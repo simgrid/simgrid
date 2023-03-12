@@ -31,7 +31,6 @@ public:
   Channel& channel() { return checker_side_.get_channel(); }
 
   void start();
-  void shutdown();
   void resume();
   void wait_for_requests();
 
@@ -40,8 +39,6 @@ public:
 
   /* Interactions with the simcall observer */
   XBT_ATTRIB_NORETURN void exit(int status);
-
-  void finalize_app(bool terminate_asap = false);
 
   Exploration* get_exploration() const { return exploration_; }
   void set_exploration(Exploration* exploration) { exploration_ = exploration; }

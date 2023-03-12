@@ -105,19 +105,6 @@ void ModelChecker::setup_ignore()
   process.ignore_global_variable("counter");
 }
 
-void ModelChecker::shutdown()
-{
-  XBT_DEBUG("Shutting down model-checker");
-
-  RemoteProcessMemory& process = get_remote_process_memory();
-  if (process.running()) {
-    XBT_DEBUG("Killing process");
-    finalize_app(true);
-    kill(process.pid(), SIGKILL);
-    process.terminate();
-  }
-}
-
 void ModelChecker::resume()
 {
   if (checker_side_.get_channel().send(MessageType::CONTINUE) != 0)
@@ -244,7 +231,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
 /** Terminate the model-checker application */
 void ModelChecker::exit(int status)
 {
-  shutdown();
+  get_exploration()->get_remote_app().shutdown();
   ::exit(status);
 }
 
@@ -337,22 +324,6 @@ Transition* ModelChecker::handle_simcall(aid_t aid, int times_considered, bool n
     return deserialize_transition(aid, times_considered, stream);
   } else
     return nullptr;
-}
-
-void ModelChecker::finalize_app(bool terminate_asap)
-{
-  s_mc_message_int_t m = {};
-  m.type  = MessageType::FINALIZE;
-  m.value = terminate_asap;
-  xbt_assert(checker_side_.get_channel().send(m) == 0, "Could not ask the app to finalize on need");
-
-  s_mc_message_t answer;
-  ssize_t s = checker_side_.get_channel().receive(answer);
-  xbt_assert(s != -1, "Could not receive answer to FINALIZE");
-  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
-  xbt_assert(answer.type == MessageType::FINALIZE_REPLY,
-             "Received unexpected message %s (%i); expected MessageType::FINALIZE_REPLY (%i)", to_c_str(answer.type),
-             (int)answer.type, (int)MessageType::FINALIZE_REPLY);
 }
 
 } // namespace simgrid::mc

@@ -135,7 +135,7 @@ void DFSExplorer::run()
                 stack_.size() + 1);
       
       if (state->get_actor_count() == 0) {
-        mc_model_checker->finalize_app();
+        get_remote_app().finalize_app();
         XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
                  state->get_num(), stack_.size());
 

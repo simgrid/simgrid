@@ -143,7 +143,7 @@ RemoteApp::~RemoteApp()
 {
   initial_snapshot_ = nullptr;
   if (model_checker_) {
-    model_checker_->shutdown();
+    shutdown();
     model_checker_   = nullptr;
     mc_model_checker = nullptr;
   }
@@ -268,4 +268,34 @@ void RemoteApp::check_deadlock() const
     throw DeadlockError();
   }
 }
+
+void RemoteApp::shutdown()
+{
+  XBT_DEBUG("Shutting down model-checker");
+
+  RemoteProcessMemory& process = get_remote_process_memory();
+  if (process.running()) {
+    XBT_DEBUG("Killing process");
+    finalize_app(true);
+    kill(process.pid(), SIGKILL);
+    process.terminate();
+  }
+}
+
+void RemoteApp::finalize_app(bool terminate_asap)
+{
+  s_mc_message_int_t m = {};
+  m.type               = MessageType::FINALIZE;
+  m.value              = terminate_asap;
+  xbt_assert(model_checker_->channel().send(m) == 0, "Could not ask the app to finalize on need");
+
+  s_mc_message_t answer;
+  ssize_t s = model_checker_->channel().receive(answer);
+  xbt_assert(s != -1, "Could not receive answer to FINALIZE");
+  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
+  xbt_assert(answer.type == MessageType::FINALIZE_REPLY,
+             "Received unexpected message %s (%i); expected MessageType::FINALIZE_REPLY (%i)", to_c_str(answer.type),
+             (int)answer.type, (int)MessageType::FINALIZE_REPLY);
+}
+
 } // namespace simgrid::mc
