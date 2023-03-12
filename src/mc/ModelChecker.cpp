@@ -174,17 +174,8 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       return false;
 
     case MessageType::ASSERTION_FAILED:
-      XBT_INFO("**************************");
-      XBT_INFO("*** PROPERTY NOT VALID ***");
-      XBT_INFO("**************************");
-      XBT_INFO("Counter-example execution trace:");
-      for (auto const& s : get_exploration()->get_textual_trace())
-        XBT_INFO("  %s", s.c_str());
-      XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
-               "--cfg=model-check/replay:'%s'",
-               get_exploration()->get_record_trace().to_string().c_str());
-      exploration_->log_state();
-      exploration_->system_exit(SIMGRID_MC_EXIT_SAFETY);
+      exploration_->report_assertion_failure();
+      break;
 
     default:
       xbt_die("Unexpected message from model-checked application");

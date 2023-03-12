@@ -45,6 +45,8 @@ public:
 
   /** Produce an error message indicating that the application crashed (status was produced by waitpid) */
   void report_crash(int status);
+  /** Produce an error message indicating that a property was violated */
+  void report_assertion_failure();
 
   /** Kill the application and the model-checker (which exits with `status`)*/
   XBT_ATTRIB_NORETURN void system_exit(int status);

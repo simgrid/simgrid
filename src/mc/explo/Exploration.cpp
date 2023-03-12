@@ -90,6 +90,20 @@ void Exploration::report_crash(int status)
   get_remote_app().get_remote_process_memory().terminate();
   system_exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
 }
+void Exploration::report_assertion_failure()
+{
+  XBT_INFO("**************************");
+  XBT_INFO("*** PROPERTY NOT VALID ***");
+  XBT_INFO("**************************");
+  XBT_INFO("Counter-example execution trace:");
+  for (auto const& s : get_textual_trace())
+    XBT_INFO("  %s", s.c_str());
+  XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
+           "--cfg=model-check/replay:'%s'",
+           get_record_trace().to_string().c_str());
+  log_state();
+  system_exit(SIMGRID_MC_EXIT_SAFETY);
+}
 
 void Exploration::system_exit(int status)
 {
