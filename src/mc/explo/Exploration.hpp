@@ -43,6 +43,9 @@ public:
   /** Main function of this algorithm */
   virtual void run() = 0;
 
+  /** Produce an error message indicating that the application crashed (status was produced by waitpid) */
+  void report_crash(int status);
+
   /** Kill the application and the model-checker (which exits with `status`)*/
   XBT_ATTRIB_NORETURN void system_exit(int status);
 
