@@ -159,16 +159,6 @@ public:
 
   void ignore_local_variable(const char* var_name, const char* frame_name) const;
 
-  /* ***************** */
-  /* SIMIX-related API */
-  /* ***************** */
-private:
-  // Cache the address of the variables we read directly in the memory of remote
-  RemotePtr<unsigned long> maxpid_addr_;
-
-public:
-  unsigned long get_maxpid() const { return this->read(maxpid_addr_); }
-
   void dump_stack() const;
 
 private:

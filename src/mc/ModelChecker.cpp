@@ -279,7 +279,7 @@ void ModelChecker::handle_waitpid()
       }
 #endif
 
-      // We don't care about signals, just reinject them:
+      // We don't care about non-lethal signals, just reinject them:
       if (WIFSTOPPED(status)) {
         XBT_DEBUG("Stopped with signal %i", (int) WSTOPSIG(status));
         errno = 0;
