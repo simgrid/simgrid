@@ -43,6 +43,9 @@ public:
   /** Main function of this algorithm */
   virtual void run() = 0;
 
+  /** Kill the application and the model-checker (which exits with `status`)*/
+  XBT_ATTRIB_NORETURN void system_exit(int status);
+
   /* These methods are callbacks called by the model-checking engine
    * to get and display information about the current state of the
    * model-checking algorithm: */

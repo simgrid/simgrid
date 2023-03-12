@@ -220,19 +220,12 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
                get_exploration()->get_record_trace().to_string().c_str());
       exploration_->log_state();
 
-      this->exit(SIMGRID_MC_EXIT_SAFETY);
+      exploration_->system_exit(SIMGRID_MC_EXIT_SAFETY);
 
     default:
       xbt_die("Unexpected message from model-checked application");
   }
   return true;
-}
-
-/** Terminate the model-checker application */
-void ModelChecker::exit(int status)
-{
-  get_exploration()->get_remote_app().shutdown();
-  ::exit(status);
 }
 
 void ModelChecker::handle_waitpid()
@@ -263,7 +256,7 @@ void ModelChecker::handle_waitpid()
         if (WIFSIGNALED(status)) {
           MC_report_crash(exploration_, status);
           this->get_remote_process_memory().terminate();
-          this->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
+          exploration_->system_exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
         }
       }
 #endif
@@ -283,7 +276,7 @@ void ModelChecker::handle_waitpid()
       else if (WIFSIGNALED(status)) {
         MC_report_crash(exploration_, status);
         this->get_remote_process_memory().terminate();
-        this->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
+        exploration_->system_exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
       } else if (WIFEXITED(status)) {
         XBT_DEBUG("Child process is over");
         this->get_remote_process_memory().terminate();

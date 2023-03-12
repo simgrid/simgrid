@@ -57,4 +57,10 @@ void Exploration::log_state()
   }
 }
 
+void Exploration::system_exit(int status)
+{
+  get_remote_app().shutdown();
+  ::exit(status);
+}
+
 }; // namespace simgrid::mc
