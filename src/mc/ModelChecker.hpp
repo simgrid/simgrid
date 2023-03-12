@@ -28,10 +28,10 @@ public:
   explicit ModelChecker(std::unique_ptr<RemoteProcessMemory> remote_simulation, int sockfd);
 
   RemoteProcessMemory& get_remote_process_memory() { return *remote_process_memory_; }
-  Channel& channel() { return checker_side_.get_channel(); }
+  Channel& get_channel() { return checker_side_.get_channel(); }
+  void channel_handle_events() { checker_side_.dispatch(); }
 
   void start();
-  void wait_for_requests();
 
   /** Let the application take a transition. A new Transition is created iff the last parameter is true */
   Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);

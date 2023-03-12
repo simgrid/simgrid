@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/api/State.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
 
 #include <boost/range/algorithm.hpp>
@@ -133,6 +134,6 @@ void State::execute_next(aid_t next)
   auto executed_transition = std::unique_ptr<Transition>(just_executed);
   actor_state.set_transition(std::move(executed_transition), times_considered);
 
-  mc_model_checker->wait_for_requests();
+  mc_model_checker->get_exploration()->get_remote_app().wait_for_requests();
 }
 } // namespace simgrid::mc

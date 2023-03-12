@@ -11,6 +11,7 @@
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/ModelChecker.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/transition/TransitionActorJoin.hpp"
 #include "src/mc/transition/TransitionAny.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
@@ -50,7 +51,7 @@ void Transition::replay() const
 
 #if SIMGRID_HAVE_MC
   mc_model_checker->handle_simcall(aid_, times_considered_, false);
-  mc_model_checker->wait_for_requests();
+  mc_model_checker->get_exploration()->get_remote_app().wait_for_requests();
 #endif
 }
 

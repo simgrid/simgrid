@@ -135,7 +135,7 @@ RemoteApp::RemoteApp(const std::vector<char*>& args)
   model_checker_->start();
 
   /* Take the initial snapshot */
-  model_checker_->wait_for_requests();
+  wait_for_requests();
   initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_);
 }
 
@@ -159,9 +159,9 @@ unsigned long RemoteApp::get_maxpid() const
   // note: we could maybe cache it and count the actor creation on checker side too.
   // But counting correctly accross state checkpoint/restore would be annoying.
 
-  model_checker_->channel().send(MessageType::ACTORS_MAXPID);
+  model_checker_->get_channel().send(MessageType::ACTORS_MAXPID);
   s_mc_message_int_t answer;
-  ssize_t answer_size = model_checker_->channel().receive(answer);
+  ssize_t answer_size = model_checker_->get_channel().receive(answer);
   xbt_assert(answer_size != -1, "Could not receive message");
   xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
   xbt_assert(answer.type == MessageType::ACTORS_MAXPID_REPLY,
@@ -180,10 +180,10 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   //                    <----- send ACTORS_STATUS_REPLY
   //                    <----- send `N` `s_mc_message_actors_status_one_t` structs
   //                    <----- send `M` `s_mc_message_simcall_probe_one_t` structs
-  model_checker_->channel().send(MessageType::ACTORS_STATUS);
+  model_checker_->get_channel().send(MessageType::ACTORS_STATUS);
 
   s_mc_message_actors_status_answer_t answer;
-  ssize_t answer_size = model_checker_->channel().receive(answer);
+  ssize_t answer_size = model_checker_->get_channel().receive(answer);
   xbt_assert(answer_size != -1, "Could not receive message");
   xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
   xbt_assert(answer.type == MessageType::ACTORS_STATUS_REPLY,
@@ -201,7 +201,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   std::vector<s_mc_message_actors_status_one_t> status(answer.count);
   if (answer.count > 0) {
     size_t size      = status.size() * sizeof(s_mc_message_actors_status_one_t);
-    ssize_t received = model_checker_->channel().receive(status.data(), size);
+    ssize_t received = model_checker_->get_channel().receive(status.data(), size);
     xbt_assert(static_cast<size_t>(received) == size);
   }
 
@@ -217,7 +217,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   std::vector<s_mc_message_simcall_probe_one_t> probes(answer.transition_count);
   if (answer.transition_count > 0) {
     for (auto& probe : probes) {
-      ssize_t received = model_checker_->channel().receive(probe);
+      ssize_t received = model_checker_->get_channel().receive(probe);
       xbt_assert(received >= 0, "Could not receive response to ACTORS_PROBE message (%s)", strerror(errno));
       xbt_assert(static_cast<size_t>(received) == sizeof probe,
                  "Could not receive response to ACTORS_PROBE message (%zd bytes received != %zu bytes expected",
@@ -248,9 +248,9 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
 
 void RemoteApp::check_deadlock() const
 {
-  xbt_assert(model_checker_->channel().send(MessageType::DEADLOCK_CHECK) == 0, "Could not check deadlock state");
+  xbt_assert(model_checker_->get_channel().send(MessageType::DEADLOCK_CHECK) == 0, "Could not check deadlock state");
   s_mc_message_int_t message;
-  ssize_t received = model_checker_->channel().receive(message);
+  ssize_t received = model_checker_->get_channel().receive(message);
   xbt_assert(received != -1, "Could not receive message");
   xbt_assert(received == sizeof message, "Broken message (size=%zd; expected %zu)", received, sizeof message);
   xbt_assert(message.type == MessageType::DEADLOCK_CHECK_REPLY,
@@ -267,6 +267,17 @@ void RemoteApp::check_deadlock() const
     model_checker_->get_exploration()->log_state();
     throw DeadlockError();
   }
+}
+
+void RemoteApp::wait_for_requests()
+{
+  /* Resume the application */
+  if (model_checker_->get_channel().send(MessageType::CONTINUE) != 0)
+    throw xbt::errno_error();
+  get_remote_process_memory().clear_cache();
+
+  if (this->get_remote_process_memory().running())
+    model_checker_->channel_handle_events();
 }
 
 void RemoteApp::shutdown()
@@ -287,10 +298,10 @@ void RemoteApp::finalize_app(bool terminate_asap)
   s_mc_message_int_t m = {};
   m.type               = MessageType::FINALIZE;
   m.value              = terminate_asap;
-  xbt_assert(model_checker_->channel().send(m) == 0, "Could not ask the app to finalize on need");
+  xbt_assert(model_checker_->get_channel().send(m) == 0, "Could not ask the app to finalize on need");
 
   s_mc_message_t answer;
-  ssize_t s = model_checker_->channel().receive(answer);
+  ssize_t s = model_checker_->get_channel().receive(answer);
   xbt_assert(s != -1, "Could not receive answer to FINALIZE");
   xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
   xbt_assert(answer.type == MessageType::FINALIZE_REPLY,

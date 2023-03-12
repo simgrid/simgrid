@@ -278,17 +278,6 @@ void ModelChecker::handle_waitpid()
   }
 }
 
-void ModelChecker::wait_for_requests()
-{
-  /* Resume the application */
-  if (checker_side_.get_channel().send(MessageType::CONTINUE) != 0)
-    throw xbt::errno_error();
-  remote_process_memory_->clear_cache();
-
-  if (this->get_remote_process_memory().running())
-    checker_side_.dispatch();
-}
-
 Transition* ModelChecker::handle_simcall(aid_t aid, int times_considered, bool new_transition)
 {
   s_mc_message_simcall_execute_t m = {};

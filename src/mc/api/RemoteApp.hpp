@@ -46,6 +46,7 @@ public:
   ~RemoteApp();
 
   void restore_initial_state() const;
+  void wait_for_requests();
 
   /** Ask to the application to check for a deadlock. If so, do an error message and throw a DeadlockError. */
   void check_deadlock() const;
