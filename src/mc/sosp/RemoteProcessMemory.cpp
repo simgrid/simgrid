@@ -119,6 +119,18 @@ void RemoteProcessMemory::init(xbt_mheap_t mmalloc_default_mdp)
   this->unw_addr_space            = simgrid::mc::UnwindContext::createUnwindAddressSpace();
   this->unw_underlying_addr_space = simgrid::unw::create_addr_space();
   this->unw_underlying_context    = simgrid::unw::create_context(this->unw_underlying_addr_space, this->pid_);
+
+  auto ignored_local_variables = {
+      std::make_pair("e", "*"),
+      std::make_pair("_log_ev", "*"),
+
+      /* Ignore local variable about time used for tracing */
+      std::make_pair("start_time", "*"),
+  };
+  for (auto const& [var, frame] : ignored_local_variables)
+    ignore_local_variable(var, frame);
+
+  ignore_global_variable("counter"); // Static variable used for tracing
 }
 
 RemoteProcessMemory::~RemoteProcessMemory()

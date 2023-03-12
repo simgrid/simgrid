@@ -69,8 +69,6 @@ void ModelChecker::start()
   xbt_assert(waitpid(pid, &status, WAITPID_CHECKED_FLAGS) == pid && WIFSTOPPED(status) && WSTOPSIG(status) == SIGSTOP,
              "Could not wait model-checked process");
 
-  setup_ignore();
-
   errno = 0;
 #ifdef __linux__
   ptrace(PTRACE_SETOPTIONS, pid, nullptr, PTRACE_O_TRACEEXIT);
@@ -85,24 +83,6 @@ void ModelChecker::start()
              "If you run from within a docker, adding `--cap-add SYS_PTRACE` to the docker line may help. "
              "If it does not help, please report this bug.",
              errno);
-}
-
-static constexpr auto ignored_local_variables = {
-    std::make_pair("e", "*"),
-    std::make_pair("_log_ev", "*"),
-
-    /* Ignore local variable about time used for tracing */
-    std::make_pair("start_time", "*"),
-};
-
-void ModelChecker::setup_ignore()
-{
-  const RemoteProcessMemory& process = this->get_remote_process_memory();
-  for (auto const& [var, frame] : ignored_local_variables)
-    process.ignore_local_variable(var, frame);
-
-  /* Static variable used for tracing */
-  process.ignore_global_variable("counter");
 }
 
 bool ModelChecker::handle_message(const char* buffer, ssize_t size)
