@@ -1665,6 +1665,7 @@ include docs/source/Release_Notes.rst
 include docs/source/Start_your_own_project.rst
 include docs/source/The_XBT_toolbox.rst
 include docs/source/Tutorial_Algorithms.rst
+include docs/source/Tutorial_DAG.rst
 include docs/source/Tutorial_MPI_Applications.rst
 include docs/source/Tutorial_Model-checking.rst
 include docs/source/XML_reference.rst
@@ -1699,6 +1700,17 @@ include docs/source/img/zoom_comm.drawio
 include docs/source/img/zoom_comm.svg
 include docs/source/index.rst
 include docs/source/intl.rst
+include docs/source/tuto_dag/dag_lab1.cpp
+include docs/source/tuto_dag/dag_lab2-1.cpp
+include docs/source/tuto_dag/dag_lab2-2.cpp
+include docs/source/tuto_dag/dag_lab2-3.cpp
+include docs/source/tuto_dag/img/dag.svg
+include docs/source/tuto_dag/img/dag1.svg
+include docs/source/tuto_dag/img/dag2.svg
+include docs/source/tuto_dag/simple_dax.xml
+include docs/source/tuto_dag/simple_dot.dot
+include docs/source/tuto_dag/simple_json.json
+include docs/source/tuto_dag/small_platform.xml
 include docs/source/tuto_disk/CMakeLists.txt
 include docs/source/tuto_disk/Dockerfile
 include docs/source/tuto_disk/analysis.irst

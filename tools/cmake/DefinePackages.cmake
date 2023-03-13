@@ -871,6 +871,19 @@ set(DOC_SOURCES
   docs/source/tuto_s4u/master-workers-lab3.cpp
   docs/source/tuto_s4u/master-workers-lab4.cpp
 
+  docs/source/Tutorial_DAG.rst
+  docs/source/tuto_dag/dag_lab1.cpp
+  docs/source/tuto_dag/dag_lab2-1.cpp
+  docs/source/tuto_dag/dag_lab2-2.cpp
+  docs/source/tuto_dag/dag_lab2-3.cpp
+  docs/source/tuto_dag/img/dag1.svg
+  docs/source/tuto_dag/img/dag2.svg
+  docs/source/tuto_dag/img/dag.svg
+  docs/source/tuto_dag/simple_dax.xml
+  docs/source/tuto_dag/simple_dot.dot
+  docs/source/tuto_dag/simple_json.json
+  docs/source/tuto_dag/small_platform.xml
+
   docs/source/Tutorial_MPI_Applications.rst
   docs/source/tuto_smpi/3hosts.png
   docs/source/tuto_smpi/3hosts.xml
