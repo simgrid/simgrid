@@ -231,6 +231,16 @@ else()
   message(STATUS "Disabling model BMF because Eigen3 was not found. If it's installed, use EIGEN3_HINT to hint cmake about the location of Eigen3Config.cmake")
 endif()
 
+# Check for our JSON dependency
+set(SIMGRID_HAVE_JSON 0)
+find_package(nlohmann_json 3.11.2
+             HINTS ${nlohmann_json_HINT})
+if (nlohmann_json_FOUND)
+  set(SIMGRID_HAVE_JSON 1)
+  message(STATUS "Found nlohmann_json: ${NLOHMANN_JSON_INCLUDE_DIR}")
+  include_directories(${NLOHMANN_JSON_INCLUDE_DIR})
+endif()
+
 set(HAVE_PAPI 0)
 if(enable_smpi_papi)
   include(FindPAPI)

@@ -1,5 +1,4 @@
-/* Copyright (c) 2009-2023. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2023. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -21,7 +20,9 @@
 #include "dax_dtd.h"
 #include "dax_dtd.c"
 
+#if SIMGRID_HAVE_JSON
 #include <nlohmann/json.hpp>
+#endif
 
 #if HAVE_GRAPHVIZ
 #include <graphviz/cgraph.h>
@@ -89,6 +90,7 @@ static ExecPtr current_job;
  */
 std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename)
 {
+#if SIMGRID_HAVE_JSON
   std::ifstream f(filename);
   auto data = nlohmann::json::parse(f);
   std::vector<ActivityPtr> dag = {};
@@ -149,8 +151,11 @@ std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename)
       activity->start();
   }
   return dag;
+#else
+  xbt_die("JSON support was not compiled in, probably because nlohmann/json was not found. Please install "
+          "nlohmann-json3-dev and recompile SimGrid to use this feature.");
+#endif
 }
-
 /** @brief loads a DAX file describing a DAG
  *
  * See https://confluence.pegasus.isi.edu/display/pegasus/WorkflowGenerator for more details.

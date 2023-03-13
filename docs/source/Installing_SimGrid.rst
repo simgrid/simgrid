@@ -107,6 +107,9 @@ Eigen3 (optional)
   - On CentOS / Fedora: ``dnf install eigen3-devel``
   - On macOS with homebrew: ``brew install eigen``
   - Use EIGEN3_HINT to specify where it's installed if cmake doesn't find it automatically.
+JSON (optional, for the DAG wfcommons loader)
+  - On Debian / Ubuntu: ``apt install nlohmann-json3-dev``
+  - Use nlohmann_json_HINT to specify where it's installed if cmake doesn't find it automatically.
 
 For platform-specific details, please see below.
 

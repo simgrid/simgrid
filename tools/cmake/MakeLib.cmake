@@ -95,6 +95,10 @@ if(HAVE_GRAPHVIZ)
   endif()
 endif()
 
+if(SIMGRID_HAVE_JSON)
+  target_link_libraries(simgrid  nlohmann_json::nlohmann_json)
+endif()
+
 if(NOT ${DL_LIBRARY} STREQUAL "")
   SET(SIMGRID_DEP "${SIMGRID_DEP} ${DL_LIBRARY}")
 endif()
