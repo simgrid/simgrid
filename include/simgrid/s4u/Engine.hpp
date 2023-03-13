@@ -266,6 +266,7 @@ private:
 
 std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename);
 std::vector<ActivityPtr> create_DAG_from_DAX(const std::string& filename);
+std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename);
 
 #ifndef DOXYGEN /* Internal use only, no need to expose it */
 template <class T>

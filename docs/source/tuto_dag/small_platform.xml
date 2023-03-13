@@ -1,0 +1,194 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+  <zone id="zone0" routing="Full">
+    <host id="Tremblay" speed="98.095Mf"/>
+    <host id="Jupiter" speed="76.296Mf"/>
+    <host id="Fafard" speed="76.296Mf"/>
+    <host id="Ginette" speed="48.492Mf"/>
+    <host id="Bourassa" speed="48.492Mf"/>
+    <host id="Jacquelin" speed="137.333Mf"/>
+    <host id="Boivin" speed="98.095Mf"/>
+
+    <link id="6" bandwidth="41.279125MBps" latency="59.904us"/>
+    <link id="3" bandwidth="34.285625MBps" latency="514.433us"/>
+    <link id="7" bandwidth="11.618875MBps" latency="189.98us"/>
+    <link id="9" bandwidth="7.20975MBps" latency="1.461517ms"/>
+    <link id="2" bandwidth="118.6825MBps" latency="136.931us"/>
+    <link id="8" bandwidth="8.158MBps" latency="270.544us"/>
+    <link id="1" bandwidth="34.285625MBps" latency="514.433us"/>
+    <link id="4" bandwidth="10.099625MBps" latency="479.78us"/>
+    <link id="0" bandwidth="41.279125MBps" latency="59.904us"/>
+    <link id="5" bandwidth="27.94625MBps" latency="278.066us"/>
+    <link id="145" bandwidth="2.583375MBps" latency="410.463us"/>
+    <link id="10" bandwidth="34.285625MBps" latency="514.433us"/>
+    <link id="11" bandwidth="118.6825MBps" latency="136.931us"/>
+    <link id="16" bandwidth="34.285625MBps" latency="514.433us"/>
+    <link id="17" bandwidth="118.6825MBps" latency="136.931us"/>
+    <link id="44" bandwidth="10.314625MBps" latency="6.932556ms"/>
+    <link id="47" bandwidth="10.314625MBps" latency="6.932556ms"/>
+    <link id="54" bandwidth="15.376875MBps" latency="35.083019ms"/>
+    <link id="56" bandwidth="21.41475MBps" latency="29.5890617ms"/>
+    <link id="59" bandwidth="11.845375MBps" latency="370.788us"/>
+    <link id="78" bandwidth="27.94625MBps" latency="278.066us"/>
+    <link id="79" bandwidth="8.42725MBps" latency="156.056us"/>
+    <link id="80" bandwidth="15.376875MBps" latency="35.083019ms"/>
+    <link id="loopback" bandwidth="498MBps" latency="15us" sharing_policy="FATPIPE"/>
+
+    <route src="Tremblay" dst="Tremblay">
+      <link_ctn id="loopback"/>
+    </route>
+    <route src="Jupiter" dst="Jupiter">
+      <link_ctn id="loopback"/>
+    </route>
+    <route src="Fafard" dst="Fafard">
+      <link_ctn id="loopback"/>
+    </route>
+    <route src="Ginette" dst="Ginette">
+      <link_ctn id="loopback"/>
+    </route>
+    <route src="Bourassa" dst="Bourassa">
+      <link_ctn id="loopback"/>
+    </route>
+    <route src="Tremblay" dst="Jupiter">
+      <link_ctn id="9"/>
+    </route>
+    <route src="Tremblay" dst="Fafard">
+      <link_ctn id="4"/>
+      <link_ctn id="3"/>
+      <link_ctn id="2"/>
+      <link_ctn id="0"/>
+      <link_ctn id="1"/>
+      <link_ctn id="8"/>
+    </route>
+    <route src="Tremblay" dst="Ginette">
+      <link_ctn id="4"/>
+      <link_ctn id="3"/>
+      <link_ctn id="5"/>
+    </route>
+    <route src="Tremblay" dst="Bourassa">
+      <link_ctn id="4"/>
+      <link_ctn id="3"/>
+      <link_ctn id="2"/>
+      <link_ctn id="0"/>
+      <link_ctn id="1"/>
+      <link_ctn id="6"/>
+      <link_ctn id="7"/>
+    </route>
+    <route src="Jupiter" dst="Fafard">
+      <link_ctn id="9"/>
+      <link_ctn id="4"/>
+      <link_ctn id="3"/>
+      <link_ctn id="2"/>
+      <link_ctn id="0"/>
+      <link_ctn id="1"/>
+      <link_ctn id="8"/>
+    </route>
+    <route src="Jupiter" dst="Bourassa">
+      <link_ctn id="9"/>
+      <link_ctn id="4"/>
+      <link_ctn id="3"/>
+      <link_ctn id="2"/>
+      <link_ctn id="0"/>
+      <link_ctn id="1"/>
+      <link_ctn id="6"/>
+      <link_ctn id="7"/>
+    </route>
+    <route src="Fafard" dst="Ginette">
+      <link_ctn id="8"/>
+      <link_ctn id="1"/>
+      <link_ctn id="0"/>
+      <link_ctn id="2"/>
+      <link_ctn id="5"/>
+    </route>
+    <route src="Jupiter" dst="Jacquelin">
+      <link_ctn id="145"/>
+    </route>
+    <route src="Jupiter" dst="Boivin">
+      <link_ctn id="47"/>
+    </route>
+    <route src="Jupiter" dst="Ginette">
+      <link_ctn id="9"/>
+      <link_ctn id="4"/>
+      <link_ctn id="3"/>
+      <link_ctn id="5"/>
+    </route>
+    <route src="Fafard" dst="Bourassa">
+      <link_ctn id="8"/>
+      <link_ctn id="6"/>
+      <link_ctn id="7"/>
+    </route>
+    <route src="Ginette" dst="Bourassa">
+      <link_ctn id="5"/>
+      <link_ctn id="2"/>
+      <link_ctn id="0"/>
+      <link_ctn id="1"/>
+      <link_ctn id="6"/>
+      <link_ctn id="7"/>
+    </route>
+    <route src="Ginette" dst="Jacquelin">
+      <link_ctn id="145"/>
+    </route>
+    <route src="Ginette" dst="Boivin">
+      <link_ctn id="47"/>
+    </route>
+    <route src="Bourassa" dst="Jacquelin">
+      <link_ctn id="145"/>
+    </route>
+    <route src="Bourassa" dst="Boivin">
+      <link_ctn id="47"/>
+    </route>
+    <route src="Jacquelin" dst="Boivin">
+      <link_ctn id="145"/>
+      <link_ctn id="59"/>
+      <link_ctn id="56"/>
+      <link_ctn id="54"/>
+      <link_ctn id="17"/>
+      <link_ctn id="16"/>
+      <link_ctn id="10"/>
+      <link_ctn id="11"/>
+      <link_ctn id="44"/>
+      <link_ctn id="47"/>
+    </route>
+    <route src="Jacquelin" dst="Fafard">
+      <link_ctn id="145"/>
+      <link_ctn id="59"/>
+      <link_ctn id="56"/>
+      <link_ctn id="54"/>
+      <link_ctn id="17"/>
+      <link_ctn id="16"/>
+      <link_ctn id="10"/>
+      <link_ctn id="6"/>
+      <link_ctn id="9"/>
+      <link_ctn id="79"/>
+      <link_ctn id="78"/>
+    </route>
+    <route src="Jacquelin" dst="Tremblay">
+      <link_ctn id="145"/>
+      <link_ctn id="59"/>
+      <link_ctn id="56"/>
+      <link_ctn id="54"/>
+      <link_ctn id="2"/>
+      <link_ctn id="3"/>
+    </route>
+    <route src="Boivin" dst="Tremblay">
+      <link_ctn id="47"/>
+      <link_ctn id="44"/>
+      <link_ctn id="11"/>
+      <link_ctn id="10"/>
+      <link_ctn id="16"/>
+      <link_ctn id="0"/>
+      <link_ctn id="3"/>
+    </route>
+    <route src="Boivin" dst="Fafard">
+      <link_ctn id="47"/>
+      <link_ctn id="44"/>
+      <link_ctn id="11"/>
+      <link_ctn id="6"/>
+      <link_ctn id="9"/>
+      <link_ctn id="79"/>
+      <link_ctn id="78"/>
+      <link_ctn id="80"/>
+    </route>
+  </zone>
+</platform>

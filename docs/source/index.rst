@@ -59,6 +59,7 @@ of every page. Bugs in the code should be reported
 	Simulating distributed algorithms <Tutorial_Algorithms.rst>
 	Simulating MPI applications <Tutorial_MPI_Applications.rst>
 	Model-checking algorithms <Tutorial_Model-checking.rst>
+   Simulating DAG <Tutorial_DAG.rst>
 
 .. toctree::
    :hidden:
