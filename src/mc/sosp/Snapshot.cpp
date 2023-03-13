@@ -13,19 +13,19 @@ namespace simgrid::mc {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
-void Snapshot::snapshot_regions(RemoteProcessMemory* process)
+void Snapshot::snapshot_regions(RemoteProcessMemory& process_memory)
 {
   snapshot_regions_.clear();
 
-  for (auto const& object_info : process->object_infos)
+  for (auto const& object_info : process_memory.object_infos)
     add_region(RegionType::Data, object_info.get(), object_info->start_rw, object_info->end_rw - object_info->start_rw);
 
-  const s_xbt_mheap_t* heap = process->get_heap();
+  const s_xbt_mheap_t* heap = process_memory.get_heap();
   void* start_heap = heap->base;
   void* end_heap   = heap->breakval;
 
   add_region(RegionType::Heap, nullptr, start_heap, (char*)end_heap - (char*)start_heap);
-  heap_bytes_used_ = mmalloc_get_bytes_used_remote(heap->heaplimit, process->get_malloc_info());
+  heap_bytes_used_ = mmalloc_get_bytes_used_remote(heap->heaplimit, process_memory.get_malloc_info());
 }
 
 /** @brief Checks whether the variable is in scope for a given IP.
@@ -99,7 +99,7 @@ static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_
 
 static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_context)
 {
-  const RemoteProcessMemory* process = &mc_model_checker->get_remote_process_memory();
+  const RemoteProcessMemory* process_memory = &mc_model_checker->get_remote_process_memory();
   std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c = stack_context->cursor();
@@ -122,7 +122,7 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_
 
     // TODO, use real addresses in frame_t instead of fixing it here
 
-    Frame* frame              = process->find_function(remote(ip));
+    Frame* frame              = process_memory->find_function(remote(ip));
     stack_frame.frame         = frame;
 
     if (frame) {
@@ -149,16 +149,16 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_
   return result;
 }
 
-void Snapshot::snapshot_stacks(RemoteProcessMemory* process)
+void Snapshot::snapshot_stacks(RemoteProcessMemory& process_memory)
 {
-  for (auto const& stack : process->stack_areas()) {
+  for (auto const& stack : process_memory.stack_areas()) {
     s_mc_snapshot_stack_t st;
 
-    // Read the context from remote process:
+    // Read the context from remote process memory:
     unw_context_t context;
-    process->read_bytes(&context, sizeof(context), remote(stack.context));
+    process_memory.read_bytes(&context, sizeof(context), remote(stack.context));
 
-    st.context.initialize(process, &context);
+    st.context.initialize(process_memory, &context);
 
     st.stack_frames    = unwind_stack_frames(&st.context);
     st.local_variables = get_local_variables_values(st.stack_frames);
@@ -198,20 +198,20 @@ void Snapshot::ignore_restore() const
                                              remote(ignored_data.start));
 }
 
-Snapshot::Snapshot(long num_state, PageStore& store, RemoteProcessMemory* process)
-    : AddressSpace(process), page_store_(store), num_state_(num_state)
+Snapshot::Snapshot(long num_state, PageStore& store, RemoteProcessMemory& memory)
+    : AddressSpace(memory), page_store_(store), num_state_(num_state)
 {
   XBT_DEBUG("Taking snapshot %ld", num_state);
 
   handle_ignore();
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
-  snapshot_regions(process);
+  snapshot_regions(memory);
 
-  to_ignore_ = process->ignored_heap();
+  to_ignore_ = memory.ignored_heap();
 
   if (_sg_mc_max_visited_states > 0 || not _sg_mc_property_file.get().empty()) {
-    snapshot_stacks(process);
+    snapshot_stacks(memory);
     hash_ = this->do_hash();
   }
 
@@ -271,7 +271,7 @@ Region* Snapshot::get_region(const void* addr, Region* hinted_region) const
     return get_region(addr);
 }
 
-void Snapshot::restore(RemoteProcessMemory* process) const
+void Snapshot::restore(RemoteProcessMemory& memory) const
 {
   XBT_DEBUG("Restore snapshot %ld", num_state_);
 
@@ -282,7 +282,7 @@ void Snapshot::restore(RemoteProcessMemory* process) const
   }
 
   ignore_restore();
-  process->clear_cache();
+  memory.clear_cache();
 }
 
 /* ----------- Hashing logic -------------- */

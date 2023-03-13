@@ -23,7 +23,8 @@ VisitedState::VisitedState(unsigned long state_number, unsigned int actor_count,
     , actor_count_(actor_count)
     , num_(state_number)
 {
-  this->system_state_ = std::make_shared<simgrid::mc::Snapshot>(state_number, remote_app.get_page_store());
+  this->system_state_ = std::make_shared<simgrid::mc::Snapshot>(state_number, remote_app.get_page_store(),
+                                                                remote_app.get_remote_process_memory());
 }
 
 void VisitedStates::prune()

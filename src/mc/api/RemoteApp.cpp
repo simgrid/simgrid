@@ -136,7 +136,8 @@ RemoteApp::RemoteApp(const std::vector<char*>& args)
 
   /* Take the initial snapshot */
   wait_for_requests();
-  initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_);
+  initial_snapshot_ =
+      std::make_shared<simgrid::mc::Snapshot>(0, page_store_, model_checker_->get_remote_process_memory());
 }
 
 RemoteApp::~RemoteApp()
@@ -151,7 +152,7 @@ RemoteApp::~RemoteApp()
 
 void RemoteApp::restore_initial_state() const
 {
-  this->initial_snapshot_->restore(&model_checker_->get_remote_process_memory());
+  this->initial_snapshot_->restore(model_checker_->get_remote_process_memory());
 }
 
 unsigned long RemoteApp::get_maxpid() const

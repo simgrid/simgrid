@@ -21,7 +21,8 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
 
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
-    system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store());
+    system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store(),
+                                                            remote_app.get_remote_process_memory());
 }
 
 State::State(RemoteApp& remote_app, const State* previous_state)
@@ -33,9 +34,9 @@ State::State(RemoteApp& remote_app, const State* previous_state)
   transition_ = default_transition_.get();
 
   /* Stateful model checking */
-  if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
-    system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store());
-  }
+  if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
+    system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store(),
+                                                            remote_app.get_remote_process_memory());
 
   /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.
    * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that

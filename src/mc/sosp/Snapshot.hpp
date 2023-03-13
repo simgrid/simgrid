@@ -62,8 +62,7 @@ class XBT_PRIVATE Snapshot final : public AddressSpace {
 
 public:
   /* Initialization */
-  Snapshot(long num_state, PageStore& store,
-           RemoteProcessMemory* process = &mc_model_checker->get_remote_process_memory());
+  Snapshot(long num_state, PageStore& store, RemoteProcessMemory& memory);
 
   /* Regular use */
   bool on_heap(const void* address) const
@@ -76,7 +75,7 @@ public:
                    ReadOptions options = ReadOptions::none()) const override;
   Region* get_region(const void* addr) const;
   Region* get_region(const void* addr, Region* hinted_region) const;
-  void restore(RemoteProcessMemory* process) const;
+  void restore(RemoteProcessMemory& memory) const;
 
   bool operator==(const Snapshot& other);
   bool operator!=(const Snapshot& other) { return not(*this == other); }
@@ -93,8 +92,8 @@ public:
 
 private:
   void add_region(RegionType type, ObjectInformation* object_info, void* start_addr, std::size_t size);
-  void snapshot_regions(RemoteProcessMemory* process);
-  void snapshot_stacks(RemoteProcessMemory* process);
+  void snapshot_regions(RemoteProcessMemory& process_memory);
+  void snapshot_stacks(RemoteProcessMemory& process_memory);
   void handle_ignore();
   void ignore_restore() const;
   hash_type do_hash() const;

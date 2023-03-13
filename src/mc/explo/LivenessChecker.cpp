@@ -23,10 +23,11 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t prop_state,
                          RemoteApp& remote_app)
     : num(pair_num), prop_state_(prop_state)
 {
+  auto& memory     = mc_model_checker->get_remote_process_memory();
   this->app_state_ = std::move(app_state);
   if (not this->app_state_->get_system_state())
-    this->app_state_->set_system_state(std::make_shared<Snapshot>(pair_num, remote_app.get_page_store()));
-  this->heap_bytes_used     = mc_model_checker->get_remote_process_memory().get_remote_heap_bytes();
+    this->app_state_->set_system_state(std::make_shared<Snapshot>(pair_num, remote_app.get_page_store(), memory));
+  this->heap_bytes_used     = memory.get_remote_heap_bytes();
   this->actor_count_        = app_state_->get_actor_count();
   this->other_num           = -1;
   this->atomic_propositions = std::move(atomic_propositions);
@@ -102,7 +103,7 @@ void LivenessChecker::replay()
   if (_sg_mc_checkpoint > 0) {
     const Pair* pair = exploration_stack_.back().get();
     if (const auto* system_state = pair->app_state_->get_system_state()) {
-      system_state->restore(&get_remote_app().get_remote_process_memory());
+      system_state->restore(get_remote_app().get_remote_process_memory());
       return;
     }
   }

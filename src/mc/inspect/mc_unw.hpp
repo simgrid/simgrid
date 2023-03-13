@@ -45,7 +45,7 @@ class UnwindContext {
   unw_context_t unwind_context_              = {};
 
 public:
-  void initialize(simgrid::mc::RemoteProcessMemory* process, unw_context_t* c);
+  void initialize(simgrid::mc::RemoteProcessMemory& process, unw_context_t* c);
   unw_cursor_t cursor();
 
 private: // Methods and virtual table for libunwind
