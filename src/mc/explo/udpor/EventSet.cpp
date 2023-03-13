@@ -90,6 +90,11 @@ EventSet EventSet::make_union(const Configuration& config) const
   return make_union(config.get_events());
 }
 
+EventSet EventSet::get_local_config() const
+{
+  return History(*this).get_all_events();
+}
+
 size_t EventSet::size() const
 {
   return this->events_.size();

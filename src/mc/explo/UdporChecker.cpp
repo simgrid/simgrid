@@ -62,6 +62,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
     // relation. Here, then, we would be in a deadlock.
     if (enC.empty()) {
       get_remote_app().check_deadlock();
+      DIE_IMPOSSIBLE;
     }
 
     return;
@@ -75,7 +76,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
                            "the search, yet no events were actually chosen\n"
                            "*********************************\n\n");
 
-  // Move the application into stateCe and actually make note of that state
+  // Move the application into stateCe and make note of that state
   move_to_stateCe(*stateC, *e);
   auto stateCe = record_current_state();
 
@@ -199,8 +200,10 @@ void UdporChecker::move_to_stateCe(State& state, const UnfoldingEvent& e)
 
 void UdporChecker::restore_program_state_to(const State& stateC)
 {
-  // TODO: Perform state regeneration in the same manner as is done
-  // in the DFSChecker.cpp
+  get_remote_app().restore_initial_state();
+  // TODO: We need to have the stack of past states available at this
+  // point. Since the method is recursive, we'll need to keep track of
+  // this as we progress
 }
 
 std::unique_ptr<State> UdporChecker::record_current_state()
@@ -235,7 +238,21 @@ EventSet UdporChecker::compute_partial_alternative(const EventSet& D, const Conf
 
 void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration& C, const EventSet& D)
 {
-  // TODO: Perform clean up here
+  const EventSet C_union_D              = C.get_events().make_union(D);
+  const EventSet es_immediate_conflicts = this->unfolding.get_immediate_conflicts_of(e);
+  const EventSet Q_CDU                  = C_union_D.make_union(es_immediate_conflicts.get_local_config());
+
+  // Move {e} \ Q_CDU from U to G
+  if (Q_CDU.contains(e)) {
+    this->unfolding.remove(e);
+  }
+
+  // foreach ê in #ⁱ_U(e)
+  for (const auto* e_hat : es_immediate_conflicts) {
+    // Move [ê] \ Q_CDU from U to G
+    const EventSet to_remove = e_hat->get_history().subtracting(Q_CDU);
+    this->unfolding.remove(to_remove);
+  }
 }
 
 RecordTrace UdporChecker::get_record_trace()

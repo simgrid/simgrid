@@ -9,12 +9,20 @@
 
 namespace simgrid::mc::udpor {
 
+void Unfolding::remove(const EventSet& events)
+{
+  for (const auto e : events) {
+    remove(e);
+  }
+}
+
 void Unfolding::remove(const UnfoldingEvent* e)
 {
   if (e == nullptr) {
     throw std::invalid_argument("Expected a non-null pointer to an event, but received NULL");
   }
   this->global_events_.erase(e);
+  this->event_handles.remove(e);
 }
 
 void Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
@@ -29,6 +37,7 @@ void Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
   }
 
   // Map the handle to its owner
+  this->event_handles.insert(handle);
   this->global_events_[handle] = std::move(e);
 }
 
@@ -36,12 +45,25 @@ bool Unfolding::contains_event_equivalent_to(const UnfoldingEvent* e) const
 {
   // Notice the use of `==` equality here. `e` may not be contained in the
   // unfolding; but some event which is "equivalent" to it could be.
-  for (const auto& [event, _] : global_events_) {
+  for (const auto event : *this) {
     if (*event == *e) {
       return true;
     }
   }
   return false;
+}
+
+EventSet Unfolding::get_immediate_conflicts_of(const UnfoldingEvent* e) const
+{
+  EventSet immediate_conflicts;
+
+  for (const auto event : *this) {
+    if (event->immediately_conflicts_with(e)) {
+      immediate_conflicts.insert(e);
+    }
+  }
+
+  return immediate_conflicts;
 }
 
 } // namespace simgrid::mc::udpor
