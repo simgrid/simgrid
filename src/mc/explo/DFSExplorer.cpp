@@ -117,7 +117,7 @@ void DFSExplorer::run()
       continue;
     }
 
-    // Backtrack if we are revisiting a state we saw previously
+    // Backtrack if we are revisiting a state we saw previously while applying state-equality reduction
     if (visited_state_ != nullptr) {
       XBT_DEBUG("State already visited (equal to state %ld), exploration stopped on this path.",
                 visited_state_->original_num_ == -1 ? visited_state_->num_ : visited_state_->original_num_);
