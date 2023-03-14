@@ -181,7 +181,6 @@ void Snapshot::handle_ignore()
     s_mc_snapshot_ignored_data_t ignored_data;
     ignored_data.start = (void*)region.addr;
     ignored_data.data.resize(region.size);
-    // TODO, we should do this once per privatization segment:
     get_remote_process_memory()->read_bytes(ignored_data.data.data(), region.size, remote(region.addr));
     ignored_data_.push_back(std::move(ignored_data));
   }
@@ -277,8 +276,7 @@ void Snapshot::restore(RemoteProcessMemory& memory) const
 
   // Restore regions
   for (std::unique_ptr<Region> const& region : snapshot_regions_) {
-    if (region) // privatized variables are not snapshotted
-      region.get()->restore();
+    region->restore();
   }
 
   ignore_restore();

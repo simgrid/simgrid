@@ -76,10 +76,6 @@ public:
  *  * the current state of an existing process;
  *
  *  * a snapshot.
- *
- *  In order to support SMPI privatization, the can read the memory from the
- *  context of a given SMPI process: if specified, the code reads data from the
- *  correct SMPI privatization VMA.
  */
 class AddressSpace {
 private:

@@ -56,7 +56,6 @@ struct IgnoredHeapRegion {
  *
  *  - reading from the process memory (`AddressSpace`);
  *  - accessing the system state of the process (heap, …);
- *  - privatization;
  *  - stack unwinding;
  *  - etc.
  */
