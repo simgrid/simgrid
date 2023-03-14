@@ -5,21 +5,14 @@
 
 #include "src/mc/explo/udpor/Comb.hpp"
 
+#include <boost/iterator/function_input_iterator.hpp>
+#include <boost/iterator/indirect_iterator.hpp>
 #include <functional>
 
 namespace simgrid::mc::udpor {
 
-auto Comb::combinations_begin() const
-{
-  std::vector<std::reference_wrapper<const Spike>> references;
-  std::transform(spikes.begin(), spikes.end(), std::back_inserter(references),
-                 [](const Spike& spike) { return std::cref(spike); });
-  return simgrid::xbt::variable_for_loop<const Spike>(std::move(references));
-}
+// auto Comb::combinations_begin() const {}
 
-auto Comb::combinations_end() const
-{
-  return simgrid::xbt::variable_for_loop<const Spike>();
-}
+// auto Comb::combinations_end() const {}
 
 } // namespace simgrid::mc::udpor

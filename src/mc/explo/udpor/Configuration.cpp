@@ -19,6 +19,12 @@ Configuration::Configuration(std::initializer_list<const UnfoldingEvent*> events
 {
 }
 
+Configuration::Configuration(const UnfoldingEvent* e) : Configuration(e->get_history())
+{
+  // The local configuration should always be a valid configuration. We
+  // check the invariant regardless as a sanity check
+}
+
 Configuration::Configuration(const EventSet& events) : events_(events)
 {
   if (!events_.is_valid_configuration()) {
@@ -51,6 +57,11 @@ void Configuration::add_event(const UnfoldingEvent* e)
     throw std::invalid_argument("The newly added event has dependencies "
                                 "which are missing from this configuration");
   }
+}
+
+bool Configuration::is_compatible_with(const History& history) const
+{
+  return false;
 }
 
 std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_events() const

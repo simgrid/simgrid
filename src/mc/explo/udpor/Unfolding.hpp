@@ -35,6 +35,18 @@ private:
    */
   EventSet event_handles;
 
+  /**
+   * @brief The "irrelevant" portions of the unfolding that do not need to be kept
+   * around to ensure that UDPOR functions correctly
+   *
+   * The set `G` is another global variable maintained by the UDPOR algorithm which
+   * is used to keep track of all events which used to be important to UDPOR.
+   *
+   * @note: The current implementation does not touch the set `G`. Its use is perhaps
+   * limited to debugging and/or model-checking acyclic state spaces
+   */
+  EventSet G;
+
 public:
   Unfolding()                       = default;
   Unfolding& operator=(Unfolding&&) = default;

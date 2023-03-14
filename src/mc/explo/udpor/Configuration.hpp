@@ -18,6 +18,7 @@ public:
   Configuration& operator=(Configuration const&) = default;
   Configuration(Configuration&&)                 = default;
 
+  explicit Configuration(const UnfoldingEvent* event);
   explicit Configuration(const EventSet& events);
   explicit Configuration(std::initializer_list<const UnfoldingEvent*> events);
 
@@ -58,6 +59,15 @@ public:
    * assertions)
    */
   void add_event(const UnfoldingEvent* e);
+
+  bool is_compatible_with(const UnfoldingEvent* e) const;
+
+  /**
+   * @brief Whether or not the events in the given history
+   * could be added to this configuration while preserving
+   * the configuration property
+   */
+  bool is_compatible_with(const History& history) const;
 
   /**
    * @brief Orders the events of the configuration such that
