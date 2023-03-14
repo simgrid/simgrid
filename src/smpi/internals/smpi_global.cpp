@@ -529,6 +529,9 @@ int smpi_main(const char* executable, int argc, char* argv[])
   engine.load_platform(argv[1]);
   engine.set_default_comm_data_copy_callback(smpi_comm_copy_buffer_callback);
 
+  xbt_assert(not MC_is_active() || smpi_cfg_privatization() != SmpiPrivStrategies::MMAP,
+             "Please use the dlopen privatization schema when model-checking SMPI code");
+
   if (smpi_cfg_privatization() == SmpiPrivStrategies::DLOPEN)
     smpi_init_privatization_dlopen(executable);
   else

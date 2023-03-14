@@ -4,14 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/api/RemoteApp.hpp"
-#include "src/internal_config.h" // HAVE_SMPI
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
 #include "xbt/asserts.h"
-#if HAVE_SMPI
-#include "smpi/smpi.h"
-#include "src/smpi/include/private.hpp"
-#endif
 #include "src/mc/api/State.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -102,12 +97,6 @@ XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<
 
 RemoteApp::RemoteApp(const std::vector<char*>& args)
 {
-#if HAVE_SMPI
-  smpi_init_options(); // only performed once
-  xbt_assert(smpi_cfg_privatization() != SmpiPrivStrategies::MMAP,
-             "Please use the dlopen privatization schema when model-checking SMPI code");
-#endif
-
   // Create an AF_LOCAL socketpair used for exchanging messages
   // between the model-checker process (ourselves) and the model-checked
   // process:
