@@ -7,6 +7,7 @@
 #include "src/mc/explo/udpor/Configuration.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/History.hpp"
+#include "src/mc/explo/udpor/Unfolding.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/explo/udpor/maximal_subsets_iterator.hpp"
 #include "src/mc/explo/udpor/udpor_tests_private.hpp"
@@ -597,5 +598,92 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Stress Test for Maximal
 
     // Iteration with events directly should now also be finished
     REQUIRE(first_events == last);
+  }
+}
+
+TEST_CASE("simgrid::mc::udpor:Configuration: Computing Full Alternatives in Reader/Writer Example")
+{
+  // The following tests concern the given event structure that is given as
+  // an example in figure 1 of the original UDPOR paper.
+  //                  e0
+  //              /  /   /
+  //            e1   e4   e7
+  //           /     /  //   /
+  //         /  /   e5  e8   e9
+  //        e2 e3   /        /
+  //               e6       e10
+  //
+  // Theses tests walk through exactly the configurations and sets of `D` that
+  // UDPOR should encounter as it walks the unfolding.
+  Unfolding U;
+
+  auto e0        = std::make_unique<UnfoldingEvent>(EventSet(), std::make_shared<ConditionallyDependentAction>());
+  auto e0_handle = e0.get();
+
+  auto e1        = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}), std::make_shared<DependentAction>());
+  auto e1_handle = e1.get();
+
+  auto e2 = std::make_unique<UnfoldingEvent>(EventSet({e1_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e2_handle = e2.get();
+
+  auto e3 = std::make_unique<UnfoldingEvent>(EventSet({e1_handle}), std::make_shared<ConditionallyDependentAction>());
+  // auto e3_handle = e3.get();
+
+  auto e4 = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e4_handle = e4.get();
+
+  auto e5        = std::make_unique<UnfoldingEvent>(EventSet({e4_handle}), std::make_shared<DependentAction>());
+  auto e5_handle = e5.get();
+
+  auto e6 = std::make_unique<UnfoldingEvent>(EventSet({e5_handle}), std::make_shared<ConditionallyDependentAction>());
+
+  auto e7 = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e7_handle = e7.get();
+
+  auto e8 = std::make_unique<UnfoldingEvent>(EventSet({e4_handle, e7_handle}), std::make_shared<DependentAction>());
+
+  auto e9 = std::make_unique<UnfoldingEvent>(EventSet({e7_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e9_handle = e9.get();
+
+  auto e10 = std::make_unique<UnfoldingEvent>(EventSet({e9_handle}), std::make_shared<ConditionallyDependentAction>());
+
+  SECTION("Alternative computation step 1")
+  {
+    const EventSet D;
+    const Configuration C{e0_handle, e1_handle, e2_handle};
+
+    REQUIRE(U.empty());
+    U.insert(std::move(e0));
+    U.insert(std::move(e1));
+    U.insert(std::move(e2));
+    U.insert(std::move(e3));
+    U.insert(std::move(e4));
+    U.insert(std::move(e7));
+
+    const auto alternative = C.compute_alternative_to(D, U);
+    REQUIRE_FALSE(alternative.has_value());
+  }
+
+  SECTION("Alternative computation step 2")
+  {
+    const EventSet D{e1_handle};
+    const Configuration C{e0_handle};
+
+    REQUIRE(U.empty());
+    U.insert(std::move(e0));
+    U.insert(std::move(e1));
+    U.insert(std::move(e2));
+    U.insert(std::move(e3));
+    U.insert(std::move(e4));
+    U.insert(std::move(e7));
+
+    const auto alternative = C.compute_alternative_to(D, U);
+    REQUIRE(alternative.has_value());
+
+    // The first alternative that is found is the one that is chosen. Since
+    // traversal over the elements of an unordered_set<> are not guaranteed,
+    // both {e0, e4} and {e0, e7} are valid alternatives
+    REQUIRE((alternative.value().get_events() == EventSet({e0_handle, e4_handle}) or
+             alternative.value().get_events() == EventSet({e0_handle, e7_handle})));
   }
 }

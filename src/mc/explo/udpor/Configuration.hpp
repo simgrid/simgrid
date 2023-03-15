@@ -9,6 +9,8 @@
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
+#include <optional>
+
 namespace simgrid::mc::udpor {
 
 class Configuration {
@@ -20,6 +22,7 @@ public:
 
   explicit Configuration(const UnfoldingEvent* event);
   explicit Configuration(const EventSet& events);
+  explicit Configuration(const History& history);
   explicit Configuration(std::initializer_list<const UnfoldingEvent*> events);
 
   auto begin() const { return this->events_.begin(); }
@@ -60,14 +63,22 @@ public:
    */
   void add_event(const UnfoldingEvent* e);
 
+  /**
+   * @brief Whether or not the given event can be added to
+   * this configuration while keeping the set of events causally closed
+   * and conflict-free
+   */
   bool is_compatible_with(const UnfoldingEvent* e) const;
 
   /**
-   * @brief Whether or not the events in the given history
-   * could be added to this configuration while preserving
-   * the configuration property
+   * @brief Whether or not the events in the given history can be added to
+   * this configuration while keeping the set of events causally closed
+   * and conflict-free
    */
   bool is_compatible_with(const History& history) const;
+
+  std::optional<Configuration> compute_alternative_to(const EventSet& D, const Unfolding& U) const;
+  std::optional<Configuration> compute_k_partial_alternative_to(const EventSet& D, const Unfolding& U, size_t k) const;
 
   /**
    * @brief Orders the events of the configuration such that
@@ -118,8 +129,8 @@ public:
    * of the events returned by this method is equal to the set of events
    * in this configuration
    *
-   * @returns the smallest set of events whose events generates this configuration
-   * (denoted `config(E)`)
+   * @returns the smallest set of events whose events generates
+   * this configuration (denoted `config(E)`)
    */
   EventSet get_minimally_reproducible_events() const;
 

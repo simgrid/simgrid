@@ -58,7 +58,7 @@ public:
   bool contains_event_equivalent_to(const UnfoldingEvent* e) const;
 
   auto begin() const { return this->event_handles.begin(); }
-  auto end() const { return this->event_handles.begin(); }
+  auto end() const { return this->event_handles.end(); }
   auto cbegin() const { return this->event_handles.cbegin(); }
   auto cend() const { return this->event_handles.cend(); }
   size_t size() const { return this->global_events_.size(); }

@@ -17,14 +17,11 @@
 
 namespace simgrid::mc::udpor {
 
-class Spike : public std::vector<const UnfoldingEvent*> {
-public:
-  Spike(unsigned cap) : std::vector<const UnfoldingEvent*>() { reserve(cap); }
-};
+using Spike = std::vector<const UnfoldingEvent*>;
 
 class Comb {
 public:
-  explicit Comb(unsigned k) : k(k) {}
+  explicit Comb(unsigned k) : k(k), spikes(k) {}
   Comb(const Comb& other)            = default;
   Comb(Comb&& other)                 = default;
   Comb& operator=(const Comb& other) = default;

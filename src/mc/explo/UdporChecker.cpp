@@ -98,7 +98,8 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
   D.insert(e);
 
   constexpr unsigned K = 10;
-  if (auto J_minus_C = compute_k_partial_alternative(D, C, K); J_minus_C.has_value()) {
+  if (auto J = C.compute_k_partial_alternative_to(D, this->unfolding, K); J.has_value()) {
+
     // Before searching the "right half", we need to make
     // sure the program actually reflects the fact
     // that we are searching again from `stateC` (the recursive
@@ -106,7 +107,8 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
     restore_program_state_to(*stateC);
 
     // Explore(C, D + {e}, J \ C)
-    explore(C, D, std::move(J_minus_C.value()), std::move(stateC), std::move(prev_exC));
+    auto J_minus_C = J.value().get_events().subtracting(C.get_events());
+    explore(C, D, std::move(J_minus_C), std::move(stateC), std::move(prev_exC));
   }
 
   // D <-- D - {e}
@@ -230,77 +232,6 @@ const UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& 
     }
   }
   return nullptr;
-}
-
-std::vector<const UnfoldingEvent*> UdporChecker::pick_k_partial_alternative_events(const EventSet& D,
-                                                                                   const unsigned k) const
-{
-  const unsigned size = std::min(k, static_cast<unsigned>(D.size()));
-  std::vector<const UnfoldingEvent*> D_hat(size);
-
-  // Potentially select intelligently here (e.g. perhaps pick events
-  // with transitions that we know are totally independent)...
-  //
-  // For now, simply pick the first `k` events (any subset suffices)
-  std::copy_n(D.begin(), size, D_hat.begin());
-  return D_hat;
-}
-
-std::optional<EventSet> UdporChecker::compute_k_partial_alternative(const EventSet& D, const Configuration& C,
-                                                                    const unsigned k) const
-{
-  // 1. Select k (of |D|, whichever is smaller) arbitrary events e_1, ..., e_k from D
-  const auto D_hat = pick_k_partial_alternative_events(D, k);
-
-  // 2. Build a U-comb <s_1, ..., s_k> of size k, where spike `s_i` contains
-  // all events in conflict with `e_i`
-  //
-  // 3. EXCEPT those events e' for which [e'] + C is not a configuration or
-  // [e'] intersects D
-  //
-  // NOTE: This is an expensive operation as we must traverse the entire unfolding
-  // and compute `C.is_compatible_with(History)` for every event in the structure :/.
-  // A later performance improvement would be to incorporate the work of Nguyen et al.
-  // into SimGrid. Since that is a rather complicated addition, we defer to the addition
-  // for a later time...
-  Comb comb(k);
-
-  for (const auto* e : this->unfolding) {
-    for (unsigned i = 0; i < k; i++) {
-      const auto& e_i = D_hat[i];
-      if (const auto e_local_config = History(e);
-          e_i->conflicts_with(e) and (not D.contains(e_local_config)) and C.is_compatible_with(e_local_config)) {
-        comb[i].push_back(e);
-      }
-    }
-  }
-
-  // 4. Find any such combination <e_1', ..., e_k'> in comb satisfying
-  // ~(e_i' # e_j') for i != j
-  //
-  // NOTE: This is a VERY expensive operation: it enumerates all possible
-  // ways to select an element from each spike. Unfortunately there's no
-  // way around the enumeration, as computing a full alternative in general is
-  // NP-complete (although computing the k-partial alternative is polynomial in n)
-  const auto map_events = [](const std::vector<Spike::const_iterator>& spikes) {
-    std::vector<const UnfoldingEvent*> events;
-    for (const auto& event_in_spike : spikes) {
-      events.push_back(*event_in_spike);
-    }
-    return EventSet(std::move(events));
-  };
-  const auto alternative =
-      std::find_if(comb.combinations_begin(), comb.combinations_end(),
-                   [&map_events](const auto& vector) { return map_events(vector).is_conflict_free(); });
-
-  // No such alternative exists
-  if (alternative == comb.combinations_end()) {
-    return std::nullopt;
-  }
-
-  // 5. J := [e_1] + [e_2] + ... + [e_k] is a k-partial alternative
-  // NOTE: This function computes J / C, which is what is actually used in UDPOR
-  return History(map_events(*alternative)).get_event_diff_with(C);
 }
 
 void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration& C, const EventSet& D)

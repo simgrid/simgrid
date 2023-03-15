@@ -124,10 +124,6 @@ private:
 
   EventSet compute_enC(const Configuration& C, const EventSet& exC) const;
 
-  std::optional<EventSet> compute_k_partial_alternative(const EventSet& D, const Configuration& C,
-                                                        const unsigned k) const;
-  std::vector<const UnfoldingEvent*> pick_k_partial_alternative_events(const EventSet& D, const unsigned k) const;
-
   /**
    *
    */
