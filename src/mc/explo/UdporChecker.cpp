@@ -62,10 +62,11 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
     // are no enabled transitions that can be executed from the
     // state reached by `C` (denoted `state(C)`), i.e. by some
     // execution of the transitions in C obeying the causality
-    // relation. Here, then, we would be in a deadlock.
+    // relation. Here, then, we may be in a deadlock (the other
+    // possibility is that we've finished running everything, and
+    // we wouldn't be in deadlock then)
     if (enC.empty()) {
       get_remote_app().check_deadlock();
-      DIE_IMPOSSIBLE;
     }
 
     return;
@@ -158,7 +159,9 @@ EventSet UdporChecker::compute_exC_by_enumeration(const Configuration& C, const 
        begin != maximal_subsets_iterator(); ++begin) {
     const EventSet& maximal_subset = *begin;
 
-    // TODO: Determine if `a` is enabled here
+    // Determining if `a` is enabled here might not be possible while looking at `a` opaquely
+    // We leave the implementation as-is to ensure that any addition would be simple
+    // if it were ever added
     const bool enabled_at_config_k = false;
 
     if (enabled_at_config_k) {
@@ -254,6 +257,12 @@ std::optional<EventSet> UdporChecker::compute_k_partial_alternative(const EventS
   //
   // 3. EXCEPT those events e' for which [e'] + C is not a configuration or
   // [e'] intersects D
+  //
+  // NOTE: This is an expensive operation as we must traverse the entire unfolding
+  // and compute `C.is_compatible_with(History)` for every event in the structure :/.
+  // A later performance improvement would be to incorporate the work of Nguyen et al.
+  // into SimGrid. Since that is a rather complicated addition, we defer to the addition
+  // for a later time...
   Comb comb(k);
 
   for (const auto* e : this->unfolding) {
@@ -268,9 +277,11 @@ std::optional<EventSet> UdporChecker::compute_k_partial_alternative(const EventS
 
   // 4. Find any such combination <e_1', ..., e_k'> in comb satisfying
   // ~(e_i' # e_j') for i != j
-  // Note: This is a VERY expensive operation: it enumerates all possible
-  // ways to select an element from each spike
-
+  //
+  // NOTE: This is a VERY expensive operation: it enumerates all possible
+  // ways to select an element from each spike. Unfortunately there's no
+  // way around the enumeration, as computing a full alternative in general is
+  // NP-complete (although computing the k-partial alternative is polynomial in n)
   const auto map_events = [](const std::vector<Spike::const_iterator>& spikes) {
     std::vector<const UnfoldingEvent*> events;
     for (const auto& event_in_spike : spikes) {
@@ -288,6 +299,7 @@ std::optional<EventSet> UdporChecker::compute_k_partial_alternative(const EventS
   }
 
   // 5. J := [e_1] + [e_2] + ... + [e_k] is a k-partial alternative
+  // NOTE: This function computes J / C, which is what is actually used in UDPOR
   return History(map_events(*alternative)).get_event_diff_with(C);
 }
 

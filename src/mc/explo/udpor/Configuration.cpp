@@ -61,7 +61,8 @@ void Configuration::add_event(const UnfoldingEvent* e)
 
 bool Configuration::is_compatible_with(const History& history) const
 {
-  return false;
+  return std::none_of(history.begin(), history.end(),
+                      [&](const UnfoldingEvent* e) { return e->conflicts_with(*this); });
 }
 
 std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_events() const
