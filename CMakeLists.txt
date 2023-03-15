@@ -23,6 +23,7 @@ set(libsimgrid_version "${release_version}")
 # Basic checks on cmake
 cmake_minimum_required(VERSION 3.12)
 # once we move CMake to >= 3.13, we should use target_link_option in examples/sthread
+# once we move CMake to >= 3.13.1, we could get rid of _Boost_STACKTRACE_BACKTRACE_HEADERS
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules)
 
