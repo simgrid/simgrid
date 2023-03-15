@@ -7,7 +7,103 @@
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/explo/udpor/udpor_tests_private.hpp"
 
+using namespace simgrid::mc;
 using namespace simgrid::mc::udpor;
+
+TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Semantic Equivalence Tests")
+{
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 0, 0));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 0, 0));
+  UnfoldingEvent e3(EventSet({&e1}), std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 0, 0));
+  UnfoldingEvent e4(EventSet({&e1}), std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 0, 0));
+
+  UnfoldingEvent e5(EventSet({&e1, &e3, &e2}), std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 0, 0));
+  UnfoldingEvent e6(EventSet({&e1, &e3, &e2}), std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 0, 0));
+  UnfoldingEvent e7(EventSet({&e1, &e3, &e2}), std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 0, 0));
+
+  SECTION("Equivalence is an equivalence relation")
+  {
+    SECTION("Equivalence is reflexive")
+    {
+      REQUIRE(e1 == e1);
+      REQUIRE(e2 == e2);
+      REQUIRE(e3 == e3);
+      REQUIRE(e4 == e4);
+    }
+
+    SECTION("Equivalence is symmetric")
+    {
+      REQUIRE(e2 == e3);
+      REQUIRE(e3 == e2);
+      REQUIRE(e3 == e4);
+      REQUIRE(e4 == e3);
+      REQUIRE(e2 == e4);
+      REQUIRE(e4 == e2);
+    }
+
+    SECTION("Equivalence is transitive")
+    {
+      REQUIRE(e2 == e3);
+      REQUIRE(e3 == e4);
+      REQUIRE(e2 == e4);
+      REQUIRE(e5 == e6);
+      REQUIRE(e6 == e7);
+      REQUIRE(e5 == e7);
+    }
+  }
+
+  SECTION("Equivalence fails with different actors")
+  {
+    UnfoldingEvent e1_diff_actor(EventSet(), std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1, 0));
+    UnfoldingEvent e2_diff_actor(EventSet({&e1}), std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1, 0));
+    UnfoldingEvent e5_diff_actor(EventSet({&e1, &e3, &e2}),
+                                 std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1, 0));
+    REQUIRE(e1 != e1_diff_actor);
+    REQUIRE(e1 != e2_diff_actor);
+    REQUIRE(e1 != e5_diff_actor);
+  }
+
+  SECTION("Equivalence fails with different transition types")
+  {
+    // NOTE: We're comparing the transition `type_` field directly. To avoid
+    // modifying the `Type` enum that exists in `Transition` just for the tests,
+    // we instead provide different values of `Transition::Type` to simulate
+    // the different types
+    UnfoldingEvent e1_diff_transition(EventSet(),
+                                      std::make_shared<IndependentAction>(Transition::Type::ACTOR_JOIN, 0, 0));
+    UnfoldingEvent e2_diff_transition(EventSet({&e1}),
+                                      std::make_shared<IndependentAction>(Transition::Type::ACTOR_JOIN, 0, 0));
+    UnfoldingEvent e5_diff_transition(EventSet({&e1, &e3, &e2}),
+                                      std::make_shared<IndependentAction>(Transition::Type::ACTOR_JOIN, 0, 0));
+    REQUIRE(e1 != e1_diff_transition);
+    REQUIRE(e1 != e2_diff_transition);
+    REQUIRE(e1 != e5_diff_transition);
+  }
+
+  SECTION("Equivalence fails with different `times_considered`")
+  {
+    // With a different number for `times_considered`, we know
+    UnfoldingEvent e1_diff_considered(EventSet(), std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 0, 1));
+    UnfoldingEvent e2_diff_considered(EventSet({&e1}),
+                                      std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 0, 1));
+    UnfoldingEvent e5_diff_considered(EventSet({&e1, &e3, &e2}),
+                                      std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 0, 1));
+    REQUIRE(e1 != e1_diff_considered);
+    REQUIRE(e1 != e2_diff_considered);
+    REQUIRE(e1 != e5_diff_considered);
+  }
+
+  SECTION("Equivalence fails with different immediate histories of events")
+  {
+    UnfoldingEvent e1_diff_hist(EventSet({&e2}), std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 0, 0));
+    UnfoldingEvent e2_diff_hist(EventSet({&e3}), std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 0, 0));
+    UnfoldingEvent e5_diff_hist(EventSet({&e1, &e2}),
+                                std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 0, 0));
+    REQUIRE(e1 != e1_diff_hist);
+    REQUIRE(e1 != e2_diff_hist);
+    REQUIRE(e1 != e5_diff_hist);
+  }
+}
 
 TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
 {

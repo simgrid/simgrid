@@ -40,3 +40,13 @@ TEST_CASE("simgrid::mc::udpor::Unfolding: Inserting and removing events with an 
   REQUIRE(unfolding.size() == 0);
   REQUIRE(unfolding.empty());
 }
+
+TEST_CASE("simgrid::mc::udpor::Unfolding: Checking for semantically equivalent events")
+{
+  Unfolding unfolding;
+  auto e1 = std::make_unique<UnfoldingEvent>(EventSet(), std::make_shared<IndependentAction>());
+  auto e2 = std::make_unique<UnfoldingEvent>(EventSet(), std::make_shared<IndependentAction>());
+
+  // e1 and e2 are semantically equivalent
+  REQUIRE(*e1 == *e2);
+}

@@ -12,14 +12,22 @@
 #ifndef SIMGRID_MC_UDPOR_TEST_PRIVATE_HPP
 #define SIMGRID_MC_UDPOR_TEST_PRIVATE_HPP
 
+#include "src/mc/transition/Transition.hpp"
+
 namespace simgrid::mc::udpor {
 
 struct IndependentAction : public Transition {
+  IndependentAction() = default;
+  IndependentAction(Type type, aid_t issuer, int times_considered) : Transition(type, issuer, times_considered) {}
+
   // Independent with everyone else
   bool depends(const Transition* other) const override { return false; }
 };
 
 struct DependentAction : public Transition {
+  DependentAction() = default;
+  DependentAction(Type type, aid_t issuer, int times_considered) : Transition(type, issuer, times_considered) {}
+
   // Dependent with everyone else (except IndependentAction)
   bool depends(const Transition* other) const override
   {
@@ -28,6 +36,12 @@ struct DependentAction : public Transition {
 };
 
 struct ConditionallyDependentAction : public Transition {
+  ConditionallyDependentAction() = default;
+  ConditionallyDependentAction(Type type, aid_t issuer, int times_considered)
+      : Transition(type, issuer, times_considered)
+  {
+  }
+
   // Dependent only with DependentAction (i.e. not itself)
   bool depends(const Transition* other) const override
   {
