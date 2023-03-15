@@ -35,6 +35,7 @@
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/mc_config.hpp"
+#include "src/mc/mc_replay.hpp"
 #endif
 
 #if defined(__APPLE__)
@@ -308,7 +309,7 @@ void smpi_init_options_internal(bool called_by_smpi_main)
 void smpi_check_options()
 {
 #if SIMGRID_HAVE_MC
-  if (MC_is_active()) {
+  if (MC_is_active() || MC_record_replay_is_active()) {
     if (_sg_mc_buffering == "zero")
       simgrid::config::set_value<int>("smpi/send-is-detached-thresh", 0);
     else if (_sg_mc_buffering == "infty")
