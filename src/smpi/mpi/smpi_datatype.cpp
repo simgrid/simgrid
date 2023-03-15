@@ -116,10 +116,7 @@ Datatype::Datatype(int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags) : D
 Datatype::Datatype(int size, MPI_Aint lb, MPI_Aint ub, int flags) : size_(size), lb_(lb), ub_(ub), flags_(flags)
 {
   this->add_f();
-#if SIMGRID_HAVE_MC
-  if(MC_is_active())
-    MC_ignore(&refcount_, sizeof refcount_);
-#endif
+  MC_ignore(&refcount_, sizeof refcount_);
 }
 
 // for predefined types, so refcount_ = 0.
@@ -127,10 +124,7 @@ Datatype::Datatype(const char* name, int ident, int size, MPI_Aint lb, MPI_Aint 
     : name_(name), id(std::to_string(ident)), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(0)
 {
   id2type_lookup.try_emplace(id, this);
-#if SIMGRID_HAVE_MC
-  if(MC_is_active())
-    MC_ignore(&refcount_, sizeof refcount_);
-#endif
+  MC_ignore(&refcount_, sizeof refcount_);
 }
 
 Datatype::Datatype(Datatype* datatype, int* ret)
@@ -211,22 +205,14 @@ int Datatype::clone(MPI_Datatype* type){
 void Datatype::ref()
 {
   refcount_++;
-
-#if SIMGRID_HAVE_MC
-  if(MC_is_active())
-    MC_ignore(&refcount_, sizeof refcount_);
-#endif
+  MC_ignore(&refcount_, sizeof refcount_);
 }
 
 void Datatype::unref(MPI_Datatype datatype)
 {
   if (datatype->refcount_ > 0)
     datatype->refcount_--;
-
-#if SIMGRID_HAVE_MC
-  if(MC_is_active())
-    MC_ignore(&datatype->refcount_, sizeof datatype->refcount_);
-#endif
+  MC_ignore(&datatype->refcount_, sizeof datatype->refcount_);
 
   if (datatype->refcount_ == 0 && not(datatype->flags_ & DT_FLAG_PREDEFINED))
     delete datatype;
