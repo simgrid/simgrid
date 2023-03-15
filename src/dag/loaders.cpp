@@ -121,9 +121,11 @@ std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename)
         else if (dynamic_cast<Comm*>(parent_activity.get()) != nullptr)
           dynamic_cast<Comm*>(current.get())->set_source(dynamic_cast<Comm*>(parent_activity.get())->get_destination());
       }
+    } else if (XBT_LOG_ISENABLED(dag_parsing, xbt_log_priority_debug)) {
+      std::stringstream ss;
+      ss << task["type"];
+      XBT_DEBUG("Task type \"%s\" not supported.", ss.str().c_str());
     }
-    else
-      XBT_DEBUG("Task type \"%s\" not supported.", task["type"]);
 
     dag.push_back(current);
     for (auto const& parent: task["parents"]) {
