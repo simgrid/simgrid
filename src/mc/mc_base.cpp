@@ -9,6 +9,7 @@
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc.h"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
 
 #if SIMGRID_HAVE_MC
@@ -53,7 +54,8 @@ void execute_actors()
 bool actor_is_enabled(kernel::actor::ActorImpl* actor)
 {
 #if SIMGRID_HAVE_MC
-  xbt_assert(mc_model_checker == nullptr, "This should be called from the client side");
+  xbt_assert(simgrid::mc::model_checking_mode != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
+             "This should be called from the client side");
 #endif
 
   // Now, we are in the client app, no need for remote memory reading.
@@ -75,7 +77,8 @@ bool actor_is_enabled(kernel::actor::ActorImpl* actor)
 bool request_is_visible(const kernel::actor::Simcall* req)
 {
 #if SIMGRID_HAVE_MC
-  xbt_assert(mc_model_checker == nullptr, "This should be called from the client side");
+  xbt_assert(simgrid::mc::model_checking_mode != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
+             "This should be called from the client side");
 #endif
   if (req->observer_ == nullptr)
     return false;

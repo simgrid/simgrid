@@ -45,7 +45,7 @@ AppSide* AppSide::initialize()
   if (instance_)
     return instance_.get();
 
-  simgrid::mc::cfg_do_model_check = true;
+  simgrid::mc::model_checking_mode = ModelCheckingMode::APP_SIDE;
 
   setvbuf(stdout, nullptr, _IOLBF, 0);
 

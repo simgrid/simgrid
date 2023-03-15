@@ -14,7 +14,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_cfg);
 
-bool simgrid::mc::cfg_do_model_check = false;
+simgrid::mc::ModelCheckingMode simgrid::mc::model_checking_mode = simgrid::mc::ModelCheckingMode::NONE;
 
 static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 {
@@ -31,7 +31,15 @@ static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 /* Replay (this part is enabled even if MC it disabled) */
 simgrid::config::Flag<std::string> _sg_mc_record_path{
     "model-check/replay", "Model-check path to replay (as reported by SimGrid when a violation is reported)", "",
-    [](std::string_view value) { MC_record_path() = value; }};
+    [](std::string_view value) {
+      xbt_assert(simgrid::mc::model_checking_mode == simgrid::mc::ModelCheckingMode::NONE ||
+                     simgrid::mc::model_checking_mode == simgrid::mc::ModelCheckingMode::REPLAY,
+                 "Specifying a MC replay path is not allowed when running the model-checker in mode %s. "
+                 "Either remove the model-check/replay parameter, or execute your code out of simgrid-mc.",
+                 to_c_str(simgrid::mc::model_checking_mode));
+      simgrid::mc::model_checking_mode = simgrid::mc::ModelCheckingMode::REPLAY;
+      MC_record_path()                 = value;
+    }};
 
 #if SIMGRID_HAVE_MC
 simgrid::config::Flag<bool> _sg_mc_timeout{
