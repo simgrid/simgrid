@@ -22,6 +22,7 @@
 
 #if SIMGRID_HAVE_JSON
 #include <nlohmann/json.hpp>
+#include <sstream>
 #endif
 
 #if HAVE_GRAPHVIZ
