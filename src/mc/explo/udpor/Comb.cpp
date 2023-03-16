@@ -5,14 +5,6 @@
 
 #include "src/mc/explo/udpor/Comb.hpp"
 
-#include <boost/iterator/function_input_iterator.hpp>
-#include <boost/iterator/indirect_iterator.hpp>
-#include <functional>
-
 namespace simgrid::mc::udpor {
-
-// auto Comb::combinations_begin() const {}
-
-// auto Comb::combinations_end() const {}
 
 } // namespace simgrid::mc::udpor
