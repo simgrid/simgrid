@@ -137,6 +137,11 @@ bool EventSet::contains(const History& history) const
   return std::all_of(history.begin(), history.end(), [=](const UnfoldingEvent* e) { return this->contains(e); });
 }
 
+bool EventSet::intersects(const History& history) const
+{
+  return std::any_of(history.begin(), history.end(), [=](const UnfoldingEvent* e) { return this->contains(e); });
+}
+
 bool EventSet::is_maximal() const
 {
   // A set of events is maximal if no event from

@@ -145,15 +145,15 @@ std::optional<Configuration> Configuration::compute_k_partial_alternative_to(con
   // NOTE: This is an expensive operation as we must traverse the entire unfolding
   // and compute `C.is_compatible_with(History)` for every event in the structure :/.
   // A later performance improvement would be to incorporate the work of Nguyen et al.
-  // into SimGrid. Since that is a rather complicated addition, we defer to the addition
-  // for a later time...
+  // into SimGrid which associated additonal data structures with each unfolding event.
+  // Since that is a rather complicated addition, we defer it to a later time...
   Comb comb(k);
 
   for (const auto* e : U) {
     for (unsigned i = 0; i < k; i++) {
       const UnfoldingEvent* e_i = D_hat[i];
       if (const auto e_local_config = History(e);
-          e_i->conflicts_with(e) and (not D.contains(e_local_config)) and is_compatible_with(e_local_config)) {
+          e_i->conflicts_with(e) and (not D.intersects(e_local_config)) and is_compatible_with(e_local_config)) {
         comb[i].push_back(e);
       }
     }
@@ -165,7 +165,8 @@ std::optional<Configuration> Configuration::compute_k_partial_alternative_to(con
   // NOTE: This is a VERY expensive operation: it enumerates all possible
   // ways to select an element from each spike. Unfortunately there's no
   // way around the enumeration, as computing a full alternative in general is
-  // NP-complete (although computing the k-partial alternative is polynomial in n)
+  // NP-complete (although computing the k-partial alternative is polynomial in
+  // the number of events)
   const auto map_events = [](const std::vector<Spike::const_iterator>& spikes) {
     std::vector<const UnfoldingEvent*> events;
     for (const auto& event_in_spike : spikes) {
