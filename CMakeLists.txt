@@ -234,12 +234,17 @@ endif()
 
 # Check for our JSON dependency
 set(SIMGRID_HAVE_JSON 0)
-find_package(nlohmann_json 3.11.2
+find_package(nlohmann_json 3.7
              HINTS ${nlohmann_json_HINT})
 if (nlohmann_json_FOUND)
   set(SIMGRID_HAVE_JSON 1)
+  if (NOT NLOHMANN_JSON_INCLUDE_DIR)
+    get_target_property(NLOHMANN_JSON_INCLUDE_DIR nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
+    list(REMOVE_DUPLICATES NLOHMANN_JSON_INCLUDE_DIR)
+  else()
+    include_directories(${NLOHMANN_JSON_INCLUDE_DIR})
+  endif()
   message(STATUS "Found nlohmann_json: ${NLOHMANN_JSON_INCLUDE_DIR}")
-  include_directories(${NLOHMANN_JSON_INCLUDE_DIR})
 endif()
 
 set(HAVE_PAPI 0)
@@ -916,7 +921,7 @@ else()
   message("        Eigen3 library ..............: not found (EIGEN3_HINT='${EIGEN3_HINT}').")
 endif()
 if(SIMGRID_HAVE_JSON)
-  message("        JSON library.................: ${nlohmann_json_FIND_VERSION} in ${NLOHMANN_JSON_INCLUDE_DIR}")
+  message("        JSON library.................: ${nlohmann_json_VERSION} in ${NLOHMANN_JSON_INCLUDE_DIR}")
 else()
   message("        JSON library.................: not found (nlohmann_json_HINT='${nlohmann_json_HINT}')")
 endif()

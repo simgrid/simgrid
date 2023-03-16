@@ -21,6 +21,10 @@ get_eigen3(){
   sed -n 's/.* Eigen3 library \.\+: \([^ ]*\) in .*/\1/p;T;q' ./consoleText
 }
 
+get_json(){
+  sed -n 's/.* JSON library \.\+: \([^ ]*\) in .*/\1/p;T;q' ./consoleText
+}
+
 get_ns3(){
   sed -n 's/.*-- ns-3 found (v\(3[-.0-9a-z]\+\); minor:.*/\1/p;T;q' ./consoleText
 }
@@ -133,6 +137,7 @@ function sortTable(n, type) {
     <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Boost</td>
     <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Cmake</td>
     <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">Eigen3</td>
+    <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">JSON</td>
     <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">ns-3</td>
     <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">Python</td>
   </tr>
@@ -159,6 +164,7 @@ do
     compiler=$(get_compiler)
     cmake=$(get_cmake)
     eigen3=$(get_eigen3)
+    json=$(get_json)
     ns3=$(get_ns3)
     py=$(get_python)
     os=$(grep -m 1 "OS Version" ./consoleText| sed "s/OS Version : \(.*\)/\1/g")
@@ -196,6 +202,7 @@ do
     <td class="matrix-cell" style="text-align:left">$boost</td>
     <td class="matrix-cell" style="text-align:left">$cmake</td>
     <td class="matrix-cell" style="text-align:center">$eigen3</td>
+    <td class="matrix-cell" style="text-align:center">$json</td>
     <td class="matrix-cell" style="text-align:left">$ns3</td>
     <td class="matrix-cell" style="text-align:left">$py</td>
   </tr>
