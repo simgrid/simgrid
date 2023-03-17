@@ -399,7 +399,7 @@ void LivenessChecker::run()
       }
     }
 
-    current_pair->app_state_->execute_next(current_pair->app_state_->next_transition());
+    current_pair->app_state_->execute_next(current_pair->app_state_->next_transition(), get_remote_app());
     XBT_DEBUG("Execute: %s", current_pair->app_state_->get_transition()->to_string().c_str());
 
     /* Update the dot output */

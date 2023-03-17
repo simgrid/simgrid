@@ -194,7 +194,7 @@ void UdporChecker::move_to_stateCe(State& state, const UnfoldingEvent& e)
                               "one transition of the state of an visited event is enabled, yet no\n"
                               "state was actually enabled. Please report this as a bug.\n"
                               "*********************************\n\n");
-  state.execute_next(next_actor);
+  state.execute_next(next_actor, get_remote_app());
 }
 
 void UdporChecker::restore_program_state_to(const State& stateC)

@@ -102,7 +102,7 @@ aid_t State::next_transition() const
   return -1;
 }
 
-void State::execute_next(aid_t next)
+void State::execute_next(aid_t next, RemoteApp& app)
 {
   // This actor is ready to be executed. Execution involves three phases:
 
@@ -118,8 +118,7 @@ void State::execute_next(aid_t next)
 
   // 2. Execute the actor according to the preparation above
   Transition::executed_transitions_++;
-  auto* just_executed =
-      mc_model_checker->get_exploration()->get_remote_app().handle_simcall(next, times_considered, true);
+  auto* just_executed = app.handle_simcall(next, times_considered, true);
   xbt_assert(just_executed->type_ == expected_executed_transition->type_,
              "The transition that was just executed by actor %ld, viz:\n"
              "%s\n"
@@ -138,6 +137,6 @@ void State::execute_next(aid_t next)
   auto executed_transition = std::unique_ptr<Transition>(just_executed);
   actor_state.set_transition(std::move(executed_transition), times_considered);
 
-  mc_model_checker->get_exploration()->get_remote_app().wait_for_requests();
+  app.wait_for_requests();
 }
 } // namespace simgrid::mc

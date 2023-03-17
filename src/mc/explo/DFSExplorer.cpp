@@ -152,7 +152,7 @@ void DFSExplorer::run()
     }
 
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
-    state->execute_next(next);
+    state->execute_next(next, get_remote_app());
     on_transition_execute_signal(state->get_transition(), get_remote_app());
 
     // If there are processes to interleave and the maximum depth has not been

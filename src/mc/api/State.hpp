@@ -57,8 +57,9 @@ public:
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const;
 
-  /* Explore a new path; the parameter must be the result of a previous call to next_transition() */
-  void execute_next(aid_t next);
+  /* Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
+   * next_transition() */
+  void execute_next(aid_t next, RemoteApp& app);
 
   long get_num() const { return num_; }
   std::size_t count_todo() const;
