@@ -834,8 +834,8 @@ TEST_CASE("simgrid::mc::udpor:Configuration: Computing Full Alternatives in Read
     //
     // Alt(C, D + {e}) --> Alt({e0, e4}, {e1, e5})
     //
-    // where U is given above. There is one alternative in this case,
-    // viz. {e0, e4, e7, e8}.
+    // where U is given above. There are THREE alternatives in this case,
+    // viz. {e0, e7}, {e0, e4, e7} and {e0, e4, e7, e8}.
     //
     // To continue the search, UDPOR computes J / C which in this
     // case gives {e7, e8}. Since `e8` is not in en(C), UDPOR will
@@ -852,10 +852,13 @@ TEST_CASE("simgrid::mc::udpor:Configuration: Computing Full Alternatives in Read
     U.insert(std::move(e6));
     U.insert(std::move(e7));
     U.insert(std::move(e8));
+    REQUIRE(U.size() == 8);
 
     const auto alternative = C.compute_alternative_to(D_plus_e, U);
     REQUIRE(alternative.has_value());
-    REQUIRE(alternative.value().get_events() == EventSet({e0_handle, e4_handle, e7_handle, e8_handle}));
+    REQUIRE((alternative.value().get_events() == EventSet({e0_handle, e7_handle}) or
+             alternative.value().get_events() == EventSet({e0_handle, e4_handle, e7_handle}) or
+             alternative.value().get_events() == EventSet({e0_handle, e4_handle, e7_handle, e8_handle})));
   }
 
   SECTION("Alternative computation call 6")
