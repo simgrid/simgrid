@@ -163,12 +163,7 @@ void DFSExplorer::run()
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     std::unique_ptr<State> next_state;
 
-    /* If we want sleep set reduction, pass the old state to the new state so it can
-     * both copy the sleep set and eventually removes things from it locally */
-    if (_sg_mc_sleep_set)
-      next_state = std::make_unique<State>(get_remote_app(), state);
-    else
-      next_state = std::make_unique<State>(get_remote_app());
+    next_state = std::make_unique<State>(get_remote_app(), state);
 
     on_state_creation_signal(next_state.get(), get_remote_app());
 

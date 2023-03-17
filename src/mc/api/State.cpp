@@ -25,35 +25,37 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
                                                             remote_app.get_remote_process_memory());
 }
 
-State::State(RemoteApp& remote_app, const State* previous_state)
-    : default_transition_(std::make_unique<Transition>()), num_(++expended_states_)
+State::State(RemoteApp& remote_app, const State* parent_state)
+    :  num_(++expended_states_), parent_state_(parent_state)
 {
 
   remote_app.get_actors_status(actors_to_run_);
-
-  transition_ = default_transition_.get();
 
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
     system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store(),
                                                             remote_app.get_remote_process_memory());
 
-  /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.
-   * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
-   * it is not explored*/
-  for (auto& [aid, transition] : previous_state->get_sleep_set()) {
+  
+  /* If we want sleep set reduction, copy the sleep set and eventually removes things from it */ 
+  if (_sg_mc_sleep_set) {      
+      /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.
+       * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
+       * it is not explored*/
+      for (auto& [aid, transition] : parent_state_->get_sleep_set()) {
 
-    if (not previous_state->get_transition()->depends(&transition)) {
+	  if (not parent_state_->get_transition()->depends(&transition)) {
 
-      sleep_set_.emplace(aid, transition);
-      if (actors_to_run_.count(aid) != 0) {
-        XBT_DEBUG("Actor %ld will not be explored, for it is in the sleep set", aid);
+	      sleep_set_.emplace(aid, transition);
+	      if (actors_to_run_.count(aid) != 0) {
+		  XBT_DEBUG("Actor %ld will not be explored, for it is in the sleep set", aid);
 
-        actors_to_run_.at(aid).mark_done();
+		  actors_to_run_.at(aid).mark_done();
+	      }
+	  } else
+	      XBT_DEBUG("Transition >>%s<< removed from the sleep set because it was dependent with >>%s<<",
+			transition.to_string().c_str(), parent_state_->get_transition()->to_string().c_str());
       }
-    } else
-      XBT_DEBUG("Transition >>%s<< removed from the sleep set because it was dependent with >>%s<<",
-                transition.to_string().c_str(), previous_state->get_transition()->to_string().c_str());
   }
 }
 
