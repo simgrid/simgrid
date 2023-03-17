@@ -45,6 +45,7 @@ public:
 
   const EventSet& get_immediate_causes() const { return this->immediate_causes; }
   Transition* get_transition() const { return this->associated_transition.get(); }
+  aid_t get_actor() const { return get_transition()->aid_; }
 
   bool operator==(const UnfoldingEvent&) const;
   bool operator!=(const UnfoldingEvent& other) const { return not(*this == other); }

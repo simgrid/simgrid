@@ -16,6 +16,29 @@
 namespace simgrid::mc::udpor {
 
 class Unfolding {
+public:
+  Unfolding()                       = default;
+  Unfolding& operator=(Unfolding&&) = default;
+  Unfolding(Unfolding&&)            = default;
+
+  auto begin() const { return this->event_handles.begin(); }
+  auto end() const { return this->event_handles.end(); }
+  auto cbegin() const { return this->event_handles.cbegin(); }
+  auto cend() const { return this->event_handles.cend(); }
+  size_t size() const { return this->event_handles.size(); }
+  bool empty() const { return this->event_handles.empty(); }
+
+  void remove(const UnfoldingEvent* e);
+  void remove(const EventSet& events);
+
+  /// @brief Adds a new event `e` to the Unfolding if that
+  /// event is not equivalent to any of those already contained
+  /// in the unfolding
+  const UnfoldingEvent* insert(std::unique_ptr<UnfoldingEvent> e);
+
+  /// @brief Computes "#ⁱ_U(e)" for the given event
+  EventSet get_immediate_conflicts_of(const UnfoldingEvent*) const;
+
 private:
   /**
    * @brief All of the events that are currently are a part of the unfolding
@@ -47,25 +70,10 @@ private:
    */
   EventSet G;
 
-public:
-  Unfolding()                       = default;
-  Unfolding& operator=(Unfolding&&) = default;
-  Unfolding(Unfolding&&)            = default;
-
-  void remove(const UnfoldingEvent* e);
-  void remove(const EventSet& events);
-  void insert(std::unique_ptr<UnfoldingEvent> e);
-  bool contains_event_equivalent_to(const UnfoldingEvent* e) const;
-
-  auto begin() const { return this->event_handles.begin(); }
-  auto end() const { return this->event_handles.end(); }
-  auto cbegin() const { return this->event_handles.cbegin(); }
-  auto cend() const { return this->event_handles.cend(); }
-  size_t size() const { return this->global_events_.size(); }
-  bool empty() const { return this->global_events_.empty(); }
-
-  /// @brief Computes "#ⁱ_U(e)" for the given event
-  EventSet get_immediate_conflicts_of(const UnfoldingEvent*) const;
+  auto find_equivalent(const UnfoldingEvent* e)
+  {
+    return std::find_if(begin(), end(), [=](const UnfoldingEvent* e_i) { return *e == *e_i; });
+  }
 };
 
 } // namespace simgrid::mc::udpor

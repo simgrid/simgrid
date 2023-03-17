@@ -25,7 +25,7 @@ void Unfolding::remove(const UnfoldingEvent* e)
   this->event_handles.remove(e);
 }
 
-void Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
+const UnfoldingEvent* Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
 {
   const UnfoldingEvent* handle = e.get();
   if (auto loc = this->global_events_.find(handle); loc != this->global_events_.end()) {
@@ -36,21 +36,16 @@ void Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
                                 "This will result in a  double free error and must be fixed.");
   }
 
-  // Map the handle to its owner
+  if (auto loc = this->find_equivalent(handle); loc != this->end()) {
+    // There's already an event in the unfolding that is semantically
+    // equivalent. Return the handle to that event and ignore adding in
+    // a duplicate event
+    return *loc;
+  }
+
   this->event_handles.insert(handle);
   this->global_events_[handle] = std::move(e);
-}
-
-bool Unfolding::contains_event_equivalent_to(const UnfoldingEvent* e) const
-{
-  // Notice the use of `==` equality here. `e` may not be contained in the
-  // unfolding; but some event which is "equivalent" to it could be.
-  for (const auto event : *this) {
-    if (*event == *e) {
-      return true;
-    }
-  }
-  return false;
+  return handle;
 }
 
 EventSet Unfolding::get_immediate_conflicts_of(const UnfoldingEvent* e) const

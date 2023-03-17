@@ -10,6 +10,7 @@
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
 #include <optional>
+#include <unordered_map>
 
 namespace simgrid::mc::udpor {
 
@@ -134,6 +135,40 @@ public:
    */
   EventSet get_minimally_reproducible_events() const;
 
+  /**
+   * @brief Determines the event in the configuration whose associated
+   * transition is the latest of the given actor
+   *
+   * @invariant: At most one event in the configuration will correspond
+   * to `preEvt(C, a)` for any action `a`. This can be argued by contradiction.
+   *
+   * If there were more than one event (`e` and `e'`) in any configuration whose
+   * associated transitions `a` were run by the same actor at the same step, then they
+   * could not be causally related (`<`) since `a` could not be enabled in
+   * both subconfigurations C' and C'' containing the hypothetical events
+   * `e` and `e` + `e'`. Since they would not be contained in each other's histories,
+   * they would be in conflict, which cannot happen between any pair of events
+   * in a configuration. Thus `e` and `e'` cannot exist simultaneously
+   */
+  std::optional<const UnfoldingEvent*> get_latest_event_of(aid_t) const;
+  /**
+   * @brief Determines the most recent transition of the given actor
+   * in this configuration, or `pre(a)` as denoted in the thesis of
+   * The Anh Pham
+   *
+   * Conceptually, the execution of an interleaving of the transitions
+   * (i.e. a topological ordering) of a configuration yields a unique
+   * state `state(C)`. Since actions taken by the same actor are always
+   * dependent with one another, any such interleaving always yields a
+   * unique
+   *
+   * @returns the most recent transition of the given actor
+   * in this configuration, or `std::nullopt` if there are no transitions
+   * in this configuration run by the given actor
+   */
+  std::optional<const Transition*> get_latest_action_of(aid_t aid) const;
+  std::optional<const UnfoldingEvent*> pre_event(aid_t aid) const { return get_latest_event_of(aid); }
+
 private:
   /**
    * @brief The most recent event added to the configuration
@@ -145,8 +180,20 @@ private:
    *
    * @invariant For each event `e` in `events_`, the set of
    * dependencies of `e` is also contained in `events_`
+   *
+   * @invariant For each pair of events `e` and `e'` in
+   * `events_`, `e` and `e'` are not in conflict
    */
   EventSet events_;
+
+  /**
+   * @brief Maps actors to the latest events which
+   * are executed by the actor
+   *
+   * @invariant: The events that are contained in the map
+   * are also contained in the set `events_`
+   */
+  std::unordered_map<aid_t, const UnfoldingEvent*> latest_event_mapping;
 };
 
 } // namespace simgrid::mc::udpor

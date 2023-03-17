@@ -16,10 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to verification 
 
 namespace simgrid::mc::udpor {
 
-UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration(args, true)
-{
-  // Initialize the map
-}
+UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration(args, true) {}
 
 void UdporChecker::run()
 {
@@ -165,12 +162,9 @@ EventSet UdporChecker::compute_exC_by_enumeration(const Configuration& C, const 
     const bool enabled_at_config_k = false;
 
     if (enabled_at_config_k) {
-      auto candidate_handle = std::make_unique<UnfoldingEvent>(maximal_subset, action);
-      if (auto candidate_event = candidate_handle.get(); not unfolding.contains_event_equivalent_to(candidate_event)) {
-        // This is a new event (i.e. one we haven't yet seen)
-        unfolding.insert(std::move(candidate_handle));
-        incremental_exC.insert(candidate_event);
-      }
+      auto event        = std::make_unique<UnfoldingEvent>(maximal_subset, action);
+      const auto handle = unfolding.insert(std::move(event));
+      incremental_exC.insert(handle);
     }
   }
   return incremental_exC;

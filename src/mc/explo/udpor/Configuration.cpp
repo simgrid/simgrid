@@ -27,14 +27,20 @@ Configuration::Configuration(const UnfoldingEvent* e) : Configuration(e->get_his
   // check the invariant regardless as a sanity check
 }
 
+Configuration::Configuration(const History& history) : Configuration(history.get_all_events()) {}
+
 Configuration::Configuration(const EventSet& events) : events_(events)
 {
   if (!events_.is_valid_configuration()) {
     throw std::invalid_argument("The events do not form a valid configuration");
   }
-}
 
-Configuration::Configuration(const History& history) : Configuration(history.get_all_events()) {}
+  // Since we add in topological order under `<`, we know that the "most-recent"
+  // transition executed by each actor will appear last
+  for (const UnfoldingEvent* e : get_topologically_sorted_events()) {
+    this->latest_event_mapping[e->get_actor()] = e;
+  }
+}
 
 void Configuration::add_event(const UnfoldingEvent* e)
 {
@@ -54,7 +60,8 @@ void Configuration::add_event(const UnfoldingEvent* e)
   }
 
   this->events_.insert(e);
-  this->newest_event = e;
+  this->newest_event                         = e;
+  this->latest_event_mapping[e->get_actor()] = e;
 
   // Preserves the property that the configuration is causally closed
   if (auto history = History(e); !this->events_.contains(history)) {
@@ -188,6 +195,22 @@ std::optional<Configuration> Configuration::compute_k_partial_alternative_to(con
 
   // 5. J := [e_1] + [e_2] + ... + [e_k] is a k-partial alternative
   return Configuration(History(map_events(*alternative)));
+}
+
+std::optional<const UnfoldingEvent*> Configuration::get_latest_event_of(aid_t aid) const
+{
+  if (const auto latest_event = latest_event_mapping.find(aid); latest_event != latest_event_mapping.end()) {
+    return std::optional<const UnfoldingEvent*>{latest_event->second};
+  }
+  return std::nullopt;
+}
+
+std::optional<const Transition*> Configuration::get_latest_action_of(aid_t aid) const
+{
+  if (const auto latest_event = get_latest_event_of(aid); latest_event.has_value()) {
+    return std::optional<const Transition*>{latest_event.value()->get_transition()};
+  }
+  return std::nullopt;
 }
 
 } // namespace simgrid::mc::udpor
