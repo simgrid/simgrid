@@ -19,18 +19,37 @@ namespace simgrid::mc::udpor {
 struct IndependentAction : public Transition {
   IndependentAction() = default;
   IndependentAction(Type type, aid_t issuer, int times_considered = 0) : Transition(type, issuer, times_considered) {}
+  IndependentAction(aid_t issuer, int times_considered = 0)
+      : IndependentAction(simgrid::mc::Transition::Type::UNKNOWN, issuer, times_considered)
+  {
+  }
 
-  // Independent with everyone else
-  bool depends(const Transition* other) const override { return false; }
+  // Independent with everyone else (even if run by the same actor). NOTE: This is
+  // only for the convenience of testing: in general, transitions are dependent with
+  // one another if run by the same actor
+  bool depends(const Transition* other) const override
+  {
+    if (aid_ == other->aid_) {
+      return true;
+    }
+    return false;
+  }
 };
 
 struct DependentAction : public Transition {
   DependentAction() = default;
   DependentAction(Type type, aid_t issuer, int times_considered = 0) : Transition(type, issuer, times_considered) {}
+  DependentAction(aid_t issuer, int times_considered = 0)
+      : DependentAction(simgrid::mc::Transition::Type::UNKNOWN, issuer, times_considered)
+  {
+  }
 
   // Dependent with everyone else (except IndependentAction)
   bool depends(const Transition* other) const override
   {
+    if (aid_ == other->aid_) {
+      return true;
+    }
     return dynamic_cast<const IndependentAction*>(other) == nullptr;
   }
 };
@@ -41,10 +60,17 @@ struct ConditionallyDependentAction : public Transition {
       : Transition(type, issuer, times_considered)
   {
   }
+  ConditionallyDependentAction(aid_t issuer, int times_considered = 0)
+      : ConditionallyDependentAction(simgrid::mc::Transition::Type::UNKNOWN, issuer, times_considered)
+  {
+  }
 
   // Dependent only with DependentAction (i.e. not itself)
   bool depends(const Transition* other) const override
   {
+    if (aid_ == other->aid_) {
+      return true;
+    }
     return dynamic_cast<const DependentAction*>(other) != nullptr;
   }
 };

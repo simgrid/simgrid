@@ -27,11 +27,11 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Constructing Configurations")
   //          e3
   //         /  /
   //        e4   e5
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(0));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(1));
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(2));
+  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>(3));
+  UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>(4));
 
   SECTION("Creating a configuration without events")
   {
@@ -96,10 +96,10 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Adding Events")
   //           /
   //         /  /
   //        e3   e4
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(0));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(1));
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(2));
+  UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>(3));
 
   REQUIRE_THROWS_AS(Configuration().add_event(nullptr), std::invalid_argument);
   REQUIRE_THROWS_AS(Configuration().add_event(&e2), std::invalid_argument);
@@ -139,10 +139,10 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order")
   //          e3
   //         /
   //        e4
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(1));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(2));
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(3));
+  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>(4));
 
   SECTION("Topological ordering for entire set")
   {
@@ -197,12 +197,12 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order More Compli
   //        e4   e6
   //        /
   //       e5
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e5(EventSet({&e4}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e6(EventSet({&e3}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(1));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(2));
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(3));
+  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>(4));
+  UnfoldingEvent e5(EventSet({&e4}), std::make_shared<IndependentAction>(5));
+  UnfoldingEvent e6(EventSet({&e3}), std::make_shared<IndependentAction>(6));
 
   SECTION("Topological ordering for subsets")
   {
@@ -306,18 +306,18 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
   //        /   /     /
   //         /  /   /
   //         [   e12    ]
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e8(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e5(EventSet({&e4}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e6(EventSet({&e4}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e7(EventSet({&e2, &e8}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e9(EventSet({&e6, &e7}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e10(EventSet({&e7}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e11(EventSet({&e8}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e12(EventSet({&e5, &e9, &e10}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(1));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(2));
+  UnfoldingEvent e8(EventSet({&e1}), std::make_shared<IndependentAction>(3));
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(4));
+  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>(5));
+  UnfoldingEvent e5(EventSet({&e4}), std::make_shared<IndependentAction>(6));
+  UnfoldingEvent e6(EventSet({&e4}), std::make_shared<IndependentAction>(7));
+  UnfoldingEvent e7(EventSet({&e2, &e8}), std::make_shared<IndependentAction>(8));
+  UnfoldingEvent e9(EventSet({&e6, &e7}), std::make_shared<IndependentAction>(9));
+  UnfoldingEvent e10(EventSet({&e7}), std::make_shared<IndependentAction>(10));
+  UnfoldingEvent e11(EventSet({&e8}), std::make_shared<IndependentAction>(11));
+  UnfoldingEvent e12(EventSet({&e5, &e9, &e10}), std::make_shared<IndependentAction>(12));
   Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12};
 
   SECTION("Test every combination of the maximal configuration (forward graph)")
@@ -408,14 +408,14 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Basic Testing of Maxima
   //           e3    e6
   //           /     / /
   //          e4    e7 e8
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e5(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e6(EventSet({&e5}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e7(EventSet({&e6}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e8(EventSet({&e6}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(0));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(1));
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(2));
+  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>(3));
+  UnfoldingEvent e5(EventSet({&e1}), std::make_shared<IndependentAction>(4));
+  UnfoldingEvent e6(EventSet({&e5}), std::make_shared<IndependentAction>(5));
+  UnfoldingEvent e7(EventSet({&e6}), std::make_shared<IndependentAction>(6));
+  UnfoldingEvent e8(EventSet({&e6}), std::make_shared<IndependentAction>(7));
 
   SECTION("Iteration over an empty configuration yields only the empty set")
   {
@@ -541,24 +541,24 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Stress Test for Maximal
   //               |   e11 e12 e13 e14   e15
   //               |   /      / / /   /  /
   //               +-> e16     e17     e18
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e5(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e6(EventSet({&e3}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e7(EventSet({&e3}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e8(EventSet({&e4}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e9(EventSet({&e4, &e5, &e6}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e10(EventSet({&e6, &e7}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e11(EventSet({&e8}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e12(EventSet({&e8}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e13(EventSet({&e9}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e14(EventSet({&e9}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e15(EventSet({&e10}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e16(EventSet({&e5, &e11}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e17(EventSet({&e12, &e13, &e14}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e18(EventSet({&e14, &e15}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(1));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(2));
+  UnfoldingEvent e3(EventSet({&e1}), std::make_shared<IndependentAction>(3));
+  UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>(4));
+  UnfoldingEvent e5(EventSet({&e2}), std::make_shared<IndependentAction>(5));
+  UnfoldingEvent e6(EventSet({&e3}), std::make_shared<IndependentAction>(6));
+  UnfoldingEvent e7(EventSet({&e3}), std::make_shared<IndependentAction>(7));
+  UnfoldingEvent e8(EventSet({&e4}), std::make_shared<IndependentAction>(8));
+  UnfoldingEvent e9(EventSet({&e4, &e5, &e6}), std::make_shared<IndependentAction>(9));
+  UnfoldingEvent e10(EventSet({&e6, &e7}), std::make_shared<IndependentAction>(10));
+  UnfoldingEvent e11(EventSet({&e8}), std::make_shared<IndependentAction>(11));
+  UnfoldingEvent e12(EventSet({&e8}), std::make_shared<IndependentAction>(12));
+  UnfoldingEvent e13(EventSet({&e9}), std::make_shared<IndependentAction>(13));
+  UnfoldingEvent e14(EventSet({&e9}), std::make_shared<IndependentAction>(14));
+  UnfoldingEvent e15(EventSet({&e10}), std::make_shared<IndependentAction>(15));
+  UnfoldingEvent e16(EventSet({&e5, &e11}), std::make_shared<IndependentAction>(16));
+  UnfoldingEvent e17(EventSet({&e12, &e13, &e14}), std::make_shared<IndependentAction>(17));
+  UnfoldingEvent e18(EventSet({&e14, &e15}), std::make_shared<IndependentAction>(18));
   Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12, &e13, &e14, &e15, &e16, &e17, &e18};
 
   SECTION("Every subset iterated over is maximal")
