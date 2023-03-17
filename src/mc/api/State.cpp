@@ -118,7 +118,8 @@ void State::execute_next(aid_t next)
 
   // 2. Execute the actor according to the preparation above
   Transition::executed_transitions_++;
-  auto* just_executed = mc_model_checker->handle_simcall(next, times_considered, true);
+  auto* just_executed =
+      mc_model_checker->get_exploration()->get_remote_app().handle_simcall(next, times_considered, true);
   xbt_assert(just_executed->type_ == expected_executed_transition->type_,
              "The transition that was just executed by actor %ld, viz:\n"
              "%s\n"

@@ -33,9 +33,6 @@ public:
 
   void start();
 
-  /** Let the application take a transition. A new Transition is created iff the last parameter is true */
-  Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
-
   Exploration* get_exploration() const { return exploration_; }
   void set_exploration(Exploration* exploration) { exploration_ = exploration; }
 

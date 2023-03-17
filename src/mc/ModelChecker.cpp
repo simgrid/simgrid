@@ -215,31 +215,4 @@ void ModelChecker::handle_waitpid()
   }
 }
 
-Transition* ModelChecker::handle_simcall(aid_t aid, int times_considered, bool new_transition)
-{
-  s_mc_message_simcall_execute_t m = {};
-  m.type              = MessageType::SIMCALL_EXECUTE;
-  m.aid_              = aid;
-  m.times_considered_ = times_considered;
-  checker_side_.get_channel().send(m);
-
-  this->remote_process_memory_->clear_cache();
-  if (this->remote_process_memory_->running())
-    checker_side_.dispatch(); // The app may send messages while processing the transition
-
-  s_mc_message_simcall_execute_answer_t answer;
-  ssize_t s = checker_side_.get_channel().receive(answer);
-  xbt_assert(s != -1, "Could not receive message");
-  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
-  xbt_assert(answer.type == MessageType::SIMCALL_EXECUTE_ANSWER,
-             "Received unexpected message %s (%i); expected MessageType::SIMCALL_EXECUTE_ANSWER (%i)",
-             to_c_str(answer.type), (int)answer.type, (int)MessageType::SIMCALL_EXECUTE_ANSWER);
-
-  if (new_transition) {
-    std::stringstream stream(answer.buffer.data());
-    return deserialize_transition(aid, times_considered, stream);
-  } else
-    return nullptr;
-}
-
 } // namespace simgrid::mc

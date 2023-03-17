@@ -50,7 +50,7 @@ void Transition::replay() const
   replayed_transitions_++;
 
 #if SIMGRID_HAVE_MC
-  mc_model_checker->handle_simcall(aid_, times_considered_, false);
+  mc_model_checker->get_exploration()->get_remote_app().handle_simcall(aid_, times_considered_, false);
   mc_model_checker->get_exploration()->get_remote_app().wait_for_requests();
 #endif
 }
