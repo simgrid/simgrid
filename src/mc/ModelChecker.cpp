@@ -43,9 +43,12 @@ void ModelChecker::start()
         auto mc = static_cast<simgrid::mc::ModelChecker*>(arg);
         if (events == EV_READ) {
           std::array<char, MC_MESSAGE_LENGTH> buffer;
-          ssize_t size = mc->checker_side_.get_channel().receive(buffer.data(), buffer.size(), false);
-          if (size == -1 && errno != EAGAIN)
-            throw simgrid::xbt::errno_error();
+          ssize_t size = recv(mc->checker_side_.get_channel().get_socket(), buffer.data(), buffer.size(), MSG_DONTWAIT);
+          if (size == -1) {
+            XBT_ERROR("Channel::receive failure: %s", strerror(errno));
+            if (errno != EAGAIN)
+              throw simgrid::xbt::errno_error();
+          }
 
           if (not mc->handle_message(buffer.data(), size))
             mc->checker_side_.break_loop();

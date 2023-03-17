@@ -43,7 +43,7 @@ public:
   }
 
   // Receive
-  ssize_t receive(void* message, size_t size, bool block = true) const;
+  ssize_t receive(void* message, size_t size) const;
   template <class M> typename std::enable_if_t<messageType<M>(), ssize_t> receive(M& m) const
   {
     return this->receive(&m, sizeof(M));

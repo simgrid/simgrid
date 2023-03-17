@@ -42,9 +42,9 @@ int Channel::send(const void* message, size_t size) const
   return 0;
 }
 
-ssize_t Channel::receive(void* message, size_t size, bool block) const
+ssize_t Channel::receive(void* message, size_t size) const
 {
-  ssize_t res = recv(this->socket_, message, size, block ? 0 : MSG_DONTWAIT);
+  ssize_t res = recv(this->socket_, message, size, 0);
   if (res != -1) {
     if (is_valid_MessageType(*static_cast<int*>(message))) {
       XBT_DEBUG("Receive %s (requested %zu; received %zd)", to_c_str(*static_cast<MessageType*>(message)), size, res);
