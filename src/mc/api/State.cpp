@@ -64,15 +64,6 @@ std::size_t State::count_todo() const
   return boost::range::count_if(this->guide->actors_to_run_, [](auto& pair) { return pair.second.is_todo(); });
 }
 
-void State::mark_all_enabled_todo()
-{
-  for (auto const& [aid, _] : this->get_actors_list()) {
-    if (this->is_actor_enabled(aid) and not is_actor_done(aid)) {
-      this->mark_todo(aid);
-    }
-  }
-}
-
 Transition* State::get_transition() const
 {
   return transition_;

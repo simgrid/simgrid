@@ -307,7 +307,7 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt
   /* Add all enabled actors to the interleave set of the initial state */
   for (auto const& [aid, _] : next_pair->app_state_->get_actors_list())
     if (next_pair->app_state_->is_actor_enabled(aid))
-      next_pair->app_state_->mark_todo(aid);
+      next_pair->app_state_->consider_one(aid);
 
   next_pair->requests = next_pair->app_state_->count_todo();
   /* FIXME : get search_cycle value for each accepting state */

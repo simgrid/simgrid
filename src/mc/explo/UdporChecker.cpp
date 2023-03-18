@@ -208,7 +208,7 @@ std::unique_ptr<State> UdporChecker::record_current_state()
   auto next_state = this->get_current_state();
 
   // In UDPOR, we care about all enabled transitions in a given state
-  next_state->mark_all_enabled_todo();
+  next_state->consider_all();
 
   return next_state;
 }

@@ -54,7 +54,8 @@ public:
   explicit State(RemoteApp& remote_app);
   explicit State(RemoteApp& remote_app, const State* parent_state);
   /* Returns a positive number if there is another transition to pick, or -1 if not */
-  aid_t next_transition() const;
+  aid_t next_transition() const; // this function should disapear as it is redundant with the next one
+
   /* Same as next_transition, but choice is now guided, and a double corresponding to the
    internal cost of the transition is returned */
   std::pair<aid_t, double> next_transition_guided() const;
@@ -65,8 +66,11 @@ public:
 
   long get_num() const { return num_; }
   std::size_t count_todo() const;
-  void mark_todo(aid_t actor) { guide->actors_to_run_.at(actor).mark_todo(); }
-  void mark_all_enabled_todo();
+
+  void consider_one(aid_t aid) { guide->consider_one(aid); }
+  void consider_best() { guide->consider_best(); }
+  void consider_all() { guide->consider_all(); }
+
   bool is_actor_done(aid_t actor) const { return guide->actors_to_run_.at(actor).is_done(); }
   Transition* get_transition() const;
   void set_transition(Transition* t) { transition_ = t; }

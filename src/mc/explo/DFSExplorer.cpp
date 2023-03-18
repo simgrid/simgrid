@@ -177,13 +177,10 @@ void DFSExplorer::run()
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
       /* Get an enabled process and insert it in the interleave set of the next state */
-      for (auto const& [aid, _] : next_state->get_actors_list()) {
-        if (next_state->is_actor_enabled(aid) and not next_state->is_actor_done(aid)) {
-          next_state->mark_todo(aid);
-          if (reduction_mode_ == ReductionMode::dpor)
-            break; // With DPOR, we take the first enabled transition
-        }
-      }
+      if (reduction_mode_ == ReductionMode::dpor)
+        next_state->consider_best(); // Take only one transition if DPOR: others may be considered later if required
+      else
+        next_state->consider_all();
 
       dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), next_state->get_num(),
                  state->get_transition()->dot_string().c_str());
@@ -240,14 +237,14 @@ void DFSExplorer::backtrack()
 
           if (prev_state->is_actor_enabled(issuer_id)) {
             if (not prev_state->is_actor_done(issuer_id))
-              prev_state->mark_todo(issuer_id);
+              prev_state->consider_one(issuer_id);
             else
               XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
           } else {
             XBT_DEBUG("Actor %ld is not enabled: DPOR may be failing. To stay sound, we are marking every enabled "
                       "transition as todo",
                       issuer_id);
-            prev_state->mark_all_enabled_todo();
+            prev_state->consider_all();
           }
           break;
         } else {
@@ -317,16 +314,11 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Explo
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   XBT_DEBUG("Initial state. %lu actors to consider", initial_state->get_actor_count());
-  for (auto const& [aid, _] : initial_state->get_actors_list()) {
-    if (initial_state->is_actor_enabled(aid)) {
-      initial_state->mark_todo(aid);
-      if (reduction_mode_ == ReductionMode::dpor) {
-        XBT_DEBUG("Actor %ld is TODO, DPOR is ON so let's go for this one.", aid);
-        break;
-      }
-      XBT_DEBUG("Actor %ld is TODO", aid);
-    }
-  }
+ if (reduction_mode_ == ReductionMode::dpor) 
+     initial_state->consider_best();
+ else
+     initial_state->consider_all();
+
 
   stack_.push_back(std::move(initial_state));
 }
