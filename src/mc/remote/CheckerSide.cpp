@@ -12,8 +12,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkerside, mc, "MC communication with the application");
 
 namespace simgrid::mc {
-
-void CheckerSide::start(ModelChecker* mc)
+CheckerSide::CheckerSide(int sockfd, ModelChecker* mc) : channel_(sockfd)
 {
   auto* base = event_base_new();
   base_.reset(base);

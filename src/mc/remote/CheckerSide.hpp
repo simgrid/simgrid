@@ -23,7 +23,7 @@ class CheckerSide {
   Channel channel_;
 
 public:
-  explicit CheckerSide(int sockfd) : channel_(sockfd) {}
+  explicit CheckerSide(int sockfd, ModelChecker* mc);
 
   // No copy:
   CheckerSide(CheckerSide const&) = delete;
@@ -33,7 +33,6 @@ public:
   Channel const& get_channel() const { return channel_; }
   Channel& get_channel() { return channel_; }
 
-  void start(ModelChecker* mc);
   void dispatch() const;
   void break_loop() const;
 };
