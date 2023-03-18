@@ -33,7 +33,7 @@ public:
   Channel const& get_channel() const { return channel_; }
   Channel& get_channel() { return channel_; }
 
-  void start(void (*handler_sock)(int, short, void*), void (*handler_sig)(int, short, void*), ModelChecker* mc);
+  void start(ModelChecker* mc);
   void dispatch() const;
   void break_loop() const;
 };

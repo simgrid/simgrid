@@ -126,10 +126,10 @@ RemoteApp::RemoteApp(const std::vector<char*>& args)
   xbt_assert(mc_model_checker == nullptr, "Did you manage to start the MC twice in this process?");
 
   checker_side_  = std::make_unique<simgrid::mc::CheckerSide>(sockets[1]);
-  auto process   = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid);
-  model_checker_ = std::make_unique<simgrid::mc::ModelChecker>(std::move(process));
-
+  auto memory      = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid);
+  model_checker_   = std::make_unique<simgrid::mc::ModelChecker>(std::move(memory));
   mc_model_checker = model_checker_.get();
+
   start();
 
   /* Take the initial snapshot */
@@ -149,36 +149,7 @@ RemoteApp::~RemoteApp()
 }
 void RemoteApp::start()
 {
-  checker_side_->start(
-      [](evutil_socket_t sig, short events, void* arg) {
-        auto checker = static_cast<simgrid::mc::CheckerSide*>(arg);
-        if (events == EV_READ) {
-          std::array<char, MC_MESSAGE_LENGTH> buffer;
-          ssize_t size = recv(checker->get_channel().get_socket(), buffer.data(), buffer.size(), MSG_DONTWAIT);
-          if (size == -1) {
-            XBT_ERROR("Channel::receive failure: %s", strerror(errno));
-            if (errno != EAGAIN)
-              throw simgrid::xbt::errno_error();
-          }
-
-          if (not mc_model_checker->handle_message(buffer.data(), size))
-            checker->break_loop();
-        } else {
-          xbt_die("Unexpected event");
-        }
-      },
-      [](evutil_socket_t sig, short events, void* arg) {
-        auto mc = static_cast<simgrid::mc::ModelChecker*>(arg);
-        if (events == EV_SIGNAL) {
-          if (sig == SIGCHLD)
-            mc->handle_waitpid();
-          else
-            xbt_die("Unexpected signal: %d", sig);
-        } else {
-          xbt_die("Unexpected event");
-        }
-      },
-      model_checker_.get());
+  checker_side_->start(model_checker_.get());
 
   XBT_DEBUG("Waiting for the model-checked process");
   int status;
