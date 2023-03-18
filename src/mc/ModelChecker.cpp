@@ -23,69 +23,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 
 ::simgrid::mc::ModelChecker* mc_model_checker = nullptr;
 
-#ifdef __linux__
-# define WAITPID_CHECKED_FLAGS __WALL
-#else
-# define WAITPID_CHECKED_FLAGS 0
-#endif
-
 namespace simgrid::mc {
 
-ModelChecker::ModelChecker(std::unique_ptr<RemoteProcessMemory> remote_memory, int sockfd)
-    : checker_side_(sockfd), remote_process_memory_(std::move(remote_memory))
+ModelChecker::ModelChecker(std::unique_ptr<RemoteProcessMemory> remote_memory)
+    : remote_process_memory_(std::move(remote_memory))
 {
-}
-
-void ModelChecker::start()
-{
-  checker_side_.start(
-      [](evutil_socket_t sig, short events, void* arg) {
-        auto mc = static_cast<simgrid::mc::ModelChecker*>(arg);
-        if (events == EV_READ) {
-          std::array<char, MC_MESSAGE_LENGTH> buffer;
-          ssize_t size = recv(mc->checker_side_.get_channel().get_socket(), buffer.data(), buffer.size(), MSG_DONTWAIT);
-          if (size == -1) {
-            XBT_ERROR("Channel::receive failure: %s", strerror(errno));
-            if (errno != EAGAIN)
-              throw simgrid::xbt::errno_error();
-          }
-
-          if (not mc->handle_message(buffer.data(), size))
-            mc->checker_side_.break_loop();
-        } else if (events == EV_SIGNAL) {
-          if (sig == SIGCHLD)
-            mc->handle_waitpid();
-          else
-            xbt_die("Unexpected signal: %d", sig);
-        } else {
-          xbt_die("Unexpected event");
-        }
-      },
-      this);
-
-  XBT_DEBUG("Waiting for the model-checked process");
-  int status;
-
-  // The model-checked process SIGSTOP itself to signal it's ready:
-  const pid_t pid = remote_process_memory_->pid();
-
-  xbt_assert(waitpid(pid, &status, WAITPID_CHECKED_FLAGS) == pid && WIFSTOPPED(status) && WSTOPSIG(status) == SIGSTOP,
-             "Could not wait model-checked process");
-
-  errno = 0;
-#ifdef __linux__
-  ptrace(PTRACE_SETOPTIONS, pid, nullptr, PTRACE_O_TRACEEXIT);
-  ptrace(PTRACE_CONT, pid, 0, 0);
-#elif defined BSD
-  ptrace(PT_CONTINUE, pid, (caddr_t)1, 0);
-#else
-# error "no ptrace equivalent coded for this platform"
-#endif
-  xbt_assert(errno == 0,
-             "Ptrace does not seem to be usable in your setup (errno: %d). "
-             "If you run from within a docker, adding `--cap-add SYS_PTRACE` to the docker line may help. "
-             "If it does not help, please report this bug.",
-             errno);
 }
 
 bool ModelChecker::handle_message(const char* buffer, ssize_t size)

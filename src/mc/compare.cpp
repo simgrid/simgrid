@@ -7,6 +7,7 @@
 
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_private.hpp"
+#include "src/mc/sosp/RemoteProcessMemory.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 #include "xbt/ex.h"
 
@@ -76,7 +77,7 @@ public:
     compared_pointers.clear();
   }
 
-  int initHeapInformation(const s_xbt_mheap_t* heap1, const s_xbt_mheap_t* heap2,
+  int initHeapInformation(RemoteProcessMemory& appli, const s_xbt_mheap_t* heap1, const s_xbt_mheap_t* heap2,
                           const std::vector<IgnoredHeapRegion>& i1, const std::vector<IgnoredHeapRegion>& i2);
 
   template <int rank> HeapArea& equals_to_(std::size_t i, std::size_t j)
@@ -176,14 +177,14 @@ void ProcessComparisonState::initHeapInformation(const s_xbt_mheap_t* heap, cons
   this->types.assign(heaplimit * MAX_FRAGMENT_PER_BLOCK, nullptr);
 }
 
-int StateComparator::initHeapInformation(const s_xbt_mheap_t* heap1, const s_xbt_mheap_t* heap2,
-                                         const std::vector<IgnoredHeapRegion>& i1,
+int StateComparator::initHeapInformation(simgrid::mc::RemoteProcessMemory& memory, const s_xbt_mheap_t* heap1,
+                                         const s_xbt_mheap_t* heap2, const std::vector<IgnoredHeapRegion>& i1,
                                          const std::vector<IgnoredHeapRegion>& i2)
 {
   if ((heap1->heaplimit != heap2->heaplimit) || (heap1->heapsize != heap2->heapsize))
     return -1;
   this->heaplimit     = heap1->heaplimit;
-  this->std_heap_copy = *mc_model_checker->get_remote_process_memory().get_heap();
+  this->std_heap_copy = *memory.get_heap();
   this->processStates[0].initHeapInformation(heap1, i1);
   this->processStates[1].initHeapInformation(heap2, i2);
   return 0;
@@ -1211,7 +1212,7 @@ bool Snapshot::operator==(const Snapshot& other)
   // TODO, make this a field of ModelChecker or something similar
   static StateComparator state_comparator;
 
-  const RemoteProcessMemory& process = mc_model_checker->get_remote_process_memory();
+  RemoteProcessMemory& memory = mc_model_checker->get_remote_process_memory();
 
   if (hash_ != other.hash_) {
     XBT_VERB("(%ld - %ld) Different hash: 0x%" PRIx64 "--0x%" PRIx64, this->num_state_, other.num_state_, this->hash_,
@@ -1234,11 +1235,11 @@ bool Snapshot::operator==(const Snapshot& other)
   }
 
   /* Init heap information used in heap comparison algorithm */
-  const s_xbt_mheap_t* heap1 = static_cast<xbt_mheap_t>(this->read_bytes(
-      alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t), process.heap_address, ReadOptions::lazy()));
-  const s_xbt_mheap_t* heap2 = static_cast<xbt_mheap_t>(other.read_bytes(
-      alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t), process.heap_address, ReadOptions::lazy()));
-  if (state_comparator.initHeapInformation(heap1, heap2, this->to_ignore_, other.to_ignore_) == -1) {
+  const s_xbt_mheap_t* heap1 = static_cast<xbt_mheap_t>(
+      this->read_bytes(alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t), memory.heap_address, ReadOptions::lazy()));
+  const s_xbt_mheap_t* heap2 = static_cast<xbt_mheap_t>(
+      other.read_bytes(alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t), memory.heap_address, ReadOptions::lazy()));
+  if (state_comparator.initHeapInformation(memory, heap1, heap2, this->to_ignore_, other.to_ignore_) == -1) {
     XBT_VERB("(%ld - %ld) Different heap information", this->num_state_, other.num_state_);
     return false;
   }
@@ -1248,7 +1249,7 @@ bool Snapshot::operator==(const Snapshot& other)
     const_mc_snapshot_stack_t stack1 = &this->stacks_[cursor];
     const_mc_snapshot_stack_t stack2 = &other.stacks_[cursor];
 
-    if (local_variables_differ(process, state_comparator, *this, other, stack1, stack2)) {
+    if (local_variables_differ(memory, state_comparator, *this, other, stack1, stack2)) {
       XBT_VERB("(%ld - %ld) Different local variables between stacks %u", this->num_state_, other.num_state_,
                cursor + 1);
       return false;
@@ -1272,7 +1273,7 @@ bool Snapshot::operator==(const Snapshot& other)
     xbt_assert(region1->object_info());
 
     /* Compare global variables */
-    if (global_variables_differ(process, state_comparator, region1->object_info(), region1, region2, *this, other)) {
+    if (global_variables_differ(memory, state_comparator, region1->object_info(), region1, region2, *this, other)) {
       std::string const& name = region1->object_info()->file_name;
       XBT_VERB("(%ld - %ld) Different global variables in %s", this->num_state_, other.num_state_, name.c_str());
       return false;
@@ -1281,7 +1282,7 @@ bool Snapshot::operator==(const Snapshot& other)
 
   XBT_VERB("   Compare heap...");
   /* Compare heap */
-  if (mmalloc_heap_differ(process, state_comparator, *this, other)) {
+  if (mmalloc_heap_differ(memory, state_comparator, *this, other)) {
     XBT_VERB("(%ld - %ld) Different heap (mmalloc_heap_differ)", this->num_state_, other.num_state_);
     return false;
   }
