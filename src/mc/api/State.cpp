@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/api/State.hpp"
+#include "src/mc/api/guide/BasicGuide.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
 
@@ -15,9 +16,9 @@ namespace simgrid::mc {
 
 long State::expended_states_ = 0;
 
-State::State(RemoteApp& remote_app) : num_(++expended_states_)
+State::State(RemoteApp& remote_app) : num_(++expended_states_), guide(std::make_unique<BasicGuide>())
 {
-  remote_app.get_actors_status(actors_to_run_);
+  remote_app.get_actors_status(guide->actors_to_run_);
 
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
@@ -26,51 +27,41 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
 }
 
 State::State(RemoteApp& remote_app, const State* parent_state)
-    :  num_(++expended_states_), parent_state_(parent_state)
+    : num_(++expended_states_), parent_state_(parent_state), guide(std::make_unique<BasicGuide>())
 {
 
-  remote_app.get_actors_status(actors_to_run_);
+  remote_app.get_actors_status(guide->actors_to_run_);
 
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
     system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store(),
                                                             remote_app.get_remote_process_memory());
 
-  
-  /* If we want sleep set reduction, copy the sleep set and eventually removes things from it */ 
-  if (_sg_mc_sleep_set) {      
-      /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.
-       * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
-       * it is not explored*/
-      for (auto& [aid, transition] : parent_state_->get_sleep_set()) {
+  /* If we want sleep set reduction, copy the sleep set and eventually removes things from it */
+  if (_sg_mc_sleep_set) {
+    /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.
+     * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
+     * it is not explored*/
+    for (auto& [aid, transition] : parent_state_->get_sleep_set()) {
 
-	  if (not parent_state_->get_transition()->depends(&transition)) {
+      if (not parent_state_->get_transition()->depends(&transition)) {
 
-	      sleep_set_.emplace(aid, transition);
-	      if (actors_to_run_.count(aid) != 0) {
-		  XBT_DEBUG("Actor %ld will not be explored, for it is in the sleep set", aid);
+        sleep_set_.emplace(aid, transition);
+        if (guide->actors_to_run_.count(aid) != 0) {
+          XBT_DEBUG("Actor %ld will not be explored, for it is in the sleep set", aid);
 
-		  actors_to_run_.at(aid).mark_done();
-	      }
-	  } else
-	      XBT_DEBUG("Transition >>%s<< removed from the sleep set because it was dependent with >>%s<<",
-			transition.to_string().c_str(), parent_state_->get_transition()->to_string().c_str());
-      }
+          guide->actors_to_run_.at(aid).mark_done();
+        }
+      } else
+        XBT_DEBUG("Transition >>%s<< removed from the sleep set because it was dependent with >>%s<<",
+                  transition.to_string().c_str(), parent_state_->get_transition()->to_string().c_str());
+    }
   }
 }
 
 std::size_t State::count_todo() const
 {
-  return boost::range::count_if(this->actors_to_run_, [](auto& pair) { return pair.second.is_todo(); });
-}
-
-void State::mark_all_enabled_todo()
-{
-  for (auto const& [aid, _] : this->get_actors_list()) {
-      if (this->is_actor_enabled(aid) and not is_actor_done(aid)) {
-      this->mark_todo(aid);
-    }
-  }
+  return boost::range::count_if(this->guide->actors_to_run_, [](auto& pair) { return pair.second.is_todo(); });
 }
 
 Transition* State::get_transition() const
@@ -80,8 +71,8 @@ Transition* State::get_transition() const
 
 aid_t State::next_transition() const
 {
-  XBT_DEBUG("Search for an actor to run. %zu actors to consider", actors_to_run_.size());
-  for (auto const& [aid, actor] : actors_to_run_) {
+  XBT_DEBUG("Search for an actor to run. %zu actors to consider", guide->actors_to_run_.size());
+  for (auto const& [aid, actor] : guide->actors_to_run_) {
     /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
     if (not actor.is_todo() || not actor.is_enabled() || actor.is_done()) {
 
@@ -102,13 +93,19 @@ aid_t State::next_transition() const
   return -1;
 }
 
+std::pair<aid_t, double> State::next_transition_guided() const
+{
+  return guide->next_transition();
+}
+
+// This should be done in GuidedState, or at least interact with it
 void State::execute_next(aid_t next, RemoteApp& app)
 {
   // This actor is ready to be executed. Execution involves three phases:
 
   // 1. Identify the appropriate ActorState to prepare for execution
   // when simcall_handle will be called on it
-  auto& actor_state                        = actors_to_run_.at(next);
+  auto& actor_state                        = guide->actors_to_run_.at(next);
   const unsigned times_considered          = actor_state.do_consider();
   const auto* expected_executed_transition = actor_state.get_transition(times_considered);
   xbt_assert(expected_executed_transition != nullptr,

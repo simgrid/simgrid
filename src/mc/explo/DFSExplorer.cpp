@@ -128,19 +128,19 @@ void DFSExplorer::run()
     }
 
     // Search for the next transition
-    aid_t next = state->next_transition();
+    // next_transition returns a pair<aid_t, double> in case we want to consider multiple state
+    auto [next, _] = state->next_transition_guided();
 
     if (next < 0) { // If there is no more transition in the current state, backtrack.
       XBT_DEBUG("There remains %lu actors, but none to interleave (depth %zu).", state->get_actor_count(),
                 stack_.size() + 1);
-      
+
       if (state->get_actor_count() == 0) {
         get_remote_app().finalize_app();
         XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
                  state->get_num(), stack_.size());
-
       }
-      
+
       this->backtrack();
       continue;
     }
@@ -164,10 +164,53 @@ void DFSExplorer::run()
     std::unique_ptr<State> next_state;
 
     next_state = std::make_unique<State>(get_remote_app(), state);
-
     on_state_creation_signal(next_state.get(), get_remote_app());
 
-		
+    /* Sleep set procedure:
+     * adding the taken transition to the sleep set of the original state.
+     * <!> Since the parent sleep set is used to compute the child sleep set, this need to be
+     * done after next_state creation */
+    XBT_DEBUG("Marking Transition >>%s<< of process %ld done and adding it to the sleep set",
+              state->get_transition()->to_string().c_str(), state->get_transition()->aid_);
+    state->add_sleep_set(state->get_transition()); // Actors are marked done when they are considerd in ActorState
+    
+    /* DPOR persistent set procedure:
+     * for each new transition considered, check if it depends on any other previous transition executed before it
+     * on another process. If there exists one, find the more recent, and add its process to the interleave set.
+     * If the process is not enabled at this  point, then add every enabled process to the interleave */
+    if (reduction_mode_ == ReductionMode::dpor) {
+      aid_t issuer_id = state->get_transition()->aid_;
+      for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
+        State* prev_state = i->get();
+        if (state->get_transition()->aid_ == prev_state->get_transition()->aid_) {
+          XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->get_transition()->to_string().c_str(),
+                    prev_state->get_transition()->to_string().c_str(), issuer_id);
+          continue;
+        } else if (prev_state->get_transition()->depends(state->get_transition())) {
+          XBT_VERB("Dependent Transitions:");
+          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->get_num());
+          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->get_num());
+
+          if (prev_state->is_actor_enabled(issuer_id)) {
+            if (not prev_state->is_actor_done(issuer_id))
+              prev_state->consider_one(issuer_id);
+            else
+              XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
+          } else {
+            XBT_DEBUG("Actor %ld is not enabled: DPOR may be failing. To stay sound, we are marking every enabled "
+                      "transition as todo",
+                      issuer_id);
+            prev_state->consider_all();
+          }
+          break;
+        } else {
+          XBT_VERB("INDEPENDENT Transitions:");
+          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->get_num());
+          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->get_num());
+        }
+      }
+    }
+
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
 
@@ -178,13 +221,10 @@ void DFSExplorer::run()
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
       /* Get an enabled process and insert it in the interleave set of the next state */
-      for (auto const& [aid, _] : next_state->get_actors_list()) {
-        if (next_state->is_actor_enabled(aid) and not next_state->is_actor_done(aid)) {
-          next_state->mark_todo(aid);
-          if (reduction_mode_ == ReductionMode::dpor)
-            break; // With DPOR, we take the first enabled transition
-        }
-      }
+      if (reduction_mode_ == ReductionMode::dpor)
+        next_state->consider_best(); // Take only one transition if DPOR: others may be considered later if required
+      else
+        next_state->consider_all();
 
       dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), next_state->get_num(),
                  state->get_transition()->dot_string().c_str());
@@ -209,55 +249,16 @@ void DFSExplorer::backtrack()
   /* We may backtrack from somewhere either because it's leaf, or because every enabled process are in done/sleep set.
    * In the first case, we need to remove the last transition corresponding to the Finalize */
   if (stack_.back()->get_transition()->aid_ == 0)
-      stack_.pop_back();
-  
+    stack_.pop_back();
+
   /* Traverse the stack backwards until a state with a non empty interleave set is found, deleting all the states that
-   *  have it empty in the way. For each deleted state, check if the request that has generated it (from its
-   *  predecessor state) depends on any other previous request executed before it on another process. If there exists one,
-   *  find the more recent, and add its process to the interleave set. If the process is not enabled at this point,
-   *  then add every enabled process to the interleave */
+   *  have it empty in the way. */
   bool found_backtracking_point = false;
   while (not stack_.empty() && not found_backtracking_point) {
     std::unique_ptr<State> state = std::move(stack_.back());
 
     stack_.pop_back();
 
-    XBT_DEBUG("Marking Transition >>%s<< of process %ld done and adding it to the sleep set",
-              state->get_transition()->to_string().c_str(), state->get_transition()->aid_);
-    state->add_sleep_set(state->get_transition()); // Actors are marked done when they are considerd in ActorState
-
-    if (reduction_mode_ == ReductionMode::dpor) {
-      aid_t issuer_id = state->get_transition()->aid_;
-      for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
-        State* prev_state = i->get();
-        if (state->get_transition()->aid_ == prev_state->get_transition()->aid_) {
-          XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->get_transition()->to_string().c_str(),
-                    prev_state->get_transition()->to_string().c_str(), issuer_id);
-          continue;
-        } else if (prev_state->get_transition()->depends(state->get_transition())) {
-          XBT_VERB("Dependent Transitions:");
-          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->get_num());
-          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->get_num());
-
-          if (prev_state->is_actor_enabled(issuer_id)) {
-            if (not prev_state->is_actor_done(issuer_id))
-              prev_state->mark_todo(issuer_id);
-            else
-              XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
-          } else {
-            XBT_DEBUG("Actor %ld is not enabled: DPOR may be failing. To stay sound, we are marking every enabled "
-                      "transition as todo",
-                      issuer_id);
-            prev_state->mark_all_enabled_todo();
-          }
-          break;
-        } else {
-          XBT_VERB("INDEPENDENT Transitions:");
-          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->get_num());
-          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->get_num());
-        }
-      }
-    }
 
     if (state->count_todo() == 0) { // Empty interleaving set: exploration at this level is over
       XBT_DEBUG("Delete state %ld at depth %zu", state->get_num(), stack_.size() + 1);
@@ -265,7 +266,8 @@ void DFSExplorer::backtrack()
     } else {
       XBT_DEBUG("Back-tracking to state %ld at depth %zu: %lu transitions left to be explored", state->get_num(),
                 stack_.size() + 1, state->count_todo());
-      stack_.push_back(std::move(state)); // Put it back on the stack so we can explore the next transition of the interleave
+      stack_.push_back(
+          std::move(state)); // Put it back on the stack so we can explore the next transition of the interleave
       found_backtracking_point = true;
     }
   }
@@ -317,16 +319,10 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Explo
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   XBT_DEBUG("Initial state. %lu actors to consider", initial_state->get_actor_count());
-  for (auto const& [aid, _] : initial_state->get_actors_list()) {
-    if (initial_state->is_actor_enabled(aid)) {
-      initial_state->mark_todo(aid);
-      if (reduction_mode_ == ReductionMode::dpor) {
-        XBT_DEBUG("Actor %ld is TODO, DPOR is ON so let's go for this one.", aid);
-        break;
-      }
-      XBT_DEBUG("Actor %ld is TODO", aid);
-    }
-  }
+  if (reduction_mode_ == ReductionMode::dpor)
+    initial_state->consider_best();
+  else
+    initial_state->consider_all();
 
   stack_.push_back(std::move(initial_state));
 }
