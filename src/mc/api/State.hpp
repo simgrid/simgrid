@@ -8,6 +8,7 @@
 
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/api/guide/GuidedState.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 #include "src/mc/transition/Transition.hpp"
 
@@ -35,22 +36,20 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   /** Sequential state ID (used for debugging) */
   long num_ = 0;
 
-  /** State's exploration status by actor. Not all the actors are there, only the ones that are ready-to-run in this
-   * state */
-  std::map<aid_t, ActorState> actors_to_run_;
-
   /** Snapshot of system state (if needed) */
   std::shared_ptr<Snapshot> system_state_;
 
   /** Unique parent of this state. Required both for sleep set computation
       and for guided model-checking */
   const State* parent_state_;
-  
+
+  std::unique_ptr<GuidedState> guide;
+
   /* Sleep sets are composed of the actor and the corresponding transition that made it being added to the sleep
    * set. With this information, it is check whether it should be removed from it or not when exploring a new
    * transition */
   std::map<aid_t, Transition> sleep_set_;
-  
+
 public:
   explicit State(RemoteApp& remote_app);
   explicit State(RemoteApp& remote_app, const State* parent_state);
@@ -63,22 +62,25 @@ public:
 
   long get_num() const { return num_; }
   std::size_t count_todo() const;
-  void mark_todo(aid_t actor) { actors_to_run_.at(actor).mark_todo(); }
+  void mark_todo(aid_t actor) { guide->actors_to_run_.at(actor).mark_todo(); }
   void mark_all_enabled_todo();
-  bool is_actor_done(aid_t actor) const { return actors_to_run_.at(actor).is_done(); }
+  bool is_actor_done(aid_t actor) const { return guide->actors_to_run_.at(actor).is_done(); }
   Transition* get_transition() const;
   void set_transition(Transition* t) { transition_ = t; }
-  std::map<aid_t, ActorState> const& get_actors_list() const { return actors_to_run_; }
+  std::map<aid_t, ActorState> const& get_actors_list() const { return guide->actors_to_run_; }
 
-  unsigned long get_actor_count() const { return actors_to_run_.size(); }
-  bool is_actor_enabled(aid_t actor) { return actors_to_run_.at(actor).is_enabled(); }
+  unsigned long get_actor_count() const { return guide->actors_to_run_.size(); }
+  bool is_actor_enabled(aid_t actor) { return guide->actors_to_run_.at(actor).is_enabled(); }
 
   Snapshot* get_system_state() const { return system_state_.get(); }
   void set_system_state(std::shared_ptr<Snapshot> state) { system_state_ = std::move(state); }
 
   std::map<aid_t, Transition> const& get_sleep_set() const { return sleep_set_; }
-  void add_sleep_set(Transition* t) {sleep_set_.insert_or_assign(t->aid_, Transition(t->type_, t->aid_, t->times_considered_)); }
-  
+  void add_sleep_set(Transition* t)
+  {
+    sleep_set_.insert_or_assign(t->aid_, Transition(t->type_, t->aid_, t->times_considered_));
+  }
+
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }
 };
