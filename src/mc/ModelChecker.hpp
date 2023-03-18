@@ -31,7 +31,7 @@ public:
   Exploration* get_exploration() const { return exploration_; }
   void set_exploration(Exploration* exploration) { exploration_ = exploration; }
 
-  void handle_waitpid();                                 // FIXME move to RemoteApp
+  void handle_waitpid(pid_t pid_to_wait);                // FIXME move to RemoteApp
   bool handle_message(const char* buffer, ssize_t size); // FIXME move to RemoteApp
 };
 

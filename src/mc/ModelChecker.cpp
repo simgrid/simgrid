@@ -108,15 +108,14 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
   return true;
 }
 
-void ModelChecker::handle_waitpid()
+void ModelChecker::handle_waitpid(pid_t pid_to_wait)
 {
   XBT_DEBUG("Check for wait event");
   int status;
   pid_t pid;
   while ((pid = waitpid(-1, &status, WNOHANG)) != 0) {
     if (pid == -1) {
-      if (errno == ECHILD) {
-        // No more children:
+      if (errno == ECHILD) { // No more children:
         xbt_assert(not this->get_remote_process_memory().running(), "Inconsistent state");
         break;
       } else {
@@ -125,13 +124,12 @@ void ModelChecker::handle_waitpid()
       }
     }
 
-    if (pid == this->get_remote_process_memory().pid()) {
+    if (pid == pid_to_wait) {
       // From PTRACE_O_TRACEEXIT:
 #ifdef __linux__
       if (status>>8 == (SIGTRAP | (PTRACE_EVENT_EXIT<<8))) {
         unsigned long eventmsg;
-        xbt_assert(ptrace(PTRACE_GETEVENTMSG, get_remote_process_memory().pid(), 0, &eventmsg) != -1,
-                   "Could not get exit status");
+        xbt_assert(ptrace(PTRACE_GETEVENTMSG, pid_to_wait, 0, &eventmsg) != -1, "Could not get exit status");
         status = static_cast<int>(eventmsg);
         if (WIFSIGNALED(status))
           exploration_->report_crash(status);
@@ -143,9 +141,9 @@ void ModelChecker::handle_waitpid()
         XBT_DEBUG("Stopped with signal %i", (int) WSTOPSIG(status));
         errno = 0;
 #ifdef __linux__
-        ptrace(PTRACE_CONT, get_remote_process_memory().pid(), 0, WSTOPSIG(status));
+        ptrace(PTRACE_CONT, pid_to_wait, 0, WSTOPSIG(status));
 #elif defined BSD
-        ptrace(PT_CONTINUE, get_remote_process_memory().pid(), (caddr_t)1, WSTOPSIG(status));
+        ptrace(PT_CONTINUE, pid_to_wait, (caddr_t)1, WSTOPSIG(status));
 #endif
         xbt_assert(errno == 0, "Could not PTRACE_CONT");
       }
