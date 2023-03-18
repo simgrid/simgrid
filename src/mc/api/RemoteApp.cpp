@@ -26,6 +26,14 @@
 #ifdef __linux__
 #include <sys/prctl.h>
 #endif
+#include <sys/ptrace.h>
+#include <sys/wait.h>
+
+#ifdef __linux__
+#define WAITPID_CHECKED_FLAGS __WALL
+#else
+#define WAITPID_CHECKED_FLAGS 0
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
 XBT_LOG_EXTERNAL_CATEGORY(mc_global);
@@ -117,11 +125,12 @@ RemoteApp::RemoteApp(const std::vector<char*>& args)
 
   xbt_assert(mc_model_checker == nullptr, "Did you manage to start the MC twice in this process?");
 
+  checker_side_  = std::make_unique<simgrid::mc::CheckerSide>(sockets[1]);
   auto process   = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid);
-  model_checker_ = std::make_unique<simgrid::mc::ModelChecker>(std::move(process), sockets[1]);
+  model_checker_ = std::make_unique<simgrid::mc::ModelChecker>(std::move(process));
 
   mc_model_checker = model_checker_.get();
-  model_checker_->start();
+  start();
 
   /* Take the initial snapshot */
   wait_for_requests();
@@ -138,7 +147,63 @@ RemoteApp::~RemoteApp()
     mc_model_checker = nullptr;
   }
 }
+void RemoteApp::start()
+{
+  checker_side_->start(
+      [](evutil_socket_t sig, short events, void* arg) {
+        auto checker = static_cast<simgrid::mc::CheckerSide*>(arg);
+        if (events == EV_READ) {
+          std::array<char, MC_MESSAGE_LENGTH> buffer;
+          ssize_t size = recv(checker->get_channel().get_socket(), buffer.data(), buffer.size(), MSG_DONTWAIT);
+          if (size == -1) {
+            XBT_ERROR("Channel::receive failure: %s", strerror(errno));
+            if (errno != EAGAIN)
+              throw simgrid::xbt::errno_error();
+          }
 
+          if (not mc_model_checker->handle_message(buffer.data(), size))
+            checker->break_loop();
+        } else {
+          xbt_die("Unexpected event");
+        }
+      },
+      [](evutil_socket_t sig, short events, void* arg) {
+        auto mc = static_cast<simgrid::mc::ModelChecker*>(arg);
+        if (events == EV_SIGNAL) {
+          if (sig == SIGCHLD)
+            mc->handle_waitpid();
+          else
+            xbt_die("Unexpected signal: %d", sig);
+        } else {
+          xbt_die("Unexpected event");
+        }
+      },
+      model_checker_.get());
+
+  XBT_DEBUG("Waiting for the model-checked process");
+  int status;
+
+  // The model-checked process SIGSTOP itself to signal it's ready:
+  const pid_t pid = get_remote_process_memory().pid();
+
+  xbt_assert(waitpid(pid, &status, WAITPID_CHECKED_FLAGS) == pid && WIFSTOPPED(status) && WSTOPSIG(status) == SIGSTOP,
+             "Could not wait model-checked process");
+
+  errno = 0;
+#ifdef __linux__
+  ptrace(PTRACE_SETOPTIONS, pid, nullptr, PTRACE_O_TRACEEXIT);
+  ptrace(PTRACE_CONT, pid, 0, 0);
+#elif defined BSD
+  ptrace(PT_CONTINUE, pid, (caddr_t)1, 0);
+#else
+#error "no ptrace equivalent coded for this platform"
+#endif
+  xbt_assert(errno == 0,
+             "Ptrace does not seem to be usable in your setup (errno: %d). "
+             "If you run from within a docker, adding `--cap-add SYS_PTRACE` to the docker line may help. "
+             "If it does not help, please report this bug.",
+             errno);
+}
 void RemoteApp::restore_initial_state() const
 {
   this->initial_snapshot_->restore(model_checker_->get_remote_process_memory());
@@ -149,9 +214,9 @@ unsigned long RemoteApp::get_maxpid() const
   // note: we could maybe cache it and count the actor creation on checker side too.
   // But counting correctly accross state checkpoint/restore would be annoying.
 
-  model_checker_->get_channel().send(MessageType::ACTORS_MAXPID);
+  checker_side_->get_channel().send(MessageType::ACTORS_MAXPID);
   s_mc_message_int_t answer;
-  ssize_t answer_size = model_checker_->get_channel().receive(answer);
+  ssize_t answer_size = checker_side_->get_channel().receive(answer);
   xbt_assert(answer_size != -1, "Could not receive message");
   xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
   xbt_assert(answer.type == MessageType::ACTORS_MAXPID_REPLY,
@@ -170,10 +235,10 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   //                    <----- send ACTORS_STATUS_REPLY
   //                    <----- send `N` `s_mc_message_actors_status_one_t` structs
   //                    <----- send `M` `s_mc_message_simcall_probe_one_t` structs
-  model_checker_->get_channel().send(MessageType::ACTORS_STATUS);
+  checker_side_->get_channel().send(MessageType::ACTORS_STATUS);
 
   s_mc_message_actors_status_answer_t answer;
-  ssize_t answer_size = model_checker_->get_channel().receive(answer);
+  ssize_t answer_size = checker_side_->get_channel().receive(answer);
   xbt_assert(answer_size != -1, "Could not receive message");
   xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
   xbt_assert(answer.type == MessageType::ACTORS_STATUS_REPLY,
@@ -191,7 +256,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   std::vector<s_mc_message_actors_status_one_t> status(answer.count);
   if (answer.count > 0) {
     size_t size      = status.size() * sizeof(s_mc_message_actors_status_one_t);
-    ssize_t received = model_checker_->get_channel().receive(status.data(), size);
+    ssize_t received = checker_side_->get_channel().receive(status.data(), size);
     xbt_assert(static_cast<size_t>(received) == size);
   }
 
@@ -207,7 +272,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   std::vector<s_mc_message_simcall_probe_one_t> probes(answer.transition_count);
   if (answer.transition_count > 0) {
     for (auto& probe : probes) {
-      ssize_t received = model_checker_->get_channel().receive(probe);
+      ssize_t received = checker_side_->get_channel().receive(probe);
       xbt_assert(received >= 0, "Could not receive response to ACTORS_PROBE message (%s)", strerror(errno));
       xbt_assert(static_cast<size_t>(received) == sizeof probe,
                  "Could not receive response to ACTORS_PROBE message (%zd bytes received != %zu bytes expected",
@@ -238,9 +303,9 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
 
 void RemoteApp::check_deadlock() const
 {
-  xbt_assert(model_checker_->get_channel().send(MessageType::DEADLOCK_CHECK) == 0, "Could not check deadlock state");
+  xbt_assert(checker_side_->get_channel().send(MessageType::DEADLOCK_CHECK) == 0, "Could not check deadlock state");
   s_mc_message_int_t message;
-  ssize_t received = model_checker_->get_channel().receive(message);
+  ssize_t received = checker_side_->get_channel().receive(message);
   xbt_assert(received != -1, "Could not receive message");
   xbt_assert(received == sizeof message, "Broken message (size=%zd; expected %zu)", received, sizeof message);
   xbt_assert(message.type == MessageType::DEADLOCK_CHECK_REPLY,
@@ -262,12 +327,12 @@ void RemoteApp::check_deadlock() const
 void RemoteApp::wait_for_requests()
 {
   /* Resume the application */
-  if (model_checker_->get_channel().send(MessageType::CONTINUE) != 0)
+  if (checker_side_->get_channel().send(MessageType::CONTINUE) != 0)
     throw xbt::errno_error();
   get_remote_process_memory().clear_cache();
 
   if (this->get_remote_process_memory().running())
-    model_checker_->channel_handle_events();
+    checker_side_->dispatch();
 }
 
 void RemoteApp::shutdown()
@@ -289,14 +354,14 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
   m.type                           = MessageType::SIMCALL_EXECUTE;
   m.aid_                           = aid;
   m.times_considered_              = times_considered;
-  model_checker_->get_channel().send(m);
+  checker_side_->get_channel().send(m);
 
   get_remote_process_memory().clear_cache();
   if (this->get_remote_process_memory().running())
-    model_checker_->channel_handle_events(); // The app may send messages while processing the transition
+    checker_side_->dispatch(); // The app may send messages while processing the transition
 
   s_mc_message_simcall_execute_answer_t answer;
-  ssize_t s = model_checker_->get_channel().receive(answer);
+  ssize_t s = checker_side_->get_channel().receive(answer);
   xbt_assert(s != -1, "Could not receive message");
   xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
   xbt_assert(answer.type == MessageType::SIMCALL_EXECUTE_ANSWER,
@@ -315,10 +380,10 @@ void RemoteApp::finalize_app(bool terminate_asap)
   s_mc_message_int_t m = {};
   m.type               = MessageType::FINALIZE;
   m.value              = terminate_asap;
-  xbt_assert(model_checker_->get_channel().send(m) == 0, "Could not ask the app to finalize on need");
+  xbt_assert(checker_side_->get_channel().send(m) == 0, "Could not ask the app to finalize on need");
 
   s_mc_message_t answer;
-  ssize_t s = model_checker_->get_channel().receive(answer);
+  ssize_t s = checker_side_->get_channel().receive(answer);
   xbt_assert(s != -1, "Could not receive answer to FINALIZE");
   xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
   xbt_assert(answer.type == MessageType::FINALIZE_REPLY,

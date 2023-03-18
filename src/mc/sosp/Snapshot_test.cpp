@@ -62,7 +62,7 @@ void snap_test_helper::Init()
 
   process = std::make_unique<simgrid::mc::RemoteProcessMemory>(getpid());
   process->init(nullptr);
-  mc_model_checker = new ::simgrid::mc::ModelChecker(std::move(process), -1);
+  mc_model_checker = new ::simgrid::mc::ModelChecker(std::move(process));
 }
 
 snap_test_helper::prologue_return snap_test_helper::prologue(int n)

@@ -9,16 +9,17 @@
 
 namespace simgrid::mc {
 
-void CheckerSide::start(void (*handler)(int, short, void*), ModelChecker* mc)
+void CheckerSide::start(void (*handler_sock)(int, short, void*), void (*handler_sig)(int, short, void*),
+                        ModelChecker* mc)
 {
   auto* base = event_base_new();
   base_.reset(base);
 
-  auto* socket_event = event_new(base, get_channel().get_socket(), EV_READ | EV_PERSIST, handler, mc);
+  auto* socket_event = event_new(base, get_channel().get_socket(), EV_READ | EV_PERSIST, handler_sock, this);
   event_add(socket_event, nullptr);
   socket_event_.reset(socket_event);
 
-  auto* signal_event = event_new(base, SIGCHLD, EV_SIGNAL | EV_PERSIST, handler, mc);
+  auto* signal_event = event_new(base, SIGCHLD, EV_SIGNAL | EV_PERSIST, handler_sig, mc);
   event_add(signal_event, nullptr);
   signal_event_.reset(signal_event);
 }

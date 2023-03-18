@@ -18,27 +18,21 @@ namespace simgrid::mc {
 /** State of the model-checker (global variables for the model checker)
  */
 class ModelChecker {
-  CheckerSide checker_side_;
   std::unique_ptr<RemoteProcessMemory> remote_process_memory_;
   Exploration* exploration_ = nullptr;
 
 public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
-  explicit ModelChecker(std::unique_ptr<RemoteProcessMemory> remote_simulation, int sockfd);
+  explicit ModelChecker(std::unique_ptr<RemoteProcessMemory> remote_simulation);
 
   RemoteProcessMemory& get_remote_process_memory() { return *remote_process_memory_; }
-  Channel& get_channel() { return checker_side_.get_channel(); }
-  void channel_handle_events() { checker_side_.dispatch(); }
-
-  void start();
 
   Exploration* get_exploration() const { return exploration_; }
   void set_exploration(Exploration* exploration) { exploration_ = exploration; }
 
-private:
-  bool handle_message(const char* buffer, ssize_t size);
-  void handle_waitpid();
+  void handle_waitpid();                                 // FIXME move to RemoteApp
+  bool handle_message(const char* buffer, ssize_t size); // FIXME move to RemoteApp
 };
 
 } // namespace simgrid::mc

@@ -25,6 +25,7 @@ namespace simgrid::mc {
  */
 class XBT_PUBLIC RemoteApp {
 private:
+  std::unique_ptr<CheckerSide> checker_side_;
   std::unique_ptr<ModelChecker> model_checker_;
   PageStore page_store_{500};
   std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
@@ -45,6 +46,7 @@ public:
 
   ~RemoteApp();
 
+  void start();
   void restore_initial_state() const;
   void wait_for_requests();
 
