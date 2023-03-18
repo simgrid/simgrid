@@ -5,6 +5,7 @@
 
 #include "src/mc/remote/CheckerSide.hpp"
 #include "src/mc/ModelChecker.hpp"
+#include "src/mc/sosp/RemoteProcessMemory.hpp"
 #include "xbt/system_error.hpp"
 #include <csignal>
 #include <sys/wait.h>
@@ -46,7 +47,7 @@ CheckerSide::CheckerSide(int sockfd, ModelChecker* mc) : channel_(sockfd)
         auto mc = static_cast<simgrid::mc::ModelChecker*>(arg);
         if (events == EV_SIGNAL) {
           if (sig == SIGCHLD)
-            mc->handle_waitpid();
+            mc->handle_waitpid(mc->get_remote_process_memory().pid());
           else
             xbt_die("Unexpected signal: %d", sig);
         } else {
