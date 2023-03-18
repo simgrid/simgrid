@@ -9,9 +9,10 @@
 namespace simgrid::mc {
 
 /** Basic MC guiding class which corresponds to no guide at all (random choice) */
-// Not Yet fully implemented
 class BasicGuide : public GuidedState {
 public:
+  void operator=(const GuidedState&) { return; }
+
   std::pair<aid_t, double> next_transition() const override
   {
 

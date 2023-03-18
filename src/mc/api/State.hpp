@@ -43,7 +43,7 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
       and for guided model-checking */
   const State* parent_state_;
 
-  std::unique_ptr<GuidedState> guide;
+  std::unique_ptr<GuidedState> guide_;
 
   /* Sleep sets are composed of the actor and the corresponding transition that made it being added to the sleep
    * set. With this information, it is check whether it should be removed from it or not when exploring a new
@@ -67,17 +67,21 @@ public:
   long get_num() const { return num_; }
   std::size_t count_todo() const;
 
-  void consider_one(aid_t aid) { guide->consider_one(aid); }
-  void consider_best() { guide->consider_best(); }
-  void consider_all() { guide->consider_all(); }
+  /* Marking as TODO some actor in this state:
+   *  + consider_one mark aid actor (and assert it is possible)
+   *  + consider_best ensure one actor is marked by eventually marking the best regarding its guiding methode
+   *  + conside_all mark all enabled actor that are not done yet */
+  void consider_one(aid_t aid) { guide_->consider_one(aid); }
+  void consider_best() { guide_->consider_best(); }
+  void consider_all() { guide_->consider_all(); }
 
-  bool is_actor_done(aid_t actor) const { return guide->actors_to_run_.at(actor).is_done(); }
+  bool is_actor_done(aid_t actor) const { return guide_->actors_to_run_.at(actor).is_done(); }
   Transition* get_transition() const;
   void set_transition(Transition* t) { transition_ = t; }
-  std::map<aid_t, ActorState> const& get_actors_list() const { return guide->actors_to_run_; }
+  std::map<aid_t, ActorState> const& get_actors_list() const { return guide_->actors_to_run_; }
 
-  unsigned long get_actor_count() const { return guide->actors_to_run_.size(); }
-  bool is_actor_enabled(aid_t actor) { return guide->actors_to_run_.at(actor).is_enabled(); }
+  unsigned long get_actor_count() const { return guide_->actors_to_run_.size(); }
+  bool is_actor_enabled(aid_t actor) { return guide_->actors_to_run_.at(actor).is_enabled(); }
 
   Snapshot* get_system_state() const { return system_state_.get(); }
   void set_system_state(std::shared_ptr<Snapshot> state) { system_state_ = std::move(state); }

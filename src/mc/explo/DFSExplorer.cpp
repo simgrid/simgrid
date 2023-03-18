@@ -173,7 +173,7 @@ void DFSExplorer::run()
     XBT_DEBUG("Marking Transition >>%s<< of process %ld done and adding it to the sleep set",
               state->get_transition()->to_string().c_str(), state->get_transition()->aid_);
     state->add_sleep_set(state->get_transition()); // Actors are marked done when they are considerd in ActorState
-    
+
     /* DPOR persistent set procedure:
      * for each new transition considered, check if it depends on any other previous transition executed before it
      * on another process. If there exists one, find the more recent, and add its process to the interleave set.
@@ -258,7 +258,6 @@ void DFSExplorer::backtrack()
     std::unique_ptr<State> state = std::move(stack_.back());
 
     stack_.pop_back();
-
 
     if (state->count_todo() == 0) { // Empty interleaving set: exploration at this level is over
       XBT_DEBUG("Delete state %ld at depth %zu", state->get_num(), stack_.size() + 1);
