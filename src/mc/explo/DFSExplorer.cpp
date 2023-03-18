@@ -128,19 +128,19 @@ void DFSExplorer::run()
     }
 
     // Search for the next transition
-    aid_t next = state->next_transition();
+    // next_transition returns a pair<aid_t, double> in case we want to consider multiple state
+    auto [next, _] = state->next_transition_guided();
 
     if (next < 0) { // If there is no more transition in the current state, backtrack.
       XBT_DEBUG("There remains %lu actors, but none to interleave (depth %zu).", state->get_actor_count(),
                 stack_.size() + 1);
-      
+
       if (state->get_actor_count() == 0) {
         get_remote_app().finalize_app();
         XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
                  state->get_num(), stack_.size());
-
       }
-      
+
       this->backtrack();
       continue;
     }
@@ -167,7 +167,6 @@ void DFSExplorer::run()
 
     on_state_creation_signal(next_state.get(), get_remote_app());
 
-		
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
 
@@ -209,12 +208,12 @@ void DFSExplorer::backtrack()
   /* We may backtrack from somewhere either because it's leaf, or because every enabled process are in done/sleep set.
    * In the first case, we need to remove the last transition corresponding to the Finalize */
   if (stack_.back()->get_transition()->aid_ == 0)
-      stack_.pop_back();
-  
+    stack_.pop_back();
+
   /* Traverse the stack backwards until a state with a non empty interleave set is found, deleting all the states that
    *  have it empty in the way. For each deleted state, check if the request that has generated it (from its
-   *  predecessor state) depends on any other previous request executed before it on another process. If there exists one,
-   *  find the more recent, and add its process to the interleave set. If the process is not enabled at this point,
+   *  predecessor state) depends on any other previous request executed before it on another process. If there exists
+   * one, find the more recent, and add its process to the interleave set. If the process is not enabled at this point,
    *  then add every enabled process to the interleave */
   bool found_backtracking_point = false;
   while (not stack_.empty() && not found_backtracking_point) {
@@ -265,7 +264,8 @@ void DFSExplorer::backtrack()
     } else {
       XBT_DEBUG("Back-tracking to state %ld at depth %zu: %lu transitions left to be explored", state->get_num(),
                 stack_.size() + 1, state->count_todo());
-      stack_.push_back(std::move(state)); // Put it back on the stack so we can explore the next transition of the interleave
+      stack_.push_back(
+          std::move(state)); // Put it back on the stack so we can explore the next transition of the interleave
       found_backtracking_point = true;
     }
   }

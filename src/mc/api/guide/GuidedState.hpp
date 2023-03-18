@@ -9,13 +9,14 @@
 namespace simgrid::mc {
 
 class GuidedState {
+protected:
   /** State's exploration status by actor. Not all the actors are there, only the ones that are ready-to-run in this
    * state */
   std::map<aid_t, ActorState> actors_to_run_;
 
 public:
   virtual std::pair<aid_t, double> next_transition() const = 0;
-  virtual void execute_next(aid_t aid)                     = 0;
+  virtual void execute_next(aid_t aid, RemoteApp& app)     = 0;
   friend class State;
 };
 

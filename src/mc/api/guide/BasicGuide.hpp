@@ -12,8 +12,20 @@ namespace simgrid::mc {
 // Not Yet fully implemented
 class BasicGuide : public GuidedState {
 public:
-  std::pair<aid_t, double> next_transition() const override { return std::make_pair(0, 0); }
-  virtual void execute_next(aid_t aid) override { return; }
+  std::pair<aid_t, double> next_transition() const override
+  {
+
+    for (auto const& [aid, actor] : actors_to_run_) {
+      /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
+      if (not actor.is_todo() || not actor.is_enabled() || actor.is_done()) {
+        continue;
+      }
+
+      return std::make_pair(aid, 1.0);
+    }
+    return std::make_pair(-1, 0.0);
+  }
+  void execute_next(aid_t aid, RemoteApp& app) override { return; }
 };
 
 } // namespace simgrid::mc

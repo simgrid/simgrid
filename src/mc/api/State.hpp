@@ -55,6 +55,9 @@ public:
   explicit State(RemoteApp& remote_app, const State* parent_state);
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const;
+  /* Same as next_transition, but choice is now guided, and a double corresponding to the
+   internal cost of the transition is returned */
+  std::pair<aid_t, double> next_transition_guided() const;
 
   /* Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
    * next_transition() */

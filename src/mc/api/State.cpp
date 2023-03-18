@@ -78,7 +78,6 @@ Transition* State::get_transition() const
   return transition_;
 }
 
-// This should be intierely done in GuidedState
 aid_t State::next_transition() const
 {
   XBT_DEBUG("Search for an actor to run. %zu actors to consider", guide->actors_to_run_.size());
@@ -101,6 +100,11 @@ aid_t State::next_transition() const
     return aid;
   }
   return -1;
+}
+
+std::pair<aid_t, double> State::next_transition_guided() const
+{
+  return guide->next_transition();
 }
 
 // This should be done in GuidedState, or at least interact with it
