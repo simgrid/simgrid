@@ -114,8 +114,8 @@ public:
   // Heap access:
   xbt_mheap_t get_heap()
   {
-    if (not(this->cache_flags_ & RemoteProcessMemory::cache_heap))
-      this->refresh_heap();
+    if (not(cache_flags_ & RemoteProcessMemory::cache_heap))
+      refresh_heap();
     return this->heap.get();
   }
   const malloc_info* get_malloc_info()
