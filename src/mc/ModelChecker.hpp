@@ -26,8 +26,6 @@ public:
   explicit ModelChecker(std::unique_ptr<RemoteProcessMemory> remote_simulation);
 
   RemoteProcessMemory& get_remote_process_memory() { return *remote_process_memory_; }
-
-  bool handle_message(const char* buffer, ssize_t size); // FIXME move to RemoteApp
 };
 
 } // namespace simgrid::mc

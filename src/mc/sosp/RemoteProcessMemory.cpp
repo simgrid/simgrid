@@ -8,6 +8,7 @@
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
 
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/LivenessChecker.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 #include "xbt/file.hpp"
 #include "xbt/log.h"
@@ -453,6 +454,84 @@ void RemoteProcessMemory::dump_stack() const
 
   _UPT_destroy(context);
   unw_destroy_addr_space(as);
+}
+
+bool RemoteProcessMemory::handle_message(const char* buffer, ssize_t size)
+{
+  s_mc_message_t base_message;
+  xbt_assert(size >= (ssize_t)sizeof(base_message), "Broken message");
+  memcpy(&base_message, buffer, sizeof(base_message));
+
+  switch (base_message.type) {
+    case MessageType::INITIAL_ADDRESSES: {
+      s_mc_message_initial_addresses_t message;
+      xbt_assert(size == sizeof(message), "Broken message. Got %d bytes instead of %d.", (int)size,
+                 (int)sizeof(message));
+      memcpy(&message, buffer, sizeof(message));
+
+      this->init(message.mmalloc_default_mdp);
+      break;
+    }
+
+    case MessageType::IGNORE_HEAP: {
+      s_mc_message_ignore_heap_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
+
+      IgnoredHeapRegion region;
+      region.block    = message.block;
+      region.fragment = message.fragment;
+      region.address  = message.address;
+      region.size     = message.size;
+      this->ignore_heap(region);
+      break;
+    }
+
+    case MessageType::UNIGNORE_HEAP: {
+      s_mc_message_ignore_memory_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
+      this->unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
+      break;
+    }
+
+    case MessageType::IGNORE_MEMORY: {
+      s_mc_message_ignore_memory_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
+      this->ignore_region(message.addr, message.size);
+      break;
+    }
+
+    case MessageType::STACK_REGION: {
+      s_mc_message_stack_region_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
+      this->stack_areas().push_back(message.stack_region);
+    } break;
+
+    case MessageType::REGISTER_SYMBOL: {
+      s_mc_message_register_symbol_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
+      xbt_assert(not message.callback, "Support for client-side function proposition is not implemented.");
+      XBT_DEBUG("Received symbol: %s", message.name.data());
+
+      LivenessChecker::automaton_register_symbol(*this, message.name.data(), remote((int*)message.data));
+      break;
+    }
+
+    case MessageType::WAITING:
+      return false;
+
+    case MessageType::ASSERTION_FAILED:
+      Exploration::get_instance()->report_assertion_failure();
+      break;
+
+    default:
+      xbt_die("Unexpected message from model-checked application");
+  }
+  return true;
 }
 
 void RemoteProcessMemory::handle_waitpid()

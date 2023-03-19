@@ -31,7 +31,7 @@ CheckerSide::CheckerSide(int sockfd, ModelChecker* mc) : channel_(sockfd)
               throw simgrid::xbt::errno_error();
           }
 
-          if (not mc_model_checker->handle_message(buffer.data(), size))
+          if (not mc_model_checker->get_remote_process_memory().handle_message(buffer.data(), size))
             checker->break_loop();
         } else {
           xbt_die("Unexpected event");
