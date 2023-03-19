@@ -126,16 +126,15 @@ RemoteApp::RemoteApp(const std::vector<char*>& args)
   xbt_assert(mc_model_checker == nullptr, "Did you manage to start the MC twice in this process?");
 
   auto memory      = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid);
-  model_checker_   = std::make_unique<simgrid::mc::ModelChecker>(std::move(memory));
+  model_checker_   = std::make_unique<simgrid::mc::ModelChecker>();
   mc_model_checker = model_checker_.get();
-  checker_side_    = std::make_unique<simgrid::mc::CheckerSide>(sockets[1], model_checker_.get());
+  checker_side_    = std::make_unique<simgrid::mc::CheckerSide>(sockets[1], std::move(memory), model_checker_.get());
 
   start();
 
   /* Take the initial snapshot */
   wait_for_requests();
-  initial_snapshot_ =
-      std::make_shared<simgrid::mc::Snapshot>(0, page_store_, model_checker_->get_remote_process_memory());
+  initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_, checker_side_->get_remote_memory());
 }
 
 RemoteApp::~RemoteApp()
@@ -175,7 +174,7 @@ void RemoteApp::start()
 }
 void RemoteApp::restore_initial_state() const
 {
-  this->initial_snapshot_->restore(model_checker_->get_remote_process_memory());
+  this->initial_snapshot_->restore(checker_side_->get_remote_memory());
 }
 
 unsigned long RemoteApp::get_maxpid() const

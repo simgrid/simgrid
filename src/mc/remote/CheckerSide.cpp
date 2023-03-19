@@ -13,7 +13,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkerside, mc, "MC communication with the application");
 
 namespace simgrid::mc {
-CheckerSide::CheckerSide(int sockfd, ModelChecker* mc) : channel_(sockfd)
+CheckerSide::CheckerSide(int sockfd, std::unique_ptr<RemoteProcessMemory> memory, ModelChecker* mc)
+    : remote_memory_(std::move(memory)), channel_(sockfd)
 {
   auto* base = event_base_new();
   base_.reset(base);
@@ -31,7 +32,7 @@ CheckerSide::CheckerSide(int sockfd, ModelChecker* mc) : channel_(sockfd)
               throw simgrid::xbt::errno_error();
           }
 
-          if (not mc_model_checker->get_remote_process_memory().handle_message(buffer.data(), size))
+          if (not checker->get_remote_memory().handle_message(buffer.data(), size))
             checker->break_loop();
         } else {
           xbt_die("Unexpected event");
@@ -44,17 +45,17 @@ CheckerSide::CheckerSide(int sockfd, ModelChecker* mc) : channel_(sockfd)
   auto* signal_event = event_new(
       base, SIGCHLD, EV_SIGNAL | EV_PERSIST,
       [](evutil_socket_t sig, short events, void* arg) {
-        auto mc = static_cast<simgrid::mc::ModelChecker*>(arg);
+        auto checker = static_cast<simgrid::mc::CheckerSide*>(arg);
         if (events == EV_SIGNAL) {
           if (sig == SIGCHLD)
-            mc->get_remote_process_memory().handle_waitpid();
+            checker->get_remote_memory().handle_waitpid();
           else
             xbt_die("Unexpected signal: %d", sig);
         } else {
           xbt_die("Unexpected event");
         }
       },
-      mc);
+      this);
   event_add(signal_event, nullptr);
   signal_event_.reset(signal_event);
 }

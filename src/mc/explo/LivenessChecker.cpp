@@ -23,7 +23,7 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t prop_state,
                          RemoteApp& remote_app)
     : num(pair_num), prop_state_(prop_state)
 {
-  auto& memory     = mc_model_checker->get_remote_process_memory();
+  auto& memory     = remote_app.get_remote_process_memory();
   this->app_state_ = std::move(app_state);
   if (not this->app_state_->get_system_state())
     this->app_state_->set_system_state(std::make_shared<Snapshot>(pair_num, remote_app.get_page_store(), memory));

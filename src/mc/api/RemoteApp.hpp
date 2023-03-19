@@ -68,7 +68,7 @@ public:
   Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
 
   /* Get the memory of the remote process */
-  RemoteProcessMemory& get_remote_process_memory() { return model_checker_->get_remote_process_memory(); }
+  RemoteProcessMemory& get_remote_process_memory() { return checker_side_->get_remote_memory(); }
 
   PageStore& get_page_store() { return page_store_; }
 };

@@ -25,9 +25,4 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 
 namespace simgrid::mc {
 
-ModelChecker::ModelChecker(std::unique_ptr<RemoteProcessMemory> remote_memory)
-    : remote_process_memory_(std::move(remote_memory))
-{
-}
-
 } // namespace simgrid::mc

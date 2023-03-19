@@ -18,14 +18,11 @@ namespace simgrid::mc {
 /** State of the model-checker (global variables for the model checker)
  */
 class ModelChecker {
-  std::unique_ptr<RemoteProcessMemory> remote_process_memory_;
 
 public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
-  explicit ModelChecker(std::unique_ptr<RemoteProcessMemory> remote_simulation);
-
-  RemoteProcessMemory& get_remote_process_memory() { return *remote_process_memory_; }
+  explicit ModelChecker()                      = default;
 };
 
 } // namespace simgrid::mc
