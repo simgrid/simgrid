@@ -2156,6 +2156,8 @@ include src/mc/api/RemoteApp.cpp
 include src/mc/api/RemoteApp.hpp
 include src/mc/api/State.cpp
 include src/mc/api/State.hpp
+include src/mc/api/guide/BasicGuide.hpp
+include src/mc/api/guide/GuidedState.hpp
 include src/mc/compare.cpp
 include src/mc/datatypes.h
 include src/mc/explo/CommunicationDeterminismChecker.cpp
@@ -2603,6 +2605,7 @@ include tools/cmake/Modules/FindLibunwind.cmake
 include tools/cmake/Modules/FindNS3.cmake
 include tools/cmake/Modules/FindPAPI.cmake
 include tools/cmake/Modules/FindValgrind.cmake
+include tools/cmake/Modules/nlohmann_jsonConfig.cmake
 include tools/cmake/Modules/pybind11Config.cmake
 include tools/cmake/Option.cmake
 include tools/cmake/Tests.cmake
