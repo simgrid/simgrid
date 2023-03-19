@@ -48,7 +48,7 @@ static bool valid_variable(const simgrid::mc::Variable* var, simgrid::mc::Frame*
 }
 
 static void fill_local_variables_values(mc_stack_frame_t stack_frame, Frame* scope,
-                                        std::vector<s_local_variable_t>& result)
+                                        std::vector<s_local_variable_t>& result, AddressSpace* memory)
 {
   if (not scope || not scope->range.contain(stack_frame->ip))
     return;
@@ -73,9 +73,9 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, Frame* sco
     if (current_variable.address != nullptr)
       new_var.address = current_variable.address;
     else if (not current_variable.location_list.empty()) {
-      dwarf::Location location = simgrid::dwarf::resolve(current_variable.location_list, current_variable.object_info,
-                                                         &(stack_frame->unw_cursor), (void*)stack_frame->frame_base,
-                                                         &mc_model_checker->get_remote_process_memory());
+      dwarf::Location location =
+          simgrid::dwarf::resolve(current_variable.location_list, current_variable.object_info,
+                                  &(stack_frame->unw_cursor), (void*)stack_frame->frame_base, memory);
 
       xbt_assert(location.in_memory(), "Cannot handle non-address variable");
       new_var.address = location.address();
@@ -87,20 +87,21 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, Frame* sco
 
   // Recursive processing of nested scopes:
   for (Frame& nested_scope : scope->scopes)
-    fill_local_variables_values(stack_frame, &nested_scope, result);
+    fill_local_variables_values(stack_frame, &nested_scope, result, memory);
 }
 
-static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_mc_stack_frame_t>& stack_frames)
+static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_mc_stack_frame_t>& stack_frames,
+                                                                  AddressSpace* memory)
 {
   std::vector<s_local_variable_t> variables;
   for (s_mc_stack_frame_t& stack_frame : stack_frames)
-    fill_local_variables_values(&stack_frame, stack_frame.frame, variables);
+    fill_local_variables_values(&stack_frame, stack_frame.frame, variables, memory);
   return variables;
 }
 
-static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_context)
+static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_context,
+                                                           const RemoteProcessMemory* process_memory)
 {
-  const RemoteProcessMemory* process_memory = &mc_model_checker->get_remote_process_memory();
   std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c = stack_context->cursor();
@@ -161,8 +162,8 @@ void Snapshot::snapshot_stacks(RemoteProcessMemory& process_memory)
 
     st.context.initialize(process_memory, &context);
 
-    st.stack_frames    = unwind_stack_frames(&st.context);
-    st.local_variables = get_local_variables_values(st.stack_frames);
+    st.stack_frames    = unwind_stack_frames(&st.context, &process_memory);
+    st.local_variables = get_local_variables_values(st.stack_frames, &process_memory);
 
     unw_word_t sp = st.stack_frames[0].sp;
 
