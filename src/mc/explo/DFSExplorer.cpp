@@ -42,7 +42,8 @@ xbt::signal<void(RemoteApp&)> DFSExplorer::on_log_state_signal;
 void DFSExplorer::check_non_termination(const State* current_state)
 {
   for (auto const& state : stack_) {
-    if (*state->get_system_state() == *current_state->get_system_state()) {
+    if (state->get_system_state()->equals_to(*current_state->get_system_state(),
+                                             get_remote_app().get_remote_process_memory())) {
       XBT_INFO("Non-progressive cycle: state %ld -> state %ld", state->get_num(), current_state->get_num());
       XBT_INFO("******************************************");
       XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");

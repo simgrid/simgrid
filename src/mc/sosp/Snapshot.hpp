@@ -77,8 +77,7 @@ public:
   Region* get_region(const void* addr, Region* hinted_region) const;
   void restore(RemoteProcessMemory& memory) const;
 
-  bool operator==(const Snapshot& other);
-  bool operator!=(const Snapshot& other) { return not(*this == other); }
+  bool equals_to(const Snapshot& other, RemoteProcessMemory& memory);
 
   // To be private
   long num_state_;

@@ -58,7 +58,8 @@ VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* g
 
   for (auto i = range_begin; i != range_end; ++i) {
     auto& visited_state = *i;
-    if (*visited_state->system_state_.get() == *new_state->system_state_.get()) {
+    if (visited_state->system_state_->equals_to(*new_state->system_state_.get(),
+                                                remote_app.get_remote_process_memory())) {
       // The state has been visited:
 
       std::unique_ptr<simgrid::mc::VisitedState> old_state = std::move(visited_state);
