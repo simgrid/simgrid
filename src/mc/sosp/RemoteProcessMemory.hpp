@@ -32,14 +32,14 @@ struct IgnoredHeapRegion {
   std::size_t size;
 };
 
-/** The Application's process memory, seen from the Checker perspective
+/** The Application's process memory, seen from the Checker perspective. This class is not needed if you don't need to
+ * introspect the application process.
  *
- *  Responsibilities:
- *
- *  - reading from the process memory (`AddressSpace`);
- *  - accessing the system state of the process (heap, …);
- *  - stack unwinding;
- *  - etc.
+ *  Responsabilities:
+ *    - reading from the process memory (`AddressSpace`);
+ *    - accessing the system state of the process (heap, …);
+ *    - stack unwinding;
+ *    - etc.
  */
 class RemoteProcessMemory final : public AddressSpace {
 private:
@@ -58,10 +58,6 @@ public:
   RemoteProcessMemory(RemoteProcessMemory&&)                 = delete;
   RemoteProcessMemory& operator=(RemoteProcessMemory const&) = delete;
   RemoteProcessMemory& operator=(RemoteProcessMemory&&)      = delete;
-
-  pid_t pid() const { return pid_; }
-  bool running() const { return running_; }
-  void terminate() { running_ = false; }
 
   /* ************* */
   /* Low-level API */
@@ -145,8 +141,7 @@ private:
   void refresh_heap();
   void refresh_malloc_info();
 
-  pid_t pid_    = -1;
-  bool running_ = false;
+  pid_t pid_ = -1;
   std::vector<xbt::VmMap> memory_map_;
   RemotePtr<void> maestro_stack_start_;
   RemotePtr<void> maestro_stack_end_;

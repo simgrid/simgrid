@@ -18,11 +18,11 @@ namespace simgrid::mc {
 
 /** High-level view of the verified application, from the model-checker POV
  *
- *  This is expected to become the interface used by model-checking
- *  algorithms to control the execution of the model-checked process
- *  and the exploration of the execution graph. Model-checking
- *  algorithms should be able to be written in high-level languages
- *  (e.g. Python) using bindings on this interface.
+ *  This is expected to become the interface used by model-checking algorithms to control the execution of
+ *  the application process during the exploration of the execution graph.
+ *
+ *  One day, this will allow parallel exploration, ie, the handling of several application processes (each encapsulated
+ * in a separate CheckerSide objects) that explore several parts of the exploration graph.
  */
 class XBT_PUBLIC RemoteApp {
 private:

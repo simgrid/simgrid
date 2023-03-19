@@ -123,8 +123,7 @@ RemoteApp::RemoteApp(const std::vector<char*>& args)
   // Parent (model-checker):
   ::close(sockets[0]);
 
-  auto memory      = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid);
-  checker_side_    = std::make_unique<simgrid::mc::CheckerSide>(sockets[1], std::move(memory));
+  checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(sockets[1], pid);
 
   start();
 
@@ -144,7 +143,7 @@ void RemoteApp::start()
   int status;
 
   // The model-checked process SIGSTOP itself to signal it's ready:
-  const pid_t pid = get_remote_process_memory().pid();
+  const pid_t pid = checker_side_->get_pid();
 
   xbt_assert(waitpid(pid, &status, WAITPID_CHECKED_FLAGS) == pid && WIFSTOPPED(status) && WSTOPSIG(status) == SIGSTOP,
              "Could not wait model-checked process");
@@ -292,7 +291,7 @@ void RemoteApp::wait_for_requests()
     throw xbt::errno_error();
   get_remote_process_memory().clear_cache();
 
-  if (this->get_remote_process_memory().running())
+  if (checker_side_->running())
     checker_side_->dispatch_events();
 }
 
@@ -300,12 +299,11 @@ void RemoteApp::shutdown()
 {
   XBT_DEBUG("Shutting down model-checker");
 
-  RemoteProcessMemory& process = get_remote_process_memory();
-  if (process.running()) {
+  if (checker_side_->running()) {
     XBT_DEBUG("Killing process");
     finalize_app(true);
-    kill(process.pid(), SIGKILL);
-    process.terminate();
+    kill(checker_side_->get_pid(), SIGKILL);
+    checker_side_->terminate();
   }
 }
 
@@ -318,7 +316,7 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
   checker_side_->get_channel().send(m);
 
   get_remote_process_memory().clear_cache();
-  if (this->get_remote_process_memory().running())
+  if (checker_side_->running())
     checker_side_->dispatch_events(); // The app may send messages while processing the transition
 
   s_mc_message_simcall_execute_answer_t answer;

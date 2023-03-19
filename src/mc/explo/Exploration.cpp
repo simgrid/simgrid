@@ -91,7 +91,6 @@ void Exploration::report_crash(int status)
     get_remote_app().get_remote_process_memory().dump_stack();
   }
 
-  get_remote_app().get_remote_process_memory().terminate();
   system_exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
 }
 void Exploration::report_assertion_failure()

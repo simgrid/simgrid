@@ -16,8 +16,11 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkerside, mc, "MC communication with the application");
 
 namespace simgrid::mc {
-CheckerSide::CheckerSide(int sockfd, std::unique_ptr<RemoteProcessMemory> memory)
-    : remote_memory_(std::move(memory)), channel_(sockfd)
+CheckerSide::CheckerSide(int sockfd, pid_t pid)
+    : remote_memory_(std::make_unique<simgrid::mc::RemoteProcessMemory>(pid))
+    , channel_(sockfd)
+    , running_(true)
+    , pid_(pid)
 {
   auto* base = event_base_new();
   base_.reset(base);
@@ -159,7 +162,7 @@ void CheckerSide::handle_waitpid()
   while ((pid = waitpid(-1, &status, WNOHANG)) != 0) {
     if (pid == -1) {
       if (errno == ECHILD) { // No more children:
-        xbt_assert(not get_remote_memory().running(), "Inconsistent state");
+        xbt_assert(not this->running(), "Inconsistent state");
         break;
       } else {
         XBT_ERROR("Could not wait for pid");
@@ -167,15 +170,17 @@ void CheckerSide::handle_waitpid()
       }
     }
 
-    if (pid == get_remote_memory().pid()) {
+    if (pid == get_pid()) {
       // From PTRACE_O_TRACEEXIT:
 #ifdef __linux__
       if (status >> 8 == (SIGTRAP | (PTRACE_EVENT_EXIT << 8))) {
         unsigned long eventmsg;
         xbt_assert(ptrace(PTRACE_GETEVENTMSG, pid, 0, &eventmsg) != -1, "Could not get exit status");
         status = static_cast<int>(eventmsg);
-        if (WIFSIGNALED(status))
+        if (WIFSIGNALED(status)) {
+          this->terminate();
           Exploration::get_instance()->report_crash(status);
+        }
       }
 #endif
 
@@ -192,10 +197,11 @@ void CheckerSide::handle_waitpid()
       }
 
       else if (WIFSIGNALED(status)) {
+        this->terminate();
         Exploration::get_instance()->report_crash(status);
       } else if (WIFEXITED(status)) {
         XBT_DEBUG("Child process is over");
-        get_remote_memory().terminate();
+        this->terminate();
       }
     }
   }
