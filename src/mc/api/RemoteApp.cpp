@@ -24,6 +24,7 @@
 
 #include <fcntl.h>
 #ifdef __linux__
+#include <sys/personality.h>
 #include <sys/prctl.h>
 #endif
 #include <sys/ptrace.h>
@@ -59,6 +60,12 @@ XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<
   sigemptyset(&mask);
   xbt_assert(sigprocmask(SIG_SETMASK, &mask, nullptr) >= 0, "Could not unblock signals");
   xbt_assert(prctl(PR_SET_PDEATHSIG, SIGHUP) == 0, "Could not PR_SET_PDEATHSIG");
+
+  // Make sure that the application process layout is not randomized, so that the info we gather is stable over re-execs
+  if (personality(ADDR_NO_RANDOMIZE) == -1) {
+    XBT_ERROR("Could not set the NO_RANDOMIZE personality");
+    throw xbt::errno_error();
+  }
 #endif
 
   // Remove CLOEXEC to pass the socket to the application
