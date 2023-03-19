@@ -25,7 +25,6 @@ class Type;
 class Variable;
 class Transition;
 class Frame;
-class ActorInformation;
 
 class Session;
 class Exploration;

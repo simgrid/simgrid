@@ -20,24 +20,6 @@
 
 namespace simgrid::mc {
 
-class ActorInformation {
-public:
-  /** MCed address of the process */
-  RemotePtr<kernel::actor::ActorImpl> address{nullptr};
-  Remote<kernel::actor::ActorImpl> copy;
-
-  /** Hostname (owned by `mc_model_checker->hostnames_`) */
-  const std::string* hostname = nullptr;
-  std::string name;
-
-  void clear()
-  {
-    name.clear();
-    address  = nullptr;
-    hostname = nullptr;
-  }
-};
-
 struct IgnoredRegion {
   std::uint64_t addr;
   std::size_t size;
