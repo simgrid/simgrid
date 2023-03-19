@@ -106,9 +106,7 @@ int open_vm(pid_t pid, int flags)
 
 // ***** RemoteProcessMemory
 
-RemoteProcessMemory::RemoteProcessMemory(pid_t pid) : AddressSpace(this), pid_(pid) {}
-
-void RemoteProcessMemory::init(xbt_mheap_t mmalloc_default_mdp)
+RemoteProcessMemory::RemoteProcessMemory(pid_t pid, xbt_mheap_t mmalloc_default_mdp) : AddressSpace(this), pid_(pid)
 {
   this->heap_address = remote(mmalloc_default_mdp);
 

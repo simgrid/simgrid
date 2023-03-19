@@ -16,11 +16,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkerside, mc, "MC communication with the application");
 
 namespace simgrid::mc {
-CheckerSide::CheckerSide(int sockfd, pid_t pid)
-    : remote_memory_(std::make_unique<simgrid::mc::RemoteProcessMemory>(pid))
-    , channel_(sockfd)
-    , running_(true)
-    , pid_(pid)
+CheckerSide::CheckerSide(int sockfd, pid_t pid) : channel_(sockfd), running_(true), pid_(pid)
 {
   auto* base = event_base_new();
   base_.reset(base);
@@ -88,8 +84,8 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
       xbt_assert(size == sizeof(message), "Broken message. Got %d bytes instead of %d.", (int)size,
                  (int)sizeof(message));
       memcpy(&message, buffer, sizeof(message));
-
-      get_remote_memory().init(message.mmalloc_default_mdp);
+      /* Create the memory address space, now that we have the mandatory information */
+      remote_memory_ = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid_, message.mmalloc_default_mdp);
       break;
     }
 
@@ -152,6 +148,12 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
       xbt_die("Unexpected message from model-checked application");
   }
   return true;
+}
+
+void CheckerSide::clear_memory_cache()
+{
+  if (remote_memory_)
+    remote_memory_->clear_cache();
 }
 
 void CheckerSide::handle_waitpid()

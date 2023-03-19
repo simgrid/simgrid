@@ -55,8 +55,7 @@ void snap_test_helper::Init()
   REQUIRE(xbt_pagesize == getpagesize());
   REQUIRE(1 << xbt_pagebits == xbt_pagesize);
 
-  memory_ = std::make_unique<simgrid::mc::RemoteProcessMemory>(getpid());
-  memory_->init(nullptr);
+  memory_ = std::make_unique<simgrid::mc::RemoteProcessMemory>(getpid(), nullptr);
 }
 
 snap_test_helper::prologue_return snap_test_helper::prologue(int n)

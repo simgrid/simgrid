@@ -47,8 +47,9 @@ public:
   pid_t get_pid() const { return pid_; }
   bool running() const { return running_; }
   void terminate() { running_ = false; }
-  RemoteProcessMemory& get_remote_memory() { return *remote_memory_.get(); }
   void handle_waitpid();
+  RemoteProcessMemory& get_remote_memory() { return *remote_memory_.get(); }
+  void clear_memory_cache();
 };
 
 } // namespace simgrid::mc

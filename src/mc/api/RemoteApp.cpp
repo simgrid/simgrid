@@ -289,7 +289,7 @@ void RemoteApp::wait_for_requests()
   /* Resume the application */
   if (checker_side_->get_channel().send(MessageType::CONTINUE) != 0)
     throw xbt::errno_error();
-  get_remote_process_memory().clear_cache();
+  checker_side_->clear_memory_cache();
 
   if (checker_side_->running())
     checker_side_->dispatch_events();

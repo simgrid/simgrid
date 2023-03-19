@@ -50,9 +50,8 @@ private:
   static constexpr int cache_malloc = 2;
 
 public:
-  explicit RemoteProcessMemory(pid_t pid);
+  explicit RemoteProcessMemory(pid_t pid, xbt_mheap_t mmalloc_default_mdp);
   ~RemoteProcessMemory() override;
-  void init(xbt_mheap_t mmalloc_default_mdp);
 
   RemoteProcessMemory(RemoteProcessMemory const&)            = delete;
   RemoteProcessMemory(RemoteProcessMemory&&)                 = delete;
