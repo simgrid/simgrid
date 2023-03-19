@@ -36,6 +36,9 @@ public:
 
   void dispatch_events() const;
   void break_loop() const;
+
+  void handle_waitpid();
+  bool handle_message(const char* buffer, ssize_t size);
 };
 
 } // namespace simgrid::mc

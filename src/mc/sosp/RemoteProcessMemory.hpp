@@ -62,8 +62,6 @@ public:
   pid_t pid() const { return pid_; }
   bool running() const { return running_; }
   void terminate() { running_ = false; }
-  void handle_waitpid();
-  bool handle_message(const char* buffer, ssize_t size);
 
   /* ************* */
   /* Low-level API */
