@@ -39,12 +39,9 @@ public:
     delete mc_model_checker;
     mc_model_checker = nullptr;
   }
-
-  static std::unique_ptr<simgrid::mc::RemoteProcessMemory> process;
 };
 
 // static member variables init.
-std::unique_ptr<simgrid::mc::RemoteProcessMemory> snap_test_helper::process = nullptr;
 simgrid::mc::PageStore snap_test_helper::page_store_(500);
 
 void snap_test_helper::init_memory(void* mem, size_t size)
@@ -60,9 +57,9 @@ void snap_test_helper::Init()
   REQUIRE(xbt_pagesize == getpagesize());
   REQUIRE(1 << xbt_pagebits == xbt_pagesize);
 
-  process = std::make_unique<simgrid::mc::RemoteProcessMemory>(getpid());
-  process->init(nullptr);
-  mc_model_checker = new ::simgrid::mc::ModelChecker(std::move(process));
+  auto memory = std::make_unique<simgrid::mc::RemoteProcessMemory>(getpid());
+  memory->init(nullptr);
+  mc_model_checker = new ::simgrid::mc::ModelChecker(std::move(memory));
 }
 
 snap_test_helper::prologue_return snap_test_helper::prologue(int n)
@@ -75,11 +72,13 @@ snap_test_helper::prologue_return snap_test_helper::prologue(int n)
 
   // Init memory and take snapshots:
   init_memory(source, byte_size);
-  auto* region0 = new simgrid::mc::Region(page_store_, simgrid::mc::RegionType::Data, source, byte_size);
+  auto* region0 = new simgrid::mc::Region(page_store_, mc_model_checker->get_remote_process_memory(),
+                                          simgrid::mc::RegionType::Data, source, byte_size);
   for (int i = 0; i < n; i += 2) {
     init_memory((char*)source + i * xbt_pagesize, xbt_pagesize);
   }
-  auto* region = new simgrid::mc::Region(page_store_, simgrid::mc::RegionType::Data, source, byte_size);
+  auto* region = new simgrid::mc::Region(page_store_, mc_model_checker->get_remote_process_memory(),
+                                         simgrid::mc::RegionType::Data, source, byte_size);
 
   void* destination = mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   INFO("Could not allocate destination memory");
@@ -161,7 +160,8 @@ void snap_test_helper::read_pointer()
 {
   prologue_return ret = prologue(1);
   memcpy(ret.src, &mc_model_checker, sizeof(void*));
-  const simgrid::mc::Region region2(page_store_, simgrid::mc::RegionType::Data, ret.src, ret.size);
+  const simgrid::mc::Region region2(page_store_, mc_model_checker->get_remote_process_memory(),
+                                    simgrid::mc::RegionType::Data, ret.src, ret.size);
   INFO("Mismtach in MC_region_read_pointer()");
   REQUIRE(MC_region_read_pointer(&region2, ret.src) == mc_model_checker);
 

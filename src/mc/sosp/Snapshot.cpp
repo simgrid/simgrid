@@ -13,19 +13,20 @@ namespace simgrid::mc {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
-void Snapshot::snapshot_regions(RemoteProcessMemory& process_memory)
+void Snapshot::snapshot_regions(RemoteProcessMemory& memory)
 {
   snapshot_regions_.clear();
 
-  for (auto const& object_info : process_memory.object_infos)
-    add_region(RegionType::Data, object_info.get(), object_info->start_rw, object_info->end_rw - object_info->start_rw);
+  for (auto const& object_info : memory.object_infos)
+    add_region(RegionType::Data, memory, object_info.get(), object_info->start_rw,
+               object_info->end_rw - object_info->start_rw);
 
-  const s_xbt_mheap_t* heap = process_memory.get_heap();
+  const s_xbt_mheap_t* heap = memory.get_heap();
   void* start_heap = heap->base;
   void* end_heap   = heap->breakval;
 
-  add_region(RegionType::Heap, nullptr, start_heap, (char*)end_heap - (char*)start_heap);
-  heap_bytes_used_ = mmalloc_get_bytes_used_remote(heap->heaplimit, process_memory.get_malloc_info());
+  add_region(RegionType::Heap, memory, nullptr, start_heap, (char*)end_heap - (char*)start_heap);
+  heap_bytes_used_ = mmalloc_get_bytes_used_remote(heap->heaplimit, memory.get_malloc_info());
 }
 
 /** @brief Checks whether the variable is in scope for a given IP.
@@ -217,14 +218,15 @@ Snapshot::Snapshot(long num_state, PageStore& store, RemoteProcessMemory& memory
   ignore_restore();
 }
 
-void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void* start_addr, std::size_t size)
+void Snapshot::add_region(RegionType type, RemoteProcessMemory& memory, ObjectInformation* object_info,
+                          void* start_addr, std::size_t size)
 {
   if (type == RegionType::Data)
     xbt_assert(object_info, "Missing object info for object.");
   else if (type == RegionType::Heap)
     xbt_assert(not object_info, "Unexpected object info for heap region.");
 
-  auto* region = new Region(page_store_, type, start_addr, size);
+  auto* region = new Region(page_store_, memory, type, start_addr, size);
   region->object_info(object_info);
   snapshot_regions_.push_back(std::unique_ptr<Region>(region));
 }
@@ -276,7 +278,7 @@ void Snapshot::restore(RemoteProcessMemory& memory) const
 
   // Restore regions
   for (std::unique_ptr<Region> const& region : snapshot_regions_) {
-    region->restore();
+    region->restore(memory);
   }
 
   ignore_restore();

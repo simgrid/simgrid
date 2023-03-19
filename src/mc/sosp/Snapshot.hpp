@@ -90,9 +90,10 @@ public:
   std::vector<s_mc_snapshot_ignored_data_t> ignored_data_;
 
 private:
-  void add_region(RegionType type, ObjectInformation* object_info, void* start_addr, std::size_t size);
-  void snapshot_regions(RemoteProcessMemory& process_memory);
-  void snapshot_stacks(RemoteProcessMemory& process_memory);
+  void add_region(RegionType type, RemoteProcessMemory& memory, ObjectInformation* object_info, void* start_addr,
+                  std::size_t size);
+  void snapshot_regions(RemoteProcessMemory& memory);
+  void snapshot_stacks(RemoteProcessMemory& memory);
   void handle_ignore();
   void ignore_restore() const;
   hash_type do_hash() const;
