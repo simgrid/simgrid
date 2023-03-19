@@ -29,6 +29,7 @@ namespace simgrid::mc {
 // abstract
 class Exploration : public xbt::Extendable<Exploration> {
   std::unique_ptr<RemoteApp> remote_app_;
+  static Exploration* instance_;
 
   FILE* dot_output_ = nullptr;
 
@@ -36,6 +37,7 @@ public:
   explicit Exploration(const std::vector<char*>& args);
   virtual ~Exploration();
 
+  static Exploration* get_instance() { return instance_; }
   // No copy:
   Exploration(Exploration const&) = delete;
   Exploration& operator=(Exploration const&) = delete;

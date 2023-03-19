@@ -18,9 +18,12 @@ namespace simgrid::mc {
 static simgrid::config::Flag<std::string> cfg_dot_output_file{
     "model-check/dot-output", "Name of dot output file corresponding to graph state", ""};
 
+Exploration* Exploration::instance_ = nullptr; // singleton instance
+
 Exploration::Exploration(const std::vector<char*>& args) : remote_app_(std::make_unique<RemoteApp>(args))
 {
-  mc_model_checker->set_exploration(this);
+  xbt_assert(instance_ == nullptr, "Cannot have more than one exploration instance");
+  instance_ = this;
 
   if (not cfg_dot_output_file.get().empty()) {
     dot_output_ = fopen(cfg_dot_output_file.get().c_str(), "w");

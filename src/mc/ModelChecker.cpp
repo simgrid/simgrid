@@ -99,7 +99,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       return false;
 
     case MessageType::ASSERTION_FAILED:
-      exploration_->report_assertion_failure();
+      Exploration::get_instance()->report_assertion_failure();
       break;
 
     default:
@@ -132,7 +132,7 @@ void ModelChecker::handle_waitpid(pid_t pid_to_wait)
         xbt_assert(ptrace(PTRACE_GETEVENTMSG, pid_to_wait, 0, &eventmsg) != -1, "Could not get exit status");
         status = static_cast<int>(eventmsg);
         if (WIFSIGNALED(status))
-          exploration_->report_crash(status);
+          Exploration::get_instance()->report_crash(status);
       }
 #endif
 
@@ -149,7 +149,7 @@ void ModelChecker::handle_waitpid(pid_t pid_to_wait)
       }
 
       else if (WIFSIGNALED(status)) {
-        exploration_->report_crash(status);
+        Exploration::get_instance()->report_crash(status);
       } else if (WIFEXITED(status)) {
         XBT_DEBUG("Child process is over");
         this->get_remote_process_memory().terminate();
