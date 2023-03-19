@@ -28,6 +28,8 @@ class CheckerSide {
   pid_t pid_;
 
   void setup_events(); // Part of the initialization
+  void clear_memory_cache();
+  void handle_waitpid();
 
 public:
   explicit CheckerSide(const std::vector<char*>& args);
@@ -50,9 +52,7 @@ public:
   pid_t get_pid() const { return pid_; }
   bool running() const { return running_; }
   void terminate() { running_ = false; }
-  void handle_waitpid();
   RemoteProcessMemory& get_remote_memory() { return *remote_memory_.get(); }
-  void clear_memory_cache();
 };
 
 } // namespace simgrid::mc

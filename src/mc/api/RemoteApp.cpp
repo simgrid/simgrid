@@ -31,10 +31,8 @@ namespace simgrid::mc {
 
 RemoteApp::RemoteApp(const std::vector<char*>& args)
 {
-
   checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(args);
 
-  /* Take the initial snapshot */
   initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_, checker_side_->get_remote_memory());
 }
 
