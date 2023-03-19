@@ -301,7 +301,7 @@ void RemoteApp::wait_for_requests()
   get_remote_process_memory().clear_cache();
 
   if (this->get_remote_process_memory().running())
-    checker_side_->dispatch();
+    checker_side_->dispatch_events();
 }
 
 void RemoteApp::shutdown()
@@ -327,7 +327,7 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
 
   get_remote_process_memory().clear_cache();
   if (this->get_remote_process_memory().running())
-    checker_side_->dispatch(); // The app may send messages while processing the transition
+    checker_side_->dispatch_events(); // The app may send messages while processing the transition
 
   s_mc_message_simcall_execute_answer_t answer;
   ssize_t s = checker_side_->get_channel().receive(answer);

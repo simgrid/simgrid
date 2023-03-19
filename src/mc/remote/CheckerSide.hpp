@@ -33,7 +33,7 @@ public:
   Channel const& get_channel() const { return channel_; }
   Channel& get_channel() { return channel_; }
 
-  void dispatch() const;
+  void dispatch_events() const;
   void break_loop() const;
 };
 

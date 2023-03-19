@@ -66,7 +66,7 @@ public:
   virtual std::string dot_string() const;
 
   /* Moves the application toward a path that was already explored, but don't change the current transition */
-  void replay() const;
+  void replay(RemoteApp& app) const;
 
   virtual bool depends(const Transition* other) const { return true; }
 

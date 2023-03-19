@@ -59,7 +59,7 @@ CheckerSide::CheckerSide(int sockfd, ModelChecker* mc) : channel_(sockfd)
   signal_event_.reset(signal_event);
 }
 
-void CheckerSide::dispatch() const
+void CheckerSide::dispatch_events() const
 {
   event_base_dispatch(base_.get());
 }

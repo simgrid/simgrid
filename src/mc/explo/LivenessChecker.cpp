@@ -119,7 +119,7 @@ void LivenessChecker::replay()
     std::shared_ptr<State> state = pair->app_state_;
 
     if (pair->exploration_started) {
-      state->get_transition()->replay();
+      state->get_transition()->replay(get_remote_app());
       XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, state->get_transition()->to_string().c_str(), state.get());
     }
 

@@ -289,7 +289,7 @@ void DFSExplorer::backtrack()
     for (std::unique_ptr<State> const& state : stack_) {
       if (state == stack_.back()) /* If we are arrived on the target state, don't replay the outgoing transition */
         break;
-      state->get_transition()->replay();
+      state->get_transition()->replay(get_remote_app());
       on_transition_replay_signal(state->get_transition(), get_remote_app());
       visited_states_count_++;
     }

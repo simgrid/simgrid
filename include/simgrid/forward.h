@@ -209,6 +209,7 @@ class Profile;
 } // namespace kernel
 namespace mc {
 class State;
+class RemoteApp;
 }
 } // namespace simgrid
 
