@@ -46,7 +46,6 @@ public:
 
   ~RemoteApp();
 
-  void start();
   void restore_initial_state() const;
   void wait_for_requests();
 

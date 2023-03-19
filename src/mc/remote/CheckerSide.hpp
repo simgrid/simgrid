@@ -27,8 +27,10 @@ class CheckerSide {
   bool running_ = false;
   pid_t pid_;
 
+  void setup_events(); // Part of the initialization
+
 public:
-  explicit CheckerSide(int sockfd, pid_t pid);
+  explicit CheckerSide(const std::vector<char*>& args);
 
   // No copy:
   CheckerSide(CheckerSide const&) = delete;
@@ -42,6 +44,7 @@ public:
   bool handle_message(const char* buffer, ssize_t size);
   void dispatch_events() const;
   void break_loop() const;
+  void wait_for_requests();
 
   /* Interacting with the application process */
   pid_t get_pid() const { return pid_; }
