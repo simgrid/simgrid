@@ -123,12 +123,8 @@ RemoteApp::RemoteApp(const std::vector<char*>& args)
   // Parent (model-checker):
   ::close(sockets[0]);
 
-  xbt_assert(mc_model_checker == nullptr, "Did you manage to start the MC twice in this process?");
-
   auto memory      = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid);
-  model_checker_   = std::make_unique<simgrid::mc::ModelChecker>();
-  mc_model_checker = model_checker_.get();
-  checker_side_    = std::make_unique<simgrid::mc::CheckerSide>(sockets[1], std::move(memory), model_checker_.get());
+  checker_side_    = std::make_unique<simgrid::mc::CheckerSide>(sockets[1], std::move(memory));
 
   start();
 
@@ -140,11 +136,7 @@ RemoteApp::RemoteApp(const std::vector<char*>& args)
 RemoteApp::~RemoteApp()
 {
   initial_snapshot_ = nullptr;
-  if (model_checker_) {
-    shutdown();
-    model_checker_   = nullptr;
-    mc_model_checker = nullptr;
-  }
+  shutdown();
 }
 void RemoteApp::start()
 {

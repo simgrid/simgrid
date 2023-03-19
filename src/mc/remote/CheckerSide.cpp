@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/remote/CheckerSide.hpp"
-#include "src/mc/ModelChecker.hpp"
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
 #include "xbt/system_error.hpp"
 #include <csignal>
@@ -13,7 +12,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkerside, mc, "MC communication with the application");
 
 namespace simgrid::mc {
-CheckerSide::CheckerSide(int sockfd, std::unique_ptr<RemoteProcessMemory> memory, ModelChecker* mc)
+CheckerSide::CheckerSide(int sockfd, std::unique_ptr<RemoteProcessMemory> memory)
     : remote_memory_(std::move(memory)), channel_(sockfd)
 {
   auto* base = event_base_new();

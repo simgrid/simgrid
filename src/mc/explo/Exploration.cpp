@@ -38,6 +38,7 @@ Exploration::~Exploration()
 {
   if (dot_output_ != nullptr)
     fclose(dot_output_);
+  instance_ = nullptr;
 }
 
 void Exploration::dot_output(const char* fmt, ...)

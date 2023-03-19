@@ -13,7 +13,6 @@
 #include "src/mc/mc_replay.hpp"
 
 #if SIMGRID_HAVE_MC
-#include "src/mc/ModelChecker.hpp"
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/remote/AppSide.hpp"
 #include "src/mc/sosp/RemoteProcessMemory.hpp"

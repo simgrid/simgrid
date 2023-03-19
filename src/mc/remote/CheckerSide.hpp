@@ -23,7 +23,7 @@ class CheckerSide {
   Channel channel_;
 
 public:
-  explicit CheckerSide(int sockfd, std::unique_ptr<RemoteProcessMemory> mem, ModelChecker* mc);
+  explicit CheckerSide(int sockfd, std::unique_ptr<RemoteProcessMemory> mem);
 
   // No copy:
   CheckerSide(CheckerSide const&) = delete;

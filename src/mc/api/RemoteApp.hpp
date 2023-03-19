@@ -7,9 +7,10 @@
 #define SIMGRID_MC_REMOTE_APP_HPP
 
 #include "simgrid/forward.h"
-#include "src/mc/ModelChecker.hpp"
 #include "src/mc/api/ActorState.hpp"
+#include "src/mc/remote/CheckerSide.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
+#include "src/mc/sosp/PageStore.hpp"
 
 #include <functional>
 
@@ -26,7 +27,6 @@ namespace simgrid::mc {
 class XBT_PUBLIC RemoteApp {
 private:
   std::unique_ptr<CheckerSide> checker_side_;
-  std::unique_ptr<ModelChecker> model_checker_;
   PageStore page_store_{500};
   std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
 

@@ -607,8 +607,6 @@ set(MC_SRC
   src/mc/api/RemoteApp.hpp
 
   src/mc/AddressSpace.hpp
-  src/mc/ModelChecker.cpp
-  src/mc/ModelChecker.hpp
   src/mc/VisitedState.cpp
   src/mc/VisitedState.hpp
   src/mc/compare.cpp

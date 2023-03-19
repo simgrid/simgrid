@@ -2147,8 +2147,6 @@ include src/kernel/xml/simgrid.dtd
 include src/kernel/xml/simgrid_dtd.c
 include src/kernel/xml/simgrid_dtd.h
 include src/mc/AddressSpace.hpp
-include src/mc/ModelChecker.cpp
-include src/mc/ModelChecker.hpp
 include src/mc/VisitedState.cpp
 include src/mc/VisitedState.hpp
 include src/mc/api/ActorState.hpp

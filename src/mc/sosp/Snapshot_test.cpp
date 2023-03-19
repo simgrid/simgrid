@@ -152,13 +152,15 @@ void snap_test_helper::compare_region_parts()
   }
 }
 
+int some_global_variable  = 42;
+void* some_global_pointer = &some_global_variable;
 void snap_test_helper::read_pointer()
 {
   prologue_return ret = prologue(1);
-  memcpy(ret.src, &mc_model_checker, sizeof(void*));
+  memcpy(ret.src, &some_global_pointer, sizeof(void*));
   const simgrid::mc::Region region2(page_store_, *memory_.get(), simgrid::mc::RegionType::Data, ret.src, ret.size);
   INFO("Mismtach in MC_region_read_pointer()");
-  REQUIRE(MC_region_read_pointer(&region2, ret.src) == mc_model_checker);
+  REQUIRE(MC_region_read_pointer(&region2, ret.src) == some_global_pointer);
 
   munmap(ret.dstn, ret.size);
   munmap(ret.src, ret.size);

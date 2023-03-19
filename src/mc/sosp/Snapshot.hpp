@@ -6,7 +6,6 @@
 #ifndef SIMGRID_MC_SNAPSHOT_HPP
 #define SIMGRID_MC_SNAPSHOT_HPP
 
-#include "src/mc/ModelChecker.hpp"
 #include "src/mc/inspect/mc_unw.hpp"
 #include "src/mc/sosp/Region.hpp"
 #include "src/mc/sosp/RemoteProcessMemory.hpp"

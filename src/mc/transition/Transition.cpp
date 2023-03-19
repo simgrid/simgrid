@@ -10,7 +10,6 @@
 #include <simgrid/config.h>
 
 #if SIMGRID_HAVE_MC
-#include "src/mc/ModelChecker.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/transition/TransitionActorJoin.hpp"
 #include "src/mc/transition/TransitionAny.hpp"
