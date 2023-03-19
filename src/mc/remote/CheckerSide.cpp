@@ -47,7 +47,7 @@ CheckerSide::CheckerSide(int sockfd, ModelChecker* mc) : channel_(sockfd)
         auto mc = static_cast<simgrid::mc::ModelChecker*>(arg);
         if (events == EV_SIGNAL) {
           if (sig == SIGCHLD)
-            mc->handle_waitpid(mc->get_remote_process_memory().pid());
+            mc->get_remote_process_memory().handle_waitpid();
           else
             xbt_die("Unexpected signal: %d", sig);
         } else {

@@ -7,9 +7,11 @@
 
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
 
+#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 #include "xbt/file.hpp"
 #include "xbt/log.h"
+#include "xbt/system_error.hpp"
 
 #include <fcntl.h>
 #include <libunwind-ptrace.h>
@@ -22,6 +24,8 @@
 #include <mutex>
 #include <string>
 #include <string_view>
+#include <sys/ptrace.h>
+#include <sys/wait.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc, "MC process information");
 
@@ -450,4 +454,55 @@ void RemoteProcessMemory::dump_stack() const
   _UPT_destroy(context);
   unw_destroy_addr_space(as);
 }
+
+void RemoteProcessMemory::handle_waitpid()
+{
+  XBT_DEBUG("Check for wait event");
+  int status;
+  pid_t pid;
+  while ((pid = waitpid(-1, &status, WNOHANG)) != 0) {
+    if (pid == -1) {
+      if (errno == ECHILD) { // No more children:
+        xbt_assert(not running(), "Inconsistent state");
+        break;
+      } else {
+        XBT_ERROR("Could not wait for pid");
+        throw simgrid::xbt::errno_error();
+      }
+    }
+
+    if (pid == this->pid()) {
+      // From PTRACE_O_TRACEEXIT:
+#ifdef __linux__
+      if (status >> 8 == (SIGTRAP | (PTRACE_EVENT_EXIT << 8))) {
+        unsigned long eventmsg;
+        xbt_assert(ptrace(PTRACE_GETEVENTMSG, pid, 0, &eventmsg) != -1, "Could not get exit status");
+        status = static_cast<int>(eventmsg);
+        if (WIFSIGNALED(status))
+          Exploration::get_instance()->report_crash(status);
+      }
+#endif
+
+      // We don't care about non-lethal signals, just reinject them:
+      if (WIFSTOPPED(status)) {
+        XBT_DEBUG("Stopped with signal %i", (int)WSTOPSIG(status));
+        errno = 0;
+#ifdef __linux__
+        ptrace(PTRACE_CONT, pid, 0, WSTOPSIG(status));
+#elif defined BSD
+        ptrace(PT_CONTINUE, pid, (caddr_t)1, WSTOPSIG(status));
+#endif
+        xbt_assert(errno == 0, "Could not PTRACE_CONT");
+      }
+
+      else if (WIFSIGNALED(status)) {
+        Exploration::get_instance()->report_crash(status);
+      } else if (WIFEXITED(status)) {
+        XBT_DEBUG("Child process is over");
+        terminate();
+      }
+    }
+  }
+}
+
 } // namespace simgrid::mc

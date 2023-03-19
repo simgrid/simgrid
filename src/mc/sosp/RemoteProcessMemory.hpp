@@ -59,6 +59,11 @@ public:
   RemoteProcessMemory& operator=(RemoteProcessMemory const&) = delete;
   RemoteProcessMemory& operator=(RemoteProcessMemory&&)      = delete;
 
+  pid_t pid() const { return pid_; }
+  bool running() const { return running_; }
+  void terminate() { running_ = false; }
+  void handle_waitpid();
+
   /* ************* */
   /* Low-level API */
   /* ************* */
@@ -114,16 +119,10 @@ public:
   std::vector<IgnoredRegion> const& ignored_regions() const { return ignored_regions_; }
   void ignore_region(std::uint64_t address, std::size_t size);
 
-  pid_t pid() const { return pid_; }
-
   bool in_maestro_stack(RemotePtr<void> p) const
   {
     return p >= this->maestro_stack_start_ && p < this->maestro_stack_end_;
   }
-
-  bool running() const { return running_; }
-
-  void terminate() { running_ = false; }
 
   void ignore_global_variable(const char* name) const
   {

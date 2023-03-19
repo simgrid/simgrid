@@ -27,7 +27,6 @@ public:
 
   RemoteProcessMemory& get_remote_process_memory() { return *remote_process_memory_; }
 
-  void handle_waitpid(pid_t pid_to_wait);                // FIXME move to RemoteApp
   bool handle_message(const char* buffer, ssize_t size); // FIXME move to RemoteApp
 };
 
