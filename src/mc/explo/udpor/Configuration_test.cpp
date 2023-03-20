@@ -602,7 +602,196 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Stress Test for Maximal
   }
 }
 
-TEST_CASE("simgrid::mc::udpor:Configuration: Computing Full Alternatives in Reader/Writer Example")
+TEST_CASE("simgrid::mc::udpor::Configuration: Latest Transitions")
+{
+  // The following tests concern the given event structure (labeled as "event(actor)")
+  //                  e1(1)
+  //                 /     /
+  //              e2(1)   e3(2)
+  //              /    //     /
+  //            e4(3) e5(2)  e6(1)
+  //                  /   /
+  //               e7(1) e8(1)
+  const auto t1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto t2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto t3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+  const auto t4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
+  const auto t5 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+  const auto t6 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto t7 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto t8 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+
+  const UnfoldingEvent e1(EventSet(), t1);
+  const UnfoldingEvent e2(EventSet({&e1}), t2);
+  const UnfoldingEvent e3(EventSet({&e1}), t3);
+  const UnfoldingEvent e4(EventSet({&e2}), t4);
+  const UnfoldingEvent e5(EventSet({&e2, &e3}), t5);
+  const UnfoldingEvent e6(EventSet({&e3}), t6);
+  const UnfoldingEvent e7(EventSet({&e5}), t7);
+  const UnfoldingEvent e8(EventSet({&e5}), t8);
+
+  SECTION("Test that the latest events are correct on initialization")
+  {
+    SECTION("Empty configuration has no events")
+    {
+      Configuration C;
+      REQUIRE_FALSE(C.get_latest_event_of(1).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+
+      REQUIRE_FALSE(C.get_latest_action_of(1).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+    }
+
+    SECTION("Missing two actors")
+    {
+      Configuration C{&e1};
+      REQUIRE(C.get_latest_event_of(1).has_value());
+      REQUIRE(C.get_latest_event_of(1).value() == &e1);
+
+      REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+
+      REQUIRE(C.get_latest_action_of(1).has_value());
+      REQUIRE(C.get_latest_action_of(1).value() == t1.get());
+
+      REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+    }
+
+    SECTION("Two events with one actor yields the latest event")
+    {
+      Configuration C{&e1, &e2};
+      REQUIRE(C.get_latest_event_of(1).has_value());
+      REQUIRE(C.get_latest_event_of(1).value() == &e2);
+
+      REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+
+      REQUIRE(C.get_latest_action_of(1).has_value());
+      REQUIRE(C.get_latest_action_of(1).value() == t2.get());
+
+      REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+    }
+
+    SECTION("Two events with two actors")
+    {
+      Configuration C{&e1, &e3};
+      REQUIRE(C.get_latest_event_of(1).has_value());
+      REQUIRE(C.get_latest_event_of(1).value() == &e1);
+
+      REQUIRE(C.get_latest_event_of(2).has_value());
+      REQUIRE(C.get_latest_event_of(2).value() == &e3);
+
+      REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+
+      REQUIRE(C.get_latest_action_of(1).has_value());
+      REQUIRE(C.get_latest_action_of(1).value() == t1.get());
+
+      REQUIRE(C.get_latest_action_of(2).has_value());
+      REQUIRE(C.get_latest_action_of(2).value() == t3.get());
+
+      REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+    }
+
+    SECTION("Three different actors actors")
+    {
+      Configuration C{&e1, &e2, &e3, &e4, &e5};
+      REQUIRE(C.get_latest_event_of(1).has_value());
+      REQUIRE(C.get_latest_event_of(1).value() == &e2);
+
+      REQUIRE(C.get_latest_event_of(2).has_value());
+      REQUIRE(C.get_latest_event_of(2).value() == &e5);
+
+      REQUIRE(C.get_latest_event_of(3).has_value());
+      REQUIRE(C.get_latest_event_of(3).value() == &e4);
+
+      REQUIRE(C.get_latest_action_of(1).has_value());
+      REQUIRE(C.get_latest_action_of(1).value() == t2.get());
+
+      REQUIRE(C.get_latest_action_of(2).has_value());
+      REQUIRE(C.get_latest_action_of(2).value() == t5.get());
+
+      REQUIRE(C.get_latest_action_of(3).has_value());
+      REQUIRE(C.get_latest_action_of(3).value() == t4.get());
+    }
+  }
+
+  SECTION("Test that the latest events are correct when adding new events")
+  {
+    Configuration C;
+    REQUIRE_FALSE(C.get_latest_event_of(1).has_value());
+    REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
+    REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(1).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+
+    C.add_event(&e1);
+    REQUIRE(C.get_latest_event_of(1).has_value());
+    REQUIRE(C.get_latest_event_of(1).value() == &e1);
+    REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
+    REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+    REQUIRE(C.get_latest_action_of(1).has_value());
+    REQUIRE(C.get_latest_action_of(1).value() == t1.get());
+    REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+
+    C.add_event(&e2);
+    REQUIRE(C.get_latest_event_of(1).has_value());
+    REQUIRE(C.get_latest_event_of(1).value() == &e2);
+    REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
+    REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+    REQUIRE(C.get_latest_action_of(1).has_value());
+    REQUIRE(C.get_latest_action_of(1).value() == t2.get());
+    REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+
+    C.add_event(&e3);
+    REQUIRE(C.get_latest_event_of(1).has_value());
+    REQUIRE(C.get_latest_event_of(1).value() == &e2);
+    REQUIRE(C.get_latest_event_of(2).has_value());
+    REQUIRE(C.get_latest_event_of(2).value() == &e3);
+    REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+    REQUIRE(C.get_latest_action_of(1).has_value());
+    REQUIRE(C.get_latest_action_of(1).value() == t2.get());
+    REQUIRE(C.get_latest_action_of(2).has_value());
+    REQUIRE(C.get_latest_action_of(2).value() == t3.get());
+    REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+
+    C.add_event(&e4);
+    REQUIRE(C.get_latest_event_of(1).has_value());
+    REQUIRE(C.get_latest_event_of(1).value() == &e2);
+    REQUIRE(C.get_latest_event_of(2).has_value());
+    REQUIRE(C.get_latest_event_of(2).value() == &e3);
+    REQUIRE(C.get_latest_event_of(3).has_value());
+    REQUIRE(C.get_latest_event_of(3).value() == &e4);
+    REQUIRE(C.get_latest_action_of(1).has_value());
+    REQUIRE(C.get_latest_action_of(1).value() == t2.get());
+    REQUIRE(C.get_latest_action_of(2).has_value());
+    REQUIRE(C.get_latest_action_of(2).value() == t3.get());
+    REQUIRE(C.get_latest_action_of(3).has_value());
+    REQUIRE(C.get_latest_action_of(3).value() == t4.get());
+
+    C.add_event(&e5);
+    REQUIRE(C.get_latest_event_of(1).has_value());
+    REQUIRE(C.get_latest_event_of(1).value() == &e2);
+    REQUIRE(C.get_latest_event_of(2).has_value());
+    REQUIRE(C.get_latest_event_of(2).value() == &e5);
+    REQUIRE(C.get_latest_event_of(3).has_value());
+    REQUIRE(C.get_latest_event_of(3).value() == &e4);
+    REQUIRE(C.get_latest_action_of(1).has_value());
+    REQUIRE(C.get_latest_action_of(1).value() == t2.get());
+    REQUIRE(C.get_latest_action_of(2).has_value());
+    REQUIRE(C.get_latest_action_of(2).value() == t5.get());
+    REQUIRE(C.get_latest_action_of(3).has_value());
+    REQUIRE(C.get_latest_action_of(3).value() == t4.get());
+  }
+}
+
+TEST_CASE("simgrid::mc::udpor::Configuration: Computing Full Alternatives in Reader/Writer Example")
 {
   // The following tests concern the given event structure that is given as
   // an example in figure 1 of the original UDPOR paper.
