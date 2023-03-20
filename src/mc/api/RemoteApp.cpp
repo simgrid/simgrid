@@ -29,11 +29,15 @@ XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 namespace simgrid::mc {
 
-RemoteApp::RemoteApp(const std::vector<char*>& args)
+RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspection)
 {
-  checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(args);
+  for (auto* arg : args)
+    app_args_.push_back(arg);
 
-  initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_, checker_side_->get_remote_memory());
+  checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
+
+  if (need_memory_introspection)
+    initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_, checker_side_->get_remote_memory());
 }
 
 RemoteApp::~RemoteApp()
@@ -42,9 +46,15 @@ RemoteApp::~RemoteApp()
   shutdown();
 }
 
-void RemoteApp::restore_initial_state() const
+void RemoteApp::restore_initial_state()
 {
-  this->initial_snapshot_->restore(checker_side_->get_remote_memory());
+  if (initial_snapshot_ == nullptr) { // No memory introspection
+    shutdown();
+    checker_side_.reset(
+        nullptr); // We need to destroy the existing CheckerSide before creating the new one, or libevent gets crazy
+    checker_side_.reset(new simgrid::mc::CheckerSide(app_args_));
+  } else
+    initial_snapshot_->restore(checker_side_->get_remote_memory());
 }
 
 unsigned long RemoteApp::get_maxpid() const

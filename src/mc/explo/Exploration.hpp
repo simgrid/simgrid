@@ -34,7 +34,7 @@ class Exploration : public xbt::Extendable<Exploration> {
   FILE* dot_output_ = nullptr;
 
 public:
-  explicit Exploration(const std::vector<char*>& args);
+  explicit Exploration(const std::vector<char*>& args, bool need_memory_introspection);
   virtual ~Exploration();
 
   static Exploration* get_instance() { return instance_; }

@@ -20,7 +20,8 @@ static simgrid::config::Flag<std::string> cfg_dot_output_file{
 
 Exploration* Exploration::instance_ = nullptr; // singleton instance
 
-Exploration::Exploration(const std::vector<char*>& args) : remote_app_(std::make_unique<RemoteApp>(args))
+Exploration::Exploration(const std::vector<char*>& args, bool need_memory_introspection)
+    : remote_app_(std::make_unique<RemoteApp>(args, need_memory_introspection))
 {
   xbt_assert(instance_ == nullptr, "Cannot have more than one exploration instance");
   instance_ = this;

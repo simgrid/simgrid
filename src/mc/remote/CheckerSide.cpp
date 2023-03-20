@@ -126,6 +126,8 @@ static void wait_application_process(pid_t pid)
 
 void CheckerSide::setup_events()
 {
+  if (base_ != nullptr)
+    event_base_free(base_.get());
   auto* base = event_base_new();
   base_.reset(base);
 

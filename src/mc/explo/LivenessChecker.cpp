@@ -180,7 +180,7 @@ void LivenessChecker::purge_visited_pairs()
   }
 }
 
-LivenessChecker::LivenessChecker(const std::vector<char*>& args) : Exploration(args) {}
+LivenessChecker::LivenessChecker(const std::vector<char*>& args) : Exploration(args, true) {}
 LivenessChecker::~LivenessChecker()
 {
   xbt_automaton_free(property_automaton_);

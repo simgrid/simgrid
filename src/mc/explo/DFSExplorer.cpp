@@ -297,7 +297,7 @@ void DFSExplorer::backtrack()
   } // If no backtracing point, then the stack is empty and the exploration is over
 }
 
-DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Exploration(args)
+DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Exploration(args, true)
 {
   if (with_dpor)
     reduction_mode_ = ReductionMode::dpor;

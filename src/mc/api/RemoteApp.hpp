@@ -30,6 +30,8 @@ private:
   PageStore page_store_{500};
   std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
 
+  std::vector<char*> app_args_;
+
   // No copy:
   RemoteApp(RemoteApp const&) = delete;
   RemoteApp& operator=(RemoteApp const&) = delete;
@@ -42,11 +44,11 @@ public:
    *
    *  The code is expected to `exec` the model-checked application.
    */
-  explicit RemoteApp(const std::vector<char*>& args);
+  explicit RemoteApp(const std::vector<char*>& args, bool need_memory_introspection);
 
   ~RemoteApp();
 
-  void restore_initial_state() const;
+  void restore_initial_state();
   void wait_for_requests();
 
   /** Ask to the application to check for a deadlock. If so, do an error message and throw a DeadlockError. */
