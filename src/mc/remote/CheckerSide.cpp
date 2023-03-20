@@ -4,16 +4,127 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/remote/CheckerSide.hpp"
-#include "src/mc/ModelChecker.hpp"
+#include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/LivenessChecker.hpp"
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
 #include "xbt/system_error.hpp"
+
+#ifdef __linux__
+#include <sys/personality.h>
+#include <sys/prctl.h>
+#endif
+
+#include <boost/tokenizer.hpp>
 #include <csignal>
+#include <fcntl.h>
+#include <sys/ptrace.h>
 #include <sys/wait.h>
+
+#ifdef __linux__
+#define WAITPID_CHECKED_FLAGS __WALL
+#else
+#define WAITPID_CHECKED_FLAGS 0
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkerside, mc, "MC communication with the application");
 
+static simgrid::config::Flag<std::string> _sg_mc_setenv{
+    "model-check/setenv", "Extra environment variables to pass to the child process (ex: 'AZE=aze;QWE=qwe').", "",
+    [](std::string_view value) {
+      xbt_assert(value.empty() || value.find('=', 0) != std::string_view::npos,
+                 "The 'model-check/setenv' parameter must be like 'AZE=aze', but it does not contain an equal sign.");
+    }};
+
 namespace simgrid::mc {
-CheckerSide::CheckerSide(int sockfd, ModelChecker* mc) : channel_(sockfd)
+
+XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<char*>& args)
+{
+  /* On startup, simix_global_init() calls simgrid::mc::Client::initialize(), which checks whether the MC_ENV_SOCKET_FD
+   * env variable is set. If so, MC mode is assumed, and the client is setup from its side
+   */
+
+#ifdef __linux__
+  // Make sure we do not outlive our parent
+  sigset_t mask;
+  sigemptyset(&mask);
+  xbt_assert(sigprocmask(SIG_SETMASK, &mask, nullptr) >= 0, "Could not unblock signals");
+  xbt_assert(prctl(PR_SET_PDEATHSIG, SIGHUP) == 0, "Could not PR_SET_PDEATHSIG");
+
+  // Make sure that the application process layout is not randomized, so that the info we gather is stable over re-execs
+  if (personality(ADDR_NO_RANDOMIZE) == -1) {
+    XBT_ERROR("Could not set the NO_RANDOMIZE personality");
+    throw xbt::errno_error();
+  }
+#endif
+
+  // Remove CLOEXEC to pass the socket to the application
+  int fdflags = fcntl(socket, F_GETFD, 0);
+  xbt_assert(fdflags != -1 && fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) != -1,
+             "Could not remove CLOEXEC for socket");
+
+  setenv(MC_ENV_SOCKET_FD, std::to_string(socket).c_str(), 1);
+
+  /* Setup the tokenizer that parses the cfg:model-check/setenv parameter */
+  using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
+  boost::char_separator<char> semicol_sep(";");
+  boost::char_separator<char> equal_sep("=");
+  Tokenizer token_vars(_sg_mc_setenv.get(), semicol_sep); /* Iterate over all FOO=foo parts */
+  for (const auto& token : token_vars) {
+    std::vector<std::string> kv;
+    Tokenizer token_kv(token, equal_sep);
+    for (const auto& t : token_kv) /* Iterate over 'FOO' and then 'foo' in that 'FOO=foo' */
+      kv.push_back(t);
+    xbt_assert(kv.size() == 2, "Parse error on 'model-check/setenv' value %s. Does it contain an equal sign?",
+               token.c_str());
+    XBT_INFO("setenv '%s'='%s'", kv[0].c_str(), kv[1].c_str());
+    setenv(kv[0].c_str(), kv[1].c_str(), 1);
+  }
+
+  /* And now, exec the child process */
+  int i = 1;
+  while (args[i] != nullptr && args[i][0] == '-')
+    i++;
+
+  xbt_assert(args[i] != nullptr,
+             "Unable to find a binary to exec on the command line. Did you only pass config flags?");
+
+  execvp(args[i], args.data() + i);
+  XBT_CRITICAL("The model-checked process failed to exec(%s): %s.\n"
+               "        Make sure that your binary exists on disk and is executable.",
+               args[i], strerror(errno));
+  if (strchr(args[i], '=') != nullptr)
+    XBT_CRITICAL("If you want to pass environment variables to the application, please use --cfg=model-check/setenv:%s",
+                 args[i]);
+
+  xbt_die("Aborting now.");
+}
+
+static void wait_application_process(pid_t pid)
+{
+  XBT_DEBUG("Waiting for the model-checked process");
+  int status;
+
+  // The model-checked process SIGSTOP itself to signal it's ready:
+  xbt_assert(waitpid(pid, &status, WAITPID_CHECKED_FLAGS) == pid && WIFSTOPPED(status) && WSTOPSIG(status) == SIGSTOP,
+             "Could not wait model-checked process");
+
+  errno = 0;
+#ifdef __linux__
+  ptrace(PTRACE_SETOPTIONS, pid, nullptr, PTRACE_O_TRACEEXIT);
+  ptrace(PTRACE_CONT, pid, 0, 0);
+#elif defined BSD
+  ptrace(PT_CONTINUE, pid, (caddr_t)1, 0);
+#else
+#error "no ptrace equivalent coded for this platform"
+#endif
+  xbt_assert(errno == 0,
+             "Ptrace does not seem to be usable in your setup (errno: %d). "
+             "If you run from within a docker, adding `--cap-add SYS_PTRACE` to the docker line may help. "
+             "If it does not help, please report this bug.",
+             errno);
+}
+
+void CheckerSide::setup_events()
 {
   auto* base = event_base_new();
   base_.reset(base);
@@ -31,7 +142,7 @@ CheckerSide::CheckerSide(int sockfd, ModelChecker* mc) : channel_(sockfd)
               throw simgrid::xbt::errno_error();
           }
 
-          if (not mc_model_checker->handle_message(buffer.data(), size))
+          if (not checker->handle_message(buffer.data(), size))
             checker->break_loop();
         } else {
           xbt_die("Unexpected event");
@@ -44,22 +155,48 @@ CheckerSide::CheckerSide(int sockfd, ModelChecker* mc) : channel_(sockfd)
   auto* signal_event = event_new(
       base, SIGCHLD, EV_SIGNAL | EV_PERSIST,
       [](evutil_socket_t sig, short events, void* arg) {
-        auto mc = static_cast<simgrid::mc::ModelChecker*>(arg);
+        auto checker = static_cast<simgrid::mc::CheckerSide*>(arg);
         if (events == EV_SIGNAL) {
           if (sig == SIGCHLD)
-            mc->handle_waitpid(mc->get_remote_process_memory().pid());
+            checker->handle_waitpid();
           else
             xbt_die("Unexpected signal: %d", sig);
         } else {
           xbt_die("Unexpected event");
         }
       },
-      mc);
+      this);
   event_add(signal_event, nullptr);
   signal_event_.reset(signal_event);
 }
 
-void CheckerSide::dispatch() const
+CheckerSide::CheckerSide(const std::vector<char*>& args) : running_(true)
+{
+  // Create an AF_LOCAL socketpair used for exchanging messages between the model-checker process (ancestor)
+  // and the application process (child)
+  int sockets[2];
+  xbt_assert(socketpair(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, sockets) != -1, "Could not create socketpair");
+
+  pid_ = fork();
+  xbt_assert(pid_ >= 0, "Could not fork model-checked process");
+
+  if (pid_ == 0) { // Child
+    ::close(sockets[1]);
+    run_child_process(sockets[0], args);
+    DIE_IMPOSSIBLE;
+  }
+
+  // Parent (model-checker):
+  ::close(sockets[0]);
+  channel_.reset_socket(sockets[1]);
+
+  setup_events();
+  wait_application_process(pid_);
+
+  wait_for_requests();
+}
+
+void CheckerSide::dispatch_events() const
 {
   event_base_dispatch(base_.get());
 }
@@ -67,6 +204,154 @@ void CheckerSide::dispatch() const
 void CheckerSide::break_loop() const
 {
   event_base_loopbreak(base_.get());
+}
+
+bool CheckerSide::handle_message(const char* buffer, ssize_t size)
+{
+  s_mc_message_t base_message;
+  xbt_assert(size >= (ssize_t)sizeof(base_message), "Broken message");
+  memcpy(&base_message, buffer, sizeof(base_message));
+
+  switch (base_message.type) {
+    case MessageType::INITIAL_ADDRESSES: {
+      s_mc_message_initial_addresses_t message;
+      xbt_assert(size == sizeof(message), "Broken message. Got %d bytes instead of %d.", (int)size,
+                 (int)sizeof(message));
+      memcpy(&message, buffer, sizeof(message));
+      /* Create the memory address space, now that we have the mandatory information */
+      remote_memory_ = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid_, message.mmalloc_default_mdp);
+      break;
+    }
+
+    case MessageType::IGNORE_HEAP: {
+      s_mc_message_ignore_heap_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
+
+      IgnoredHeapRegion region;
+      region.block    = message.block;
+      region.fragment = message.fragment;
+      region.address  = message.address;
+      region.size     = message.size;
+      get_remote_memory().ignore_heap(region);
+      break;
+    }
+
+    case MessageType::UNIGNORE_HEAP: {
+      s_mc_message_ignore_memory_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
+      get_remote_memory().unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
+      break;
+    }
+
+    case MessageType::IGNORE_MEMORY: {
+      s_mc_message_ignore_memory_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
+      get_remote_memory().ignore_region(message.addr, message.size);
+      break;
+    }
+
+    case MessageType::STACK_REGION: {
+      s_mc_message_stack_region_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
+      get_remote_memory().stack_areas().push_back(message.stack_region);
+    } break;
+
+    case MessageType::REGISTER_SYMBOL: {
+      s_mc_message_register_symbol_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
+      xbt_assert(not message.callback, "Support for client-side function proposition is not implemented.");
+      XBT_DEBUG("Received symbol: %s", message.name.data());
+
+      LivenessChecker::automaton_register_symbol(get_remote_memory(), message.name.data(), remote((int*)message.data));
+      break;
+    }
+
+    case MessageType::WAITING:
+      return false;
+
+    case MessageType::ASSERTION_FAILED:
+      Exploration::get_instance()->report_assertion_failure();
+      break;
+
+    default:
+      xbt_die("Unexpected message from model-checked application");
+  }
+  return true;
+}
+
+void CheckerSide::wait_for_requests()
+{
+  /* Resume the application */
+  if (get_channel().send(MessageType::CONTINUE) != 0)
+    throw xbt::errno_error();
+  clear_memory_cache();
+
+  if (running())
+    dispatch_events();
+}
+
+void CheckerSide::clear_memory_cache()
+{
+  if (remote_memory_)
+    remote_memory_->clear_cache();
+}
+
+void CheckerSide::handle_waitpid()
+{
+  XBT_DEBUG("Check for wait event");
+  int status;
+  pid_t pid;
+  while ((pid = waitpid(-1, &status, WNOHANG)) != 0) {
+    if (pid == -1) {
+      if (errno == ECHILD) { // No more children:
+        xbt_assert(not this->running(), "Inconsistent state");
+        break;
+      } else {
+        XBT_ERROR("Could not wait for pid");
+        throw simgrid::xbt::errno_error();
+      }
+    }
+
+    if (pid == get_pid()) {
+      // From PTRACE_O_TRACEEXIT:
+#ifdef __linux__
+      if (status >> 8 == (SIGTRAP | (PTRACE_EVENT_EXIT << 8))) {
+        unsigned long eventmsg;
+        xbt_assert(ptrace(PTRACE_GETEVENTMSG, pid, 0, &eventmsg) != -1, "Could not get exit status");
+        status = static_cast<int>(eventmsg);
+        if (WIFSIGNALED(status)) {
+          this->terminate();
+          Exploration::get_instance()->report_crash(status);
+        }
+      }
+#endif
+
+      // We don't care about non-lethal signals, just reinject them:
+      if (WIFSTOPPED(status)) {
+        XBT_DEBUG("Stopped with signal %i", (int)WSTOPSIG(status));
+        errno = 0;
+#ifdef __linux__
+        ptrace(PTRACE_CONT, pid, 0, WSTOPSIG(status));
+#elif defined BSD
+        ptrace(PT_CONTINUE, pid, (caddr_t)1, WSTOPSIG(status));
+#endif
+        xbt_assert(errno == 0, "Could not PTRACE_CONT");
+      }
+
+      else if (WIFSIGNALED(status)) {
+        this->terminate();
+        Exploration::get_instance()->report_crash(status);
+      } else if (WIFEXITED(status)) {
+        XBT_DEBUG("Child process is over");
+        this->terminate();
+      }
+    }
+  }
 }
 
 } // namespace simgrid::mc

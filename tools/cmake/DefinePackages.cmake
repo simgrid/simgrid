@@ -598,16 +598,17 @@ set(MC_SRC
   src/mc/transition/TransitionSynchro.cpp
   src/mc/transition/TransitionSynchro.hpp
 
-  src/mc/AddressSpace.hpp
-  src/mc/ModelChecker.cpp
-  src/mc/ModelChecker.hpp
-  src/mc/VisitedState.cpp
-  src/mc/VisitedState.hpp
+  src/mc/api/guide/BasicGuide.hpp
+  src/mc/api/guide/GuidedState.hpp
   src/mc/api/ActorState.hpp
   src/mc/api/State.cpp
   src/mc/api/State.hpp
   src/mc/api/RemoteApp.cpp
   src/mc/api/RemoteApp.hpp
+
+  src/mc/AddressSpace.hpp
+  src/mc/VisitedState.cpp
+  src/mc/VisitedState.hpp
   src/mc/compare.cpp
   src/mc/mc_exit.hpp
   src/mc/mc_forward.hpp
@@ -1054,6 +1055,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindPAPI.cmake
   tools/cmake/Modules/FindValgrind.cmake
+  tools/cmake/Modules/nlohmann_jsonConfig.cmake
   tools/cmake/Modules/pybind11Config.cmake
   tools/cmake/Option.cmake
   tools/cmake/Tests.cmake

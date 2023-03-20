@@ -17,165 +17,34 @@
 
 #include <algorithm>
 #include <array>
-#include <boost/tokenizer.hpp>
 #include <memory>
 #include <numeric>
 #include <string>
 
-#include <fcntl.h>
-#ifdef __linux__
-#include <sys/prctl.h>
-#endif
 #include <sys/ptrace.h>
 #include <sys/wait.h>
-
-#ifdef __linux__
-#define WAITPID_CHECKED_FLAGS __WALL
-#else
-#define WAITPID_CHECKED_FLAGS 0
-#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
 XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
-static simgrid::config::Flag<std::string> _sg_mc_setenv{
-    "model-check/setenv", "Extra environment variables to pass to the child process (ex: 'AZE=aze;QWE=qwe').", "",
-    [](std::string_view value) {
-      xbt_assert(value.empty() || value.find('=', 0) != std::string_view::npos,
-                 "The 'model-check/setenv' parameter must be like 'AZE=aze', but it does not contain an equal sign.");
-    }};
-
 namespace simgrid::mc {
-
-XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<char*>& args)
-{
-  /* On startup, simix_global_init() calls simgrid::mc::Client::initialize(), which checks whether the MC_ENV_SOCKET_FD
-   * env variable is set. If so, MC mode is assumed, and the client is setup from its side
-   */
-
-#ifdef __linux__
-  // Make sure we do not outlive our parent
-  sigset_t mask;
-  sigemptyset(&mask);
-  xbt_assert(sigprocmask(SIG_SETMASK, &mask, nullptr) >= 0, "Could not unblock signals");
-  xbt_assert(prctl(PR_SET_PDEATHSIG, SIGHUP) == 0, "Could not PR_SET_PDEATHSIG");
-#endif
-
-  // Remove CLOEXEC to pass the socket to the application
-  int fdflags = fcntl(socket, F_GETFD, 0);
-  xbt_assert(fdflags != -1 && fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) != -1,
-             "Could not remove CLOEXEC for socket");
-
-  setenv(MC_ENV_SOCKET_FD, std::to_string(socket).c_str(), 1);
-
-  /* Setup the tokenizer that parses the cfg:model-check/setenv parameter */
-  using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
-  boost::char_separator<char> semicol_sep(";");
-  boost::char_separator<char> equal_sep("=");
-  Tokenizer token_vars(_sg_mc_setenv.get(), semicol_sep); /* Iterate over all FOO=foo parts */
-  for (const auto& token : token_vars) {
-    std::vector<std::string> kv;
-    Tokenizer token_kv(token, equal_sep);
-    for (const auto& t : token_kv) /* Iterate over 'FOO' and then 'foo' in that 'FOO=foo' */
-      kv.push_back(t);
-    xbt_assert(kv.size() == 2, "Parse error on 'model-check/setenv' value %s. Does it contain an equal sign?",
-               token.c_str());
-    XBT_INFO("setenv '%s'='%s'", kv[0].c_str(), kv[1].c_str());
-    setenv(kv[0].c_str(), kv[1].c_str(), 1);
-  }
-
-  /* And now, exec the child process */
-  int i = 1;
-  while (args[i] != nullptr && args[i][0] == '-')
-    i++;
-
-  xbt_assert(args[i] != nullptr,
-             "Unable to find a binary to exec on the command line. Did you only pass config flags?");
-
-  execvp(args[i], args.data() + i);
-  XBT_CRITICAL("The model-checked process failed to exec(%s): %s.\n"
-               "        Make sure that your binary exists on disk and is executable.",
-               args[i], strerror(errno));
-  if (strchr(args[i], '=') != nullptr)
-    XBT_CRITICAL("If you want to pass environment variables to the application, please use --cfg=model-check/setenv:%s",
-                 args[i]);
-
-  xbt_die("Aborting now.");
-}
 
 RemoteApp::RemoteApp(const std::vector<char*>& args)
 {
-  // Create an AF_LOCAL socketpair used for exchanging messages
-  // between the model-checker process (ourselves) and the model-checked
-  // process:
-  int sockets[2];
-  xbt_assert(socketpair(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, sockets) != -1, "Could not create socketpair");
+  checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(args);
 
-  pid_t pid = fork();
-  xbt_assert(pid >= 0, "Could not fork model-checked process");
-
-  if (pid == 0) { // Child
-    ::close(sockets[1]);
-    run_child_process(sockets[0], args);
-    DIE_IMPOSSIBLE;
-  }
-
-  // Parent (model-checker):
-  ::close(sockets[0]);
-
-  xbt_assert(mc_model_checker == nullptr, "Did you manage to start the MC twice in this process?");
-
-  auto memory      = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid);
-  model_checker_   = std::make_unique<simgrid::mc::ModelChecker>(std::move(memory));
-  mc_model_checker = model_checker_.get();
-  checker_side_    = std::make_unique<simgrid::mc::CheckerSide>(sockets[1], model_checker_.get());
-
-  start();
-
-  /* Take the initial snapshot */
-  wait_for_requests();
-  initial_snapshot_ =
-      std::make_shared<simgrid::mc::Snapshot>(0, page_store_, model_checker_->get_remote_process_memory());
+  initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_, checker_side_->get_remote_memory());
 }
 
 RemoteApp::~RemoteApp()
 {
   initial_snapshot_ = nullptr;
-  if (model_checker_) {
-    shutdown();
-    model_checker_   = nullptr;
-    mc_model_checker = nullptr;
-  }
+  shutdown();
 }
-void RemoteApp::start()
-{
-  XBT_DEBUG("Waiting for the model-checked process");
-  int status;
 
-  // The model-checked process SIGSTOP itself to signal it's ready:
-  const pid_t pid = get_remote_process_memory().pid();
-
-  xbt_assert(waitpid(pid, &status, WAITPID_CHECKED_FLAGS) == pid && WIFSTOPPED(status) && WSTOPSIG(status) == SIGSTOP,
-             "Could not wait model-checked process");
-
-  errno = 0;
-#ifdef __linux__
-  ptrace(PTRACE_SETOPTIONS, pid, nullptr, PTRACE_O_TRACEEXIT);
-  ptrace(PTRACE_CONT, pid, 0, 0);
-#elif defined BSD
-  ptrace(PT_CONTINUE, pid, (caddr_t)1, 0);
-#else
-#error "no ptrace equivalent coded for this platform"
-#endif
-  xbt_assert(errno == 0,
-             "Ptrace does not seem to be usable in your setup (errno: %d). "
-             "If you run from within a docker, adding `--cap-add SYS_PTRACE` to the docker line may help. "
-             "If it does not help, please report this bug.",
-             errno);
-}
 void RemoteApp::restore_initial_state() const
 {
-  this->initial_snapshot_->restore(model_checker_->get_remote_process_memory());
+  this->initial_snapshot_->restore(checker_side_->get_remote_memory());
 }
 
 unsigned long RemoteApp::get_maxpid() const
@@ -282,38 +151,32 @@ void RemoteApp::check_deadlock() const
              to_c_str(message.type), (int)message.type, (int)MessageType::DEADLOCK_CHECK_REPLY);
 
   if (message.value != 0) {
+    auto* explo = Exploration::get_instance();
     XBT_CINFO(mc_global, "Counter-example execution trace:");
-    for (auto const& frame : model_checker_->get_exploration()->get_textual_trace())
+    for (auto const& frame : explo->get_textual_trace())
       XBT_CINFO(mc_global, "  %s", frame.c_str());
     XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
              "--cfg=model-check/replay:'%s'",
-             model_checker_->get_exploration()->get_record_trace().to_string().c_str());
-    model_checker_->get_exploration()->log_state();
+             explo->get_record_trace().to_string().c_str());
+    explo->log_state();
     throw DeadlockError();
   }
 }
 
 void RemoteApp::wait_for_requests()
 {
-  /* Resume the application */
-  if (checker_side_->get_channel().send(MessageType::CONTINUE) != 0)
-    throw xbt::errno_error();
-  get_remote_process_memory().clear_cache();
-
-  if (this->get_remote_process_memory().running())
-    checker_side_->dispatch();
+  checker_side_->wait_for_requests();
 }
 
 void RemoteApp::shutdown()
 {
   XBT_DEBUG("Shutting down model-checker");
 
-  RemoteProcessMemory& process = get_remote_process_memory();
-  if (process.running()) {
+  if (checker_side_->running()) {
     XBT_DEBUG("Killing process");
     finalize_app(true);
-    kill(process.pid(), SIGKILL);
-    process.terminate();
+    kill(checker_side_->get_pid(), SIGKILL);
+    checker_side_->terminate();
   }
 }
 
@@ -326,8 +189,8 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
   checker_side_->get_channel().send(m);
 
   get_remote_process_memory().clear_cache();
-  if (this->get_remote_process_memory().running())
-    checker_side_->dispatch(); // The app may send messages while processing the transition
+  if (checker_side_->running())
+    checker_side_->dispatch_events(); // The app may send messages while processing the transition
 
   s_mc_message_simcall_execute_answer_t answer;
   ssize_t s = checker_side_->get_channel().receive(answer);

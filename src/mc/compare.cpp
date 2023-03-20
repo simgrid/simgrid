@@ -1206,13 +1206,19 @@ static bool local_variables_differ(const simgrid::mc::RemoteProcessMemory& proce
 }
 
 namespace simgrid::mc {
-
-bool Snapshot::operator==(const Snapshot& other)
+bool Snapshot::equals_to(const Snapshot& other, RemoteProcessMemory& memory)
 {
-  // TODO, make this a field of ModelChecker or something similar
-  static StateComparator state_comparator;
+  /* TODO: the memory parameter should be eventually removed. It seems to be there because each snapshot lacks some sort
+    of metadata. That's OK for now (letting appart the fact that we cannot have a nice operator== because we need that
+    extra parameter), but it will fall short when we want to have parallel explorations, with more than one
+    RemoteProcess. At the very least, snapshots will need to know the remote process they are corresponding to, and more
+    probably they will need to embeed all their metadata to let the remoteprocesses die before the end of the
+    exploration. */
 
-  RemoteProcessMemory& memory = mc_model_checker->get_remote_process_memory();
+  /* TODO: This method should moved to Snapshot.cpp, but it needs the StateComparator that is declared locally to this
+   * file only. */
+
+  static StateComparator state_comparator; // TODO, make this a field of a persistant state object
 
   if (hash_ != other.hash_) {
     XBT_VERB("(%ld - %ld) Different hash: 0x%" PRIx64 "--0x%" PRIx64, this->num_state_, other.num_state_, this->hash_,

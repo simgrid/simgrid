@@ -6,7 +6,6 @@
 #ifndef SIMGRID_MC_SNAPSHOT_HPP
 #define SIMGRID_MC_SNAPSHOT_HPP
 
-#include "src/mc/ModelChecker.hpp"
 #include "src/mc/inspect/mc_unw.hpp"
 #include "src/mc/sosp/Region.hpp"
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
@@ -77,8 +76,7 @@ public:
   Region* get_region(const void* addr, Region* hinted_region) const;
   void restore(RemoteProcessMemory& memory) const;
 
-  bool operator==(const Snapshot& other);
-  bool operator!=(const Snapshot& other) { return not(*this == other); }
+  bool equals_to(const Snapshot& other, RemoteProcessMemory& memory);
 
   // To be private
   long num_state_;
@@ -91,9 +89,10 @@ public:
   std::vector<s_mc_snapshot_ignored_data_t> ignored_data_;
 
 private:
-  void add_region(RegionType type, ObjectInformation* object_info, void* start_addr, std::size_t size);
-  void snapshot_regions(RemoteProcessMemory& process_memory);
-  void snapshot_stacks(RemoteProcessMemory& process_memory);
+  void add_region(RegionType type, RemoteProcessMemory& memory, ObjectInformation* object_info, void* start_addr,
+                  std::size_t size);
+  void snapshot_regions(RemoteProcessMemory& memory);
+  void snapshot_stacks(RemoteProcessMemory& memory);
   void handle_ignore();
   void ignore_restore() const;
   hash_type do_hash() const;

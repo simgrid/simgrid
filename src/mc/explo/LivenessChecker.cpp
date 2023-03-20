@@ -23,7 +23,7 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t prop_state,
                          RemoteApp& remote_app)
     : num(pair_num), prop_state_(prop_state)
 {
-  auto& memory     = mc_model_checker->get_remote_process_memory();
+  auto& memory     = remote_app.get_remote_process_memory();
   this->app_state_ = std::move(app_state);
   if (not this->app_state_->get_system_state())
     this->app_state_->set_system_state(std::make_shared<Snapshot>(pair_num, remote_app.get_page_store(), memory));
@@ -74,7 +74,8 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
       std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
       if (xbt_automaton_state_compare(pair_test->prop_state_, new_pair->prop_state_) != 0 ||
           *(pair_test->atomic_propositions) != *(new_pair->atomic_propositions) ||
-          (*pair_test->app_state_->get_system_state() != *new_pair->app_state_->get_system_state()))
+          (not pair_test->app_state_->get_system_state()->equals_to(*new_pair->app_state_->get_system_state(),
+                                                                    get_remote_app().get_remote_process_memory())))
         continue;
       XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
       exploration_stack_.pop_back();
@@ -119,7 +120,7 @@ void LivenessChecker::replay()
     std::shared_ptr<State> state = pair->app_state_;
 
     if (pair->exploration_started) {
-      state->get_transition()->replay();
+      state->get_transition()->replay(get_remote_app());
       XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, state->get_transition()->to_string().c_str(), state.get());
     }
 
@@ -151,7 +152,8 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
     const VisitedPair* pair_test = i->get();
     if (xbt_automaton_state_compare(pair_test->prop_state_, visited_pair->prop_state_) != 0 ||
         *(pair_test->atomic_propositions) != *(visited_pair->atomic_propositions) ||
-        (*pair_test->app_state_->get_system_state() != *visited_pair->app_state_->get_system_state()))
+        (not pair_test->app_state_->get_system_state()->equals_to(*visited_pair->app_state_->get_system_state(),
+                                                                  get_remote_app().get_remote_process_memory())))
       continue;
     if (pair_test->other_num == -1)
       visited_pair->other_num = pair_test->num;

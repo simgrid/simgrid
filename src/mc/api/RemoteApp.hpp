@@ -7,9 +7,10 @@
 #define SIMGRID_MC_REMOTE_APP_HPP
 
 #include "simgrid/forward.h"
-#include "src/mc/ModelChecker.hpp"
 #include "src/mc/api/ActorState.hpp"
+#include "src/mc/remote/CheckerSide.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
+#include "src/mc/sosp/PageStore.hpp"
 
 #include <functional>
 
@@ -17,16 +18,15 @@ namespace simgrid::mc {
 
 /** High-level view of the verified application, from the model-checker POV
  *
- *  This is expected to become the interface used by model-checking
- *  algorithms to control the execution of the model-checked process
- *  and the exploration of the execution graph. Model-checking
- *  algorithms should be able to be written in high-level languages
- *  (e.g. Python) using bindings on this interface.
+ *  This is expected to become the interface used by model-checking algorithms to control the execution of
+ *  the application process during the exploration of the execution graph.
+ *
+ *  One day, this will allow parallel exploration, ie, the handling of several application processes (each encapsulated
+ * in a separate CheckerSide objects) that explore several parts of the exploration graph.
  */
 class XBT_PUBLIC RemoteApp {
 private:
   std::unique_ptr<CheckerSide> checker_side_;
-  std::unique_ptr<ModelChecker> model_checker_;
   PageStore page_store_{500};
   std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
 
@@ -46,7 +46,6 @@ public:
 
   ~RemoteApp();
 
-  void start();
   void restore_initial_state() const;
   void wait_for_requests();
 
@@ -68,7 +67,7 @@ public:
   Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
 
   /* Get the memory of the remote process */
-  RemoteProcessMemory& get_remote_process_memory() { return model_checker_->get_remote_process_memory(); }
+  RemoteProcessMemory& get_remote_process_memory() { return checker_side_->get_remote_memory(); }
 
   PageStore& get_page_store() { return page_store_; }
 };

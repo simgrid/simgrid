@@ -7,9 +7,12 @@
 
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
 
+#include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/LivenessChecker.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 #include "xbt/file.hpp"
 #include "xbt/log.h"
+#include "xbt/system_error.hpp"
 
 #include <fcntl.h>
 #include <libunwind-ptrace.h>
@@ -103,9 +106,7 @@ int open_vm(pid_t pid, int flags)
 
 // ***** RemoteProcessMemory
 
-RemoteProcessMemory::RemoteProcessMemory(pid_t pid) : AddressSpace(this), pid_(pid), running_(true) {}
-
-void RemoteProcessMemory::init(xbt_mheap_t mmalloc_default_mdp)
+RemoteProcessMemory::RemoteProcessMemory(pid_t pid, xbt_mheap_t mmalloc_default_mdp) : AddressSpace(this), pid_(pid)
 {
   this->heap_address = remote(mmalloc_default_mdp);
 
@@ -450,4 +451,5 @@ void RemoteProcessMemory::dump_stack() const
   _UPT_destroy(context);
   unw_destroy_addr_space(as);
 }
+
 } // namespace simgrid::mc

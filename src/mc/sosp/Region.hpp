@@ -35,7 +35,7 @@ private:
   ChunkedData chunks_;
 
 public:
-  Region(PageStore& store, RegionType type, void* start_addr, size_t size);
+  Region(PageStore& store, RemoteProcessMemory& memory, RegionType type, void* start_addr, size_t size);
   Region(Region const&) = delete;
   Region& operator=(Region const&) = delete;
   Region(Region&& that)            = delete;
@@ -58,7 +58,7 @@ public:
   bool contain(RemotePtr<void> p) const { return p >= start() && p < end(); }
 
   /** @brief Restore a region from a snapshot */
-  void restore() const;
+  void restore(RemoteProcessMemory& memory) const;
 
   /** @brief Read memory that was snapshotted in this region
    *

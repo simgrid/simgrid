@@ -10,7 +10,6 @@
 #include <simgrid/config.h>
 
 #if SIMGRID_HAVE_MC
-#include "src/mc/ModelChecker.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/transition/TransitionActorJoin.hpp"
 #include "src/mc/transition/TransitionAny.hpp"
@@ -45,13 +44,13 @@ std::string Transition::dot_string() const
   return xbt::string_printf("label = \"[(%ld)] %s\", color = %s, fontcolor = %s", aid_, Transition::to_c_str(type_),
                             color, color);
 }
-void Transition::replay() const
+void Transition::replay(RemoteApp& app) const
 {
   replayed_transitions_++;
 
 #if SIMGRID_HAVE_MC
-  mc_model_checker->get_exploration()->get_remote_app().handle_simcall(aid_, times_considered_, false);
-  mc_model_checker->get_exploration()->get_remote_app().wait_for_requests();
+  app.handle_simcall(aid_, times_considered_, false);
+  app.wait_for_requests();
 #endif
 }
 

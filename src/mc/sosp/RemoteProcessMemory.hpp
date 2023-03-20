@@ -20,24 +20,6 @@
 
 namespace simgrid::mc {
 
-class ActorInformation {
-public:
-  /** MCed address of the process */
-  RemotePtr<kernel::actor::ActorImpl> address{nullptr};
-  Remote<kernel::actor::ActorImpl> copy;
-
-  /** Hostname (owned by `mc_model_checker->hostnames_`) */
-  const std::string* hostname = nullptr;
-  std::string name;
-
-  void clear()
-  {
-    name.clear();
-    address  = nullptr;
-    hostname = nullptr;
-  }
-};
-
 struct IgnoredRegion {
   std::uint64_t addr;
   std::size_t size;
@@ -50,14 +32,14 @@ struct IgnoredHeapRegion {
   std::size_t size;
 };
 
-/** The Application's process memory, seen from the Checker perspective
+/** The Application's process memory, seen from the Checker perspective. This class is not needed if you don't need to
+ * introspect the application process.
  *
- *  Responsibilities:
- *
- *  - reading from the process memory (`AddressSpace`);
- *  - accessing the system state of the process (heap, …);
- *  - stack unwinding;
- *  - etc.
+ *  Responsabilities:
+ *    - reading from the process memory (`AddressSpace`);
+ *    - accessing the system state of the process (heap, …);
+ *    - stack unwinding;
+ *    - etc.
  */
 class RemoteProcessMemory final : public AddressSpace {
 private:
@@ -68,9 +50,8 @@ private:
   static constexpr int cache_malloc = 2;
 
 public:
-  explicit RemoteProcessMemory(pid_t pid);
+  explicit RemoteProcessMemory(pid_t pid, xbt_mheap_t mmalloc_default_mdp);
   ~RemoteProcessMemory() override;
-  void init(xbt_mheap_t mmalloc_default_mdp);
 
   RemoteProcessMemory(RemoteProcessMemory const&)            = delete;
   RemoteProcessMemory(RemoteProcessMemory&&)                 = delete;
@@ -132,16 +113,10 @@ public:
   std::vector<IgnoredRegion> const& ignored_regions() const { return ignored_regions_; }
   void ignore_region(std::uint64_t address, std::size_t size);
 
-  pid_t pid() const { return pid_; }
-
   bool in_maestro_stack(RemotePtr<void> p) const
   {
     return p >= this->maestro_stack_start_ && p < this->maestro_stack_end_;
   }
-
-  bool running() const { return running_; }
-
-  void terminate() { running_ = false; }
 
   void ignore_global_variable(const char* name) const
   {
@@ -165,8 +140,7 @@ private:
   void refresh_heap();
   void refresh_malloc_info();
 
-  pid_t pid_    = -1;
-  bool running_ = false;
+  pid_t pid_ = -1;
   std::vector<xbt::VmMap> memory_map_;
   RemotePtr<void> maestro_stack_start_;
   RemotePtr<void> maestro_stack_end_;

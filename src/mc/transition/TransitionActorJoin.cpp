@@ -8,7 +8,6 @@
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
 #if SIMGRID_HAVE_MC
-#include "src/mc/ModelChecker.hpp"
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/State.hpp"
 #endif

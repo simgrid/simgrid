@@ -22,6 +22,7 @@ class Channel {
   template <class M> static constexpr bool messageType() { return std::is_class_v<M> && std::is_trivial_v<M>; }
 
 public:
+  Channel() = default;
   explicit Channel(int sock) : socket_(sock) {}
   ~Channel();
 
@@ -50,6 +51,7 @@ public:
   }
 
   int get_socket() const { return socket_; }
+  void reset_socket(int socket) { socket_ = socket; }
 };
 } // namespace simgrid::mc
 

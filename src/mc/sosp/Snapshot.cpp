@@ -13,19 +13,20 @@ namespace simgrid::mc {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
-void Snapshot::snapshot_regions(RemoteProcessMemory& process_memory)
+void Snapshot::snapshot_regions(RemoteProcessMemory& memory)
 {
   snapshot_regions_.clear();
 
-  for (auto const& object_info : process_memory.object_infos)
-    add_region(RegionType::Data, object_info.get(), object_info->start_rw, object_info->end_rw - object_info->start_rw);
+  for (auto const& object_info : memory.object_infos)
+    add_region(RegionType::Data, memory, object_info.get(), object_info->start_rw,
+               object_info->end_rw - object_info->start_rw);
 
-  const s_xbt_mheap_t* heap = process_memory.get_heap();
+  const s_xbt_mheap_t* heap = memory.get_heap();
   void* start_heap = heap->base;
   void* end_heap   = heap->breakval;
 
-  add_region(RegionType::Heap, nullptr, start_heap, (char*)end_heap - (char*)start_heap);
-  heap_bytes_used_ = mmalloc_get_bytes_used_remote(heap->heaplimit, process_memory.get_malloc_info());
+  add_region(RegionType::Heap, memory, nullptr, start_heap, (char*)end_heap - (char*)start_heap);
+  heap_bytes_used_ = mmalloc_get_bytes_used_remote(heap->heaplimit, memory.get_malloc_info());
 }
 
 /** @brief Checks whether the variable is in scope for a given IP.
@@ -47,7 +48,7 @@ static bool valid_variable(const simgrid::mc::Variable* var, simgrid::mc::Frame*
 }
 
 static void fill_local_variables_values(mc_stack_frame_t stack_frame, Frame* scope,
-                                        std::vector<s_local_variable_t>& result)
+                                        std::vector<s_local_variable_t>& result, AddressSpace* memory)
 {
   if (not scope || not scope->range.contain(stack_frame->ip))
     return;
@@ -72,9 +73,9 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, Frame* sco
     if (current_variable.address != nullptr)
       new_var.address = current_variable.address;
     else if (not current_variable.location_list.empty()) {
-      dwarf::Location location = simgrid::dwarf::resolve(current_variable.location_list, current_variable.object_info,
-                                                         &(stack_frame->unw_cursor), (void*)stack_frame->frame_base,
-                                                         &mc_model_checker->get_remote_process_memory());
+      dwarf::Location location =
+          simgrid::dwarf::resolve(current_variable.location_list, current_variable.object_info,
+                                  &(stack_frame->unw_cursor), (void*)stack_frame->frame_base, memory);
 
       xbt_assert(location.in_memory(), "Cannot handle non-address variable");
       new_var.address = location.address();
@@ -86,20 +87,21 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, Frame* sco
 
   // Recursive processing of nested scopes:
   for (Frame& nested_scope : scope->scopes)
-    fill_local_variables_values(stack_frame, &nested_scope, result);
+    fill_local_variables_values(stack_frame, &nested_scope, result, memory);
 }
 
-static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_mc_stack_frame_t>& stack_frames)
+static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_mc_stack_frame_t>& stack_frames,
+                                                                  AddressSpace* memory)
 {
   std::vector<s_local_variable_t> variables;
   for (s_mc_stack_frame_t& stack_frame : stack_frames)
-    fill_local_variables_values(&stack_frame, stack_frame.frame, variables);
+    fill_local_variables_values(&stack_frame, stack_frame.frame, variables, memory);
   return variables;
 }
 
-static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_context)
+static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_context,
+                                                           const RemoteProcessMemory* process_memory)
 {
-  const RemoteProcessMemory* process_memory = &mc_model_checker->get_remote_process_memory();
   std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c = stack_context->cursor();
@@ -160,8 +162,8 @@ void Snapshot::snapshot_stacks(RemoteProcessMemory& process_memory)
 
     st.context.initialize(process_memory, &context);
 
-    st.stack_frames    = unwind_stack_frames(&st.context);
-    st.local_variables = get_local_variables_values(st.stack_frames);
+    st.stack_frames    = unwind_stack_frames(&st.context, &process_memory);
+    st.local_variables = get_local_variables_values(st.stack_frames, &process_memory);
 
     unw_word_t sp = st.stack_frames[0].sp;
 
@@ -217,14 +219,15 @@ Snapshot::Snapshot(long num_state, PageStore& store, RemoteProcessMemory& memory
   ignore_restore();
 }
 
-void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void* start_addr, std::size_t size)
+void Snapshot::add_region(RegionType type, RemoteProcessMemory& memory, ObjectInformation* object_info,
+                          void* start_addr, std::size_t size)
 {
   if (type == RegionType::Data)
     xbt_assert(object_info, "Missing object info for object.");
   else if (type == RegionType::Heap)
     xbt_assert(not object_info, "Unexpected object info for heap region.");
 
-  auto* region = new Region(page_store_, type, start_addr, size);
+  auto* region = new Region(page_store_, memory, type, start_addr, size);
   region->object_info(object_info);
   snapshot_regions_.push_back(std::unique_ptr<Region>(region));
 }
@@ -276,7 +279,7 @@ void Snapshot::restore(RemoteProcessMemory& memory) const
 
   // Restore regions
   for (std::unique_ptr<Region> const& region : snapshot_regions_) {
-    region->restore();
+    region->restore(memory);
   }
 
   ignore_restore();

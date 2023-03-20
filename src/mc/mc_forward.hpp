@@ -15,7 +15,6 @@ namespace simgrid::mc {
 
 class PageStore;
 class ChunkedData;
-class ModelChecker;
 class AddressSpace;
 class RemoteProcessMemory;
 class Snapshot;
@@ -25,13 +24,9 @@ class Type;
 class Variable;
 class Transition;
 class Frame;
-class ActorInformation;
 
 class Session;
 class Exploration;
 } // namespace simgrid::mc
-
-// TODO, try to get rid of the global ModelChecker variable
-extern simgrid::mc::ModelChecker* mc_model_checker;
 
 #endif

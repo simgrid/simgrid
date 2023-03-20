@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/sosp/Region.hpp"
-#include "src/mc/ModelChecker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
@@ -17,20 +16,19 @@
 
 namespace simgrid::mc {
 
-Region::Region(PageStore& store, RegionType region_type, void* start_addr, size_t size)
+Region::Region(PageStore& store, RemoteProcessMemory& memory, RegionType region_type, void* start_addr, size_t size)
     : region_type_(region_type), start_addr_(start_addr), size_(size)
 {
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize - 1)) == 0, "Start address not at the beginning of a page");
 
-  chunks_ = ChunkedData(store, mc_model_checker->get_remote_process_memory(), RemotePtr<void>(start_addr),
-                        mmu::chunk_count(size));
+  chunks_ = ChunkedData(store, memory, RemotePtr<void>(start_addr), mmu::chunk_count(size));
 }
 
 /** @brief Restore a region from a snapshot
  *
  *  @param region     Target region
  */
-void Region::restore() const
+void Region::restore(RemoteProcessMemory& memory) const
 {
   xbt_assert(((start().address()) & (xbt_pagesize - 1)) == 0, "Not at the beginning of a page");
   xbt_assert(simgrid::mc::mmu::chunk_count(size()) == get_chunks().page_count());
@@ -38,7 +36,7 @@ void Region::restore() const
   for (size_t i = 0; i != get_chunks().page_count(); ++i) {
     auto* target_page       = (void*)simgrid::mc::mmu::join(i, (std::uintptr_t)(void*)start().address());
     const void* source_page = get_chunks().page(i);
-    mc_model_checker->get_remote_process_memory().write_bytes(source_page, xbt_pagesize, remote(target_page));
+    memory.write_bytes(source_page, xbt_pagesize, remote(target_page));
   }
 }
 
