@@ -6,6 +6,7 @@
 #include "src/mc/explo/UdporChecker.hpp"
 #include "src/mc/api/State.hpp"
 #include "src/mc/explo/udpor/Comb.hpp"
+#include "src/mc/explo/udpor/ExtensionSetCalculator.hpp"
 #include "src/mc/explo/udpor/History.hpp"
 #include "src/mc/explo/udpor/maximal_subsets_iterator.hpp"
 
@@ -128,15 +129,8 @@ EventSet UdporChecker::compute_exC(const Configuration& C, const State& stateC, 
 
   for (const auto& [aid, actor_state] : stateC.get_actors_list()) {
     for (const auto& transition : actor_state.get_enabled_transitions()) {
-      // First check for a specialized function that can compute the extension
-      // set "quickly" based on its type. Otherwise, fall back to computing
-      // the set "by hand"
-      const auto specialized_extension_function = incremental_extension_functions.find(transition->type_);
-      if (specialized_extension_function != incremental_extension_functions.end()) {
-        exC.form_union((specialized_extension_function->second)(C, transition));
-      } else {
-        exC.form_union(this->compute_exC_by_enumeration(C, transition));
-      }
+      EventSet extension = ExtensionSetCalculator::partially_extend(C, unfolding, transition);
+      exC.form_union(extension);
     }
   }
   return exC;
