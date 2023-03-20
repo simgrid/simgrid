@@ -531,7 +531,6 @@ set(MC_SRC
   src/mc/explo/UdporChecker.hpp
   
   src/mc/explo/udpor/Comb.hpp
-  src/mc/explo/udpor/Comb.cpp
   src/mc/explo/udpor/Configuration.hpp
   src/mc/explo/udpor/Configuration.cpp
   src/mc/explo/udpor/EventSet.cpp
