@@ -128,10 +128,13 @@ std::optional<Configuration> Configuration::compute_k_partial_alternative_to(con
   const auto D_hat = [&]() {
     const size_t size = std::min(k, D.size());
     std::vector<const UnfoldingEvent*> D_hat(size);
-    // Potentially select intelligently here (e.g. perhaps pick events
-    // with transitions that we know are totally independent)...
+    // TODO: Since any subset suffices for computing `k`-partial alternatives,
+    // potentially select intelligently here (e.g. perhaps pick events
+    // with transitions that we know are totally independent). This may be
+    // especially important if the enumeration is the slowest part of
+    // UDPOR
     //
-    // For now, simply pick the first `k` events (any subset suffices)
+    // For now, simply pick the first `k` events
     std::copy_n(D.begin(), size, D_hat.begin());
     return D_hat;
   }();

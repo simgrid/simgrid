@@ -86,7 +86,6 @@ bool UnfoldingEvent::conflicts_with(const Configuration& config) const
 
 bool UnfoldingEvent::immediately_conflicts_with(const UnfoldingEvent* other) const
 {
-  // Computes "this #ⁱ other"
   // They have to be in conflict at a minimum
   if (not conflicts_with(other)) {
     return false;
