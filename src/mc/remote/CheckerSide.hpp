@@ -18,12 +18,8 @@ namespace simgrid::mc {
 /* CheckerSide: All what the checker needs to interact with a given application process */
 
 class CheckerSide {
-  void (*const free_event_fun)(event*) = [](event* evt) {
-    event_del(evt);
-    event_free(evt);
-  };
-  std::unique_ptr<event, decltype(&event_free)> socket_event_{nullptr, &event_free};
-  std::unique_ptr<event, decltype(&event_free)> signal_event_{nullptr, &event_free};
+  event* socket_event_;
+  event* signal_event_;
   std::unique_ptr<event_base, decltype(&event_base_free)> base_{nullptr, &event_base_free};
   std::unique_ptr<RemoteProcessMemory> remote_memory_;
 
@@ -37,6 +33,7 @@ class CheckerSide {
 
 public:
   explicit CheckerSide(const std::vector<char*>& args, bool need_memory_introspection);
+  ~CheckerSide();
 
   // No copy:
   CheckerSide(CheckerSide const&) = delete;

@@ -131,7 +131,7 @@ void CheckerSide::setup_events()
   auto* base = event_base_new();
   base_.reset(base);
 
-  auto* socket_event = event_new(
+  socket_event_ = event_new(
       base, get_channel().get_socket(), EV_READ | EV_PERSIST,
       [](evutil_socket_t sig, short events, void* arg) {
         auto checker = static_cast<simgrid::mc::CheckerSide*>(arg);
@@ -151,10 +151,9 @@ void CheckerSide::setup_events()
         }
       },
       this);
-  event_add(socket_event, nullptr);
-  socket_event_.reset(socket_event);
+  event_add(socket_event_, nullptr);
 
-  auto* signal_event = event_new(
+  signal_event_ = event_new(
       base, SIGCHLD, EV_SIGNAL | EV_PERSIST,
       [](evutil_socket_t sig, short events, void* arg) {
         auto checker = static_cast<simgrid::mc::CheckerSide*>(arg);
@@ -168,8 +167,7 @@ void CheckerSide::setup_events()
         }
       },
       this);
-  event_add(signal_event, nullptr);
-  signal_event_.reset(signal_event);
+  event_add(signal_event_, nullptr);
 }
 
 CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_introspection) : running_(true)
@@ -211,6 +209,14 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_intros
     /* We now have enough info to create the memory address space */
     remote_memory_ = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid_, answer.mmalloc_default_mdp);
   }
+}
+
+CheckerSide::~CheckerSide()
+{
+  event_del(socket_event_);
+  event_free(socket_event_);
+  event_del(signal_event_);
+  event_free(signal_event_);
 }
 
 void CheckerSide::dispatch_events() const
