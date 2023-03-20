@@ -23,7 +23,7 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_), guide(std::make_
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
     system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store(),
-                                                            remote_app.get_remote_process_memory());
+                                                            *remote_app.get_remote_process_memory());
 }
 
 State::State(RemoteApp& remote_app, const State* parent_state)
@@ -35,7 +35,7 @@ State::State(RemoteApp& remote_app, const State* parent_state)
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
     system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store(),
-                                                            remote_app.get_remote_process_memory());
+                                                            *remote_app.get_remote_process_memory());
 
   /* If we want sleep set reduction, copy the sleep set and eventually removes things from it */
   if (_sg_mc_sleep_set) {

@@ -172,7 +172,7 @@ void CheckerSide::setup_events()
   signal_event_.reset(signal_event);
 }
 
-CheckerSide::CheckerSide(const std::vector<char*>& args) : running_(true)
+CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_introspection) : running_(true)
 {
   // Create an AF_LOCAL socketpair used for exchanging messages between the model-checker process (ancestor)
   // and the application process (child)
@@ -196,6 +196,21 @@ CheckerSide::CheckerSide(const std::vector<char*>& args) : running_(true)
   wait_application_process(pid_);
 
   wait_for_requests();
+
+  // Request the initial memory on need
+  if (need_memory_introspection) {
+    channel_.send(MessageType::INITIAL_ADDRESSES);
+    s_mc_message_initial_addresses_reply_t answer;
+    ssize_t answer_size = channel_.receive(answer);
+    xbt_assert(answer_size != -1, "Could not receive message");
+    xbt_assert(answer.type == MessageType::INITIAL_ADDRESSES_REPLY,
+               "The received message is not the INITIAL_ADDRESS_REPLY I was expecting but of type %s",
+               to_c_str(answer.type));
+    xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
+
+    /* We now have enough info to create the memory address space */
+    remote_memory_ = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid_, answer.mmalloc_default_mdp);
+  }
 }
 
 void CheckerSide::dispatch_events() const
@@ -215,52 +230,59 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
   memcpy(&base_message, buffer, sizeof(base_message));
 
   switch (base_message.type) {
-    case MessageType::INITIAL_ADDRESSES: {
-      s_mc_message_initial_addresses_t message;
-      xbt_assert(size == sizeof(message), "Broken message. Got %d bytes instead of %d.", (int)size,
-                 (int)sizeof(message));
-      memcpy(&message, buffer, sizeof(message));
-      /* Create the memory address space, now that we have the mandatory information */
-      remote_memory_ = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid_, message.mmalloc_default_mdp);
-      break;
-    }
-
     case MessageType::IGNORE_HEAP: {
-      s_mc_message_ignore_heap_t message;
-      xbt_assert(size == sizeof(message), "Broken message");
-      memcpy(&message, buffer, sizeof(message));
+      if (remote_memory_ != nullptr) {
+        s_mc_message_ignore_heap_t message;
+        xbt_assert(size == sizeof(message), "Broken message");
+        memcpy(&message, buffer, sizeof(message));
 
-      IgnoredHeapRegion region;
-      region.block    = message.block;
-      region.fragment = message.fragment;
-      region.address  = message.address;
-      region.size     = message.size;
-      get_remote_memory().ignore_heap(region);
+        IgnoredHeapRegion region;
+        region.block    = message.block;
+        region.fragment = message.fragment;
+        region.address  = message.address;
+        region.size     = message.size;
+        get_remote_memory()->ignore_heap(region);
+      } else {
+        XBT_INFO("Ignoring a IGNORE_HEAP message because we don't need to introspect memory.");
+      }
       break;
     }
 
     case MessageType::UNIGNORE_HEAP: {
-      s_mc_message_ignore_memory_t message;
-      xbt_assert(size == sizeof(message), "Broken message");
-      memcpy(&message, buffer, sizeof(message));
-      get_remote_memory().unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
+      if (remote_memory_ != nullptr) {
+        s_mc_message_ignore_memory_t message;
+        xbt_assert(size == sizeof(message), "Broken message");
+        memcpy(&message, buffer, sizeof(message));
+        get_remote_memory()->unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
+      } else {
+        XBT_INFO("Ignoring an UNIGNORE_HEAP message because we don't need to introspect memory.");
+      }
       break;
     }
 
     case MessageType::IGNORE_MEMORY: {
-      s_mc_message_ignore_memory_t message;
-      xbt_assert(size == sizeof(message), "Broken message");
-      memcpy(&message, buffer, sizeof(message));
-      get_remote_memory().ignore_region(message.addr, message.size);
+      if (remote_memory_ != nullptr) {
+        s_mc_message_ignore_memory_t message;
+        xbt_assert(size == sizeof(message), "Broken message");
+        memcpy(&message, buffer, sizeof(message));
+        get_remote_memory()->ignore_region(message.addr, message.size);
+      } else {
+        XBT_INFO("Ignoring an IGNORE_MEMORY message because we don't need to introspect memory.");
+      }
       break;
     }
 
     case MessageType::STACK_REGION: {
-      s_mc_message_stack_region_t message;
-      xbt_assert(size == sizeof(message), "Broken message");
-      memcpy(&message, buffer, sizeof(message));
-      get_remote_memory().stack_areas().push_back(message.stack_region);
-    } break;
+      if (remote_memory_ != nullptr) {
+        s_mc_message_stack_region_t message;
+        xbt_assert(size == sizeof(message), "Broken message");
+        memcpy(&message, buffer, sizeof(message));
+        get_remote_memory()->stack_areas().push_back(message.stack_region);
+      } else {
+        XBT_INFO("Ignoring an STACK_REGION message because we don't need to introspect memory.");
+      }
+      break;
+    }
 
     case MessageType::REGISTER_SYMBOL: {
       s_mc_message_register_symbol_t message;
@@ -269,7 +291,7 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
       xbt_assert(not message.callback, "Support for client-side function proposition is not implemented.");
       XBT_DEBUG("Received symbol: %s", message.name.data());
 
-      LivenessChecker::automaton_register_symbol(get_remote_memory(), message.name.data(), remote((int*)message.data));
+      LivenessChecker::automaton_register_symbol(*get_remote_memory(), message.name.data(), remote((int*)message.data));
       break;
     }
 

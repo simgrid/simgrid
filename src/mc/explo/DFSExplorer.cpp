@@ -43,7 +43,7 @@ void DFSExplorer::check_non_termination(const State* current_state)
 {
   for (auto const& state : stack_) {
     if (state->get_system_state()->equals_to(*current_state->get_system_state(),
-                                             get_remote_app().get_remote_process_memory())) {
+                                             *get_remote_app().get_remote_process_memory())) {
       XBT_INFO("Non-progressive cycle: state %ld -> state %ld", state->get_num(), current_state->get_num());
       XBT_INFO("******************************************");
       XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
@@ -277,7 +277,7 @@ void DFSExplorer::backtrack()
     /* If asked to rollback on a state that has a snapshot, restore it */
     State* last_state = stack_.back().get();
     if (const auto* system_state = last_state->get_system_state()) {
-      system_state->restore(get_remote_app().get_remote_process_memory());
+      system_state->restore(*get_remote_app().get_remote_process_memory());
       on_restore_system_state_signal(last_state, get_remote_app());
       return;
     }
@@ -297,7 +297,8 @@ void DFSExplorer::backtrack()
   } // If no backtracing point, then the stack is empty and the exploration is over
 }
 
-DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Exploration(args, true)
+//DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Exploration(args, _sg_mc_termination) // UNCOMMENT TO ACTIVATE REFORKS
+DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Exploration(args, true) // This version does not use reforks as it breaks
 {
   if (with_dpor)
     reduction_mode_ = ReductionMode::dpor;

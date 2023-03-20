@@ -22,8 +22,8 @@ class CheckerSide {
     event_del(evt);
     event_free(evt);
   };
-  std::unique_ptr<event, decltype(&event_free)> socket_event_{nullptr, free_event_fun};
-  std::unique_ptr<event, decltype(&event_free)> signal_event_{nullptr, free_event_fun};
+  std::unique_ptr<event, decltype(&event_free)> socket_event_{nullptr, &event_free};
+  std::unique_ptr<event, decltype(&event_free)> signal_event_{nullptr, &event_free};
   std::unique_ptr<event_base, decltype(&event_base_free)> base_{nullptr, &event_base_free};
   std::unique_ptr<RemoteProcessMemory> remote_memory_;
 
@@ -36,7 +36,7 @@ class CheckerSide {
   void handle_waitpid();
 
 public:
-  explicit CheckerSide(const std::vector<char*>& args);
+  explicit CheckerSide(const std::vector<char*>& args, bool need_memory_introspection);
 
   // No copy:
   CheckerSide(CheckerSide const&) = delete;
@@ -56,7 +56,7 @@ public:
   pid_t get_pid() const { return pid_; }
   bool running() const { return running_; }
   void terminate() { running_ = false; }
-  RemoteProcessMemory& get_remote_memory() { return *remote_memory_.get(); }
+  RemoteProcessMemory* get_remote_memory() { return remote_memory_.get(); }
 };
 
 } // namespace simgrid::mc

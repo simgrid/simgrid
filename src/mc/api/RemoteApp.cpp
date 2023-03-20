@@ -34,10 +34,10 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
   for (auto* arg : args)
     app_args_.push_back(arg);
 
-  checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
+  checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_, need_memory_introspection);
 
   if (need_memory_introspection)
-    initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_, checker_side_->get_remote_memory());
+    initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_, *checker_side_->get_remote_memory());
 }
 
 RemoteApp::~RemoteApp()
@@ -50,11 +50,11 @@ void RemoteApp::restore_initial_state()
 {
   if (initial_snapshot_ == nullptr) { // No memory introspection
     shutdown();
-    checker_side_.reset(
-        nullptr); // We need to destroy the existing CheckerSide before creating the new one, or libevent gets crazy
-    checker_side_.reset(new simgrid::mc::CheckerSide(app_args_));
+    // We need to destroy the existing CheckerSide before creating the new one, or libevent gets crazy
+    checker_side_.reset(nullptr);
+    checker_side_.reset(new simgrid::mc::CheckerSide(app_args_, true));
   } else
-    initial_snapshot_->restore(checker_side_->get_remote_memory());
+    initial_snapshot_->restore(*checker_side_->get_remote_memory());
 }
 
 unsigned long RemoteApp::get_maxpid() const
@@ -198,7 +198,9 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
   m.times_considered_              = times_considered;
   checker_side_->get_channel().send(m);
 
-  get_remote_process_memory().clear_cache();
+  auto* memory = get_remote_process_memory();
+  if (memory != nullptr)
+    memory->clear_cache();
   if (checker_side_->running())
     checker_side_->dispatch_events(); // The app may send messages while processing the transition
 

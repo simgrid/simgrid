@@ -22,6 +22,7 @@ class XBT_PUBLIC AppSide {
 private:
   Channel channel_;
   static std::unique_ptr<AppSide> instance_;
+  bool need_memory_info_ = false; /* by default we don't send memory info, unless we got a INITIAL_ADDRESSES */
 
 public:
   AppSide();
@@ -32,6 +33,7 @@ private:
   void handle_deadlock_check(const s_mc_message_t* msg) const;
   void handle_simcall_execute(const s_mc_message_simcall_execute_t* message) const;
   void handle_finalize(const s_mc_message_int_t* msg) const;
+  void handle_initial_addresses() const;
   void handle_actors_status() const;
   void handle_actors_maxpid() const;
 

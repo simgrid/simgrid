@@ -75,11 +75,6 @@ AppSide* AppSide::initialize()
   xbt_assert(errno == 0 && raise(SIGSTOP) == 0, "Could not wait for the model-checker (errno = %d: %s)", errno,
              strerror(errno));
 
-  s_mc_message_initial_addresses_t message = {};
-  message.type                = MessageType::INITIAL_ADDRESSES;
-  message.mmalloc_default_mdp              = mmalloc_get_current_heap();
-  xbt_assert(instance_->channel_.send(message) == 0, "Could not send the initial message with addresses.");
-
   instance_->handle_messages();
   return instance_.get();
 }
@@ -151,6 +146,13 @@ void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
   std::fflush(stdout);
   if (terminate_asap)
     ::_Exit(0);
+}
+void AppSide::handle_initial_addresses() const
+{
+  s_mc_message_initial_addresses_reply_t answer = {};
+  answer.type                                   = MessageType::INITIAL_ADDRESSES_REPLY;
+  answer.mmalloc_default_mdp                    = mmalloc_get_current_heap();
+  xbt_assert(channel_.send(answer) == 0, "Could not send response with initial addresses.");
 }
 void AppSide::handle_actors_status() const
 {
@@ -268,6 +270,11 @@ void AppSide::handle_messages() const
         handle_finalize((s_mc_message_int_t*)message_buffer.data());
         break;
 
+      case MessageType::INITIAL_ADDRESSES:
+        assert_msg_size("INITIAL_ADDRESSES", s_mc_message_t);
+        handle_initial_addresses();
+        break;
+
       case MessageType::ACTORS_STATUS:
         assert_msg_size("ACTORS_STATUS", s_mc_message_t);
         handle_actors_status();
@@ -309,7 +316,7 @@ void AppSide::report_assertion_failure() const
 
 void AppSide::ignore_memory(void* addr, std::size_t size) const
 {
-  if (not MC_is_active())
+  if (not MC_is_active() || not need_memory_info_)
     return;
 
   s_mc_message_ignore_memory_t message = {};
@@ -321,7 +328,7 @@ void AppSide::ignore_memory(void* addr, std::size_t size) const
 
 void AppSide::ignore_heap(void* address, std::size_t size) const
 {
-  if (not MC_is_active())
+  if (not MC_is_active() || not need_memory_info_)
     return;
 
   const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
@@ -344,7 +351,7 @@ void AppSide::ignore_heap(void* address, std::size_t size) const
 
 void AppSide::unignore_heap(void* address, std::size_t size) const
 {
-  if (not MC_is_active())
+  if (not MC_is_active() || not need_memory_info_)
     return;
 
   s_mc_message_ignore_memory_t message = {};
@@ -356,7 +363,7 @@ void AppSide::unignore_heap(void* address, std::size_t size) const
 
 void AppSide::declare_symbol(const char* name, int* value) const
 {
-  if (not MC_is_active())
+  if (not MC_is_active() || not need_memory_info_)
     return;
 
   s_mc_message_register_symbol_t message = {};
@@ -376,7 +383,7 @@ void AppSide::declare_symbol(const char* name, int* value) const
  */
 void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context) const
 {
-  if (not MC_is_active())
+  if (not MC_is_active() || not need_memory_info_)
     return;
 
   const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
