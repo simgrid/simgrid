@@ -614,6 +614,10 @@ set(MC_SRC
   src/mc/mc_private.hpp
   src/mc/mc_record.cpp
 
+  src/mc/api/guide/BasicGuide.hpp
+  src/mc/api/guide/GuidedState.hpp
+  src/mc/api/guide/WaitGuide.hpp
+  
   src/xbt/mmalloc/mm_interface.c
   )
 

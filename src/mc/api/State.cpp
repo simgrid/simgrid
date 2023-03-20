@@ -5,7 +5,7 @@
 
 #include "src/mc/api/State.hpp"
 #include "src/mc/api/guide/BasicGuide.hpp"
-//#include "src/mc/api/guide/WaitGuide.hpp"
+#include "src/mc/api/guide/WaitGuide.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
 
@@ -20,26 +20,26 @@ long State::expended_states_ = 0;
 State::State(RemoteApp& remote_app) : num_(++expended_states_)
 {
   remote_app.get_actors_status(guide_->actors_to_run_);
-  if (_sg_mc_guided == "none")  
-      guide_ = std::make_unique<BasicGuide>();
+  if (_sg_mc_guided == "none")
+    guide_ = std::make_unique<BasicGuide>();
   if (_sg_mc_guided == "nb_wait")
-      guide_ = std::make_unique<BasicGuide>();  
+    guide_ = std::make_unique<WaitGuide>();
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
     system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store(),
                                                             remote_app.get_remote_process_memory());
 }
 
-State::State(RemoteApp& remote_app, const State* parent_state)
-    : num_(++expended_states_), parent_state_(parent_state)
+State::State(RemoteApp& remote_app, const State* parent_state) : num_(++expended_states_), parent_state_(parent_state)
 {
-    
-    remote_app.get_actors_status(guide_->actors_to_run_);
-    if (_sg_mc_guided == "none")  
-	guide_ = std::make_unique<BasicGuide>();
-    if (_sg_mc_guided == "nb_wait")
-	guide_ = std::make_unique<BasicGuide>();	
-    
+
+  remote_app.get_actors_status(guide_->actors_to_run_);
+  if (_sg_mc_guided == "none")
+    guide_ = std::make_unique<BasicGuide>();
+  if (_sg_mc_guided == "nb_wait")
+    guide_ = std::make_unique<WaitGuide>();
+  *guide_ = *(parent_state->guide_);
+
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
     system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store(),
@@ -143,5 +143,8 @@ void State::execute_next(aid_t next, RemoteApp& app)
   actor_state.set_transition(std::move(executed_transition), times_considered);
 
   app.wait_for_requests();
+
+  // finally, also update informations in the guide, so it knows how to build a proper child state
+  guide_->execute_next(next, app);
 }
 } // namespace simgrid::mc
