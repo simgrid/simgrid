@@ -147,8 +147,9 @@ void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
   if (terminate_asap)
     ::_Exit(0);
 }
-void AppSide::handle_initial_addresses() const
+void AppSide::handle_initial_addresses()
 {
+  this->need_memory_info_                       = true;
   s_mc_message_initial_addresses_reply_t answer = {};
   answer.type                                   = MessageType::INITIAL_ADDRESSES_REPLY;
   answer.mmalloc_default_mdp                    = mmalloc_get_current_heap();
@@ -237,7 +238,7 @@ void AppSide::handle_actors_maxpid() const
   xbt_assert(received_size == sizeof(_type_), "Unexpected size for " _name_ " (%zd != %zu)", received_size,            \
              sizeof(_type_))
 
-void AppSide::handle_messages() const
+void AppSide::handle_messages()
 {
   while (true) { // Until we get a CONTINUE message
     XBT_DEBUG("Waiting messages from model-checker");
@@ -292,7 +293,7 @@ void AppSide::handle_messages() const
   }
 }
 
-void AppSide::main_loop() const
+void AppSide::main_loop()
 {
   simgrid::mc::processes_time.resize(simgrid::kernel::actor::ActorImpl::get_maxpid());
   MC_ignore_heap(simgrid::mc::processes_time.data(),
@@ -308,7 +309,7 @@ void AppSide::main_loop() const
   }
 }
 
-void AppSide::report_assertion_failure() const
+void AppSide::report_assertion_failure()
 {
   xbt_assert(channel_.send(MessageType::ASSERTION_FAILED) == 0, "Could not send assertion to model-checker");
   this->handle_messages();
@@ -363,8 +364,10 @@ void AppSide::unignore_heap(void* address, std::size_t size) const
 
 void AppSide::declare_symbol(const char* name, int* value) const
 {
-  if (not MC_is_active() || not need_memory_info_)
+  if (not MC_is_active() || not need_memory_info_) {
+    XBT_CRITICAL("Ignore AppSide::declare_symbol(%s)", name);
     return;
+  }
 
   s_mc_message_register_symbol_t message = {};
   message.type = MessageType::REGISTER_SYMBOL;

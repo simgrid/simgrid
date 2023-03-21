@@ -27,21 +27,21 @@ private:
 public:
   AppSide();
   explicit AppSide(int fd) : channel_(fd) {}
-  void handle_messages() const;
+  void handle_messages();
 
 private:
   void handle_deadlock_check(const s_mc_message_t* msg) const;
   void handle_simcall_execute(const s_mc_message_simcall_execute_t* message) const;
   void handle_finalize(const s_mc_message_int_t* msg) const;
-  void handle_initial_addresses() const;
+  void handle_initial_addresses();
   void handle_actors_status() const;
   void handle_actors_maxpid() const;
 
 public:
   Channel const& get_channel() const { return channel_; }
   Channel& get_channel() { return channel_; }
-  XBT_ATTRIB_NORETURN void main_loop() const;
-  void report_assertion_failure() const;
+  XBT_ATTRIB_NORETURN void main_loop();
+  void report_assertion_failure();
   void ignore_memory(void* addr, std::size_t size) const;
   void ignore_heap(void* addr, std::size_t size) const;
   void unignore_heap(void* addr, std::size_t size) const;

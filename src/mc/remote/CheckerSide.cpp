@@ -193,8 +193,6 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_intros
   setup_events();
   wait_application_process(pid_);
 
-  wait_for_requests();
-
   // Request the initial memory on need
   if (need_memory_introspection) {
     channel_.send(MessageType::INITIAL_ADDRESSES);
@@ -209,6 +207,8 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_intros
     /* We now have enough info to create the memory address space */
     remote_memory_ = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid_, answer.mmalloc_default_mdp);
   }
+
+  wait_for_requests();
 }
 
 CheckerSide::~CheckerSide()
