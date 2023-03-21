@@ -4,6 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/udpor/ExtensionSetCalculator.hpp"
+#include "src/mc/explo/udpor/Configuration.hpp"
+#include "src/mc/explo/udpor/History.hpp"
+#include "src/mc/explo/udpor/Unfolding.hpp"
 
 #include <functional>
 #include <unordered_map>
@@ -14,7 +17,7 @@ using namespace simgrid::mc;
 
 namespace simgrid::mc::udpor {
 
-EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, const Unfolding& U,
+EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, Unfolding* U,
                                                   const std::shared_ptr<Transition> action)
 {
   switch (action->type_) {
@@ -41,28 +44,97 @@ EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, const 
   }
 }
 
-EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& C, const Unfolding& U,
-                                                           const std::shared_ptr<CommSendTransition> action)
+EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& C, Unfolding* U,
+                                                           const std::shared_ptr<CommSendTransition> send_action)
+{
+  EventSet exC;
+
+  // TODO: if this is the first action by the actor, no such previous event exists.
+  // How do we react here? Do we say we're dependent with the root event?
+  const unsigned sender_mailbox = send_action->get_mailbox();
+  const auto pre_event_a_C      = C.pre_event(send_action->aid_).value();
+
+  // 1. Create `e' := <a, config(preEvt(a, C))>` and add `e'` to `ex(C)`
+  const auto e_prime = U->discover_event(EventSet({pre_event_a_C}), send_action);
+  exC.insert(e_prime);
+
+  // 2. foreach e ∈ C s.t. λ(e) ∈ {AsyncSend(m, _), TestAny(Com)} where
+  // Com contains a matching c' = AsyncReceive(m, _) with a
+  for (const auto e : C) {
+    const bool transition_type_check = [&]() {
+      if (const auto* async_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
+          e != nullptr && async_send->get_mailbox() == sender_mailbox) {
+        return true;
+      } else if (const auto* e_test_any = dynamic_cast<const CommTestTransition*>(e->get_transition());
+                 e_test_any != nullptr) {
+        // TODO: Check if there's a way to find a matching AsyncReceive -> matching when? in the history?
+        return true;
+      }
+      return false;
+    }();
+
+    if (transition_type_check) {
+      const EventSet K = EventSet({e, pre_event_a_C}).get_largest_maximal_subset();
+
+      // TODO: How do we compute D_K(a, b)? There's a specialized
+      // function for each case it appears, but I don't see where
+      // `config(K)` comes in
+      if (false) {
+        const auto e_prime = U->discover_event(std::move(K), send_action);
+        exC.insert(e_prime);
+      }
+    }
+  }
+
+  return exC;
+}
+
+EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& C, Unfolding* U,
+                                                           const std::shared_ptr<CommRecvTransition> recv_action)
 {
   return EventSet();
 }
 
-EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& C, const Unfolding& U,
-                                                           const std::shared_ptr<CommRecvTransition> action)
+EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration&, Unfolding* U,
+                                                           std::shared_ptr<CommWaitTransition> wait_action)
 {
   return EventSet();
 }
 
-EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration&, const Unfolding& U,
-                                                           std::shared_ptr<CommWaitTransition>)
+EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration&, Unfolding* U,
+                                                           std::shared_ptr<CommTestTransition> test_action)
 {
   return EventSet();
-}
+  // EventSet exC;
 
-EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration&, const Unfolding& U,
-                                                           std::shared_ptr<CommTestTransition>)
-{
-  return EventSet();
+  // // TODO: if this is the first action by the actor, no such previous event exists.
+  // // How do we react here? Do we say we're dependent with the root event?
+  // const auto tested_mailbox = test_action->get_mailbox();
+  // const auto pre_event_a_C  = C.pre_event(send_action->aid_).value();
+
+  // for (const auto e : C) {
+  //   if (e == pre_event_a_C) {
+  //     const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), action);
+  //     exC.insert(e_prime);
+  //   } else {
+  //     // TODO: Check condition
+  //     const bool should_process = [&]() { return false; }();
+
+  //     EventSet K;
+  //     if (not(e < pre_event_a_C))
+  //       K.insert(e);
+  //     if (not(pre_event_a_C < e))
+  //       K.insert(pre_event_a_C);
+
+  //     // TODO: How do we compute D_K(a, b)? There's a specialized
+  //     // function for each case it appears, but I don't see where
+  //     // `config(K)` comes in
+  //     if (should_process) {
+  //       const auto e_prime = U->discover_event(std::move(K), action);
+  //       exC.insert(e_prime);
+  //     }
+  //   }
+  // }
 }
 
 } // namespace simgrid::mc::udpor

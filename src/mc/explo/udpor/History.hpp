@@ -12,6 +12,7 @@
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <functional>
+#include <initializer_list>
 #include <optional>
 
 namespace simgrid::mc::udpor {
@@ -54,8 +55,9 @@ public:
   History& operator=(History const&) = default;
   History(History&&)                 = default;
 
-  explicit History(EventSet event_set = EventSet()) : events_(std::move(event_set)) {}
   explicit History(const UnfoldingEvent* e) : events_({e}) {}
+  explicit History(EventSet event_set = EventSet()) : events_(std::move(event_set)) {}
+  explicit History(std::initializer_list<const UnfoldingEvent*> list) : events_(std::move(list)) {}
 
   auto begin() const { return Iterator(events_); }
   auto end() const { return Iterator(EventSet()); }

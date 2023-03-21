@@ -142,13 +142,18 @@ bool EventSet::intersects(const History& history) const
   return std::any_of(history.begin(), history.end(), [=](const UnfoldingEvent* e) { return this->contains(e); });
 }
 
+EventSet EventSet::get_largest_maximal_subset() const
+{
+  const History history(*this);
+  return history.get_all_maximal_events();
+}
+
 bool EventSet::is_maximal() const
 {
   // A set of events is maximal if no event from
   // the original set is ruled out when traversing
   // the history of the events
-  const History history(*this);
-  return *this == history.get_all_maximal_events();
+  return *this == this->get_largest_maximal_subset();
 }
 
 bool EventSet::is_conflict_free() const

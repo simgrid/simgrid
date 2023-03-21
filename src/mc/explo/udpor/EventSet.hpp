@@ -105,6 +105,12 @@ public:
   bool is_conflict_free() const;
 
   /**
+   * @brief Produces the largest subset of this
+   * set of events which is maximal
+   */
+  EventSet get_largest_maximal_subset() const;
+
+  /**
    * @brief Orders the events of the set such that
    * "more recent" events (i.e. those that are farther down in
    * the event structure's dependency chain) come after those

@@ -20,6 +20,10 @@ UnfoldingEvent::UnfoldingEvent(EventSet immediate_causes, std::shared_ptr<Transi
 
 bool UnfoldingEvent::operator==(const UnfoldingEvent& other) const
 {
+  // Intrinsic identity check
+  if (this == &other) {
+    return true;
+  }
   // Two events are equivalent iff:
   // 1. they have the same action
   // 2. they have the same history

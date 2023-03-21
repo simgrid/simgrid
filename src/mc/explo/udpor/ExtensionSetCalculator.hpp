@@ -25,17 +25,13 @@ namespace simgrid::mc::udpor {
  */
 struct ExtensionSetCalculator final {
 private:
-  static EventSet partially_extend_CommSend(const Configuration&, const Unfolding&,
-                                            std::shared_ptr<CommSendTransition>);
-  static EventSet partially_extend_CommRecv(const Configuration&, const Unfolding&,
-                                            std::shared_ptr<CommRecvTransition>);
-  static EventSet partially_extend_CommWait(const Configuration&, const Unfolding&,
-                                            std::shared_ptr<CommWaitTransition>);
-  static EventSet partially_extend_CommTest(const Configuration&, const Unfolding&,
-                                            std::shared_ptr<CommTestTransition>);
+  static EventSet partially_extend_CommSend(const Configuration&, Unfolding*, std::shared_ptr<CommSendTransition>);
+  static EventSet partially_extend_CommRecv(const Configuration&, Unfolding*, std::shared_ptr<CommRecvTransition>);
+  static EventSet partially_extend_CommWait(const Configuration&, Unfolding*, std::shared_ptr<CommWaitTransition>);
+  static EventSet partially_extend_CommTest(const Configuration&, Unfolding*, std::shared_ptr<CommTestTransition>);
 
 public:
-  static EventSet partially_extend(const Configuration&, const Unfolding&, const std::shared_ptr<Transition>);
+  static EventSet partially_extend(const Configuration&, Unfolding*, const std::shared_ptr<Transition>);
 };
 
 } // namespace simgrid::mc::udpor

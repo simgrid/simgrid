@@ -129,7 +129,7 @@ EventSet UdporChecker::compute_exC(const Configuration& C, const State& stateC, 
 
   for (const auto& [aid, actor_state] : stateC.get_actors_list()) {
     for (const auto& transition : actor_state.get_enabled_transitions()) {
-      EventSet extension = ExtensionSetCalculator::partially_extend(C, unfolding, transition);
+      EventSet extension = ExtensionSetCalculator::partially_extend(C, &unfolding, transition);
       exC.form_union(extension);
     }
   }

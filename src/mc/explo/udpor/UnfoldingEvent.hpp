@@ -28,6 +28,11 @@ public:
 
   EventSet get_history() const;
   bool in_history_of(const UnfoldingEvent* other) const;
+
+  /**
+   * @brief Whether or not the given event is a decendant
+   * of or an ancestor of the given event
+   */
   bool related_to(const UnfoldingEvent* other) const;
 
   /// @brief Whether or not this event is in conflict with
