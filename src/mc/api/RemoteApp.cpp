@@ -43,13 +43,12 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
 RemoteApp::~RemoteApp()
 {
   initial_snapshot_ = nullptr;
-  shutdown();
+  checker_side_     = nullptr;
 }
 
 void RemoteApp::restore_initial_state()
 {
   if (initial_snapshot_ == nullptr) { // No memory introspection
-    shutdown();
     // We need to destroy the existing CheckerSide before creating the new one, or libevent gets crazy
     checker_side_.reset(nullptr);
     checker_side_.reset(new simgrid::mc::CheckerSide(app_args_, true));
@@ -178,18 +177,6 @@ void RemoteApp::wait_for_requests()
   checker_side_->wait_for_requests();
 }
 
-void RemoteApp::shutdown()
-{
-  XBT_DEBUG("Shutting down model-checker");
-
-  if (checker_side_->running()) {
-    XBT_DEBUG("Killing process");
-    finalize_app(true);
-    kill(checker_side_->get_pid(), SIGKILL);
-    checker_side_->terminate();
-  }
-}
-
 Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_transition)
 {
   s_mc_message_simcall_execute_t m = {};
@@ -221,18 +208,7 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
 
 void RemoteApp::finalize_app(bool terminate_asap)
 {
-  s_mc_message_int_t m = {};
-  m.type               = MessageType::FINALIZE;
-  m.value              = terminate_asap;
-  xbt_assert(checker_side_->get_channel().send(m) == 0, "Could not ask the app to finalize on need");
-
-  s_mc_message_t answer;
-  ssize_t s = checker_side_->get_channel().receive(answer);
-  xbt_assert(s != -1, "Could not receive answer to FINALIZE");
-  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
-  xbt_assert(answer.type == MessageType::FINALIZE_REPLY,
-             "Received unexpected message %s (%i); expected MessageType::FINALIZE_REPLY (%i)", to_c_str(answer.type),
-             (int)answer.type, (int)MessageType::FINALIZE_REPLY);
+  checker_side_->finalize(terminate_asap);
 }
 
 } // namespace simgrid::mc

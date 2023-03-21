@@ -116,7 +116,6 @@ void Exploration::report_assertion_failure()
 
 void Exploration::system_exit(int status)
 {
-  get_remote_app().shutdown();
   ::exit(status);
 }
 

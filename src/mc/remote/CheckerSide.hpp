@@ -49,6 +49,9 @@ public:
   void break_loop() const;
   void wait_for_requests();
 
+  /** Ask the application to run post-mortem analysis, and maybe to stop ASAP */
+  void finalize(bool terminate_asap = false);
+
   /* Interacting with the application process */
   pid_t get_pid() const { return pid_; }
   bool running() const { return running_; }

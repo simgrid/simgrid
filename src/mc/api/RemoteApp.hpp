@@ -56,8 +56,6 @@ public:
 
   /** Ask the application to run post-mortem analysis, and maybe to stop ASAP */
   void finalize_app(bool terminate_asap = false);
-  /** Forcefully kill the application (after running post-mortem analysis)*/
-  void shutdown();
 
   /** Retrieve the max PID of the running actors */
   unsigned long get_maxpid() const;

@@ -217,6 +217,30 @@ CheckerSide::~CheckerSide()
   event_free(socket_event_);
   event_del(signal_event_);
   event_free(signal_event_);
+
+  if (running()) {
+    XBT_DEBUG("Killing process");
+    finalize(true);
+    kill(get_pid(), SIGKILL);
+    terminate();
+    handle_waitpid();
+  }
+}
+
+void CheckerSide::finalize(bool terminate_asap)
+{
+  s_mc_message_int_t m = {};
+  m.type               = MessageType::FINALIZE;
+  m.value              = terminate_asap;
+  xbt_assert(get_channel().send(m) == 0, "Could not ask the app to finalize on need");
+
+  s_mc_message_t answer;
+  ssize_t s = get_channel().receive(answer);
+  xbt_assert(s != -1, "Could not receive answer to FINALIZE");
+  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
+  xbt_assert(answer.type == MessageType::FINALIZE_REPLY,
+             "Received unexpected message %s (%i); expected MessageType::FINALIZE_REPLY (%i)", to_c_str(answer.type),
+             (int)answer.type, (int)MessageType::FINALIZE_REPLY);
 }
 
 void CheckerSide::dispatch_events() const
