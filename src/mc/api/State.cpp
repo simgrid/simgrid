@@ -19,11 +19,14 @@ long State::expended_states_ = 0;
 
 State::State(RemoteApp& remote_app) : num_(++expended_states_)
 {
-  remote_app.get_actors_status(guide_->actors_to_run_);
+  XBT_VERB("Creating a guide for the state");
   if (_sg_mc_guided == "none")
     guide_ = std::make_unique<BasicGuide>();
   if (_sg_mc_guided == "nb_wait")
     guide_ = std::make_unique<WaitGuide>();
+
+  remote_app.get_actors_status(guide_->actors_to_run_);
+
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
     system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store(),
@@ -33,12 +36,13 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
 State::State(RemoteApp& remote_app, const State* parent_state) : num_(++expended_states_), parent_state_(parent_state)
 {
 
-  remote_app.get_actors_status(guide_->actors_to_run_);
   if (_sg_mc_guided == "none")
     guide_ = std::make_unique<BasicGuide>();
   if (_sg_mc_guided == "nb_wait")
     guide_ = std::make_unique<WaitGuide>();
   *guide_ = *(parent_state->guide_);
+
+  remote_app.get_actors_status(guide_->actors_to_run_);
 
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
@@ -109,6 +113,9 @@ std::pair<aid_t, double> State::next_transition_guided() const
 // This should be done in GuidedState, or at least interact with it
 void State::execute_next(aid_t next, RemoteApp& app)
 {
+  // First, warn the guide, so it knows how to build a proper child state
+  guide_->execute_next(next, app);
+
   // This actor is ready to be executed. Execution involves three phases:
 
   // 1. Identify the appropriate ActorState to prepare for execution
@@ -143,8 +150,5 @@ void State::execute_next(aid_t next, RemoteApp& app)
   actor_state.set_transition(std::move(executed_transition), times_considered);
 
   app.wait_for_requests();
-
-  // finally, also update informations in the guide, so it knows how to build a proper child state
-  guide_->execute_next(next, app);
 }
 } // namespace simgrid::mc
