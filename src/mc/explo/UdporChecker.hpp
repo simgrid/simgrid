@@ -28,7 +28,7 @@ namespace simgrid::mc::udpor {
  * current implementation of `tiny_simgrid`:
  *
  * 1. "Unfolding-based Partial Order Reduction" by Rodriguez et al.
- * 2. Quasi-Optimal Partial Order Reduction by Nguyen et al.
+ * 2. "Quasi-Optimal Partial Order Reduction" by Nguyen et al.
  * 3. The Anh Pham's Thesis "Exploration efficace de l'espace ..."
  */
 class XBT_PRIVATE UdporChecker : public Exploration {
@@ -42,33 +42,6 @@ public:
   inline std::unique_ptr<State> get_current_state() { return std::make_unique<State>(get_remote_app()); }
 
 private:
-  /**
-   * @brief The "relevant" portions of the unfolding that must be kept around to ensure that
-   * UDPOR properly searches the state space
-   *
-   * The set `U` is a global variable which is maintained by UDPOR
-   * to keep track of "just enough" information about the unfolding
-   * to compute *alternatives* (see the paper for more details).
-   *
-   * @invariant: When a new event is created by UDPOR, it is inserted into
-   * this set. All new events that are created by UDPOR have causes that
-   * also exist in U and are valid for the duration of the search.
-   *
-   * If an event is discarded instead of moved from set `U` to set `G`,
-   * the event and its contents will be discarded.
-   */
-  EventSet U;
-
-  /**
-   * @brief The "irrelevant" portions of the unfolding that do not need to be kept
-   * around to ensure that UDPOR functions correctly
-   *
-   * The set `G` is another global variable maintained by the UDPOR algorithm which
-   * is used to keep track of all events which used to be important to UDPOR
-   */
-  EventSet G;
-
-  /// @brief UDPOR's current "view" of the program it is exploring
   Unfolding unfolding = Unfolding();
 
   /**
@@ -131,7 +104,7 @@ private:
    * SimGrid is apart, which allow for `ex(C)` to be computed much more efficiently.
    * Intuitively, the idea is to take advantage of the fact that you can avoid a lot
    * of repeated computation by exploiting the aforementioned properties (in [3]) in
-   * what is effectively a dynamic programming optimization. See [3] for more details
+   * what is akin to a dynamic programming optimization. See [3] for more details
    *
    * @param C the configuration based on which the two sets `ex(C)` and `en(C)` are
    * computed
@@ -144,16 +117,12 @@ private:
 
   /**
    * @brief Computes a portion of the extension set of a configuration given
-   * some action `action`
+   * some action `action` by directly enumerating all maximal subsets of C
+   * (i.e. without specializations based on the action)
    */
   EventSet compute_exC_by_enumeration(const Configuration& C, const std::shared_ptr<Transition> action);
 
   EventSet compute_enC(const Configuration& C, const EventSet& exC) const;
-
-  /**
-   *
-   */
-  EventSet compute_partial_alternative(const EventSet& D, const Configuration& C, const unsigned k) const;
 
   /**
    *

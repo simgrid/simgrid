@@ -2168,6 +2168,7 @@ include src/mc/explo/LivenessChecker.hpp
 include src/mc/explo/UdporChecker.cpp
 include src/mc/explo/UdporChecker.hpp
 include src/mc/explo/simgrid_mc.cpp
+include src/mc/explo/udpor/Comb.hpp
 include src/mc/explo/udpor/Configuration.cpp
 include src/mc/explo/udpor/Configuration.hpp
 include src/mc/explo/udpor/Configuration_test.cpp

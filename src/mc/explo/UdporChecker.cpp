@@ -5,7 +5,10 @@
 
 #include "src/mc/explo/UdporChecker.hpp"
 #include "src/mc/api/State.hpp"
+#include "src/mc/explo/udpor/Comb.hpp"
+#include "src/mc/explo/udpor/History.hpp"
 #include "src/mc/explo/udpor/maximal_subsets_iterator.hpp"
+
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 
@@ -59,7 +62,9 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
     // are no enabled transitions that can be executed from the
     // state reached by `C` (denoted `state(C)`), i.e. by some
     // execution of the transitions in C obeying the causality
-    // relation. Here, then, we would be in a deadlock.
+    // relation. Here, then, we may be in a deadlock (the other
+    // possibility is that we've finished running everything, and
+    // we wouldn't be in deadlock then)
     if (enC.empty()) {
       get_remote_app().check_deadlock();
     }
@@ -75,7 +80,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
                            "the search, yet no events were actually chosen\n"
                            "*********************************\n\n");
 
-  // Move the application into stateCe and actually make note of that state
+  // Move the application into stateCe and make note of that state
   move_to_stateCe(*stateC, *e);
   auto stateCe = record_current_state();
 
@@ -92,10 +97,8 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
   // D <-- D + {e}
   D.insert(e);
 
-  // TODO: Determine a value of K to use or don't use it at all
   constexpr unsigned K = 10;
-  if (auto J = compute_partial_alternative(D, C, K); !J.empty()) {
-    J.subtract(C.get_events());
+  if (auto J = C.compute_k_partial_alternative_to(D, this->unfolding, K); J.has_value()) {
 
     // Before searching the "right half", we need to make
     // sure the program actually reflects the fact
@@ -104,7 +107,8 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
     restore_program_state_to(*stateC);
 
     // Explore(C, D + {e}, J \ C)
-    explore(C, D, std::move(J), std::move(stateC), std::move(prev_exC));
+    auto J_minus_C = J.value().get_events().subtracting(C.get_events());
+    explore(C, D, std::move(J_minus_C), std::move(stateC), std::move(prev_exC));
   }
 
   // D <-- D - {e}
@@ -157,7 +161,9 @@ EventSet UdporChecker::compute_exC_by_enumeration(const Configuration& C, const 
        begin != maximal_subsets_iterator(); ++begin) {
     const EventSet& maximal_subset = *begin;
 
-    // TODO: Determine if `a` is enabled here
+    // Determining if `a` is enabled here might not be possible while looking at `a` opaquely
+    // We leave the implementation as-is to ensure that any addition would be simple
+    // if it were ever added
     const bool enabled_at_config_k = false;
 
     if (enabled_at_config_k) {
@@ -169,7 +175,6 @@ EventSet UdporChecker::compute_exC_by_enumeration(const Configuration& C, const 
       }
     }
   }
-
   return incremental_exC;
 }
 
@@ -199,8 +204,10 @@ void UdporChecker::move_to_stateCe(State& state, const UnfoldingEvent& e)
 
 void UdporChecker::restore_program_state_to(const State& stateC)
 {
-  // TODO: Perform state regeneration in the same manner as is done
-  // in the DFSChecker.cpp
+  get_remote_app().restore_initial_state();
+  // TODO: We need to have the stack of past states available at this
+  // point. Since the method is recursive, we'll need to keep track of
+  // this as we progress
 }
 
 std::unique_ptr<State> UdporChecker::record_current_state()
@@ -227,15 +234,23 @@ const UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& 
   return nullptr;
 }
 
-EventSet UdporChecker::compute_partial_alternative(const EventSet& D, const Configuration& C, const unsigned k) const
-{
-  // TODO: Compute k-partial alternatives using [2]
-  return EventSet();
-}
-
 void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration& C, const EventSet& D)
 {
-  // TODO: Perform clean up here
+  const EventSet C_union_D              = C.get_events().make_union(D);
+  const EventSet es_immediate_conflicts = this->unfolding.get_immediate_conflicts_of(e);
+  const EventSet Q_CDU                  = C_union_D.make_union(es_immediate_conflicts.get_local_config());
+
+  // Move {e} \ Q_CDU from U to G
+  if (Q_CDU.contains(e)) {
+    this->unfolding.remove(e);
+  }
+
+  // foreach ê in #ⁱ_U(e)
+  for (const auto* e_hat : es_immediate_conflicts) {
+    // Move [ê] \ Q_CDU from U to G
+    const EventSet to_remove = e_hat->get_history().subtracting(Q_CDU);
+    this->unfolding.remove(to_remove);
+  }
 }
 
 RecordTrace UdporChecker::get_record_trace()

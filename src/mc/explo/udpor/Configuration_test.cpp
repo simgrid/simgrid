@@ -7,6 +7,7 @@
 #include "src/mc/explo/udpor/Configuration.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/History.hpp"
+#include "src/mc/explo/udpor/Unfolding.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/explo/udpor/maximal_subsets_iterator.hpp"
 #include "src/mc/explo/udpor/udpor_tests_private.hpp"
@@ -597,5 +598,569 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Stress Test for Maximal
 
     // Iteration with events directly should now also be finished
     REQUIRE(first_events == last);
+  }
+}
+
+TEST_CASE("simgrid::mc::udpor:Configuration: Computing Full Alternatives in Reader/Writer Example")
+{
+  // The following tests concern the given event structure that is given as
+  // an example in figure 1 of the original UDPOR paper.
+  //                  e0
+  //              /  /   /
+  //            e1   e4   e7
+  //           /     /  //   /
+  //         /  /   e5  e8   e9
+  //        e2 e3   /        /
+  //               e6       e10
+  //
+  // Theses tests walk through exactly the configurations and sets of `D` that
+  // UDPOR COULD encounter as it walks through the unfolding. Note that
+  // if there are multiple alternatives to any given configuration, UDPOR can
+  // continue searching any one of them. The sequence assumes UDPOR first picks `e1`,
+  // then `e4`, and then `e7`
+  Unfolding U;
+
+  auto e0        = std::make_unique<UnfoldingEvent>(EventSet(), std::make_shared<ConditionallyDependentAction>());
+  auto e0_handle = e0.get();
+
+  auto e1        = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}), std::make_shared<DependentAction>());
+  auto e1_handle = e1.get();
+
+  auto e2 = std::make_unique<UnfoldingEvent>(EventSet({e1_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e2_handle = e2.get();
+
+  auto e3 = std::make_unique<UnfoldingEvent>(EventSet({e1_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e3_handle = e3.get();
+
+  auto e4 = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e4_handle = e4.get();
+
+  auto e5        = std::make_unique<UnfoldingEvent>(EventSet({e4_handle}), std::make_shared<DependentAction>());
+  auto e5_handle = e5.get();
+
+  auto e6 = std::make_unique<UnfoldingEvent>(EventSet({e5_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e6_handle = e6.get();
+
+  auto e7 = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e7_handle = e7.get();
+
+  auto e8 = std::make_unique<UnfoldingEvent>(EventSet({e4_handle, e7_handle}), std::make_shared<DependentAction>());
+  auto e8_handle = e8.get();
+
+  auto e9        = std::make_unique<UnfoldingEvent>(EventSet({e7_handle}), std::make_shared<DependentAction>());
+  auto e9_handle = e9.get();
+
+  auto e10 = std::make_unique<UnfoldingEvent>(EventSet({e9_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e10_handle = e10.get();
+
+  SECTION("Alternative computation call 1")
+  {
+    // During the first call to Alt(C, D + {e}),
+    // UDPOR believes `U` to be the following:
+    //
+    //                  e0
+    //              /  /   /
+    //            e1   e4   e7
+    //           /
+    //         /  /
+    //        e2 e3
+    //
+    // C := {e0, e1, e2} and `Explore(C, D, A)` picked `e3`
+    // (since en(C') where C' := {e0, e1, e2, e3} is empty
+    // [so UDPOR will simply return when C' is reached])
+    //
+    // Thus the computation is (since D is empty at first)
+    //
+    // Alt(C, D + {e}) --> Alt({e0, e1, e2}, {e3})
+    //
+    // where U is given above. There are no alternatives in
+    // this case since `e4` and `e7` conflict with `e1` (so
+    // they cannot be added to C to form a configuration)
+    const Configuration C{e0_handle, e1_handle, e2_handle};
+    const EventSet D_plus_e{e3_handle};
+
+    REQUIRE(U.empty());
+    U.insert(std::move(e0));
+    U.insert(std::move(e1));
+    U.insert(std::move(e2));
+    U.insert(std::move(e3));
+    U.insert(std::move(e4));
+    U.insert(std::move(e7));
+
+    const auto alternative = C.compute_alternative_to(D_plus_e, U);
+    REQUIRE_FALSE(alternative.has_value());
+  }
+
+  SECTION("Alternative computation call 2")
+  {
+    // During the second call to Alt(C, D + {e}),
+    // UDPOR believes `U` to be the following:
+    //
+    //                  e0
+    //              /  /   /
+    //            e1   e4   e7
+    //           /
+    //         /  /
+    //        e2 e3
+    //
+    // C := {e0, e1} and `Explore(C, D, A)` picked `e2`.
+    //
+    // Thus the computation is (since D is still empty)
+    //
+    // Alt(C, D + {e}) --> Alt({e0, e1}, {e2})
+    //
+    // where U is given above. There are no alternatives in
+    // this case since `e4` and `e7` conflict with `e1` (so
+    // they cannot be added to C to form a configuration) and
+    // e3 is NOT in conflict with either e0 or e1
+    const Configuration C{e0_handle, e1_handle};
+    const EventSet D_plus_e{e2_handle};
+
+    REQUIRE(U.empty());
+    U.insert(std::move(e0));
+    U.insert(std::move(e1));
+    U.insert(std::move(e2));
+    U.insert(std::move(e3));
+    U.insert(std::move(e4));
+    U.insert(std::move(e7));
+
+    const auto alternative = C.compute_alternative_to(D_plus_e, U);
+    REQUIRE_FALSE(alternative.has_value());
+  }
+
+  SECTION("Alternative computation call 3")
+  {
+    // During the thrid call to Alt(C, D + {e}),
+    // UDPOR believes `U` to be the following:
+    //
+    //                 e0
+    //              /  /   /
+    //            e1   e4   e7
+    //           /
+    //         /  /
+    //        e2 e3
+    //
+    // C := {e0} and `Explore(C, D, A)` picked `e1`.
+    //
+    // Thus the computation is (since D is still empty)
+    //
+    // Alt(C, D + {e}) --> Alt({e0}, {e1})
+    //
+    // where U is given above. There are two alternatives in this case:
+    // {e0, e4} and {e0, e7}. Either one would be a valid choice for
+    // UDPOR, so we must check for the precense of either
+    const Configuration C{e0_handle};
+    const EventSet D_plus_e{e1_handle};
+
+    REQUIRE(U.empty());
+    U.insert(std::move(e0));
+    U.insert(std::move(e1));
+    U.insert(std::move(e2));
+    U.insert(std::move(e3));
+    U.insert(std::move(e4));
+    U.insert(std::move(e7));
+
+    const auto alternative = C.compute_alternative_to(D_plus_e, U);
+    REQUIRE(alternative.has_value());
+
+    // The first alternative that is found is the one that is chosen. Since
+    // traversal over the elements of an unordered_set<> are not guaranteed,
+    // both {e0, e4} and {e0, e7} are valid alternatives
+    REQUIRE((alternative.value().get_events() == EventSet({e0_handle, e4_handle}) or
+             alternative.value().get_events() == EventSet({e0_handle, e7_handle})));
+  }
+
+  SECTION("Alternative computation call 4")
+  {
+    // During the fourth call to Alt(C, D + {e}),
+    // UDPOR believes `U` to be the following:
+    //
+    //                  e0
+    //              /  /   /
+    //            e1   e4   e7
+    //           /     /  //
+    //         /  /   e5  e8
+    //        e2 e3   /
+    //               e6
+    //
+    // C := {e0, e4, e5} and `Explore(C, D, A)` picked `e6`
+    // (since en(C') where C' := {e0, e4, e5, e6} is empty
+    // [so UDPOR will simply return when C' is reached])
+    //
+    // Thus the computation is (since D is {e1})
+    //
+    // Alt(C, D + {e}) --> Alt({e0, e4, e5}, {e1, e6})
+    //
+    // where U is given above. There are no alternatives in this
+    // case, since:
+    //
+    // 1.`e2/e3` are eliminated since their histories contain `e1`
+    // 2. `e7/e8` are eliminated because they conflict with `e5`
+    const Configuration C{e0_handle, e4_handle, e5_handle};
+    const EventSet D_plus_e{e1_handle, e6_handle};
+
+    REQUIRE(U.empty());
+    U.insert(std::move(e0));
+    U.insert(std::move(e1));
+    U.insert(std::move(e2));
+    U.insert(std::move(e3));
+    U.insert(std::move(e4));
+    U.insert(std::move(e6));
+    U.insert(std::move(e7));
+    U.insert(std::move(e8));
+
+    const auto alternative = C.compute_alternative_to(D_plus_e, U);
+    REQUIRE_FALSE(alternative.has_value());
+  }
+
+  SECTION("Alternative computation call 5")
+  {
+    // During the fifth call to Alt(C, D + {e}),
+    // UDPOR believes `U` to be the following:
+    //
+    //                  e0
+    //              /  /   /
+    //            e1   e4   e7
+    //           /     /  //
+    //         /  /   e5  e8
+    //        e2 e3   /
+    //               e6
+    //
+    // C := {e0, e4} and `Explore(C, D, A)` picked `e5`
+    // (since en(C') where C' := {e0, e4, e5, e6} is empty
+    // [so UDPOR will simply return when C' is reached])
+    //
+    // Thus the computation is (since D is {e1})
+    //
+    // Alt(C, D + {e}) --> Alt({e0, e4}, {e1, e5})
+    //
+    // where U is given above. There are THREE alternatives in this case,
+    // viz. {e0, e7}, {e0, e4, e7} and {e0, e4, e7, e8}.
+    //
+    // To continue the search, UDPOR computes J / C which in this
+    // case gives {e7, e8}. Since `e8` is not in en(C), UDPOR will
+    // choose `e7` next and add `e5` to `D`
+    const Configuration C{e0_handle, e4_handle};
+    const EventSet D_plus_e{e1_handle, e5_handle};
+
+    REQUIRE(U.empty());
+    U.insert(std::move(e0));
+    U.insert(std::move(e1));
+    U.insert(std::move(e2));
+    U.insert(std::move(e3));
+    U.insert(std::move(e4));
+    U.insert(std::move(e6));
+    U.insert(std::move(e7));
+    U.insert(std::move(e8));
+    REQUIRE(U.size() == 8);
+
+    const auto alternative = C.compute_alternative_to(D_plus_e, U);
+    REQUIRE(alternative.has_value());
+    REQUIRE((alternative.value().get_events() == EventSet({e0_handle, e7_handle}) or
+             alternative.value().get_events() == EventSet({e0_handle, e4_handle, e7_handle}) or
+             alternative.value().get_events() == EventSet({e0_handle, e4_handle, e7_handle, e8_handle})));
+  }
+
+  SECTION("Alternative computation call 6")
+  {
+    // During the sixth call to Alt(C, D + {e}),
+    // UDPOR believes `U` to be the following:
+    //
+    //                 e0
+    //              /  /   /
+    //            e1   e4   e7
+    //           /     /  //   /
+    //         /  /   e5  e8   e9
+    //        e2 e3   /
+    //               e6
+    //
+    // C := {e0, e4, e7} and `Explore(C, D, A)` picked `e8`
+    // (since en(C') where C' := {e0, e4, e7, e8} is empty
+    // [so UDPOR will simply return when C' is reached])
+    //
+    // Thus the computation is (since D is {e1, e5} [see the last step])
+    //
+    // Alt(C, D + {e}) --> Alt({e0, e4, e7}, {e1, e5, e8})
+    //
+    // where U is given above. There are no alternatives in this case
+    // since all `e9` conflicts with `e4` and all other events of `U`
+    // are eliminated since their history intersects `D`
+    const Configuration C{e0_handle, e4_handle, e7_handle};
+    const EventSet D_plus_e{e1_handle, e5_handle, e8_handle};
+
+    REQUIRE(U.empty());
+    U.insert(std::move(e0));
+    U.insert(std::move(e1));
+    U.insert(std::move(e2));
+    U.insert(std::move(e3));
+    U.insert(std::move(e4));
+    U.insert(std::move(e6));
+    U.insert(std::move(e7));
+    U.insert(std::move(e8));
+    U.insert(std::move(e9));
+
+    const auto alternative = C.compute_alternative_to(D_plus_e, U);
+    REQUIRE_FALSE(alternative.has_value());
+  }
+
+  SECTION("Alternative computation call 7")
+  {
+    // During the seventh call to Alt(C, D + {e}),
+    // UDPOR believes `U` to be the following:
+    //
+    //                 e0
+    //              /  /   /
+    //            e1   e4   e7
+    //           /     /  //   /
+    //         /  /   e5  e8   e9
+    //        e2 e3   /
+    //               e6
+    //
+    // C := {e0, e4} and `Explore(C, D, A)` picked `e7`
+    //
+    // Thus the computation is (since D is {e1, e5} [see call 5])
+    //
+    // Alt(C, D + {e}) --> Alt({e0, e4}, {e1, e5, e7})
+    //
+    // where U is given above. There are no alternatives again in this case
+    // since all `e9` conflicts with `e4` and all other events of `U`
+    // are eliminated since their history intersects `D`
+    const Configuration C{e0_handle, e4_handle};
+    const EventSet D_plus_e{e1_handle, e5_handle, e7_handle};
+
+    REQUIRE(U.empty());
+    U.insert(std::move(e0));
+    U.insert(std::move(e1));
+    U.insert(std::move(e2));
+    U.insert(std::move(e3));
+    U.insert(std::move(e4));
+    U.insert(std::move(e6));
+    U.insert(std::move(e7));
+    U.insert(std::move(e8));
+    U.insert(std::move(e9));
+
+    const auto alternative = C.compute_alternative_to(D_plus_e, U);
+    REQUIRE_FALSE(alternative.has_value());
+  }
+
+  SECTION("Alternative computation call 8")
+  {
+    // During the eigth call to Alt(C, D + {e}),
+    // UDPOR believes `U` to be the following:
+    //
+    //                 e0
+    //              /  /   /
+    //            e1   e4   e7
+    //           /     /  //   /
+    //         /  /   e5  e8   e9
+    //        e2 e3   /
+    //               e6
+    //
+    // C := {e0} and `Explore(C, D, A)` picked `e4`. At this
+    // point, UDPOR finished its recursive search of {e0, e4}
+    // after having finished {e0, e1} prior.
+    //
+    // Thus the computation is (since D = {e1})
+    //
+    // Alt(C, D + {e}) --> Alt({e0}, {e1, e4})
+    //
+    // where U is given above. There is one alternative in this
+    // case, viz {e0, e7, e9} since
+    // 1. e9 conflicts with e4 in D
+    // 2. e7 conflicts with e1 in D
+    // 3. the set {e7, e9} is conflict-free since `e7 < e9`
+    // 4. all other events are eliminated since their histories
+    // intersect D
+    //
+    // UDPOR will continue its recursive search following `e7`
+    // and add `e4` to D
+    const Configuration C{e0_handle};
+    const EventSet D_plus_e{e1_handle, e4_handle};
+
+    REQUIRE(U.empty());
+    U.insert(std::move(e0));
+    U.insert(std::move(e1));
+    U.insert(std::move(e2));
+    U.insert(std::move(e3));
+    U.insert(std::move(e4));
+    U.insert(std::move(e6));
+    U.insert(std::move(e7));
+    U.insert(std::move(e8));
+    U.insert(std::move(e9));
+
+    const auto alternative = C.compute_alternative_to(D_plus_e, U);
+    REQUIRE(alternative.has_value());
+    REQUIRE(alternative.value().get_events() == EventSet({e0_handle, e7_handle, e9_handle}));
+  }
+
+  SECTION("Alternative computation call 9")
+  {
+    // During the ninth call to Alt(C, D + {e}),
+    // UDPOR believes `U` to be the following:
+    //
+    //                  e0
+    //              /  /   /
+    //            e1   e4   e7
+    //           /     /  //   /
+    //         /  /   e5  e8   e9
+    //        e2 e3   /        /
+    //               e6       e10
+    //
+    // C := {e0, e7, e9} and `Explore(C, D, A)` picked `e10`.
+    // (since en(C') where C' := {e0, e7, e9, e10} is empty
+    // [so UDPOR will simply return when C' is reached]).
+    //
+    // Thus the computation is (since D = {e1, e4} [see the previous step])
+    //
+    // Alt(C, D + {e}) --> Alt({e0}, {e1, e4, e10})
+    //
+    // where U is given above. There are no alternatives in this case
+    const Configuration C{e0_handle, e7_handle, e9_handle};
+    const EventSet D_plus_e{e1_handle, e4_handle, e10_handle};
+
+    REQUIRE(U.empty());
+    U.insert(std::move(e0));
+    U.insert(std::move(e1));
+    U.insert(std::move(e2));
+    U.insert(std::move(e3));
+    U.insert(std::move(e4));
+    U.insert(std::move(e6));
+    U.insert(std::move(e7));
+    U.insert(std::move(e8));
+    U.insert(std::move(e9));
+    U.insert(std::move(e10));
+
+    const auto alternative = C.compute_alternative_to(D_plus_e, U);
+    REQUIRE_FALSE(alternative.has_value());
+  }
+
+  SECTION("Alternative computation call 10")
+  {
+    // During the tenth call to Alt(C, D + {e}),
+    // UDPOR believes `U` to be the following:
+    //
+    //                  e0
+    //              /  /   /
+    //            e1   e4   e7
+    //           /     /  //   /
+    //         /  /   e5  e8   e9
+    //        e2 e3   /        /
+    //               e6       e10
+    //
+    // C := {e0, e7} and `Explore(C, D, A)` picked `e9`.
+    //
+    // Thus the computation is (since D = {e1, e4} [see call 8])
+    //
+    // Alt(C, D + {e}) --> Alt({e0}, {e1, e4, e9})
+    //
+    // where U is given above. There are no alternatives in this case
+    const Configuration C{e0_handle, e7_handle};
+    const EventSet D_plus_e{e1_handle, e4_handle, e9_handle};
+
+    REQUIRE(U.empty());
+    U.insert(std::move(e0));
+    U.insert(std::move(e1));
+    U.insert(std::move(e2));
+    U.insert(std::move(e3));
+    U.insert(std::move(e4));
+    U.insert(std::move(e6));
+    U.insert(std::move(e7));
+    U.insert(std::move(e8));
+    U.insert(std::move(e9));
+    U.insert(std::move(e10));
+
+    const auto alternative = C.compute_alternative_to(D_plus_e, U);
+    REQUIRE_FALSE(alternative.has_value());
+  }
+
+  SECTION("Alternative computation call 11 (final call)")
+  {
+    // During the eleventh and final call to Alt(C, D + {e}),
+    // UDPOR believes `U` to be the following:
+    //
+    //                  e0
+    //              /  /   /
+    //            e1   e4   e7
+    //           /     /  //   /
+    //         /  /   e5  e8   e9
+    //        e2 e3   /        /
+    //               e6       e10
+    //
+    // C := {e0} and `Explore(C, D, A)` picked `e7`.
+    //
+    // Thus the computation is (since D = {e1, e4} [see call 8])
+    //
+    // Alt(C, D + {e}) --> Alt({e0}, {e1, e4, e7})
+    //
+    // where U is given above. There are no alternatives in this case:
+    // everyone is eliminated!
+    const Configuration C{e0_handle, e7_handle};
+    const EventSet D_plus_e{e1_handle, e4_handle, e9_handle};
+
+    REQUIRE(U.empty());
+    U.insert(std::move(e0));
+    U.insert(std::move(e1));
+    U.insert(std::move(e2));
+    U.insert(std::move(e3));
+    U.insert(std::move(e4));
+    U.insert(std::move(e6));
+    U.insert(std::move(e7));
+    U.insert(std::move(e8));
+    U.insert(std::move(e9));
+    U.insert(std::move(e10));
+
+    const auto alternative = C.compute_alternative_to(D_plus_e, U);
+    REQUIRE_FALSE(alternative.has_value());
+  }
+
+  SECTION("Alternative computation next")
+  {
+    SECTION("Followed {e0, e7} first")
+    {
+      const EventSet D{e1_handle, e7_handle};
+      const Configuration C{e0_handle};
+
+      REQUIRE(U.empty());
+      U.insert(std::move(e0));
+      U.insert(std::move(e1));
+      U.insert(std::move(e2));
+      U.insert(std::move(e3));
+      U.insert(std::move(e4));
+      U.insert(std::move(e5));
+      U.insert(std::move(e7));
+      U.insert(std::move(e8));
+      U.insert(std::move(e9));
+      U.insert(std::move(e10));
+
+      const auto alternative = C.compute_alternative_to(D, U);
+      REQUIRE(alternative.has_value());
+
+      // In this case, only {e0, e4} is a valid alternative
+      REQUIRE(alternative.value().get_events() == EventSet({e0_handle, e4_handle, e5_handle}));
+    }
+
+    SECTION("Followed {e0, e4} first")
+    {
+      const EventSet D{e1_handle, e4_handle};
+      const Configuration C{e0_handle};
+
+      REQUIRE(U.empty());
+      U.insert(std::move(e0));
+      U.insert(std::move(e1));
+      U.insert(std::move(e2));
+      U.insert(std::move(e3));
+      U.insert(std::move(e4));
+      U.insert(std::move(e5));
+      U.insert(std::move(e6));
+      U.insert(std::move(e7));
+      U.insert(std::move(e8));
+      U.insert(std::move(e9));
+
+      const auto alternative = C.compute_alternative_to(D, U);
+      REQUIRE(alternative.has_value());
+
+      // In this case, only {e0, e7} is a valid alternative
+      REQUIRE(alternative.value().get_events() == EventSet({e0_handle, e7_handle, e9_handle}));
+    }
   }
 }
