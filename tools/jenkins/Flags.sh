@@ -89,7 +89,7 @@ make -j$NUMPROC tests
 
 if [ "$runtests" = "ON" ]; then
     # exclude tests known to fail with _GLIBCXX_DEBUG
-    ctest -j$NUMPROC -E '^[ps]thread-|mc-bugged1-liveness'
+    ctest -j$NUMPROC -E '^[ps]thread-|mc-bugged1-liveness' --output-on-failure
 fi
 
 cd ..
