@@ -15,6 +15,7 @@
 #include "src/mc/mc_record.hpp"
 
 #include <functional>
+#include <list>
 #include <optional>
 
 namespace simgrid::mc::udpor {
@@ -45,14 +46,6 @@ private:
   Unfolding unfolding = Unfolding();
 
   /**
-   * @brief A collection of specialized functions which can incrementally
-   * compute the extension of a configuration based on the action taken
-   */
-  using ExtensionFunction = std::function<EventSet(const Configuration&, const std::shared_ptr<Transition>)>;
-  std::unordered_map<Transition::Type, ExtensionFunction> incremental_extension_functions =
-      std::unordered_map<Transition::Type, ExtensionFunction>();
-
-  /**
    * @brief Explores the unfolding of the concurrent system
    * represented by the ModelChecker instance "mcmodel_checker"
    *
@@ -67,13 +60,20 @@ private:
    * @param A the set of events to "guide" UDPOR in the correct direction
    * when it returns back to a node in the unfolding and must decide among
    * events to select from `ex(C)`. See [1] for more details
-   * @param stateC the state of the program after having executed `C`,
-   * viz. `state(C)`  using the notation of [1]
+   * @param stateSequence the sequence of states entered by the program
+   * while UDPOR explored `C`. The program is in `state(C)` (using the notation of [1]),
+   * which is the result of executing all actions in the stack
+   *
+   * TODO: We pass around the reference to the stack which is modified
+   * appropriately in each recursive call. An iterative version would not
+   * need to pass around the states in this manner: the `std::stack<...>`
+   * could be a local variable of the function
    *
    * TODO: Add the optimization where we can check if e == e_prior
    * to prevent repeated work when computing ex(C)
    */
-  void explore(const Configuration& C, EventSet D, EventSet A, std::unique_ptr<State> stateC, EventSet prev_exC);
+  void explore(const Configuration& C, EventSet D, EventSet A, std::list<std::unique_ptr<State>>& state_stack,
+               EventSet prev_exC);
 
   /**
    * @brief Identifies the next event from the unfolding of the concurrent system
@@ -142,7 +142,7 @@ private:
   /**
    *
    */
-  void restore_program_state_to(const State& stateC);
+  void restore_program_state_with_sequence(const std::list<std::unique_ptr<State>>& state_stack);
 
   /**
    *

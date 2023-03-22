@@ -22,27 +22,19 @@ UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration(args, t
 void UdporChecker::run()
 {
   XBT_INFO("Starting a UDPOR exploration");
-  // NOTE: `A`, `D`, and `C` are derived from the
-  // original UDPOR paper [1], while `prev_exC` arises
-  // from the incremental computation of ex(C) from [3]
-  Configuration C_root;
 
-  // TODO: Move computing the root configuration into a method on the Unfolding
-  auto initial_state      = get_current_state();
-  auto root_event         = std::make_unique<UnfoldingEvent>(EventSet(), std::make_shared<Transition>());
-  auto* root_event_handle = root_event.get();
-  unfolding.insert(std::move(root_event));
-  C_root.add_event(root_event_handle);
+  auto state_stack = std::list<std::unique_ptr<State>>();
+  state_stack.push_back(get_current_state());
 
-  explore(C_root, EventSet(), EventSet(), std::move(initial_state), EventSet());
-
+  explore(Configuration(), EventSet(), EventSet(), state_stack, EventSet());
   XBT_INFO("UDPOR exploration terminated -- model checking completed");
 }
 
-void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::unique_ptr<State> stateC,
-                           EventSet prev_exC)
+void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A,
+                           std::list<std::unique_ptr<State>>& state_stack, EventSet prev_exC)
 {
-  auto exC       = compute_exC(C, *stateC, prev_exC);
+  auto& stateC   = *state_stack.back();
+  auto exC       = compute_exC(C, stateC, prev_exC);
   const auto enC = compute_enC(C, exC);
 
   // If enC is a subset of D, intuitively
@@ -76,11 +68,6 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
                            "UDPOR guarantees that an event will be chosen at each point in\n"
                            "the search, yet no events were actually chosen\n"
                            "*********************************\n\n");
-
-  // Move the application into stateCe and make note of that state
-  move_to_stateCe(*stateC, *e);
-  auto stateCe = record_current_state();
-
   // Ce := C + {e}
   Configuration Ce = C;
   Ce.add_event(e);
@@ -89,7 +76,18 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
   exC.remove(e);
 
   // Explore(C + {e}, D, A \ {e})
-  explore(Ce, D, std::move(A), std::move(stateCe), std::move(exC));
+
+  // Move the application into stateCe (i.e. `state(C + {e})`) and make note of that state
+  move_to_stateCe(stateC, *e);
+  state_stack.push_back(record_current_state());
+
+  explore(Ce, D, std::move(A), state_stack, std::move(exC));
+
+  //  Prepare to move the application back one state.
+  // We need only remove the state from the stack here: if we perform
+  // another `Explore()` after computing an alternative, at that
+  // point we'll actually create a fresh RemoteProcess
+  state_stack.pop_back();
 
   // D <-- D + {e}
   D.insert(e);
@@ -98,13 +96,16 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
   if (auto J = C.compute_k_partial_alternative_to(D, this->unfolding, K); J.has_value()) {
     // Before searching the "right half", we need to make
     // sure the program actually reflects the fact
-    // that we are searching again from `stateC` (the recursive
-    // search moved the program into `stateCe`)
-    restore_program_state_to(*stateC);
+    // that we are searching again from `state(C)`. While the
+    // stack of states is properly adjusted to represent
+    // `state(C)` all together, the RemoteApp is currently sitting
+    // at some *future* state with resepct to `state(C)` since the
+    // recursive calls have moved it there.
+    restore_program_state_with_sequence(state_stack);
 
     // Explore(C, D + {e}, J \ C)
     auto J_minus_C = J.value().get_events().subtracting(C.get_events());
-    explore(C, D, std::move(J_minus_C), std::move(stateC), std::move(prev_exC));
+    explore(C, D, std::move(J_minus_C), state_stack, std::move(prev_exC));
   }
 
   // D <-- D - {e}
@@ -188,12 +189,16 @@ void UdporChecker::move_to_stateCe(State& state, const UnfoldingEvent& e)
   state.execute_next(next_actor, get_remote_app());
 }
 
-void UdporChecker::restore_program_state_to(const State& stateC)
+void UdporChecker::restore_program_state_with_sequence(const std::list<std::unique_ptr<State>>& state_stack)
 {
   get_remote_app().restore_initial_state();
-  // TODO: We need to have the stack of past states available at this
-  // point. Since the method is recursive, we'll need to keep track of
-  // this as we progress
+
+  /* Traverse the stack from the state at position start and re-execute the transitions */
+  for (const std::unique_ptr<State>& state : state_stack) {
+    if (state == stack_.back()) /* If we are arrived on the target state, don't replay the outgoing transition */
+      break;
+    state->get_transition()->replay(get_remote_app());
+  }
 }
 
 std::unique_ptr<State> UdporChecker::record_current_state()
