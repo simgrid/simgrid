@@ -12,7 +12,7 @@ namespace simgrid::mc {
 XBT_DECLARE_ENUM_CLASS(ObjectAccessType, ENTER, EXIT, BOTH);
 
 class ObjectAccessTransition : public Transition {
-  ObjectAccessType type_;
+  ObjectAccessType access_type_;
   void* objaddr_;
   std::string objname_;
   std::string file_;

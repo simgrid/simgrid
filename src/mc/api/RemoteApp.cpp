@@ -185,8 +185,7 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
   m.times_considered_              = times_considered;
   checker_side_->get_channel().send(m);
 
-  auto* memory = get_remote_process_memory();
-  if (memory != nullptr)
+  if (auto* memory = get_remote_process_memory(); memory != nullptr)
     memory->clear_cache();
   if (checker_side_->running())
     checker_side_->dispatch_events(); // The app may send messages while processing the transition

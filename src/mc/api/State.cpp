@@ -46,7 +46,7 @@ State::State(RemoteApp& remote_app, const State* parent_state)
 
       if (not parent_state_->get_transition()->depends(&transition)) {
 
-        sleep_set_.emplace(aid, transition);
+        sleep_set_.try_emplace(aid, transition);
         if (guide->actors_to_run_.count(aid) != 0) {
           XBT_DEBUG("Actor %ld will not be explored, for it is in the sleep set", aid);
 

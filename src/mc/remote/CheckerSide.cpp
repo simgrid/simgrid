@@ -133,7 +133,7 @@ void CheckerSide::setup_events()
 
   socket_event_ = event_new(
       base, get_channel().get_socket(), EV_READ | EV_PERSIST,
-      [](evutil_socket_t sig, short events, void* arg) {
+      [](evutil_socket_t, short events, void* arg) {
         auto checker = static_cast<simgrid::mc::CheckerSide*>(arg);
         if (events == EV_READ) {
           std::array<char, MC_MESSAGE_LENGTH> buffer;
@@ -283,7 +283,7 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
         s_mc_message_ignore_memory_t message;
         xbt_assert(size == sizeof(message), "Broken message");
         memcpy(&message, buffer, sizeof(message));
-        get_remote_memory()->unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
+        get_remote_memory()->unignore_heap((void*)message.addr, message.size);
       } else {
         XBT_INFO("Ignoring an UNIGNORE_HEAP message because we don't need to introspect memory.");
       }

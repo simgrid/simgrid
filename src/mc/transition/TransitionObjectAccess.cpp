@@ -15,14 +15,14 @@ ObjectAccessTransition::ObjectAccessTransition(aid_t issuer, int times_considere
 {
   short s;
   xbt_assert(stream >> s >> objaddr_ >> objname_ >> file_ >> line_);
-  type_ = static_cast<simgrid::mc::ObjectAccessType>(s);
+  access_type_ = static_cast<simgrid::mc::ObjectAccessType>(s);
 }
 std::string ObjectAccessTransition::to_string(bool verbose) const
 {
   std::string res;
-  if (type_ == ObjectAccessType::ENTER)
+  if (access_type_ == ObjectAccessType::ENTER)
     res = std::string("BeginObjectAccess(");
-  else if (type_ == ObjectAccessType::EXIT)
+  else if (access_type_ == ObjectAccessType::EXIT)
     res = std::string("EndObjectAccess(");
   else
     res = std::string("ObjectAccess(");

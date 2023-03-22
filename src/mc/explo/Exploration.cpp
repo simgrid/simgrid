@@ -66,7 +66,7 @@ void Exploration::log_state()
   }
 }
 
-void Exploration::report_crash(int status)
+XBT_ATTRIB_NORETURN void Exploration::report_crash(int status)
 {
   XBT_INFO("**************************");
   XBT_INFO("** CRASH IN THE PROGRAM **");
@@ -88,7 +88,7 @@ void Exploration::report_crash(int status)
   if (xbt_log_no_loc) {
     XBT_INFO("Stack trace not displayed because you passed --log=no_loc");
   } else {
-    auto* memory = get_remote_app().get_remote_process_memory();
+    const auto* memory = get_remote_app().get_remote_process_memory();
     if (memory) {
       XBT_INFO("Stack trace:");
       memory->dump_stack();
@@ -99,7 +99,7 @@ void Exploration::report_crash(int status)
 
   system_exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
 }
-void Exploration::report_assertion_failure()
+XBT_ATTRIB_NORETURN void Exploration::report_assertion_failure()
 {
   XBT_INFO("**************************");
   XBT_INFO("*** PROPERTY NOT VALID ***");
@@ -114,7 +114,7 @@ void Exploration::report_assertion_failure()
   system_exit(SIMGRID_MC_EXIT_SAFETY);
 }
 
-void Exploration::system_exit(int status)
+void Exploration::system_exit(int status) const
 {
   ::exit(status);
 }

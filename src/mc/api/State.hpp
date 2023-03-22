@@ -83,7 +83,7 @@ public:
   void set_system_state(std::shared_ptr<Snapshot> state) { system_state_ = std::move(state); }
 
   std::map<aid_t, Transition> const& get_sleep_set() const { return sleep_set_; }
-  void add_sleep_set(Transition* t)
+  void add_sleep_set(const Transition* t)
   {
     sleep_set_.insert_or_assign(t->aid_, Transition(t->type_, t->aid_, t->times_considered_));
   }
