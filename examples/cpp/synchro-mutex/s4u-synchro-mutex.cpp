@@ -47,7 +47,7 @@ static void workerScopedLock(sg4::MutexPtr mutex, int& result)
 int main(int argc, char** argv)
 {
   sg4::Engine e(&argc, argv);
-  e.load_platform("../../platforms/two_hosts.xml");
+  e.load_platform(argc > 1 ? argv[1] : "../../platforms/two_hosts.xml");
 
   /* Create the requested amount of actors pairs. Each pair has a specific mutex and cell in `result`. */
   std::vector<int> result(cfg_actor_count.get());
