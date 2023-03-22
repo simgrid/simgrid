@@ -20,37 +20,36 @@ namespace simgrid::mc::udpor {
 EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, Unfolding* U,
                                                   const std::shared_ptr<Transition> action)
 {
-  switch (action->type_) {
-    case Transition::Type::COMM_WAIT: {
-      return partially_extend_CommWait(C, U, std::static_pointer_cast<CommWaitTransition>(std::move(action)));
-    }
-    case Transition::Type::COMM_ASYNC_SEND: {
-      return partially_extend_CommSend(C, U, std::static_pointer_cast<CommSendTransition>(std::move(action)));
-    }
-    case Transition::Type::COMM_ASYNC_RECV: {
-      return partially_extend_CommRecv(C, U, std::static_pointer_cast<CommRecvTransition>(std::move(action)));
-    }
-    default: {
-      xbt_assert(false,
-                 "There is currently no specialized computation for the transition "
-                 "'%s' for computing extension sets in UDPOR, so the model checker cannot "
-                 "determine how to proceed. Please submit a bug report requesting "
-                 "that the transition be supported in SimGrid using UDPOR and consider "
-                 "using the other model-checking algorithms supported by SimGrid instead "
-                 "in the meantime",
-                 action->to_string().c_str());
-      DIE_IMPOSSIBLE;
-    }
+  using Action     = Transition::Type;
+  using Handler    = std::function<EventSet(const Configuration&, Unfolding*, const std::shared_ptr<Transition>)>;
+  using HandlerMap = std::unordered_map<Action, Handler>;
+
+  const static HandlerMap handlers =
+      HandlerMap{{Action::COMM_ASYNC_RECV, &ExtensionSetCalculator::partially_extend_CommRecv}};
+
+  if (const auto handler = handlers.find(action->type_); handler != handlers.end()) {
+    return handler->second(C, U, std::move(action));
+  } else {
+    xbt_assert(false,
+               "There is currently no specialized computation for the transition "
+               "'%s' for computing extension sets in UDPOR, so the model checker cannot "
+               "determine how to proceed. Please submit a bug report requesting "
+               "that the transition be supported in SimGrid using UDPOR and consider "
+               "using the other model-checking algorithms supported by SimGrid instead "
+               "in the meantime",
+               action->to_string().c_str());
+    DIE_IMPOSSIBLE;
   }
 }
 
 EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& C, Unfolding* U,
-                                                           const std::shared_ptr<CommSendTransition> send_action)
+                                                           const std::shared_ptr<Transition> action)
 {
   EventSet exC;
 
   // TODO: if this is the first action by the actor, no such previous event exists.
   // How do we react here? Do we say we're dependent with the root event?
+  const auto send_action        = std::static_pointer_cast<CommSendTransition>(std::move(action));
   const unsigned sender_mailbox = send_action->get_mailbox();
   const auto pre_event_a_C      = C.pre_event(send_action->aid_).value();
 
@@ -90,51 +89,21 @@ EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& 
 }
 
 EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& C, Unfolding* U,
-                                                           const std::shared_ptr<CommRecvTransition> recv_action)
+                                                           const std::shared_ptr<Transition> recv_action)
 {
   return EventSet();
 }
 
 EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration&, Unfolding* U,
-                                                           std::shared_ptr<CommWaitTransition> wait_action)
+                                                           std::shared_ptr<Transition> wait_action)
 {
   return EventSet();
 }
 
 EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration&, Unfolding* U,
-                                                           std::shared_ptr<CommTestTransition> test_action)
+                                                           std::shared_ptr<Transition> test_action)
 {
   return EventSet();
-  // EventSet exC;
-
-  // // TODO: if this is the first action by the actor, no such previous event exists.
-  // // How do we react here? Do we say we're dependent with the root event?
-  // const auto tested_mailbox = test_action->get_mailbox();
-  // const auto pre_event_a_C  = C.pre_event(send_action->aid_).value();
-
-  // for (const auto e : C) {
-  //   if (e == pre_event_a_C) {
-  //     const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), action);
-  //     exC.insert(e_prime);
-  //   } else {
-  //     // TODO: Check condition
-  //     const bool should_process = [&]() { return false; }();
-
-  //     EventSet K;
-  //     if (not(e < pre_event_a_C))
-  //       K.insert(e);
-  //     if (not(pre_event_a_C < e))
-  //       K.insert(pre_event_a_C);
-
-  //     // TODO: How do we compute D_K(a, b)? There's a specialized
-  //     // function for each case it appears, but I don't see where
-  //     // `config(K)` comes in
-  //     if (should_process) {
-  //       const auto e_prime = U->discover_event(std::move(K), action);
-  //       exC.insert(e_prime);
-  //     }
-  //   }
-  // }
 }
 
 } // namespace simgrid::mc::udpor
