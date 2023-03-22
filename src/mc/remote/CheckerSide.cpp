@@ -366,8 +366,7 @@ void CheckerSide::handle_waitpid()
         xbt_assert(not this->running(), "Inconsistent state");
         break;
       } else {
-        XBT_ERROR("Could not wait for pid");
-        throw simgrid::xbt::errno_error();
+        xbt_die("Could not wait for pid: %s", strerror(errno));
       }
     }
 
