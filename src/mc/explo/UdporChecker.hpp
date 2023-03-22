@@ -39,8 +39,7 @@ public:
   void run() override;
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;
-
-  inline std::unique_ptr<State> get_current_state() { return std::make_unique<State>(get_remote_app()); }
+  std::unique_ptr<State> get_current_state() { return std::make_unique<State>(get_remote_app()); }
 
 private:
   Unfolding unfolding = Unfolding();
@@ -130,22 +129,35 @@ private:
   void move_to_stateCe(State& stateC, const UnfoldingEvent& e);
 
   /**
-   * @brief Creates a new snapshot of the state of the progam undergoing
-   * model checking
-   *
-   * @returns the handle used to uniquely identify this state later in the
-   * exploration of the unfolding. You provide this handle to an event in the
-   * unfolding to regenerate past states
+   * @brief Creates a new snapshot of the state of the application
+   * as it currently looks
    */
   std::unique_ptr<State> record_current_state();
 
   /**
+   * @brief Move the application side into the state at the top of the
+   * state stack provided
    *
+   * As UDPOR performs its search, it moves the application-side along with
+   * it so that the application is always providing the checker with
+   * the correct information about what each actor is running (and whether
+   * those actors are enabled) at the state reached by the configuration it
+   * decides to search.
+   *
+   * When UDPOR decides to "backtrack" (e.g. after reaching a configuration
+   * whose en(C) is empty), before it attempts to continue the search by taking
+   * a different path from a configuration it visited in the past, it must ensure
+   * that the application-side has moved back into `state(C)`.
+   *
+   * The search may have moved the application arbitrarily deep into its execution,
+   * and the search may backtrack arbitrarily closer to the beginning of the execution.
+   * The UDPOR implementation in SimGrid ensures that the stack is updated appropriately,
+   * but the process must still be regenerated.
    */
   void restore_program_state_with_sequence(const std::list<std::unique_ptr<State>>& state_stack);
 
   /**
-   *
+   * @brief Perform the functionality of the `Remove(e, C, D)` function in [1]
    */
   void clean_up_explore(const UnfoldingEvent* e, const Configuration& C, const EventSet& D);
 };
