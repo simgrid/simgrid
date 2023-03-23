@@ -52,7 +52,7 @@ struct ObjectOwner {
   simgrid::kernel::actor::ActorImpl* owner = nullptr;
   const char* file                         = nullptr;
   int line                                 = -1;
-  ObjectOwner(simgrid::kernel::actor::ActorImpl* o) : owner(o) {}
+  explicit ObjectOwner(simgrid::kernel::actor::ActorImpl* o) : owner(o) {}
 };
 
 std::unordered_map<void*, ObjectOwner*> owners;
