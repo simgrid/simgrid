@@ -29,11 +29,8 @@ XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 namespace simgrid::mc {
 
-RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspection)
+RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspection) : app_args_(args)
 {
-  for (auto* arg : args)
-    app_args_.push_back(arg);
-
   checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_, need_memory_introspection);
 
   if (need_memory_introspection)

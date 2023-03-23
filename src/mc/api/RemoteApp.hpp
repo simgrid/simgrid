@@ -30,7 +30,7 @@ private:
   PageStore page_store_{500};
   std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
 
-  std::vector<char*> app_args_;
+  const std::vector<char*> app_args_;
 
   // No copy:
   RemoteApp(RemoteApp const&) = delete;
