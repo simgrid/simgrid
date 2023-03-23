@@ -133,8 +133,8 @@ void DFSExplorer::run()
     auto [next, _] = state->next_transition_guided();
 
     if (next < 0) { // If there is no more transition in the current state, backtrack.
-      XBT_DEBUG("There remains %lu actors, but none to interleave (depth %zu).", state->get_actor_count(),
-                stack_.size() + 1);
+      XBT_VERB("There remains %lu actors, but none to interleave (depth %zu).", state->get_actor_count(),
+               stack_.size() + 1);
 
       if (state->get_actor_count() == 0) {
         get_remote_app().finalize_app();
@@ -162,9 +162,8 @@ void DFSExplorer::run()
              state->get_transition()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    std::unique_ptr<State> next_state;
-
-    next_state = std::make_unique<State>(get_remote_app(), state);
+    std::shared_ptr<State> next_state;
+    next_state = std::make_shared<State>(get_remote_app(), state);
     on_state_creation_signal(next_state.get(), get_remote_app());
 
     /* Sleep set procedure:
@@ -180,12 +179,14 @@ void DFSExplorer::run()
      * on another process. If there exists one, find the more recent, and add its process to the interleave set.
      * If the process is not enabled at this  point, then add every enabled process to the interleave */
     if (reduction_mode_ == ReductionMode::dpor) {
-      aid_t issuer_id = state->get_transition()->aid_;
-      for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
-        State* prev_state = i->get();
+      aid_t issuer_id   = state->get_transition()->aid_;
+      stack_t tmp_stack = std::list(stack_);
+      while (not tmp_stack.empty()) {
+        State* prev_state = tmp_stack.back().get();
         if (state->get_transition()->aid_ == prev_state->get_transition()->aid_) {
           XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->get_transition()->to_string().c_str(),
                     prev_state->get_transition()->to_string().c_str(), issuer_id);
+          tmp_stack.pop_back();
           continue;
         } else if (prev_state->get_transition()->depends(state->get_transition())) {
           XBT_VERB("Dependent Transitions:");
@@ -193,15 +194,17 @@ void DFSExplorer::run()
           XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->get_num());
 
           if (prev_state->is_actor_enabled(issuer_id)) {
-            if (not prev_state->is_actor_done(issuer_id))
+            if (not prev_state->is_actor_done(issuer_id)) {
               prev_state->consider_one(issuer_id);
-            else
+              opened_states.emplace_back(tmp_stack);
+            } else
               XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
           } else {
             XBT_DEBUG("Actor %ld is not enabled: DPOR may be failing. To stay sound, we are marking every enabled "
                       "transition as todo",
                       issuer_id);
             prev_state->consider_all();
+            opened_states.emplace_back(tmp_stack);
           }
           break;
         } else {
@@ -209,6 +212,7 @@ void DFSExplorer::run()
           XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->get_num());
           XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->get_num());
         }
+        tmp_stack.pop_back();
       }
     }
 
@@ -219,22 +223,23 @@ void DFSExplorer::run()
     if (_sg_mc_max_visited_states > 0)
       visited_state_ = visited_states_.addVisitedState(next_state->get_num(), next_state.get(), get_remote_app());
 
+    stack_.push_back(std::move(next_state));
+
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
       /* Get an enabled process and insert it in the interleave set of the next state */
       if (reduction_mode_ == ReductionMode::dpor)
-        next_state->consider_best(); // Take only one transition if DPOR: others may be considered later if required
-      else
-        next_state->consider_all();
-
-      dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), next_state->get_num(),
+        stack_.back()->consider_best(); // Take only one transition if DPOR: others may be considered later if required
+      else {
+        stack_.back()->consider_all();
+        opened_states.emplace_back(stack_);
+      }
+      dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
                  state->get_transition()->dot_string().c_str());
     } else
       dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(),
                  visited_state_->original_num_ == -1 ? visited_state_->num_ : visited_state_->original_num_,
                  state->get_transition()->dot_string().c_str());
-
-    stack_.push_back(std::move(next_state));
   }
 
   log_state();
@@ -247,53 +252,64 @@ void DFSExplorer::backtrack()
   on_backtracking_signal(get_remote_app());
   get_remote_app().check_deadlock();
 
+  // if no backtracking point, then set the stack_ to empty so we can end the exploration
+  if (opened_states.size() == 0) {
+    stack_ = std::list<std::shared_ptr<State>>();
+    return;
+  }
+
   /* We may backtrack from somewhere either because it's leaf, or because every enabled process are in done/sleep set.
    * In the first case, we need to remove the last transition corresponding to the Finalize */
   if (stack_.back()->get_transition()->aid_ == 0)
     stack_.pop_back();
 
-  /* Traverse the stack backwards until a state with a non empty interleave set is found, deleting all the states that
-   *  have it empty in the way. */
-  bool found_backtracking_point = false;
-  while (not stack_.empty() && not found_backtracking_point) {
-    std::unique_ptr<State> state = std::move(stack_.back());
-
-    stack_.pop_back();
-
-    if (state->count_todo() == 0) { // Empty interleaving set: exploration at this level is over
-      XBT_DEBUG("Delete state %ld at depth %zu", state->get_num(), stack_.size() + 1);
-
-    } else {
-      XBT_DEBUG("Back-tracking to state %ld at depth %zu: %lu transitions left to be explored", state->get_num(),
-                stack_.size() + 1, state->count_todo());
-      stack_.push_back(
-          std::move(state)); // Put it back on the stack so we can explore the next transition of the interleave
-      found_backtracking_point = true;
+  stack_t backtrack;
+  double min_dist = std::numeric_limits<double>::infinity();
+  aid_t min_aid   = -1;
+  for (auto& stack : opened_states) {
+    auto [aid, dist] = stack.back()->next_transition_guided();
+    if (aid == -1)
+      continue;
+    if (dist < min_dist) {
+      min_dist  = dist;
+      min_aid   = aid;
+      backtrack = stack;
     }
   }
 
-  if (found_backtracking_point) {
-    /* If asked to rollback on a state that has a snapshot, restore it */
-    State* last_state = stack_.back().get();
-    if (const auto* system_state = last_state->get_system_state()) {
-      system_state->restore(get_remote_app().get_remote_process_memory());
-      on_restore_system_state_signal(last_state, get_remote_app());
-      return;
-    }
+  if (min_aid == -1) {
+    stack_ = std::list<std::shared_ptr<State>>();
+    return;
+  }
 
-    /* if no snapshot, we need to restore the initial state and replay the transitions */
-    get_remote_app().restore_initial_state();
-    on_restore_initial_state_signal(get_remote_app());
+  if (backtrack.back()->count_todo() <= 1)
+    opened_states.pop_back();
+  XBT_VERB("%lu todo actors in last states of the next backtracking point %s (remaining %lu opened stacks)",
+           backtrack.back()->count_todo(), backtrack.back()->get_transition()->to_string().c_str(),
+           opened_states.size());
 
-    /* Traverse the stack from the state at position start and re-execute the transitions */
-    for (std::unique_ptr<State> const& state : stack_) {
-      if (state == stack_.back()) /* If we are arrived on the target state, don't replay the outgoing transition */
-        break;
-      state->get_transition()->replay(get_remote_app());
-      on_transition_replay_signal(state->get_transition(), get_remote_app());
-      visited_states_count_++;
-    }
-  } // If no backtracing point, then the stack is empty and the exploration is over
+  /* If asked to rollback on a state that has a snapshot, restore it */
+  State* last_state = backtrack.back().get();
+  if (const auto* system_state = last_state->get_system_state()) {
+    system_state->restore(get_remote_app().get_remote_process_memory());
+    on_restore_system_state_signal(last_state, get_remote_app());
+    return;
+  }
+
+  /* if no snapshot, we need to restore the initial state and replay the transitions */
+  get_remote_app().restore_initial_state();
+  on_restore_initial_state_signal(get_remote_app());
+
+  /* Traverse the stack from the state at position start and re-execute the transitions */
+  for (std::shared_ptr<State> const& state : backtrack) {
+    if (state == backtrack.back()) /* If we are arrived on the target state, don't replay the outgoing transition */
+      break;
+    state->get_transition()->replay(get_remote_app());
+    on_transition_replay_signal(state->get_transition(), get_remote_app());
+    visited_states_count_++;
+  }
+  stack_ = backtrack;
+  XBT_VERB(">> Backtracked to %s", get_record_trace().to_string().c_str());
 }
 
 DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Exploration(args)
@@ -317,14 +333,16 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Explo
 
   XBT_DEBUG("**************************************************");
 
+  stack_.push_back(std::move(initial_state));
+
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   XBT_DEBUG("Initial state. %lu actors to consider", initial_state->get_actor_count());
   if (reduction_mode_ == ReductionMode::dpor)
-    initial_state->consider_best();
-  else
-    initial_state->consider_all();
-
-  stack_.push_back(std::move(initial_state));
+    stack_.back()->consider_best();
+  else {
+    stack_.back()->consider_all();
+    opened_states.emplace_back(stack_);
+  }
 }
 
 Exploration* create_dfs_exploration(const std::vector<char*>& args, bool with_dpor)

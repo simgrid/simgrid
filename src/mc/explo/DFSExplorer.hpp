@@ -16,7 +16,10 @@
 
 namespace simgrid::mc {
 
+typedef std::list<std::shared_ptr<State>> stack_t;
+
 class XBT_PRIVATE DFSExplorer : public Exploration {
+
   XBT_DECLARE_ENUM_CLASS(ReductionMode, none, dpor);
 
   ReductionMode reduction_mode_;
@@ -86,9 +89,13 @@ private:
   void backtrack();
 
   /** Stack representing the position in the exploration graph */
-  std::list<std::unique_ptr<State>> stack_;
+  stack_t stack_;
   VisitedStates visited_states_;
   std::unique_ptr<VisitedState> visited_state_;
+
+  /** Opened states are states that still contains todo actors.
+   *  When backtracking, we pick a state from it*/
+  std::vector<stack_t> opened_states;
 };
 
 } // namespace simgrid::mc
