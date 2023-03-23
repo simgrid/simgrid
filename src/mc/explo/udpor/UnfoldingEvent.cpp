@@ -20,22 +20,20 @@ UnfoldingEvent::UnfoldingEvent(EventSet immediate_causes, std::shared_ptr<Transi
 
 bool UnfoldingEvent::operator==(const UnfoldingEvent& other) const
 {
-  // Must be run by the same actor
-  if (associated_transition->aid_ != other.associated_transition->aid_)
-    return false;
-
-  // If run by the same actor, must be the same _step_ of that actor's
-  // execution
-
-  // TODO: Add in information to determine which step in the sequence this actor was executed
-
-  // All unfolding event objects are created in reference to
-  // an Unfolding object which owns them. Hence, the references
+  // Two events are equivalent iff:
+  // 1. they have the same action
+  // 2. they have the same history
+  //
+  // NOTE: All unfolding event objects are created in reference to
+  // an `Unfolding` object which owns them. Hence, the references
   // they contain to other events in the unfolding can
   // be used as intrinsic identities (i.e. we don't need to
   // recursively check if each of our causes has a `==` in
   // the other event's causes)
-  return this->immediate_causes == other.immediate_causes;
+  return associated_transition->aid_ == other.associated_transition->aid_ &&
+         associated_transition->type_ == other.associated_transition->type_ &&
+         associated_transition->times_considered_ == other.associated_transition->times_considered_ &&
+         this->immediate_causes == other.immediate_causes;
 }
 
 EventSet UnfoldingEvent::get_history() const

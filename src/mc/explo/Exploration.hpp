@@ -34,7 +34,7 @@ class Exploration : public xbt::Extendable<Exploration> {
   FILE* dot_output_ = nullptr;
 
 public:
-  explicit Exploration(const std::vector<char*>& args);
+  explicit Exploration(const std::vector<char*>& args, bool need_memory_introspection);
   virtual ~Exploration();
 
   static Exploration* get_instance() { return instance_; }
@@ -46,12 +46,12 @@ public:
   virtual void run() = 0;
 
   /** Produce an error message indicating that the application crashed (status was produced by waitpid) */
-  void report_crash(int status);
+  XBT_ATTRIB_NORETURN void report_crash(int status);
   /** Produce an error message indicating that a property was violated */
-  void report_assertion_failure();
+  XBT_ATTRIB_NORETURN void report_assertion_failure();
 
   /** Kill the application and the model-checker (which exits with `status`)*/
-  XBT_ATTRIB_NORETURN void system_exit(int status);
+  XBT_ATTRIB_NORETURN void system_exit(int status) const;
 
   /* These methods are callbacks called by the model-checking engine
    * to get and display information about the current state of the

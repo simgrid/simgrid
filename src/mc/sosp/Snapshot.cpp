@@ -200,7 +200,7 @@ void Snapshot::ignore_restore() const
 }
 
 Snapshot::Snapshot(long num_state, PageStore& store, RemoteProcessMemory& memory)
-    : AddressSpace(memory), page_store_(store), num_state_(num_state)
+    : AddressSpace(&memory), page_store_(store), num_state_(num_state)
 {
   XBT_DEBUG("Taking snapshot %ld", num_state);
 

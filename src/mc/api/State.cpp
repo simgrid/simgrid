@@ -30,7 +30,7 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
     system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store(),
-                                                            remote_app.get_remote_process_memory());
+                                                            *remote_app.get_remote_process_memory());
 }
 
 State::State(RemoteApp& remote_app, const State* parent_state) : num_(++expended_states_), parent_state_(parent_state)
@@ -47,7 +47,7 @@ State::State(RemoteApp& remote_app, const State* parent_state) : num_(++expended
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
     system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store(),
-                                                            remote_app.get_remote_process_memory());
+                                                            *remote_app.get_remote_process_memory());
 
   /* If we want sleep set reduction, copy the sleep set and eventually removes things from it */
   if (_sg_mc_sleep_set) {
@@ -58,7 +58,7 @@ State::State(RemoteApp& remote_app, const State* parent_state) : num_(++expended
 
       if (not parent_state_->get_transition()->depends(&transition)) {
 
-        sleep_set_.emplace(aid, transition);
+        sleep_set_.try_emplace(aid, transition);
         if (guide_->actors_to_run_.count(aid) != 0) {
           XBT_DEBUG("Actor %ld will not be explored, for it is in the sleep set", aid);
 

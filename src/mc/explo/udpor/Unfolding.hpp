@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_UDPOR_UNFOLDING_HPP
 #define SIMGRID_MC_UDPOR_UNFOLDING_HPP
 
+#include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
@@ -26,17 +27,45 @@ private:
    */
   std::unordered_map<const UnfoldingEvent*, std::unique_ptr<UnfoldingEvent>> global_events_;
 
+  /**
+   * @brief: The collection of events in the unfolding
+   *
+   * @invariant: All of the events in this set are elements of `global_events_`
+   * and is kept updated at the same time as `global_events_`
+   */
+  EventSet event_handles;
+
+  /**
+   * @brief The "irrelevant" portions of the unfolding that do not need to be kept
+   * around to ensure that UDPOR functions correctly
+   *
+   * The set `G` is another global variable maintained by the UDPOR algorithm which
+   * is used to keep track of all events which used to be important to UDPOR.
+   *
+   * @note: The current implementation does not touch the set `G`. Its use is perhaps
+   * limited to debugging and/or model-checking acyclic state spaces
+   */
+  EventSet G;
+
 public:
   Unfolding()                       = default;
   Unfolding& operator=(Unfolding&&) = default;
   Unfolding(Unfolding&&)            = default;
 
   void remove(const UnfoldingEvent* e);
+  void remove(const EventSet& events);
   void insert(std::unique_ptr<UnfoldingEvent> e);
   bool contains_event_equivalent_to(const UnfoldingEvent* e) const;
 
+  auto begin() const { return this->event_handles.begin(); }
+  auto end() const { return this->event_handles.end(); }
+  auto cbegin() const { return this->event_handles.cbegin(); }
+  auto cend() const { return this->event_handles.cend(); }
   size_t size() const { return this->global_events_.size(); }
   bool empty() const { return this->global_events_.empty(); }
+
+  /// @brief Computes "#ⁱ_U(e)" for the given event
+  EventSet get_immediate_conflicts_of(const UnfoldingEvent*) const;
 };
 
 } // namespace simgrid::mc::udpor

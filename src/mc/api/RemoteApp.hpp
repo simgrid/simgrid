@@ -30,6 +30,8 @@ private:
   PageStore page_store_{500};
   std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
 
+  std::vector<char*> app_args_;
+
   // No copy:
   RemoteApp(RemoteApp const&) = delete;
   RemoteApp& operator=(RemoteApp const&) = delete;
@@ -42,11 +44,11 @@ public:
    *
    *  The code is expected to `exec` the model-checked application.
    */
-  explicit RemoteApp(const std::vector<char*>& args);
+  explicit RemoteApp(const std::vector<char*>& args, bool need_memory_introspection);
 
   ~RemoteApp();
 
-  void restore_initial_state() const;
+  void restore_initial_state();
   void wait_for_requests();
 
   /** Ask to the application to check for a deadlock. If so, do an error message and throw a DeadlockError. */
@@ -54,8 +56,6 @@ public:
 
   /** Ask the application to run post-mortem analysis, and maybe to stop ASAP */
   void finalize_app(bool terminate_asap = false);
-  /** Forcefully kill the application (after running post-mortem analysis)*/
-  void shutdown();
 
   /** Retrieve the max PID of the running actors */
   unsigned long get_maxpid() const;
@@ -67,7 +67,7 @@ public:
   Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
 
   /* Get the memory of the remote process */
-  RemoteProcessMemory& get_remote_process_memory() { return checker_side_->get_remote_memory(); }
+  RemoteProcessMemory* get_remote_process_memory() { return checker_side_->get_remote_memory(); }
 
   PageStore& get_page_store() { return page_store_; }
 };

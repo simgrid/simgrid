@@ -7,6 +7,7 @@
 #include "src/mc/explo/udpor/Unfolding.hpp"
 #include "src/mc/explo/udpor/udpor_tests_private.hpp"
 
+using namespace simgrid::mc;
 using namespace simgrid::mc::udpor;
 
 TEST_CASE("simgrid::mc::udpor::Unfolding: Creating an unfolding")
@@ -40,3 +41,24 @@ TEST_CASE("simgrid::mc::udpor::Unfolding: Inserting and removing events with an 
   REQUIRE(unfolding.size() == 0);
   REQUIRE(unfolding.empty());
 }
+
+TEST_CASE("simgrid::mc::udpor::Unfolding: Checking for semantically equivalent events")
+{
+  Unfolding unfolding;
+  auto e1 = std::make_unique<UnfoldingEvent>(
+      EventSet(), std::make_shared<IndependentAction>(Transition::Type::BARRIER_ASYNC_LOCK, 6, 2));
+  auto e2 = std::make_unique<UnfoldingEvent>(
+      EventSet(), std::make_shared<IndependentAction>(Transition::Type::BARRIER_ASYNC_LOCK, 6, 2));
+
+  // e1 and e2 are equivalent
+  REQUIRE(*e1 == *e2);
+
+  const auto e1_handle = e1.get();
+  const auto e2_handle = e2.get();
+  unfolding.insert(std::move(e1));
+
+  REQUIRE(unfolding.contains_event_equivalent_to(e1_handle));
+  REQUIRE(unfolding.contains_event_equivalent_to(e2_handle));
+}
+
+TEST_CASE("simgrid::mc::udpor::Unfolding: Checking all immediate conflicts restricted to an unfolding") {}

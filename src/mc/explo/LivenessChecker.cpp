@@ -23,11 +23,11 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t prop_state,
                          RemoteApp& remote_app)
     : num(pair_num), prop_state_(prop_state)
 {
-  auto& memory     = remote_app.get_remote_process_memory();
+  auto* memory     = remote_app.get_remote_process_memory();
   this->app_state_ = std::move(app_state);
   if (not this->app_state_->get_system_state())
-    this->app_state_->set_system_state(std::make_shared<Snapshot>(pair_num, remote_app.get_page_store(), memory));
-  this->heap_bytes_used     = memory.get_remote_heap_bytes();
+    this->app_state_->set_system_state(std::make_shared<Snapshot>(pair_num, remote_app.get_page_store(), *memory));
+  this->heap_bytes_used     = memory->get_remote_heap_bytes();
   this->actor_count_        = app_state_->get_actor_count();
   this->other_num           = -1;
   this->atomic_propositions = std::move(atomic_propositions);
@@ -75,7 +75,7 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
       if (xbt_automaton_state_compare(pair_test->prop_state_, new_pair->prop_state_) != 0 ||
           *(pair_test->atomic_propositions) != *(new_pair->atomic_propositions) ||
           (not pair_test->app_state_->get_system_state()->equals_to(*new_pair->app_state_->get_system_state(),
-                                                                    get_remote_app().get_remote_process_memory())))
+                                                                    *get_remote_app().get_remote_process_memory())))
         continue;
       XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
       exploration_stack_.pop_back();
@@ -104,7 +104,7 @@ void LivenessChecker::replay()
   if (_sg_mc_checkpoint > 0) {
     const Pair* pair = exploration_stack_.back().get();
     if (const auto* system_state = pair->app_state_->get_system_state()) {
-      system_state->restore(get_remote_app().get_remote_process_memory());
+      system_state->restore(*get_remote_app().get_remote_process_memory());
       return;
     }
   }
@@ -153,7 +153,7 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
     if (xbt_automaton_state_compare(pair_test->prop_state_, visited_pair->prop_state_) != 0 ||
         *(pair_test->atomic_propositions) != *(visited_pair->atomic_propositions) ||
         (not pair_test->app_state_->get_system_state()->equals_to(*visited_pair->app_state_->get_system_state(),
-                                                                  get_remote_app().get_remote_process_memory())))
+                                                                  *get_remote_app().get_remote_process_memory())))
       continue;
     if (pair_test->other_num == -1)
       visited_pair->other_num = pair_test->num;
@@ -180,7 +180,7 @@ void LivenessChecker::purge_visited_pairs()
   }
 }
 
-LivenessChecker::LivenessChecker(const std::vector<char*>& args) : Exploration(args) {}
+LivenessChecker::LivenessChecker(const std::vector<char*>& args) : Exploration(args, true) {}
 LivenessChecker::~LivenessChecker()
 {
   xbt_automaton_free(property_automaton_);

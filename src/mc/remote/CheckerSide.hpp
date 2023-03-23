@@ -18,12 +18,12 @@ namespace simgrid::mc {
 /* CheckerSide: All what the checker needs to interact with a given application process */
 
 class CheckerSide {
+  event* socket_event_;
+  event* signal_event_;
   std::unique_ptr<event_base, decltype(&event_base_free)> base_{nullptr, &event_base_free};
-  std::unique_ptr<event, decltype(&event_free)> socket_event_{nullptr, &event_free};
-  std::unique_ptr<event, decltype(&event_free)> signal_event_{nullptr, &event_free};
   std::unique_ptr<RemoteProcessMemory> remote_memory_;
-  Channel channel_;
 
+  Channel channel_;
   bool running_ = false;
   pid_t pid_;
 
@@ -32,7 +32,8 @@ class CheckerSide {
   void handle_waitpid();
 
 public:
-  explicit CheckerSide(const std::vector<char*>& args);
+  explicit CheckerSide(const std::vector<char*>& args, bool need_memory_introspection);
+  ~CheckerSide();
 
   // No copy:
   CheckerSide(CheckerSide const&) = delete;
@@ -48,11 +49,14 @@ public:
   void break_loop() const;
   void wait_for_requests();
 
+  /** Ask the application to run post-mortem analysis, and maybe to stop ASAP */
+  void finalize(bool terminate_asap = false);
+
   /* Interacting with the application process */
   pid_t get_pid() const { return pid_; }
   bool running() const { return running_; }
   void terminate() { running_ = false; }
-  RemoteProcessMemory& get_remote_memory() { return *remote_memory_.get(); }
+  RemoteProcessMemory* get_remote_memory() { return remote_memory_.get(); }
 };
 
 } // namespace simgrid::mc

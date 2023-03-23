@@ -90,6 +90,11 @@ EventSet EventSet::make_union(const Configuration& config) const
   return make_union(config.get_events());
 }
 
+EventSet EventSet::get_local_config() const
+{
+  return History(*this).get_all_events();
+}
+
 size_t EventSet::size() const
 {
   return this->events_.size();
@@ -130,6 +135,11 @@ bool EventSet::is_valid_configuration() const
 bool EventSet::contains(const History& history) const
 {
   return std::all_of(history.begin(), history.end(), [=](const UnfoldingEvent* e) { return this->contains(e); });
+}
+
+bool EventSet::intersects(const History& history) const
+{
+  return std::any_of(history.begin(), history.end(), [=](const UnfoldingEvent* e) { return this->contains(e); });
 }
 
 bool EventSet::is_maximal() const

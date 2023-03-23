@@ -126,12 +126,14 @@ static void wait_application_process(pid_t pid)
 
 void CheckerSide::setup_events()
 {
+  if (base_ != nullptr)
+    event_base_free(base_.get());
   auto* base = event_base_new();
   base_.reset(base);
 
-  auto* socket_event = event_new(
+  socket_event_ = event_new(
       base, get_channel().get_socket(), EV_READ | EV_PERSIST,
-      [](evutil_socket_t sig, short events, void* arg) {
+      [](evutil_socket_t, short events, void* arg) {
         auto checker = static_cast<simgrid::mc::CheckerSide*>(arg);
         if (events == EV_READ) {
           std::array<char, MC_MESSAGE_LENGTH> buffer;
@@ -149,10 +151,9 @@ void CheckerSide::setup_events()
         }
       },
       this);
-  event_add(socket_event, nullptr);
-  socket_event_.reset(socket_event);
+  event_add(socket_event_, nullptr);
 
-  auto* signal_event = event_new(
+  signal_event_ = event_new(
       base, SIGCHLD, EV_SIGNAL | EV_PERSIST,
       [](evutil_socket_t sig, short events, void* arg) {
         auto checker = static_cast<simgrid::mc::CheckerSide*>(arg);
@@ -166,11 +167,10 @@ void CheckerSide::setup_events()
         }
       },
       this);
-  event_add(signal_event, nullptr);
-  signal_event_.reset(signal_event);
+  event_add(signal_event_, nullptr);
 }
 
-CheckerSide::CheckerSide(const std::vector<char*>& args) : running_(true)
+CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_introspection) : running_(true)
 {
   // Create an AF_LOCAL socketpair used for exchanging messages between the model-checker process (ancestor)
   // and the application process (child)
@@ -193,7 +193,54 @@ CheckerSide::CheckerSide(const std::vector<char*>& args) : running_(true)
   setup_events();
   wait_application_process(pid_);
 
+  // Request the initial memory on need
+  if (need_memory_introspection) {
+    channel_.send(MessageType::INITIAL_ADDRESSES);
+    s_mc_message_initial_addresses_reply_t answer;
+    ssize_t answer_size = channel_.receive(answer);
+    xbt_assert(answer_size != -1, "Could not receive message");
+    xbt_assert(answer.type == MessageType::INITIAL_ADDRESSES_REPLY,
+               "The received message is not the INITIAL_ADDRESS_REPLY I was expecting but of type %s",
+               to_c_str(answer.type));
+    xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
+
+    /* We now have enough info to create the memory address space */
+    remote_memory_ = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid_, answer.mmalloc_default_mdp);
+  }
+
   wait_for_requests();
+}
+
+CheckerSide::~CheckerSide()
+{
+  event_del(socket_event_);
+  event_free(socket_event_);
+  event_del(signal_event_);
+  event_free(signal_event_);
+
+  if (running()) {
+    XBT_DEBUG("Killing process");
+    finalize(true);
+    kill(get_pid(), SIGKILL);
+    terminate();
+    handle_waitpid();
+  }
+}
+
+void CheckerSide::finalize(bool terminate_asap)
+{
+  s_mc_message_int_t m = {};
+  m.type               = MessageType::FINALIZE;
+  m.value              = terminate_asap;
+  xbt_assert(get_channel().send(m) == 0, "Could not ask the app to finalize on need");
+
+  s_mc_message_t answer;
+  ssize_t s = get_channel().receive(answer);
+  xbt_assert(s != -1, "Could not receive answer to FINALIZE");
+  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
+  xbt_assert(answer.type == MessageType::FINALIZE_REPLY,
+             "Received unexpected message %s (%i); expected MessageType::FINALIZE_REPLY (%i)", to_c_str(answer.type),
+             (int)answer.type, (int)MessageType::FINALIZE_REPLY);
 }
 
 void CheckerSide::dispatch_events() const
@@ -213,52 +260,59 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
   memcpy(&base_message, buffer, sizeof(base_message));
 
   switch (base_message.type) {
-    case MessageType::INITIAL_ADDRESSES: {
-      s_mc_message_initial_addresses_t message;
-      xbt_assert(size == sizeof(message), "Broken message. Got %d bytes instead of %d.", (int)size,
-                 (int)sizeof(message));
-      memcpy(&message, buffer, sizeof(message));
-      /* Create the memory address space, now that we have the mandatory information */
-      remote_memory_ = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid_, message.mmalloc_default_mdp);
-      break;
-    }
-
     case MessageType::IGNORE_HEAP: {
-      s_mc_message_ignore_heap_t message;
-      xbt_assert(size == sizeof(message), "Broken message");
-      memcpy(&message, buffer, sizeof(message));
+      if (remote_memory_ != nullptr) {
+        s_mc_message_ignore_heap_t message;
+        xbt_assert(size == sizeof(message), "Broken message");
+        memcpy(&message, buffer, sizeof(message));
 
-      IgnoredHeapRegion region;
-      region.block    = message.block;
-      region.fragment = message.fragment;
-      region.address  = message.address;
-      region.size     = message.size;
-      get_remote_memory().ignore_heap(region);
+        IgnoredHeapRegion region;
+        region.block    = message.block;
+        region.fragment = message.fragment;
+        region.address  = message.address;
+        region.size     = message.size;
+        get_remote_memory()->ignore_heap(region);
+      } else {
+        XBT_INFO("Ignoring a IGNORE_HEAP message because we don't need to introspect memory.");
+      }
       break;
     }
 
     case MessageType::UNIGNORE_HEAP: {
-      s_mc_message_ignore_memory_t message;
-      xbt_assert(size == sizeof(message), "Broken message");
-      memcpy(&message, buffer, sizeof(message));
-      get_remote_memory().unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
+      if (remote_memory_ != nullptr) {
+        s_mc_message_ignore_memory_t message;
+        xbt_assert(size == sizeof(message), "Broken message");
+        memcpy(&message, buffer, sizeof(message));
+        get_remote_memory()->unignore_heap((void*)message.addr, message.size);
+      } else {
+        XBT_INFO("Ignoring an UNIGNORE_HEAP message because we don't need to introspect memory.");
+      }
       break;
     }
 
     case MessageType::IGNORE_MEMORY: {
-      s_mc_message_ignore_memory_t message;
-      xbt_assert(size == sizeof(message), "Broken message");
-      memcpy(&message, buffer, sizeof(message));
-      get_remote_memory().ignore_region(message.addr, message.size);
+      if (remote_memory_ != nullptr) {
+        s_mc_message_ignore_memory_t message;
+        xbt_assert(size == sizeof(message), "Broken message");
+        memcpy(&message, buffer, sizeof(message));
+        get_remote_memory()->ignore_region(message.addr, message.size);
+      } else {
+        XBT_INFO("Ignoring an IGNORE_MEMORY message because we don't need to introspect memory.");
+      }
       break;
     }
 
     case MessageType::STACK_REGION: {
-      s_mc_message_stack_region_t message;
-      xbt_assert(size == sizeof(message), "Broken message");
-      memcpy(&message, buffer, sizeof(message));
-      get_remote_memory().stack_areas().push_back(message.stack_region);
-    } break;
+      if (remote_memory_ != nullptr) {
+        s_mc_message_stack_region_t message;
+        xbt_assert(size == sizeof(message), "Broken message");
+        memcpy(&message, buffer, sizeof(message));
+        get_remote_memory()->stack_areas().push_back(message.stack_region);
+      } else {
+        XBT_INFO("Ignoring an STACK_REGION message because we don't need to introspect memory.");
+      }
+      break;
+    }
 
     case MessageType::REGISTER_SYMBOL: {
       s_mc_message_register_symbol_t message;
@@ -267,7 +321,7 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
       xbt_assert(not message.callback, "Support for client-side function proposition is not implemented.");
       XBT_DEBUG("Received symbol: %s", message.name.data());
 
-      LivenessChecker::automaton_register_symbol(get_remote_memory(), message.name.data(), remote((int*)message.data));
+      LivenessChecker::automaton_register_symbol(*get_remote_memory(), message.name.data(), remote((int*)message.data));
       break;
     }
 
@@ -312,8 +366,7 @@ void CheckerSide::handle_waitpid()
         xbt_assert(not this->running(), "Inconsistent state");
         break;
       } else {
-        XBT_ERROR("Could not wait for pid");
-        throw simgrid::xbt::errno_error();
+        xbt_die("Could not wait for pid: %s", strerror(errno));
       }
     }
 

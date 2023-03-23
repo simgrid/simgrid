@@ -20,7 +20,8 @@ static simgrid::config::Flag<std::string> cfg_dot_output_file{
 
 Exploration* Exploration::instance_ = nullptr; // singleton instance
 
-Exploration::Exploration(const std::vector<char*>& args) : remote_app_(std::make_unique<RemoteApp>(args))
+Exploration::Exploration(const std::vector<char*>& args, bool need_memory_introspection)
+    : remote_app_(std::make_unique<RemoteApp>(args, need_memory_introspection))
 {
   xbt_assert(instance_ == nullptr, "Cannot have more than one exploration instance");
   instance_ = this;
@@ -65,7 +66,7 @@ void Exploration::log_state()
   }
 }
 
-void Exploration::report_crash(int status)
+XBT_ATTRIB_NORETURN void Exploration::report_crash(int status)
 {
   XBT_INFO("**************************");
   XBT_INFO("** CRASH IN THE PROGRAM **");
@@ -87,13 +88,18 @@ void Exploration::report_crash(int status)
   if (xbt_log_no_loc) {
     XBT_INFO("Stack trace not displayed because you passed --log=no_loc");
   } else {
-    XBT_INFO("Stack trace:");
-    get_remote_app().get_remote_process_memory().dump_stack();
+    const auto* memory = get_remote_app().get_remote_process_memory();
+    if (memory) {
+      XBT_INFO("Stack trace:");
+      memory->dump_stack();
+    } else {
+      XBT_INFO("Stack trace not shown because there is no memory introspection.");
+    }
   }
 
   system_exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
 }
-void Exploration::report_assertion_failure()
+XBT_ATTRIB_NORETURN void Exploration::report_assertion_failure()
 {
   XBT_INFO("**************************");
   XBT_INFO("*** PROPERTY NOT VALID ***");
@@ -108,9 +114,8 @@ void Exploration::report_assertion_failure()
   system_exit(SIMGRID_MC_EXIT_SAFETY);
 }
 
-void Exploration::system_exit(int status)
+void Exploration::system_exit(int status) const
 {
-  get_remote_app().shutdown();
   ::exit(status);
 }
 

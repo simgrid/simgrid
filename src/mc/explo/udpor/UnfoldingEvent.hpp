@@ -30,8 +30,15 @@ public:
   bool in_history_of(const UnfoldingEvent* other) const;
   bool related_to(const UnfoldingEvent* other) const;
 
+  /// @brief Whether or not this event is in conflict with
+  /// the given one (i.e. whether `this # other`)
   bool conflicts_with(const UnfoldingEvent* other) const;
+
+  /// @brief Whether or not this event is in conflict with
+  /// any event in the given configuration
   bool conflicts_with(const Configuration& config) const;
+
+  /// @brief Computes "this #ⁱ other"
   bool immediately_conflicts_with(const UnfoldingEvent* other) const;
   bool is_dependent_with(const Transition*) const;
   bool is_dependent_with(const UnfoldingEvent* other) const;

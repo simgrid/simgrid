@@ -151,8 +151,8 @@ void snap_test_helper::compare_region_parts()
   }
 }
 
-int some_global_variable  = 42;
-void* some_global_pointer = &some_global_variable;
+const int some_global_variable  = 42;
+const void* some_global_pointer = &some_global_variable;
 void snap_test_helper::read_pointer()
 {
   prologue_return ret = prologue(1);

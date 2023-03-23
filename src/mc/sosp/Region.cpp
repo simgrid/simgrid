@@ -16,7 +16,8 @@
 
 namespace simgrid::mc {
 
-Region::Region(PageStore& store, RemoteProcessMemory& memory, RegionType region_type, void* start_addr, size_t size)
+Region::Region(PageStore& store, const RemoteProcessMemory& memory, RegionType region_type, void* start_addr,
+               size_t size)
     : region_type_(region_type), start_addr_(start_addr), size_(size)
 {
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize - 1)) == 0, "Start address not at the beginning of a page");
@@ -28,7 +29,7 @@ Region::Region(PageStore& store, RemoteProcessMemory& memory, RegionType region_
  *
  *  @param region     Target region
  */
-void Region::restore(RemoteProcessMemory& memory) const
+void Region::restore(const RemoteProcessMemory& memory) const
 {
   xbt_assert(((start().address()) & (xbt_pagesize - 1)) == 0, "Not at the beginning of a page");
   xbt_assert(simgrid::mc::mmu::chunk_count(size()) == get_chunks().page_count());

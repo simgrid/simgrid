@@ -48,11 +48,13 @@ public:
   EventSet make_union(const UnfoldingEvent*) const;
   EventSet make_union(const EventSet&) const;
   EventSet make_union(const Configuration&) const;
+  EventSet get_local_config() const;
 
   size_t size() const;
   bool empty() const;
   bool contains(const UnfoldingEvent*) const;
   bool contains(const History&) const;
+  bool intersects(const History&) const;
   bool is_subset_of(const EventSet&) const;
 
   bool operator==(const EventSet& other) const { return this->events_ == other.events_; }
