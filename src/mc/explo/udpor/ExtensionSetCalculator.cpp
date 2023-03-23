@@ -25,7 +25,8 @@ EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, Unfold
   using HandlerMap = std::unordered_map<Action, Handler>;
 
   const static HandlerMap handlers =
-      HandlerMap{{Action::COMM_ASYNC_RECV, &ExtensionSetCalculator::partially_extend_CommRecv}};
+      HandlerMap{{Action::COMM_ASYNC_RECV, &ExtensionSetCalculator::partially_extend_CommRecv},
+                 {Action::COMM_ASYNC_SEND, &ExtensionSetCalculator::partially_extend_CommSend}};
 
   if (const auto handler = handlers.find(action->type_); handler != handlers.end()) {
     return handler->second(C, U, std::move(action));

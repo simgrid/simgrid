@@ -12,6 +12,7 @@
 
 #include <xbt/asserts.h>
 #include <xbt/log.h>
+#include <xbt/string.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to verification using UDPOR");
 
@@ -22,16 +23,13 @@ UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration(args, t
 void UdporChecker::run()
 {
   XBT_INFO("Starting a UDPOR exploration");
-
-  auto state_stack = std::list<std::unique_ptr<State>>();
+  state_stack.clear();
   state_stack.push_back(get_current_state());
-
-  explore(Configuration(), EventSet(), EventSet(), state_stack, EventSet());
+  explore(Configuration(), EventSet(), EventSet(), EventSet());
   XBT_INFO("UDPOR exploration terminated -- model checking completed");
 }
 
-void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A,
-                           std::list<std::unique_ptr<State>>& state_stack, EventSet prev_exC)
+void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, EventSet prev_exC)
 {
   auto& stateC   = *state_stack.back();
   auto exC       = compute_exC(C, stateC, prev_exC);
@@ -81,7 +79,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A,
   move_to_stateCe(stateC, *e);
   state_stack.push_back(record_current_state());
 
-  explore(Ce, D, std::move(A), state_stack, std::move(exC));
+  explore(Ce, D, std::move(A), std::move(exC));
 
   //  Prepare to move the application back one state.
   // We need only remove the state from the stack here: if we perform
@@ -101,11 +99,11 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A,
     // `state(C)` all together, the RemoteApp is currently sitting
     // at some *future* state with resepct to `state(C)` since the
     // recursive calls have moved it there.
-    restore_program_state_with_sequence(state_stack);
+    restore_program_state_with_current_stack();
 
     // Explore(C, D + {e}, J \ C)
     auto J_minus_C = J.value().get_events().subtracting(C.get_events());
-    explore(C, D, std::move(J_minus_C), state_stack, std::move(prev_exC));
+    explore(C, D, std::move(J_minus_C), std::move(prev_exC));
   }
 
   // D <-- D - {e}
@@ -189,13 +187,13 @@ void UdporChecker::move_to_stateCe(State& state, const UnfoldingEvent& e)
   state.execute_next(next_actor, get_remote_app());
 }
 
-void UdporChecker::restore_program_state_with_sequence(const std::list<std::unique_ptr<State>>& state_stack)
+void UdporChecker::restore_program_state_with_current_stack()
 {
   get_remote_app().restore_initial_state();
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (const std::unique_ptr<State>& state : state_stack) {
-    if (state == stack_.back()) /* If we are arrived on the target state, don't replay the outgoing transition */
+    if (state == state_stack.back()) /* If we are arrived on the target state, don't replay the outgoing transition */
       break;
     state->get_transition()->replay(get_remote_app());
   }
@@ -247,14 +245,18 @@ void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration
 RecordTrace UdporChecker::get_record_trace()
 {
   RecordTrace res;
+  for (auto const& state : state_stack)
+    res.push_back(state->get_transition());
   return res;
 }
 
 std::vector<std::string> UdporChecker::get_textual_trace()
 {
-  // TODO: Topologically sort the events of the latest configuration
-  // and iterate through that topological sorting
   std::vector<std::string> trace;
+  for (auto const& state : state_stack) {
+    const auto* t = state->get_transition();
+    trace.push_back(xbt::string_printf("%ld: %s", t->aid_, t->to_string().c_str()));
+  }
   return trace;
 }
 

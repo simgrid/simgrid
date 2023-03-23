@@ -44,6 +44,10 @@ public:
 private:
   Unfolding unfolding = Unfolding();
 
+  // The current sequence of states that the checker has
+  // visited in order to reach the current configuration
+  std::list<std::unique_ptr<State>> state_stack;
+
   /**
    * @brief Explores the unfolding of the concurrent system
    * represented by the ModelChecker instance "mcmodel_checker"
@@ -59,20 +63,11 @@ private:
    * @param A the set of events to "guide" UDPOR in the correct direction
    * when it returns back to a node in the unfolding and must decide among
    * events to select from `ex(C)`. See [1] for more details
-   * @param stateSequence the sequence of states entered by the program
-   * while UDPOR explored `C`. The program is in `state(C)` (using the notation of [1]),
-   * which is the result of executing all actions in the stack
-   *
-   * TODO: We pass around the reference to the stack which is modified
-   * appropriately in each recursive call. An iterative version would not
-   * need to pass around the states in this manner: the `std::stack<...>`
-   * could be a local variable of the function
    *
    * TODO: Add the optimization where we can check if e == e_prior
    * to prevent repeated work when computing ex(C)
    */
-  void explore(const Configuration& C, EventSet D, EventSet A, std::list<std::unique_ptr<State>>& state_stack,
-               EventSet prev_exC);
+  void explore(const Configuration& C, EventSet D, EventSet A, EventSet prev_exC);
 
   /**
    * @brief Identifies the next event from the unfolding of the concurrent system
@@ -154,7 +149,7 @@ private:
    * The UDPOR implementation in SimGrid ensures that the stack is updated appropriately,
    * but the process must still be regenerated.
    */
-  void restore_program_state_with_sequence(const std::list<std::unique_ptr<State>>& state_stack);
+  void restore_program_state_with_current_stack();
 
   /**
    * @brief Perform the functionality of the `Remove(e, C, D)` function in [1]
