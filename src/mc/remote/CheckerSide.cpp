@@ -37,7 +37,7 @@ static simgrid::config::Flag<std::string> _sg_mc_setenv{
 
 namespace simgrid::mc {
 
-XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<char*>& args)
+XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<char*>& args, bool need_ptrace)
 {
   /* On startup, simix_global_init() calls simgrid::mc::Client::initialize(), which checks whether the MC_ENV_SOCKET_FD
    * env variable is set. If so, MC mode is assumed, and the client is setup from its side
@@ -63,6 +63,8 @@ XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<
              "Could not remove CLOEXEC for socket");
 
   setenv(MC_ENV_SOCKET_FD, std::to_string(socket).c_str(), 1);
+  if (need_ptrace)
+    setenv("MC_NEED_PTRACE", "1", 1);
 
   /* Setup the tokenizer that parses the cfg:model-check/setenv parameter */
   using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
@@ -144,7 +146,9 @@ void CheckerSide::setup_events()
               throw simgrid::xbt::errno_error();
           }
 
-          if (not checker->handle_message(buffer.data(), size))
+          if (size == 0) // The app closed the socket. It must be dead by now.
+            checker->handle_waitpid();
+          else if (not checker->handle_message(buffer.data(), size))
             checker->break_loop();
         } else {
           xbt_die("Unexpected event");
@@ -170,8 +174,10 @@ void CheckerSide::setup_events()
   event_add(signal_event_, nullptr);
 }
 
-CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_introspection) : running_(true)
+CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) : running_(true)
 {
+  bool need_ptrace = not need_memory_info;
+
   // Create an AF_LOCAL socketpair used for exchanging messages between the model-checker process (ancestor)
   // and the application process (child)
   int sockets[2];
@@ -182,7 +188,7 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_intros
 
   if (pid_ == 0) { // Child
     ::close(sockets[1]);
-    run_child_process(sockets[0], args);
+    run_child_process(sockets[0], args, need_ptrace);
     DIE_IMPOSSIBLE;
   }
 
@@ -191,10 +197,11 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_intros
   channel_.reset_socket(sockets[1]);
 
   setup_events();
-  wait_application_process(pid_);
+  if (need_ptrace)
+    wait_application_process(pid_);
 
   // Request the initial memory on need
-  if (need_memory_introspection) {
+  if (need_memory_info) {
     channel_.send(MessageType::INITIAL_ADDRESSES);
     s_mc_message_initial_addresses_reply_t answer;
     ssize_t answer_size = channel_.receive(answer);
@@ -219,14 +226,14 @@ CheckerSide::~CheckerSide()
   event_free(signal_event_);
 
   if (running()) {
-    XBT_DEBUG("Killing process");
-    kill(get_pid(), SIGKILL);
-    while (waitpid(-1, nullptr, WNOHANG) > 0) {
-      /* we don't really care about errors here, as we are shutting things down anyway */
-      /* The child will get ripped by the next waitpid anyway */
-    }
+    errno = 0;
+    xbt_assert(kill(get_pid(), SIGKILL) == 0);
+    do {
+      errno = 0;
+      waitpid(get_pid(), nullptr, 0);
+      xbt_assert(errno == 0);
+    } while (EAGAIN == errno);
   }
-  // usleep(500); // Try to reduce the load on my system. Commented because it's not even enough :(
 }
 
 void CheckerSide::finalize(bool terminate_asap)
@@ -258,7 +265,7 @@ void CheckerSide::break_loop() const
 bool CheckerSide::handle_message(const char* buffer, ssize_t size)
 {
   s_mc_message_t base_message;
-  xbt_assert(size >= (ssize_t)sizeof(base_message), "Broken message");
+  xbt_assert(size >= (ssize_t)sizeof(base_message), "Broken message. Got only %ld bytes.", size);
   memcpy(&base_message, buffer, sizeof(base_message));
 
   switch (base_message.type) {

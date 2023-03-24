@@ -297,8 +297,7 @@ void DFSExplorer::backtrack()
   } // If no backtracing point, then the stack is empty and the exploration is over
 }
 
-//DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Exploration(args, _sg_mc_termination) // UNCOMMENT TO ACTIVATE REFORKS
-DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Exploration(args, true) // This version does not use reforks as it breaks
+DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Exploration(args, _sg_mc_termination)
 {
   if (with_dpor)
     reduction_mode_ = ReductionMode::dpor;

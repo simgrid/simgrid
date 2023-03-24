@@ -64,16 +64,19 @@ AppSide* AppSide::initialize()
   instance_ = std::make_unique<simgrid::mc::AppSide>(fd);
 
   // Wait for the model-checker:
-  errno = 0;
+  if (getenv("MC_NEED_PTRACE") != nullptr) {
+    errno = 0;
 #if defined __linux__
-  ptrace(PTRACE_TRACEME, 0, nullptr, nullptr);
+    ptrace(PTRACE_TRACEME, 0, nullptr, nullptr);
 #elif defined BSD
-  ptrace(PT_TRACE_ME, 0, nullptr, 0);
+    ptrace(PT_TRACE_ME, 0, nullptr, 0);
 #else
-#error "no ptrace equivalent coded for this platform"
+    xbt_die("no ptrace equivalent coded for this platform, please don't use the liveness checker here.");
 #endif
-  xbt_assert(errno == 0 && raise(SIGSTOP) == 0, "Could not wait for the model-checker (errno = %d: %s)", errno,
-             strerror(errno));
+
+    xbt_assert(errno == 0 && raise(SIGSTOP) == 0, "Could not wait for the model-checker (errno = %d: %s)", errno,
+               strerror(errno));
+  }
 
   instance_->handle_messages();
   return instance_.get();
