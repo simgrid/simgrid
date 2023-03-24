@@ -78,7 +78,6 @@ std::string CommTestTransition::to_string(bool verbose) const
 }
 bool CommTestTransition::depends(const Transition* other) const
 {
-
   if (other->type_ < type_)
     return other->depends(this);
 

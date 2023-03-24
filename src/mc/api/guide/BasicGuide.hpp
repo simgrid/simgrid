@@ -14,7 +14,6 @@ class BasicGuide : public GuidedState {
 public:
   std::pair<aid_t, double> next_transition() const override
   {
-
     for (auto const& [aid, actor] : actors_to_run_) {
       /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
       if (not actor.is_todo() || not actor.is_enabled() || actor.is_done()) {

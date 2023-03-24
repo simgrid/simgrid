@@ -53,7 +53,6 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
   // exploration would lead to a so-called
   // "sleep-set blocked" trace.
   if (enC.is_subset_of(D)) {
-
     if (not C.get_events().empty()) {
       // Report information...
     }
@@ -99,7 +98,6 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
 
   constexpr unsigned K = 10;
   if (auto J = C.compute_k_partial_alternative_to(D, this->unfolding, K); J.has_value()) {
-
     // Before searching the "right half", we need to make
     // sure the program actually reflects the fact
     // that we are searching again from `stateC` (the recursive
