@@ -37,8 +37,7 @@ set_target_properties(without-mutex-handling PROPERTIES RUNTIME_OUTPUT_DIRECTORY
 add_dependencies(tests-mc without-mutex-handling)
 
 set(teshsuite_src  ${teshsuite_src}                                                                        PARENT_SCOPE)
-set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/random-bug/random-bug-nocrash.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/random-bug/random-bug-replay.tesh
+set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/random-bug/random-bug-replay.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/mutex-handling/without-mutex-handling.tesh PARENT_SCOPE)
 
 IF(SIMGRID_HAVE_MC)
@@ -48,11 +47,7 @@ IF(SIMGRID_HAVE_MC)
 # ADD_TESH(tesh-mc-mutex-handling-dpor         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/mutex-handling --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/mutex-handling mutex-handling.tesh --cfg=model-check/reduction:dpor)
   ADD_TESH(tesh-mc-without-mutex-handling      --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/mutex-handling --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/mutex-handling without-mutex-handling.tesh --cfg=model-check/reduction:none)
   ADD_TESH(tesh-mc-without-mutex-handling-dpor --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/mutex-handling --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/mutex-handling without-mutex-handling.tesh --cfg=model-check/reduction:dpor)
-  IF("${CMAKE_SYSTEM}" MATCHES "Linux")
-    ADD_TESH(mc-random-bug                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/random-bug --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/random-bug random-bug.tesh)
-  ELSE()
-    ADD_TESH(mc-random-bug-nocrash               --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/random-bug --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/random-bug random-bug-nocrash.tesh)
-  ENDIF()
+  ADD_TESH(mc-random-bug                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/random-bug --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/random-bug random-bug.tesh)
 ENDIF()
 
 ADD_TESH(mc-random-bug-replay                  --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/random-bug --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/random-bug random-bug-replay.tesh)
