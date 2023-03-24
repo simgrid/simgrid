@@ -672,7 +672,7 @@ def main():
             cmd.add_ignore(line[len("! ignore "):])
 
         else:
-            fatal_error("UNRECOGNIZED OPTION")
+            fatal_error(f"UNRECOGNIZED OPTION LINE: {line}")
 
         line = file.readfullline()
 
