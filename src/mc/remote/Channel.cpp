@@ -26,19 +26,20 @@ Channel::~Channel()
 /** @brief Send a message; returns 0 on success or errno on failure */
 int Channel::send(const void* message, size_t size) const
 {
+  if (size >= sizeof(int) && is_valid_MessageType(*static_cast<const int*>(message))) {
+    XBT_DEBUG("Sending %s (%zu bytes sent)", to_c_str(*static_cast<const MessageType*>(message)), size);
+  } else {
+    XBT_DEBUG("Sending bytes directly (from address %p) (%zu bytes sent)", message, size);
+    if (size == 0)
+      XBT_WARN("Request to send a 0-sized message! Proceeding anyway.");
+  }
+
   while (::send(this->socket_, message, size, 0) == -1) {
     if (errno != EINTR) {
       XBT_ERROR("Channel::send failure: %s", strerror(errno));
       return errno;
     }
   }
-
-  if (is_valid_MessageType(*static_cast<const int*>(message))) {
-    XBT_DEBUG("Sending %s (%zu bytes sent)", to_c_str(*static_cast<const MessageType*>(message)), size);
-  } else {
-    XBT_DEBUG("Sending bytes directly (from address %p) (%zu bytes sent)", message, size);
-  }
-
   return 0;
 }
 
@@ -46,7 +47,7 @@ ssize_t Channel::receive(void* message, size_t size) const
 {
   ssize_t res = recv(this->socket_, message, size, 0);
   if (res != -1) {
-    if (is_valid_MessageType(*static_cast<int*>(message))) {
+    if (static_cast<size_t>(res) >= sizeof(int) && is_valid_MessageType(*static_cast<int*>(message))) {
       XBT_DEBUG("Receive %s (requested %zu; received %zd)", to_c_str(*static_cast<MessageType*>(message)), size, res);
     } else {
       XBT_DEBUG("Receive %zd bytes", res);
