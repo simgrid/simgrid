@@ -145,6 +145,21 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
   const auto wait_action   = std::static_pointer_cast<CommWaitTransition>(std::move(action));
   const auto pre_event_a_C = C.pre_event(wait_action->aid_);
 
+  // Determine the _issuer_ of the communication of the `CommWait` event
+  // in `C`. The issuer of the `CommWait` in `C` is the event in `C`
+  // whose transition is the `CommRecv` or `CommSend` whose resulting
+  // communication this `CommWait` waits on
+  const auto issuer = std::find_if(C.begin(), C.end(), [=](const UnfoldingEvent* e) { return false; });
+  xbt_assert(issuer != C.end(),
+             "Invariant violation! A (supposedly) enabled `CommWait` transition "
+             "waiting on commiunication %lu should not be enabled: the receive/send "
+             "transition which generated the communication is not an action taken "
+             "to reach state(C) (the state of the configuration), which should "
+             "be an impossibility if `%s` is enabled. Please report this as "
+             "a bug in SimGrid's UDPOR implementation",
+             wait_action->get_comm(), wait_action->to_string(false).c_str());
+  const UnfoldingEvent* e_issuer = *issuer;
+
   // 1. if `a` is enabled at state(config({preEvt(a,C)})), then
   // create `e' := <a, config({preEvt(a,C)})>` and add `e'` to `ex(C)`
   //
@@ -153,30 +168,104 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
   // least two actions must be executed before)
   if (pre_event_a_C.has_value(); const auto unwrapped_pre_event = pre_event_a_C.value()) {
 
-    // Determine the _issuer_ of the communication of the `CommWait` event
-    // in `C`. The issuer of the `CommWait` in `C` is the event in `C`
-    // whose transition is the `CommRecv` or `CommSend` whose resutling
-    // communication this `CommWait` waits on
-    const auto issuer = std::find_if(C.begin(), C.end(), [=](const UnfoldingEvent* e) { return false; });
-    xbt_assert(issuer != C.end(),
-               "Invariant violation! A (supposedly) enabled `CommWait` transition "
-               "waiting on commiunication %lu should not be enabled: the receive/send "
-               "transition which generated the communication is not an action taken "
-               "to reach state(C) (the state of the configuration), which should "
-               "be an impossibility if `%s` is enabled. Please report this as "
-               "a bug in SimGrid's UDPOR implementation",
-               wait_action->get_comm(), wait_action->to_string(false).c_str());
-
     // A necessary condition is that the issuer be present in
     // config({preEvt(a, C)}); otherwise, the `CommWait` could not
     // be enabled since the communication on which it waits would not
     // have been created for it!
-    if (const auto config_pre_event = History(unwrapped_pre_event); config_pre_event.contains(*issuer)) {
+    if (const auto config_pre_event = History(unwrapped_pre_event); config_pre_event.contains(e_issuer)) {
       // If the issuer is a `CommRecv` (resp. `CommSend`), then we check that there
       // are at least as many `CommSend` (resp. `CommRecv`) transitions in `config_pre_event`
       // as needed to reach the receive/send number that is `issuer`.
-      //...
-      //...
+      // ...
+      // ...
+      if (e_issuer->get_transition()->type_ == Transition::Type::COMM_ASYNC_RECV) {
+
+        const unsigned send_position    = 0;
+        const unsigned receive_position = 0;
+        if (send_position == receive_position) {
+          exC.insert(U->discover_event(EventSet({unwrapped_pre_event}), wait_action));
+        }
+
+      } else if (e_issuer->get_transition()->type_ == Transition::Type::COMM_ASYNC_SEND) {
+
+        const unsigned send_position    = 0;
+        const unsigned receive_position = 0;
+        if (send_position == receive_position) {
+          exC.insert(U->discover_event(EventSet({unwrapped_pre_event}), wait_action));
+        }
+
+      } else {
+        xbt_assert(false,
+                   "The transition which created the communication on which `%s` waits "
+                   "is neither an async send nor an async receive. The current UDPOR "
+                   "implementation does not know how to check if `CommWait` is enabled in "
+                   "this case. Was a new transition added?",
+                   e_issuer->get_transition()->to_string().c_str());
+      }
+    }
+  }
+
+  // 3. foreach event e in C do
+  for (const auto e : C) {
+    if (const CommSendTransition* e_issuer_send = dynamic_cast<const CommSendTransition*>(e_issuer->get_transition());
+        e_issuer_send != nullptr) {
+
+      // If the provider of the communication for `CommWait` is a
+      // `CommSend(m)`, then we only care about `e` if `λ(e) == `CommRecv(m)`.
+      // All other actions would be independent with the wait action (including
+      // another `CommSend` to the same mailbox: `CommWait` is "waiting" for its
+      // corresponding receive action)
+      if (e->get_transition()->type_ != Transition::Type::COMM_ASYNC_RECV) {
+        continue;
+      }
+
+      // If the `issuer` is not in `config(K)`, this implies that
+      // `WaitAny()` is always disabled in `config(K)`; hence, it
+      // is independent of any transition in `config(K)` (according
+      // to formal definition of independence)
+      const EventSet K    = EventSet({e, pre_event_a_C.value_or(e)});
+      const auto config_K = History(K);
+      if (not config_K.contains(e_issuer)) {
+        continue;
+      }
+
+      // std::count_if(config_K.begin(), config_K.end(), [](const auto e) { return false; });
+
+      // TODO: Compute the send and receive positions
+      const unsigned send_position = 0;
+
+      const unsigned receive_position = 0;
+      if (send_position == receive_position) {
+        exC.insert(U->discover_event(std::move(K), wait_action));
+      }
+
+    } else if (e_issuer->get_transition()->type_ == Transition::Type::COMM_ASYNC_RECV) {
+
+      // If the provider of the communication for `CommWait` is a
+      // `CommRecv(m)`, then we only care about `e` if `λ(e) == `CommSend(m)`.
+      // All other actions would be independent with the wait action (including
+      // another `CommRecv` to the same mailbox: `CommWait` is "waiting" for its
+      // corresponding send action)
+      if (e->get_transition()->type_ != Transition::Type::COMM_ASYNC_SEND) {
+        continue;
+      }
+
+      // If the `issuer` is not in `config(K)`, this implies that
+      // `WaitAny()` is always disabled in `config(K)`; hence, it
+      // is independent of any transition in `config(K)` (according
+      // to formal definition of independence)
+      const EventSet K    = EventSet({e, pre_event_a_C.value_or(e)});
+      const auto config_K = History(K);
+      if (not config_K.contains(e_issuer)) {
+        continue;
+      }
+
+      // TODO: Compute the send and receive positions
+      const unsigned send_position    = 0;
+      const unsigned receive_position = 0;
+      if (send_position == receive_position) {
+        exC.insert(U->discover_event(std::move(K), wait_action));
+      }
     }
   }
 
