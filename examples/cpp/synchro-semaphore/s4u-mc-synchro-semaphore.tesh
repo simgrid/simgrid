@@ -3,4 +3,4 @@
 $ ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true --log=mc_dfs.thres:info --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-semaphore --log=sem_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
 > [Checker] Configuration change: Set 'model-check/sleep-set' to 'true'
 > [Checker] Start a DFS exploration. Reduction is: dpor.
-> [Checker] DFS exploration ended. 33 unique states visited; 9 backtracks (125 transition replays, 84 states visited overall)
+> [Checker] DFS exploration ended. 30 unique states visited; 6 backtracks (67 transition replays, 32 states visited overall)

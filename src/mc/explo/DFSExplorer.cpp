@@ -162,8 +162,8 @@ void DFSExplorer::run()
              state->get_transition()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    std::shared_ptr<State> next_state;
-    next_state = std::make_shared<State>(get_remote_app(), state);
+    std::unique_ptr<State> next_state;
+    next_state = std::make_unique<State>(get_remote_app(), state);
     on_state_creation_signal(next_state.get(), get_remote_app());
 
     /* Sleep set procedure:
@@ -180,7 +180,9 @@ void DFSExplorer::run()
      * If the process is not enabled at this  point, then add every enabled process to the interleave */
     if (reduction_mode_ == ReductionMode::dpor) {
       aid_t issuer_id   = state->get_transition()->aid_;
-      stack_t tmp_stack = std::list(stack_);
+      stack_t tmp_stack;
+      for (auto& state : stack_)
+        tmp_stack.push_back(std::make_shared<State>(State(*state)));
       while (not tmp_stack.empty()) {
         State* prev_state = tmp_stack.back().get();
         if (state->get_transition()->aid_ == prev_state->get_transition()->aid_) {
@@ -284,22 +286,19 @@ void DFSExplorer::backtrack()
 
   if (backtrack.back()->count_todo() <= 1)
     opened_states.pop_back();
-  XBT_VERB("%lu todo actors in last states of the next backtracking point %s (remaining %lu opened stacks)",
-           backtrack.back()->count_todo(), backtrack.back()->get_transition()->to_string().c_str(),
-           opened_states.size());
 
   /* If asked to rollback on a state that has a snapshot, restore it */
   State* last_state = backtrack.back().get();
   if (const auto* system_state = last_state->get_system_state()) {
     system_state->restore(*get_remote_app().get_remote_process_memory());
     on_restore_system_state_signal(last_state, get_remote_app());
+    stack_ = backtrack;
     return;
   }
 
   /* if no snapshot, we need to restore the initial state and replay the transitions */
   get_remote_app().restore_initial_state();
   on_restore_initial_state_signal(get_remote_app());
-
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (std::shared_ptr<State> const& state : backtrack) {
     if (state == backtrack.back()) /* If we are arrived on the target state, don't replay the outgoing transition */
@@ -309,7 +308,7 @@ void DFSExplorer::backtrack()
     visited_states_count_++;
   }
   stack_ = backtrack;
-  XBT_VERB(">> Backtracked to %s", get_record_trace().to_string().c_str());
+  XBT_DEBUG(">> Backtracked to %s", get_record_trace().to_string().c_str());
 }
 
 // DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Exploration(args, _sg_mc_termination) //

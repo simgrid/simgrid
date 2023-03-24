@@ -17,13 +17,23 @@ namespace simgrid::mc {
 
 long State::expended_states_ = 0;
 
+State::State(const State& other)
+    : transition_(other.transition_)
+    , num_(other.num_)
+    , system_state_(other.system_state_)
+    , parent_state_(nullptr)
+    , guide_(other.guide_)
+    , sleep_set_(other.sleep_set_)
+{
+}
+
 State::State(RemoteApp& remote_app) : num_(++expended_states_)
 {
   XBT_VERB("Creating a guide for the state");
   if (_sg_mc_guided == "none")
-    guide_ = std::make_unique<BasicGuide>();
+    guide_ = std::make_shared<BasicGuide>();
   if (_sg_mc_guided == "nb_wait")
-    guide_ = std::make_unique<WaitGuide>();
+    guide_ = std::make_shared<WaitGuide>();
 
   remote_app.get_actors_status(guide_->actors_to_run_);
 
@@ -37,9 +47,9 @@ State::State(RemoteApp& remote_app, const State* parent_state) : num_(++expended
 {
 
   if (_sg_mc_guided == "none")
-    guide_ = std::make_unique<BasicGuide>();
+    guide_ = std::make_shared<BasicGuide>();
   if (_sg_mc_guided == "nb_wait")
-    guide_ = std::make_unique<WaitGuide>();
+    guide_ = std::make_shared<WaitGuide>();
   *guide_ = *(parent_state->guide_);
 
   remote_app.get_actors_status(guide_->actors_to_run_);

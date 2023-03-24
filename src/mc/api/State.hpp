@@ -43,7 +43,7 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
       and for guided model-checking */
   const State* parent_state_;
 
-  std::unique_ptr<GuidedState> guide_;
+  std::shared_ptr<GuidedState> guide_;
 
   /* Sleep sets are composed of the actor and the corresponding transition that made it being added to the sleep
    * set. With this information, it is check whether it should be removed from it or not when exploring a new
@@ -53,6 +53,7 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
 public:
   explicit State(RemoteApp& remote_app);
   explicit State(RemoteApp& remote_app, const State* parent_state);
+  explicit State(const State& other);
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const; // this function should disapear as it is redundant with the next one
 

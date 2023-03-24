@@ -4,6 +4,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt
 > [Checker] Start a DFS exploration. Reduction is: dpor.
 > [Checker] Execute 1: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
 > [Checker] Execute 1: BARRIER_WAIT(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
+> [Checker] There remains 0 actors, but none to interleave (depth 4).
 > [Checker] Execution came to an end at 1;1;0 (state: 3, depth: 3)
 > [Checker] Backtracking from 1;1;0
 > [Checker] DFS exploration ended. 3 unique states visited; 1 backtracks (3 transition replays, 0 states visited overall)
@@ -26,6 +27,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt
 > [Checker] Dependent Transitions:
 > [Checker]   BARRIER_ASYNC_LOCK(barrier: 0) (state=1)
 > [Checker]   BARRIER_WAIT(barrier: 0) (state=4)
+> [Checker] There remains 0 actors, but none to interleave (depth 6).
 > [Checker] Execution came to an end at 1;2;1;2;0 (state: 5, depth: 5)
 > [Checker] Backtracking from 1;2;1;2;0
 > [Checker] Execute 2: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
@@ -44,6 +46,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt
 > [Checker] Dependent Transitions:
 > [Checker]   BARRIER_ASYNC_LOCK(barrier: 0) (state=6)
 > [Checker]   BARRIER_WAIT(barrier: 0) (state=8)
+> [Checker] There remains 0 actors, but none to interleave (depth 6).
 > [Checker] Execution came to an end at 2;1;1;2;0 (state: 9, depth: 5)
 > [Checker] Backtracking from 2;1;1;2;0
 > [Checker] DFS exploration ended. 9 unique states visited; 2 backtracks (10 transition replays, 0 states visited overall)
@@ -83,6 +86,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt
 > [Checker] Dependent Transitions:
 > [Checker]   BARRIER_ASYNC_LOCK(barrier: 0) (state=2)
 > [Checker]   BARRIER_WAIT(barrier: 0) (state=6)
+> [Checker] There remains 0 actors, but none to interleave (depth 8).
 > [Checker] Execution came to an end at 1;2;3;1;2;3;0 (state: 7, depth: 7)
 > [Checker] Backtracking from 1;2;3;1;2;3;0
 > [Checker] Execute 3: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
@@ -117,6 +121,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt
 > [Checker] Dependent Transitions:
 > [Checker]   BARRIER_ASYNC_LOCK(barrier: 0) (state=8)
 > [Checker]   BARRIER_WAIT(barrier: 0) (state=11)
+> [Checker] There remains 0 actors, but none to interleave (depth 8).
 > [Checker] Execution came to an end at 1;3;2;1;2;3;0 (state: 12, depth: 7)
 > [Checker] Backtracking from 1;3;2;1;2;3;0
 > [Checker] DFS exploration ended. 12 unique states visited; 2 backtracks (14 transition replays, 1 states visited overall)
