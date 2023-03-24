@@ -71,8 +71,8 @@ XBT_ATTRIB_NORETURN void Exploration::report_crash(int status)
   XBT_INFO("**************************");
   XBT_INFO("** CRASH IN THE PROGRAM **");
   XBT_INFO("**************************");
-  if (WIFSIGNALED(status))
-    XBT_INFO("From signal: %s", strsignal(WTERMSIG(status)));
+  if (WIFSIGNALED(status)) // FreeBSD use "Abort trap" as a strsignal for SIGABRT that is part of our tests
+    XBT_INFO("From signal: %s", WTERMSIG(status) == SIGABRT ? "Aborted" : strsignal(WTERMSIG(status)));
   else if (WIFEXITED(status))
     XBT_INFO("From exit: %i", WEXITSTATUS(status));
   if (not xbt_log_no_loc)
