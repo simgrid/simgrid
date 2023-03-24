@@ -327,7 +327,7 @@ Exploration* create_communication_determinism_checker(const std::vector<char*>& 
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
-  auto base      = new DFSExplorer(args, with_dpor);
+  auto base      = new DFSExplorer(args, with_dpor, true);
   auto extension = new CommDetExtension(*base);
 
   DFSExplorer::on_exploration_start([extension](RemoteApp const&) {
