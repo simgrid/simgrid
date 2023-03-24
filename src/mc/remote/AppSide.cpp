@@ -246,6 +246,10 @@ void AppSide::handle_messages()
     std::array<char, MC_MESSAGE_LENGTH> message_buffer;
     ssize_t received_size = channel_.receive(message_buffer.data(), message_buffer.size());
 
+    if (received_size == 0) {
+      XBT_DEBUG("Socket closed on the Checker side, bailing out.");
+      ::_Exit(0); // Nobody's listening to that process anymore => exit as quickly as possible.
+    }
     xbt_assert(received_size >= 0, "Could not receive commands from the model-checker");
     xbt_assert(static_cast<size_t>(received_size) >= sizeof(s_mc_message_t), "Cannot handle short message (size=%zd)",
                received_size);

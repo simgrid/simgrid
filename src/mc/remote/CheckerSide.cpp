@@ -220,11 +220,13 @@ CheckerSide::~CheckerSide()
 
   if (running()) {
     XBT_DEBUG("Killing process");
-    finalize(true);
     kill(get_pid(), SIGKILL);
-    terminate();
-    handle_waitpid();
+    while (waitpid(-1, nullptr, WNOHANG) > 0) {
+      /* we don't really care about errors here, as we are shutting things down anyway */
+      /* The child will get ripped by the next waitpid anyway */
+    }
   }
+  // usleep(500); // Try to reduce the load on my system. Commented because it's not even enough :(
 }
 
 void CheckerSide::finalize(bool terminate_asap)
