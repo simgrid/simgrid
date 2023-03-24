@@ -108,14 +108,6 @@ private:
    * @returns the extension set `ex(C)` of `C`
    */
   EventSet compute_exC(const Configuration& C, const State& stateC, const EventSet& prev_exC);
-
-  /**
-   * @brief Computes a portion of the extension set of a configuration given
-   * some action `action` by directly enumerating all maximal subsets of C
-   * (i.e. without specializations based on the action)
-   */
-  EventSet compute_exC_by_enumeration(const Configuration& C, const std::shared_ptr<Transition> action);
-
   EventSet compute_enC(const Configuration& C, const EventSet& exC) const;
 
   /**

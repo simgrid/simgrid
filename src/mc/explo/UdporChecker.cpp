@@ -135,34 +135,6 @@ EventSet UdporChecker::compute_exC(const Configuration& C, const State& stateC, 
   return exC;
 }
 
-EventSet UdporChecker::compute_exC_by_enumeration(const Configuration& C, const std::shared_ptr<Transition> action)
-{
-  // Here we're computing the following:
-  //
-  // U{<a, K> : K is maximal, `a` depends on all of K, `a` enabled at config(K) }
-  //
-  // where `a` is the `action` given to us. Note that `a` is presumed to be enabled
-  EventSet incremental_exC;
-
-  for (auto begin =
-           maximal_subsets_iterator(C, {[&](const UnfoldingEvent* e) { return e->is_dependent_with(action.get()); }});
-       begin != maximal_subsets_iterator(); ++begin) {
-    const EventSet& maximal_subset = *begin;
-
-    // Determining if `a` is enabled here might not be possible while looking at `a` opaquely
-    // We leave the implementation as-is to ensure that any addition would be simple
-    // if it were ever added
-    const bool enabled_at_config_k = false;
-
-    if (enabled_at_config_k) {
-      auto event        = std::make_unique<UnfoldingEvent>(maximal_subset, action);
-      const auto handle = unfolding.insert(std::move(event));
-      incremental_exC.insert(handle);
-    }
-  }
-  return incremental_exC;
-}
-
 EventSet UdporChecker::compute_enC(const Configuration& C, const EventSet& exC) const
 {
   EventSet enC;
@@ -211,7 +183,13 @@ std::unique_ptr<State> UdporChecker::record_current_state()
 
 const UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, const EventSet& enC)
 {
-  if (!enC.empty()) {
+  if (enC.empty()) {
+    throw std::invalid_argument("There are no unfolding events to select. "
+                                "Are you sure that you checked that en(C) was not "
+                                "empty before attempting to select an event from it?");
+  }
+
+  if (A.empty()) {
     return *(enC.begin());
   }
 
