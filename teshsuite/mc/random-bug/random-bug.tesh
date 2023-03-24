@@ -3,6 +3,28 @@
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug assert ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning
 > [  0.000000] (0:maestro@) Behavior: assert
 > [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: dpor.
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
+> [  0.000000] (0:maestro@) Behavior: assert
 > [  0.000000] (0:maestro@) **************************
 > [  0.000000] (0:maestro@) *** PROPERTY NOT VALID ***
 > [  0.000000] (0:maestro@) **************************
@@ -17,6 +39,28 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug assert ${platfdir
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug abort ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning --log=no_loc
 > [  0.000000] (0:maestro@) Behavior: abort
 > [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: dpor.
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) Behavior: abort
 > [  0.000000] (0:maestro@) **************************
 > [  0.000000] (0:maestro@) ** CRASH IN THE PROGRAM **
 > [  0.000000] (0:maestro@) **************************
@@ -31,7 +75,42 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug abort ${platfdir}
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug printf ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning
 > [  0.000000] (0:maestro@) Behavior: printf
 > [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: dpor.
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
 > [  0.000000] (1:app@Fafard) Error reached
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) Behavior: printf
 > [  0.000000] (0:maestro@) DFS exploration ended. 43 unique states visited; 36 backtracks (108 transition replays, 30 states visited overall)
 
 ! expect return 6
@@ -39,6 +118,28 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug printf ${platfdir
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug segv ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning --log=no_loc
 > [  0.000000] (0:maestro@) Behavior: segv
 > [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: dpor.
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
+> [  0.000000] (0:maestro@) Behavior: segv
 > Segmentation fault.
 > [  0.000000] (0:maestro@) **************************
 > [  0.000000] (0:maestro@) ** CRASH IN THE PROGRAM **
