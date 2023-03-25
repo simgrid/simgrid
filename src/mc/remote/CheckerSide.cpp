@@ -215,14 +215,6 @@ CheckerSide::~CheckerSide()
   event_free(socket_event_);
   event_del(signal_event_);
   event_free(signal_event_);
-
-  if (running()) {
-    errno = 0;
-    xbt_assert(kill(get_pid(), SIGKILL) == 0);
-    xbt_assert(errno == 0);
-    waitpid(get_pid(), nullptr, 0);
-    xbt_assert(errno == 0);
-  }
 }
 
 void CheckerSide::finalize(bool terminate_asap)
