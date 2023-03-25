@@ -164,9 +164,13 @@ void AppSide::handle_actors_status() const
   XBT_DEBUG("Serialize the actors to answer ACTORS_STATUS from the checker. %zu actors to go.", actor_list.size());
 
   std::vector<s_mc_message_actors_status_one_t> status;
-  for (auto const& [aid, actor] : actor_list)
-    status.emplace_back(s_mc_message_actors_status_one_t{aid, mc::actor_is_enabled(actor),
-                                                         actor->simcall_.observer_->get_max_consider()});
+  for (auto const& [aid, actor] : actor_list) {
+    s_mc_message_actors_status_one_t one = {};
+    one.aid                              = aid;
+    one.enabled                          = mc::actor_is_enabled(actor);
+    one.max_considered                   = actor->simcall_.observer_->get_max_consider();
+    status.push_back(one);
+  }
 
   struct s_mc_message_actors_status_answer_t answer = {};
   answer.type             = MessageType::ACTORS_STATUS_REPLY;
