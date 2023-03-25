@@ -169,8 +169,6 @@ void CheckerSide::setup_events()
 
 CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) : running_(true)
 {
-  bool need_ptrace = not need_memory_info;
-
   // Create an AF_LOCAL socketpair used for exchanging messages between the model-checker process (ancestor)
   // and the application process (child)
   int sockets[2];
@@ -181,7 +179,7 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) 
 
   if (pid_ == 0) { // Child
     ::close(sockets[1]);
-    run_child_process(sockets[0], args, need_ptrace);
+    run_child_process(sockets[0], args, need_memory_info); // We need ptrace if we need the mem info
     DIE_IMPOSSIBLE;
   }
 
@@ -190,7 +188,7 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) 
   channel_.reset_socket(sockets[1]);
 
   setup_events();
-  if (need_ptrace)
+  if (need_memory_info)
     wait_application_process(pid_);
 
   // Request the initial memory on need
@@ -221,7 +219,7 @@ CheckerSide::~CheckerSide()
   if (running()) {
     errno = 0;
     xbt_assert(kill(get_pid(), SIGKILL) == 0);
-    errno = 0;
+    xbt_assert(errno == 0);
     waitpid(get_pid(), nullptr, 0);
     xbt_assert(errno == 0);
   }
