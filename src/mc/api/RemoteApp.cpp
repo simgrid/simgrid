@@ -48,7 +48,7 @@ void RemoteApp::restore_initial_state()
   if (initial_snapshot_ == nullptr) { // No memory introspection
     // We need to destroy the existing CheckerSide before creating the new one, or libevent gets crazy
     checker_side_.reset(nullptr);
-    checker_side_.reset(new simgrid::mc::CheckerSide(app_args_, true));
+    checker_side_.reset(new simgrid::mc::CheckerSide(app_args_, false));
   } else
     initial_snapshot_->restore(*checker_side_->get_remote_memory());
 }
