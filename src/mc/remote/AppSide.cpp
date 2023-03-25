@@ -150,13 +150,13 @@ void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
   if (terminate_asap)
     ::_Exit(0);
 }
-void AppSide::handle_initial_addresses()
+void AppSide::handle_need_meminfo()
 {
-  this->need_memory_info_                       = true;
-  s_mc_message_initial_addresses_reply_t answer = {};
-  answer.type                                   = MessageType::INITIAL_ADDRESSES_REPLY;
-  answer.mmalloc_default_mdp                    = mmalloc_get_current_heap();
-  xbt_assert(channel_.send(answer) == 0, "Could not send response with initial addresses.");
+  this->need_memory_info_                  = true;
+  s_mc_message_need_meminfo_reply_t answer = {};
+  answer.type                              = MessageType::NEED_MEMINFO_REPLY;
+  answer.mmalloc_default_mdp               = mmalloc_get_current_heap();
+  xbt_assert(channel_.send(answer) == 0, "Could not send response to the request for meminfo.");
 }
 void AppSide::handle_actors_status() const
 {
@@ -262,9 +262,9 @@ void AppSide::handle_messages()
         handle_finalize((s_mc_message_int_t*)message_buffer.data());
         break;
 
-      case MessageType::INITIAL_ADDRESSES:
-        assert_msg_size("INITIAL_ADDRESSES", s_mc_message_t);
-        handle_initial_addresses();
+      case MessageType::NEED_MEMINFO:
+        assert_msg_size("NEED_MEMINFO", s_mc_message_t);
+        handle_need_meminfo();
         break;
 
       case MessageType::ACTORS_STATUS:

@@ -193,12 +193,12 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) 
 
   // Request the initial memory on need
   if (need_memory_info) {
-    channel_.send(MessageType::INITIAL_ADDRESSES);
-    s_mc_message_initial_addresses_reply_t answer;
+    channel_.send(MessageType::NEED_MEMINFO);
+    s_mc_message_need_meminfo_reply_t answer;
     ssize_t answer_size = channel_.receive(answer);
     xbt_assert(answer_size != -1, "Could not receive message");
-    xbt_assert(answer.type == MessageType::INITIAL_ADDRESSES_REPLY,
-               "The received message is not the INITIAL_ADDRESS_REPLY I was expecting but of type %s",
+    xbt_assert(answer.type == MessageType::NEED_MEMINFO_REPLY,
+               "The received message is not the NEED_MEMINFO_REPLY I was expecting but of type %s",
                to_c_str(answer.type));
     xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
 

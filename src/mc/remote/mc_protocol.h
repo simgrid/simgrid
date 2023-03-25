@@ -23,11 +23,10 @@
 // ***** Messages
 namespace simgrid::mc {
 
-XBT_DECLARE_ENUM_CLASS(MessageType, NONE, INITIAL_ADDRESSES, INITIAL_ADDRESSES_REPLY, CONTINUE, IGNORE_HEAP,
-                       UNIGNORE_HEAP, IGNORE_MEMORY, STACK_REGION, REGISTER_SYMBOL, DEADLOCK_CHECK,
-                       DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_EXECUTE, SIMCALL_EXECUTE_ANSWER, ASSERTION_FAILED,
-                       ACTORS_STATUS, ACTORS_STATUS_REPLY, ACTORS_MAXPID, ACTORS_MAXPID_REPLY, FINALIZE,
-                       FINALIZE_REPLY);
+XBT_DECLARE_ENUM_CLASS(MessageType, NONE, NEED_MEMINFO, NEED_MEMINFO_REPLY, CONTINUE, IGNORE_HEAP, UNIGNORE_HEAP,
+                       IGNORE_MEMORY, STACK_REGION, REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING,
+                       SIMCALL_EXECUTE, SIMCALL_EXECUTE_ANSWER, ASSERTION_FAILED, ACTORS_STATUS, ACTORS_STATUS_REPLY,
+                       ACTORS_MAXPID, ACTORS_MAXPID_REPLY, FINALIZE, FINALIZE_REPLY);
 } // namespace simgrid::mc
 
 constexpr unsigned MC_MESSAGE_LENGTH                 = 512;
@@ -81,7 +80,7 @@ struct s_mc_message_register_symbol_t {
 };
 
 /* Server -> client */
-struct s_mc_message_initial_addresses_reply_t {
+struct s_mc_message_need_meminfo_reply_t {
   simgrid::mc::MessageType type;
   xbt_mheap_t mmalloc_default_mdp;
 };
