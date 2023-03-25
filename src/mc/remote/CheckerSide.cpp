@@ -221,11 +221,9 @@ CheckerSide::~CheckerSide()
   if (running()) {
     errno = 0;
     xbt_assert(kill(get_pid(), SIGKILL) == 0);
-    do {
-      errno = 0;
-      waitpid(get_pid(), nullptr, 0);
-      xbt_assert(errno == 0);
-    } while (EAGAIN == errno);
+    errno = 0;
+    waitpid(get_pid(), nullptr, 0);
+    xbt_assert(errno == 0);
   }
 }
 
