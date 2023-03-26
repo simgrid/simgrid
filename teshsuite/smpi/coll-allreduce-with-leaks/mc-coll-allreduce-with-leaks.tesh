@@ -18,22 +18,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -45,14 +29,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -64,26 +40,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -95,22 +51,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -122,14 +62,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -141,50 +73,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -196,22 +84,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -223,14 +95,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -242,26 +106,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -273,22 +117,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -300,14 +128,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -319,30 +139,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -354,22 +150,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -381,14 +161,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -400,26 +172,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -431,22 +183,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -458,14 +194,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -477,66 +205,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -548,22 +216,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -575,14 +227,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -594,26 +238,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -625,22 +249,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -652,14 +260,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -671,30 +271,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -706,22 +282,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -733,14 +293,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -752,26 +304,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -783,22 +315,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -810,14 +326,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -829,54 +337,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -888,22 +348,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -915,14 +359,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -934,34 +370,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -973,22 +381,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -1000,14 +392,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
@@ -1019,52 +403,4 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
-> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 616 unique states visited; 167 backtracks (3773 transition replays, 2991 states visited overall)
