@@ -50,6 +50,7 @@ public:
     return this->receive(&m, sizeof(M));
   }
 
+  // Socket handling
   int get_socket() const { return socket_; }
   void reset_socket(int socket) { socket_ = socket; }
 };

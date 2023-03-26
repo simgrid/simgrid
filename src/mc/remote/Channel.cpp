@@ -46,14 +46,12 @@ int Channel::send(const void* message, size_t size) const
 ssize_t Channel::receive(void* message, size_t size) const
 {
   ssize_t res = recv(this->socket_, message, size, 0);
-  if (res != -1) {
-    if (static_cast<size_t>(res) >= sizeof(int) && is_valid_MessageType(*static_cast<int*>(message))) {
-      XBT_DEBUG("Receive %s (requested %zu; received %zd)", to_c_str(*static_cast<MessageType*>(message)), size, res);
-    } else {
-      XBT_DEBUG("Receive %zd bytes", res);
-    }
+  xbt_assert(res != -1, "Channel::receive failure: %s", strerror(errno));
+  if (static_cast<size_t>(res) >= sizeof(int) && is_valid_MessageType(*static_cast<const int*>(message))) {
+    XBT_DEBUG("Receive %s (requested %zu; received %zd at %p)", to_c_str(*static_cast<const MessageType*>(message)),
+              size, res, message);
   } else {
-    XBT_ERROR("Channel::receive failure: %s", strerror(errno));
+    XBT_DEBUG("Receive %zd bytes", res);
   }
   return res;
 }

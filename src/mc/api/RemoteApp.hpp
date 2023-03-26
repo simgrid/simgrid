@@ -29,6 +29,8 @@ private:
   std::unique_ptr<CheckerSide> checker_side_;
   PageStore page_store_{500};
   std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
+  std::unique_ptr<CheckerSide> application_factory_; // when no meminfo, create checker_side_ by cloning this one
+  int master_socket_ = -1;
 
   const std::vector<char*> app_args_;
 

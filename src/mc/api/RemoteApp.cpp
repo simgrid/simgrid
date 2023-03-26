@@ -17,11 +17,12 @@
 
 #include <algorithm>
 #include <array>
+#include <limits.h>
 #include <memory>
 #include <numeric>
 #include <string>
-
 #include <sys/ptrace.h>
+#include <sys/un.h>
 #include <sys/wait.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
@@ -29,12 +30,38 @@ XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 namespace simgrid::mc {
 
+static char master_socket_name[65] = {};
+static void cleanup_master_socket()
+{
+  if (master_socket_name[0] != '\0')
+    unlink(master_socket_name);
+  master_socket_name[0] = '\0';
+}
+
 RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspection) : app_args_(args)
 {
-  checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_, need_memory_introspection);
-
-  if (need_memory_introspection)
+  if (need_memory_introspection) {
+    checker_side_     = std::make_unique<simgrid::mc::CheckerSide>(app_args_, need_memory_introspection);
     initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_, *checker_side_->get_remote_memory());
+  } else {
+    master_socket_ = socket(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0);
+    xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
+
+    struct sockaddr_un serv_addr = {};
+    serv_addr.sun_family         = AF_LOCAL;
+    snprintf(serv_addr.sun_path, 64, "/tmp/simgrid-mc-%d", getpid());
+    strcpy(master_socket_name, serv_addr.sun_path);
+    auto addr_size = offsetof(struct sockaddr_un, sun_path) + strlen(serv_addr.sun_path);
+
+    xbt_assert(bind(master_socket_, (struct sockaddr*)&serv_addr, addr_size) >= 0,
+               "Cannot bind the master socket to %s: %s.", serv_addr.sun_path, strerror(errno));
+    atexit(cleanup_master_socket);
+
+    xbt_assert(listen(master_socket_, SOMAXCONN) >= 0, "Cannot listen to the master socket: %s.", strerror(errno));
+
+    application_factory_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_, need_memory_introspection);
+    checker_side_        = application_factory_->clone(master_socket_);
+  }
 }
 
 RemoteApp::~RemoteApp()
@@ -46,9 +73,7 @@ RemoteApp::~RemoteApp()
 void RemoteApp::restore_initial_state()
 {
   if (initial_snapshot_ == nullptr) { // No memory introspection
-    // We need to destroy the existing CheckerSide before creating the new one, or libevent gets crazy
-    checker_side_.reset(nullptr);
-    checker_side_.reset(new simgrid::mc::CheckerSide(app_args_, false));
+    checker_side_ = application_factory_->clone(master_socket_);
   } else
     initial_snapshot_->restore(*checker_side_->get_remote_memory());
 }
@@ -76,21 +101,22 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   //
   // CheckerSide                  AppSide
   // send ACTORS_STATUS ---->
-  //                    <----- send ACTORS_STATUS_REPLY
-  //                    <----- send `N` `s_mc_message_actors_status_one_t` structs
-  //                    <----- send `M` `s_mc_message_simcall_probe_one_t` structs
+  //                    <----- send ACTORS_STATUS_REPLY_COUNT
+  //                    <----- send `N` ACTORS_STATUS_REPLY_TRANSITION (s_mc_message_actors_status_one_t)
+  //                    <----- send `M` ACTORS_STATUS_REPLY_SIMCALL (s_mc_message_simcall_probe_one_t)
   checker_side_->get_channel().send(MessageType::ACTORS_STATUS);
 
   s_mc_message_actors_status_answer_t answer;
   ssize_t answer_size = checker_side_->get_channel().receive(answer);
   xbt_assert(answer_size != -1, "Could not receive message");
   xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
-  xbt_assert(answer.type == MessageType::ACTORS_STATUS_REPLY,
-             "Received unexpected message %s (%i); expected MessageType::ACTORS_STATUS_REPLY (%i)",
-             to_c_str(answer.type), (int)answer.type, (int)MessageType::ACTORS_STATUS_REPLY);
+  xbt_assert(answer.type == MessageType::ACTORS_STATUS_REPLY_COUNT,
+             "Received unexpected message %s (%i); expected MessageType::ACTORS_STATUS_REPLY_COUNT (%i)",
+             to_c_str(answer.type), (int)answer.type, (int)MessageType::ACTORS_STATUS_REPLY_COUNT);
 
   // Message sanity checks
-  xbt_assert(answer.count >= 0, "Received an ACTOR_STATUS_REPLY message with an actor count of '%d' < 0", answer.count);
+  xbt_assert(answer.count >= 0, "Received an ACTORS_STATUS_REPLY_COUNT message with an actor count of '%d' < 0",
+             answer.count);
 
   std::vector<s_mc_message_actors_status_one_t> status(answer.count);
   if (answer.count > 0) {
@@ -166,10 +192,10 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
   s_mc_message_simcall_execute_answer_t answer;
   ssize_t s = checker_side_->get_channel().receive(answer);
   xbt_assert(s != -1, "Could not receive message");
+  xbt_assert(s > 0 && answer.type == MessageType::SIMCALL_EXECUTE_REPLY,
+             "%d Received unexpected message %s (%i); expected MessageType::SIMCALL_EXECUTE_REPLY (%i)", getpid(),
+             to_c_str(answer.type), (int)answer.type, (int)MessageType::SIMCALL_EXECUTE_REPLY);
   xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
-  xbt_assert(answer.type == MessageType::SIMCALL_EXECUTE_ANSWER,
-             "Received unexpected message %s (%i); expected MessageType::SIMCALL_EXECUTE_ANSWER (%i)",
-             to_c_str(answer.type), (int)answer.type, (int)MessageType::SIMCALL_EXECUTE_ANSWER);
 
   if (new_transition) {
     std::stringstream stream(answer.buffer.data());

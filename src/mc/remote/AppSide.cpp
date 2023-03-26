@@ -28,6 +28,8 @@
 #include <sys/ptrace.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/un.h>
+#include <sys/wait.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
 XBT_LOG_EXTERNAL_CATEGORY(mc_global);
@@ -114,7 +116,7 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
 
   // Finish the RPC from the server: return a serialized observer, to build a Transition on Checker side
   s_mc_message_simcall_execute_answer_t answer = {};
-  answer.type = MessageType::SIMCALL_EXECUTE_ANSWER;
+  answer.type                                  = MessageType::SIMCALL_EXECUTE_REPLY;
   std::stringstream stream;
   if (actor->simcall_.observer_ != nullptr) {
     actor->simcall_.observer_->serialize(stream);
@@ -150,6 +152,42 @@ void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
   if (terminate_asap)
     ::_Exit(0);
 }
+void AppSide::handle_fork(const s_mc_message_int_t* msg)
+{
+  int pid = fork();
+  xbt_assert(pid >= 0, "Could not fork application sub-process: %s.", strerror(errno));
+
+  if (pid == 0) { // Child
+    int sock = socket(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0);
+
+    struct sockaddr_un addr = {};
+    addr.sun_family         = AF_LOCAL;
+    snprintf(addr.sun_path, 64, "/tmp/simgrid-mc-%lu", msg->value);
+    auto addr_size = offsetof(struct sockaddr_un, sun_path) + strlen(addr.sun_path);
+
+    xbt_assert(connect(sock, (struct sockaddr*)&addr, addr_size) >= 0,
+               "Cannot connect to Checker on /tmp/simgrid-mc-%lu: %s.", msg->value, strerror(errno));
+
+    channel_.reset_socket(sock);
+
+    s_mc_message_int_t answer = {};
+    answer.type               = MessageType::FORK_REPLY;
+    answer.value              = getpid();
+    xbt_assert(channel_.send(answer) == 0, "Could not send response to WAIT_CHILD_REPLY: %s", strerror(errno));
+  }
+}
+void AppSide::handle_wait_child(const s_mc_message_int_t* msg)
+{
+  int status;
+  errno = 0;
+  waitpid(msg->value, &status, 0);
+  xbt_assert(errno == 0, "Cannot wait on behalf of the checker: %s.", strerror(errno));
+
+  s_mc_message_int_t answer = {};
+  answer.type               = MessageType::WAIT_CHILD_REPLY;
+  answer.value              = status;
+  xbt_assert(channel_.send(answer) == 0, "Could not send response to WAIT_CHILD: %s", strerror(errno));
+}
 void AppSide::handle_need_meminfo()
 {
   this->need_memory_info_                  = true;
@@ -166,6 +204,7 @@ void AppSide::handle_actors_status() const
   std::vector<s_mc_message_actors_status_one_t> status;
   for (auto const& [aid, actor] : actor_list) {
     s_mc_message_actors_status_one_t one = {};
+    one.type                             = MessageType::ACTORS_STATUS_REPLY_TRANSITION;
     one.aid                              = aid;
     one.enabled                          = mc::actor_is_enabled(actor);
     one.max_considered                   = actor->simcall_.observer_->get_max_consider();
@@ -173,7 +212,7 @@ void AppSide::handle_actors_status() const
   }
 
   struct s_mc_message_actors_status_answer_t answer = {};
-  answer.type             = MessageType::ACTORS_STATUS_REPLY;
+  answer.type                                       = MessageType::ACTORS_STATUS_REPLY_COUNT;
   answer.count            = static_cast<int>(status.size());
 
   xbt_assert(channel_.send(answer) == 0, "Could not send ACTORS_STATUS_REPLY msg");
@@ -194,6 +233,7 @@ void AppSide::handle_actors_status() const
     for (int times_considered = 0; times_considered < max_considered; times_considered++) {
       std::stringstream stream;
       s_mc_message_simcall_probe_one_t probe;
+      probe.type = MessageType::ACTORS_STATUS_REPLY_SIMCALL;
 
       if (actor->simcall_.observer_ != nullptr) {
         actor->simcall_.observer_->prepare(times_considered);
@@ -232,7 +272,7 @@ void AppSide::handle_actors_maxpid() const
 void AppSide::handle_messages()
 {
   while (true) { // Until we get a CONTINUE message
-    XBT_DEBUG("Waiting messages from model-checker");
+    XBT_DEBUG("Waiting messages from the model-checker");
 
     std::array<char, MC_MESSAGE_LENGTH> message_buffer;
     ssize_t received_size = channel_.receive(message_buffer.data(), message_buffer.size());
@@ -247,14 +287,14 @@ void AppSide::handle_messages()
 
     const s_mc_message_t* message = (s_mc_message_t*)message_buffer.data();
     switch (message->type) {
+      case MessageType::CONTINUE:
+        assert_msg_size("MESSAGE_CONTINUE", s_mc_message_t);
+        return;
+
       case MessageType::DEADLOCK_CHECK:
         assert_msg_size("DEADLOCK_CHECK", s_mc_message_t);
         handle_deadlock_check(message);
         break;
-
-      case MessageType::CONTINUE:
-        assert_msg_size("MESSAGE_CONTINUE", s_mc_message_t);
-        return;
 
       case MessageType::SIMCALL_EXECUTE:
         assert_msg_size("SIMCALL_EXECUTE", s_mc_message_simcall_execute_t);
@@ -264,6 +304,16 @@ void AppSide::handle_messages()
       case MessageType::FINALIZE:
         assert_msg_size("FINALIZE", s_mc_message_int_t);
         handle_finalize((s_mc_message_int_t*)message_buffer.data());
+        break;
+
+      case MessageType::FORK:
+        assert_msg_size("FORK", s_mc_message_int_t);
+        handle_fork((s_mc_message_int_t*)message_buffer.data());
+        break;
+
+      case MessageType::WAIT_CHILD:
+        assert_msg_size("WAIT_CHILD", s_mc_message_int_t);
+        handle_wait_child((s_mc_message_int_t*)message_buffer.data());
         break;
 
       case MessageType::NEED_MEMINFO:

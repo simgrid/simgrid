@@ -119,10 +119,8 @@ static void wait_application_process(pid_t pid)
              errno);
 }
 
-void CheckerSide::setup_events()
+void CheckerSide::setup_events(bool socket_only)
 {
-  if (base_ != nullptr)
-    event_base_free(base_.get());
   auto* base = event_base_new();
   base_.reset(base);
 
@@ -150,32 +148,38 @@ void CheckerSide::setup_events()
       this);
   event_add(socket_event_, nullptr);
 
-  signal_event_ = event_new(
-      base, SIGCHLD, EV_SIGNAL | EV_PERSIST,
-      [](evutil_socket_t sig, short events, void* arg) {
-        auto checker = static_cast<simgrid::mc::CheckerSide*>(arg);
-        if (events == EV_SIGNAL) {
-          if (sig == SIGCHLD)
-            checker->handle_waitpid();
-          else
-            xbt_die("Unexpected signal: %d", sig);
-        } else {
-          xbt_die("Unexpected event");
-        }
-      },
-      this);
-  event_add(signal_event_, nullptr);
+  if (socket_only) {
+    signal_event_ = nullptr;
+  } else {
+    signal_event_ = event_new(
+        base, SIGCHLD, EV_SIGNAL | EV_PERSIST,
+        [](evutil_socket_t sig, short events, void* arg) {
+          auto checker = static_cast<simgrid::mc::CheckerSide*>(arg);
+          if (events == EV_SIGNAL) {
+            if (sig == SIGCHLD)
+              checker->handle_waitpid();
+            else
+              xbt_die("Unexpected signal: %d", sig);
+          } else {
+            xbt_die("Unexpected event");
+          }
+        },
+        this);
+    event_add(signal_event_, nullptr);
+  }
 }
 
+/* When this constructor is called, no other checkerside exists */
 CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) : running_(true)
 {
   // Create an AF_LOCAL socketpair used for exchanging messages between the model-checker process (ancestor)
   // and the application process (child)
   int sockets[2];
-  xbt_assert(socketpair(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, sockets) != -1, "Could not create socketpair");
+  xbt_assert(socketpair(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, sockets) != -1, "Could not create socketpair: %s",
+             strerror(errno));
 
   pid_ = fork();
-  xbt_assert(pid_ >= 0, "Could not fork model-checked process");
+  xbt_assert(pid_ >= 0, "Could not fork application process");
 
   if (pid_ == 0) { // Child
     ::close(sockets[1]);
@@ -187,12 +191,12 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) 
   ::close(sockets[0]);
   channel_.reset_socket(sockets[1]);
 
-  setup_events();
-  if (need_memory_info)
+  setup_events(false); /* we need a signal handler too */
+  if (need_memory_info) {
+    // setup ptrace and sync with the app
     wait_application_process(pid_);
 
-  // Request the initial memory on need
-  if (need_memory_info) {
+    // Request the initial memory on need
     channel_.send(MessageType::NEED_MEMINFO);
     s_mc_message_need_meminfo_reply_t answer;
     ssize_t answer_size = channel_.receive(answer);
@@ -213,8 +217,41 @@ CheckerSide::~CheckerSide()
 {
   event_del(socket_event_);
   event_free(socket_event_);
-  event_del(signal_event_);
-  event_free(signal_event_);
+  if (signal_event_ != nullptr) {
+    event_del(signal_event_);
+    event_free(signal_event_);
+  }
+}
+
+/* This constructor is called when cloning a checkerside to get its application to fork away */
+CheckerSide::CheckerSide(int socket, CheckerSide* child_checker)
+    : channel_(socket), running_(true), child_checker_(child_checker)
+{
+  setup_events(true); // We already have a signal handled in that case
+
+  s_mc_message_int_t answer;
+  ssize_t s = get_channel().receive(answer);
+  xbt_assert(s != -1, "Could not receive answer to FORK_REPLY");
+  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
+  xbt_assert(answer.type == MessageType::FORK_REPLY,
+             "Received unexpected message %s (%i); expected MessageType::FORK_REPLY (%i)", to_c_str(answer.type),
+             (int)answer.type, (int)MessageType::FORK_REPLY);
+  pid_ = answer.value;
+
+  wait_for_requests();
+}
+
+std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket)
+{
+  s_mc_message_int_t m = {};
+  m.type               = MessageType::FORK;
+  m.value              = getpid();
+  xbt_assert(get_channel().send(m) == 0, "Could not ask the app to fork on need.");
+
+  int sock = accept(master_socket, nullptr /* I know who's connecting*/, nullptr);
+  xbt_assert(sock > 0, "Cannot accept the incomming connection of the forked app: %s.", strerror(errno));
+
+  return std::make_unique<CheckerSide>(sock, this);
 }
 
 void CheckerSide::finalize(bool terminate_asap)
@@ -323,14 +360,14 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
       break;
 
     default:
-      xbt_die("Unexpected message from model-checked application");
+      xbt_die("Unexpected message from the application");
   }
   return true;
 }
 
 void CheckerSide::wait_for_requests()
 {
-  /* Resume the application */
+  XBT_DEBUG("Resume the application");
   if (get_channel().send(MessageType::CONTINUE) != 0)
     throw xbt::errno_error();
   clear_memory_cache();
@@ -345,56 +382,79 @@ void CheckerSide::clear_memory_cache()
     remote_memory_->clear_cache();
 }
 
-void CheckerSide::handle_waitpid()
+void CheckerSide::handle_dead_child(int status)
 {
-  XBT_DEBUG("Check for wait event");
-  int status;
-  pid_t pid;
-  while ((pid = waitpid(-1, &status, WNOHANG)) != 0) {
-    if (pid == -1) {
-      if (errno == ECHILD) { // No more children:
-        xbt_assert(not this->running(), "Inconsistent state");
-        break;
-      } else {
-        xbt_die("Could not wait for pid: %s", strerror(errno));
-      }
-    }
-
-    if (pid == get_pid()) {
-      // From PTRACE_O_TRACEEXIT:
+  // From PTRACE_O_TRACEEXIT:
 #ifdef __linux__
-      if (status >> 8 == (SIGTRAP | (PTRACE_EVENT_EXIT << 8))) {
-        unsigned long eventmsg;
-        xbt_assert(ptrace(PTRACE_GETEVENTMSG, pid, 0, &eventmsg) != -1, "Could not get exit status");
-        status = static_cast<int>(eventmsg);
-        if (WIFSIGNALED(status)) {
-          this->terminate();
-          Exploration::get_instance()->report_crash(status);
-        }
-      }
+  if (status >> 8 == (SIGTRAP | (PTRACE_EVENT_EXIT << 8))) {
+    unsigned long eventmsg;
+    xbt_assert(ptrace(PTRACE_GETEVENTMSG, pid_, 0, &eventmsg) != -1, "Could not get exit status");
+    status = static_cast<int>(eventmsg);
+    if (WIFSIGNALED(status)) {
+      this->terminate();
+      Exploration::get_instance()->report_crash(status);
+    }
+  }
 #endif
 
-      // We don't care about non-lethal signals, just reinject them:
-      if (WIFSTOPPED(status)) {
-        XBT_DEBUG("Stopped with signal %i", (int)WSTOPSIG(status));
-        errno = 0;
+  // We don't care about non-lethal signals, just reinject them:
+  if (WIFSTOPPED(status)) {
+    XBT_DEBUG("Stopped with signal %i", (int)WSTOPSIG(status));
+    errno = 0;
 #ifdef __linux__
-        ptrace(PTRACE_CONT, pid, 0, WSTOPSIG(status));
+    ptrace(PTRACE_CONT, pid_, 0, WSTOPSIG(status));
 #elif defined BSD
-        ptrace(PT_CONTINUE, pid, (caddr_t)1, WSTOPSIG(status));
+    ptrace(PT_CONTINUE, pid_, (caddr_t)1, WSTOPSIG(status));
 #endif
-        xbt_assert(errno == 0, "Could not PTRACE_CONT");
-      }
+    xbt_assert(errno == 0, "Could not PTRACE_CONT: %s", strerror(errno));
+  }
 
-      else if (WIFSIGNALED(status)) {
-        this->terminate();
-        Exploration::get_instance()->report_crash(status);
-      } else if (WIFEXITED(status)) {
-        XBT_DEBUG("Child process is over");
-        this->terminate();
-      }
-    }
+  else if (WIFSIGNALED(status)) {
+    this->terminate();
+    Exploration::get_instance()->report_crash(status);
+  } else if (WIFEXITED(status)) {
+    XBT_DEBUG("Child process is over");
+    this->terminate();
   }
 }
 
+void CheckerSide::handle_waitpid()
+{
+  XBT_DEBUG("Check for wait event");
+
+  if (child_checker_ == nullptr) { // Wait directly
+    int status;
+    pid_t pid;
+    while ((pid = waitpid(-1, &status, WNOHANG)) != 0) {
+      if (pid == -1) {
+        if (errno == ECHILD) { // No more children:
+          xbt_assert(not this->running(), "Inconsistent state");
+          break;
+        } else {
+          xbt_die("Could not wait for pid: %s", strerror(errno));
+        }
+      }
+
+      if (pid == get_pid())
+        handle_dead_child(status);
+    }
+
+  } else { // Ask our proxy to wait for us
+
+    s_mc_message_int_t request = {};
+    request.type               = MessageType::WAIT_CHILD;
+    request.value              = pid_;
+    xbt_assert(child_checker_->get_channel().send(request) == 0,
+               "Could not ask my child to waitpid its child for me: %s", strerror(errno));
+
+    s_mc_message_int_t answer;
+    ssize_t answer_size = child_checker_->get_channel().receive(answer);
+    xbt_assert(answer_size != -1, "Could not receive message");
+    xbt_assert(answer.type == MessageType::WAIT_CHILD_REPLY,
+               "The received message is not the WAIT_CHILD_REPLY I was expecting but of type %s",
+               to_c_str(answer.type));
+    xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
+    handle_dead_child(answer.value);
+  }
+}
 } // namespace simgrid::mc

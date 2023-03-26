@@ -26,12 +26,17 @@ class CheckerSide {
   Channel channel_;
   bool running_ = false;
   pid_t pid_;
+  // When forking (no meminfo), the real app is our grandchild. In this case,
+  // child_checker_ is a CheckerSide to our child that can waitpid our grandchild on our behalf
+  CheckerSide* child_checker_ = nullptr;
 
-  void setup_events(); // Part of the initialization
+  void setup_events(bool socket_only); // Part of the initialization
   void clear_memory_cache();
-  void handle_waitpid();
+  void handle_dead_child(int status); // Launched when the dying child is the PID we follow
+  void handle_waitpid();              // Launched when receiving a sigchild
 
 public:
+  explicit CheckerSide(int socket, CheckerSide* child_checker);
   explicit CheckerSide(const std::vector<char*>& args, bool need_memory_introspection);
   ~CheckerSide();
 
@@ -48,6 +53,9 @@ public:
   void dispatch_events() const;
   void break_loop() const;
   void wait_for_requests();
+
+  /* Create a new CheckerSide by forking the currently existing one, and connect it through the master_socket */
+  std::unique_ptr<CheckerSide> clone(int master_socket);
 
   /** Ask the application to run post-mortem analysis, and maybe to stop ASAP */
   void finalize(bool terminate_asap = false);
