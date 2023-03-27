@@ -67,6 +67,7 @@ public:
 
   long get_num() const { return num_; }
   std::size_t count_todo() const;
+  std::size_t count_todo_multiples() const;
 
   /* Marking as TODO some actor in this state:
    *  + consider_one mark aid actor (and assert it is possible)

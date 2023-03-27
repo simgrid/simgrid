@@ -84,6 +84,16 @@ std::size_t State::count_todo() const
   return boost::range::count_if(this->guide_->actors_to_run_, [](auto& pair) { return pair.second.is_todo(); });
 }
 
+std::size_t State::count_todo_multiples() const
+{
+  size_t count = 0;
+  for (auto& [_, actor] : guide_->actors_to_run_)
+    if (actor.is_todo())
+      count += actor.get_times_not_considered();
+
+  return count;
+}
+
 Transition* State::get_transition() const
 {
   return transition_;

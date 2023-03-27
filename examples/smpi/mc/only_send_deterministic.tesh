@@ -10,4 +10,4 @@ $ ../../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../../bin/simgrid-m
 > [0.000000] [mc_comm_determinism/INFO] The recv communications pattern of the actor 0 is different! Different source for communication #1
 > [0.000000] [mc_comm_determinism/INFO] Send-deterministic : Yes
 > [0.000000] [mc_comm_determinism/INFO] Recv-deterministic : No
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 110 unique states visited; 21 backtracks (189 transition replays, 59 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 242 unique states visited; 68 backtracks (612 transition replays, 303 states visited overall)

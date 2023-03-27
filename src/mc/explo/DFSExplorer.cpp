@@ -69,6 +69,14 @@ RecordTrace DFSExplorer::get_record_trace() // override
   return res;
 }
 
+RecordTrace get_record_trace_of_stack(stack_t stack)
+{
+  RecordTrace res;
+  for (auto const& state : stack)
+    res.push_back(state->get_transition());
+  return res;
+}
+
 std::vector<std::string> DFSExplorer::get_textual_trace() // override
 {
   std::vector<std::string> trace;
@@ -87,6 +95,14 @@ void DFSExplorer::log_state() // override
            State::get_expanded_states(), backtrack_count_, visited_states_count_,
            Transition::get_replayed_transitions());
   Exploration::log_state();
+}
+
+void DFSExplorer::add_to_opened_states(stack_t stack)
+{
+  stack_t tmp_stack;
+  for (auto& state : stack)
+    tmp_stack.push_back(std::make_shared<State>(State(*state)));
+  opened_states_.emplace_back(tmp_stack);
 }
 
 void DFSExplorer::run()
@@ -145,12 +161,14 @@ void DFSExplorer::run()
       this->backtrack();
       continue;
     }
-
     if (_sg_mc_sleep_set && XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose)) {
       XBT_VERB("Sleep set actually containing:");
       for (auto& [aid, transition] : state->get_sleep_set())
         XBT_VERB("  <%ld,%s>", aid, transition.to_string().c_str());
     }
+
+    // if (stack_.back()->count_todo_multiples() <= 1)
+    // 	add_to_opened_states(stack_);
 
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
     state->execute_next(next, get_remote_app());
@@ -162,8 +180,8 @@ void DFSExplorer::run()
              state->get_transition()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    std::unique_ptr<State> next_state;
-    next_state = std::make_unique<State>(get_remote_app(), state);
+    std::shared_ptr<State> next_state;
+    next_state = std::make_shared<State>(get_remote_app(), state);
     on_state_creation_signal(next_state.get(), get_remote_app());
 
     /* Sleep set procedure:
@@ -180,9 +198,7 @@ void DFSExplorer::run()
      * If the process is not enabled at this  point, then add every enabled process to the interleave */
     if (reduction_mode_ == ReductionMode::dpor) {
       aid_t issuer_id   = state->get_transition()->aid_;
-      stack_t tmp_stack;
-      for (auto& state : stack_)
-        tmp_stack.push_back(std::make_shared<State>(State(*state)));
+      stack_t tmp_stack = std::list(stack_);
       while (not tmp_stack.empty()) {
         State* prev_state = tmp_stack.back().get();
         if (state->get_transition()->aid_ == prev_state->get_transition()->aid_) {
@@ -198,7 +214,7 @@ void DFSExplorer::run()
           if (prev_state->is_actor_enabled(issuer_id)) {
             if (not prev_state->is_actor_done(issuer_id)) {
               prev_state->consider_one(issuer_id);
-              opened_states.emplace_back(tmp_stack);
+              add_to_opened_states(tmp_stack);
             } else
               XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
           } else {
@@ -206,7 +222,7 @@ void DFSExplorer::run()
                       "transition as todo",
                       issuer_id);
             prev_state->consider_all();
-            opened_states.emplace_back(tmp_stack);
+            add_to_opened_states(tmp_stack);
           }
           break;
         } else {
@@ -234,8 +250,9 @@ void DFSExplorer::run()
         stack_.back()->consider_best(); // Take only one transition if DPOR: others may be considered later if required
       else {
         stack_.back()->consider_all();
-        opened_states.emplace_back(stack_);
       }
+      if (stack_.back()->count_todo_multiples() > 1)
+        add_to_opened_states(stack_);
       dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
                  state->get_transition()->dot_string().c_str());
     } else
@@ -251,11 +268,14 @@ void DFSExplorer::backtrack()
 {
   backtrack_count_++;
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
+  XBT_DEBUG("%ld alternatives are yet to be explored:", opened_states_.size());
+  for (auto& stack : opened_states_)
+    XBT_DEBUG("--> %s", get_record_trace_of_stack(stack).to_string().c_str());
   on_backtracking_signal(get_remote_app());
   get_remote_app().check_deadlock();
 
   // if no backtracking point, then set the stack_ to empty so we can end the exploration
-  if (opened_states.size() == 0) {
+  if (opened_states_.size() == 0) {
     stack_ = std::list<std::shared_ptr<State>>();
     return;
   }
@@ -268,15 +288,18 @@ void DFSExplorer::backtrack()
   stack_t backtrack;
   double min_dist = std::numeric_limits<double>::infinity();
   aid_t min_aid   = -1;
-  for (auto& stack : opened_states) {
-    auto [aid, dist] = stack.back()->next_transition_guided();
-    if (aid == -1)
+  for (auto iter = opened_states_.begin(); iter != opened_states_.end();) {
+    auto [aid, dist] = (*iter).back()->next_transition_guided();
+    if (aid == -1) { // happens if no actors are todo anymore in this transition
+      iter = opened_states_.erase(iter);
       continue;
+    }
     if (dist < min_dist) {
       min_dist  = dist;
       min_aid   = aid;
-      backtrack = stack;
+      backtrack = (*iter);
     }
+    iter++;
   }
 
   if (min_aid == -1) {
@@ -284,8 +307,8 @@ void DFSExplorer::backtrack()
     return;
   }
 
-  if (backtrack.back()->count_todo() <= 1)
-    opened_states.pop_back();
+  if (backtrack.back()->count_todo_multiples() <= 1)
+    opened_states_.remove(backtrack);
 
   /* If asked to rollback on a state that has a snapshot, restore it */
   State* last_state = backtrack.back().get();
@@ -341,8 +364,9 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor, bool ne
     stack_.back()->consider_best();
   else {
     stack_.back()->consider_all();
-    opened_states.emplace_back(stack_);
   }
+  if (stack_.back()->count_todo_multiples() > 1)
+    add_to_opened_states(stack_);
 }
 
 Exploration* create_dfs_exploration(const std::vector<char*>& args, bool with_dpor)

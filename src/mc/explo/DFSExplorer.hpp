@@ -95,7 +95,8 @@ private:
 
   /** Opened states are states that still contains todo actors.
    *  When backtracking, we pick a state from it*/
-  std::vector<stack_t> opened_states;
+  std::list<stack_t> opened_states_;
+  void add_to_opened_states(stack_t stack);
 };
 
 } // namespace simgrid::mc
