@@ -622,7 +622,6 @@ include teshsuite/mc/dwarf/dwarf.tesh
 include teshsuite/mc/mutex-handling/mutex-handling.cpp
 include teshsuite/mc/mutex-handling/mutex-handling.tesh
 include teshsuite/mc/mutex-handling/without-mutex-handling.tesh
-include teshsuite/mc/random-bug/random-bug-nocrash.tesh
 include teshsuite/mc/random-bug/random-bug-replay.tesh
 include teshsuite/mc/random-bug/random-bug.cpp
 include teshsuite/mc/random-bug/random-bug.tesh

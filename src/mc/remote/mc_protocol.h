@@ -23,11 +23,12 @@
 // ***** Messages
 namespace simgrid::mc {
 
-XBT_DECLARE_ENUM_CLASS(MessageType, NONE, INITIAL_ADDRESSES, INITIAL_ADDRESSES_REPLY, CONTINUE, IGNORE_HEAP,
-                       UNIGNORE_HEAP, IGNORE_MEMORY, STACK_REGION, REGISTER_SYMBOL, DEADLOCK_CHECK,
-                       DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_EXECUTE, SIMCALL_EXECUTE_ANSWER, ASSERTION_FAILED,
-                       ACTORS_STATUS, ACTORS_STATUS_REPLY, ACTORS_MAXPID, ACTORS_MAXPID_REPLY, FINALIZE,
-                       FINALIZE_REPLY);
+XBT_DECLARE_ENUM_CLASS(MessageType, NONE, NEED_MEMINFO, NEED_MEMINFO_REPLY, FORK, FORK_REPLY, WAIT_CHILD,
+                       WAIT_CHILD_REPLY, CONTINUE, IGNORE_HEAP, UNIGNORE_HEAP, IGNORE_MEMORY, STACK_REGION,
+                       REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_EXECUTE,
+                       SIMCALL_EXECUTE_REPLY, ASSERTION_FAILED, ACTORS_STATUS, ACTORS_STATUS_REPLY_COUNT,
+                       ACTORS_STATUS_REPLY_SIMCALL, ACTORS_STATUS_REPLY_TRANSITION, ACTORS_MAXPID, ACTORS_MAXPID_REPLY,
+                       FINALIZE, FINALIZE_REPLY);
 } // namespace simgrid::mc
 
 constexpr unsigned MC_MESSAGE_LENGTH                 = 512;
@@ -81,7 +82,7 @@ struct s_mc_message_register_symbol_t {
 };
 
 /* Server -> client */
-struct s_mc_message_initial_addresses_reply_t {
+struct s_mc_message_need_meminfo_reply_t {
   simgrid::mc::MessageType type;
   xbt_mheap_t mmalloc_default_mdp;
 };
@@ -104,22 +105,19 @@ struct s_mc_message_restore_t {
 struct s_mc_message_actors_status_answer_t {
   simgrid::mc::MessageType type;
   int count;
-  int transition_count; // The total number of transitions sent as a payload to the checker
 };
 struct s_mc_message_actors_status_one_t { // an array of `s_mc_message_actors_status_one_t[count]` is sent right after
                                           // after a `s_mc_message_actors_status_answer_t`
+  simgrid::mc::MessageType type;
   aid_t aid;
   bool enabled;
   int max_considered;
-
-  // The total number of transitions that are serialized and associated with this actor.
-  // Enforced to be either `0` or the same as `max_considered`
-  int n_transitions;
 };
 
 // Answer from an actor to the question "what are you about to run?"
 struct s_mc_message_simcall_probe_one_t { // a series of `s_mc_message_simcall_probe_one_t`
                                           // is sent right after `s_mc_message_actors_status_one_t[]`
+  simgrid::mc::MessageType type;
   std::array<char, SIMCALL_SERIALIZATION_BUFFER_SIZE> buffer;
 };
 

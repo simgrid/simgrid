@@ -65,7 +65,7 @@ foreach(example
     set_target_properties(${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
 
     add_dependencies(tests-mc ${example})
-    #ADD_TESH_FACTORIES(sthread-mc-${example} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread/${example} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
+    ADD_TESH_FACTORIES(sthread-mc-${example} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread/${example} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
   endif()
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)

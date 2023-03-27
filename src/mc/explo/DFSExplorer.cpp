@@ -311,10 +311,8 @@ void DFSExplorer::backtrack()
   XBT_DEBUG(">> Backtracked to %s", get_record_trace().to_string().c_str());
 }
 
-// DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Exploration(args, _sg_mc_termination) //
-// UNCOMMENT TO ACTIVATE REFORKS
-DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor)
-    : Exploration(args, true) // This version does not use reforks as it breaks
+DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor, bool need_memory_info)
+    : Exploration(args, need_memory_info || _sg_mc_termination)
 {
   if (with_dpor)
     reduction_mode_ = ReductionMode::dpor;

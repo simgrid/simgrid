@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 
   MPI_Comm_size(MPI_COMM_WORLD, &size); /* Get nr of tasks */
   MPI_Comm_rank(MPI_COMM_WORLD, &rank); /* Get id of this process */
-  if (size < 2) {
+  if (size != 2) {
     printf("run this program with exactly 2 processes (-np 2)\n");
     MPI_Finalize();
     exit(0);

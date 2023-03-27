@@ -65,9 +65,7 @@ State::State(RemoteApp& remote_app, const State* parent_state) : num_(++expended
      * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
      * it is not explored*/
     for (auto& [aid, transition] : parent_state_->get_sleep_set()) {
-
       if (not parent_state_->get_transition()->depends(&transition)) {
-
         sleep_set_.try_emplace(aid, transition);
         if (guide_->actors_to_run_.count(aid) != 0) {
           XBT_DEBUG("Actor %ld will not be explored, for it is in the sleep set", aid);
@@ -97,7 +95,6 @@ aid_t State::next_transition() const
   for (auto const& [aid, actor] : guide_->actors_to_run_) {
     /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
     if (not actor.is_todo() || not actor.is_enabled() || actor.is_done()) {
-
       if (not actor.is_todo())
         XBT_DEBUG("Can't run actor %ld because it is not todo", aid);
 

@@ -17,11 +17,12 @@
 
 #include <algorithm>
 #include <array>
+#include <limits.h>
 #include <memory>
 #include <numeric>
 #include <string>
-
 #include <sys/ptrace.h>
+#include <sys/un.h>
 #include <sys/wait.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
@@ -29,15 +30,38 @@ XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 namespace simgrid::mc {
 
-RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspection)
+static char master_socket_name[65] = {};
+static void cleanup_master_socket()
 {
-  for (auto* arg : args)
-    app_args_.push_back(arg);
+  if (master_socket_name[0] != '\0')
+    unlink(master_socket_name);
+  master_socket_name[0] = '\0';
+}
 
-  checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_, need_memory_introspection);
-
-  if (need_memory_introspection)
+RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspection) : app_args_(args)
+{
+  if (need_memory_introspection) {
+    checker_side_     = std::make_unique<simgrid::mc::CheckerSide>(app_args_, need_memory_introspection);
     initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_, *checker_side_->get_remote_memory());
+  } else {
+    master_socket_ = socket(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0);
+    xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
+
+    struct sockaddr_un serv_addr = {};
+    serv_addr.sun_family         = AF_LOCAL;
+    snprintf(serv_addr.sun_path, 64, "/tmp/simgrid-mc-%d", getpid());
+    strcpy(master_socket_name, serv_addr.sun_path);
+    auto addr_size = offsetof(struct sockaddr_un, sun_path) + strlen(serv_addr.sun_path);
+
+    xbt_assert(bind(master_socket_, (struct sockaddr*)&serv_addr, addr_size) >= 0,
+               "Cannot bind the master socket to %s: %s.", serv_addr.sun_path, strerror(errno));
+    atexit(cleanup_master_socket);
+
+    xbt_assert(listen(master_socket_, SOMAXCONN) >= 0, "Cannot listen to the master socket: %s.", strerror(errno));
+
+    application_factory_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_, need_memory_introspection);
+    checker_side_        = application_factory_->clone(master_socket_);
+  }
 }
 
 RemoteApp::~RemoteApp()
@@ -49,9 +73,7 @@ RemoteApp::~RemoteApp()
 void RemoteApp::restore_initial_state()
 {
   if (initial_snapshot_ == nullptr) { // No memory introspection
-    // We need to destroy the existing CheckerSide before creating the new one, or libevent gets crazy
-    checker_side_.reset(nullptr);
-    checker_side_.reset(new simgrid::mc::CheckerSide(app_args_, true));
+    checker_side_ = application_factory_->clone(master_socket_);
   } else
     initial_snapshot_->restore(*checker_side_->get_remote_memory());
 }
@@ -79,26 +101,22 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   //
   // CheckerSide                  AppSide
   // send ACTORS_STATUS ---->
-  //                    <----- send ACTORS_STATUS_REPLY
-  //                    <----- send `N` `s_mc_message_actors_status_one_t` structs
-  //                    <----- send `M` `s_mc_message_simcall_probe_one_t` structs
+  //                    <----- send ACTORS_STATUS_REPLY_COUNT
+  //                    <----- send `N` ACTORS_STATUS_REPLY_TRANSITION (s_mc_message_actors_status_one_t)
+  //                    <----- send `M` ACTORS_STATUS_REPLY_SIMCALL (s_mc_message_simcall_probe_one_t)
   checker_side_->get_channel().send(MessageType::ACTORS_STATUS);
 
   s_mc_message_actors_status_answer_t answer;
   ssize_t answer_size = checker_side_->get_channel().receive(answer);
   xbt_assert(answer_size != -1, "Could not receive message");
   xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
-  xbt_assert(answer.type == MessageType::ACTORS_STATUS_REPLY,
-             "Received unexpected message %s (%i); expected MessageType::ACTORS_STATUS_REPLY (%i)",
-             to_c_str(answer.type), (int)answer.type, (int)MessageType::ACTORS_STATUS_REPLY);
+  xbt_assert(answer.type == MessageType::ACTORS_STATUS_REPLY_COUNT,
+             "Received unexpected message %s (%i); expected MessageType::ACTORS_STATUS_REPLY_COUNT (%i)",
+             to_c_str(answer.type), (int)answer.type, (int)MessageType::ACTORS_STATUS_REPLY_COUNT);
 
   // Message sanity checks
-  xbt_assert(answer.count >= 0, "Received an ACTOR_STATUS_REPLY message with an actor count of '%d' < 0", answer.count);
-  xbt_assert(answer.transition_count >= 0, "Received an ACTOR_STATUS_REPLY message with transition_count '%d' < 0",
-             answer.transition_count);
-  xbt_assert(answer.transition_count == 0 || answer.count >= 0,
-             "Received an ACTOR_STATUS_REPLY message with no actor data "
-             "but with transition data nonetheless");
+  xbt_assert(answer.count >= 0, "Received an ACTORS_STATUS_REPLY_COUNT message with an actor count of '%d' < 0",
+             answer.count);
 
   std::vector<s_mc_message_actors_status_one_t> status(answer.count);
   if (answer.count > 0) {
@@ -107,39 +125,20 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
     xbt_assert(static_cast<size_t>(received) == size);
   }
 
-  // Ensures that each actor sends precisely `answer.transition_count` transitions. While technically
-  // this doesn't catch the edge case where actor A sends 3 instead of 2 and actor B sends 2 instead
-  // of 3 transitions, that is ignored here since that invariant needs to be enforced on the AppSide
-  const auto expected_transitions = std::accumulate(
-      status.begin(), status.end(), 0, [](int total, const auto& actor) { return total + actor.n_transitions; });
-  xbt_assert(expected_transitions == answer.transition_count,
-             "Expected to receive %d transition(s) but was only notified of %d by the app side", expected_transitions,
-             answer.transition_count);
+  whereto.clear();
 
-  std::vector<s_mc_message_simcall_probe_one_t> probes(answer.transition_count);
-  if (answer.transition_count > 0) {
-    for (auto& probe : probes) {
+  for (const auto& actor : status) {
+    std::vector<std::shared_ptr<Transition>> actor_transitions;
+    int n_transitions = actor.enabled ? actor.max_considered : 0;
+    for (int times_considered = 0; times_considered < n_transitions; times_considered++) {
+      s_mc_message_simcall_probe_one_t probe;
       ssize_t received = checker_side_->get_channel().receive(probe);
       xbt_assert(received >= 0, "Could not receive response to ACTORS_PROBE message (%s)", strerror(errno));
       xbt_assert(static_cast<size_t>(received) == sizeof probe,
                  "Could not receive response to ACTORS_PROBE message (%zd bytes received != %zu bytes expected",
                  received, sizeof probe);
-    }
-  }
 
-  whereto.clear();
-  std::move_iterator probes_iter(probes.begin());
-
-  for (const auto& actor : status) {
-    xbt_assert(actor.n_transitions == 0 || actor.n_transitions == actor.max_considered,
-               "If any transitions are serialized for an actor, it must match the "
-               "total number of transitions that can be considered for the actor "
-               "(currently %d), but only %d transition(s) was/were said to be encoded",
-               actor.max_considered, actor.n_transitions);
-
-    std::vector<std::shared_ptr<Transition>> actor_transitions;
-    for (int times_considered = 0; times_considered < actor.n_transitions; times_considered++, probes_iter++) {
-      std::stringstream stream((*probes_iter).buffer.data());
+      std::stringstream stream(probe.buffer.data());
       actor_transitions.emplace_back(deserialize_transition(actor.aid, times_considered, stream));
     }
 
@@ -193,10 +192,10 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
   s_mc_message_simcall_execute_answer_t answer;
   ssize_t s = checker_side_->get_channel().receive(answer);
   xbt_assert(s != -1, "Could not receive message");
+  xbt_assert(s > 0 && answer.type == MessageType::SIMCALL_EXECUTE_REPLY,
+             "%d Received unexpected message %s (%i); expected MessageType::SIMCALL_EXECUTE_REPLY (%i)", getpid(),
+             to_c_str(answer.type), (int)answer.type, (int)MessageType::SIMCALL_EXECUTE_REPLY);
   xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
-  xbt_assert(answer.type == MessageType::SIMCALL_EXECUTE_ANSWER,
-             "Received unexpected message %s (%i); expected MessageType::SIMCALL_EXECUTE_ANSWER (%i)",
-             to_c_str(answer.type), (int)answer.type, (int)MessageType::SIMCALL_EXECUTE_ANSWER);
 
   if (new_transition) {
     std::stringstream stream(answer.buffer.data());
