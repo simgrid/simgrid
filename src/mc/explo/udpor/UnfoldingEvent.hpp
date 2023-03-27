@@ -52,6 +52,8 @@ public:
   Transition* get_transition() const { return this->associated_transition.get(); }
   aid_t get_actor() const { return get_transition()->aid_; }
 
+  std::string to_string() const;
+
   bool operator==(const UnfoldingEvent&) const;
   bool operator!=(const UnfoldingEvent& other) const { return not(*this == other); }
 

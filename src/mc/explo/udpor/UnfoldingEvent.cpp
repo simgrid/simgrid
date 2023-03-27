@@ -6,6 +6,8 @@
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/explo/udpor/History.hpp"
 
+#include <xbt/string.hpp>
+
 namespace simgrid::mc::udpor {
 
 UnfoldingEvent::UnfoldingEvent(std::initializer_list<const UnfoldingEvent*> init_list)
@@ -38,6 +40,12 @@ bool UnfoldingEvent::operator==(const UnfoldingEvent& other) const
          associated_transition->type_ == other.associated_transition->type_ &&
          associated_transition->times_considered_ == other.associated_transition->times_considered_ &&
          this->immediate_causes == other.immediate_causes;
+}
+
+std::string UnfoldingEvent::to_string() const
+{
+  return xbt::string_printf("e(%s) (%zu dependencies)", associated_transition->to_string().c_str(),
+                            immediate_causes.size());
 }
 
 EventSet UnfoldingEvent::get_history() const
