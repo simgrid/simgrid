@@ -97,6 +97,8 @@ private:
    *  When backtracking, we pick a state from it*/
   std::list<stack_t> opened_states_;
   void add_to_opened_states(stack_t stack);
+
+  RecordTrace get_record_trace_of_stack(stack_t stack);
 };
 
 } // namespace simgrid::mc

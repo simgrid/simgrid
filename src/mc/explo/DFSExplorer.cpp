@@ -63,13 +63,10 @@ void DFSExplorer::check_non_termination(const State* current_state)
 
 RecordTrace DFSExplorer::get_record_trace() // override
 {
-  RecordTrace res;
-  for (auto const& state : stack_)
-    res.push_back(state->get_transition());
-  return res;
+  return get_record_trace_of_stack(stack_);
 }
 
-RecordTrace get_record_trace_of_stack(stack_t stack)
+RecordTrace DFSExplorer::get_record_trace_of_stack(stack_t stack)
 {
   RecordTrace res;
   for (auto const& state : stack)
@@ -268,7 +265,7 @@ void DFSExplorer::backtrack()
 {
   backtrack_count_++;
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
-  XBT_DEBUG("%ld alternatives are yet to be explored:", opened_states_.size());
+  XBT_DEBUG("%lu alternatives are yet to be explored:", opened_states_.size());
   for (auto& stack : opened_states_)
     XBT_DEBUG("--> %s", get_record_trace_of_stack(stack).to_string().c_str());
   on_backtracking_signal(get_remote_app());
