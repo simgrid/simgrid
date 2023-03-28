@@ -124,7 +124,7 @@ public:
     return this->pending_transitions_[times_considered].get();
   }
 
-  inline void set_transition(std::unique_ptr<Transition> t, unsigned times_considered)
+  inline void set_transition(std::shared_ptr<Transition> t, unsigned times_considered)
   {
     xbt_assert(times_considered < this->pending_transitions_.size(),
                "Actor %ld does not have a state available transition with `times_considered = %u`, "

@@ -81,7 +81,7 @@ private:
    * by the UDPOR algorithm to select new events to search. See the original
    * paper [1] for more details
    */
-  const UnfoldingEvent* select_next_unfolding_event(const EventSet& A, const EventSet& enC);
+  UnfoldingEvent* select_next_unfolding_event(const EventSet& A, const EventSet& enC);
 
   /**
    * @brief Computes the sets `ex(C)` and `en(C)` of the given configuration
@@ -113,7 +113,7 @@ private:
   /**
    *
    */
-  void move_to_stateCe(State& stateC, const UnfoldingEvent& e);
+  void move_to_stateCe(State* stateC, UnfoldingEvent* e);
 
   /**
    * @brief Creates a new snapshot of the state of the application

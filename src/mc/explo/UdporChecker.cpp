@@ -61,7 +61,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
 
   // TODO: Add verbose logging about which event is being explored
 
-  const UnfoldingEvent* e = select_next_unfolding_event(A, enC);
+  UnfoldingEvent* e = select_next_unfolding_event(A, enC);
   xbt_assert(e != nullptr, "\n\n****** INVARIANT VIOLATION ******\n"
                            "UDPOR guarantees that an event will be chosen at each point in\n"
                            "the search, yet no events were actually chosen\n"
@@ -76,7 +76,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
   // Explore(C + {e}, D, A \ {e})
 
   // Move the application into stateCe (i.e. `state(C + {e})`) and make note of that state
-  move_to_stateCe(stateC, *e);
+  move_to_stateCe(&stateC, e);
   state_stack.push_back(record_current_state());
 
   explore(Ce, D, std::move(A), std::move(exC));
@@ -146,9 +146,9 @@ EventSet UdporChecker::compute_enC(const Configuration& C, const EventSet& exC) 
   return enC;
 }
 
-void UdporChecker::move_to_stateCe(State& state, const UnfoldingEvent& e)
+void UdporChecker::move_to_stateCe(State* state, UnfoldingEvent* e)
 {
-  const aid_t next_actor = e.get_transition()->aid_;
+  const aid_t next_actor = e->get_transition()->aid_;
 
   // TODO: Add the trace if possible for reporting a bug
   xbt_assert(next_actor >= 0, "\n\n****** INVARIANT VIOLATION ******\n"
@@ -156,7 +156,28 @@ void UdporChecker::move_to_stateCe(State& state, const UnfoldingEvent& e)
                               "one transition of the state of an visited event is enabled, yet no\n"
                               "state was actually enabled. Please report this as a bug.\n"
                               "*********************************\n\n");
-  state.execute_next(next_actor, get_remote_app());
+  auto latest_transition_by_next_actor = state->execute_next(next_actor, get_remote_app());
+
+  // The transition that is associated with the event was just
+  // executed, so it's possible that the new version of the transition
+  // (i.e. the one after execution) has *more* information than
+  // that which existed *prior* to execution.
+  //
+  //
+  // ------- !!!!! UDPOR INVARIANT !!!!! -------
+  //
+  // At this point, we are leveraging the fact that
+  // UDPOR will not contain more than one copy of any
+  // transition executed by any actor for any
+  // particular step taken by that actor. That is,
+  // if transition `i` of the `j`th actor is contained in the
+  // configuration `C` currently under consideration
+  // by UDPOR, then only one and only one copy exists in `C`
+  //
+  // This means that we can referesh the transitions associated
+  // with each event lazily, i.e. only after we have chosen the
+  // event to continue our execution.
+  e->set_transition(std::move(latest_transition_by_next_actor));
 }
 
 void UdporChecker::restore_program_state_with_current_stack()
@@ -181,7 +202,7 @@ std::unique_ptr<State> UdporChecker::record_current_state()
   return next_state;
 }
 
-const UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, const EventSet& enC)
+UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, const EventSet& enC)
 {
   if (enC.empty()) {
     throw std::invalid_argument("There are no unfolding events to select. "
@@ -190,12 +211,12 @@ const UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& 
   }
 
   if (A.empty()) {
-    return *(enC.begin());
+    return const_cast<UnfoldingEvent*>(*(enC.begin()));
   }
 
   for (const auto& event : A) {
     if (enC.contains(event)) {
-      return event;
+      return const_cast<UnfoldingEvent*>(event);
     }
   }
   return nullptr;

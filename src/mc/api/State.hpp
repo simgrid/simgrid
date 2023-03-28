@@ -66,9 +66,11 @@ public:
    internal cost of the transition is returned */
   std::pair<aid_t, int> next_transition_guided() const;
 
-  /* Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
-   * next_transition() */
-  void execute_next(aid_t next, RemoteApp& app);
+  /**
+   * @brief Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
+   * next_transition()
+   */
+  std::shared_ptr<Transition> execute_next(aid_t next, RemoteApp& app);
 
   long get_num() const { return num_; }
   std::size_t count_todo() const;
