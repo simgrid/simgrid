@@ -75,7 +75,7 @@ public:
    *  + conside_all mark all enabled actor that are not done yet */
   void consider_one(aid_t aid) { guide_->consider_one(aid); }
   void consider_best() { guide_->consider_best(); }
-  void consider_all() { guide_->consider_all(); }
+  unsigned long consider_all() { return guide_->consider_all(); }
 
   bool is_actor_done(aid_t actor) const { return guide_->actors_to_run_.at(actor).is_done(); }
   Transition* get_transition() const;

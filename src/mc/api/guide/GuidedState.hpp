@@ -31,11 +31,15 @@ public:
     actors_to_run_.at(aid).mark_todo();
   }
   // Matk as todo all actors enabled that are not done yet
-  void consider_all()
+  unsigned long consider_all()
   {
+    unsigned long count = 0;
     for (auto& [_, actor] : actors_to_run_)
-      if (actor.is_enabled() and not actor.is_done())
+      if (actor.is_enabled() and not actor.is_done()) {
         actor.mark_todo();
+        count++;
+      }
+    return count;
   }
 
   friend class State;

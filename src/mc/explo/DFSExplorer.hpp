@@ -18,6 +18,16 @@ namespace simgrid::mc {
 
 typedef std::list<std::shared_ptr<State>> stack_t;
 
+/* Used to compare two stacks and decide which one is better to backtrack,
+ * regarding the chosen guide in the last state. */
+class OpenedStatesCompare {
+public:
+  bool operator()(stack_t const& lhs, stack_t const& rhs)
+  {
+    return lhs.back()->next_transition_guided().second < rhs.back()->next_transition_guided().second;
+  }
+};
+
 class XBT_PRIVATE DFSExplorer : public Exploration {
 
   XBT_DECLARE_ENUM_CLASS(ReductionMode, none, dpor);
@@ -95,7 +105,8 @@ private:
 
   /** Opened states are states that still contains todo actors.
    *  When backtracking, we pick a state from it*/
-  std::list<stack_t> opened_states_;
+
+  std::priority_queue<stack_t, std::vector<stack_t>, OpenedStatesCompare> opened_states_;
   void add_to_opened_states(stack_t stack);
 
   RecordTrace get_record_trace_of_stack(stack_t stack);

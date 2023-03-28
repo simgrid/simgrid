@@ -64,7 +64,7 @@ simgrid::config::Flag<std::string> _sg_mc_guided{
     "model-check/guided-mc", "Specify the the kind of heuristic to use for guided model-checking", "none",
     [](std::string_view value) {
       if (value != "none" && value != "nb_wait")
-        xbt_die("configuration option 'model-check/reduction' can only take 'none' or 'dpor' as a value");
+        xbt_die("configuration option 'model-check/guided-mc' can only take 'none' or 'nb_wait' as a value");
     }};
 
 

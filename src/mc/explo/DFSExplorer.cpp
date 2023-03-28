@@ -66,6 +66,7 @@ RecordTrace DFSExplorer::get_record_trace() // override
   return get_record_trace_of_stack(stack_);
 }
 
+/* Usefull to show debug information */
 RecordTrace DFSExplorer::get_record_trace_of_stack(stack_t stack)
 {
   RecordTrace res;
@@ -94,12 +95,16 @@ void DFSExplorer::log_state() // override
   Exploration::log_state();
 }
 
+/* Copy a given stack by deep-copying it at the State level : this is required so we can backtrack at different
+ * points without interacting with the stacks in the opened_states_ waiting for their turn. On the other hand,
+ * the exploration of one stack in opened_states_ could only slightly modify the sleep set of another stack in
+ * opened_states_, so it is only a slight waste of performance in the exploration. */
 void DFSExplorer::add_to_opened_states(stack_t stack)
 {
   stack_t tmp_stack;
   for (auto& state : stack)
     tmp_stack.push_back(std::make_shared<State>(State(*state)));
-  opened_states_.emplace_back(tmp_stack);
+  opened_states_.emplace(tmp_stack);
 }
 
 void DFSExplorer::run()
@@ -142,7 +147,7 @@ void DFSExplorer::run()
     }
 
     // Search for the next transition
-    // next_transition returns a pair<aid_t, double> in case we want to consider multiple state
+    // next_transition returns a pair<aid_t, double> in case we want to consider multiple state (eg. during backtrack)
     auto [next, _] = state->next_transition_guided();
 
     if (next < 0) { // If there is no more transition in the current state, backtrack.
@@ -158,14 +163,12 @@ void DFSExplorer::run()
       this->backtrack();
       continue;
     }
+
     if (_sg_mc_sleep_set && XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose)) {
       XBT_VERB("Sleep set actually containing:");
       for (auto& [aid, transition] : state->get_sleep_set())
         XBT_VERB("  <%ld,%s>", aid, transition.to_string().c_str());
     }
-
-    // if (stack_.back()->count_todo_multiples() <= 1)
-    // 	add_to_opened_states(stack_);
 
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
     state->execute_next(next, get_remote_app());
@@ -218,8 +221,9 @@ void DFSExplorer::run()
             XBT_DEBUG("Actor %ld is not enabled: DPOR may be failing. To stay sound, we are marking every enabled "
                       "transition as todo",
                       issuer_id);
-            prev_state->consider_all();
-            add_to_opened_states(tmp_stack);
+            if (prev_state->consider_all() >
+                0) // If we ended up marking at least a transition, explore it at some point
+              add_to_opened_states(tmp_stack);
           }
           break;
         } else {
@@ -230,6 +234,11 @@ void DFSExplorer::run()
         tmp_stack.pop_back();
       }
     }
+
+    // Before leaving that state, if the transition we just took can be taken multiple times, we
+    // need to give it to the opened states
+    if (stack_.back()->count_todo_multiples() > 0)
+      add_to_opened_states(stack_);
 
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
@@ -248,8 +257,7 @@ void DFSExplorer::run()
       else {
         stack_.back()->consider_all();
       }
-      if (stack_.back()->count_todo_multiples() > 1)
-        add_to_opened_states(stack_);
+
       dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
                  state->get_transition()->dot_string().c_str());
     } else
@@ -257,55 +265,33 @@ void DFSExplorer::run()
                  visited_state_->original_num_ == -1 ? visited_state_->num_ : visited_state_->original_num_,
                  state->get_transition()->dot_string().c_str());
   }
-
   log_state();
 }
 
 void DFSExplorer::backtrack()
 {
-  backtrack_count_++;
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
   XBT_DEBUG("%lu alternatives are yet to be explored:", opened_states_.size());
-  for (auto& stack : opened_states_)
-    XBT_DEBUG("--> %s", get_record_trace_of_stack(stack).to_string().c_str());
+
   on_backtracking_signal(get_remote_app());
   get_remote_app().check_deadlock();
 
   // if no backtracking point, then set the stack_ to empty so we can end the exploration
-  if (opened_states_.size() == 0) {
+  if (opened_states_.empty()) {
     stack_ = std::list<std::shared_ptr<State>>();
     return;
   }
 
-  /* We may backtrack from somewhere either because it's leaf, or because every enabled process are in done/sleep set.
-   * In the first case, we need to remove the last transition corresponding to the Finalize */
-  if (stack_.back()->get_transition()->aid_ == 0)
-    stack_.pop_back();
+  stack_t backtrack = opened_states_.top(); // Take the point with smallest distance
+  opened_states_.pop();
 
-  stack_t backtrack;
-  double min_dist = std::numeric_limits<double>::infinity();
-  aid_t min_aid   = -1;
-  for (auto iter = opened_states_.begin(); iter != opened_states_.end();) {
-    auto [aid, dist] = (*iter).back()->next_transition_guided();
-    if (aid == -1) { // happens if no actors are todo anymore in this transition
-      iter = opened_states_.erase(iter);
-      continue;
-    }
-    if (dist < min_dist) {
-      min_dist  = dist;
-      min_aid   = aid;
-      backtrack = (*iter);
-    }
-    iter++;
-  }
-
-  if (min_aid == -1) {
-    stack_ = std::list<std::shared_ptr<State>>();
+  // if the smallest distance corresponded to no enable actor, remove this and let the
+  // exploration ask again for a backtrack
+  if (backtrack.back()->next_transition_guided().first == -1)
     return;
-  }
 
-  if (backtrack.back()->count_todo_multiples() <= 1)
-    opened_states_.remove(backtrack);
+  // We found a real backtracking point, let's go to it
+  backtrack_count_++;
 
   /* If asked to rollback on a state that has a snapshot, restore it */
   State* last_state = backtrack.back().get();
