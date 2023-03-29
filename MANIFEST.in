@@ -2155,6 +2155,7 @@ include src/mc/api/State.cpp
 include src/mc/api/State.hpp
 include src/mc/api/guide/BasicGuide.hpp
 include src/mc/api/guide/GuidedState.hpp
+include src/mc/api/guide/WaitGuide.hpp
 include src/mc/compare.cpp
 include src/mc/datatypes.h
 include src/mc/explo/CommunicationDeterminismChecker.cpp

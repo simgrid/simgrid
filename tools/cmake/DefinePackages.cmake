@@ -601,6 +601,7 @@ set(MC_SRC
 
   src/mc/api/guide/BasicGuide.hpp
   src/mc/api/guide/GuidedState.hpp
+  src/mc/api/guide/WaitGuide.hpp
   src/mc/api/ActorState.hpp
   src/mc/api/State.cpp
   src/mc/api/State.hpp
