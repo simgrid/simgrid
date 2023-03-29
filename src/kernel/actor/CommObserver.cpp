@@ -197,6 +197,7 @@ void ActivityWaitanySimcall::prepare(int times_considered)
 
 void CommIsendSimcall::serialize(std::stringstream& stream) const
 {
+  /* Note that the comm_ is 0 until after the execution of the simcall */
   stream << (short)mc::Transition::Type::COMM_ASYNC_SEND << ' ';
   stream << (uintptr_t)comm_ << ' ' << mbox_->get_id() << ' ' << (uintptr_t)src_buff_ << ' ' << src_buff_size_ << ' '
          << tag_;
@@ -212,6 +213,7 @@ std::string CommIsendSimcall::to_string() const
 
 void CommIrecvSimcall::serialize(std::stringstream& stream) const
 {
+  /* Note that the comm_ is 0 until after the execution of the simcall */
   stream << (short)mc::Transition::Type::COMM_ASYNC_RECV << ' ';
   stream << (uintptr_t)comm_ << ' ' << mbox_->get_id() << ' ' << (uintptr_t)dst_buff_ << ' ' << tag_;
   XBT_DEBUG("RecvObserver comm:%p mbox:%u buff:%p tag:%d", comm_, mbox_->get_id(), dst_buff_, tag_);
