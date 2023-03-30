@@ -63,25 +63,21 @@ void DFSExplorer::check_non_termination(const State* current_state)
 
 RecordTrace DFSExplorer::get_record_trace() // override
 {
-  return get_record_trace_of_stack(stack_);
-}
-
-/* Usefull to show debug information */
-RecordTrace DFSExplorer::get_record_trace_of_stack(stack_t stack)
-{
   RecordTrace res;
-  for (auto const& state : stack)
-    res.push_back(state->get_transition());
+  for (auto const& transition : stack_.back()->get_recipe())
+    res.push_back(transition);
+  res.push_back(stack_.back()->get_transition());
   return res;
 }
 
 std::vector<std::string> DFSExplorer::get_textual_trace() // override
 {
   std::vector<std::string> trace;
-  for (auto const& state : stack_) {
-    const auto* t = state->get_transition();
-    trace.push_back(xbt::string_printf("%ld: %s", t->aid_, t->to_string().c_str()));
+  for (auto const& transition : stack_.back()->get_recipe()) {
+    trace.push_back(xbt::string_printf("%ld: %s", transition->aid_, transition->to_string().c_str()));
   }
+  trace.push_back(xbt::string_printf("%ld: %s", stack_.back()->get_transition()->aid_,
+                                     stack_.back()->get_transition()->to_string().c_str()));
   return trace;
 }
 
@@ -153,7 +149,7 @@ void DFSExplorer::run()
     auto [next, _] = state->next_transition_guided();
 
     if (next < 0) { // If there is no more transition in the current state, backtrack.
-      XBT_VERB("There remains %lu actors, but none to interleave (depth %zu).", state->get_actor_count(),
+      XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
                stack_.size() + 1);
 
       if (state->get_actor_count() == 0) {
@@ -222,8 +218,8 @@ void DFSExplorer::run()
             XBT_DEBUG("Actor %ld is not enabled: DPOR may be failing. To stay sound, we are marking every enabled "
                       "transition as todo",
                       issuer_id);
-            if (prev_state->consider_all() >
-                0) // If we ended up marking at least a transition, explore it at some point
+            // If we ended up marking at least a transition, explore it at some point
+            if (prev_state->consider_all() > 0)
               opened_states_.push(std::shared_ptr<State>(tmp_stack.back()));
           }
           break;
@@ -290,7 +286,8 @@ void DFSExplorer::backtrack()
   // if the smallest distance corresponded to no enable actor, remove this and let the
   // exploration ask again for a backtrack
   if (backtracking_point->next_transition_guided().first == -1) {
-    XBT_DEBUG("Best backtracking candidates has already been explored. We may backtrack again");
+    XBT_DEBUG("Best backtracking candidates has already been explored. Let's backtrack again");
+    this->backtrack();
     return;
   }
 

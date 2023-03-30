@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_MC_WAITGUIDE_HPP
-#define SIMGRID_MC_WAITGUIDE_HPP
+#ifndef SIMGRID_MC_WAITSTRATEGY_HPP
+#define SIMGRID_MC_WAITSTRATEGY_HPP
 
 #include "src/mc/transition/Transition.hpp"
 
@@ -12,12 +12,12 @@ namespace simgrid::mc {
 
 /** Wait MC guiding class that aims at minimizing the number of in-fly communication.
  *  When possible, it will try to take the wait transition. */
-class WaitGuide : public GuidedState {
+class WaitStrategy : public Strategy {
   double taken_wait_ = 0;
   bool taking_wait_  = false;
 
 public:
-  void operator=(const WaitGuide& guide) { taken_wait_ = guide.taken_wait_; }
+  void operator=(const WaitStrategy& guide) { taken_wait_ = guide.taken_wait_; }
 
   bool is_transition_wait(Transition::Type type) const
   {

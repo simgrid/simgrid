@@ -32,7 +32,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug printf ${platfdir
 > [  0.000000] (0:maestro@) Behavior: printf
 > [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: dpor.
 > [  0.000000] (1:app@Fafard) Error reached
-> [  0.000000] (0:maestro@) DFS exploration ended. 43 unique states visited; 35 backtracks (109 transition replays, 30 states visited overall)
+> [  0.000000] (0:maestro@) DFS exploration ended. 43 unique states visited; 35 backtracks (108 transition replays, 30 states visited overall)
 
 ! expect return 6
 # because SIMGRID_MC_EXIT_PROGRAM_CRASH = 6

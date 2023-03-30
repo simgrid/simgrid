@@ -5,19 +5,19 @@
 
 #include "xbt/asserts.h"
 
-#ifndef SIMGRID_MC_GUIDEDSTATE_HPP
-#define SIMGRID_MC_GUIDEDSTATE_HPP
+#ifndef SIMGRID_MC_STRATEGY_HPP
+#define SIMGRID_MC_STRATEGY_HPP
 
 namespace simgrid::mc {
 
-class GuidedState {
+class Strategy {
 protected:
   /** State's exploration status by actor. Not all the actors are there, only the ones that are ready-to-run in this
    * state */
   std::map<aid_t, ActorState> actors_to_run_;
 
 public:
-  virtual ~GuidedState()                                   = default;
+  virtual ~Strategy()                                      = default;
   virtual std::pair<aid_t, double> next_transition() const = 0;
   virtual void execute_next(aid_t aid, RemoteApp& app)     = 0;
   virtual void consider_best()                             = 0;
