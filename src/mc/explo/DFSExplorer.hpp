@@ -22,9 +22,9 @@ typedef std::list<std::shared_ptr<State>> stack_t;
  * regarding the chosen guide in the last state. */
 class OpenedStatesCompare {
 public:
-  bool operator()(stack_t const& lhs, stack_t const& rhs)
+  bool operator()(std::shared_ptr<State> const& lhs, std::shared_ptr<State> const& rhs)
   {
-    return lhs.back()->next_transition_guided().second < rhs.back()->next_transition_guided().second;
+    return lhs->next_transition_guided().second < rhs->next_transition_guided().second;
   }
 };
 
@@ -106,8 +106,12 @@ private:
   /** Opened states are states that still contains todo actors.
    *  When backtracking, we pick a state from it*/
 
-  std::priority_queue<stack_t, std::vector<stack_t>, OpenedStatesCompare> opened_states_;
-  void add_to_opened_states(stack_t stack);
+  std::priority_queue<std::shared_ptr<State>, std::vector<std::shared_ptr<State>>, OpenedStatesCompare> opened_states_;
+
+  /** Change current stack_ value to correspond to the one we would have
+   *  had if we executed transition to get to state. This is required when
+   *  backtracking, and achieved thanks to the fact states save their parent.*/
+  void restore_stack(std::shared_ptr<State> state);
 
   RecordTrace get_record_trace_of_stack(stack_t stack);
 };

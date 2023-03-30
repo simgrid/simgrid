@@ -57,12 +57,12 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt
 > [Checker] INDEPENDENT Transitions:
 > [Checker]   MUTEX_WAIT(mutex: 0, owner: 1) (state=2)
 > [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 1) (state=3)
-> [Checker] Dependent Transitions:
-> [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 1) (state=1)
-> [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 1) (state=3)
 > [Checker] Execute 1: MUTEX_UNLOCK(mutex: 0, owner: 2) (stack depth: 4, state: 14, 0 interleaves)
 > [Checker] INDEPENDENT Transitions:
 > [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 1) (state=3)
+> [Checker]   MUTEX_UNLOCK(mutex: 0, owner: 2) (state=14)
+> [Checker] INDEPENDENT Transitions:
+> [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=1)
 > [Checker]   MUTEX_UNLOCK(mutex: 0, owner: 2) (state=14)
 > [Checker] Execute 2: MUTEX_WAIT(mutex: 0, owner: 2) (stack depth: 5, state: 15, 0 interleaves)
 > [Checker] Dependent Transitions:
@@ -73,22 +73,22 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt
 > [Checker]   MUTEX_UNLOCK(mutex: 0, owner: 2) (state=14)
 > [Checker]   MUTEX_UNLOCK(mutex: 0, owner: -1) (state=16)
 > [Checker] There remains 0 actors, but none to interleave (depth 8).
-> [Checker] Execution came to an end at 1;1;2;1;2;2;0 (state: 17, depth: 7)
-> [Checker] Backtracking from 1;1;2;1;2;2;0
+> [Checker] Execution came to an end at 2;1;2;1;2;2;0 (state: 17, depth: 7)
+> [Checker] Backtracking from 2;1;2;1;2;2;0
 > [Checker] There remains 0 actors, but none to interleave (depth 8).
-> [Checker] Execution came to an end at 1;1;2;1;2;2;0 (state: 17, depth: 7)
-> [Checker] Backtracking from 1;1;2;1;2;2;0
+> [Checker] Execution came to an end at 2;1;2;1;2;2;0 (state: 17, depth: 7)
+> [Checker] Backtracking from 2;1;2;1;2;2;0
 > [Checker] DFS exploration ended. 17 unique states visited; 2 backtracks (22 transition replays, 2 states visited overall)
 
 $ ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true -- ${bindir:=.}/s4u-synchro-mutex --cfg=actors:2 --log=s4u_test.thres:critical
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/sleep-set' to 'true'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'actors' to '2'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 135 unique states visited; 26 backtracks (339 transition replays, 151 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 130 unique states visited; 27 backtracks (334 transition replays, 151 states visited overall)
 
 $ ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/guided-mc:nb_wait -- ${bindir:=.}/s4u-synchro-mutex  --cfg=actors:3 --log=s4u_test.thres:critical
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/sleep-set' to 'true'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/guided-mc' to 'nb_wait'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'actors' to '3'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 5622 unique states visited; 1169 backtracks (21253 transition replays, 13439 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 3492 unique states visited; 743 backtracks (13164 transition replays, 8263 states visited overall)

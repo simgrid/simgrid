@@ -33,6 +33,9 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
    */
   Transition* transition_ = default_transition_.get();
 
+  /** @brief A list of transition to be replayed in order to get in this state. */
+  std::list<Transition*> recipe_;
+
   /** Sequential state ID (used for debugging) */
   long num_ = 0;
 
@@ -41,7 +44,7 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
 
   /** Unique parent of this state. Required both for sleep set computation
       and for guided model-checking */
-  const State* parent_state_;
+  std::shared_ptr<State> parent_state_ = nullptr;
 
   std::shared_ptr<GuidedState> guide_;
 
@@ -52,8 +55,7 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
 
 public:
   explicit State(RemoteApp& remote_app);
-  explicit State(RemoteApp& remote_app, const State* parent_state);
-  explicit State(const State& other);
+  explicit State(RemoteApp& remote_app, std::shared_ptr<State> parent_state);
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const; // this function should disapear as it is redundant with the next one
 
@@ -80,6 +82,9 @@ public:
   bool is_actor_done(aid_t actor) const { return guide_->actors_to_run_.at(actor).is_done(); }
   Transition* get_transition() const;
   void set_transition(Transition* t) { transition_ = t; }
+  std::shared_ptr<State> get_parent_state() { return parent_state_; }
+  std::list<Transition*> get_recipe() const { return recipe_; }
+
   std::map<aid_t, ActorState> const& get_actors_list() const { return guide_->actors_to_run_; }
 
   unsigned long get_actor_count() const { return guide_->actors_to_run_.size(); }

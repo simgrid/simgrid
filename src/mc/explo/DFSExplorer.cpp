@@ -85,6 +85,20 @@ std::vector<std::string> DFSExplorer::get_textual_trace() // override
   return trace;
 }
 
+void DFSExplorer::restore_stack(std::shared_ptr<State> state)
+{
+
+  stack_ = std::list<std::shared_ptr<State>>();
+  std::shared_ptr<State> current_state(state);
+  stack_.push_front(std::shared_ptr<State>(current_state));
+  // condition corresponds to reaching initial state
+  while (current_state->get_parent_state() != nullptr) {
+    current_state = current_state->get_parent_state();
+    stack_.push_front(std::shared_ptr<State>(current_state));
+  }
+  XBT_DEBUG("Replaced stack by %s", get_record_trace().to_string().c_str());
+}
+
 void DFSExplorer::log_state() // override
 {
   on_log_state_signal(get_remote_app());
@@ -93,18 +107,6 @@ void DFSExplorer::log_state() // override
            State::get_expanded_states(), backtrack_count_, visited_states_count_,
            Transition::get_replayed_transitions());
   Exploration::log_state();
-}
-
-/* Copy a given stack by deep-copying it at the State level : this is required so we can backtrack at different
- * points without interacting with the stacks in the opened_states_ waiting for their turn. On the other hand,
- * the exploration of one stack in opened_states_ could only slightly modify the sleep set of another stack in
- * opened_states_, so it is only a slight waste of performance in the exploration. */
-void DFSExplorer::add_to_opened_states(stack_t stack)
-{
-  stack_t tmp_stack;
-  for (auto& state : stack)
-    tmp_stack.push_back(std::make_shared<State>(State(*state)));
-  opened_states_.emplace(tmp_stack);
 }
 
 void DFSExplorer::run()
@@ -116,7 +118,7 @@ void DFSExplorer::run()
 
   while (not stack_.empty()) {
     /* Get current state */
-    State* state = stack_.back().get();
+    std::shared_ptr<State> state(stack_.back());
 
     XBT_DEBUG("**************************************************");
     XBT_DEBUG("Exploration depth=%zu (state:#%ld; %zu interleaves todo)", stack_.size(), state->get_num(),
@@ -180,8 +182,7 @@ void DFSExplorer::run()
              state->get_transition()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    std::shared_ptr<State> next_state;
-    next_state = std::make_shared<State>(get_remote_app(), state);
+    std::shared_ptr<State> next_state = std::make_shared<State>(get_remote_app(), state);
     on_state_creation_signal(next_state.get(), get_remote_app());
 
     /* Sleep set procedure:
@@ -214,7 +215,7 @@ void DFSExplorer::run()
           if (prev_state->is_actor_enabled(issuer_id)) {
             if (not prev_state->is_actor_done(issuer_id)) {
               prev_state->consider_one(issuer_id);
-              add_to_opened_states(tmp_stack);
+              opened_states_.push(std::shared_ptr<State>(tmp_stack.back()));
             } else
               XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
           } else {
@@ -223,7 +224,7 @@ void DFSExplorer::run()
                       issuer_id);
             if (prev_state->consider_all() >
                 0) // If we ended up marking at least a transition, explore it at some point
-              add_to_opened_states(tmp_stack);
+              opened_states_.push(std::shared_ptr<State>(tmp_stack.back()));
           }
           break;
         } else {
@@ -238,7 +239,7 @@ void DFSExplorer::run()
     // Before leaving that state, if the transition we just took can be taken multiple times, we
     // need to give it to the opened states
     if (stack_.back()->count_todo_multiples() > 0)
-      add_to_opened_states(stack_);
+      opened_states_.push(std::shared_ptr<State>(stack_.back()));
 
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
@@ -278,27 +279,29 @@ void DFSExplorer::backtrack()
 
   // if no backtracking point, then set the stack_ to empty so we can end the exploration
   if (opened_states_.empty()) {
+    XBT_DEBUG("No more opened point of exploration, the search will end");
     stack_ = std::list<std::shared_ptr<State>>();
     return;
   }
 
-  stack_t backtrack = opened_states_.top(); // Take the point with smallest distance
+  std::shared_ptr<State> backtracking_point = opened_states_.top(); // Take the point with smallest distance
   opened_states_.pop();
 
   // if the smallest distance corresponded to no enable actor, remove this and let the
   // exploration ask again for a backtrack
-  if (backtrack.back()->next_transition_guided().first == -1)
+  if (backtracking_point->next_transition_guided().first == -1) {
+    XBT_DEBUG("Best backtracking candidates has already been explored. We may backtrack again");
     return;
+  }
 
   // We found a real backtracking point, let's go to it
   backtrack_count_++;
-
+  XBT_DEBUG("Backtracking to state#%ld", backtracking_point->get_num());
   /* If asked to rollback on a state that has a snapshot, restore it */
-  State* last_state = backtrack.back().get();
-  if (const auto* system_state = last_state->get_system_state()) {
+  if (const auto* system_state = backtracking_point->get_system_state()) {
     system_state->restore(*get_remote_app().get_remote_process_memory());
-    on_restore_system_state_signal(last_state, get_remote_app());
-    stack_ = backtrack;
+    on_restore_system_state_signal(backtracking_point.get(), get_remote_app());
+    this->restore_stack(backtracking_point);
     return;
   }
 
@@ -306,15 +309,12 @@ void DFSExplorer::backtrack()
   get_remote_app().restore_initial_state();
   on_restore_initial_state_signal(get_remote_app());
   /* Traverse the stack from the state at position start and re-execute the transitions */
-  for (std::shared_ptr<State> const& state : backtrack) {
-    if (state == backtrack.back()) /* If we are arrived on the target state, don't replay the outgoing transition */
-      break;
-    state->get_transition()->replay(get_remote_app());
-    on_transition_replay_signal(state->get_transition(), get_remote_app());
+  for (auto& state : backtracking_point->get_recipe()) {
+    state->replay(get_remote_app());
+    on_transition_replay_signal(state, get_remote_app());
     visited_states_count_++;
   }
-  stack_ = backtrack;
-  XBT_DEBUG(">> Backtracked to %s", get_record_trace().to_string().c_str());
+  this->restore_stack(backtracking_point);
 }
 
 DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor, bool need_memory_info)
@@ -335,21 +335,21 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor, bool ne
   } else
     XBT_INFO("Start a DFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
 
-  auto initial_state = std::make_unique<State>(get_remote_app());
+  auto initial_state = std::make_shared<State>(get_remote_app());
 
   XBT_DEBUG("**************************************************");
 
   stack_.push_back(std::move(initial_state));
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
-  XBT_DEBUG("Initial state. %lu actors to consider", initial_state->get_actor_count());
+  XBT_DEBUG("Initial state. %lu actors to consider", stack_.back()->get_actor_count());
   if (reduction_mode_ == ReductionMode::dpor)
     stack_.back()->consider_best();
   else {
     stack_.back()->consider_all();
   }
   if (stack_.back()->count_todo_multiples() > 1)
-    add_to_opened_states(stack_);
+    opened_states_.push(std::shared_ptr<State>(stack_.back()));
 }
 
 Exploration* create_dfs_exploration(const std::vector<char*>& args, bool with_dpor)
