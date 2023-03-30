@@ -11,6 +11,7 @@
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_config.hpp"
+#include "src/mc/mc_environ.h"
 #if SIMGRID_HAVE_STATEFUL_MC
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
 #endif
@@ -49,7 +50,7 @@ AppSide* AppSide::get()
   if (std::getenv(MC_ENV_SOCKET_FD) == nullptr) // We are not in MC mode: don't initialize the MC world
     return nullptr;
 
-  XBT_DEBUG("Initialize the MC world. MC_NEED_PTRACE=%s", std::getenv("MC_NEED_PTRACE"));
+  XBT_DEBUG("Initialize the MC world. %s=%s", MC_ENV_NEED_PTRACE, std::getenv(MC_ENV_NEED_PTRACE));
 
   simgrid::mc::set_model_checking_mode(ModelCheckingMode::APP_SIDE);
 
@@ -63,7 +64,7 @@ AppSide* AppSide::get()
   instance_ = std::make_unique<simgrid::mc::AppSide>(fd);
 
   // Wait for the model-checker:
-  if (getenv("MC_NEED_PTRACE") != nullptr) {
+  if (getenv(MC_ENV_NEED_PTRACE) != nullptr) {
     errno = 0;
 #if defined __linux__
     ptrace(PTRACE_TRACEME, 0, nullptr, nullptr);

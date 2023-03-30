@@ -5,6 +5,7 @@
 
 #include "src/mc/remote/CheckerSide.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/mc_environ.h"
 #include "xbt/config.hpp"
 #include "xbt/system_error.hpp"
 
@@ -56,7 +57,7 @@ XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<
 
   setenv(MC_ENV_SOCKET_FD, std::to_string(socket).c_str(), 1);
   if (need_ptrace)
-    setenv("MC_NEED_PTRACE", "1", 1);
+    setenv(MC_ENV_NEED_PTRACE, "1", 1);
 
   /* Setup the tokenizer that parses the cfg:model-check/setenv parameter */
   using Tokenizer = boost::tokenizer<boost::char_separator<char>>;

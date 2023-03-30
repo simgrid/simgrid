@@ -613,6 +613,7 @@ set(MC_SRC_STATEFUL
   src/mc/VisitedState.cpp
   src/mc/VisitedState.hpp
   src/mc/compare.cpp
+  src/mc/mc_environ.h
   src/mc/mc_exit.hpp
   src/mc/mc_forward.hpp
   src/mc/mc_private.hpp

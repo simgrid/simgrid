@@ -7,7 +7,7 @@
 #define _GNU_SOURCE
 
 #include "mmprivate.h"
-
+#include "src/mc/mc_environ.h" // MC_ENV_SOCKET_FD
 #include <dlfcn.h>
 #include <math.h>
 #include <stdlib.h>

@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
+#include "src/mc/mc_environ.h"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 
@@ -62,7 +63,7 @@ void Exploration::log_state()
     dot_output("}\n");
     fclose(dot_output_);
   }
-  if (getenv("SIMGRID_MC_SYSTEM_STATISTICS")) {
+  if (getenv(MC_ENV_SYSTEM_STATISTICS)) {
     int ret = system("free");
     if (ret != 0)
       XBT_WARN("Call to system(free) did not return 0, but %d", ret);
