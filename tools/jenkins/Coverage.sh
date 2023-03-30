@@ -10,6 +10,7 @@ die() {
 
 echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -f /tmp/cc*
+rm -f /tmp/simgrid-mc-*
 rm -f /tmp/*.so
 rm -f /tmp/*.so.*
 ls /tmp
