@@ -211,10 +211,13 @@ add_dependencies(dist dist-dir)
 set(CMAKE_BINARY_TEST_DIR ${CMAKE_BINARY_DIR})
 
 # Allow to test the "make dist"
-add_custom_target(distcheck
+add_custom_target(distcheck-archive
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Compare archive with git repository"
   COMMAND ${CMAKE_HOME_DIRECTORY}/tools/internal/check_dist_archive -batch ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}.tar.gz
+  )
+add_dependencies(distcheck-archive dist)
 
+add_custom_target(distcheck-configure
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Remove old copy"
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
 
@@ -231,7 +234,10 @@ add_custom_target(distcheck
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Check generated files -- please copy new version if they are different"
   COMMAND ${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/MANIFEST.in ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build/MANIFEST.in
+  )
+add_dependencies(distcheck-configure distcheck-archive)
 
+add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Build"
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} -j 4
 
@@ -247,7 +253,7 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Remove temp directories"
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
   )
-add_dependencies(distcheck dist)
+add_dependencies(distcheck distcheck-configure)
 
 #######################################
 ### Fill in the "make check" target ###
