@@ -195,7 +195,7 @@ void Battery::set_power(const double p)
     if (power_w_ > 0) {
       soc_shutdown = capacity_wh_ * 3600 * (state_of_charge_ - state_of_charge_min_) / (power_w_ * charge_efficiency_);
       soh_shutdown = (energy_budget_j_ - energy_exchanged_j_) / (power_w_ * charge_efficiency_);
-    } else if (power_w_ < 0) {
+    } else { // power_w_ < 0
       soc_shutdown =
           capacity_wh_ * 3600 * (state_of_charge_max_ - state_of_charge_) / (abs(power_w_) / discharge_efficiency_);
       soh_shutdown = (energy_budget_j_ - energy_exchanged_j_) / (abs(power_w_) / discharge_efficiency_);
