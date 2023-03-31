@@ -195,7 +195,7 @@ Note that the dot at the end is mandatory (see :ref:`install_cmake_outsrc`).
 
 .. code-block:: console
 
-   $ cmake -DCC=clang -DCXX=clang++ .
+   $ cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ .
 
 SimGrid compilation options
 """""""""""""""""""""""""""

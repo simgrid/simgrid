@@ -30,8 +30,8 @@ ctest-modelchecking:
   - stable
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y binutils xsltproc
-  - cmake -Denable_model-checking=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - apt install -y binutils xsltproc clang
+  - cmake -Denable_model-checking=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" -DCMAKE_C_COMPILER=/usr/bin/clang  -DCMAKE_CXX_COMPILER=/usr/bin/clang++ .
   - make -j$(nproc) VERBOSE=1 all tests
   - ctest -T Test -j$(nproc) --output-on-failure
   - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml
@@ -44,6 +44,15 @@ ctest-modelchecking:
     expire_in: 1 week
     when: always
 
+ctest-distcheck:
+  stage: build
+  only:
+  - merge_requests
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y binutils
+  - cmake .
+  - make distcheck-configure
 
 release:
   stage: build

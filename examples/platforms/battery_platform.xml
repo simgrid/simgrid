@@ -1,0 +1,33 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+  <zone id="world" routing="Floyd">
+    <host id="battery" speed="0f">
+      <!-- For Energy plugin -->
+      <prop id="wattage_per_state" value="0:0:0" />
+      <!---->
+      <!-- For Battery plugin -->
+      <prop id="battery_active" value="1" />
+      <prop id="battery_capacity" value="10" />
+      <prop id="battery_cycles" value="100" />
+      <prop id="battery_state_of_charge" value="0.8" />
+      <!---->
+    </host>
+
+    <host id="host1" core="1" pstate="0" speed="100.0Mf,50.0Mf,20.0Mf">
+      <!-- For Energy plugin -->
+      <prop id="wattage_per_state" value="100.0:200.0:200.0, 93.0:170.0:170.0, 90.0:150.0:150.0" />
+      <prop id="wattage_off" value="10" />
+      <!---->
+    </host>
+
+    <host id="host2" core="1" pstate="1" speed="100.0Mf,50.0Mf,20.0Mf">
+      <!-- For Energy plugin -->
+      <prop id="wattage_per_state" value="100.0:200.0:200.0, 93.0:170.0:170.0, 90.0:150.0:150.0" />
+      <prop id="wattage_off" value="10" />
+      <!---->
+    </host>
+
+
+  </zone>
+</platform>
