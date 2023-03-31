@@ -11,7 +11,10 @@ namespace simgrid::mc {
 /** Basic MC guiding class which corresponds to no guide at all (random choice) */
 class BasicStrategy : public Strategy {
 public:
-  void operator=(const BasicStrategy&) { return; }
+  void operator=(const BasicStrategy&)
+  { /* nothing to copy over while cloning */
+    return;
+  }
 
   std::pair<aid_t, double> next_transition() const override
   {
