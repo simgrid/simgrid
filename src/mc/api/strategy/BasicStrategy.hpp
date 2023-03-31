@@ -45,8 +45,8 @@ public:
   void execute_next(aid_t aid, RemoteApp& app) override
   {
     auto actor = actors_to_run_.at(aid);
-    if (actor.get_transition(actor.get_times_considered())->type_ != Transition::Type::TESTANY)
-      penalties_[aid] += 1.0;
+    if (actor.get_transition(actor.get_times_considered())->type_ == Transition::Type::TESTANY)
+      penalties_[aid] = penalties_[aid] + 1.0;
     return;
   }
 

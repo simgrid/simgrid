@@ -50,6 +50,9 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
 
   remote_app.get_actors_status(strategy_->actors_to_run_);
 
+  for (auto const& [aid, _] : strategy_->actors_to_run_)
+    strategy_->penalties_[aid] = parent_state_->strategy_->penalties_[aid];
+
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
     system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store(),
@@ -99,7 +102,6 @@ aid_t State::next_transition() const
 {
   XBT_DEBUG("Search for an actor to run. %zu actors to consider", strategy_->actors_to_run_.size());
   for (auto const& [aid, actor] : strategy_->actors_to_run_) {
-    XBT_DEBUG("Current penalty for actor %ld:%f", aid, strategy_->penalties_[aid]);
     /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
     if (not actor.is_todo() || not actor.is_enabled() || actor.is_done()) {
       if (not actor.is_todo())
@@ -121,9 +123,15 @@ aid_t State::next_transition() const
 
 std::pair<aid_t, double> State::next_transition_guided() const
 {
+
+  for (auto const& [aid, penalty] : strategy_->penalties_)
+    XBT_DEBUG("Current penalty for actor %ld:%f", aid, strategy_->penalties_[aid]);
+
   for (auto const& [aid, actor] : strategy_->actors_to_run_) {
+
     /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
     if (not actor.is_todo() || not actor.is_enabled() || actor.is_done()) {
+
       if (not actor.is_todo())
         XBT_DEBUG("Can't run actor %ld because it is not todo", aid);
 
