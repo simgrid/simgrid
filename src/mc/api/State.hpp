@@ -8,7 +8,7 @@
 
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/api/RemoteApp.hpp"
-#include "src/mc/api/guide/GuidedState.hpp"
+#include "src/mc/api/strategy/Strategy.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 #include "src/mc/transition/Transition.hpp"
 
@@ -33,6 +33,9 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
    */
   Transition* transition_ = default_transition_.get();
 
+  /** @brief A list of transition to be replayed in order to get in this state. */
+  std::list<Transition*> recipe_;
+
   /** Sequential state ID (used for debugging) */
   long num_ = 0;
 
@@ -41,9 +44,9 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
 
   /** Unique parent of this state. Required both for sleep set computation
       and for guided model-checking */
-  const State* parent_state_;
+  std::shared_ptr<State> parent_state_ = nullptr;
 
-  std::unique_ptr<GuidedState> guide;
+  std::shared_ptr<Strategy> strategy_;
 
   /* Sleep sets are composed of the actor and the corresponding transition that made it being added to the sleep
    * set. With this information, it is check whether it should be removed from it or not when exploring a new
@@ -52,7 +55,7 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
 
 public:
   explicit State(RemoteApp& remote_app);
-  explicit State(RemoteApp& remote_app, const State* parent_state);
+  explicit State(RemoteApp& remote_app, std::shared_ptr<State> parent_state);
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const; // this function should disapear as it is redundant with the next one
 
@@ -66,18 +69,26 @@ public:
 
   long get_num() const { return num_; }
   std::size_t count_todo() const;
+  std::size_t count_todo_multiples() const;
 
-  void consider_one(aid_t aid) { guide->consider_one(aid); }
-  void consider_best() { guide->consider_best(); }
-  void consider_all() { guide->consider_all(); }
+  /* Marking as TODO some actor in this state:
+   *  + consider_one mark aid actor (and assert it is possible)
+   *  + consider_best ensure one actor is marked by eventually marking the best regarding its guiding methode
+   *  + conside_all mark all enabled actor that are not done yet */
+  void consider_one(aid_t aid) { strategy_->consider_one(aid); }
+  void consider_best() { strategy_->consider_best(); }
+  unsigned long consider_all() { return strategy_->consider_all(); }
 
-  bool is_actor_done(aid_t actor) const { return guide->actors_to_run_.at(actor).is_done(); }
+  bool is_actor_done(aid_t actor) const { return strategy_->actors_to_run_.at(actor).is_done(); }
   Transition* get_transition() const;
   void set_transition(Transition* t) { transition_ = t; }
-  std::map<aid_t, ActorState> const& get_actors_list() const { return guide->actors_to_run_; }
+  std::shared_ptr<State> get_parent_state() { return parent_state_; }
+  std::list<Transition*> get_recipe() const { return recipe_; }
 
-  unsigned long get_actor_count() const { return guide->actors_to_run_.size(); }
-  bool is_actor_enabled(aid_t actor) { return guide->actors_to_run_.at(actor).is_enabled(); }
+  std::map<aid_t, ActorState> const& get_actors_list() const { return strategy_->actors_to_run_; }
+
+  unsigned long get_actor_count() const { return strategy_->actors_to_run_.size(); }
+  bool is_actor_enabled(aid_t actor) { return strategy_->actors_to_run_.at(actor).is_enabled(); }
 
   Snapshot* get_system_state() const { return system_state_.get(); }
   void set_system_state(std::shared_ptr<Snapshot> state) { system_state_ = std::move(state); }

@@ -2166,8 +2166,9 @@ include src/mc/api/RemoteApp.cpp
 include src/mc/api/RemoteApp.hpp
 include src/mc/api/State.cpp
 include src/mc/api/State.hpp
-include src/mc/api/guide/BasicGuide.hpp
-include src/mc/api/guide/GuidedState.hpp
+include src/mc/api/strategy/BasicStrategy.hpp
+include src/mc/api/strategy/Strategy.hpp
+include src/mc/api/strategy/WaitStrategy.hpp
 include src/mc/compare.cpp
 include src/mc/datatypes.h
 include src/mc/explo/CommunicationDeterminismChecker.cpp

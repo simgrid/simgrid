@@ -3,15 +3,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_MC_BASICGUIDE_HPP
-#define SIMGRID_MC_BASICGUIDE_HPP
+#ifndef SIMGRID_MC_BASICSTRATEGY_HPP
+#define SIMGRID_MC_BASICSTRATEGY_HPP
 
 namespace simgrid::mc {
 
 /** Basic MC guiding class which corresponds to no guide at all (random choice) */
-// Not Yet fully implemented
-class BasicGuide : public GuidedState {
+class BasicStrategy : public Strategy {
 public:
+  void operator=(const BasicStrategy&) { return; }
+
   std::pair<aid_t, double> next_transition() const override
   {
     for (auto const& [aid, actor] : actors_to_run_) {

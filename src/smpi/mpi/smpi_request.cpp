@@ -528,9 +528,8 @@ void Request::start()
     comm_->increment_sent_messages_count(comm_->group()->rank(src_), comm_->group()->rank(dst_), tag_);
 
     void* buf = buf_;
-    if ((flags_ & MPI_REQ_SSEND) == 0 &&
-        ((flags_ & MPI_REQ_RMA) != 0 || (flags_ & MPI_REQ_BSEND) != 0 ||
-         static_cast<int>(size_) < smpi_cfg_detached_send_thresh())) {
+    if ((flags_ & MPI_REQ_SSEND) == 0 && ((flags_ & MPI_REQ_RMA) != 0 || (flags_ & MPI_REQ_BSEND) != 0 ||
+                                          static_cast<int>(size_) < smpi_cfg_detached_send_thresh())) {
       detached_    = true;
       XBT_DEBUG("Send request %p is detached", this);
       this->ref();

@@ -600,8 +600,6 @@ set(MC_SRC
   src/mc/transition/TransitionSynchro.cpp
   src/mc/transition/TransitionSynchro.hpp
 
-  src/mc/api/guide/BasicGuide.hpp
-  src/mc/api/guide/GuidedState.hpp
   src/mc/api/ActorState.hpp
   src/mc/api/State.cpp
   src/mc/api/State.hpp
@@ -617,6 +615,10 @@ set(MC_SRC
   src/mc/mc_private.hpp
   src/mc/mc_record.cpp
 
+  src/mc/api/strategy/BasicStrategy.hpp
+  src/mc/api/strategy/Strategy.hpp
+  src/mc/api/strategy/WaitStrategy.hpp
+  
   src/xbt/mmalloc/mm_interface.c
   )
 

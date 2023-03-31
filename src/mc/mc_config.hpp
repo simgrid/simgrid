@@ -27,5 +27,6 @@ extern "C" XBT_PUBLIC int _sg_mc_max_visited_states;
 extern XBT_PRIVATE simgrid::config::Flag<std::string> _sg_mc_dot_output_file;
 extern XBT_PRIVATE simgrid::config::Flag<bool> _sg_mc_termination;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_sleep_set;
+extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_strategy;
 
 #endif

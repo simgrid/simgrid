@@ -213,7 +213,7 @@ void AppSide::handle_actors_status() const
 
   struct s_mc_message_actors_status_answer_t answer = {};
   answer.type                                       = MessageType::ACTORS_STATUS_REPLY_COUNT;
-  answer.count            = static_cast<int>(status.size());
+  answer.count                                      = static_cast<int>(status.size());
 
   xbt_assert(channel_.send(answer) == 0, "Could not send ACTORS_STATUS_REPLY msg");
   if (answer.count > 0) {

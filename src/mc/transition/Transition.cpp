@@ -47,7 +47,6 @@ std::string Transition::dot_string() const
 void Transition::replay(RemoteApp& app) const
 {
   replayed_transitions_++;
-
 #if SIMGRID_HAVE_MC
   app.handle_simcall(aid_, times_considered_, false);
   app.wait_for_requests();
