@@ -159,5 +159,13 @@ File System
 
 .. doxygengroup:: plugin_filesystem
 
+.. _plugin_battery:
+
+Battery
+===========
+
+.. doxygengroup:: plugin_battery
+
+
 
 ..  LocalWords:  SimGrid

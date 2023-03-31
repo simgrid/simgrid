@@ -99,9 +99,13 @@ if (SIMGRID_HAVE_MC)
   endforeach()
 endif()
 
-
 if(NOT HAVE_GRAPHVIZ)
   set(_dag-from-dot_disable 1)
+  set(_dag-from-dot-simple_disable 1)
+endif()
+
+if (NOT SIMGRID_HAVE_JSON)
+  set(_dag-from-json-simple_disable 1)
 endif()
 
 if(NOT SIMGRID_HAVE_NS3)
@@ -116,10 +120,11 @@ foreach (example activity-testany activity-waitany
                  actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-token-ring
+                 battery-degradation battery-simple battery-energy
                  comm-pingpong comm-ready comm-suspend comm-testany comm-wait comm-waitany comm-waitall comm-waituntil
                  comm-dependent comm-host2host comm-failure comm-throttling
                  cloud-capping cloud-migration cloud-simple
-                 dag-comm dag-from-dax dag-from-dot dag-failure dag-io dag-scheduling dag-simple
+                 dag-comm dag-from-json-simple dag-from-dax-simple dag-from-dax dag-from-dot-simple dag-from-dot dag-failure dag-io dag-scheduling dag-simple dag-tuto
                  dht-chord dht-kademlia
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
                  engine-filtering engine-run-partial
@@ -286,14 +291,18 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/dogbone_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/onelink_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml                PARENT_SCOPE)
-set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py
+set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/battery-degradation/plot_battery_degradation.py
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/promela_bugged1_liveness
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged2-liveness/promela_bugged2_liveness PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/simple_dax_with_cycle.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/smalldax.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax-simple/dag.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/dag.dot
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot-simple/dag.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/dag_with_cycle.dot
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-json-simple/dag.json
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm.txt
