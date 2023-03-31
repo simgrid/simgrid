@@ -9,7 +9,7 @@
 #include "src/mc/api/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
 #include "src/mc/VisitedState.hpp"
 #endif
 
@@ -104,7 +104,7 @@ private:
 
   /** Stack representing the position in the exploration graph */
   stack_t stack_;
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   VisitedStates visited_states_;
   std::unique_ptr<VisitedState> visited_state_;
 #else

@@ -50,10 +50,10 @@ void sg_version()
   XBT_HELP("This program was linked against %s (git: %s), found in %s.", SIMGRID_VERSION_STRING, SIMGRID_GIT_VERSION,
            SIMGRID_INSTALL_PREFIX);
 
-#if SIMGRID_HAVE_MC
-  XBT_HELP("   Model-checking support compiled in.");
+#if SIMGRID_HAVE_STATEFUL_MC
+  XBT_HELP("   Stateful model-checking support compiled in.");
 #else
-  XBT_HELP("   Model-checking support disabled at compilation.");
+  XBT_HELP("   Stateful model-checking support disabled at compilation.");
 #endif
 
 #if SIMGRID_HAVE_NS3

@@ -28,7 +28,7 @@ if(enable_coverage)
   endforeach()
 endif()
 
-if(SIMGRID_HAVE_MC)
+if(SIMGRID_HAVE_STATEFUL_MC)
   if(HAVE_C_STACK_CLEANER)
     add_executable       (s4u-mc-bugged1-liveness-cleaner-on  EXCLUDE_FROM_ALL s4u-mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
     target_link_libraries(s4u-mc-bugged1-liveness-cleaner-on  simgrid)
@@ -219,7 +219,7 @@ foreach(example mc-failing-assert)
 # We should first optimize mmalloc_heap_differ() which takes ~4sec for each pair to compare (maybe {175 x 174/ 2} pairs here)
 # See the comment on mmalloc_heap_differ() in compare.cpp for more info on why it's hard to optimize.
 #
-#  if(SIMGRID_HAVE_MC)
+#  if(SIMGRID_HAVE_STATEFUL_MC)
 #    ADD_TESH(s4u-${example}-statequality  --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
 #                                      --setenv libdir=${CMAKE_BINARY_DIR}/lib
 #                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms

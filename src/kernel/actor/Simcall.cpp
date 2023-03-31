@@ -4,17 +4,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/actor/Simcall.hpp"
+#include "simgrid/modelchecker.h"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/kernel/context/Context.hpp"
-#include "xbt/log.h"
-
-#if SIMGRID_HAVE_MC
-#include "simgrid/modelchecker.h"
 #include "src/mc/mc_replay.hpp"
-#endif
+#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_simcall, kernel, "transmuting from user request into kernel handlers");
 
@@ -82,11 +79,7 @@ void simcall_run_object_access(std::function<void()> const& code, simgrid::kerne
   // We only need a simcall if the order of the setters is important (parallel run or MC execution).
   // Otherwise, just call the function with no simcall
 
-  if (simgrid::kernel::context::Context::is_parallel()
-#if SIMGRID_HAVE_MC
-      || MC_is_active() || MC_record_replay_is_active()
-#endif
-  ) {
+  if (simgrid::kernel::context::Context::is_parallel() || MC_is_active() || MC_record_replay_is_active()) {
     simgrid::kernel::actor::ObjectAccessSimcallObserver observer{self, item};
     simcall(simgrid::kernel::actor::Simcall::Type::RUN_ANSWERED, code, &observer);
     item->take_ownership();

@@ -26,7 +26,7 @@ namespace simgrid::mc {
  */
 class XBT_PUBLIC RemoteApp {
 private:
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   PageStore page_store_{500};
   std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
 #else
@@ -72,7 +72,7 @@ public:
   /** Take a transition. A new Transition is created iff the last parameter is true */
   Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   /* Get the memory of the remote process */
   RemoteProcessMemory* get_remote_process_memory() { return checker_side_->get_remote_memory(); }
 

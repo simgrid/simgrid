@@ -61,7 +61,7 @@ UContext::UContext(std::function<void()>&& code, actor::ActorImpl* actor, Swappe
     memcpy(ctx_addr, &arg, sizeof arg);
     makecontext(&this->uc_, (void (*)())sysv_ctx_wrapper, 2, ctx_addr[0], ctx_addr[1]);
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
     if (MC_is_active())
       simgrid::mc::AppSide::get()->declare_stack(get_stack(), stack_size, &uc_);
 #endif

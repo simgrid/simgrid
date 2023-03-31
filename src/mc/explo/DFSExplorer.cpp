@@ -10,7 +10,7 @@
 #include "src/mc/mc_record.hpp"
 #include "src/mc/transition/Transition.hpp"
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
 #include "src/mc/VisitedState.hpp"
 #endif
 
@@ -44,7 +44,7 @@ xbt::signal<void(RemoteApp&)> DFSExplorer::on_log_state_signal;
 
 void DFSExplorer::check_non_termination(const State* current_state)
 {
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   for (auto const& state : stack_) {
     if (state->get_system_state()->equals_to(*current_state->get_system_state(),
                                              *get_remote_app().get_remote_process_memory())) {
@@ -139,7 +139,7 @@ void DFSExplorer::run()
       continue;
     }
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
     // Backtrack if we are revisiting a state we saw previously while applying state-equality reduction
     if (visited_state_ != nullptr) {
       XBT_DEBUG("State already visited (equal to state %ld), exploration stopped on this path.",
@@ -247,7 +247,7 @@ void DFSExplorer::run()
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
     /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction) */
     if (_sg_mc_max_visited_states > 0)
       visited_state_ = visited_states_.addVisitedState(next_state->get_num(), next_state.get(), get_remote_app());
@@ -266,7 +266,7 @@ void DFSExplorer::run()
 
       dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
                  state->get_transition()->dot_string().c_str());
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
     } else {
       dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(),
                  visited_state_->original_num_ == -1 ? visited_state_->num_ : visited_state_->original_num_,
@@ -307,7 +307,7 @@ void DFSExplorer::backtrack()
   backtrack_count_++;
   XBT_DEBUG("Backtracking to state#%ld", backtracking_point->get_num());
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   /* If asked to rollback on a state that has a snapshot, restore it */
   if (const auto* system_state = backtracking_point->get_system_state()) {
     system_state->restore(*get_remote_app().get_remote_process_memory());

@@ -1,4 +1,4 @@
-if (NOT SIMGRID_HAVE_MC)
+if (NOT SIMGRID_HAVE_STATEFUL_MC)
   set(dwarf_disable 1)
   set(dwarf-expression_disable 1)
 endif()
@@ -40,7 +40,7 @@ set(teshsuite_src  ${teshsuite_src}                                             
 set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/random-bug/random-bug-replay.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/mutex-handling/without-mutex-handling.tesh PARENT_SCOPE)
 
-IF(SIMGRID_HAVE_MC)
+IF(SIMGRID_HAVE_STATEFUL_MC)
   ADD_TESH(tesh-mc-dwarf                       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/dwarf            --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf dwarf.tesh)
   ADD_TESH(tesh-mc-dwarf-expression            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/dwarf-expression --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf-expression dwarf-expression.tesh)
 ENDIF()

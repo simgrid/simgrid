@@ -82,8 +82,8 @@ SwappedContext::SwappedContext(std::function<void()>&& code, actor::ActorImpl* a
 #endif
 
       size_t size = actor->get_stacksize() + guard_size;
-#if SIMGRID_HAVE_MC
-      /* Cannot use posix_memalign when SIMGRID_HAVE_MC. Align stack by hand, and save the
+#if SIMGRID_HAVE_STATEFUL_MC
+      /* Cannot use posix_memalign when SIMGRID_HAVE_STATEFUL_MC. Align stack by hand, and save the
        * pointer returned by xbt_malloc0. */
       auto* alloc          = static_cast<unsigned char*>(xbt_malloc0(size + xbt_pagesize));
       stack_               = alloc - (reinterpret_cast<uintptr_t>(alloc) & (xbt_pagesize - 1)) + xbt_pagesize;
@@ -146,7 +146,7 @@ SwappedContext::~SwappedContext()
       XBT_WARN("Failed to remove page protection: %s", strerror(errno));
       /* try to pursue anyway */
     }
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
     /* Retrieve the saved pointer.  See the initialization above. */
     stack_ = reinterpret_cast<unsigned char**>(stack_)[-1];
 #endif

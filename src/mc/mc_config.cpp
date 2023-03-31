@@ -8,7 +8,7 @@
 #include "src/simgrid/sg_config.hpp"
 #include <simgrid/modelchecker.h>
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
 #include <string_view>
 #endif
 
@@ -62,7 +62,7 @@ simgrid::config::Flag<std::string> _sg_mc_strategy{
         xbt_die("configuration option 'model-check/guided-mc' can only take 'none' or 'nb_wait' as a value");
     }};
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
 simgrid::config::Flag<int> _sg_mc_checkpoint{
     "model-check/checkpoint", "Specify the amount of steps between checkpoints during stateful model-checking "
                               "(default: 0 => stateless verification). If value=1, one checkpoint is saved for each "

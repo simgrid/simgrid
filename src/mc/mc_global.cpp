@@ -6,7 +6,7 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/mc.h"
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/inspect/mc_unw.hpp"
@@ -34,7 +34,7 @@ std::vector<double> processes_time;
 
 }
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
 
 namespace simgrid::mc {
 

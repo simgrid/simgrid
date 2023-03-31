@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 
   std::unique_ptr<Exploration> explo;
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
     explo = std::unique_ptr<Exploration>(create_communication_determinism_checker(argv_copy, cfg_use_DPOR()));
   else if (_sg_mc_unfolding_checker)

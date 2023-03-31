@@ -554,7 +554,7 @@ set(MC_SRC_BASE
   src/mc/transition/TransitionSynchro.hpp
   )
 
-set(MC_SRC
+set(MC_SRC_STATEFUL
   src/mc/explo/CommunicationDeterminismChecker.cpp
   src/mc/explo/LivenessChecker.cpp
   src/mc/explo/LivenessChecker.hpp
@@ -769,8 +769,8 @@ if(enable_smpi)
   set(simgrid_sources  ${simgrid_sources}  ${SMPI_SRC})
 endif()
 
-if(SIMGRID_HAVE_MC)
-  set(simgrid_sources  ${simgrid_sources}  ${MC_SRC})
+if(SIMGRID_HAVE_STATEFUL_MC)
+  set(simgrid_sources  ${simgrid_sources}  ${MC_SRC_STATEFUL})
 endif()
 
 if(SIMGRID_HAVE_NS3)

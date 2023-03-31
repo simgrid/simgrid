@@ -10,12 +10,6 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/transition/Transition.hpp"
 
-#if SIMGRID_HAVE_MC
-#include "src/mc/api/State.hpp"
-#include "src/mc/explo/Exploration.hpp"
-#include "src/mc/mc_private.hpp"
-#endif
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc, "Logging specific to MC record/replay facility");
 
 namespace simgrid::mc {

@@ -11,7 +11,7 @@
 #include "src/mc/api/strategy/Strategy.hpp"
 #include "src/mc/transition/Transition.hpp"
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
 #include "src/mc/sosp/Snapshot.hpp"
 #endif
 

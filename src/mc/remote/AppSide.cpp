@@ -11,7 +11,7 @@
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_config.hpp"
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
 #endif
 #if HAVE_SMPI
@@ -192,7 +192,7 @@ void AppSide::handle_wait_child(const s_mc_message_int_t* msg)
 }
 void AppSide::handle_need_meminfo()
 {
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   this->need_memory_info_                  = true;
   s_mc_message_need_meminfo_reply_t answer = {};
   answer.type                              = MessageType::NEED_MEMINFO_REPLY;
@@ -371,7 +371,7 @@ void AppSide::ignore_memory(void* addr, std::size_t size) const
   if (not MC_is_active() || not need_memory_info_)
     return;
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   s_mc_message_ignore_memory_t message = {};
   message.type = MessageType::IGNORE_MEMORY;
   message.addr = (std::uintptr_t)addr;
@@ -387,7 +387,7 @@ void AppSide::ignore_heap(void* address, std::size_t size) const
   if (not MC_is_active() || not need_memory_info_)
     return;
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
 
   s_mc_message_ignore_heap_t message = {};
@@ -414,7 +414,7 @@ void AppSide::unignore_heap(void* address, std::size_t size) const
   if (not MC_is_active() || not need_memory_info_)
     return;
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   s_mc_message_ignore_memory_t message = {};
   message.type = MessageType::UNIGNORE_HEAP;
   message.addr = (std::uintptr_t)address;
@@ -432,7 +432,7 @@ void AppSide::declare_symbol(const char* name, int* value) const
     return;
   }
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   s_mc_message_register_symbol_t message = {};
   message.type = MessageType::REGISTER_SYMBOL;
   xbt_assert(strlen(name) + 1 <= message.name.size(), "Symbol is too long");
@@ -456,7 +456,7 @@ void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context) const
   if (not MC_is_active() || not need_memory_info_)
     return;
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
 
   s_stack_region_t region = {};

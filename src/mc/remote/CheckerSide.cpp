@@ -8,7 +8,7 @@
 #include "xbt/config.hpp"
 #include "xbt/system_error.hpp"
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
 #include "src/mc/explo/LivenessChecker.hpp"
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
 #endif
@@ -197,7 +197,7 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) 
 
   setup_events(false); /* we need a signal handler too */
   if (need_memory_info) {
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
     // setup ptrace and sync with the app
     wait_application_process(pid_);
 
@@ -296,7 +296,7 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
 
   switch (base_message.type) {
     case MessageType::IGNORE_HEAP: {
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
       if (remote_memory_ != nullptr) {
         s_mc_message_ignore_heap_t message;
         xbt_assert(size == sizeof(message), "Broken message");
@@ -315,7 +315,7 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
     }
 
     case MessageType::UNIGNORE_HEAP: {
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
       if (remote_memory_ != nullptr) {
         s_mc_message_ignore_memory_t message;
         xbt_assert(size == sizeof(message), "Broken message");
@@ -328,7 +328,7 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
     }
 
     case MessageType::IGNORE_MEMORY: {
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
       if (remote_memory_ != nullptr) {
         s_mc_message_ignore_memory_t message;
         xbt_assert(size == sizeof(message), "Broken message");
@@ -341,7 +341,7 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
     }
 
     case MessageType::STACK_REGION: {
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
       if (remote_memory_ != nullptr) {
         s_mc_message_stack_region_t message;
         xbt_assert(size == sizeof(message), "Broken message");
@@ -354,7 +354,7 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
     }
 
     case MessageType::REGISTER_SYMBOL: {
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
       s_mc_message_register_symbol_t message;
       xbt_assert(size == sizeof(message), "Broken message");
       memcpy(&message, buffer, sizeof(message));
@@ -394,7 +394,7 @@ void CheckerSide::wait_for_requests()
 
 void CheckerSide::clear_memory_cache()
 {
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   if (remote_memory_)
     remote_memory_->clear_cache();
 #endif

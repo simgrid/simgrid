@@ -8,7 +8,7 @@
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
 #endif
 
@@ -91,7 +91,7 @@ XBT_ATTRIB_NORETURN void Exploration::report_crash(int status)
   if (xbt_log_no_loc) {
     XBT_INFO("Stack trace not displayed because you passed --log=no_loc");
   } else {
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
     const auto* memory = get_remote_app().get_remote_process_memory();
     if (memory) {
       XBT_INFO("Stack trace:");

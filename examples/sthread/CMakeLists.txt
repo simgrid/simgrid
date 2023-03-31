@@ -12,7 +12,7 @@ foreach(x
     add_executable       (pthread-${x} EXCLUDE_FROM_ALL pthread-${x}.c)
     set_target_properties(pthread-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(pthread-${x} PRIVATE Threads::Threads)
-    if(SIMGRID_HAVE_MC) # Only needed to introspect the binary
+    if(SIMGRID_HAVE_STATEFUL_MC) # Only needed to introspect the binary
       target_link_libraries(pthread-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
     endif()
 
@@ -40,7 +40,7 @@ foreach(x
     add_executable       (pthread-${x} EXCLUDE_FROM_ALL pthread-${x}.c)
     set_target_properties(pthread-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(pthread-${x} PRIVATE Threads::Threads)
-    if(SIMGRID_HAVE_MC) # Only needed to introspect the binary
+    if(SIMGRID_HAVE_STATEFUL_MC) # Only needed to introspect the binary
       target_link_libraries(pthread-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
     endif()
 
@@ -63,7 +63,7 @@ foreach(example
     add_executable       (${example} EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.cpp)
     set_target_properties(${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(${example} PRIVATE Threads::Threads)
-    if(SIMGRID_HAVE_MC) # Only needed to introspect the binary
+    if(SIMGRID_HAVE_STATEFUL_MC) # Only needed to introspect the binary
       target_link_libraries(${example} PUBLIC "-fPIC -Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
     endif()
     set_target_properties(${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
