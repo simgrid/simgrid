@@ -174,8 +174,9 @@ void DFSExplorer::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_VERB("Execute %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition()->aid_,
-             state->get_transition()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
+    XBT_VERB("Execute %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves out of %zu enabled)",
+             state->get_transition()->aid_, state->get_transition()->to_string().c_str(), stack_.size(),
+             state->get_num(), state->count_todo(), state->get_actor_count());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     std::shared_ptr<State> next_state = std::make_shared<State>(get_remote_app(), state);

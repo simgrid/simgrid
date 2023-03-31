@@ -99,6 +99,7 @@ aid_t State::next_transition() const
 {
   XBT_DEBUG("Search for an actor to run. %zu actors to consider", strategy_->actors_to_run_.size());
   for (auto const& [aid, actor] : strategy_->actors_to_run_) {
+    XBT_DEBUG("Current penalty for actor %ld:%f", aid, strategy_->penalties_[aid]);
     /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
     if (not actor.is_todo() || not actor.is_enabled() || actor.is_done()) {
       if (not actor.is_todo())
@@ -120,6 +121,19 @@ aid_t State::next_transition() const
 
 std::pair<aid_t, double> State::next_transition_guided() const
 {
+  for (auto const& [aid, actor] : strategy_->actors_to_run_) {
+    /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
+    if (not actor.is_todo() || not actor.is_enabled() || actor.is_done()) {
+      if (not actor.is_todo())
+        XBT_DEBUG("Can't run actor %ld because it is not todo", aid);
+
+      if (not actor.is_enabled())
+        XBT_DEBUG("Can't run actor %ld because it is not enabled", aid);
+
+      if (actor.is_done())
+        XBT_DEBUG("Can't run actor %ld because it has already been done", aid);
+    }
+  }
   return strategy_->next_transition();
 }
 

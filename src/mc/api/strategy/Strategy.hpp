@@ -17,6 +17,8 @@ protected:
   std::map<aid_t, ActorState> actors_to_run_;
 
 public:
+  /** Used to store penalties computed by the strategy to each actor */
+  std::map<aid_t, double> penalties_;
   virtual ~Strategy()                                      = default;
   virtual std::pair<aid_t, double> next_transition() const = 0;
   virtual void execute_next(aid_t aid, RemoteApp& app)     = 0;
