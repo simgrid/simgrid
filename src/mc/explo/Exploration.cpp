@@ -7,7 +7,10 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
+
+#if SIMGRID_HAVE_MC
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
+#endif
 
 #include <sys/wait.h>
 

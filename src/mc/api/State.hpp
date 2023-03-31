@@ -9,8 +9,11 @@
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/strategy/Strategy.hpp"
-#include "src/mc/sosp/Snapshot.hpp"
 #include "src/mc/transition/Transition.hpp"
+
+#if SIMGRID_HAVE_MC
+#include "src/mc/sosp/Snapshot.hpp"
+#endif
 
 namespace simgrid::mc {
 

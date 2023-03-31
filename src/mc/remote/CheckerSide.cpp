@@ -5,9 +5,13 @@
 
 #include "src/mc/remote/CheckerSide.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "xbt/config.hpp"
+#include "xbt/system_error.hpp"
+
+#if SIMGRID_HAVE_MC
 #include "src/mc/explo/LivenessChecker.hpp"
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
-#include "xbt/system_error.hpp"
+#endif
 
 #ifdef __linux__
 #include <sys/prctl.h>

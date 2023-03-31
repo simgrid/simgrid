@@ -11,7 +11,9 @@
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_config.hpp"
+#if SIMGRID_HAVE_MC
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
+#endif
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif

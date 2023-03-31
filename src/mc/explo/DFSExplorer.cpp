@@ -4,12 +4,15 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/DFSExplorer.hpp"
-#include "src/mc/VisitedState.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/transition/Transition.hpp"
+
+#if SIMGRID_HAVE_MC
+#include "src/mc/VisitedState.hpp"
+#endif
 
 #include "src/xbt/mmalloc/mmprivate.h"
 #include "xbt/log.h"
@@ -136,6 +139,7 @@ void DFSExplorer::run()
       continue;
     }
 
+#if SIMGRID_HAVE_MC
     // Backtrack if we are revisiting a state we saw previously while applying state-equality reduction
     if (visited_state_ != nullptr) {
       XBT_DEBUG("State already visited (equal to state %ld), exploration stopped on this path.",
@@ -145,6 +149,7 @@ void DFSExplorer::run()
       this->backtrack();
       continue;
     }
+#endif
 
     // Search for the next transition
     // next_transition returns a pair<aid_t, double> in case we want to consider multiple state (eg. during backtrack)
@@ -261,10 +266,13 @@ void DFSExplorer::run()
 
       dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
                  state->get_transition()->dot_string().c_str());
-    } else
+#if SIMGRID_HAVE_MC
+    } else {
       dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(),
                  visited_state_->original_num_ == -1 ? visited_state_->num_ : visited_state_->original_num_,
                  state->get_transition()->dot_string().c_str());
+#endif
+    }
   }
   log_state();
 }

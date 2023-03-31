@@ -10,6 +10,7 @@
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
 
+#include <inttypes.h>
 #include <sstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_comm, mc_transition,

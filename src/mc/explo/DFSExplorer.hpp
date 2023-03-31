@@ -6,8 +6,12 @@
 #ifndef SIMGRID_MC_SAFETY_CHECKER_HPP
 #define SIMGRID_MC_SAFETY_CHECKER_HPP
 
-#include "src/mc/VisitedState.hpp"
+#include "src/mc/api/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
+
+#if SIMGRID_HAVE_MC
+#include "src/mc/VisitedState.hpp"
+#endif
 
 #include <list>
 #include <memory>
@@ -100,12 +104,15 @@ private:
 
   /** Stack representing the position in the exploration graph */
   stack_t stack_;
+#if SIMGRID_HAVE_MC
   VisitedStates visited_states_;
   std::unique_ptr<VisitedState> visited_state_;
+#else
+  void* visited_state_ = nullptr; /* The code uses it to detect whether we are doing stateful MC */
+#endif
 
   /** Opened states are states that still contains todo actors.
    *  When backtracking, we pick a state from it*/
-
   std::priority_queue<std::shared_ptr<State>, std::vector<std::shared_ptr<State>>, OpenedStatesCompare> opened_states_;
 
   /** Change current stack_ value to correspond to the one we would have
