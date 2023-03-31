@@ -35,14 +35,16 @@ int main(int argc, char** argv)
 
   std::unique_ptr<Exploration> explo;
 
+#if SIMGRID_HAVE_MC
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
     explo = std::unique_ptr<Exploration>(create_communication_determinism_checker(argv_copy, cfg_use_DPOR()));
   else if (_sg_mc_unfolding_checker)
     explo = std::unique_ptr<Exploration>(create_udpor_checker(argv_copy));
-  else if (_sg_mc_property_file.get().empty())
-    explo = std::unique_ptr<Exploration>(create_dfs_exploration(argv_copy, cfg_use_DPOR()));
-  else
+  else if (not _sg_mc_property_file.get().empty())
     explo = std::unique_ptr<Exploration>(create_liveness_checker(argv_copy));
+  else
+#endif
+    explo = std::unique_ptr<Exploration>(create_dfs_exploration(argv_copy, cfg_use_DPOR()));
 
   try {
     explo->run();

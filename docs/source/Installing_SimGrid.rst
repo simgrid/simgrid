@@ -100,8 +100,10 @@ boost recommended components (optional).
   - On Debian / Ubuntu: ``apt install libboost-context-dev libboost-stacktrace-dev``
 python bindings (optional):
   - On Debian / Ubuntu: ``apt install pybind11-dev python3-dev``
-Model-checking dependencies (optional)
-  - On Debian / Ubuntu: ``apt install libunwind-dev libdw-dev libelf-dev libevent-dev``
+Model-checking mandatory dependencies
+  - On Debian / Ubuntu: ``apt install libevent-dev``
+Model-checking optional dependencies
+  - On Debian / Ubuntu: ``apt install libunwind-dev libdw-dev libelf-dev``
 Eigen3 (optional)
   - On Debian / Ubuntu: ``apt install libeigen3-dev``
   - On CentOS / Fedora: ``dnf install eigen3-devel``
@@ -242,7 +244,7 @@ enable_mallocators (ON/off)
   code, but it may fool the debuggers.
 
 enable_model-checking (on/OFF)
-  Activates the formal verification mode. This will hinder simulation speed even when the model checker is not activated at run
+  Activates the liveness verification mode. This will hinder simulation speed even when the model checker is not activated at run
   time, because some optimizations such as LTO must be disabled at compile time. You need to have the :ref:`required
   build-dependencies <install_src_deps>` to activate this option.
 
@@ -399,7 +401,7 @@ Windows-specific instructions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The best solution to get SimGrid working on windows is to install the
-Ubuntu subsystem of Windows 10. All of SimGrid (but the model checker)
+Ubuntu subsystem of Windows 10. All of SimGrid (but the liveness model checker)
 works in this setting. Native builds never really worked, and they are
 disabled starting with SimGrid v3.33.
 

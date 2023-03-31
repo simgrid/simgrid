@@ -12,15 +12,15 @@ foreach(x
     add_executable       (pthread-${x} EXCLUDE_FROM_ALL pthread-${x}.c)
     set_target_properties(pthread-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(pthread-${x} PRIVATE Threads::Threads)
-    target_link_libraries(pthread-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
+    if(SIMGRID_HAVE_MC) # Only needed to introspect the binary
+      target_link_libraries(pthread-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
+    endif()
 
     add_dependencies(tests pthread-${x})
     ADD_TESH_FACTORIES(pthread-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh)
 
-    if(SIMGRID_HAVE_MC)
-      add_dependencies(tests-mc pthread-${x})
-      ADD_TESH_FACTORIES(pthread-mc-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
-    endif()
+    add_dependencies(tests-mc pthread-${x})
+    ADD_TESH_FACTORIES(pthread-mc-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
   endif()
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh
@@ -35,12 +35,14 @@ endforeach()
 foreach(x
         mutex-simpledeadlock)
 
-  if(SIMGRID_HAVE_MC AND ("${CMAKE_SYSTEM}" MATCHES "Linux")) # sthread is linux-only
+  if("${CMAKE_SYSTEM}" MATCHES "Linux") # sthread is linux-only
 
     add_executable       (pthread-${x} EXCLUDE_FROM_ALL pthread-${x}.c)
     set_target_properties(pthread-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(pthread-${x} PRIVATE Threads::Threads)
-    target_link_libraries(pthread-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
+    if(SIMGRID_HAVE_MC) # Only needed to introspect the binary
+      target_link_libraries(pthread-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
+    endif()
 
     add_dependencies(tests-mc pthread-${x})
     ADD_TESH_FACTORIES(pthread-mc-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
@@ -56,12 +58,14 @@ endforeach()
 foreach(example
         stdobject)
 
-  if(SIMGRID_HAVE_MC AND ("${CMAKE_SYSTEM}" MATCHES "Linux")) # sthread is linux-only
+  if("${CMAKE_SYSTEM}" MATCHES "Linux") # sthread is linux-only
 
     add_executable       (${example} EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.cpp)
     set_target_properties(${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(${example} PRIVATE Threads::Threads)
-    target_link_libraries(${example} PUBLIC "-fPIC -Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
+    if(SIMGRID_HAVE_MC) # Only needed to introspect the binary
+      target_link_libraries(${example} PUBLIC "-fPIC -Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
+    endif()
     set_target_properties(${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
 
     add_dependencies(tests-mc ${example})

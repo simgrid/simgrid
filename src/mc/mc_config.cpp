@@ -18,14 +18,10 @@ simgrid::mc::ModelCheckingMode simgrid::mc::model_checking_mode = simgrid::mc::M
 
 static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 {
-#if SIMGRID_HAVE_MC
   xbt_assert(_sg_cfg_init_status == 0 || MC_is_active() || MC_record_replay_is_active() || not more_check,
              "Specifying a %s is only allowed within the model-checker. Please use simgrid-mc, or specify this option "
              "after the replay path.",
              spec);
-#else
-  xbt_die("Specifying a %s is only allowed within the model-checker. Please enable it before the compilation.", spec);
-#endif
 }
 
 /* Replay (this part is enabled even if MC it disabled) */
@@ -41,7 +37,6 @@ simgrid::config::Flag<std::string> _sg_mc_record_path{
       MC_record_path()                 = value;
     }};
 
-#if SIMGRID_HAVE_MC
 simgrid::config::Flag<bool> _sg_mc_timeout{
     "model-check/timeout", "Whether to enable timeouts for wait requests", false, [](bool) {
       _mc_cfg_cb_check("value to enable/disable timeout for wait requests", not MC_record_replay_is_active());
@@ -67,6 +62,7 @@ simgrid::config::Flag<std::string> _sg_mc_strategy{
         xbt_die("configuration option 'model-check/guided-mc' can only take 'none' or 'nb_wait' as a value");
     }};
 
+#if SIMGRID_HAVE_MC
 simgrid::config::Flag<int> _sg_mc_checkpoint{
     "model-check/checkpoint", "Specify the amount of steps between checkpoints during stateful model-checking "
                               "(default: 0 => stateless verification). If value=1, one checkpoint is saved for each "
@@ -99,6 +95,7 @@ simgrid::config::Flag<bool> _sg_mc_unfolding_checker{
     "Whether to enable the unfolding-based dynamic partial order reduction to MPI programs", false, [](bool) {
       _mc_cfg_cb_check("value to to enable/disable the unfolding-based dynamic partial order reduction to MPI programs");
     }};
+#endif
 
 simgrid::config::Flag<std::string> _sg_mc_buffering{
     "smpi/buffering",
@@ -136,5 +133,3 @@ bool simgrid::mc::cfg_use_DPOR()
   }
   return cfg_mc_reduction.get() == "dpor";
 }
-
-#endif

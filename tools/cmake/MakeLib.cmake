@@ -42,19 +42,17 @@ if(HAVE_MMALLOC)
                 APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
 endif()
 
-if(enable_model-checking)
-  add_executable(simgrid-mc ${MC_SIMGRID_MC_SRC})
-  target_link_libraries(simgrid-mc simgrid)
-  set_target_properties(simgrid-mc
-                        PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-  set_property(TARGET simgrid-mc
-               APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
-  install(TARGETS simgrid-mc # install that binary without breaking the rpath on Mac
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/)
-  add_dependencies(tests-mc simgrid-mc)
-  if("${CMAKE_SYSTEM}" MATCHES "Linux")
-    add_dependencies(tests-mc sthread)
-  endif()
+add_executable(simgrid-mc ${MC_SIMGRID_MC_SRC})
+target_link_libraries(simgrid-mc simgrid)
+set_target_properties(simgrid-mc
+                      PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set_property(TARGET simgrid-mc
+              APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+install(TARGETS simgrid-mc # install that binary without breaking the rpath on Mac
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/)
+add_dependencies(tests-mc simgrid-mc)
+if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  add_dependencies(tests-mc sthread)
 endif()
 
 # Compute the dependencies of SimGrid

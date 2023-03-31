@@ -190,11 +190,15 @@ void AppSide::handle_wait_child(const s_mc_message_int_t* msg)
 }
 void AppSide::handle_need_meminfo()
 {
+#if SIMGRID_HAVE_MC
   this->need_memory_info_                  = true;
   s_mc_message_need_meminfo_reply_t answer = {};
   answer.type                              = MessageType::NEED_MEMINFO_REPLY;
   answer.mmalloc_default_mdp               = mmalloc_get_current_heap();
   xbt_assert(channel_.send(answer) == 0, "Could not send response to the request for meminfo.");
+#else
+  xbt_die("SimGrid was compiled without MC suppport, so liveness and similar features are not available.");
+#endif
 }
 void AppSide::handle_actors_status() const
 {
@@ -365,11 +369,15 @@ void AppSide::ignore_memory(void* addr, std::size_t size) const
   if (not MC_is_active() || not need_memory_info_)
     return;
 
+#if SIMGRID_HAVE_MC
   s_mc_message_ignore_memory_t message = {};
   message.type = MessageType::IGNORE_MEMORY;
   message.addr = (std::uintptr_t)addr;
   message.size = size;
   xbt_assert(channel_.send(message) == 0, "Could not send IGNORE_MEMORY message to model-checker");
+#else
+  xbt_die("Cannot really call ignore_heap() in non-SIMGRID_MC mode.");
+#endif
 }
 
 void AppSide::ignore_heap(void* address, std::size_t size) const
@@ -377,6 +385,7 @@ void AppSide::ignore_heap(void* address, std::size_t size) const
   if (not MC_is_active() || not need_memory_info_)
     return;
 
+#if SIMGRID_HAVE_MC
   const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
 
   s_mc_message_ignore_heap_t message = {};
@@ -393,6 +402,9 @@ void AppSide::ignore_heap(void* address, std::size_t size) const
   }
 
   xbt_assert(channel_.send(message) == 0, "Could not send ignored region to MCer");
+#else
+  xbt_die("Cannot really call ignore_heap() in non-SIMGRID_MC mode.");
+#endif
 }
 
 void AppSide::unignore_heap(void* address, std::size_t size) const
@@ -400,11 +412,15 @@ void AppSide::unignore_heap(void* address, std::size_t size) const
   if (not MC_is_active() || not need_memory_info_)
     return;
 
+#if SIMGRID_HAVE_MC
   s_mc_message_ignore_memory_t message = {};
   message.type = MessageType::UNIGNORE_HEAP;
   message.addr = (std::uintptr_t)address;
   message.size = size;
   xbt_assert(channel_.send(message) == 0, "Could not send IGNORE_HEAP message to model-checker");
+#else
+  xbt_die("Cannot really call unignore_heap() in non-SIMGRID_MC mode.");
+#endif
 }
 
 void AppSide::declare_symbol(const char* name, int* value) const
@@ -414,6 +430,7 @@ void AppSide::declare_symbol(const char* name, int* value) const
     return;
   }
 
+#if SIMGRID_HAVE_MC
   s_mc_message_register_symbol_t message = {};
   message.type = MessageType::REGISTER_SYMBOL;
   xbt_assert(strlen(name) + 1 <= message.name.size(), "Symbol is too long");
@@ -421,6 +438,9 @@ void AppSide::declare_symbol(const char* name, int* value) const
   message.callback = nullptr;
   message.data     = value;
   xbt_assert(channel_.send(message) == 0, "Could send REGISTER_SYMBOL message to model-checker");
+#else
+  xbt_die("Cannot really call declare_symbol() in non-SIMGRID_MC mode.");
+#endif
 }
 
 /** Register a stack in the model checker
@@ -434,6 +454,7 @@ void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context) const
   if (not MC_is_active() || not need_memory_info_)
     return;
 
+#if SIMGRID_HAVE_MC
   const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
 
   s_stack_region_t region = {};
@@ -446,5 +467,8 @@ void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context) const
   message.type         = MessageType::STACK_REGION;
   message.stack_region = region;
   xbt_assert(channel_.send(message) == 0, "Could not send STACK_REGION to model-checker");
+#else
+  xbt_die("Cannot really call declare_stack() in non-SIMGRID_MC mode.");
+#endif
 }
 } // namespace simgrid::mc

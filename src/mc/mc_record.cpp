@@ -100,8 +100,6 @@ simgrid::mc::RecordTrace::RecordTrace(const char* data)
   }
 }
 
-#if SIMGRID_HAVE_MC
-
 std::string simgrid::mc::RecordTrace::to_string() const
 {
   std::ostringstream stream;
@@ -114,7 +112,4 @@ std::string simgrid::mc::RecordTrace::to_string() const
   }
   return stream.str();
 }
-
-#endif
-
 } // namespace simgrid::mc

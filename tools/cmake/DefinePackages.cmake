@@ -518,14 +518,44 @@ set(MC_SRC_BASE
   src/mc/mc_record.hpp
   src/mc/mc_replay.hpp
   src/mc/transition/Transition.cpp
-  )
 
-set(MC_SRC
-  src/mc/explo/CommunicationDeterminismChecker.cpp
+  src/mc/api/ActorState.hpp
+  src/mc/api/State.cpp
+  src/mc/api/State.hpp
+  src/mc/api/RemoteApp.cpp
+  src/mc/api/RemoteApp.hpp
+
   src/mc/explo/DFSExplorer.cpp
   src/mc/explo/DFSExplorer.hpp
   src/mc/explo/Exploration.cpp
   src/mc/explo/Exploration.hpp
+
+  src/mc/remote/AppSide.cpp
+  src/mc/remote/AppSide.hpp
+  src/mc/remote/Channel.cpp
+  src/mc/remote/Channel.hpp
+  src/mc/remote/CheckerSide.cpp
+  src/mc/remote/CheckerSide.hpp
+  src/mc/remote/RemotePtr.hpp
+  src/mc/remote/mc_protocol.h
+
+  src/mc/transition/Transition.hpp
+  src/mc/transition/TransitionActorJoin.cpp
+  src/mc/transition/TransitionActorJoin.hpp
+  src/mc/transition/TransitionAny.cpp
+  src/mc/transition/TransitionAny.hpp
+  src/mc/transition/TransitionComm.cpp
+  src/mc/transition/TransitionComm.hpp
+  src/mc/transition/TransitionObjectAccess.cpp
+  src/mc/transition/TransitionObjectAccess.hpp
+  src/mc/transition/TransitionRandom.cpp
+  src/mc/transition/TransitionRandom.hpp
+  src/mc/transition/TransitionSynchro.cpp
+  src/mc/transition/TransitionSynchro.hpp
+  )
+
+set(MC_SRC
+  src/mc/explo/CommunicationDeterminismChecker.cpp
   src/mc/explo/LivenessChecker.cpp
   src/mc/explo/LivenessChecker.hpp
   src/mc/explo/UdporChecker.cpp
@@ -565,15 +595,6 @@ set(MC_SRC
   src/mc/inspect/mc_unw.cpp
   src/mc/inspect/mc_unw.hpp
   src/mc/inspect/mc_unw_vmread.cpp
-
-  src/mc/remote/AppSide.cpp
-  src/mc/remote/AppSide.hpp
-  src/mc/remote/Channel.cpp
-  src/mc/remote/Channel.hpp
-  src/mc/remote/CheckerSide.cpp
-  src/mc/remote/CheckerSide.hpp
-  src/mc/remote/RemotePtr.hpp
-  src/mc/remote/mc_protocol.h
   
   src/mc/sosp/ChunkedData.cpp
   src/mc/sosp/ChunkedData.hpp
@@ -585,26 +606,6 @@ set(MC_SRC
   src/mc/sosp/RemoteProcessMemory.hpp
   src/mc/sosp/Snapshot.cpp
   src/mc/sosp/Snapshot.hpp
-
-  src/mc/transition/Transition.hpp
-  src/mc/transition/TransitionActorJoin.cpp
-  src/mc/transition/TransitionActorJoin.hpp
-  src/mc/transition/TransitionAny.cpp
-  src/mc/transition/TransitionAny.hpp
-  src/mc/transition/TransitionComm.cpp
-  src/mc/transition/TransitionComm.hpp
-  src/mc/transition/TransitionObjectAccess.cpp
-  src/mc/transition/TransitionObjectAccess.hpp
-  src/mc/transition/TransitionRandom.cpp
-  src/mc/transition/TransitionRandom.hpp
-  src/mc/transition/TransitionSynchro.cpp
-  src/mc/transition/TransitionSynchro.hpp
-
-  src/mc/api/ActorState.hpp
-  src/mc/api/State.cpp
-  src/mc/api/State.hpp
-  src/mc/api/RemoteApp.cpp
-  src/mc/api/RemoteApp.hpp
 
   src/mc/AddressSpace.hpp
   src/mc/VisitedState.cpp

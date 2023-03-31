@@ -26,9 +26,13 @@ namespace simgrid::mc {
  */
 class XBT_PUBLIC RemoteApp {
 private:
-  std::unique_ptr<CheckerSide> checker_side_;
+#if SIMGRID_HAVE_MC
   PageStore page_store_{500};
   std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
+#else
+  void* initial_snapshot_ = nullptr; // The code tests it to decide whether to use the refork exec path
+#endif
+  std::unique_ptr<CheckerSide> checker_side_;
   std::unique_ptr<CheckerSide> application_factory_; // when no meminfo, create checker_side_ by cloning this one
   int master_socket_ = -1;
 
@@ -68,10 +72,12 @@ public:
   /** Take a transition. A new Transition is created iff the last parameter is true */
   Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
 
+#if SIMGRID_HAVE_MC
   /* Get the memory of the remote process */
   RemoteProcessMemory* get_remote_process_memory() { return checker_side_->get_remote_memory(); }
 
   PageStore& get_page_store() { return page_store_; }
+#endif
 };
 } // namespace simgrid::mc
 

@@ -88,13 +88,14 @@ XBT_ATTRIB_NORETURN void Exploration::report_crash(int status)
   if (xbt_log_no_loc) {
     XBT_INFO("Stack trace not displayed because you passed --log=no_loc");
   } else {
+#if SIMGRID_HAVE_MC
     const auto* memory = get_remote_app().get_remote_process_memory();
     if (memory) {
       XBT_INFO("Stack trace:");
       memory->dump_stack();
-    } else {
+    } else
+#endif
       XBT_INFO("Stack trace not shown because there is no memory introspection.");
-    }
   }
 
   system_exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);

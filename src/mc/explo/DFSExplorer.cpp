@@ -41,6 +41,7 @@ xbt::signal<void(RemoteApp&)> DFSExplorer::on_log_state_signal;
 
 void DFSExplorer::check_non_termination(const State* current_state)
 {
+#if SIMGRID_HAVE_MC
   for (auto const& state : stack_) {
     if (state->get_system_state()->equals_to(*current_state->get_system_state(),
                                              *get_remote_app().get_remote_process_memory())) {
@@ -59,6 +60,7 @@ void DFSExplorer::check_non_termination(const State* current_state)
       throw TerminationError();
     }
   }
+#endif
 }
 
 RecordTrace DFSExplorer::get_record_trace() // override
@@ -240,9 +242,11 @@ void DFSExplorer::run()
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
 
+#if SIMGRID_HAVE_MC
     /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction) */
     if (_sg_mc_max_visited_states > 0)
       visited_state_ = visited_states_.addVisitedState(next_state->get_num(), next_state.get(), get_remote_app());
+#endif
 
     stack_.push_back(std::move(next_state));
 
@@ -294,6 +298,8 @@ void DFSExplorer::backtrack()
   // We found a real backtracking point, let's go to it
   backtrack_count_++;
   XBT_DEBUG("Backtracking to state#%ld", backtracking_point->get_num());
+
+#if SIMGRID_HAVE_MC
   /* If asked to rollback on a state that has a snapshot, restore it */
   if (const auto* system_state = backtracking_point->get_system_state()) {
     system_state->restore(*get_remote_app().get_remote_process_memory());
@@ -301,6 +307,7 @@ void DFSExplorer::backtrack()
     this->restore_stack(backtracking_point);
     return;
   }
+#endif
 
   /* if no snapshot, we need to restore the initial state and replay the transitions */
   get_remote_app().restore_initial_state();

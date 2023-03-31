@@ -17,10 +17,9 @@
 
 int MC_random(int min, int max)
 {
-#if SIMGRID_HAVE_MC
   xbt_assert(simgrid::mc::model_checking_mode != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
-#endif
+
   if (not MC_is_active() && not MC_record_replay_is_active()) { // no need to do a simcall in this case
     static simgrid::xbt::random::XbtRandom prng;
     return prng.uniform_int(min, max);
@@ -32,7 +31,6 @@ int MC_random(int min, int max)
 void MC_assert(int prop)
 {
   // Cannot used xbt_assert here, or it would be an infinite recursion.
-#if SIMGRID_HAVE_MC
   xbt_assert(simgrid::mc::model_checking_mode != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
   if (not prop) {
@@ -41,10 +39,6 @@ void MC_assert(int prop)
     if (MC_record_replay_is_active())
       xbt_die("MC assertion failed");
   }
-#else
-  if (not prop)
-    xbt_die("Safety property violation detected without the model-checker");
-#endif
 }
 
 int MC_is_active()
@@ -55,36 +49,28 @@ int MC_is_active()
 
 void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
 {
-#if SIMGRID_HAVE_MC
   xbt_assert(simgrid::mc::model_checking_mode != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
   simgrid::mc::AppSide::get()->declare_symbol(name, value);
-#endif
 }
 
 void MC_ignore(void* addr, size_t size)
 {
-#if SIMGRID_HAVE_MC
   xbt_assert(simgrid::mc::model_checking_mode != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
   simgrid::mc::AppSide::get()->ignore_memory(addr, size);
-#endif
 }
 
 void MC_ignore_heap(void *address, size_t size)
 {
-#if SIMGRID_HAVE_MC
   xbt_assert(simgrid::mc::model_checking_mode != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
   simgrid::mc::AppSide::get()->ignore_heap(address, size);
-#endif
 }
 
 void MC_unignore_heap(void* address, size_t size)
 {
-#if SIMGRID_HAVE_MC
   xbt_assert(simgrid::mc::model_checking_mode != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
   simgrid::mc::AppSide::get()->unignore_heap(address, size);
-#endif
 }

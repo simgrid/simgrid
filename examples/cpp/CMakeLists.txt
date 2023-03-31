@@ -16,13 +16,19 @@ set(_actor-stacksize_factories "^thread") # Threads ignore modifications of the
 # The maestro-set example only works for threads
 set(_maestro-set_factories "thread")
 
-if(SIMGRID_HAVE_MC)
-  # These tests timeout with threads, maybe because of dwarf parsing? not sure
-  foreach(example mc-bugged1 mc-bugged2 mc-failing-assert mc-electric-fence)
-     set(_${example}_factories "^thread") # Timeout
-     add_dependencies(tests-mc s4u-${example})
-  endforeach()
+# These tests timeout with threads, not sure why
+foreach(example mc-bugged1 mc-bugged2 mc-failing-assert mc-electric-fence)
+   set(_${example}_factories "^thread") # Timeout
+   add_dependencies(tests-mc s4u-${example})
+endforeach()
 
+if(enable_coverage)
+  foreach (example mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert)
+    ADD_TEST(cover-${example} ${CMAKE_CURRENT_BINARY_DIR}/${example}/s4u-${example} ${CMAKE_HOME_DIRECTORY}/examples/platforms/model_checker_platform.xml)
+  endforeach()
+endif()
+
+if(SIMGRID_HAVE_MC)
   if(HAVE_C_STACK_CLEANER)
     add_executable       (s4u-mc-bugged1-liveness-cleaner-on  EXCLUDE_FROM_ALL s4u-mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
     target_link_libraries(s4u-mc-bugged1-liveness-cleaner-on  simgrid)
@@ -62,15 +68,11 @@ if(SIMGRID_HAVE_MC)
   endif()
 
   if(enable_coverage)
-    foreach (example mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert)
-      ADD_TEST(cover-${example} ${CMAKE_CURRENT_BINARY_DIR}/${example}/s4u-${example} ${CMAKE_HOME_DIRECTORY}/examples/platforms/model_checker_platform.xml)
-    endforeach()
     ADD_TEST(cover-mc-bugged1-liveness ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness ${CMAKE_HOME_DIRECTORY}/examples/platforms/small_platform.xml 1 1001)
   endif()
 
 else()
-  foreach (example mc-bugged1 mc-bugged2  mc-centralized-mutex mc-failing-assert mc-electric-fence
-                   mc-bugged1-liveness mc-bugged2-liveness)
+  foreach (example mc-bugged1-liveness mc-bugged2-liveness)
     set(_${example}_disable 1)
   endforeach()
 endif()
@@ -79,25 +81,21 @@ endif()
 foreach (example synchro-barrier synchro-mutex synchro-semaphore)
   set(tesh_files ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-mc-${example}.tesh)
 
-  if (SIMGRID_HAVE_MC)
-    ADD_TESH(s4u-mc-${example}
-             --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
-             --setenv libdir=${CMAKE_BINARY_DIR}/lib
-             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-             --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
-             --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
-             ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-mc-${example}.tesh)
+  ADD_TESH(s4u-mc-${example}
+            --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+            --setenv libdir=${CMAKE_BINARY_DIR}/lib
+            --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+            --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
+            --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
+            ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-mc-${example}.tesh)
 
-    add_dependencies(tests-mc s4u-${example})
-  endif()
+  add_dependencies(tests-mc s4u-${example})
 endforeach()
 
-if (SIMGRID_HAVE_MC)
-  # Dependency on the regular tests
-  foreach(example mc-centralized-mutex)
-    add_dependencies(tests-mc s4u-${example})
-  endforeach()
-endif()
+# Dependency on the regular tests
+foreach(example mc-centralized-mutex)
+  add_dependencies(tests-mc s4u-${example})
+endforeach()
 
 if(NOT HAVE_GRAPHVIZ)
   set(_dag-from-dot_disable 1)
@@ -217,25 +215,25 @@ endforeach()
 
 # Test non-DPOR reductions on a given MC test
 foreach(example mc-failing-assert)
-  if(SIMGRID_HAVE_MC)
 # State equality is not tested because it would take about 15 hours to run that test on my machine.
 # We should first optimize mmalloc_heap_differ() which takes ~4sec for each pair to compare (maybe {175 x 174/ 2} pairs here)
 # See the comment on mmalloc_heap_differ() in compare.cpp for more info on why it's hard to optimize.
 #
+#  if(SIMGRID_HAVE_MC)
 #    ADD_TESH(s4u-${example}-statequality  --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
 #                                      --setenv libdir=${CMAKE_BINARY_DIR}/lib
 #                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
 #                                      --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
 #                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
 #                                      ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-statequality.tesh)
+#  endif()
 
-    ADD_TESH(s4u-${example}-nodpor    --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
-                                      --setenv libdir=${CMAKE_BINARY_DIR}/lib
-                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                      --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                                      ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-nodpor.tesh)
-  endif()
+  ADD_TESH(s4u-${example}-nodpor    --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                                    --setenv libdir=${CMAKE_BINARY_DIR}/lib
+                                    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                    --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
+                                    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
+                                    ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-nodpor.tesh)
   set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-statequality.tesh)
   set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-nodpor.tesh)
 endforeach()

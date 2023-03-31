@@ -41,8 +41,12 @@ static void cleanup_master_socket()
 RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspection) : app_args_(args)
 {
   if (need_memory_introspection) {
+#if SIMGRID_HAVE_MC
     checker_side_     = std::make_unique<simgrid::mc::CheckerSide>(app_args_, need_memory_introspection);
     initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_, *checker_side_->get_remote_memory());
+#else
+    xbt_die("SimGrid was compiled without MC support.");
+#endif
   } else {
     master_socket_ = socket(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0);
     xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
@@ -66,16 +70,17 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
 
 RemoteApp::~RemoteApp()
 {
-  initial_snapshot_ = nullptr;
   checker_side_     = nullptr;
 }
 
 void RemoteApp::restore_initial_state()
 {
-  if (initial_snapshot_ == nullptr) { // No memory introspection
+  if (initial_snapshot_ == nullptr) // No memory introspection
     checker_side_ = application_factory_->clone(master_socket_);
-  } else
+#if SIMGRID_HAVE_MC
+  else
     initial_snapshot_->restore(*checker_side_->get_remote_memory());
+#endif
 }
 
 unsigned long RemoteApp::get_maxpid() const
@@ -184,8 +189,10 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
   m.times_considered_              = times_considered;
   checker_side_->get_channel().send(m);
 
+#if SIMGRID_HAVE_MC
   if (auto* memory = get_remote_process_memory(); memory != nullptr)
     memory->clear_cache();
+#endif
   if (checker_side_->running())
     checker_side_->dispatch_events(); // The app may send messages while processing the transition
 

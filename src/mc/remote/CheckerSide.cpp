@@ -193,6 +193,7 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) 
 
   setup_events(false); /* we need a signal handler too */
   if (need_memory_info) {
+#if SIMGRID_HAVE_MC
     // setup ptrace and sync with the app
     wait_application_process(pid_);
 
@@ -208,6 +209,9 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) 
 
     /* We now have enough info to create the memory address space */
     remote_memory_ = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid_, answer.mmalloc_default_mdp);
+#else
+    xbt_die("Cannot introspect memory without MC support");
+#endif
   }
 
   wait_for_requests();
@@ -288,6 +292,7 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
 
   switch (base_message.type) {
     case MessageType::IGNORE_HEAP: {
+#if SIMGRID_HAVE_MC
       if (remote_memory_ != nullptr) {
         s_mc_message_ignore_heap_t message;
         xbt_assert(size == sizeof(message), "Broken message");
@@ -299,49 +304,53 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
         region.address  = message.address;
         region.size     = message.size;
         get_remote_memory()->ignore_heap(region);
-      } else {
+      } else
+#endif
         XBT_INFO("Ignoring a IGNORE_HEAP message because we don't need to introspect memory.");
-      }
       break;
     }
 
     case MessageType::UNIGNORE_HEAP: {
+#if SIMGRID_HAVE_MC
       if (remote_memory_ != nullptr) {
         s_mc_message_ignore_memory_t message;
         xbt_assert(size == sizeof(message), "Broken message");
         memcpy(&message, buffer, sizeof(message));
         get_remote_memory()->unignore_heap((void*)message.addr, message.size);
-      } else {
+      } else
+#endif
         XBT_INFO("Ignoring an UNIGNORE_HEAP message because we don't need to introspect memory.");
-      }
       break;
     }
 
     case MessageType::IGNORE_MEMORY: {
+#if SIMGRID_HAVE_MC
       if (remote_memory_ != nullptr) {
         s_mc_message_ignore_memory_t message;
         xbt_assert(size == sizeof(message), "Broken message");
         memcpy(&message, buffer, sizeof(message));
         get_remote_memory()->ignore_region(message.addr, message.size);
-      } else {
+      } else
+#endif
         XBT_INFO("Ignoring an IGNORE_MEMORY message because we don't need to introspect memory.");
-      }
       break;
     }
 
     case MessageType::STACK_REGION: {
+#if SIMGRID_HAVE_MC
       if (remote_memory_ != nullptr) {
         s_mc_message_stack_region_t message;
         xbt_assert(size == sizeof(message), "Broken message");
         memcpy(&message, buffer, sizeof(message));
         get_remote_memory()->stack_areas().push_back(message.stack_region);
-      } else {
+      } else
+#endif
         XBT_INFO("Ignoring an STACK_REGION message because we don't need to introspect memory.");
-      }
       break;
     }
 
     case MessageType::REGISTER_SYMBOL: {
+#if SIMGRID_HAVE_MC
       s_mc_message_register_symbol_t message;
       xbt_assert(size == sizeof(message), "Broken message");
       memcpy(&message, buffer, sizeof(message));
@@ -349,6 +358,9 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
       XBT_DEBUG("Received symbol: %s", message.name.data());
 
       LivenessChecker::automaton_register_symbol(*get_remote_memory(), message.name.data(), remote((int*)message.data));
+#else
+      xbt_die("Please don't use liveness properties when MC is compiled out.");
+#endif
       break;
     }
 
@@ -378,8 +390,10 @@ void CheckerSide::wait_for_requests()
 
 void CheckerSide::clear_memory_cache()
 {
+#if SIMGRID_HAVE_MC
   if (remote_memory_)
     remote_memory_->clear_cache();
+#endif
 }
 
 void CheckerSide::handle_dead_child(int status)

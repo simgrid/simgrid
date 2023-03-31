@@ -21,7 +21,9 @@ class CheckerSide {
   event* socket_event_;
   event* signal_event_;
   std::unique_ptr<event_base, decltype(&event_base_free)> base_{nullptr, &event_base_free};
+#if SIMGRID_HAVE_MC
   std::unique_ptr<RemoteProcessMemory> remote_memory_;
+#endif
 
   Channel channel_;
   bool running_ = false;
@@ -64,7 +66,9 @@ public:
   pid_t get_pid() const { return pid_; }
   bool running() const { return running_; }
   void terminate() { running_ = false; }
+#if SIMGRID_HAVE_MC
   RemoteProcessMemory* get_remote_memory() { return remote_memory_.get(); }
+#endif
 };
 
 } // namespace simgrid::mc

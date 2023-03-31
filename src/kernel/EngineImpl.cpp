@@ -16,6 +16,7 @@
 #include "src/mc/mc.h"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "src/mc/remote/AppSide.hpp"
 #include "src/simgrid/math_utils.h"
 #include "src/simgrid/sg_config.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
@@ -24,10 +25,6 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <dlfcn.h>
-
-#if SIMGRID_HAVE_MC
-#include "src/mc/remote/AppSide.hpp"
-#endif
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(ker_engine, "Logging specific to Engine (kernel)");
 
@@ -171,12 +168,10 @@ void EngineImpl::initialize(int* argc, char** argv)
   xbt_assert(EngineImpl::instance_ == nullptr,
              "It is currently forbidden to create more than one instance of kernel::EngineImpl");
   EngineImpl::instance_ = this;
-#if SIMGRID_HAVE_MC
   // The communication initialization is done ASAP, as we need to get some init parameters from the MC for different
   // layers. But instance_ needs to be created, as we send the address of some of its fields to the MC that wants to
   // read them directly.
   simgrid::mc::AppSide::initialize();
-#endif
 
   if (static bool inited = false; not inited) {
     inited = true;
@@ -605,11 +600,7 @@ void EngineImpl::run(double max_date)
   seal_platform();
 
   if (MC_is_active()) {
-#if SIMGRID_HAVE_MC
     mc::AppSide::get()->main_loop();
-#else
-    xbt_die("MC_is_active() is not supposed to return true in non-MC settings");
-#endif
     THROW_IMPOSSIBLE; // main_loop never returns
   }
 
