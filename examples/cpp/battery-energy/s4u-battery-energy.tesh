@@ -1,0 +1,15 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-battery-energy ${platfdir}/battery_platform.xml
+> [host1:manager:(1) 0.000000] [battery_energy/INFO] Initial Battery: SoC: 0.800000 SoH: 1.000000 Capacity (Total): 10.000000Wh Capacity (Usable): 6.000000Wh P: 0.000000W
+> [host1:manager:(1) 0.000000] [battery_energy/INFO] Battery power set to: 200.000000W (host1) + 170.000000W (host2)
+> [host1:manager:(1) 0.000000] [battery_energy/INFO] The battery will be depleted at: 58.378378
+> [host1:manager:(1) 0.000000] [battery_energy/INFO] Exec1 will be finished in: 100.000000
+> [host1:manager:(1) 0.000000] [battery_energy/INFO] Exec2 will be finished in: 200.000000
+> [host1:manager:(1) 58.378378] [battery_energy/INFO] Battery depleted: SoC: 0.200000 SoH: 0.995833 P: 0.000000W
+> [host1:manager:(1) 58.378378] [battery_energy/INFO] Pursuing with power from the grid until both execs are finished
+> [host1:manager:(1) 200.000000] [battery_energy/INFO] Energy consumed: Battery: 21600.000000J (6.000000Wh) Grid: 42400.000000J (11.777778Wh)
+> [200.000000] [host_energy/INFO] Total energy consumption: 64000.000000 Joules (used hosts: 64000.000000 Joules; unused/idle hosts: 0.000000)
+> [200.000000] [host_energy/INFO] Energy consumption of host battery: 0.000000 Joules
+> [200.000000] [host_energy/INFO] Energy consumption of host host1: 30000.000000 Joules
+> [200.000000] [host_energy/INFO] Energy consumption of host host2: 34000.000000 Joules

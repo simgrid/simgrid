@@ -453,6 +453,7 @@ set(PLUGINS_SRC
   src/plugins/vm/VmLiveMigration.cpp
   src/plugins/vm/VmLiveMigration.hpp
   src/plugins/vm/dirty_page_tracking.cpp
+  src/plugins/battery.cpp
   )
 
 
@@ -631,6 +632,7 @@ set(headers_to_install
   include/simgrid/chrono.hpp
   include/simgrid/plugins/dvfs.h
   include/simgrid/plugins/energy.h
+  include/simgrid/plugins/battery.hpp
   include/simgrid/plugins/file_system.h
   include/simgrid/plugins/live_migration.h
   include/simgrid/plugins/load.h
@@ -874,17 +876,10 @@ set(DOC_SOURCES
   docs/source/tuto_s4u/master-workers-lab4.cpp
 
   docs/source/Tutorial_DAG.rst
-  docs/source/tuto_dag/dag_lab1.cpp
-  docs/source/tuto_dag/dag_lab2-1.cpp
-  docs/source/tuto_dag/dag_lab2-2.cpp
-  docs/source/tuto_dag/dag_lab2-3.cpp
-  docs/source/tuto_dag/img/dag1.svg
-  docs/source/tuto_dag/img/dag2.svg
-  docs/source/tuto_dag/img/dag.svg
-  docs/source/tuto_dag/simple_dax.xml
-  docs/source/tuto_dag/simple_dot.dot
-  docs/source/tuto_dag/simple_json.json
-  docs/source/tuto_dag/small_platform.xml
+  docs/source/img/battery_degradation.svg
+  docs/source/img/dag1.svg
+  docs/source/img/dag2.svg
+  docs/source/img/dag.svg
 
   docs/source/Tutorial_MPI_Applications.rst
   docs/source/tuto_smpi/3hosts.png
@@ -1076,6 +1071,7 @@ set(CMAKE_SOURCE_FILES
   )
 
 set(PLATFORMS_EXAMPLES
+  examples/platforms/battery_platform.xml
   examples/platforms/bypassRoute.xml
   examples/platforms/bypassZoneRoute.xml
   examples/platforms/cloud.xml

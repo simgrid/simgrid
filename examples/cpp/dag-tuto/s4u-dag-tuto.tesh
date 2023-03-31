@@ -1,0 +1,7 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-dag-tuto --log=no_loc ${platfdir}/small_platform.xml
+> [10.194200] [dag_tuto/INFO] Activity 'c1' is complete (start time: 0.000000, finish time: 10.194200)
+> [65.534235] [dag_tuto/INFO] Activity 'c2' is complete (start time: 0.000000, finish time: 65.534235)
+> [85.283378] [dag_tuto/INFO] Activity 't1' is complete (start time: 10.194200, finish time: 85.283378)
+> [111.497072] [dag_tuto/INFO] Activity 'c3' is complete (start time: 85.283378, finish time: 111.497072)
