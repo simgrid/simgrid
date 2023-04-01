@@ -14,6 +14,7 @@
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/kernel/xml/platf.hpp"
 #include "src/mc/mc.h"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simgrid/math_utils.h"
@@ -603,6 +604,9 @@ double EngineImpl::solve(double max_date) const
 void EngineImpl::run(double max_date)
 {
   seal_platform();
+
+  XBT_DEBUG("Running the main loop until t=%.3f in mode %s", max_date,
+            to_c_str(simgrid::mc::get_model_checking_mode()));
 
   if (MC_is_active()) {
 #if SIMGRID_HAVE_MC

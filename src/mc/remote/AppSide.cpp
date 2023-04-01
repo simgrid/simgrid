@@ -43,13 +43,15 @@ std::unique_ptr<AppSide> AppSide::instance_;
 AppSide* AppSide::get()
 {
   // Only initialize the MC world once
-  if (instance_)
+  if (instance_ != nullptr)
     return instance_.get();
 
-  if (not std::getenv(MC_ENV_SOCKET_FD)) // We are not in MC mode: don't initialize the MC world
+  if (std::getenv(MC_ENV_SOCKET_FD) == nullptr) // We are not in MC mode: don't initialize the MC world
     return nullptr;
 
-  simgrid::mc::model_checking_mode = ModelCheckingMode::APP_SIDE;
+  XBT_DEBUG("Initialize the MC world. MC_NEED_PTRACE=%s", std::getenv("MC_NEED_PTRACE"));
+
+  simgrid::mc::set_model_checking_mode(ModelCheckingMode::APP_SIDE);
 
   setvbuf(stdout, nullptr, _IOLBF, 0);
 
@@ -176,6 +178,8 @@ void AppSide::handle_fork(const s_mc_message_int_t* msg)
     answer.type               = MessageType::FORK_REPLY;
     answer.value              = getpid();
     xbt_assert(channel_.send(answer) == 0, "Could not send response to WAIT_CHILD_REPLY: %s", strerror(errno));
+  } else {
+    XBT_DEBUG("App %d forks subprocess %d.", getpid(), pid);
   }
 }
 void AppSide::handle_wait_child(const s_mc_message_int_t* msg)

@@ -176,6 +176,8 @@ void CheckerSide::setup_events(bool socket_only)
 /* When this constructor is called, no other checkerside exists */
 CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) : running_(true)
 {
+  XBT_DEBUG("Create a CheckerSide. Needs_meminfo: %s", need_memory_info ? "YES" : "no");
+
   // Create an AF_LOCAL socketpair used for exchanging messages between the model-checker process (ancestor)
   // and the application process (child)
   int sockets[2];
@@ -438,7 +440,8 @@ void CheckerSide::handle_dead_child(int status)
 
 void CheckerSide::handle_waitpid()
 {
-  XBT_DEBUG("Check for wait event");
+  XBT_DEBUG("%d checks for wait event. %s", getpid(),
+            child_checker_ == nullptr ? "Wait directly." : "Ask our proxy to wait for its child.");
 
   if (child_checker_ == nullptr) { // Wait directly
     int status;
