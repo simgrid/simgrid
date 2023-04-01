@@ -40,14 +40,14 @@ namespace simgrid::mc {
 
 std::unique_ptr<AppSide> AppSide::instance_;
 
-AppSide* AppSide::initialize()
+AppSide* AppSide::get()
 {
-  if (not std::getenv(MC_ENV_SOCKET_FD)) // We are not in MC mode: don't initialize the MC world
-    return nullptr;
-
-  // Do not break if we are called multiple times:
+  // Only initialize the MC world once
   if (instance_)
     return instance_.get();
+
+  if (not std::getenv(MC_ENV_SOCKET_FD)) // We are not in MC mode: don't initialize the MC world
+    return nullptr;
 
   simgrid::mc::model_checking_mode = ModelCheckingMode::APP_SIDE;
 

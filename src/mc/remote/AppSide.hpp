@@ -52,10 +52,8 @@ public:
   void declare_stack(void* stack, size_t size, ucontext_t* context) const;
 #endif
 
-  // Singleton :/
   // TODO, remove the singleton antipattern.
-  static AppSide* initialize();
-  static AppSide* get() { return instance_.get(); }
+  static AppSide* get();
 };
 } // namespace simgrid::mc
 
