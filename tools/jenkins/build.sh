@@ -194,6 +194,7 @@ if [ $NODE_NAME = "armv8" ]; then
     MAY_DISABLE_LTO=-Denable_lto=OFF
 fi
 
+set +x
 cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
@@ -209,7 +210,6 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -DLTO_EXTRA_FLAG="auto" \
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
   "$SRCFOLDER"
-set +x
 
 make -j $NUMBER_OF_PROCESSORS VERBOSE=1 tests
 
