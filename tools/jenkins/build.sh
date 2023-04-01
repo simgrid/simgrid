@@ -194,7 +194,6 @@ if [ $NODE_NAME = "armv8" ]; then
     MAY_DISABLE_LTO=-Denable_lto=OFF
 fi
 
-set +x
 cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
