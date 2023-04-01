@@ -28,7 +28,7 @@ static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 simgrid::config::Flag<std::string> _sg_mc_record_path{
     "model-check/replay", "Model-check path to replay (as reported by SimGrid when a violation is reported)", "",
     [](std::string_view value) {
-      xbt_assert(simgrid::mc::model_checking_mode == simgrid::mc::ModelCheckingMode::NONE ||
+      xbt_assert(value.empty() || simgrid::mc::model_checking_mode == simgrid::mc::ModelCheckingMode::NONE ||
                      simgrid::mc::model_checking_mode == simgrid::mc::ModelCheckingMode::REPLAY,
                  "Specifying a MC replay path is not allowed when running the model-checker in mode %s. "
                  "Either remove the model-check/replay parameter, or execute your code out of simgrid-mc.",
