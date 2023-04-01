@@ -38,7 +38,7 @@ endif()
 option(minimal-bindings      "Whether to compile the Python bindings libraries with the minimal dependency set" off)
 mark_as_advanced(minimal-bindings)
 
-option(enable_model-checking "Turn this on to experiment with our prototype of model-checker (hinders the simulation's performance even if turned off at runtime)" off)
+option(enable_model-checking "Turn this on to experiment with our prototype of model-checker" on)
 option(enable-model-checking "Please set 'enable_model-checking' instead" off)
 mark_as_advanced(enable-model-checking)
 if(enable-model-checking)

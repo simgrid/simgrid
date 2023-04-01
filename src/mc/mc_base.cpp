@@ -8,11 +8,12 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
-#include "src/mc/api/RemoteApp.hpp"
+
 #include "src/mc/mc.h"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/mc/remote/AppSide.hpp"
+/*#include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/remote/AppSide.hpp"*/
 
 #if SIMGRID_HAVE_STATEFUL_MC
 #include "src/mc/sosp/RemoteProcessMemory.hpp"

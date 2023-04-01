@@ -518,13 +518,15 @@ set(MC_SRC_BASE
   src/mc/mc_record.hpp
   src/mc/mc_replay.hpp
   src/mc/transition/Transition.cpp
-
+  )
+  
+set(MC_SRC_STATELESS
   src/mc/api/ActorState.hpp
   src/mc/api/State.cpp
   src/mc/api/State.hpp
   src/mc/api/RemoteApp.cpp
   src/mc/api/RemoteApp.hpp
-
+  
   src/mc/explo/DFSExplorer.cpp
   src/mc/explo/DFSExplorer.hpp
   src/mc/explo/Exploration.cpp
@@ -769,6 +771,9 @@ if(enable_smpi)
   set(simgrid_sources  ${simgrid_sources}  ${SMPI_SRC})
 endif()
 
+if(SIMGRID_HAVE_MC)
+  set(simgrid_sources  ${simgrid_sources}  ${MC_SRC_STATELESS})
+endif()
 if(SIMGRID_HAVE_STATEFUL_MC)
   set(simgrid_sources  ${simgrid_sources}  ${MC_SRC_STATEFUL})
 endif()

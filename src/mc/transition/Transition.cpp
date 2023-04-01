@@ -5,6 +5,11 @@
 
 #include "src/mc/transition/Transition.hpp"
 #include "src/kernel/actor/Simcall.hpp"
+#include "xbt/asserts.h"
+#include "xbt/string.hpp"
+#include <simgrid/config.h>
+
+#if SIMGRID_HAVE_MC
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/transition/TransitionActorJoin.hpp"
 #include "src/mc/transition/TransitionAny.hpp"
@@ -12,8 +17,7 @@
 #include "src/mc/transition/TransitionObjectAccess.hpp"
 #include "src/mc/transition/TransitionRandom.hpp"
 #include "src/mc/transition/TransitionSynchro.hpp"
-#include "xbt/asserts.h"
-#include "xbt/string.hpp"
+#endif
 
 #include <sstream>
 
@@ -43,12 +47,15 @@ std::string Transition::dot_string() const
 void Transition::replay(RemoteApp& app) const
 {
   replayed_transitions_++;
+#if SIMGRID_HAVE_MC
   app.handle_simcall(aid_, times_considered_, false);
   app.wait_for_requests();
+#endif
 }
 
 Transition* deserialize_transition(aid_t issuer, int times_considered, std::stringstream& stream)
 {
+#if SIMGRID_HAVE_MC
   short type;
   xbt_assert(stream >> type);
 
@@ -101,6 +108,9 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
   xbt_die("Invalid transition type %d received. Did you implement a new observer in the app without implementing the "
           "corresponding transition in the checker?",
           type);
+#else
+  xbt_die("Deserializing transitions is only interesting in MC mode.");
+#endif
 }
 
 } // namespace simgrid::mc

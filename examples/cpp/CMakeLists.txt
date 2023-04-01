@@ -16,15 +16,21 @@ set(_actor-stacksize_factories "^thread") # Threads ignore modifications of the
 # The maestro-set example only works for threads
 set(_maestro-set_factories "thread")
 
-# These tests timeout with threads, not sure why
-foreach(example mc-bugged1 mc-bugged2 mc-failing-assert mc-electric-fence)
-   set(_${example}_factories "^thread") # Timeout
-   add_dependencies(tests-mc s4u-${example})
-endforeach()
+if(SIMGRID_HAVE_MC)
+  # These tests timeout with threads, not sure why
+  foreach(example mc-bugged1 mc-bugged2 mc-failing-assert mc-electric-fence)
+    set(_${example}_factories "^thread") # Timeout
+    add_dependencies(tests-mc s4u-${example})
+  endforeach()
 
-if(enable_coverage)
-  foreach (example mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert)
-    ADD_TEST(cover-${example} ${CMAKE_CURRENT_BINARY_DIR}/${example}/s4u-${example} ${CMAKE_HOME_DIRECTORY}/examples/platforms/model_checker_platform.xml)
+  if(enable_coverage)
+    foreach (example mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert)
+      ADD_TEST(cover-${example} ${CMAKE_CURRENT_BINARY_DIR}/${example}/s4u-${example} ${CMAKE_HOME_DIRECTORY}/examples/platforms/model_checker_platform.xml)
+    endforeach()
+  endif()
+else()
+  foreach (example mc-bugged1 mc-bugged2  mc-centralized-mutex mc-failing-assert mc-electric-fence)
+    set(_${example}_disable 1)
   endforeach()
 endif()
 
@@ -81,21 +87,25 @@ endif()
 foreach (example synchro-barrier synchro-mutex synchro-semaphore)
   set(tesh_files ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-mc-${example}.tesh)
 
-  ADD_TESH(s4u-mc-${example}
-            --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
-            --setenv libdir=${CMAKE_BINARY_DIR}/lib
-            --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-            --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
-            --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
-            ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-mc-${example}.tesh)
+  if (SIMGRID_HAVE_MC)
+    ADD_TESH(s4u-mc-${example}
+              --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+              --setenv libdir=${CMAKE_BINARY_DIR}/lib
+              --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+              --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
+              --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
+              ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-mc-${example}.tesh)
 
-  add_dependencies(tests-mc s4u-${example})
+    add_dependencies(tests-mc s4u-${example})
+  endif()
 endforeach()
 
-# Dependency on the regular tests
-foreach(example mc-centralized-mutex)
-  add_dependencies(tests-mc s4u-${example})
-endforeach()
+if (SIMGRID_HAVE_MC)
+  # Dependency on the regular tests
+  foreach(example mc-centralized-mutex)
+    add_dependencies(tests-mc s4u-${example})
+  endforeach()
+endif()
 
 if(NOT HAVE_GRAPHVIZ)
   set(_dag-from-dot_disable 1)
@@ -228,12 +238,14 @@ foreach(example mc-failing-assert)
 #                                      ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-statequality.tesh)
 #  endif()
 
-  ADD_TESH(s4u-${example}-nodpor    --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
-                                    --setenv libdir=${CMAKE_BINARY_DIR}/lib
-                                    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                    --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                                    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                                    ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-nodpor.tesh)
+  if(SIMGRID_HAVE_MC)
+    ADD_TESH(s4u-${example}-nodpor    --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                                      --setenv libdir=${CMAKE_BINARY_DIR}/lib
+                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                      --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
+                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
+                                      ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-nodpor.tesh)
+  endif()                                    
   set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-statequality.tesh)
   set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-nodpor.tesh)
 endforeach()

@@ -19,8 +19,10 @@ foreach(x
     add_dependencies(tests pthread-${x})
     ADD_TESH_FACTORIES(pthread-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh)
 
-    add_dependencies(tests-mc pthread-${x})
-    ADD_TESH_FACTORIES(pthread-mc-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
+    if(SIMGRID_HAVE_MC)
+      add_dependencies(tests-mc pthread-${x})
+      ADD_TESH_FACTORIES(pthread-mc-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
+    endif()
   endif()
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh
@@ -44,8 +46,10 @@ foreach(x
       target_link_libraries(pthread-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
     endif()
 
-    add_dependencies(tests-mc pthread-${x})
-    ADD_TESH_FACTORIES(pthread-mc-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
+    if(SIMGRID_HAVE_MC)
+      add_dependencies(tests-mc pthread-${x})
+      ADD_TESH_FACTORIES(pthread-mc-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
+    endif()
   endif()
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
@@ -68,8 +72,10 @@ foreach(example
     endif()
     set_target_properties(${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
 
-    add_dependencies(tests-mc ${example})
-    ADD_TESH_FACTORIES(sthread-mc-${example} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread/${example} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
+    if(SIMGRID_HAVE_MC)
+      add_dependencies(tests-mc ${example})
+      ADD_TESH_FACTORIES(sthread-mc-${example} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread/${example} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
+    endif()
   endif()
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
