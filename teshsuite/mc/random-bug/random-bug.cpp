@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <cstring>
+#include <signal.h>
 #include <simgrid/modelchecker.h>
 #include <simgrid/s4u.hpp>
 #include <xbt/log.h>
@@ -30,11 +31,8 @@ static void app()
     if (x == 3 && y == 4)
       abort();
   } else if (behavior == Behavior::SEGV) {
-#ifndef __clang_analyzer__
-    int* A = nullptr;
     if (x == 3 && y == 4)
-      *A = 1;
-#endif
+      kill(getpid(), SIGSEGV); // Simulate a segfault without displeasing the static analyzers
   } else {
     DIE_IMPOSSIBLE;
   }
