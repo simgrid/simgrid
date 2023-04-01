@@ -777,6 +777,7 @@ endif()
 if(SIMGRID_HAVE_STATEFUL_MC)
   set(simgrid_sources  ${simgrid_sources}  ${MC_SRC_STATEFUL})
 endif()
+set(EXTRA_DIST ${EXTRA_DIST} ${MC_SRC_STATELESS} ${MC_SRC_STATEFUL})
 
 if(SIMGRID_HAVE_NS3)
   set(headers_to_install ${headers_to_install} include/simgrid/plugins/ns3.hpp)
