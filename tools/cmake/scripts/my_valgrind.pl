@@ -8,7 +8,8 @@
 use strict;
 use warnings;
 
-my @argv = ("valgrind", "--quiet", "--trace-children=yes");
+# Many other parameters (such as trace-children) are set in Tests.cmake
+my @argv = ("valgrind", "--quiet");
 my $count = 0;
 
 while (defined(my $arg = shift)) {
