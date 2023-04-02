@@ -461,6 +461,7 @@ void AppSide::declare_symbol(const char* name, int* value) const
  *  when we analyze/compare the content of the heap so it must be told where
  *  they are with this function.
  */
+#if HAVE_UCONTEXT_H /* Apple don't want us to use ucontexts */
 void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context) const
 {
   if (not MC_is_active() || not need_memory_info_)
@@ -483,4 +484,6 @@ void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context) const
   xbt_die("Cannot really call declare_stack() in non-SIMGRID_MC mode.");
 #endif
 }
+#endif
+
 } // namespace simgrid::mc
