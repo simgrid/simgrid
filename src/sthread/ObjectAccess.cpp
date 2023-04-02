@@ -35,7 +35,6 @@ public:
   }
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
-  bool is_visible() const override { return true; }
 };
 void ObjectAccessObserver::serialize(std::stringstream& stream) const
 {
