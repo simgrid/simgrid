@@ -23,7 +23,6 @@ public:
       : ResultingSimcall(actor, true), activity_(activity)
   {
   }
-  bool is_visible() const override { return true; }
   activity::ActivityImpl* get_activity() const { return activity_; }
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
@@ -36,7 +35,6 @@ class ActivityTestanySimcall final : public ResultingSimcall<ssize_t> {
 
 public:
   ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities);
-  bool is_visible() const override { return true; }
   bool is_enabled() override { return true; /* can return -1 if no activity is ready */ }
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
@@ -57,7 +55,6 @@ public:
   }
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
-  bool is_visible() const override { return true; }
   bool is_enabled() override;
   activity::ActivityImpl* get_activity() const { return activity_; }
   void set_activity(activity::ActivityImpl* activity) { activity_ = activity; }
@@ -75,7 +72,6 @@ public:
   bool is_enabled() override;
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
-  bool is_visible() const override { return true; }
   void prepare(int times_considered) override;
   int get_max_consider() const override;
   const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
@@ -121,7 +117,6 @@ public:
   }
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
-  bool is_visible() const override { return true; }
   activity::MailboxImpl* get_mailbox() const { return mbox_; }
   double get_payload_size() const { return payload_size_; }
   double get_rate() const { return rate_; }
@@ -166,7 +161,6 @@ public:
   }
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
-  bool is_visible() const override { return true; }
   activity::MailboxImpl* get_mailbox() const { return mbox_; }
   double get_rate() const { return rate_; }
   unsigned char* get_dst_buff() const { return dst_buff_; }
