@@ -13,11 +13,13 @@
 #include "xbt/asserts.h"
 #include "xbt/random.hpp"
 
+using namespace simgrid::mc;
+
 /* Implementation of the user API from the App to the Checker (see modelchecker.h)  */
 
 int MC_random(int min, int max)
 {
-  xbt_assert(simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
+  xbt_assert(get_model_checking_mode() != ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
 
   if (not MC_is_active() && not MC_record_replay_is_active()) { // no need to do a simcall in this case
@@ -31,12 +33,12 @@ int MC_random(int min, int max)
 void MC_assert(int prop)
 {
   // Cannot used xbt_assert here, or it would be an infinite recursion.
-  xbt_assert(simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
+  xbt_assert(get_model_checking_mode() != ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
 #if SIMGRID_HAVE_MC
   if (not prop) {
     if (MC_is_active())
-      simgrid::mc::AppSide::get()->report_assertion_failure();
+      AppSide::get()->report_assertion_failure();
     if (MC_record_replay_is_active())
       xbt_die("MC assertion failed");
   }
@@ -48,42 +50,46 @@ void MC_assert(int prop)
 
 int MC_is_active()
 {
-  return simgrid::mc::get_model_checking_mode() == simgrid::mc::ModelCheckingMode::APP_SIDE ||
-         simgrid::mc::get_model_checking_mode() == simgrid::mc::ModelCheckingMode::CHECKER_SIDE;
+  return get_model_checking_mode() == ModelCheckingMode::APP_SIDE ||
+         get_model_checking_mode() == ModelCheckingMode::CHECKER_SIDE;
 }
 
 void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
 {
 #if SIMGRID_HAVE_STATEFUL_MC
-  xbt_assert(simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
+  xbt_assert(get_model_checking_mode() != ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
-  simgrid::mc::AppSide::get()->declare_symbol(name, value);
+  if (MC_is_active())
+    AppSide::get()->declare_symbol(name, value);
 #endif
 }
 
 void MC_ignore(void* addr, size_t size)
 {
 #if SIMGRID_HAVE_STATEFUL_MC
-  xbt_assert(simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
+  xbt_assert(get_model_checking_mode() != ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
-  simgrid::mc::AppSide::get()->ignore_memory(addr, size);
+  if (MC_is_active())
+    AppSide::get()->ignore_memory(addr, size);
 #endif
 }
 
 void MC_ignore_heap(void *address, size_t size)
 {
 #if SIMGRID_HAVE_STATEFUL_MC
-  xbt_assert(simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
+  xbt_assert(get_model_checking_mode() != ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
-  simgrid::mc::AppSide::get()->ignore_heap(address, size);
+  if (MC_is_active())
+    AppSide::get()->ignore_heap(address, size);
 #endif
 }
 
 void MC_unignore_heap(void* address, size_t size)
 {
 #if SIMGRID_HAVE_STATEFUL_MC
-  xbt_assert(simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
+  xbt_assert(get_model_checking_mode() != ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
-  simgrid::mc::AppSide::get()->unignore_heap(address, size);
+  if (MC_is_active())
+    AppSide::get()->unignore_heap(address, size);
 #endif
 }
