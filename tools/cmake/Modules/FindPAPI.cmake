@@ -17,7 +17,7 @@
 #  PAPI_LIBRARY          The PAPI library
 #  PAPI_INCLUDE_DIRS       The location of PAPI headers
 
-set(HAVE_PAPI 0)
+set(HAVE_PAPI OFF)
 set(PAPI_HINT ${papi_path} CACHE PATH "Path to search for PAPI headers and library")
 
 find_path(PAPI_PREFIX
@@ -55,7 +55,7 @@ endif()
 
 if (PAPI_LIBRARY)
   if(PAPI_INCLUDE_DIRS)
-    set(HAVE_PAPI 1)
+    set(HAVE_PAPI ON)
     mark_as_advanced(HAVE_PAPI)
   endif()
 endif()

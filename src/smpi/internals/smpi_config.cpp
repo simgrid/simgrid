@@ -255,9 +255,9 @@ void smpi_init_options_internal(bool called_by_smpi_main)
   simgrid::config::declare_flag<std::string>(
       "smpi/privatization", "How we should privatize global variable at runtime (no, yes, mmap, dlopen).",
       default_privatization, [](const std::string& smpi_privatize_option) {
-        if (smpi_privatize_option == "no" || smpi_privatize_option == "0")
+        if (smpi_privatize_option == "no" || smpi_privatize_option == "0" || smpi_privatize_option == "OFF")
           _smpi_cfg_privatization = SmpiPrivStrategies::NONE;
-        else if (smpi_privatize_option == "yes" || smpi_privatize_option == "1")
+        else if (smpi_privatize_option == "yes" || smpi_privatize_option == "1" || smpi_privatize_option == "ON")
           _smpi_cfg_privatization = SmpiPrivStrategies::DEFAULT;
         else if (smpi_privatize_option == "mmap")
           _smpi_cfg_privatization = SmpiPrivStrategies::MMAP;

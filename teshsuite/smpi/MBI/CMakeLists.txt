@@ -9,10 +9,10 @@ file(GLOB generator_scripts *Generator.py)
 
 if (enable_smpi_MBI_testsuite)
   if (NOT enable_smpi)
-    message(FATAL_ERROR "MBI test suite cannot be enabled without SMPI. Please change either setting.")
+    message(FATAL_ERROR "The MBI test suite cannot be enabled without SMPI. Please change either setting.")
   endif()
-  if (NOT enable_model-checking)
-    message(FATAL_ERROR "MBI test suite cannot be enabled without the Mc SimGrid model-checker. Please change either setting.")
+  if (NOT SIMGRID_HAVE_MC)
+    message(FATAL_ERROR "The MBI test suite cannot be enabled without the model-checker. Please change either setting.")
   endif()
 
   message(STATUS "Generating the MBI test cases")

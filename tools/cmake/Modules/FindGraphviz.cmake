@@ -25,9 +25,9 @@ if(HAVE_CDT_LIB AND HAVE_CGRAPH_LIB AND HAVE_CGRAPH_H)
   include_directories(${file_graphviz_h} ${file_graphviz_h}/graphviz)
   link_directories(${lib_graphviz})
 
-  set(HAVE_GRAPHVIZ "1")
+  set(HAVE_GRAPHVIZ ON)
 else()
-  set(HAVE_GRAPHVIZ "0")
+  set(HAVE_GRAPHVIZ OFF)
 endif()
 
 mark_as_advanced(HAVE_GRAPHVIZ)
