@@ -54,7 +54,7 @@ int MC_is_active()
 
 void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
 {
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   xbt_assert(simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
   simgrid::mc::AppSide::get()->declare_symbol(name, value);
@@ -63,7 +63,7 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
 
 void MC_ignore(void* addr, size_t size)
 {
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   xbt_assert(simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
   simgrid::mc::AppSide::get()->ignore_memory(addr, size);
@@ -72,7 +72,7 @@ void MC_ignore(void* addr, size_t size)
 
 void MC_ignore_heap(void *address, size_t size)
 {
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   xbt_assert(simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
   simgrid::mc::AppSide::get()->ignore_heap(address, size);
@@ -81,7 +81,7 @@ void MC_ignore_heap(void *address, size_t size)
 
 void MC_unignore_heap(void* address, size_t size)
 {
-#if SIMGRID_HAVE_MC
+#if SIMGRID_HAVE_STATEFUL_MC
   xbt_assert(simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::CHECKER_SIDE,
              "This should be called from the client side");
   simgrid::mc::AppSide::get()->unignore_heap(address, size);
