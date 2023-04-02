@@ -172,11 +172,11 @@ void AppSide::handle_fork(const s_mc_message_int_t* msg)
 
     struct sockaddr_un addr = {};
     addr.sun_family         = AF_LOCAL;
-    snprintf(addr.sun_path, 64, "/tmp/simgrid-mc-%lu", msg->value);
+    snprintf(addr.sun_path, 64, "/tmp/simgrid-mc-%lu", static_cast<unsigned long>(msg->value));
     auto addr_size = offsetof(struct sockaddr_un, sun_path) + strlen(addr.sun_path);
 
     xbt_assert(connect(sock, (struct sockaddr*)&addr, addr_size) >= 0,
-               "Cannot connect to Checker on /tmp/simgrid-mc-%lu: %s.", msg->value, strerror(errno));
+               "Cannot connect to Checker on %s: %s.", addr.sun_path, strerror(errno));
 
     channel_.reset_socket(sock);
 
