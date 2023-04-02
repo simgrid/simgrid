@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <csignal>
 #include <cstring>
-#include <signal.h>
 #include <simgrid/modelchecker.h>
 #include <simgrid/s4u.hpp>
 #include <xbt/log.h>
@@ -32,7 +32,7 @@ static void app()
       abort();
   } else if (behavior == Behavior::SEGV) {
     if (x == 3 && y == 4)
-      kill(getpid(), SIGSEGV); // Simulate a segfault without displeasing the static analyzers
+      raise(SIGSEGV); // Simulate a segfault without displeasing the static analyzers
   } else {
     DIE_IMPOSSIBLE;
   }
