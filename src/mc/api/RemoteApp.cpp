@@ -48,7 +48,13 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
     xbt_die("SimGrid was compiled without MC support.");
 #endif
   } else {
-    master_socket_ = socket(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0);
+    master_socket_ = socket(AF_LOCAL,
+                            SOCK_SEQPACKET
+#ifdef SOCK_CLOEXEC
+                                | SOCK_CLOEXEC /* MacOSX does not have it */
+#endif
+                            ,
+                            0);
     xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
 
     struct sockaddr_un serv_addr = {};

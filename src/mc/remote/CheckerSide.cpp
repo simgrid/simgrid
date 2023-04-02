@@ -54,11 +54,6 @@ XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<
   xbt_assert(prctl(PR_SET_PDEATHSIG, SIGHUP) == 0, "Could not PR_SET_PDEATHSIG");
 #endif
 
-  // Remove CLOEXEC to pass the socket to the application
-  int fdflags = fcntl(socket, F_GETFD, 0);
-  xbt_assert(fdflags != -1 && fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) != -1,
-             "Could not remove CLOEXEC for socket");
-
   setenv(MC_ENV_SOCKET_FD, std::to_string(socket).c_str(), 1);
   if (need_ptrace)
     setenv("MC_NEED_PTRACE", "1", 1);
@@ -181,7 +176,7 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) 
   // Create an AF_LOCAL socketpair used for exchanging messages between the model-checker process (ancestor)
   // and the application process (child)
   int sockets[2];
-  xbt_assert(socketpair(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, sockets) != -1, "Could not create socketpair: %s",
+  xbt_assert(socketpair(AF_LOCAL, SOCK_SEQPACKET, 0, sockets) != -1, "Could not create socketpair: %s",
              strerror(errno));
 
   pid_ = fork();
