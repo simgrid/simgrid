@@ -131,9 +131,15 @@ void CheckerSide::setup_events(bool socket_only)
           std::array<char, MC_MESSAGE_LENGTH> buffer;
           ssize_t size = recv(checker->get_channel().get_socket(), buffer.data(), buffer.size(), MSG_DONTWAIT);
           if (size == -1) {
-            XBT_ERROR("Channel::receive failure: %s", strerror(errno));
-            if (errno != EAGAIN)
-              throw simgrid::xbt::errno_error();
+            if (errno == ECONNRESET) {
+              XBT_DEBUG("Channel::receive failure: %s", strerror(errno));
+              size = 0; // Connection was closed
+            } else {
+              XBT_ERROR("Channel::receive failure: %s", strerror(errno));
+              if (errno != EAGAIN)
+                throw simgrid::xbt::errno_error();
+              return;
+            }
           }
 
           if (size == 0) // The app closed the socket. It must be dead by now.
