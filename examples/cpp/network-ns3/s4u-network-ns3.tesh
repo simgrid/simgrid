@@ -5,52 +5,62 @@ p We just want to check that the ns-3 bindings of SimGrid are working correctly,
 
 p 3hosts 2links
 
-$ ${bindir:=.}/s4u-network-ns3 ${platfdir}/small_platform_one_link_routes.xml ${srcdir}/3hosts_2links_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)]%e[%c/%p]%e%m%n"
-> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
-> [Jupiter:worker(2)] [s4u_test/INFO] FLOW[1] : Receive 100 bytes from Tremblay to Jupiter
+$ ${bindir:=.}/s4u-network-ns3 ${platfdir}/small_platform_one_link_routes.xml ${srcdir}/3hosts_2links_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [Jupiter:worker(2) 0.000249] [s4u_test/INFO] FLOW[1] : Receive 100 bytes from Tremblay to Jupiter
 
 p 6hosts 3links
 
-$ ${bindir:=.}/s4u-network-ns3 ${platfdir}/small_platform_one_link_routes.xml ${srcdir}/3links_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)]%e[%c/%p]%e%m%n"
-> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
-> [Jupiter:worker(2)] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from Tremblay to Jupiter
-> [Ginette:worker(4)] [s4u_test/INFO] FLOW[2] : Receive 10000 bytes from Fafard to Ginette
-> [Lovelace:worker(6)] [s4u_test/INFO] FLOW[3] : Receive 10000 bytes from Bourassa to Lovelace
+$ ${bindir:=.}/s4u-network-ns3 ${platfdir}/small_platform_one_link_routes.xml ${srcdir}/3links_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [Jupiter:worker(2) 0.000498] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from Tremblay to Jupiter
+> [Ginette:worker(4) 0.007323] [s4u_test/INFO] FLOW[2] : Receive 10000 bytes from Fafard to Ginette
+> [Lovelace:worker(6) 0.037450] [s4u_test/INFO] FLOW[3] : Receive 10000 bytes from Bourassa to Lovelace
 
-$ ${bindir:=.}/s4u-network-ns3 ${platfdir}/small_platform_one_link_routes.xml ${srcdir}/3links-timer_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)]%e[%c/%p]%e%m%n"
-> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
-> [Jupiter:worker(2)] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from Tremblay to Jupiter
-> [Ginette:worker(4)] [s4u_test/INFO] FLOW[2] : Receive 10000 bytes from Fafard to Ginette
-> [Lovelace:worker(6)] [s4u_test/INFO] FLOW[3] : Receive 10000 bytes from Bourassa to Lovelace
-> [Lovelace:worker(7)] [s4u_test/INFO] FLOW[4] : Receive 10000 bytes from Bourassa to Lovelace
+$ ${bindir:=.}/s4u-network-ns3 ${platfdir}/small_platform_one_link_routes.xml ${srcdir}/3links-timer_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [Jupiter:worker(2) 0.000498] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from Tremblay to Jupiter
+> [Ginette:worker(4) 0.007323] [s4u_test/INFO] FLOW[2] : Receive 10000 bytes from Fafard to Ginette
+> [Lovelace:worker(6) 0.037450] [s4u_test/INFO] FLOW[3] : Receive 10000 bytes from Bourassa to Lovelace
+> [Lovelace:worker(7) 2.037450] [s4u_test/INFO] FLOW[4] : Receive 10000 bytes from Bourassa to Lovelace
 
 p One cluster
 
-$ ${bindir:=.}/s4u-network-ns3 ${platfdir}/cluster_backbone.xml ${srcdir}/one_cluster_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)]%e[%c/%p]%e%m%n"
-> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
-> [node-6.simgrid.org:worker(2)] [s4u_test/INFO] FLOW[1] : Receive 100 bytes from node-2.simgrid.org to node-6.simgrid.org
+$ ${bindir:=.}/s4u-network-ns3 ${platfdir}/cluster_backbone.xml ${srcdir}/one_cluster_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [node-6.simgrid.org:worker(2) 0.021502] [s4u_test/INFO] FLOW[1] : Receive 100 bytes from node-2.simgrid.org to node-6.simgrid.org
 
 p Dogbone
 
 ! timeout 10
-$ ${bindir:=.}/s4u-network-ns3 ${platfdir}/dogbone.xml ${srcdir}/dogbone_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)]%e[%c/%p]%e%m%n"
-> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
-> [:maestro(0)] [res_ns3/WARNING] Ignoring a route between S1 and C1 of length 3: Only routes of length 1 are considered with ns-3.
+$ ${bindir:=.}/s4u-network-ns3 ${platfdir}/dogbone.xml ${srcdir}/dogbone_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [:maestro(0) 0.000000] [res_ns3/WARNING] Ignoring a route between S1 and C1 of length 3: Only routes of length 1 are considered with ns-3.
 > WARNING: You can ignore this warning if your hosts can still communicate when only considering routes of length 1.
 > WARNING: Remove long routes to avoid this harmless message; subsequent long routes will be silently ignored.
-> [C1:worker(3)] [s4u_test/INFO] FLOW[0] : Receive 10000 bytes from S1 to C1
-> [C2:worker(4)] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from S2 to C2
+> [C1:worker(3) 0.120224] [s4u_test/INFO] FLOW[0] : Receive 10000 bytes from S1 to C1
+> [C2:worker(4) 0.120234] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from S2 to C2
 
 p 2hosts 1link
 
-$ ${bindir:=.}/s4u-network-ns3 ${platfdir}/onelink.xml ${srcdir}/onelink_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)]%e[%c/%p]%e%m%n"
-> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
-> [C1:worker(2)] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
+$ ${bindir:=.}/s4u-network-ns3 ${platfdir}/onelink.xml ${srcdir}/onelink_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [C1:worker(2) 1.104600] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
 
 p Crosstraffic TCP option DISABLED
-! output ignore
 $ ${bindir:=.}/s4u-network-ns3 ${platfdir}/crosstraffic.xml ${srcdir}/crosstraffic_d.xml --cfg=network/model:ns-3 --cfg=network/crosstraffic:0
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '0'
+> [C1:worker:(2) 1.236600] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
+> [C1:worker:(4) 2.150800] [s4u_test/INFO] FLOW[2] : Receive 10000 bytes from S1 to C1
+> [C1:worker:(6) 3.197000] [s4u_test/INFO] FLOW[3] : Receive 10000 bytes from S1 to C1
+> [S1:worker:(8) 3.537400] [s4u_test/INFO] FLOW[4] : Receive 10000 bytes from C1 to S1
 
 p Crosstraffic TCP option ENABLED
-! output ignore
 $ ${bindir:=.}/s4u-network-ns3 ${platfdir}/crosstraffic.xml ${srcdir}/crosstraffic_d.xml --cfg=network/model:ns-3 --cfg=network/crosstraffic:1
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '1'
+> [C1:worker:(2) 1.236600] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
+> [C1:worker:(4) 2.150800] [s4u_test/INFO] FLOW[2] : Receive 10000 bytes from S1 to C1
+> [C1:worker:(6) 3.197000] [s4u_test/INFO] FLOW[3] : Receive 10000 bytes from S1 to C1
+> [S1:worker:(8) 3.537400] [s4u_test/INFO] FLOW[4] : Receive 10000 bytes from C1 to S1
