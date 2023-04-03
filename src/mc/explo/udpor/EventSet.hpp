@@ -59,6 +59,7 @@ public:
 
   bool operator==(const EventSet& other) const { return this->events_ == other.events_; }
   bool operator!=(const EventSet& other) const { return this->events_ != other.events_; }
+  std::string to_string() const;
 
   /**
    * @brief Whether or not this set of events could

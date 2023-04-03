@@ -10,6 +10,7 @@
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
 #include <optional>
+#include <string>
 #include <unordered_map>
 
 namespace simgrid::mc::udpor {
@@ -34,6 +35,7 @@ public:
   bool contains(const UnfoldingEvent* e) const { return this->events_.contains(e); }
   const EventSet& get_events() const { return this->events_; }
   const UnfoldingEvent* get_latest_event() const { return this->newest_event; }
+  std::string to_string() const { return this->events_.to_string(); }
 
   /**
    * @brief Insert a new event into the configuration

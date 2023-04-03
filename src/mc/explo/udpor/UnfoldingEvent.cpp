@@ -44,8 +44,17 @@ bool UnfoldingEvent::operator==(const UnfoldingEvent& other) const
 
 std::string UnfoldingEvent::to_string() const
 {
-  return xbt::string_printf("e(%s) (%zu dependencies)", associated_transition->to_string().c_str(),
-                            immediate_causes.size());
+  std::string dependencies_string;
+
+  dependencies_string += "[";
+  for (const auto* e : immediate_causes) {
+    dependencies_string += e->to_string();
+  }
+  dependencies_string += "]";
+
+  return xbt::string_printf("Actor %ld: %s (%zu dependencies { %s })", associated_transition->aid_,
+                            associated_transition->to_string().c_str(), immediate_causes.size(),
+                            dependencies_string.c_str());
 }
 
 EventSet UnfoldingEvent::get_history() const

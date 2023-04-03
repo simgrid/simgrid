@@ -238,6 +238,18 @@ std::vector<const UnfoldingEvent*> EventSet::get_topological_ordering_of_reverse
   return topological_events;
 }
 
+std::string EventSet::to_string() const
+{
+  std::string contents;
+
+  for (const auto* event : *this) {
+    contents += event->to_string();
+    contents += "\n";
+  }
+
+  return contents;
+}
+
 std::vector<const UnfoldingEvent*> EventSet::move_into_vector() const&&
 {
   std::vector<const UnfoldingEvent*> contents;

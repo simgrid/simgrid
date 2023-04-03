@@ -34,6 +34,15 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
   auto& stateC   = *state_stack.back();
   auto exC       = compute_exC(C, stateC, prev_exC);
   const auto enC = compute_enC(C, exC);
+  XBT_DEBUG("explore(C, D, A) with:\n"
+            "C\t := %s \n"
+            "D\t := %s \n"
+            "A\t := %s \n"
+            "ex(C)\t := %s \n"
+            "en(C)\t := %s \n",
+            C.to_string().c_str(), D.to_string().c_str(), A.to_string().c_str(), exC.to_string().c_str(),
+            enC.to_string().c_str());
+  XBT_DEBUG("ex(C) has %zu elements, of which %zu are in en(C)", exC.size(), enC.size());
 
   // If enC is a subset of D, intuitively
   // there aren't any enabled transitions
@@ -41,9 +50,10 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
   // exploration would lead to a so-called
   // "sleep-set blocked" trace.
   if (enC.is_subset_of(D)) {
-    if (not C.get_events().empty()) {
-      // Report information...
-    }
+    XBT_DEBUG("en(C) is a subset of the sleep set D (size %zu); if we"
+              "kept exploring, we'd hit a sleep-set blocked trace",
+              D.size());
+    XBT_DEBUG("The current configuration has %zu elements", C.get_events().size());
 
     // When `en(C)` is empty, intuitively this means that there
     // are no enabled transitions that can be executed from the
@@ -53,19 +63,20 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
     // possibility is that we've finished running everything, and
     // we wouldn't be in deadlock then)
     if (enC.empty()) {
+      XBT_VERB("Maximal configuration detected. Checking for deadlock...");
       get_remote_app().check_deadlock();
     }
 
     return;
   }
-
-  // TODO: Add verbose logging about which event is being explored
-
   UnfoldingEvent* e = select_next_unfolding_event(A, enC);
   xbt_assert(e != nullptr, "\n\n****** INVARIANT VIOLATION ******\n"
                            "UDPOR guarantees that an event will be chosen at each point in\n"
                            "the search, yet no events were actually chosen\n"
                            "*********************************\n\n");
+  XBT_DEBUG("Selected event `%s` (%zu dependencies) to extend the configuration", e->to_string().c_str(),
+            e->get_immediate_causes().size());
+
   // Ce := C + {e}
   Configuration Ce = C;
   Ce.add_event(e);
@@ -81,7 +92,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
 
   explore(Ce, D, std::move(A), std::move(exC));
 
-  //  Prepare to move the application back one state.
+  // Prepare to move the application back one state.
   // We need only remove the state from the stack here: if we perform
   // another `Explore()` after computing an alternative, at that
   // point we'll actually create a fresh RemoteProcess
@@ -90,8 +101,8 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
   // D <-- D + {e}
   D.insert(e);
 
-  constexpr unsigned K = 10;
-  if (auto J = C.compute_k_partial_alternative_to(D, this->unfolding, K); J.has_value()) {
+  XBT_DEBUG("Checking for the existence of an alternative...");
+  if (auto J = C.compute_alternative_to(D, this->unfolding); J.has_value()) {
     // Before searching the "right half", we need to make
     // sure the program actually reflects the fact
     // that we are searching again from `state(C)`. While the
@@ -103,7 +114,19 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
 
     // Explore(C, D + {e}, J \ C)
     auto J_minus_C = J.value().get_events().subtracting(C.get_events());
+
+    XBT_DEBUG("Alternative detected! The alternative is:\n"
+              "J\t := %s \n"
+              "J / C := %s\n"
+              "UDPOR is going to explore it...",
+              J.value().to_string().c_str(), J_minus_C.to_string().c_str());
     explore(C, D, std::move(J_minus_C), std::move(prev_exC));
+  } else {
+    XBT_DEBUG("No alternative detected with:\n"
+              "C\t := %s \n"
+              "D\t := %s \n"
+              "A\t := %s \n",
+              C.to_string().c_str(), D.to_string().c_str(), A.to_string().c_str());
   }
 
   // D <-- D - {e}
@@ -182,6 +205,7 @@ void UdporChecker::move_to_stateCe(State* state, UnfoldingEvent* e)
 
 void UdporChecker::restore_program_state_with_current_stack()
 {
+  XBT_DEBUG("Restoring state using the current stack");
   get_remote_app().restore_initial_state();
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
@@ -229,7 +253,8 @@ void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration
   const EventSet Q_CDU                  = C_union_D.make_union(es_immediate_conflicts.get_local_config());
 
   // Move {e} \ Q_CDU from U to G
-  if (Q_CDU.contains(e)) {
+  if (not Q_CDU.contains(e)) {
+    XBT_DEBUG("Removing %s from U to G...", e->to_string().c_str());
     this->unfolding.remove(e);
   }
 
@@ -237,6 +262,7 @@ void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration
   for (const auto* e_hat : es_immediate_conflicts) {
     // Move [ê] \ Q_CDU from U to G
     const EventSet to_remove = e_hat->get_history().subtracting(Q_CDU);
+    XBT_DEBUG("Removing {%s} from U to G...", to_remove.to_string().c_str());
     this->unfolding.remove(to_remove);
   }
 }

@@ -132,9 +132,9 @@ std::optional<Configuration> Configuration::compute_k_partial_alternative_to(con
                                                                              size_t k) const
 {
   // 1. Select k (of |D|, whichever is smaller) arbitrary events e_1, ..., e_k from D
-  const auto D_hat = [&]() {
-    const size_t size = std::min(k, D.size());
-    std::vector<const UnfoldingEvent*> D_hat(size);
+  const size_t k_alt_size = std::min(k, D.size());
+  const auto D_hat        = [&k_alt_size, &D]() {
+    std::vector<const UnfoldingEvent*> D_hat(k_alt_size);
     // TODO: Since any subset suffices for computing `k`-partial alternatives,
     // potentially select intelligently here (e.g. perhaps pick events
     // with transitions that we know are totally independent). This may be
@@ -142,7 +142,7 @@ std::optional<Configuration> Configuration::compute_k_partial_alternative_to(con
     // UDPOR
     //
     // For now, simply pick the first `k` events
-    std::copy_n(D.begin(), size, D_hat.begin());
+    std::copy_n(D.begin(), k_alt_size, D_hat.begin());
     return D_hat;
   }();
 
@@ -160,7 +160,7 @@ std::optional<Configuration> Configuration::compute_k_partial_alternative_to(con
   Comb comb(k);
 
   for (const auto* e : U) {
-    for (unsigned i = 0; i < k; i++) {
+    for (size_t i = 0; i < k_alt_size; i++) {
       const UnfoldingEvent* e_i = D_hat[i];
       if (const auto e_local_config = History(e);
           e_i->conflicts_with(e) and (not D.intersects(e_local_config)) and is_compatible_with(e_local_config)) {
