@@ -109,7 +109,7 @@ static void wait_application_process(pid_t pid)
 #elif defined BSD
   ptrace(PT_CONTINUE, pid, (caddr_t)1, 0);
 #else
-#error "no ptrace equivalent coded for this platform"
+  xbt_die("no ptrace equivalent coded for this platform, stateful model-checking is impossible.");
 #endif
   xbt_assert(errno == 0,
              "Ptrace does not seem to be usable in your setup (errno: %d). "
