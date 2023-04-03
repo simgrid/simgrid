@@ -10,6 +10,7 @@
 #include "src/mc/explo/udpor/History.hpp"
 #include "src/mc/explo/udpor/maximal_subsets_iterator.hpp"
 
+#include <numeric>
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 #include <xbt/string.hpp>
@@ -50,7 +51,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
   // exploration would lead to a so-called
   // "sleep-set blocked" trace.
   if (enC.is_subset_of(D)) {
-    XBT_DEBUG("en(C) is a subset of the sleep set D (size %zu); if we"
+    XBT_DEBUG("en(C) is a subset of the sleep set D (size %zu); if we "
               "kept exploring, we'd hit a sleep-set blocked trace",
               D.size());
     XBT_DEBUG("The current configuration has %zu elements", C.get_events().size());
@@ -151,6 +152,7 @@ EventSet UdporChecker::compute_exC(const Configuration& C, const State& stateC, 
 
   for (const auto& [aid, actor_state] : stateC.get_actors_list()) {
     for (const auto& transition : actor_state.get_enabled_transitions()) {
+      XBT_DEBUG("\t Considering partial extension for %s", transition->to_string().c_str());
       EventSet extension = ExtensionSetCalculator::partially_extend(C, &unfolding, transition);
       exC.form_union(extension);
     }
@@ -248,23 +250,55 @@ UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, con
 
 void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration& C, const EventSet& D)
 {
-  const EventSet C_union_D              = C.get_events().make_union(D);
-  const EventSet es_immediate_conflicts = this->unfolding.get_immediate_conflicts_of(e);
-  const EventSet Q_CDU                  = C_union_D.make_union(es_immediate_conflicts.get_local_config());
+  // // The "clean-up set" conceptually represents
+  // // those events which will no longer be considered
+  // // by UDPOR during its exploration. The concept is
+  // // introduced to avoid modification during iteration
+  // // over the current unfolding to determine who needs to
+  // // be removed. Since sets are unordered, it's quite possible
+  // // that e.g. two events `e` and `e'` such that `e < e'`
+  // // which are determined eligible for removal are removed
+  // // in the order `e` and then `e'`. Determining that `e'`
+  // // needs to be removed requires that its history be in
+  // // tact to e.g. compute the conflicts with the event.
+  // //
+  // // Thus, we compute the set and remove all of the events
+  // // at once in lieu of removing events while iterating over them.
+  // // We can hypothesize that processing the events in reverse
+  // // topological order would prevent any issues concerning
+  // // the order in which are processed
+  // EventSet clean_up_set;
 
-  // Move {e} \ Q_CDU from U to G
-  if (not Q_CDU.contains(e)) {
-    XBT_DEBUG("Removing %s from U to G...", e->to_string().c_str());
-    this->unfolding.remove(e);
-  }
+  // // Q_(C, D, U) = C u D u U (complicated expression)
+  // // See page 9 of "Unfolding-based Partial Order Reduction"
 
-  // foreach ê in #ⁱ_U(e)
-  for (const auto* e_hat : es_immediate_conflicts) {
-    // Move [ê] \ Q_CDU from U to G
-    const EventSet to_remove = e_hat->get_history().subtracting(Q_CDU);
-    XBT_DEBUG("Removing {%s} from U to G...", to_remove.to_string().c_str());
-    this->unfolding.remove(to_remove);
-  }
+  // // "C u D" portion
+  // const EventSet C_union_D = C.get_events().make_union(D);
+
+  // // "U (complicated expression)" portion
+  // const EventSet conflict_union = std::accumulate(
+  //     C_union_D.begin(), C_union_D.end(), EventSet(), [&](const EventSet acc, const UnfoldingEvent* e_prime) {
+  //       return acc.make_union(unfolding.get_immediate_conflicts_of(e_prime));
+  //     });
+
+  // const EventSet Q_CDU = C_union_D.make_union(conflict_union.get_local_config());
+
+  // XBT_DEBUG("Computed Q_CDU as '%s'", Q_CDU.to_string().c_str());
+
+  // // Move {e} \ Q_CDU from U to G
+  // if (not Q_CDU.contains(e)) {
+  //   XBT_DEBUG("Moving %s from U to G...", e->to_string().c_str());
+  //   clean_up_set.insert(e);
+  // }
+
+  // // foreach ê in #ⁱ_U(e)
+  // for (const auto* e_hat : this->unfolding.get_immediate_conflicts_of(e)) {
+  //   // Move [ê] \ Q_CDU from U to G
+  //   const EventSet to_remove = e_hat->get_history().subtracting(Q_CDU);
+  //   XBT_DEBUG("Moving {%s} from U to G...", to_remove.to_string().c_str());
+  //   clean_up_set.form_union(to_remove);
+  // }
+  // // this->unfolding.remove(clean_up_set);
 }
 
 RecordTrace UdporChecker::get_record_trace()

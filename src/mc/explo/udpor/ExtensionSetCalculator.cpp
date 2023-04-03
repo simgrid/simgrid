@@ -151,15 +151,15 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
   // in `C`. The issuer of the `CommWait` in `C` is the event in `C`
   // whose transition is the `CommRecv` or `CommSend` whose resulting
   // communication this `CommWait` waits on
-  const auto issuer = std::find_if(C.begin(), C.end(), [=](const UnfoldingEvent* e) {
+  const auto issuer = std::find_if(C.begin(), C.end(), [&](const UnfoldingEvent* e) {
     if (const CommRecvTransition* e_issuer_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition());
         e_issuer_receive != nullptr) {
-      return wait_comm == e_issuer_receive->get_comm();
+      return e_issuer_receive->aid_ == wait_action->aid_ && wait_comm == e_issuer_receive->get_comm();
     }
 
     if (const CommSendTransition* e_issuer_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
         e_issuer_send != nullptr) {
-      return wait_comm == e_issuer_send->get_comm();
+      return e_issuer_send->aid_ == wait_action->aid_ && wait_comm == e_issuer_send->get_comm();
     }
 
     return false;
@@ -331,7 +331,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
         continue;
       }
 
-      const auto issuer_mailbox        = e_issuer_send->get_mailbox();
+      const auto issuer_mailbox        = e_issuer_recv->get_mailbox();
       const CommSendTransition* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
       if (e_send->get_mailbox() != issuer_mailbox) {
         continue;
