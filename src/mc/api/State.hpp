@@ -54,6 +54,8 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   std::map<aid_t, Transition> sleep_set_;
 
 public:
+  bool is_opened = false;
+
   explicit State(RemoteApp& remote_app);
   explicit State(RemoteApp& remote_app, std::shared_ptr<State> parent_state);
   /* Returns a positive number if there is another transition to pick, or -1 if not */

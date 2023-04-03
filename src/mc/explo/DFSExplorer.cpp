@@ -174,9 +174,10 @@ void DFSExplorer::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_VERB("Execute %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves out of %zu enabled)",
+    XBT_VERB("Execute %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves out of %zu enabled, %zu alternatives "
+             "to explore after)",
              state->get_transition()->aid_, state->get_transition()->to_string().c_str(), stack_.size(),
-             state->get_num(), state->count_todo(), state->get_actor_count());
+             state->get_num(), state->count_todo(), state->get_actor_count(), opened_states_.size());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     std::shared_ptr<State> next_state = std::make_shared<State>(get_remote_app(), state);
@@ -212,7 +213,10 @@ void DFSExplorer::run()
           if (prev_state->is_actor_enabled(issuer_id)) {
             if (not prev_state->is_actor_done(issuer_id)) {
               prev_state->consider_one(issuer_id);
-              opened_states_.push(std::shared_ptr<State>(tmp_stack.back()));
+              if (not tmp_stack.back()->is_opened) {
+                opened_states_.push(std::shared_ptr<State>(tmp_stack.back()));
+                tmp_stack.back()->is_opened = true;
+              }
             } else
               XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
           } else {
@@ -220,8 +224,10 @@ void DFSExplorer::run()
                       "transition as todo",
                       issuer_id);
             // If we ended up marking at least a transition, explore it at some point
-            if (prev_state->consider_all() > 0)
+            if (prev_state->consider_all() > 0 and not tmp_stack.back()->is_opened) {
               opened_states_.push(std::shared_ptr<State>(tmp_stack.back()));
+              tmp_stack.back()->is_opened = true;
+            }
           }
           break;
         } else {
@@ -235,8 +241,10 @@ void DFSExplorer::run()
 
     // Before leaving that state, if the transition we just took can be taken multiple times, we
     // need to give it to the opened states
-    if (stack_.back()->count_todo_multiples() > 0)
+    if (stack_.back()->count_todo_multiples() > 0 and not stack_.back()->is_opened) {
       opened_states_.push(std::shared_ptr<State>(stack_.back()));
+      stack_.back()->is_opened = true;
+    }
 
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
@@ -307,10 +315,13 @@ void DFSExplorer::backtrack()
   get_remote_app().restore_initial_state();
   on_restore_initial_state_signal(get_remote_app());
   /* Traverse the stack from the state at position start and re-execute the transitions */
-  for (auto& state : backtracking_point->get_recipe()) {
-    state->replay(get_remote_app());
-    on_transition_replay_signal(state, get_remote_app());
+  long i = 1;
+  for (auto& transition : backtracking_point->get_recipe()) {
+    transition->replay(get_remote_app());
+    on_transition_replay_signal(transition, get_remote_app());
+    XBT_DEBUG("[Backtracking in progress] executing state #%ld/#%ld", i, backtracking_point->get_num());
     visited_states_count_++;
+    i++;
   }
   this->restore_stack(backtracking_point);
 }

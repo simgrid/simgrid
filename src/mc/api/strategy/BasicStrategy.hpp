@@ -7,6 +7,8 @@
 #define SIMGRID_MC_BASICSTRATEGY_HPP
 
 #include "src/mc/transition/Transition.hpp"
+#include "src/mc/transition/TransitionAny.hpp"
+#include "src/mc/transition/TransitionComm.hpp"
 
 namespace simgrid::mc {
 
@@ -27,14 +29,23 @@ public:
         return std::make_pair(aid, 0.0);
 
       double dist;
+
+      TestAnyTransition* transition =
+          static_cast<TestAnyTransition*>(actor.get_transition(actor.get_times_considered()));
+
       auto iterator = penalties_.find(aid);
       if (iterator != penalties_.end())
         dist = (*iterator).second;
       else
         dist = 0;
+
+      if (not transition->result())
+        dist += 5000;
+
       if (dist < min.second)
         min = std::make_pair(aid, dist);
     }
+
     if (min.first == -1)
       return std::make_pair(-1, -1000);
     return min;
@@ -45,9 +56,15 @@ public:
   void execute_next(aid_t aid, RemoteApp& app) override
   {
     auto actor = actors_to_run_.at(aid);
-    if (actor.get_transition(actor.get_times_considered())->type_ == Transition::Type::TESTANY)
-      penalties_[aid] = penalties_[aid] + 1.0;
-    return;
+    if (actor.get_transition(actor.get_times_considered())->type_ == Transition::Type::TESTANY) {
+      TestAnyTransition* transition =
+          static_cast<TestAnyTransition*>(actor.get_transition(actor.get_times_considered()));
+      if (not transition->result()) {
+        penalties_[aid] = penalties_[aid] + 1.0;
+        return;
+      }
+    }
+    penalties_[aid] = 0;
   }
 
   void consider_best() override
