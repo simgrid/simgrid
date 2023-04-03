@@ -475,7 +475,7 @@ else()
   endif()
 endif()
 # If the test ran well, remove the test binary
-file(REMOVE test_stackgrowth)
+file(REMOVE ${CMAKE_BINARY_DIR}/test_stackgrowth)
 #--------------------------------------------------------------------------------------------------
 
 ###############
