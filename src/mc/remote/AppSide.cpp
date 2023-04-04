@@ -156,11 +156,11 @@ void AppSide::handle_fork(const s_mc_message_int_t* msg)
 
   if (pid == 0) { // Child
     int sock = socket(AF_UNIX,
-                      SOCK_STREAM
-#ifdef SOCK_CLOEXEC
-                          | SOCK_CLOEXEC /* MacOSX does not have it */
+#ifdef __APPLE__
+                      SOCK_STREAM, /* Mac OSX does not have AF_UNIX + SOCK_SEQPACKET, even if that's faster*/
+#else
+                      SOCK_SEQPACKET,
 #endif
-                      ,
                       0);
 
     struct sockaddr_un addr = {};

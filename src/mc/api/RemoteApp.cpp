@@ -49,11 +49,11 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
 #endif
   } else {
     master_socket_ = socket(AF_UNIX,
-                            SOCK_STREAM
-#ifdef SOCK_CLOEXEC
-                                | SOCK_CLOEXEC /* MacOSX does not have it */
+#ifdef __APPLE__
+                            SOCK_STREAM, /* Mac OSX does not have AF_UNIX + SOCK_SEQPACKET, even if that's faster*/
+#else
+                            SOCK_SEQPACKET,
 #endif
-                            ,
                             0);
     xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
 

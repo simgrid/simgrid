@@ -182,7 +182,14 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) 
   // Create an AF_UNIX socketpair used for exchanging messages between the model-checker process (ancestor)
   // and the application process (child)
   int sockets[2];
-  xbt_assert(socketpair(AF_UNIX, SOCK_STREAM, 0, sockets) != -1, "Could not create socketpair: %s", strerror(errno));
+  xbt_assert(socketpair(AF_UNIX,
+#ifdef __APPLE__
+                        SOCK_STREAM, /* Mac OSX does not have AF_UNIX + SOCK_SEQPACKET, even if that's faster*/
+#else
+                        SOCK_SEQPACKET,
+#endif
+                        0, sockets) != -1,
+             "Could not create socketpair: %s", strerror(errno));
 
   pid_ = fork();
   xbt_assert(pid_ >= 0, "Could not fork application process");
