@@ -244,7 +244,7 @@ std::string EventSet::to_string() const
 
   for (const auto* event : *this) {
     contents += event->to_string();
-    contents += "\n";
+    contents += " + ";
   }
 
   return contents;

@@ -115,7 +115,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& 
   // Com contains a matching c' = AsyncReceive(m, _) with a
   for (const auto e : C) {
     const bool transition_type_check = [&]() {
-      if (const auto* async_recv = dynamic_cast<const CommSendTransition*>(e->get_transition());
+      if (const auto* async_recv = dynamic_cast<const CommRecvTransition*>(e->get_transition());
           async_recv != nullptr && async_recv->get_mailbox() == recv_mailbox) {
         return true;
       }
