@@ -218,7 +218,7 @@ void DFSExplorer::run()
           if (prev_state->is_actor_enabled(issuer_id)) {
             if (not prev_state->is_actor_done(issuer_id)) {
               prev_state->consider_one(issuer_id);
-              opened_states_.push(std::shared_ptr<State>(tmp_stack.back()));
+              opened_states_.emplace(tmp_stack.back());
             } else
               XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
           } else {
@@ -227,7 +227,7 @@ void DFSExplorer::run()
                       issuer_id);
             // If we ended up marking at least a transition, explore it at some point
             if (prev_state->consider_all() > 0)
-              opened_states_.push(std::shared_ptr<State>(tmp_stack.back()));
+              opened_states_.emplace(tmp_stack.back());
           }
           break;
         } else {
@@ -242,7 +242,7 @@ void DFSExplorer::run()
     // Before leaving that state, if the transition we just took can be taken multiple times, we
     // need to give it to the opened states
     if (stack_.back()->count_todo_multiples() > 0)
-      opened_states_.push(std::shared_ptr<State>(stack_.back()));
+      opened_states_.emplace(stack_.back());
 
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
@@ -292,8 +292,8 @@ void DFSExplorer::backtrack()
     return;
   }
 
-  std::shared_ptr<State> backtracking_point = opened_states_.top(); // Take the point with smallest distance
-  opened_states_.pop();
+  // Take the point with smallest distance
+  auto backtracking_point = opened_states_.extract(begin(opened_states_)).value();
 
   // if the smallest distance corresponded to no enable actor, remove this and let the
   // exploration ask again for a backtrack
@@ -361,7 +361,7 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor, bool ne
     stack_.back()->consider_all();
   }
   if (stack_.back()->count_todo_multiples() > 1)
-    opened_states_.push(std::shared_ptr<State>(stack_.back()));
+    opened_states_.emplace(stack_.back());
 }
 
 Exploration* create_dfs_exploration(const std::vector<char*>& args, bool with_dpor)
