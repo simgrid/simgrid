@@ -60,13 +60,6 @@ AppSide* AppSide::get()
   int fd             = xbt_str_parse_int(fd_env, "Not a number in variable '" MC_ENV_SOCKET_FD "'");
   XBT_DEBUG("Model-checked application found socket FD %i", fd);
 
-  // Check the socket type/validity:
-  int type;
-  socklen_t socklen = sizeof(type);
-  xbt_assert(getsockopt(fd, SOL_SOCKET, SO_TYPE, &type, &socklen) == 0, "Could not check socket type");
-  xbt_assert(type == SOCK_SEQPACKET, "Unexpected socket type %i", type);
-  XBT_DEBUG("Model-checked application found expected socket type");
-
   instance_ = std::make_unique<simgrid::mc::AppSide>(fd);
 
   // Wait for the model-checker:
@@ -162,8 +155,8 @@ void AppSide::handle_fork(const s_mc_message_int_t* msg)
   xbt_assert(pid >= 0, "Could not fork application sub-process: %s.", strerror(errno));
 
   if (pid == 0) { // Child
-    int sock = socket(AF_LOCAL,
-                      SOCK_SEQPACKET
+    int sock = socket(AF_UNIX,
+                      SOCK_STREAM
 #ifdef SOCK_CLOEXEC
                           | SOCK_CLOEXEC /* MacOSX does not have it */
 #endif
@@ -171,7 +164,7 @@ void AppSide::handle_fork(const s_mc_message_int_t* msg)
                       0);
 
     struct sockaddr_un addr = {};
-    addr.sun_family         = AF_LOCAL;
+    addr.sun_family         = AF_UNIX;
     snprintf(addr.sun_path, 64, "/tmp/simgrid-mc-%lu", static_cast<unsigned long>(msg->value));
     auto addr_size = offsetof(struct sockaddr_un, sun_path) + strlen(addr.sun_path);
 

@@ -36,7 +36,7 @@ constexpr unsigned SIMCALL_SERIALIZATION_BUFFER_SIZE = 2048;
 
 /** Basic structure for a MC message
  *
- *  The current version of the client/server protocol sends C structures over `AF_LOCAL`
+ *  The current version of the client/server protocol sends C structures over `AF_UNIX`
  *  `SOCK_SEQPACKET` sockets. This means that the protocol is ABI/architecture specific:
  *  we currently can't model-check a x86 process from a x86_64 process.
  *

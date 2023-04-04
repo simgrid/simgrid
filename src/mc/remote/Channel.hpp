@@ -20,10 +20,12 @@ namespace simgrid::mc {
 class Channel {
   int socket_ = -1;
   template <class M> static constexpr bool messageType() { return std::is_class_v<M> && std::is_trivial_v<M>; }
+  std::vector<char> buffer_;
 
 public:
   Channel() = default;
   explicit Channel(int sock) : socket_(sock) {}
+  Channel(int sock, Channel const& other);
   ~Channel();
 
   // No copy:
@@ -44,11 +46,13 @@ public:
   }
 
   // Receive
-  ssize_t receive(void* message, size_t size) const;
-  template <class M> typename std::enable_if_t<messageType<M>(), ssize_t> receive(M& m) const
+  ssize_t receive(const void* message, size_t size, int flags = 0);
+  template <class M> typename std::enable_if_t<messageType<M>(), ssize_t> receive(M& m)
   {
-    return this->receive(&m, sizeof(M));
+    return this->receive(&m, sizeof(M), 0);
   }
+  void reinject(const char* data, size_t size);
+  bool has_pending_data() const { return not buffer_.empty(); }
 
   // Socket handling
   int get_socket() const { return socket_; }

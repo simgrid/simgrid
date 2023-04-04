@@ -48,8 +48,8 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
     xbt_die("SimGrid was compiled without MC support.");
 #endif
   } else {
-    master_socket_ = socket(AF_LOCAL,
-                            SOCK_SEQPACKET
+    master_socket_ = socket(AF_UNIX,
+                            SOCK_STREAM
 #ifdef SOCK_CLOEXEC
                                 | SOCK_CLOEXEC /* MacOSX does not have it */
 #endif
@@ -58,7 +58,7 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
     xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
 
     struct sockaddr_un serv_addr = {};
-    serv_addr.sun_family         = AF_LOCAL;
+    serv_addr.sun_family         = AF_UNIX;
     snprintf(serv_addr.sun_path, 64, "/tmp/simgrid-mc-%d", getpid());
     strcpy(master_socket_name, serv_addr.sun_path);
     auto addr_size = offsetof(struct sockaddr_un, sun_path) + strlen(serv_addr.sun_path);
@@ -122,7 +122,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   xbt_assert(answer_size != -1, "Could not receive message");
   xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
   xbt_assert(answer.type == MessageType::ACTORS_STATUS_REPLY_COUNT,
-             "Received unexpected message %s (%i); expected MessageType::ACTORS_STATUS_REPLY_COUNT (%i)",
+             "%d Received unexpected message %s (%i); expected MessageType::ACTORS_STATUS_REPLY_COUNT (%i)", getpid(),
              to_c_str(answer.type), (int)answer.type, (int)MessageType::ACTORS_STATUS_REPLY_COUNT);
 
   // Message sanity checks
