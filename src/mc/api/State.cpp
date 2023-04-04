@@ -121,7 +121,7 @@ aid_t State::next_transition() const
   return -1;
 }
 
-std::pair<aid_t, double> State::next_transition_guided() const
+std::pair<aid_t, int> State::next_transition_guided() const
 {
   return strategy_->next_transition();
 }

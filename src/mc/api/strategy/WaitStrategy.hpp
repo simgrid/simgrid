@@ -13,8 +13,8 @@ namespace simgrid::mc {
 /** Wait MC guiding class that aims at minimizing the number of in-fly communication.
  *  When possible, it will try to take the wait transition. */
 class WaitStrategy : public Strategy {
-  double taken_wait_ = 0;
-  bool taking_wait_  = false;
+  int taken_wait_   = 0;
+  bool taking_wait_ = false;
 
 public:
   void operator=(const WaitStrategy& guide) { taken_wait_ = guide.taken_wait_; }
@@ -25,9 +25,9 @@ public:
            type == Transition::Type::MUTEX_WAIT or type == Transition::Type::SEM_WAIT;
   }
 
-  std::pair<aid_t, double> next_transition() const override
+  std::pair<aid_t, int> next_transition() const override
   {
-    std::pair<aid_t, double> if_no_wait = std::make_pair(-1, 0.0);
+    std::pair<aid_t, int> if_no_wait = std::make_pair(-1, 0);
     for (auto const& [aid, actor] : actors_to_run_) {
       if (not actor.is_todo() || not actor.is_enabled() || actor.is_done())
         continue;

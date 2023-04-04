@@ -23,9 +23,9 @@ public:
     return;
   }
 
-  virtual std::pair<aid_t, double> next_transition() const = 0;
-  virtual void execute_next(aid_t aid, RemoteApp& app)     = 0;
-  virtual void consider_best()                             = 0;
+  virtual std::pair<aid_t, int> next_transition() const = 0;
+  virtual void execute_next(aid_t aid, RemoteApp& app)  = 0;
+  virtual void consider_best()                          = 0;
 
   // Mark the first enabled and not yet done transition as todo
   // If there's already a transition marked as todo, does nothing

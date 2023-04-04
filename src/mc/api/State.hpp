@@ -62,9 +62,9 @@ public:
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const; // this function should disapear as it is redundant with the next one
 
-  /* Same as next_transition, but choice is now guided, and a double corresponding to the
+  /* Same as next_transition, but choice is now guided, and an integer corresponding to the
    internal cost of the transition is returned */
-  std::pair<aid_t, double> next_transition_guided() const;
+  std::pair<aid_t, int> next_transition_guided() const;
 
   /* Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
    * next_transition() */
