@@ -18,7 +18,7 @@
 
 /** Environment variable name defined when ptrace(2) is used to control the MCed process.
  */
-#define MC_ENV_NEED_PTRACE "MC_NEED_PTRACE"
+#define MC_ENV_NEED_PTRACE "SIMGRID_MC_NEED_PTRACE"
 
 /** Environment variable used to request additional system statistics.
  */
