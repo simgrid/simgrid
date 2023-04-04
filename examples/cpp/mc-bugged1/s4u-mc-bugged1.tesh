@@ -13,6 +13,10 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-bugged1 ${platfdir:=.
 > [  0.000000] (1:server@HostA) OK
 > [  0.000000] (4:client@HostD) Sent!
 > [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (0:maestro@) **************************
 > [  0.000000] (0:maestro@) *** PROPERTY NOT VALID ***
 > [  0.000000] (0:maestro@) **************************
@@ -28,4 +32,4 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-bugged1 ${platfdir:=.
 > [  0.000000] (0:maestro@)   3: iSend(mbox=0)
 > [  0.000000] (0:maestro@)   1: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [  0.000000] (0:maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;4;1;1;2;1;1;2;3;1'
-> [  0.000000] (0:maestro@) DFS exploration ended. 32 unique states visited; 2 backtracks (36 transition replays, 2 states visited overall)
+> [  0.000000] (0:maestro@) DFS exploration ended. 41 unique states visited; 3 backtracks (49 transition replays, 5 states visited overall)
