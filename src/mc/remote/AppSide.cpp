@@ -179,7 +179,7 @@ void AppSide::handle_fork(const s_mc_message_int_t* msg)
     answer.value              = getpid();
     xbt_assert(channel_.send(answer) == 0, "Could not send response to WAIT_CHILD_REPLY: %s", strerror(errno));
   } else {
-    XBT_DEBUG("App %d forks subprocess %d.", getpid(), pid);
+    XBT_VERB("App %d forks subprocess %d.", getpid(), pid);
   }
 }
 void AppSide::handle_wait_child(const s_mc_message_int_t* msg)
