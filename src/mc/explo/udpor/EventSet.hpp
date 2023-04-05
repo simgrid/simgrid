@@ -65,6 +65,7 @@ public:
   bool empty() const;
   bool contains(const UnfoldingEvent*) const;
   bool contains(const History&) const;
+  bool intersects(const EventSet&) const;
   bool intersects(const History&) const;
   bool is_subset_of(const EventSet&) const;
 

@@ -27,6 +27,7 @@ public:
   auto cend() const { return this->event_handles.cend(); }
   size_t size() const { return this->event_handles.size(); }
   bool empty() const { return this->event_handles.empty(); }
+  bool contains(const UnfoldingEvent* e) const { return this->event_handles.contains(e); }
 
   void remove(const UnfoldingEvent* e);
   void remove(const EventSet& events);

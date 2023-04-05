@@ -53,7 +53,7 @@ EventSet Unfolding::get_immediate_conflicts_of(const UnfoldingEvent* e) const
   EventSet immediate_conflicts;
   for (const auto event : *this) {
     if (event->immediately_conflicts_with(e)) {
-      immediate_conflicts.insert(e);
+      immediate_conflicts.insert(event);
     }
   }
   return immediate_conflicts;

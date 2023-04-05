@@ -250,55 +250,70 @@ UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, con
 
 void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration& C, const EventSet& D)
 {
-  // // The "clean-up set" conceptually represents
-  // // those events which will no longer be considered
-  // // by UDPOR during its exploration. The concept is
-  // // introduced to avoid modification during iteration
-  // // over the current unfolding to determine who needs to
-  // // be removed. Since sets are unordered, it's quite possible
-  // // that e.g. two events `e` and `e'` such that `e < e'`
-  // // which are determined eligible for removal are removed
-  // // in the order `e` and then `e'`. Determining that `e'`
-  // // needs to be removed requires that its history be in
-  // // tact to e.g. compute the conflicts with the event.
-  // //
-  // // Thus, we compute the set and remove all of the events
-  // // at once in lieu of removing events while iterating over them.
-  // // We can hypothesize that processing the events in reverse
-  // // topological order would prevent any issues concerning
-  // // the order in which are processed
-  // EventSet clean_up_set;
+  // The "clean-up set" conceptually represents
+  // those events which will no longer be considered
+  // by UDPOR during its exploration. The concept is
+  // introduced to avoid modification during iteration
+  // over the current unfolding to determine who needs to
+  // be removed. Since sets are unordered, it's quite possible
+  // that e.g. two events `e` and `e'` such that `e < e'`
+  // which are determined eligible for removal are removed
+  // in the order `e` and then `e'`. Determining that `e'`
+  // needs to be removed requires that its history be in
+  // tact to e.g. compute the conflicts with the event.
+  //
+  // Thus, we compute the set and remove all of the events
+  // at once in lieu of removing events while iterating over them.
+  // We can hypothesize that processing the events in reverse
+  // topological order would prevent any issues concerning
+  // the order in which are processed
+  EventSet clean_up_set;
 
-  // // Q_(C, D, U) = C u D u U (complicated expression)
-  // // See page 9 of "Unfolding-based Partial Order Reduction"
+  // Q_(C, D, U) = C u D u U (complicated expression)
+  // See page 9 of "Unfolding-based Partial Order Reduction"
 
-  // // "C u D" portion
-  // const EventSet C_union_D = C.get_events().make_union(D);
+  // "C u D" portion
+  const EventSet C_union_D = C.get_events().make_union(D);
 
-  // // "U (complicated expression)" portion
-  // const EventSet conflict_union = std::accumulate(
-  //     C_union_D.begin(), C_union_D.end(), EventSet(), [&](const EventSet acc, const UnfoldingEvent* e_prime) {
-  //       return acc.make_union(unfolding.get_immediate_conflicts_of(e_prime));
-  //     });
+  // "U (complicated expression)" portion
+  const EventSet conflict_union = std::accumulate(
+      C_union_D.begin(), C_union_D.end(), EventSet(), [&](const EventSet acc, const UnfoldingEvent* e_prime) {
+        return acc.make_union(unfolding.get_immediate_conflicts_of(e_prime));
+      });
 
-  // const EventSet Q_CDU = C_union_D.make_union(conflict_union.get_local_config());
+  const EventSet Q_CDU = C_union_D.make_union(conflict_union.get_local_config());
 
-  // XBT_DEBUG("Computed Q_CDU as '%s'", Q_CDU.to_string().c_str());
+  XBT_DEBUG("Computed Q_CDU as '%s'", Q_CDU.to_string().c_str());
 
-  // // Move {e} \ Q_CDU from U to G
-  // if (not Q_CDU.contains(e)) {
-  //   XBT_DEBUG("Moving %s from U to G...", e->to_string().c_str());
-  //   clean_up_set.insert(e);
-  // }
+  // Move {e} \ Q_CDU from U to G
+  if (not Q_CDU.contains(e)) {
+    XBT_DEBUG("Moving %s from U to G...", e->to_string().c_str());
+    clean_up_set.insert(e);
+  }
 
-  // // foreach ê in #ⁱ_U(e)
-  // for (const auto* e_hat : this->unfolding.get_immediate_conflicts_of(e)) {
-  //   // Move [ê] \ Q_CDU from U to G
-  //   const EventSet to_remove = e_hat->get_local_config().subtracting(Q_CDU);
-  //   XBT_DEBUG("Moving {%s} from U to G...", to_remove.to_string().c_str());
-  //   clean_up_set.form_union(to_remove);
-  // }
-  // // this->unfolding.remove(clean_up_set);
+  // foreach ê in #ⁱ_U(e)
+  for (const auto* e_hat : this->unfolding.get_immediate_conflicts_of(e)) {
+    // Move [ê] \ Q_CDU from U to G
+    const EventSet to_remove = e_hat->get_local_config().subtracting(Q_CDU);
+    XBT_DEBUG("Moving {%s} from U to G...", to_remove.to_string().c_str());
+    clean_up_set.form_union(to_remove);
+  }
+  // TODO: We compute everything... but we don't actually
+  // remove anything yet. This is a workaround until
+  // we figure out how to deal with the fact that the previous
+  // extension sets computed for past configurations
+  // contain events that may be removed from `U`. Perhaps
+  // it would be best to keep them around forever (they
+  // are moved to `G` after all and can be discarded at will,
+  // which means they may never have to be removed at all).
+  //
+  // Of course, the benefit of moving them into the set `G`
+  // is that the computation for immediate conflicts becomes
+  // more efficient (we have to search all of `U` for such conflicts,
+  // and there would be no reason to search those events
+  // that UDPOR has marked as no longer being important)
+  //
+  // this->unfolding.remove(clean_up_set);
 }
 
 RecordTrace UdporChecker::get_record_trace()

@@ -6,6 +6,8 @@
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/explo/udpor/History.hpp"
 
+#include <xbt/asserts.h>
+#include <xbt/log.h>
 #include <xbt/string.hpp>
 
 namespace simgrid::mc::udpor {
@@ -52,7 +54,7 @@ std::string UnfoldingEvent::to_string() const
   }
   dependencies_string += "]";
 
-  return xbt::string_printf("Actor %ld: %s (%zu dependencies: %s)", associated_transition->aid_,
+  return xbt::string_printf("(%p) Actor %ld: %s (%zu dependencies: %s)", this, associated_transition->aid_,
                             associated_transition->to_string().c_str(), immediate_causes.size(),
                             dependencies_string.c_str());
 }
