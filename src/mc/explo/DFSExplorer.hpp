@@ -21,7 +21,7 @@
 
 namespace simgrid::mc {
 
-typedef std::list<std::shared_ptr<State>> stack_t;
+using stack_t = std::list<std::shared_ptr<State>>;
 
 /* Used to compare two stacks and decide which one is better to backtrack,
  * regarding the chosen guide in the last state. */
@@ -34,7 +34,6 @@ public:
 };
 
 class XBT_PRIVATE DFSExplorer : public Exploration {
-
   XBT_DECLARE_ENUM_CLASS(ReductionMode, none, dpor);
 
   ReductionMode reduction_mode_;

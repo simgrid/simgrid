@@ -88,14 +88,13 @@ std::vector<std::string> DFSExplorer::get_textual_trace() // override
 
 void DFSExplorer::restore_stack(std::shared_ptr<State> state)
 {
-
-  stack_ = std::list<std::shared_ptr<State>>();
-  std::shared_ptr<State> current_state(state);
-  stack_.push_front(std::shared_ptr<State>(current_state));
+  stack_.clear();
+  auto current_state = state;
+  stack_.emplace_front(current_state);
   // condition corresponds to reaching initial state
   while (current_state->get_parent_state() != nullptr) {
     current_state = current_state->get_parent_state();
-    stack_.push_front(std::shared_ptr<State>(current_state));
+    stack_.emplace_front(current_state);
   }
   XBT_DEBUG("Replaced stack by %s", get_record_trace().to_string().c_str());
 }
@@ -119,7 +118,7 @@ void DFSExplorer::run()
 
   while (not stack_.empty()) {
     /* Get current state */
-    std::shared_ptr<State> state(stack_.back());
+    auto state = stack_.back();
 
     XBT_DEBUG("**************************************************");
     XBT_DEBUG("Exploration depth=%zu (state:#%ld; %zu interleaves todo)", stack_.size(), state->get_num(),
@@ -185,7 +184,7 @@ void DFSExplorer::run()
              state->get_transition()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    std::shared_ptr<State> next_state = std::make_shared<State>(get_remote_app(), state);
+    auto next_state = std::make_shared<State>(get_remote_app(), state);
     on_state_creation_signal(next_state.get(), get_remote_app());
 
     /* Sleep set procedure:
@@ -202,10 +201,10 @@ void DFSExplorer::run()
      * If the process is not enabled at this  point, then add every enabled process to the interleave */
     if (reduction_mode_ == ReductionMode::dpor) {
       aid_t issuer_id   = state->get_transition()->aid_;
-      stack_t tmp_stack = std::list(stack_);
+      stack_t tmp_stack = stack_;
       while (not tmp_stack.empty()) {
-        State* prev_state = tmp_stack.back().get();
-        if (state->get_transition()->aid_ == prev_state->get_transition()->aid_) {
+        if (State* prev_state = tmp_stack.back().get();
+            state->get_transition()->aid_ == prev_state->get_transition()->aid_) {
           XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->get_transition()->to_string().c_str(),
                     prev_state->get_transition()->to_string().c_str(), issuer_id);
           tmp_stack.pop_back();
@@ -253,7 +252,7 @@ void DFSExplorer::run()
       visited_state_ = visited_states_.addVisitedState(next_state->get_num(), next_state.get(), get_remote_app());
 #endif
 
-    stack_.push_back(std::move(next_state));
+    stack_.emplace_back(std::move(next_state));
 
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
@@ -288,7 +287,7 @@ void DFSExplorer::backtrack()
   // if no backtracking point, then set the stack_ to empty so we can end the exploration
   if (opened_states_.empty()) {
     XBT_DEBUG("No more opened point of exploration, the search will end");
-    stack_ = std::list<std::shared_ptr<State>>();
+    stack_.clear();
     return;
   }
 
@@ -351,7 +350,7 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor, bool ne
 
   XBT_DEBUG("**************************************************");
 
-  stack_.push_back(std::move(initial_state));
+  stack_.emplace_back(std::move(initial_state));
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   XBT_DEBUG("Initial state. %lu actors to consider", stack_.back()->get_actor_count());
