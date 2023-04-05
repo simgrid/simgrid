@@ -47,6 +47,7 @@ $ ${bindir:=.}/s4u-network-ns3 ${platfdir}/onelink.xml ${srcdir}/onelink_d.xml -
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
 > [C1:worker(2)] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
 
+! output sort
 p Crosstraffic TCP option DISABLED
 $ ${bindir:=.}/s4u-network-ns3 ${platfdir}/crosstraffic.xml ${srcdir}/crosstraffic_d.xml --cfg=network/model:ns-3 --cfg=network/crosstraffic:0 "--log=root.fmt:[%h:%a(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
@@ -56,6 +57,7 @@ $ ${bindir:=.}/s4u-network-ns3 ${platfdir}/crosstraffic.xml ${srcdir}/crosstraff
 > [C1:worker(6)] [s4u_test/INFO] FLOW[3] : Receive 10000 bytes from S1 to C1
 > [S1:worker(8)] [s4u_test/INFO] FLOW[4] : Receive 10000 bytes from C1 to S1
 
+! output sort
 p Crosstraffic TCP option ENABLED
 $ ${bindir:=.}/s4u-network-ns3 ${platfdir}/crosstraffic.xml ${srcdir}/crosstraffic_d.xml --cfg=network/model:ns-3 --cfg=network/crosstraffic:1 "--log=root.fmt:[%h:%a(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
