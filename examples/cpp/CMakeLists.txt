@@ -116,7 +116,16 @@ if (NOT SIMGRID_HAVE_JSON)
   set(_dag-from-json-simple_disable 1)
 endif()
 
-if(NOT SIMGRID_HAVE_NS3)
+if(SIMGRID_HAVE_NS3)
+  if(NS3_VERSION VERSION_GREATER_EQUAL 3.37)
+    set(_network-ns3_teshfile         ${CMAKE_HOME_DIRECTORY}/examples/cpp/network-ns3/s4u-network-ns3-timed.tesh)
+    set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/cpp/network-ns3/s4u-network-ns3-notime.tesh)
+  else()
+    set(_network-ns3_teshfile         ${CMAKE_HOME_DIRECTORY}/examples/cpp/network-ns3/s4u-network-ns3-notime.tesh)
+    set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/cpp/network-ns3/s4u-network-ns3-timed.tesh)
+  endif()
+
+else()
   foreach (example network-ns3 network-ns3-wifi)
     set(_${example}_disable 1)
   endforeach()
@@ -154,6 +163,11 @@ foreach (example activity-testany activity-waitany
     set(_${example}_sources ${example}/s4u-${example}.cpp)
   endif()
 
+  # Use default tesh file unless specified otherwise
+  if(NOT DEFINED _${example}_teshfile)
+    set(_${example}_teshfile ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
+  endif()
+
   if(NOT DEFINED _${example}_disable)
     add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${_${example}_sources})
     add_dependencies     (tests s4u-${example})
@@ -173,19 +187,20 @@ foreach (example activity-testany activity-waitany
                                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                       --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
                                       --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                                      ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
+                                      ${_${example}_teshfile})
   else()
     message(STATUS "Example ${example} disabled, thus not compiled.")
     unset(_${example}_disable)
   endif()
 
-  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
+  set(tesh_files    ${tesh_files}    ${_${example}_teshfile})
   foreach(file ${_${example}_sources})
     set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file})
   endforeach()
 
   unset(_${example}_factories)
   unset(_${example}_sources)
+  unset(_${example}_teshfile)
 endforeach()
 
 

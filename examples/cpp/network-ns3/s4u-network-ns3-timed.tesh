@@ -1,7 +1,6 @@
 #!/usr/bin/env tesh
 
-p In the ns-3 tests, the timings are not shown because the exact values may vary with your ns-3 version.
-p We just want to check that the ns-3 bindings of SimGrid are working correctly, we don't want to thoroughly test ns-3.
+p In the ns-3 tests, the timings are valid only with the very latest version of ns3 (the exact values may vary with your ns-3 version).
 
 p 3hosts 2links
 
