@@ -68,14 +68,25 @@ void Exploration::log_state()
       XBT_WARN("Call to system(free) did not return 0, but %d", ret);
   }
 }
-
+// Make our tests fully reproducible despite the subtle differences of strsignal() across archs
+static const char* signal_name(int status)
+{
+  switch (WTERMSIG(status)) {
+    case SIGABRT: // FreeBSD uses "Abort trap" as a strsignal for SIGABRT
+      return "Aborted";
+    case SIGSEGV: // MacOSX uses "Segmentation fault: 11" for SIGKILL
+      return "Segmentation fault";
+    default:
+      return strsignal(WTERMSIG(status));
+  }
+}
 XBT_ATTRIB_NORETURN void Exploration::report_crash(int status)
 {
   XBT_INFO("**************************");
   XBT_INFO("** CRASH IN THE PROGRAM **");
   XBT_INFO("**************************");
-  if (WIFSIGNALED(status)) // FreeBSD use "Abort trap" as a strsignal for SIGABRT that is part of our tests
-    XBT_INFO("From signal: %s", WTERMSIG(status) == SIGABRT ? "Aborted" : strsignal(WTERMSIG(status)));
+  if (WIFSIGNALED(status))
+    XBT_INFO("From signal: %s", signal_name(status));
   else if (WIFEXITED(status))
     XBT_INFO("From exit: %i", WEXITSTATUS(status));
   if (not xbt_log_no_loc)
