@@ -164,7 +164,7 @@ EventSet UdporChecker::compute_enC(const Configuration& C, const EventSet& exC) 
 {
   EventSet enC;
   for (const auto e : exC) {
-    if (not e->conflicts_with(C)) {
+    if (C.is_compatible_with(e)) {
       enC.insert(e);
     }
   }
@@ -294,7 +294,7 @@ void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration
   // // foreach ê in #ⁱ_U(e)
   // for (const auto* e_hat : this->unfolding.get_immediate_conflicts_of(e)) {
   //   // Move [ê] \ Q_CDU from U to G
-  //   const EventSet to_remove = e_hat->get_history().subtracting(Q_CDU);
+  //   const EventSet to_remove = e_hat->get_local_config().subtracting(Q_CDU);
   //   XBT_DEBUG("Moving {%s} from U to G...", to_remove.to_string().c_str());
   //   clean_up_set.form_union(to_remove);
   // }

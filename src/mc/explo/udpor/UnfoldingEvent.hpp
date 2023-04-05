@@ -27,6 +27,7 @@ public:
   UnfoldingEvent(UnfoldingEvent&&)                 = default;
 
   EventSet get_history() const;
+  EventSet get_local_config() const;
   bool in_history_of(const UnfoldingEvent* other) const;
 
   /**
@@ -40,8 +41,8 @@ public:
   bool conflicts_with(const UnfoldingEvent* other) const;
 
   /// @brief Whether or not this event is in conflict with
-  /// any event in the given configuration
-  bool conflicts_with(const Configuration& config) const;
+  /// any event in the given set
+  bool conflicts_with_any(const EventSet& events) const;
 
   /// @brief Computes "this #ⁱ other"
   bool immediately_conflicts_with(const UnfoldingEvent* other) const;

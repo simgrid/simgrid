@@ -96,6 +96,17 @@ public:
    */
   EventSet get_all_maximal_events() const;
 
+  /**
+   * @brief Computes the set of events that are not contained
+   * in the given configuration
+   *
+   * A configuration is a causally-closed, conflict-free set
+   * of events. Thus, you can determine which events lie outside
+   * of a configuration during the search more efficiently: the moment
+   * you discover an event contained in the configuration, you
+   * do not need to search that event or any of its ancestors as
+   * they will all be contained in the configuration
+   */
   EventSet get_event_diff_with(const Configuration& config) const;
 
 private:

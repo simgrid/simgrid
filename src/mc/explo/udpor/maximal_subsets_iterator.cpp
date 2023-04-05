@@ -161,16 +161,16 @@ maximal_subsets_iterator::bookkeeper::find_next_candidate_event(topological_orde
 
 void maximal_subsets_iterator::bookkeeper::mark_included_in_maximal_set(const UnfoldingEvent* e)
 {
-  const auto e_history = e->get_history();
-  for (const auto e_hist : e_history) {
+  const auto e_local_config = e->get_local_config();
+  for (const auto e_hist : e_local_config) {
     event_counts[e_hist]++;
   }
 }
 
 void maximal_subsets_iterator::bookkeeper::mark_removed_from_maximal_set(const UnfoldingEvent* e)
 {
-  const auto e_history = e->get_history();
-  for (const auto e_hist : e_history) {
+  const auto e_local_config = e->get_local_config();
+  for (const auto e_hist : e_local_config) {
     xbt_assert(event_counts.find(e_hist) != event_counts.end(),
                "Invariant Violation: Attempted to remove an event which was not previously added");
     xbt_assert(event_counts[e_hist] > 0, "Invariant Violation: An event `e` had a count of `0` at this point "

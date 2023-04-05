@@ -52,12 +52,19 @@ std::string UnfoldingEvent::to_string() const
   }
   dependencies_string += "]";
 
-  return xbt::string_printf("Actor %ld: %s (%zu dependencies { %s })", associated_transition->aid_,
+  return xbt::string_printf("Actor %ld: %s (%zu dependencies: %s)", associated_transition->aid_,
                             associated_transition->to_string().c_str(), immediate_causes.size(),
                             dependencies_string.c_str());
 }
 
 EventSet UnfoldingEvent::get_history() const
+{
+  EventSet local_config = get_local_config();
+  local_config.remove(this);
+  return local_config;
+}
+
+EventSet UnfoldingEvent::get_local_config() const
 {
   return History(this).get_all_events();
 }
@@ -81,8 +88,8 @@ bool UnfoldingEvent::conflicts_with(const UnfoldingEvent* other) const
     return false;
   }
 
-  const EventSet my_history      = get_history();
-  const EventSet other_history   = other->get_history();
+  const EventSet my_history      = get_local_config();
+  const EventSet other_history   = other->get_local_config();
   const EventSet unique_to_me    = my_history.subtracting(other_history);
   const EventSet unique_to_other = other_history.subtracting(my_history);
 
@@ -93,16 +100,9 @@ bool UnfoldingEvent::conflicts_with(const UnfoldingEvent* other) const
   return conflicts_with_me or conflicts_with_other;
 }
 
-bool UnfoldingEvent::conflicts_with(const Configuration& config) const
+bool UnfoldingEvent::conflicts_with_any(const EventSet& events) const
 {
-  // A configuration is itself already conflict-free. Thus, it is
-  // simply a matter of testing whether or not the transition associated
-  // with the event is dependent with any already in `config` that are
-  // OUTSIDE this event's history (in an unfolding, events only conflict
-  // if they are not related)
-  const EventSet potential_conflicts = config.get_events().subtracting(get_history());
-  return std::any_of(potential_conflicts.cbegin(), potential_conflicts.cend(),
-                     [&](const UnfoldingEvent* e) { return this->is_dependent_with(e); });
+  return std::any_of(events.begin(), events.end(), [&](const auto e) { return e->conflicts_with(this); });
 }
 
 bool UnfoldingEvent::immediately_conflicts_with(const UnfoldingEvent* other) const

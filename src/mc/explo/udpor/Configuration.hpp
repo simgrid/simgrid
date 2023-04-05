@@ -33,6 +33,7 @@ public:
   auto cend() const { return this->events_.cend(); }
 
   bool contains(const UnfoldingEvent* e) const { return this->events_.contains(e); }
+  bool contains(const EventSet& events) const { return events.is_subset_of(this->events_); }
   const EventSet& get_events() const { return this->events_; }
   const UnfoldingEvent* get_latest_event() const { return this->newest_event; }
   std::string to_string() const { return this->events_.to_string(); }
@@ -68,8 +69,16 @@ public:
 
   /**
    * @brief Whether or not the given event can be added to
-   * this configuration while keeping the set of events causally closed
-   * and conflict-free
+   * this configuration while preserving that the configuration
+   * is causally closed and conflict-free
+   *
+   * A configuration `C` is compatible with an event iff
+   * the event can be added to `C` while preserving that
+   * the configuration is causally closed and conflict-free.
+   *
+   * The method effectively answers the following question:
+   *
+   * "Is `C + {e}` a valid configuration?"
    */
   bool is_compatible_with(const UnfoldingEvent* e) const;
 
@@ -77,6 +86,14 @@ public:
    * @brief Whether or not the events in the given history can be added to
    * this configuration while keeping the set of events causally closed
    * and conflict-free
+   *
+   * A configuration `C` is compatible with a history iff all
+   * events of the history can be added to `C` while preserving
+   * that the configuration is causally closed and conflict-free.
+   *
+   * The method effectively answers the following question:
+   *
+   * "Is `C + (U_i [e_i])` a valid configuration?"
    */
   bool is_compatible_with(const History& history) const;
 

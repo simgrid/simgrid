@@ -9,6 +9,7 @@
 #include "src/mc/explo/udpor/Unfolding.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/explo/udpor/maximal_subsets_iterator.hpp"
+#include "src/xbt/utils/iter/variable_for_loop.hpp"
 #include "xbt/asserts.h"
 
 #include <algorithm>
@@ -21,7 +22,7 @@ Configuration::Configuration(std::initializer_list<const UnfoldingEvent*> events
 {
 }
 
-Configuration::Configuration(const UnfoldingEvent* e) : Configuration(e->get_history())
+Configuration::Configuration(const UnfoldingEvent* e) : Configuration(e->get_local_config())
 {
   // The local configuration should always be a valid configuration. We
   // check the invariant regardless as a sanity check
@@ -48,12 +49,14 @@ void Configuration::add_event(const UnfoldingEvent* e)
     throw std::invalid_argument("Expected a nonnull `UnfoldingEvent*` but received NULL instead");
   }
 
+  // The event is already a member of the configuration: there's
+  // nothing to do in this case
   if (this->events_.contains(e)) {
     return;
   }
 
   // Preserves the property that the configuration is conflict-free
-  if (e->conflicts_with(*this)) {
+  if (e->conflicts_with_any(this->events_)) {
     throw std::invalid_argument("The newly added event conflicts with the events already "
                                 "contained in the configuration. Adding this event violates "
                                 "the property that a configuration is conflict-free");
@@ -72,13 +75,41 @@ void Configuration::add_event(const UnfoldingEvent* e)
 
 bool Configuration::is_compatible_with(const UnfoldingEvent* e) const
 {
-  return not e->conflicts_with(*this);
+  // 1. `e`'s history must be contained in the configuration;
+  // otherwise adding the event would violate the invariant
+  // that a configuration is causally-closed
+  //
+  // 2. `e` itself must not conflict with any events of
+  // the configuration; otherwise adding the event would
+  // violate the invariant that a configuration is conflict-free
+  return contains(e->get_history()) and (not e->conflicts_with_any(this->events_));
 }
 
 bool Configuration::is_compatible_with(const History& history) const
 {
-  return std::none_of(history.begin(), history.end(),
-                      [&](const UnfoldingEvent* e) { return e->conflicts_with(*this); });
+  // Note: We don't need to check if the `C` will be causally-closed
+  // after adding `history` to it since a) `C` itself is already
+  // causally-closed and b) the history is already causally closed
+  const auto event_diff = history.get_event_diff_with(*this);
+
+  // The events that are contained outside of the configuration
+  // must themselves be free of conflicts.
+  if (not event_diff.is_conflict_free()) {
+    return false;
+  }
+
+  // Now we need only ensure that there are no conflicts
+  // between events of the configuration and the events
+  // that lie outside of the configuration. There is no
+  // need to check if there are conflicts in `C`: we already
+  // know that it's conflict free
+  const auto begin = simgrid::xbt::variable_for_loop<const EventSet>{{event_diff}, {this->events_}};
+  const auto end   = simgrid::xbt::variable_for_loop<const EventSet>();
+  return std::none_of(begin, end, [=](const auto event_pair) {
+    const UnfoldingEvent* e1 = *event_pair[0];
+    const UnfoldingEvent* e2 = *event_pair[1];
+    return e1->conflicts_with(e2);
+  });
 }
 
 std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_events() const
