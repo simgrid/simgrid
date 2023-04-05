@@ -75,7 +75,6 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt
 > [Checker] 0 actors remain, but none of them need to be interleaved (depth 8).
 > [Checker] Execution came to an end at 1;1;2;1;2;2;0 (state: 17, depth: 7)
 > [Checker] Backtracking from 1;1;2;1;2;2;0
-> [Checker] Backtracking from 1;1;2;1;2;2;0
 > [Checker] DFS exploration ended. 17 unique states visited; 2 backtracks (21 transition replays, 2 states visited overall)
 
 $ ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true -- ${bindir:=.}/s4u-synchro-mutex --cfg=actors:2 --log=s4u_test.thres:critical

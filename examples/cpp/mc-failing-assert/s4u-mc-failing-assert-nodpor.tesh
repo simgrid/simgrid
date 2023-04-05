@@ -16,7 +16,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/reduction:none -- ${bin
 > [0.000000] [mc_explo/INFO]   2: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   1: WaitComm(from 2 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'3;1;1;1;2;1'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 22 unique states visited; 2 backtracks (24 transition replays, 0 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 162 unique states visited; 48 backtracks (438 transition replays, 228 states visited overall)
 
 ! expect return 1
 ! timeout 300
