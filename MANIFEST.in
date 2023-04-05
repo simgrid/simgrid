@@ -345,8 +345,9 @@ include examples/cpp/network-ns3/crosstraffic_d.xml
 include examples/cpp/network-ns3/dogbone_d.xml
 include examples/cpp/network-ns3/one_cluster_d.xml
 include examples/cpp/network-ns3/onelink_d.xml
+include examples/cpp/network-ns3/s4u-network-ns3-notime.tesh
+include examples/cpp/network-ns3/s4u-network-ns3-timed.tesh
 include examples/cpp/network-ns3/s4u-network-ns3.cpp
-include examples/cpp/network-ns3/s4u-network-ns3.tesh
 include examples/cpp/network-wifi/s4u-network-wifi.cpp
 include examples/cpp/network-wifi/s4u-network-wifi.tesh
 include examples/cpp/platform-comm-serialize/s4u-platform-comm-serialize.cpp

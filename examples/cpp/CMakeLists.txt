@@ -126,6 +126,10 @@ if(SIMGRID_HAVE_NS3)
   endif()
 
 else()
+  # Even if ns3 is not found, we need to override the teshfile name and make sure that everything gets included in the archive
+  set(_network-ns3_teshfile         ${CMAKE_HOME_DIRECTORY}/examples/cpp/network-ns3/s4u-network-ns3-notime.tesh)
+  set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/cpp/network-ns3/s4u-network-ns3-timed.tesh)
+
   foreach (example network-ns3 network-ns3-wifi)
     set(_${example}_disable 1)
   endforeach()
