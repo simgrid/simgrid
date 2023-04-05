@@ -217,7 +217,7 @@ void DFSExplorer::run()
           if (prev_state->is_actor_enabled(issuer_id)) {
             if (not prev_state->is_actor_done(issuer_id)) {
               prev_state->consider_one(issuer_id);
-              opened_states_.emplace(tmp_stack.back());
+              opened_states_.emplace_back(tmp_stack.back());
             } else
               XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
           } else {
@@ -226,7 +226,7 @@ void DFSExplorer::run()
                       issuer_id);
             // If we ended up marking at least a transition, explore it at some point
             if (prev_state->consider_all() > 0)
-              opened_states_.emplace(tmp_stack.back());
+              opened_states_.emplace_back(tmp_stack.back());
           }
           break;
         } else {
@@ -241,7 +241,7 @@ void DFSExplorer::run()
     // Before leaving that state, if the transition we just took can be taken multiple times, we
     // need to give it to the opened states
     if (stack_.back()->count_todo_multiples() > 0)
-      opened_states_.emplace(stack_.back());
+      opened_states_.emplace_back(stack_.back());
 
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
@@ -276,6 +276,41 @@ void DFSExplorer::run()
   log_state();
 }
 
+std::shared_ptr<State> DFSExplorer::best_opened_state()
+{
+  int best_prio = 0; // cache the value for the best priority found so far (initialized to silence gcc)
+  auto best     = end(opened_states_);   // iterator to the state to explore having the best priority
+  auto valid    = begin(opened_states_); // iterator marking the limit between states still to explore, and already
+                                         // explored ones
+
+  // Keep only still non-explored states (aid != -1), and record the one with the best (greater) priority.
+  for (auto current = begin(opened_states_); current != end(opened_states_); ++current) {
+    auto [aid, prio] = (*current)->next_transition_guided();
+    if (aid == -1)
+      continue;
+    if (valid != current)
+      *valid = std::move(*current);
+    if (best == end(opened_states_) || prio > best_prio) {
+      best_prio = prio;
+      best      = valid;
+    }
+    ++valid;
+  }
+
+  std::shared_ptr<State> best_state;
+  if (best < valid) {
+    // There are non-explored states, and one of them has the best priority.  Remove it from opened_states_ before
+    // returning.
+    best_state = std::move(*best);
+    --valid;
+    if (best != valid)
+      *best = std::move(*valid);
+  }
+  opened_states_.erase(valid, end(opened_states_));
+
+  return best_state;
+}
+
 void DFSExplorer::backtrack()
 {
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
@@ -284,25 +319,17 @@ void DFSExplorer::backtrack()
   on_backtracking_signal(get_remote_app());
   get_remote_app().check_deadlock();
 
+  // Take the point with smallest distance
+  auto backtracking_point = best_opened_state();
+
   // if no backtracking point, then set the stack_ to empty so we can end the exploration
-  if (opened_states_.empty()) {
+  if (not backtracking_point) {
     XBT_DEBUG("No more opened point of exploration, the search will end");
     stack_.clear();
     return;
   }
 
-  // Take the point with smallest distance
-  auto backtracking_point = opened_states_.extract(begin(opened_states_)).value();
-
-  // if the smallest distance corresponded to no enable actor, remove this and let the
-  // exploration ask again for a backtrack
-  if (backtracking_point->next_transition_guided().first == -1) {
-    XBT_DEBUG("Best backtracking candidates has already been explored. Let's backtrack again");
-    this->backtrack();
-    return;
-  }
-
-  // We found a real backtracking point, let's go to it
+  // We found a backtracking point, let's go to it
   backtrack_count_++;
   XBT_DEBUG("Backtracking to state#%ld", backtracking_point->get_num());
 
@@ -360,7 +387,7 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor, bool ne
     stack_.back()->consider_all();
   }
   if (stack_.back()->count_todo_multiples() > 1)
-    opened_states_.emplace(stack_.back());
+    opened_states_.emplace_back(stack_.back());
 }
 
 Exploration* create_dfs_exploration(const std::vector<char*>& args, bool with_dpor)
