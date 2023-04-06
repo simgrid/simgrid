@@ -332,21 +332,26 @@ distributed algorithms such as leader election or causal broadcast.
 ns-3 as a SimGrid model
 ***********************
 
-The **ns-3 based model** is the most accurate network model in SimGrid. It relies on the well-known
-`ns-3 packet-level network simulator <http://www.nsnam.org>`_ to compute full timing information related to network
-transfers. This
-model is much slower than the LMM-based models. This is because ns-3 simulates the movement of every network packet involved in
-every communication, while the LMM-based models only recompute the respective instantaneous speeds of the currently ongoing
-communications when a communication starts or stops.
+The **ns-3 based model** is the most accurate network model in SimGrid. It relies on the well-known `ns-3 packet-level network
+simulator <http://www.nsnam.org>`_ to compute full timing information related to network transfers. This model is much slower
+than the LMM-based models. This is because ns-3 simulates the movement of every network packet involved in every communication,
+while the LMM-based models only recompute the respective instantaneous speeds of the currently ongoing communications when a
+communication starts or stops. In other terms, both SimGrid and ns-3 are fast and highly optimized, but while SimGrid only
+depends on application-level events (starting and stoping of communications), ns-3 depends on network-level events (sending a
+packet).
 
 You need to install ns-3 and recompile SimGrid accordingly to use this model.
 
-The SimGrid/ns-3 binding only contains features that are common to both systems. Not all ns-3 models are available from
-SimGrid (only the TCP and WiFi ones are), while not all SimGrid platform files can be used in conjunction with ns-3
-(routes must be of length 1). Note also that the platform built in ns-3 from the SimGrid
-description is very basic. Finally, communicating from a host to
-itself is forbidden in ns-3, so every such communication is simulated to take zero time.
+The SimGrid/ns-3 binding only contains features that are common to both systems. Not all ns-3 models are available from SimGrid
+(only the TCP and WiFi ones are), while not all SimGrid platform files can be used in conjunction with ns-3 (routes must be of
+length 1). Note also that the platform built in ns-3 from the SimGrid description is very basic. Finally, communicating from a
+host to itself is forbidden in ns-3, so every such communication is simulated to take zero time.
 
+By default, the ns-3 model in SimGrid is not idempotent, unless you patch your version of ns-3 with [this
+patch](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/1338). It is perfectly OK to have a non-idempotent model in SimGrid as
+long as you only have only one such model, and as long as you don't use utterly advanced things in SimGrid. If you do want to
+have an idempotent ns-3, apply the previously mentioned patch, and recompile SimGrid. It should detect the patch and react
+accordingly.
 
 Compiling the ns-3/SimGrid binding
 ==================================

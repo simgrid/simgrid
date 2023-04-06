@@ -22,7 +22,7 @@ public:
   StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidth) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool streamed) override;
   double next_occurring_event(double now) override;
-  bool next_occurring_event_is_idempotent() override { return false; }
+  bool next_occurring_event_is_idempotent() override;
   void update_actions_state(double now, double delta) override;
 };
 

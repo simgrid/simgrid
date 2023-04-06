@@ -512,9 +512,9 @@ double EngineImpl::solve(double max_date) const
 
   XBT_DEBUG("Looking for next event in all models");
   for (auto model : models_) {
-    if (not model->next_occurring_event_is_idempotent()) {
+    if (not model->next_occurring_event_is_idempotent())
       continue;
-    }
+
     double next_event = model->next_occurring_event(now_);
     if ((time_delta < 0.0 || next_event < time_delta) && next_event >= 0.0) {
       time_delta = next_event;

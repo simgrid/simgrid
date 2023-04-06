@@ -95,3 +95,5 @@
 /* The boost_stacktrace_backtrace library */
 #cmakedefine01 HAVE_BOOST_STACKTRACE_BACKTRACE /* preferred */
 #cmakedefine01 HAVE_BOOST_STACKTRACE_ADDR2LINE /* fallback */
+/* Whether the ns-3 library has GetNextEventTime */
+#cmakedefine01 SIMGRID_HAVE_NS3_GetNextEventTime

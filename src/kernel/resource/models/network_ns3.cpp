@@ -310,6 +310,7 @@ static simgrid::config::Flag<std::string> ns3_seed(
 
 namespace simgrid {
 namespace kernel::resource {
+static bool ns3_is_initialized = false;
 
 NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
 {
@@ -343,6 +344,7 @@ NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
     ns3::GlobalRouteManager::DeleteGlobalRoutes(); // just in case this callback is called twice
     ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
     ns3::GlobalRouteManager::InitializeRoutes();
+    ns3_is_initialized = true;
   });
   routing::on_cluster_creation.connect(&clusterCreation_cb);
   routing::NetZoneImpl::on_route_creation.connect(&routeCreation_cb);
@@ -377,6 +379,31 @@ Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size
   return new NetworkNS3Action(this, size, src, dst);
 }
 
+#if SIMGRID_HAVE_NS3_GetNextEventTime
+/* If patched, ns3 is idempotent and nice to use */
+bool NetworkNS3Model::next_occurring_event_is_idempotent()
+{
+  return true;
+}
+
+double NetworkNS3Model::next_occurring_event(double sg_time)
+{
+  if (get_started_action_set()->empty()) {
+    return -1.0;
+  }
+
+  double ns3_time = ns3::Simulator::GetNextEventTime().GetSeconds();
+  XBT_DEBUG("NS3 tells that the next occuring event is at %f (it's %f in simgrid), so NS3 returns a delta of %f.",
+            ns3_time, sg_time, ns3_time - sg_time);
+  return ns3_time - sg_time;
+}
+#else
+/* NS3 is only idempotent with the appropriate patch */
+bool NetworkNS3Model::next_occurring_event_is_idempotent()
+{
+  return false;
+}
+
 double NetworkNS3Model::next_occurring_event(double now)
 {
   double time_to_next_flow_completion = 0.0;
@@ -406,10 +433,29 @@ double NetworkNS3Model::next_occurring_event(double now)
 
   return time_to_next_flow_completion;
 }
+#endif
 
 void NetworkNS3Model::update_actions_state(double now, double delta)
 {
   static std::vector<std::string> socket_to_destroy;
+
+#if SIMGRID_HAVE_NS3_GetNextEventTime
+  /* If the ns-3 model is idempotent, it won't get updated in next_occurring_event() */
+
+  if (not ns3_is_initialized) {
+    XBT_DEBUG("PRESOLVE, I SEE YOU. Don't run ns3 until after all initializations are done.");
+    return;
+  }
+
+  if (delta >= 0) {
+    XBT_DEBUG("DO START simulator delta: %f (current simgrid time: %f; current ns3 time: %f)", delta,
+              simgrid::kernel::EngineImpl::get_clock(), ns3::Simulator::Now().GetSeconds());
+    ns3_simulator(delta);
+  } else {
+    XBT_DEBUG("don't start simulator delta: %f (current simgrid time: %f; current ns3 time: %f)", delta,
+              simgrid::kernel::EngineImpl::get_clock(), ns3::Simulator::Now().GetSeconds());
+  }
+#endif
 
   for (const auto& [ns3_socket, sgFlow] : flow_from_sock) {
     NetworkNS3Action* action = sgFlow->action_;
@@ -506,7 +552,7 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   if (src == dst) {
     if (static bool warned = false; not warned) {
       XBT_WARN("Sending from a host %s to itself is not supported by ns-3. Every such communication finishes "
-               "immediately upon startup.",
+               "immediately upon startup in the SimGrid+ns-3 system.",
                src->get_cname());
       warned = true;
     }
@@ -579,17 +625,21 @@ ns3::Ptr<ns3::Node> get_ns3node_from_sghost(const simgrid::s4u::Host* host)
 }
 } // namespace simgrid
 
-void ns3_simulator(double maxSeconds)
+void ns3_simulator(double maxSeconds) // maxSecond is a delay, not an absolute time
 {
   ns3::EventId id;
-  if (maxSeconds > 0.0) // If there is a maximum amount of time to run
+  if (maxSeconds >= 0.0) // If there is a maximum amount of time to run
     id = ns3::Simulator::Schedule(ns3::Seconds(maxSeconds), &ns3::Simulator::Stop);
 
-  XBT_DEBUG("Start simulator for at most %fs (current time: %f)", maxSeconds, simgrid::kernel::EngineImpl::get_clock());
+  XBT_DEBUG("Start simulator for at most %fs (current simgrid time: %f; current ns3 time: %f)", maxSeconds,
+            simgrid::kernel::EngineImpl::get_clock(), ns3::Simulator::Now().GetSeconds());
+#if SIMGRID_HAVE_NS3_GetNextEventTime
+  xbt_assert(maxSeconds >= 0.0);
+#endif
   ns3::Simulator::Run();
-  XBT_DEBUG("Simulator stopped at %fs", ns3::Simulator::Now().GetSeconds());
+  XBT_DEBUG("ns3 simulator stopped at %fs", ns3::Simulator::Now().GetSeconds());
 
-  if (maxSeconds > 0.0)
+  if (maxSeconds >= 0.0)
     id.Cancel();
 }
 
