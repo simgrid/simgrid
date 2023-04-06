@@ -2629,6 +2629,7 @@ include tools/cmake/scripts/my_valgrind.pl
 include tools/cmake/scripts/update_tesh.pl
 include tools/cmake/test_prog/prog_asan.cpp
 include tools/cmake/test_prog/prog_makecontext.c
+include tools/cmake/test_prog/prog_ns3.cpp
 include tools/cmake/test_prog/prog_stackgrowth.c
 include tools/cmake/test_prog/prog_stacksetup.c
 include tools/cmake/test_prog/prog_tsan.cpp
