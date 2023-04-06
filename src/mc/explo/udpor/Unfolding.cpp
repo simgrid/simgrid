@@ -9,14 +9,14 @@
 
 namespace simgrid::mc::udpor {
 
-void Unfolding::remove(const EventSet& events)
+void Unfolding::mark_finished(const EventSet& events)
 {
   for (const auto e : events) {
-    remove(e);
+    mark_finished(e);
   }
 }
 
-void Unfolding::remove(const UnfoldingEvent* e)
+void Unfolding::mark_finished(const UnfoldingEvent* e)
 {
   if (e == nullptr) {
     throw std::invalid_argument("Expected a non-null pointer to an event, but received NULL");

@@ -28,8 +28,17 @@ public:
   size_t size() const { return this->event_handles.size(); }
   bool empty() const { return this->event_handles.empty(); }
 
-  void remove(const UnfoldingEvent* e);
-  void remove(const EventSet& events);
+  /**
+   * @brief Moves an event from UDPOR's global set `U` to
+   * the global set `G`
+   */
+  void mark_finished(const UnfoldingEvent* e);
+
+  /**
+   * @brief Moves all events in a set from UDPOR's global
+   * set `U` to the global set `G`
+   */
+  void mark_finished(const EventSet& events);
 
   /// @brief Adds a new event `e` to the Unfolding if that
   /// event is not equivalent to any of those already contained

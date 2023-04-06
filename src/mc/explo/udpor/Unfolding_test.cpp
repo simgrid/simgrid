@@ -17,7 +17,7 @@ TEST_CASE("simgrid::mc::udpor::Unfolding: Creating an unfolding")
   REQUIRE(unfolding.empty());
 }
 
-TEST_CASE("simgrid::mc::udpor::Unfolding: Inserting and removing events with an unfolding")
+TEST_CASE("simgrid::mc::udpor::Unfolding: Inserting and marking events with an unfolding")
 {
   Unfolding unfolding;
   auto e1 = std::make_unique<UnfoldingEvent>(
@@ -35,13 +35,13 @@ TEST_CASE("simgrid::mc::udpor::Unfolding: Inserting and removing events with an 
   REQUIRE(unfolding.size() == 2);
   REQUIRE_FALSE(unfolding.empty());
 
-  unfolding.remove(e1_handle);
-  REQUIRE(unfolding.size() == 1);
+  unfolding.mark_finished(e1_handle);
+  REQUIRE(unfolding.size() == 2);
   REQUIRE_FALSE(unfolding.empty());
 
-  unfolding.remove(e2_handle);
-  REQUIRE(unfolding.size() == 0);
-  REQUIRE(unfolding.empty());
+  unfolding.mark_finished(e2_handle);
+  REQUIRE(unfolding.size() == 2);
+  REQUIRE_FALSE(unfolding.empty());
 }
 
 TEST_CASE("simgrid::mc::udpor::Unfolding: Checking all immediate conflicts restricted to an unfolding") {}

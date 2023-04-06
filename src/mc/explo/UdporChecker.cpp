@@ -314,7 +314,7 @@ void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration
   // that UDPOR has marked as no longer being important)
   // For now, there appear to be no "obvious" issues (although
   // UDPOR's behavior is often far from obvious...)
-  this->unfolding.remove(clean_up_set);
+  this->unfolding.mark_finished(clean_up_set);
 }
 
 RecordTrace UdporChecker::get_record_trace()
