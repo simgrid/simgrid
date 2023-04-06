@@ -21,8 +21,8 @@ void Unfolding::remove(const UnfoldingEvent* e)
   if (e == nullptr) {
     throw std::invalid_argument("Expected a non-null pointer to an event, but received NULL");
   }
-  this->global_events_.erase(e);
-  this->event_handles.remove(e);
+  this->U.remove(e);
+  this->G.insert(e);
 }
 
 const UnfoldingEvent* Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
@@ -36,13 +36,28 @@ const UnfoldingEvent* Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
                                 "This will result in a  double free error and must be fixed.");
   }
 
-  if (auto loc = this->find_equivalent(handle); loc != this->end()) {
-    // There's already an event in the unfolding that is semantically
-    // equivalent. Return the handle to that event and ignore adding in
-    // a duplicate event
+  // Attempt to search first for an event in `U`. If it exists, we use that event
+  // instead of `e` since it is semantically equivalent to `e` (i.e. `e` is
+  // effectively already contained in the unfolding)
+  if (auto loc = std::find_if(U.begin(), U.end(), [=](const auto e_i) { return *e_i == *handle; }); loc != U.end()) {
+    // Return the handle to that event and ignore adding in a duplicate event
     return *loc;
   }
 
+  // Then look for `e` in `G`. It's possible `e` was already constructed
+  // in the past, in which case we can simply re-use it.
+  //
+  // Note, though, that in this case we must move the event in `G` into
+  // `U`: we've inserted `e` into the unfolding, so we expect it to be in `U`
+  if (auto loc = std::find_if(G.begin(), G.end(), [=](const auto e_i) { return *e_i == *handle; }); loc != G.end()) {
+    const auto e_equiv = *loc;
+    G.remove(e_equiv);
+    U.insert(e_equiv);
+    return e_equiv;
+  }
+
+  // Otherwise `e` is truly a "new" event
+  this->U.insert(handle);
   this->event_handles.insert(handle);
   this->global_events_[handle] = std::move(e);
   return handle;
@@ -51,7 +66,7 @@ const UnfoldingEvent* Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
 EventSet Unfolding::get_immediate_conflicts_of(const UnfoldingEvent* e) const
 {
   EventSet immediate_conflicts;
-  for (const auto event : *this) {
+  for (const auto event : U) {
     if (event->immediately_conflicts_with(e)) {
       immediate_conflicts.insert(event);
     }

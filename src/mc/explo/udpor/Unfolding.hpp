@@ -27,7 +27,6 @@ public:
   auto cend() const { return this->event_handles.cend(); }
   size_t size() const { return this->event_handles.size(); }
   bool empty() const { return this->event_handles.empty(); }
-  bool contains(const UnfoldingEvent* e) const { return this->event_handles.contains(e); }
 
   void remove(const UnfoldingEvent* e);
   void remove(const EventSet& events);
@@ -97,21 +96,18 @@ private:
   EventSet event_handles;
 
   /**
+   * @brief: The collection of events in the unfolding that are "important"
+   */
+  EventSet U;
+
+  /**
    * @brief The "irrelevant" portions of the unfolding that do not need to be kept
    * around to ensure that UDPOR functions correctly
    *
    * The set `G` is another global variable maintained by the UDPOR algorithm which
    * is used to keep track of all events which used to be important to UDPOR.
-   *
-   * @note: The current implementation does not touch the set `G`. Its use is perhaps
-   * limited to debugging and/or model-checking acyclic state spaces
    */
   EventSet G;
-
-  auto find_equivalent(const UnfoldingEvent* e)
-  {
-    return std::find_if(begin(), end(), [=](const UnfoldingEvent* e_i) { return *e == *e_i; });
-  }
 };
 
 } // namespace simgrid::mc::udpor

@@ -298,9 +298,9 @@ void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration
     XBT_DEBUG("Moving {%s} from U to G...", to_remove.to_string().c_str());
     clean_up_set.form_union(to_remove);
   }
-  // TODO: We compute everything... but we don't actually
-  // remove anything yet. This is a workaround until
-  // we figure out how to deal with the fact that the previous
+
+  // TODO: We still perhaps need to
+  // figure out how to deal with the fact that the previous
   // extension sets computed for past configurations
   // contain events that may be removed from `U`. Perhaps
   // it would be best to keep them around forever (they
@@ -312,8 +312,9 @@ void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration
   // more efficient (we have to search all of `U` for such conflicts,
   // and there would be no reason to search those events
   // that UDPOR has marked as no longer being important)
-  //
-  // this->unfolding.remove(clean_up_set);
+  // For now, there appear to be no "obvious" issues (although
+  // UDPOR's behavior is often far from obvious...)
+  this->unfolding.remove(clean_up_set);
 }
 
 RecordTrace UdporChecker::get_record_trace()
