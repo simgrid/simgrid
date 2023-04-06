@@ -23,6 +23,7 @@ private:
   Channel channel_;
   static std::unique_ptr<AppSide> instance_;
   bool need_memory_info_ = false; /* by default we don't send memory info, unless we got a NEED_MEMINFO */
+  std::unordered_map<int, int> child_statuses_;
 
 public:
   AppSide();

@@ -152,7 +152,13 @@ void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
 }
 void AppSide::handle_fork(const s_mc_message_int_t* msg)
 {
-  int pid = fork();
+  int status;
+  int pid;
+  /* Reap any zombie child, saving its status for later use in AppSide::handle_wait_child() */
+  while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
+    child_statuses_[pid] = status;
+
+  pid = fork();
   xbt_assert(pid >= 0, "Could not fork application sub-process: %s.", strerror(errno));
 
   if (pid == 0) { // Child
@@ -186,7 +192,12 @@ void AppSide::handle_wait_child(const s_mc_message_int_t* msg)
 {
   int status;
   errno = 0;
-  waitpid(msg->value, &status, 0);
+  if (auto search = child_statuses_.find(msg->value); search != child_statuses_.end()) {
+    status = search->second;
+    child_statuses_.erase(search); // We only need this info once
+  } else {
+    waitpid(msg->value, &status, 0);
+  }
   xbt_assert(errno == 0, "Cannot wait on behalf of the checker: %s.", strerror(errno));
 
   s_mc_message_int_t answer = {};
