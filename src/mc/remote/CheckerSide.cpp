@@ -395,6 +395,8 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
       return false;
 
     case MessageType::ASSERTION_FAILED:
+      // report_assertion_failure() is NORETURN, but it may change when we report more than one error per run,
+      // so please keep the consumed computation even if clang-static detects it as a dead affectation.
       consumed = sizeof(s_mc_message_t);
       Exploration::get_instance()->report_assertion_failure();
       break;
