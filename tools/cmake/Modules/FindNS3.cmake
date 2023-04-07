@@ -129,6 +129,7 @@ endif()
 set(SIMGRID_HAVE_NS3_GetNextEventTime FALSE)
 if(SIMGRID_HAVE_NS3)
   try_compile(compile_ns3 ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_ns3.cpp
+              CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${NS3_INCLUDE_DIR}" "-DLINK_DIRECTORIES=${NS3_LIBRARY_PATH}"
               LINK_LIBRARIES "${NS3_LIBRARIES}"
               OUTPUT_VARIABLE compile_ns3_output)
   if(NOT compile_ns3)
