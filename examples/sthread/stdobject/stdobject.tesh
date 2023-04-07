@@ -4,7 +4,7 @@
 # We ignore the LD_PRELOAD lines from the expected output because they contain the build path
 ! ignore .*LD_PRELOAD.*
 
-$ ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/stdobject "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" --log=no_loc
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/stdobject "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" --log=no_loc
 > [   0.000000] (maestro@) Configuration change: Set 'model-check/sleep-set' to 'true'
 > [   0.000000] (maestro@) Starting the simulation.
 > starting two helpers...

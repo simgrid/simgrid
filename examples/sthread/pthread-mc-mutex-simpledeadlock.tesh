@@ -5,7 +5,7 @@
 # We ignore the LD_PRELOAD lines from the expected output because they contain the build path
 ! ignore .*LD_PRELOAD.*
 
-$ ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/pthread-mutex-simpledeadlock
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/pthread-mutex-simpledeadlock
 > [0.000000] [sthread/INFO] Starting the simulation.
 > All threads are started.
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.

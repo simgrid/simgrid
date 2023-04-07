@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-barrier 1 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-barrier 1 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
 > [Checker] Start a DFS exploration. Reduction is: dpor.
 > [Checker] Execute 1: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
 > [Checker] Execute 1: BARRIER_WAIT(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
@@ -9,7 +9,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt
 > [Checker] Backtracking from 1;1;0
 > [Checker] DFS exploration ended. 3 unique states visited; 0 backtracks (3 transition replays, 0 states visited overall)
 
-$ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-barrier 2 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-barrier 2 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
 > [Checker] Start a DFS exploration. Reduction is: dpor.
 > [Checker] Execute 1: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
 > [Checker] Execute 2: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
@@ -51,7 +51,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt
 > [Checker] Backtracking from 2;1;1;2;0
 > [Checker] DFS exploration ended. 9 unique states visited; 1 backtracks (10 transition replays, 0 states visited overall)
 
-$ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-barrier 3 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-barrier 3 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
 > [Checker] Start a DFS exploration. Reduction is: dpor.
 > [Checker] Execute 1: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
 > [Checker] Execute 2: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)

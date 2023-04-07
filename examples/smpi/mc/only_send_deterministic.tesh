@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 ! timeout 60
-$ ../../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../../bin/simgrid-mc" --log=xbt_cfg.thresh:warning -hostfile ${srcdir:=.}/hostfile_only_send_deterministic  -platform ${srcdir:=.}/../../platforms/cluster_backbone.xml --cfg=model-check/communications-determinism:1 --cfg=smpi/buffering:zero --cfg=smpi/host-speed:1Gf ./smpi_only_send_deterministic
+$ $VALGRIND_NO_LEAK_CHECK ../../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../../bin/simgrid-mc" --log=xbt_cfg.thresh:warning -hostfile ${srcdir:=.}/hostfile_only_send_deterministic  -platform ${srcdir:=.}/../../platforms/cluster_backbone.xml --cfg=model-check/communications-determinism:1 --cfg=smpi/buffering:zero --cfg=smpi/host-speed:1Gf ./smpi_only_send_deterministic
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
 > [0.000000] [mc_comm_determinism/INFO] Check communication determinism
 > [0.000000] [mc_comm_determinism/INFO] *******************************************************

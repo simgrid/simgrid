@@ -2,7 +2,7 @@
 
 ! expect return 1
 ! timeout 300
-$ ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/reduction:none -- ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml --log=root.thresh:critical
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/reduction:none -- ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml --log=root.thresh:critical
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'none'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: none.
 > [0.000000] [mc_explo/INFO] **************************
@@ -20,7 +20,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/reduction:none -- ${bin
 
 ! expect return 1
 ! timeout 300
-$ ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/reduction:none --cfg=model-check/strategy:nb_wait -- ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml --log=root.thresh:critical
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/reduction:none --cfg=model-check/strategy:nb_wait -- ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml --log=root.thresh:critical
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'none'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/strategy' to 'nb_wait'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: none.
