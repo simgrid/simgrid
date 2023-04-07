@@ -2,7 +2,7 @@
 
 ! expect return 1
 ! timeout 20
-$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true ${bindir:=.}/s4u-mc-bugged2 ${platfdir:=.}/model_checker_platform.xml  --log=root.thresh:critical --log=mc.thresh:info
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true ${bindir:=.}/s4u-mc-bugged2 ${platfdir:=.}/model_checker_platform.xml  --log=root.thresh:critical --log=mc.thresh:info
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
 > [0.000000] [mc_explo/INFO] **************************
 > [0.000000] [mc_explo/INFO] *** PROPERTY NOT VALID ***
@@ -20,7 +20,7 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check
 
 ! expect return 1
 ! timeout 20
-$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/strategy:nb_wait ${bindir:=.}/s4u-mc-bugged2 ${platfdir:=.}/model_checker_platform.xml  --log=root.thresh:critical --log=mc.thresh:info
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/strategy:nb_wait ${bindir:=.}/s4u-mc-bugged2 ${platfdir:=.}/model_checker_platform.xml  --log=root.thresh:critical --log=mc.thresh:info
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
 > [0.000000] [mc_explo/INFO] **************************
 > [0.000000] [mc_explo/INFO] *** PROPERTY NOT VALID ***

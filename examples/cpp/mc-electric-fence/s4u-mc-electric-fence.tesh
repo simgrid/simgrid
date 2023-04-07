@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-electric-fence ${platfdir}/model_checker_platform.xml
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-electric-fence ${platfdir}/model_checker_platform.xml
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
 > [HostB:client:(2) 0.000000] [electric_fence/INFO] Sent!
 > [HostA:server:(1) 0.000000] [electric_fence/INFO] OK

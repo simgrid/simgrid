@@ -19,6 +19,7 @@ IF(enable_memcheck)
       SET(VALGRIND_WRAPPER ${VALGRIND_WRAPPER}\ --xml=yes\ --xml-file=memcheck_test_%p.memcheck\ --child-silent-after-fork=yes\ )
     endif()
     set(TESH_OPTION ${TESH_OPTION} --setenv VALGRIND_NO_LEAK_CHECK=--leak-check=no\ --show-leak-kinds=none)
+    set(TESH_OPTION ${TESH_OPTION} --setenv VALGRIND_NO_TRACE_CHILDREN=--trace-children=no)
 
 #    message(STATUS "tesh wrapper: ${VALGRIND_WRAPPER}")
 
