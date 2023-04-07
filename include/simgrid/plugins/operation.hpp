@@ -39,9 +39,9 @@ private:
 protected:
   std::string name_;
   double amount_;
-  int iteration_limit_          = -1;
-  unsigned int iteration_count_ = 0;
-  bool working_                 = false;
+  int iteration_limit_ = -1;
+  int iteration_count_ = 0;
+  bool working_        = false;
   simgrid::s4u::ActivityPtr current_activity_;
   Operation(const std::string& name, double amount);
   ~Operation() = default;
