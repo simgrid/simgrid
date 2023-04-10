@@ -15,29 +15,29 @@
 #include <mpi.h>
 #include <stdio.h>
 
-void multiply(float* a, float* b, float* c, int istart, int iend, int size);
-void multiply_sampled(float* a, float* b, float* c, int istart, int iend, int size);
-
-
-void multiply(float* a, float* b, float* c, int istart, int iend, int size)
+static void multiply(const float* a, const float* b, float* c, int istart, int iend, int size)
 {
     for (int i = istart; i <= iend; ++i) {
         for (int j = 0; j < size; ++j) {
-            for (int k = 0; k < size; ++k) {
-                c[i*size+j] += a[i*size+k] * b[k*size+j];
-            }
+          float sum = 0.0;
+          for (int k = 0; k < size; ++k) {
+            sum += a[i * size + k] * b[k * size + j];
+          }
+          c[i * size + j] += sum;
         }
     }
 }
 
-void multiply_sampled(float* a, float* b, float* c, int istart, int iend, int size)
+static void multiply_sampled(const float* a, const float* b, float* c, int istart, int iend, int size)
 {
     //for (int i = istart; i <= iend; ++i) {
     SMPI_SAMPLE_GLOBAL (int i = istart, i <= iend, ++i, 10, 0.005){
         for (int j = 0; j < size; ++j) {
-            for (int k = 0; k < size; ++k) {
-                c[i*size+j] += a[i*size+k] * b[k*size+j];
-            }
+          float sum = 0.0;
+          for (int k = 0; k < size; ++k) {
+            sum += a[i * size + k] * b[k * size + j];
+          }
+          c[i * size + j] += sum;
         }
     }
 }
