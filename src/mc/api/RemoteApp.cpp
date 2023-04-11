@@ -30,12 +30,12 @@ XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 namespace simgrid::mc {
 
-static char master_socket_name[65] = {};
+static std::string master_socket_name;
 static void cleanup_master_socket()
 {
-  if (master_socket_name[0] != '\0')
-    unlink(master_socket_name);
-  master_socket_name[0] = '\0';
+  if (not master_socket_name.empty())
+    unlink(master_socket_name.c_str());
+  master_socket_name.clear();
 }
 
 RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspection) : app_args_(args)
@@ -60,7 +60,7 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
     struct sockaddr_un serv_addr = {};
     serv_addr.sun_family         = AF_UNIX;
     snprintf(serv_addr.sun_path, 64, "/tmp/simgrid-mc-%d", getpid());
-    strcpy(master_socket_name, serv_addr.sun_path);
+    master_socket_name = serv_addr.sun_path;
     auto addr_size = offsetof(struct sockaddr_un, sun_path) + strlen(serv_addr.sun_path);
 
     xbt_assert(bind(master_socket_, (struct sockaddr*)&serv_addr, addr_size) >= 0,
