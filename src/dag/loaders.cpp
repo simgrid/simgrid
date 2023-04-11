@@ -129,12 +129,8 @@ std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename)
     }
 
     dag.push_back(current);
-    for (auto const& parent: task["parents"]) {
-      auto it = successors.find(parent);
-      if (it == successors.end())
-        successors[parent] = {};
+    for (auto const& parent : task["parents"])
       successors[parent].push_back(current);
-    }
   }
   // Assign successors
   for (auto const& [parent, successors_list] : successors)

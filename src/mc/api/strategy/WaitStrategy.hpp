@@ -58,9 +58,8 @@ public:
 
   void consider_best() override
   {
-    const auto& [aid, _] = this->next_transition();
-    auto actor           = actors_to_run_.find(aid);
-    if (actor != actors_to_run_.end()) {
+    aid_t aid = next_transition().first;
+    if (auto actor = actors_to_run_.find(aid); actor != actors_to_run_.end()) {
       actor->second.mark_todo();
       return;
     }

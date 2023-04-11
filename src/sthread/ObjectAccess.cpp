@@ -66,11 +66,10 @@ static ObjectOwner* get_owner(void* object)
 {
   if (owners.empty())
     std::atexit(clean_owners);
-  auto it = owners.find(object);
-  if (it != owners.end())
+  if (auto it = owners.find(object); it != owners.end())
     return it->second;
   auto* o = new ObjectOwner(nullptr);
-  owners.insert({object, o});
+  owners.emplace(object, o);
   return o;
 }
 
