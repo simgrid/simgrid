@@ -50,7 +50,7 @@ ssize_t Channel::receive(void* message, size_t size, int flags)
 {
   size_t bufsize = buffer_.size();
   ssize_t copied = 0;
-  char* whereto  = static_cast<char*>(message);
+  auto* whereto  = static_cast<char*>(message);
   size_t todo    = size;
   if (bufsize > 0) {
     XBT_DEBUG("%d %zu bytes (of %zu expected) are already in buffer", getpid(), bufsize, size);

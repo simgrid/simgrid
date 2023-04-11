@@ -24,6 +24,7 @@
 #include <simgrid/modelchecker.h>
 
 #include <cerrno>
+#include <cinttypes>
 #include <cstdio> // setvbuf
 #include <cstdlib>
 #include <memory>
@@ -172,7 +173,7 @@ void AppSide::handle_fork(const s_mc_message_int_t* msg)
 
     struct sockaddr_un addr = {};
     addr.sun_family         = AF_UNIX;
-    snprintf(addr.sun_path, 64, "/tmp/simgrid-mc-%lu", static_cast<unsigned long>(msg->value));
+    snprintf(addr.sun_path, 64, "/tmp/simgrid-mc-%" PRIu64, msg->value);
     auto addr_size = offsetof(struct sockaddr_un, sun_path) + strlen(addr.sun_path);
 
     xbt_assert(connect(sock, (struct sockaddr*)&addr, addr_size) >= 0,

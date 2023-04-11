@@ -95,7 +95,7 @@ std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename)
   std::ifstream f(filename);
   auto data = nlohmann::json::parse(f);
   std::vector<ActivityPtr> dag = {};
-  std::map<std::string, std::vector<ActivityPtr>> successors = {};
+  std::map<std::string, std::vector<ActivityPtr>, std::less<>> successors = {};
   std::map<ActivityPtr, Host*> comms_destinations = {};
   ActivityPtr current; 
   
