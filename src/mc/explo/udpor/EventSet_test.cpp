@@ -41,7 +41,9 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Initial conditions when creating sets")
 
   SECTION("Initialization with one or more elements")
   {
-    UnfoldingEvent e1, e2, e3;
+    UnfoldingEvent e1;
+    UnfoldingEvent e2;
+    UnfoldingEvent e3;
 
     SECTION("Set initializer")
     {
@@ -68,7 +70,9 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Initial conditions when creating sets")
 TEST_CASE("simgrid::mc::udpor::EventSet: Insertions")
 {
   EventSet event_set;
-  UnfoldingEvent e1, e2, e3;
+  UnfoldingEvent e1;
+  UnfoldingEvent e2;
+  UnfoldingEvent e3;
 
   SECTION("Inserting unique elements")
   {
@@ -192,7 +196,9 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Set Equality")
   UnfoldingEvent e2;
   UnfoldingEvent e3;
   UnfoldingEvent e4;
-  EventSet A{&e1, &e2, &e3}, B{&e1, &e2, &e3}, C{&e1, &e2, &e3};
+  EventSet A{&e1, &e2, &e3};
+  EventSet B{&e1, &e2, &e3};
+  EventSet C{&e1, &e2, &e3};
 
   SECTION("Equality implies containment")
   {
@@ -267,10 +273,16 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Set Equality")
 
 TEST_CASE("simgrid::mc::udpor::EventSet: Set Union Tests")
 {
-  UnfoldingEvent e1, e2, e3, e4;
+  UnfoldingEvent e1;
+  UnfoldingEvent e2;
+  UnfoldingEvent e3;
+  UnfoldingEvent e4;
 
   // C = A + B
-  EventSet A{&e1, &e2, &e3}, B{&e2, &e3, &e4}, C{&e1, &e2, &e3, &e4}, D{&e1, &e3};
+  EventSet A{&e1, &e2, &e3};
+  EventSet B{&e2, &e3, &e4};
+  EventSet C{&e1, &e2, &e3, &e4};
+  EventSet D{&e1, &e3};
 
   SECTION("Unions with no effect")
   {
@@ -395,7 +407,12 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Set Difference Tests")
   // D is a subset of A and C
   // E is a subset of B and C
   // F is a subset of A, C, and D
-  EventSet A{&e1, &e2, &e3}, B{&e2, &e3, &e4}, C{&e1, &e2, &e3, &e4}, D{&e1, &e3}, E{&e4}, F{&e1};
+  EventSet A{&e1, &e2, &e3};
+  EventSet B{&e2, &e3, &e4};
+  EventSet C{&e1, &e2, &e3, &e4};
+  EventSet D{&e1, &e3};
+  EventSet E{&e4};
+  EventSet F{&e1};
 
   SECTION("Difference with no effect")
   {
@@ -465,7 +482,10 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Set Difference Tests")
 
 TEST_CASE("simgrid::mc::udpor::EventSet: Subset Tests")
 {
-  UnfoldingEvent e1, e2, e3, e4;
+  UnfoldingEvent e1;
+  UnfoldingEvent e2;
+  UnfoldingEvent e3;
+  UnfoldingEvent e4;
 
   // A is a subset of C only
   // B is a subset of C only
@@ -473,7 +493,12 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Subset Tests")
   // D is NOT a subset of B
   // B is NOT a subset of D
   // ...
-  EventSet A{&e1, &e2, &e3}, B{&e2, &e3, &e4}, C{&e1, &e2, &e3, &e4}, D{&e1, &e3}, E{&e2, &e3}, F{&e1, &e2, &e3};
+  EventSet A{&e1, &e2, &e3};
+  EventSet B{&e2, &e3, &e4};
+  EventSet C{&e1, &e2, &e3, &e4};
+  EventSet D{&e1, &e3};
+  EventSet E{&e2, &e3};
+  EventSet F{&e1, &e2, &e3};
 
   SECTION("Subset operator properties")
   {

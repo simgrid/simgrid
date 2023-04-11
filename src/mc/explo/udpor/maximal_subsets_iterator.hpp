@@ -70,7 +70,7 @@ private:
    * with events that are its current maximal event set (i.e.
    * its `current_maximal_set`)
    */
-  struct bookkeeper {
+  struct Bookkeeper {
   public:
     using topological_order_position = maximal_subsets_iterator::topological_order_position;
 
@@ -86,7 +86,8 @@ private:
     /// bookkeeping that has been done thus far, can be added to the
     /// current candidate maximal set
     bool is_candidate_event(const UnfoldingEvent*) const;
-  } bookkeeper;
+  };
+  Bookkeeper bookkeeper;
 
   void add_element_to_current_maximal_set(const UnfoldingEvent*);
   void remove_element_from_current_maximal_set(const UnfoldingEvent*);

@@ -110,7 +110,7 @@ maximal_subsets_iterator::continue_traversal_of_maximal_events_tree()
   return topological_ordering.end();
 }
 
-bool maximal_subsets_iterator::bookkeeper::is_candidate_event(const UnfoldingEvent* e) const
+bool maximal_subsets_iterator::Bookkeeper::is_candidate_event(const UnfoldingEvent* e) const
 {
   if (const auto e_count = event_counts.find(e); e_count != event_counts.end()) {
     return e_count->second == 0;
@@ -153,13 +153,13 @@ bool maximal_subsets_iterator::can_grow_maximal_set() const
 }
 
 maximal_subsets_iterator::topological_order_position
-maximal_subsets_iterator::bookkeeper::find_next_candidate_event(topological_order_position first,
+maximal_subsets_iterator::Bookkeeper::find_next_candidate_event(topological_order_position first,
                                                                 topological_order_position last) const
 {
   return std::find_if(first, last, [&](const UnfoldingEvent* e) { return is_candidate_event(e); });
 }
 
-void maximal_subsets_iterator::bookkeeper::mark_included_in_maximal_set(const UnfoldingEvent* e)
+void maximal_subsets_iterator::Bookkeeper::mark_included_in_maximal_set(const UnfoldingEvent* e)
 {
   const auto e_local_config = e->get_local_config();
   for (const auto e_hist : e_local_config) {
@@ -167,7 +167,7 @@ void maximal_subsets_iterator::bookkeeper::mark_included_in_maximal_set(const Un
   }
 }
 
-void maximal_subsets_iterator::bookkeeper::mark_removed_from_maximal_set(const UnfoldingEvent* e)
+void maximal_subsets_iterator::Bookkeeper::mark_removed_from_maximal_set(const UnfoldingEvent* e)
 {
   const auto e_local_config = e->get_local_config();
   for (const auto e_hist : e_local_config) {
