@@ -6,7 +6,6 @@
 
 #include "src/simgrid/module.hpp"
 
-
 SIMGRID_REGISTER_PLUGIN(operation, "Battery management", nullptr)
 /** @defgroup plugin_operation plugin_operation Plugin Operation
 
@@ -15,8 +14,8 @@ SIMGRID_REGISTER_PLUGIN(operation, "Battery management", nullptr)
 This is the operation plugin, enabling management of Operations.
 To activate this plugin, first call :cpp:func:`Operation::init`.
 
-Operations are designed to represent workflows, i.e, graphs of Operations. 
-Operations can only be instancied using either 
+Operations are designed to represent workflows, i.e, graphs of Operations.
+Operations can only be instancied using either
 :cpp:func:`simgrid::plugins::ExecOp::create` or :cpp:func:`simgrid::plugins::CommOp::create`
 An ExecOp is an Execution Operation. Its underlying Activity is an :ref:`Exec <API_s4u_Exec>`.
 A CommOp is a Communication Operation. Its underlying Activity is a :ref:`Comm <API_s4u_Comm>`.
@@ -33,30 +32,26 @@ std::string Operation::get_name()
   return name_;
 }
 
-/** 
+/**
  *  @param predecessor The Operation to add.
  *  @brief Add a predecessor to this Operation.
  */
 void Operation::add_predecessor(Operation* predecessor)
 {
   if (predecessors_.find(predecessor) == predecessors_.end())
-    simgrid::kernel::actor::simcall_answered([this, predecessor] {
-        predecessors_[predecessor] = 0;
-    });
+    simgrid::kernel::actor::simcall_answered([this, predecessor] { predecessors_[predecessor] = 0; });
 }
 
-/** 
+/**
  *  @param predecessor The Operation to remove.
  *  @brief Remove a predecessor from this Operation.
  */
 void Operation::remove_predecessor(Operation* predecessor)
 {
-  simgrid::kernel::actor::simcall_answered([this, predecessor] {
-  predecessors_.erase(predecessor);
-  });
+  simgrid::kernel::actor::simcall_answered([this, predecessor] { predecessors_.erase(predecessor); });
 }
 
-/** 
+/**
  *  @brief Return True if the Operation can start a new Activity.
  *  @note The Operation is ready if not already doing something and there is at least one execution waiting in queue.
  */
@@ -68,10 +63,10 @@ bool Operation::ready_to_run() const
     return true;
 }
 
-/** 
+/**
  *  @param source The sender.
  *  @brief Receive a token from another Operation.
- *  @note Check upon reception if the Operation has received a token from each of its predecessors, 
+ *  @note Check upon reception if the Operation has received a token from each of its predecessors,
  * and in this case consumes those tokens and enqueue an execution.
  */
 void Operation::receive(Operation* source)
@@ -79,25 +74,25 @@ void Operation::receive(Operation* source)
   XBT_DEBUG("Operation %s received a token from %s", name_.c_str(), source->name_.c_str());
   auto it = predecessors_.find(source);
   simgrid::kernel::actor::simcall_answered([this, it] {
-  it->second++;
-  bool enough_tokens = true;
-  for (auto const& [key, val] : predecessors_)
-    if (val < 1) {
-      enough_tokens = false;
-      break;
+    it->second++;
+    bool enough_tokens = true;
+    for (auto const& [key, val] : predecessors_)
+      if (val < 1) {
+        enough_tokens = false;
+        break;
+      }
+    if (enough_tokens) {
+      for (auto [key, val] : predecessors_)
+        val--;
+      enqueue_execs(1);
     }
-  if (enough_tokens) {
-    for (auto [key, val] : predecessors_)
-      val--;
-    enqueue_execs(1);
-  }
   });
 }
 
-/** 
+/**
  *  @brief Operation routine when finishing an execution.
- *  @note Set its working status as false. Add 1 to its count of finished executions. 
- * Call the on_end() func. Send a token to each of its successors. 
+ *  @note Set its working status as false. Add 1 to its count of finished executions.
+ * Call the on_end() func. Send a token to each of its successors.
  * Start a new execution if possible.
  */
 void Operation::complete()
@@ -136,9 +131,9 @@ void Operation::init()
 void Operation::enqueue_execs(int n)
 {
   simgrid::kernel::actor::simcall_answered([this, n] {
-  queued_execs_ += n;
-  if (ready_to_run())
-    execute();
+    queued_execs_ += n;
+    if (ready_to_run())
+      execute();
   });
 }
 
@@ -149,9 +144,7 @@ void Operation::enqueue_execs(int n)
  */
 void Operation::set_amount(double amount)
 {
-  simgrid::kernel::actor::simcall_answered([this, amount] {
-  amount_ = amount;
-  });
+  simgrid::kernel::actor::simcall_answered([this, amount] { amount_ = amount; });
 }
 
 /** @ingroup plugin_operation
@@ -161,9 +154,7 @@ void Operation::set_amount(double amount)
  */
 void Operation::add_successor(OperationPtr successor)
 {
-  simgrid::kernel::actor::simcall_answered([this, successor] {
-  successors_.insert(successor.get());
-  });
+  simgrid::kernel::actor::simcall_answered([this, successor] { successors_.insert(successor.get()); });
   successor->add_predecessor(this);
 }
 
@@ -174,34 +165,28 @@ void Operation::add_successor(OperationPtr successor)
  */
 void Operation::remove_successor(OperationPtr successor)
 {
-  simgrid::kernel::actor::simcall_answered([this, successor] {
-  successors_.erase(successor.get());
-  });
+  simgrid::kernel::actor::simcall_answered([this, successor] { successors_.erase(successor.get()); });
   successor->remove_predecessor(this);
 }
 
 /** @ingroup plugin_operation
  *  @param func The function to set.
  *  @brief Set a function to be called before each execution.
- *  @note The function is called before the underlying Activity starts. 
+ *  @note The function is called before the underlying Activity starts.
  */
 void Operation::on_start(std::function<void(Operation*)> func)
 {
-  simgrid::kernel::actor::simcall_answered([this, func] {
-    start_func_ = func;
-  });
+  simgrid::kernel::actor::simcall_answered([this, func] { start_func_ = func; });
 }
 
 /** @ingroup plugin_operation
  *  @param func The function to set.
  *  @brief Set a function to be called after each execution.
- *  @note The function is called after the underlying Activity ends, but before sending tokens to successors. 
+ *  @note The function is called after the underlying Activity ends, but before sending tokens to successors.
  */
 void Operation::on_end(std::function<void(Operation*)> func)
 {
-  simgrid::kernel::actor::simcall_answered([this,func] {
-    end_func_ = func;
-  });
+  simgrid::kernel::actor::simcall_answered([this, func] { end_func_ = func; });
 }
 
 /** @ingroup plugin_operation
@@ -212,7 +197,7 @@ int Operation::get_count()
   return count_;
 }
 
-/** 
+/**
  *  @brief Default constructor.
  */
 ExecOp::ExecOp(const std::string& name, double flops, simgrid::s4u::Host* host) : Operation(name, flops), host_(host) {}
@@ -226,7 +211,7 @@ ExecOpPtr ExecOp::create(const std::string& name, double flops, simgrid::s4u::Ho
   return op;
 }
 
-/** 
+/**
  *  @brief Do one execution of the Operation.
  *  @note Call the on_start() func. Set its working status as true.
  *  Create and start the underlying Activity.
@@ -235,7 +220,7 @@ void ExecOp::execute()
 {
   start_func_(this);
   simgrid::kernel::actor::simcall_answered([this] {
-    working_ = true;
+    working_      = true;
     queued_execs_ = std::max(queued_execs_ - 1, 0);
   });
   simgrid::s4u::ExecPtr exec = simgrid::s4u::Exec::init();
@@ -245,9 +230,7 @@ void ExecOp::execute()
   exec->start();
   exec->extension_set(new ExtendedAttributeActivity());
   exec->extension<ExtendedAttributeActivity>()->operation_ = this;
-  simgrid::kernel::actor::simcall_answered([this, exec] {
-  current_activity_                                        = exec;
-  });
+  simgrid::kernel::actor::simcall_answered([this, exec] { current_activity_ = exec; });
 }
 
 /** @ingroup plugin_operation
@@ -256,12 +239,10 @@ void ExecOp::execute()
  */
 void ExecOp::set_host(simgrid::s4u::Host* host)
 {
-  simgrid::kernel::actor::simcall_answered([this, host] {
-    host_ = host;
-  });
+  simgrid::kernel::actor::simcall_answered([this, host] { host_ = host; });
 }
 
-/** 
+/**
  *  @brief Default constructor.
  */
 CommOp::CommOp(const std::string& name, double bytes, simgrid::s4u::Host* source, simgrid::s4u::Host* destination)
@@ -279,7 +260,7 @@ CommOpPtr CommOp::create(const std::string& name, double bytes, simgrid::s4u::Ho
   return op;
 }
 
-/** 
+/**
  *  @brief Do one execution of the Operation.
  *  @note Call the on_start() func. Set its working status as true.
  *  Create and start the underlying Activity.
@@ -288,7 +269,7 @@ void CommOp::execute()
 {
   start_func_(this);
   simgrid::kernel::actor::simcall_answered([this] {
-    working_ = true;
+    working_      = true;
     queued_execs_ = std::max(queued_execs_ - 1, 0);
   });
   simgrid::s4u::CommPtr comm = simgrid::s4u::Comm::sendto_init(source_, destination_);
@@ -297,9 +278,7 @@ void CommOp::execute()
   comm->start();
   comm->extension_set(new ExtendedAttributeActivity());
   comm->extension<ExtendedAttributeActivity>()->operation_ = this;
-  simgrid::kernel::actor::simcall_answered([this, comm] {
-  current_activity_                                        = comm;
-  });
+  simgrid::kernel::actor::simcall_answered([this, comm] { current_activity_ = comm; });
 }
 
 /** @ingroup plugin_operation
@@ -308,9 +287,7 @@ void CommOp::execute()
  */
 void CommOp::set_source(simgrid::s4u::Host* source)
 {
-  simgrid::kernel::actor::simcall_answered([this, source] {
-    source_ = source;
-  });
+  simgrid::kernel::actor::simcall_answered([this, source] { source_ = source; });
 }
 
 /** @ingroup plugin_operation
@@ -319,9 +296,7 @@ void CommOp::set_source(simgrid::s4u::Host* source)
  */
 void CommOp::set_destination(simgrid::s4u::Host* destination)
 {
-  simgrid::kernel::actor::simcall_answered([this, destination] {
-    destination_ = destination;
-  });
+  simgrid::kernel::actor::simcall_answered([this, destination] { destination_ = destination; });
 }
 
 } // namespace simgrid::plugins

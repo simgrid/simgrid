@@ -5,49 +5,49 @@
 
 /* This example demonstrate basic use of the operation plugin.
  *
- * We model the following graph: 
- * 
+ * We model the following graph:
+ *
  * exec1 -> comm -> exec2
- * 
+ *
  * exec1 and exec2 are execution operations.
  * comm is a communication operation.
  */
 
-#include "simgrid/s4u.hpp"
 #include "simgrid/plugins/operation.hpp"
+#include "simgrid/s4u.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(operation_simple, "Messages specific for this operation example");
 
 int main(int argc, char* argv[])
 {
-    simgrid::s4u::Engine e(&argc, argv);
-    e.load_platform(argv[1]);
-    simgrid::plugins::Operation::init();
+  simgrid::s4u::Engine e(&argc, argv);
+  e.load_platform(argv[1]);
+  simgrid::plugins::Operation::init();
 
-    // Retrieve hosts
-    auto tremblay = e.host_by_name("Tremblay");
-    auto jupiter = e.host_by_name("Jupiter");
+  // Retrieve hosts
+  auto tremblay = e.host_by_name("Tremblay");
+  auto jupiter  = e.host_by_name("Jupiter");
 
-    // Create operations
-    auto exec1 = simgrid::plugins::ExecOp::create("exec1",1e9,tremblay);
-    auto exec2 = simgrid::plugins::ExecOp::create("exec2",1e9,jupiter);
-    auto comm = simgrid::plugins::CommOp::create("comm",1e7,tremblay,jupiter);
+  // Create operations
+  auto exec1 = simgrid::plugins::ExecOp::create("exec1", 1e9, tremblay);
+  auto exec2 = simgrid::plugins::ExecOp::create("exec2", 1e9, jupiter);
+  auto comm  = simgrid::plugins::CommOp::create("comm", 1e7, tremblay, jupiter);
 
-    // Create the graph by defining dependencies between operations
-    exec1->add_successor(comm);
-    comm->add_successor(exec2);
+  // Create the graph by defining dependencies between operations
+  exec1->add_successor(comm);
+  comm->add_successor(exec2);
 
-    // Add a function to be called when operations end for log purpose
-    std::vector<simgrid::plugins::OperationPtr> ops{exec1,exec2,comm};
-    for (auto op: ops)
-        op->on_end([](simgrid::plugins::Operation* op) {
-            XBT_INFO("Operation %s finished (%d)",op->get_name().c_str(), op->get_count());
-        });
+  // Add a function to be called when operations end for log purpose
+  std::vector<simgrid::plugins::OperationPtr> ops{exec1, exec2, comm};
+  for (auto op : ops)
+    op->on_end([](simgrid::plugins::Operation* op) {
+      XBT_INFO("Operation %s finished (%d)", op->get_name().c_str(), op->get_count());
+    });
 
-    // Enqueue two executions for operation exec1
-    exec1->enqueue_execs(2);
+  // Enqueue two executions for operation exec1
+  exec1->enqueue_execs(2);
 
-    // Start the simulation
-    e.run();
-    return 0;
+  // Start the simulation
+  e.run();
+  return 0;
 }

@@ -40,13 +40,13 @@ protected:
   std::string name_;
   double amount_;
   int queued_execs_ = 0;
-  int count_ = 0;
-  bool working_        = false;
+  int count_        = 0;
+  bool working_     = false;
   simgrid::s4u::ActivityPtr current_activity_;
-  std::function<void(Operation*)> end_func_         = [](Operation*) {};
-  std::function<void(Operation*)> start_func_       = [](Operation*) {};
+  std::function<void(Operation*)> end_func_   = [](Operation*) {};
+  std::function<void(Operation*)> start_func_ = [](Operation*) {};
   Operation(const std::string& name, double amount);
-  ~Operation() = default;
+  ~Operation()           = default;
   virtual void execute() = 0;
 
 public:
@@ -59,7 +59,6 @@ public:
   void on_start(std::function<void(Operation*)> func);
   void on_end(std::function<void(Operation*)> func);
   int get_count();
-
 };
 
 class ExecOp : public Operation {
@@ -87,7 +86,6 @@ public:
                           simgrid::s4u::Host* destination);
   void set_source(simgrid::s4u::Host* source);
   void set_destination(simgrid::s4u::Host* destination);
-  
 };
 } // namespace simgrid::plugins
 #endif
