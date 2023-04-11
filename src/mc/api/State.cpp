@@ -40,7 +40,6 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
 State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
     : num_(++expended_states_), parent_state_(parent_state)
 {
-
   if (_sg_mc_strategy == "none")
     strategy_ = std::make_shared<BasicStrategy>();
   if (_sg_mc_strategy == "nb_wait")

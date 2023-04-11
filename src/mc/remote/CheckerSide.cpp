@@ -131,7 +131,6 @@ void CheckerSide::setup_events(bool socket_only)
         auto checker = static_cast<simgrid::mc::CheckerSide*>(arg);
         if (events == EV_READ) {
           do {
-
             std::array<char, MC_MESSAGE_LENGTH> buffer;
             ssize_t size = checker->get_channel().receive(buffer.data(), buffer.size(), MSG_DONTWAIT);
             if (size == -1) {
@@ -489,7 +488,6 @@ void CheckerSide::handle_waitpid()
     }
 
   } else { // Ask our proxy to wait for us
-
     s_mc_message_int_t request = {};
     request.type               = MessageType::WAIT_CHILD;
     request.value              = pid_;
