@@ -216,7 +216,7 @@ unw_addr_space_t UnwindContext::createUnwindAddressSpace()
   return unw_create_addr_space(&accessors, BYTE_ORDER);
 }
 
-void UnwindContext::initialize(simgrid::mc::RemoteProcessMemory& process_memory, unw_context_t* c)
+void UnwindContext::initialize(simgrid::mc::RemoteProcessMemory& process_memory, const unw_context_t* c)
 {
   this->address_space_ = &process_memory;
   this->process_       = &process_memory;

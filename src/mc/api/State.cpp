@@ -85,7 +85,7 @@ std::size_t State::count_todo() const
 std::size_t State::count_todo_multiples() const
 {
   size_t count = 0;
-  for (auto& [_, actor] : strategy_->actors_to_run_)
+  for (auto const& [_, actor] : strategy_->actors_to_run_)
     if (actor.is_todo())
       count += actor.get_times_not_considered();
 

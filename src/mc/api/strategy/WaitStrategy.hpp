@@ -43,7 +43,7 @@ public:
    *  to decrease the count. */
   void execute_next(aid_t aid, RemoteApp& app) override
   {
-    auto& actor = actors_to_run_.at(aid);
+    auto const& actor = actors_to_run_.at(aid);
     if ((not taking_wait_) and is_transition_wait(actor.get_transition(actor.get_times_considered())->type_)) {
       taken_wait_++;
       taking_wait_ = true;

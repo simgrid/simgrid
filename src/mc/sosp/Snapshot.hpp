@@ -89,7 +89,7 @@ public:
   std::vector<s_mc_snapshot_ignored_data_t> ignored_data_;
 
 private:
-  void add_region(RegionType type, RemoteProcessMemory& memory, ObjectInformation* object_info, void* start_addr,
+  void add_region(RegionType type, const RemoteProcessMemory& memory, ObjectInformation* object_info, void* start_addr,
                   std::size_t size);
   void snapshot_regions(RemoteProcessMemory& memory);
   void snapshot_stacks(RemoteProcessMemory& memory);

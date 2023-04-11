@@ -219,7 +219,7 @@ Snapshot::Snapshot(long num_state, PageStore& store, RemoteProcessMemory& memory
   ignore_restore();
 }
 
-void Snapshot::add_region(RegionType type, RemoteProcessMemory& memory, ObjectInformation* object_info,
+void Snapshot::add_region(RegionType type, const RemoteProcessMemory& memory, ObjectInformation* object_info,
                           void* start_addr, std::size_t size)
 {
   if (type == RegionType::Data)
