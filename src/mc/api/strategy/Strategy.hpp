@@ -17,10 +17,12 @@ protected:
   std::map<aid_t, ActorState> actors_to_run_;
 
 public:
-  virtual ~Strategy()                                      = default;
-  void operator=(const Strategy&)
+  Strategy()                = default;
+  virtual ~Strategy()       = default;
+  Strategy(const Strategy&) = delete;
+  Strategy& operator=(const Strategy&)
   { /* nothing to copy over while cloning */
-    return;
+    return *this;
   }
 
   virtual std::pair<aid_t, int> next_transition() const = 0;

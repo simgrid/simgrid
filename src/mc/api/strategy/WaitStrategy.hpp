@@ -17,7 +17,14 @@ class WaitStrategy : public Strategy {
   bool taking_wait_ = false;
 
 public:
-  void operator=(const WaitStrategy& guide) { taken_wait_ = guide.taken_wait_; }
+  WaitStrategy()                     = default;
+  ~WaitStrategy()                    = default;
+  WaitStrategy(const BasicStrategy&) = delete;
+  WaitStrategy& operator=(const WaitStrategy& guide)
+  {
+    taken_wait_ = guide.taken_wait_;
+    return *this;
+  }
 
   bool is_transition_wait(Transition::Type type) const
   {
