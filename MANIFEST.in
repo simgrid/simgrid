@@ -350,12 +350,12 @@ include examples/cpp/network-ns3/s4u-network-ns3-timed.tesh
 include examples/cpp/network-ns3/s4u-network-ns3.cpp
 include examples/cpp/network-wifi/s4u-network-wifi.cpp
 include examples/cpp/network-wifi/s4u-network-wifi.tesh
-include examples/cpp/operation-simple/s4u-operaton-simple.cpp
+include examples/cpp/operation-simple/s4u-operation-simple.cpp
 include examples/cpp/operation-simple/s4u-operation-simple.tesh
-include examples/cpp/operation-variable-load/s4u-operaton-variable-load.cpp
-include examples/cpp/operation-variable-load/s4u-operation-variable-load.tesh
-include examples/cpp/operation-switch-host/s4u-operaton-switch-host.cpp
+include examples/cpp/operation-switch-host/s4u-operation-switch-host.cpp
 include examples/cpp/operation-switch-host/s4u-operation-switch-host.tesh
+include examples/cpp/operation-variable-load/s4u-operation-variable-load.cpp
+include examples/cpp/operation-variable-load/s4u-operation-variable-load.tesh
 include examples/cpp/platform-comm-serialize/s4u-platform-comm-serialize.cpp
 include examples/cpp/platform-comm-serialize/s4u-platform-comm-serialize.tesh
 include examples/cpp/platform-failures/s4u-platform-failures.cpp
