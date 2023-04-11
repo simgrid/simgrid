@@ -287,7 +287,7 @@ void CheckerSide::finalize(bool terminate_asap)
              (int)answer.type, (int)MessageType::FINALIZE_REPLY);
 }
 
-void CheckerSide::dispatch_events()
+void CheckerSide::dispatch_events() const
 {
   event_base_dispatch(base_.get());
 }

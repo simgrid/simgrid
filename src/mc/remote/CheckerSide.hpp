@@ -52,7 +52,7 @@ public:
   Channel& get_channel() { return channel_; }
 
   bool handle_message(const char* buffer, ssize_t size);
-  void dispatch_events();
+  void dispatch_events() const;
   void break_loop() const;
   void wait_for_requests();
 

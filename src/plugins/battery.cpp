@@ -166,8 +166,8 @@ public:
   bool is_active() const;
   double get_power();
   double get_state_of_charge();
-  double get_state_of_charge_min();
-  double get_state_of_charge_max();
+  double get_state_of_charge_min() const;
+  double get_state_of_charge_max() const;
   double get_state_of_health();
   double get_capacity();
   double get_cumulative_cost();
@@ -321,12 +321,12 @@ double Battery::get_state_of_charge()
   return state_of_charge_;
 }
 
-double Battery::get_state_of_charge_min()
+double Battery::get_state_of_charge_min() const
 {
   return state_of_charge_min_;
 }
 
-double Battery::get_state_of_charge_max()
+double Battery::get_state_of_charge_max() const
 {
   return state_of_charge_max_;
 }
