@@ -166,6 +166,11 @@ Battery
 
 .. doxygengroup:: plugin_battery
 
+.. _plugin_operation:
 
+Operation
+===========
+
+.. doxygengroup:: plugin_operation
 
 ..  LocalWords:  SimGrid
