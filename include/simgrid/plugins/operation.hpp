@@ -5,6 +5,7 @@
 #include <xbt/Extendable.hpp>
 
 #include <map>
+#include <memory>
 #include <set>
 
 namespace simgrid::plugins {
