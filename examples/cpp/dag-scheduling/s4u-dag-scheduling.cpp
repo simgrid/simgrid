@@ -165,10 +165,17 @@ int main(int argc, char** argv)
   });
 
   e.load_platform(argv[1]);
+  const auto hosts = e.get_all_hosts();
+
+  /* Mark all hosts as sequential, as it ought to be in such a scheduling example.
+   *
+   * It means that the hosts can only compute one thing at a given time. If an execution already takes place on a given
+   * host, any subsequently started execution will be queued until after the first execution terminates */
+  for (auto const& host : hosts)
+    host->set_concurrency_limit(1);
 
   /*  Allocating the host attribute */
   unsigned long total_nhosts = e.get_host_count();
-  const auto hosts          = e.get_all_hosts();
   std::vector<HostAttribute> host_attributes(total_nhosts);
   for (unsigned long i = 0; i < total_nhosts; i++)
     hosts[i]->set_data(&host_attributes[i]);
