@@ -12,7 +12,7 @@ namespace simgrid::mc {
 class BasicStrategy : public Strategy {
 public:
   BasicStrategy()                     = default;
-  ~BasicStrategy()                    = default;
+  ~BasicStrategy() override           = default;
   BasicStrategy(const BasicStrategy&) = delete;
   BasicStrategy& operator=(const BasicStrategy&)
   { /* nothing to copy over while cloning */

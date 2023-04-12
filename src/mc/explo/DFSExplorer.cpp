@@ -203,7 +203,7 @@ void DFSExplorer::run()
       aid_t issuer_id   = state->get_transition()->aid_;
       stack_t tmp_stack = stack_;
       while (not tmp_stack.empty()) {
-        if (State* prev_state = tmp_stack.back().get();
+        if (const State* prev_state = tmp_stack.back().get();
             state->get_transition()->aid_ == prev_state->get_transition()->aid_) {
           XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->get_transition()->to_string().c_str(),
                     prev_state->get_transition()->to_string().c_str(), issuer_id);
