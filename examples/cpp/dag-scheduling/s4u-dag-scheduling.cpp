@@ -95,6 +95,7 @@ static void schedule_on(sg4::ExecPtr exec, sg4::Host* host, double busy_until = 
 {
   exec->set_host(host);
   // We use the user data field to store up to when the host is busy
+  delete host->get_data<double>(); // In case we're erasing a previous value
   host->set_data(new double(busy_until));
   // we can also set the destination of all the input comms of this exec
   for (const auto& pred : exec->get_dependencies()) {
@@ -190,6 +191,10 @@ int main(int argc, char** argv)
     ready_tasks.clear();
     e.run();
   }
+
+  /* Cleanup memory */
+  for (auto const& host : e.get_all_hosts())
+    delete host->get_data<double>();
 
   XBT_INFO("Simulation Time: %f", simgrid_get_clock());
 

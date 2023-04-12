@@ -168,7 +168,7 @@ std::pair<std::vector<Link*>, double> Host::route_to(const Host* dest) const
 {
   std::vector<kernel::resource::StandardLinkImpl*> linkImpls;
   std::vector<Link*> links;
-  double latency;
+  double latency = 0;
   this->route_to(dest, linkImpls, &latency);
   for (auto* l : linkImpls)
     links.push_back(l->get_iface());
