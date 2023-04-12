@@ -101,6 +101,17 @@ public:
 
   lmm::Constraint* get_constraint() const { return constraint_; }
 
+  /** @brief Set the concurrency limit for this resource */
+  virtual void set_concurrency_limit(int limit) const
+  {
+    if (limit != -1)
+      get_constraint()->reset_concurrency_maximum();
+    get_constraint()->set_concurrency_limit(limit);
+  }
+
+  /** @brief Get the concurrency limit of this resource */
+  virtual int get_concurrency_limit() const { return get_constraint()->get_concurrency_limit(); }
+
   /** @brief returns the current load due to activities (in flops per second, byte per second or similar)
    *
    * The load due to external usages modeled by profile files is ignored.*/

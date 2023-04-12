@@ -207,6 +207,17 @@ Host* Host::set_properties(const std::unordered_map<std::string, std::string>& p
   return this;
 }
 
+int Host::get_concurrency_limit() const
+{
+  return pimpl_cpu_->get_concurrency_limit();
+}
+
+Host* Host::set_concurrency_limit(int limit)
+{
+  kernel::actor::simcall_object_access(pimpl_cpu_, [this, limit] { pimpl_cpu_->set_concurrency_limit(limit); });
+  return this;
+}
+
 /** Specify a profile turning the host on and off according to an exhaustive list or a stochastic law.
  * The profile must contain boolean values. */
 Host* Host::set_state_profile(kernel::profile::Profile* p)

@@ -133,16 +133,4 @@ void StandardLinkImpl::set_latency_profile(profile::Profile* profile)
   }
 }
 
-void StandardLinkImpl::set_concurrency_limit(int limit) const
-{
-  if (limit != -1) {
-    get_constraint()->reset_concurrency_maximum();
-  }
-  get_constraint()->set_concurrency_limit(limit);
-}
-int StandardLinkImpl::get_concurrency_limit() const
-{
-  return get_constraint()->get_concurrency_limit();
-}
-
 } // namespace simgrid::kernel::resource

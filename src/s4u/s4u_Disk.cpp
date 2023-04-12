@@ -112,6 +112,16 @@ Disk* Disk::set_write_bandwidth_profile(kernel::profile::Profile* profile)
                                        [this, profile]() { this->pimpl_->set_write_bandwidth_profile(profile); });
   return this;
 }
+int Disk::get_concurrency_limit() const
+{
+  return pimpl_->get_concurrency_limit();
+}
+
+Disk* Disk::set_concurrency_limit(int limit)
+{
+  kernel::actor::simcall_object_access(pimpl_, [this, limit] { pimpl_->set_concurrency_limit(limit); });
+  return this;
+}
 
 IoPtr Disk::io_init(sg_size_t size, Io::OpType type) const
 {

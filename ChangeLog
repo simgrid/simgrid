@@ -18,6 +18,7 @@ S4U:
  - Full simDAG integration: Activity::start() actually starts only when all dependencies
    are fullfiled. If it cannot be started right away, it will start as soon as it becomes
    possible.
+ - Allow to set a concurrency limit on disks and hosts, as it was already the case for links.
 
 Kernel:
  - optimize an internal datastructure (use a set instead of a list for ongoing activities),

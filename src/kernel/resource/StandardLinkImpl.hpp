@@ -70,9 +70,6 @@ public:
   /* setup the profile file with latency events (peak latency changes due to external load).
    * Profile must contain absolute values */
   void set_latency_profile(kernel::profile::Profile* profile) override;
-
-  void set_concurrency_limit(int limit) const override;
-  int get_concurrency_limit() const override;
 };
 
 } // namespace simgrid::kernel::resource

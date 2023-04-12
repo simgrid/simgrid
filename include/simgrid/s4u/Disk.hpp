@@ -79,6 +79,13 @@ public:
   Disk* set_state_profile(kernel::profile::Profile* profile);
   Disk* set_read_bandwidth_profile(kernel::profile::Profile* profile);
   Disk* set_write_bandwidth_profile(kernel::profile::Profile* profile);
+  /**
+   * @brief Set the max amount of operations (either read or write) that can take place on this disk at the same time
+   *
+   * Use -1 to set no limit.
+   */
+  Disk* set_concurrency_limit(int limit);
+  int get_concurrency_limit() const;
 
   IoPtr io_init(sg_size_t size, s4u::Io::OpType type) const;
 

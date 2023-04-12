@@ -38,10 +38,6 @@ public:
   /* setup the profile file with latency events (peak latency changes due to external load).
    * Profile must contain absolute values */
   virtual void set_latency_profile(kernel::profile::Profile* profile) = 0;
-  /** @brief Set the concurrency limit for this link */
-  virtual void set_concurrency_limit(int limit) const = 0;
-  /** @brief Get the concurrency limit of this link */
-  virtual int get_concurrency_limit() const = 0;
 };
 
 } // namespace simgrid::kernel::resource
