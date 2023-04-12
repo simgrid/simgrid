@@ -25,16 +25,6 @@ struct McError : public std::exception {
   const ExitStatus value;
   McError(ExitStatus v = ExitStatus::ERROR) : value(v) {}
 };
-
-struct DeadlockError : public McError {
-  DeadlockError() : McError(ExitStatus::DEADLOCK) {}
-};
-struct TerminationError : public McError {
-  TerminationError() : McError(ExitStatus::NON_TERMINATION) {}
-};
-struct LivenessError : public McError {
-  LivenessError() : McError(ExitStatus::LIVENESS) {}
-};
 } // namespace simgrid::mc
 
 #endif

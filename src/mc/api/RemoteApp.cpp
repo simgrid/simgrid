@@ -178,7 +178,7 @@ void RemoteApp::check_deadlock() const
              "--cfg=model-check/replay:'%s'",
              explo->get_record_trace().to_string().c_str());
     explo->log_state();
-    throw DeadlockError();
+    throw McError(ExitStatus::DEADLOCK);
   }
 }
 

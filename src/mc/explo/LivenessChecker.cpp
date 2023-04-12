@@ -384,7 +384,7 @@ void LivenessChecker::run()
       reached_pair = this->insert_acceptance_pair(current_pair.get());
       if (reached_pair == nullptr) {
         this->show_acceptance_cycle(current_pair->depth);
-        throw LivenessError();
+        throw McError(ExitStatus::LIVENESS);
       }
     }
 

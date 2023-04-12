@@ -60,7 +60,7 @@ void DFSExplorer::check_non_termination(const State* current_state)
                get_record_trace().to_string().c_str());
       log_state();
 
-      throw TerminationError();
+      throw McError(ExitStatus::NON_TERMINATION);
     }
   }
 #endif
