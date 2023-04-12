@@ -47,7 +47,7 @@ protected:
   std::function<void(Operation*)> end_func_   = [](Operation*) {};
   std::function<void(Operation*)> start_func_ = [](Operation*) {};
   Operation(const std::string& name, double amount);
-  ~Operation()           = default;
+  virtual ~Operation()   = default;
   virtual void execute() = 0;
 
 public:
