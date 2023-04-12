@@ -8,6 +8,7 @@
 
 #include "simgrid/forward.h"
 #include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_record.hpp"
 #include <xbt/Extendable.hpp>
 
@@ -51,7 +52,7 @@ public:
   XBT_ATTRIB_NORETURN void report_assertion_failure();
 
   /** Kill the application and the model-checker (which exits with `status`)*/
-  XBT_ATTRIB_NORETURN void system_exit(int status) const;
+  XBT_ATTRIB_NORETURN void system_exit(ExitStatus status) const;
 
   /* These methods are callbacks called by the model-checking engine
    * to get and display information about the current state of the

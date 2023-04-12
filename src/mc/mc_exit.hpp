@@ -8,22 +8,32 @@
 #include "xbt/base.h"
 #include <exception>
 
-constexpr int SIMGRID_MC_EXIT_SUCCESS         = 0;
-constexpr int SIMGRID_MC_EXIT_SAFETY          = 1;
-constexpr int SIMGRID_MC_EXIT_LIVENESS        = 2;
-constexpr int SIMGRID_MC_EXIT_DEADLOCK        = 3;
-constexpr int SIMGRID_MC_EXIT_NON_TERMINATION = 4;
-constexpr int SIMGRID_MC_EXIT_NON_DETERMINISM = 5;
-constexpr int SIMGRID_MC_EXIT_PROGRAM_CRASH   = 6;
-
-constexpr int SIMGRID_MC_EXIT_ERROR           = 63;
-
 namespace simgrid::mc {
-class XBT_PUBLIC DeadlockError : public std::exception {
+
+enum class ExitStatus {
+  SUCCESS         = 0,
+  SAFETY          = 1,
+  LIVENESS        = 2,
+  DEADLOCK        = 3,
+  NON_TERMINATION = 4,
+  NON_DETERMINISM = 5,
+  PROGRAM_CRASH   = 6,
+  ERROR           = 63
 };
-class XBT_PUBLIC TerminationError : public std::exception {
+
+struct McError : public std::exception {
+  const ExitStatus value;
+  McError(ExitStatus v = ExitStatus::ERROR) : value(v) {}
 };
-class XBT_PUBLIC LivenessError : public std::exception {
+
+struct DeadlockError : public McError {
+  DeadlockError() : McError(ExitStatus::DEADLOCK) {}
+};
+struct TerminationError : public McError {
+  TerminationError() : McError(ExitStatus::NON_TERMINATION) {}
+};
+struct LivenessError : public McError {
+  LivenessError() : McError(ExitStatus::LIVENESS) {}
 };
 } // namespace simgrid::mc
 

@@ -46,14 +46,12 @@ int main(int argc, char** argv)
 #endif
     explo = std::unique_ptr<Exploration>(create_dfs_exploration(argv_copy, cfg_use_DPOR()));
 
+  ExitStatus status;
   try {
     explo->run();
-  } catch (const DeadlockError&) {
-    return SIMGRID_MC_EXIT_DEADLOCK;
-  } catch (const TerminationError&) {
-    return SIMGRID_MC_EXIT_NON_TERMINATION;
-  } catch (const LivenessError&) {
-    return SIMGRID_MC_EXIT_LIVENESS;
+    status = ExitStatus::SUCCESS;
+  } catch (const McError& e) {
+    status = e.value;
   }
-  return SIMGRID_MC_EXIT_SUCCESS;
+  return static_cast<int>(status);
 }
