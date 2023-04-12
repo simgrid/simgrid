@@ -52,8 +52,12 @@ static double finish_on_at(const sg4::ExecPtr task, const sg4::Host* host)
       if (comm->get_remaining() <= 1e-6) {
         redist_time = 0;
       } else {
-        redist_time =
-            sg_host_get_route_latency(source, host) + comm->get_remaining() / sg_host_get_route_bandwidth(source, host);
+        double bandwidth      = std::numeric_limits<double>::max();
+        auto [links, latency] = source->route_to(host);
+        for (auto const& link : links)
+          bandwidth = std::min(bandwidth, link->get_bandwidth());
+
+        redist_time = latency + comm->get_remaining() / bandwidth;
       }
       // We use the user data field to store the finish time of the predecessor of the comm, i.e., its potential start
       // time
@@ -72,17 +76,16 @@ static double finish_on_at(const sg4::ExecPtr task, const sg4::Host* host)
 
 static sg4::Host* get_best_host(const sg4::ExecPtr exec)
 {
-  auto hosts     = sg4::Engine::get_instance()->get_all_hosts();
-  auto best_host = hosts.front();
-  double min_EFT = finish_on_at(exec, best_host);
+  sg4::Host* best_host;
+  double min_EFT = std::numeric_limits<double>::max();
 
-  for (const auto& h : hosts) {
-    double EFT = finish_on_at(exec, h);
-    XBT_DEBUG("%s finishes on %s at %f", exec->get_cname(), h->get_cname(), EFT);
+  for (const auto& host : sg4::Engine::get_instance()->get_all_hosts()) {
+    double EFT = finish_on_at(exec, host);
+    XBT_DEBUG("%s finishes on %s at %f", exec->get_cname(), host->get_cname(), EFT);
 
     if (EFT < min_EFT) {
       min_EFT   = EFT;
-      best_host = h;
+      best_host = host;
     }
   }
   return best_host;
@@ -132,12 +135,12 @@ int main(int argc, char** argv)
   });
 
   e.load_platform(argv[1]);
-  const auto hosts = e.get_all_hosts();
+
   /* Mark all hosts as sequential, as it ought to be in such a scheduling example.
    *
    * It means that the hosts can only compute one thing at a given time. If an execution already takes place on a given
    * host, any subsequently started execution will be queued until after the first execution terminates */
-  for (auto const& host : hosts) {
+  for (auto const& host : e.get_all_hosts()) {
     host->set_concurrency_limit(1);
     host->set_data(new double(0.0));
   }

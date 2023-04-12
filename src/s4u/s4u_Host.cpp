@@ -164,6 +164,16 @@ void Host::route_to(const Host* dest, std::vector<Link*>& links, double* latency
   for (auto* l : linkImpls)
     links.push_back(l->get_iface());
 }
+std::pair<std::vector<Link*>, double> Host::route_to(const Host* dest) const
+{
+  std::vector<kernel::resource::StandardLinkImpl*> linkImpls;
+  std::vector<Link*> links;
+  double latency;
+  this->route_to(dest, linkImpls, &latency);
+  for (auto* l : linkImpls)
+    links.push_back(l->get_iface());
+  return std::make_pair(links, latency);
+}
 
 /** @brief Just like Host::routeTo, but filling an array of link implementations */
 void Host::route_to(const Host* dest, std::vector<kernel::resource::StandardLinkImpl*>& links, double* latency) const

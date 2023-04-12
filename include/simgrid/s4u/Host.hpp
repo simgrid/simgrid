@@ -239,6 +239,7 @@ public:
 
   void route_to(const Host* dest, std::vector<Link*>& links, double* latency) const;
   void route_to(const Host* dest, std::vector<kernel::resource::StandardLinkImpl*>& links, double* latency) const;
+  std::pair<std::vector<Link*>, double> route_to(const Host* dest) const;
 
   /**
    * @brief Seal this host
