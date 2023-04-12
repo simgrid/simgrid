@@ -12,40 +12,6 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(dag_scheduling, "Logging specific to this example");
 namespace sg4 = simgrid::s4u;
 
-struct HostAttribute {
-  /* Earliest time at which a host is ready to execute a task */
-  double available_at                     = 0.0;
-  sg4::Exec* last_scheduled_task          = nullptr;
-};
-
-static double sg_host_get_available_at(const sg4::Host* host)
-{
-  return host->get_data<HostAttribute>()->available_at;
-}
-
-static void sg_host_set_available_at(const sg4::Host* host, double time)
-{
-  host->get_data<HostAttribute>()->available_at = time;
-}
-
-static sg4::Exec* sg_host_get_last_scheduled_task(const sg4::Host* host)
-{
-  return host->get_data<HostAttribute>()->last_scheduled_task;
-}
-
-static void sg_host_set_last_scheduled_task(const sg4::Host* host, sg4::ExecPtr task)
-{
-  host->get_data<HostAttribute>()->last_scheduled_task = task.get();
-}
-
-static bool dependency_exists(const sg4::Exec* src, sg4::Exec* dst)
-{
-  const auto& dependencies = src->get_dependencies();
-  const auto& successors   = src->get_successors();
-  return (std::find(successors.begin(), successors.end(), dst) != successors.end() ||
-          dependencies.find(dst) != dependencies.end());
-}
-
 static std::vector<sg4::Exec*> get_ready_tasks(const std::vector<sg4::ActivityPtr>& dax)
 {
   std::vector<sg4::Exec*> ready_tasks;
@@ -101,15 +67,14 @@ static double finish_on_at(const sg4::ExecPtr task, const sg4::Host* host)
     if (last_data_available < data_available)
       last_data_available = data_available;
   }
-
-  return std::max(sg_host_get_available_at(host), last_data_available) + task->get_remaining() / host->get_speed();
+  return std::max(*host->get_data<double>(), last_data_available) + task->get_remaining() / host->get_speed();
 }
 
 static sg4::Host* get_best_host(const sg4::ExecPtr exec)
 {
-  std::vector<sg4::Host*> hosts          = sg4::Engine::get_instance()->get_all_hosts();
-  auto best_host                         = hosts.front();
-  double min_EFT                         = finish_on_at(exec, best_host);
+  auto hosts     = sg4::Engine::get_instance()->get_all_hosts();
+  auto best_host = hosts.front();
+  double min_EFT = finish_on_at(exec, best_host);
 
   for (const auto& h : hosts) {
     double EFT = finish_on_at(exec, h);
@@ -123,9 +88,11 @@ static sg4::Host* get_best_host(const sg4::ExecPtr exec)
   return best_host;
 }
 
-static void schedule_on(sg4::ExecPtr exec, sg4::Host* host)
+static void schedule_on(sg4::ExecPtr exec, sg4::Host* host, double busy_until = 0.0)
 {
   exec->set_host(host);
+  // We use the user data field to store up to when the host is busy
+  host->set_data(new double(busy_until));
   // we can also set the destination of all the input comms of this exec
   for (const auto& pred : exec->get_dependencies()) {
     auto* comm = dynamic_cast<sg4::Comm*>(pred.get());
@@ -166,20 +133,14 @@ int main(int argc, char** argv)
 
   e.load_platform(argv[1]);
   const auto hosts = e.get_all_hosts();
-
   /* Mark all hosts as sequential, as it ought to be in such a scheduling example.
    *
    * It means that the hosts can only compute one thing at a given time. If an execution already takes place on a given
    * host, any subsequently started execution will be queued until after the first execution terminates */
-  for (auto const& host : hosts)
+  for (auto const& host : hosts) {
     host->set_concurrency_limit(1);
-
-  /*  Allocating the host attribute */
-  unsigned long total_nhosts = e.get_host_count();
-  std::vector<HostAttribute> host_attributes(total_nhosts);
-  for (unsigned long i = 0; i < total_nhosts; i++)
-    hosts[i]->set_data(&host_attributes[i]);
-
+    host->set_data(new double(0.0));
+  }
   /* load the DAX file */
   auto dax = sg4::create_DAG_from_DAX(argv[2]);
 
@@ -221,25 +182,7 @@ int main(int argc, char** argv)
     }
 
     XBT_INFO("Schedule %s on %s", selected_task->get_cname(), selected_host->get_cname());
-    schedule_on(selected_task, selected_host);
-
-    /*
-     * tasks can be executed concurrently when they can by default.
-     * Yet schedulers take decisions assuming that tasks wait for resource availability to start.
-     * The solution (well crude hack is to keep track of the last task scheduled on a host and add a special type of
-     * dependency if needed to force the sequential execution meant by the scheduler.
-     * If the last scheduled task is already done, has failed or is a predecessor of the current task, no need for a
-     * new dependency
-     */
-
-    if (auto last_scheduled_task = sg_host_get_last_scheduled_task(selected_host);
-        last_scheduled_task && (last_scheduled_task->get_state() != sg4::Activity::State::FINISHED) &&
-        (last_scheduled_task->get_state() != sg4::Activity::State::FAILED) &&
-        not dependency_exists(sg_host_get_last_scheduled_task(selected_host), selected_task))
-      last_scheduled_task->add_successor(selected_task);
-
-    sg_host_set_last_scheduled_task(selected_host, selected_task);
-    sg_host_set_available_at(selected_host, min_finish_time);
+    schedule_on(selected_task, selected_host, min_finish_time);
 
     ready_tasks.clear();
     e.run();
