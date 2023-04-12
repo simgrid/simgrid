@@ -57,6 +57,10 @@ Model checking:
  - Synchronize the MBI tests with upstream.
  - Show the full actor bactraces when replaying a MC trace (with model-check/replay)
    and the status of all actors on deadlocks in MC mode.
+ - The safety/stateless aspects of the MC are now enabled by default in all simgrid builds. 
+   Liveness and stateful aspects are still controled by the enabling_model-checking 
+   configuration option.
+ - Stateless model-checking is now usable on any system, including Mac OSX and ARM processors.
 
 XBT:
  - simgrid::xbt::cmdline and simgrid::xbt::binary_name are gone.
