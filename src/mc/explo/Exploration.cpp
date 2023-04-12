@@ -113,7 +113,7 @@ XBT_ATTRIB_NORETURN void Exploration::report_crash(int status)
       XBT_INFO("Stack trace not shown because there is no memory introspection.");
   }
 
-  system_exit(ExitStatus::PROGRAM_CRASH);
+  throw McError(ExitStatus::PROGRAM_CRASH);
 }
 XBT_ATTRIB_NORETURN void Exploration::report_assertion_failure()
 {
@@ -127,12 +127,7 @@ XBT_ATTRIB_NORETURN void Exploration::report_assertion_failure()
            "--cfg=model-check/replay:'%s'",
            get_record_trace().to_string().c_str());
   log_state();
-  system_exit(ExitStatus::SAFETY);
-}
-
-void Exploration::system_exit(ExitStatus status) const
-{
-  throw McError(status);
+  throw McError(ExitStatus::SAFETY);
 }
 
 }; // namespace simgrid::mc

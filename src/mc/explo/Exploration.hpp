@@ -51,9 +51,6 @@ public:
   /** Produce an error message indicating that a property was violated */
   XBT_ATTRIB_NORETURN void report_assertion_failure();
 
-  /** Kill the application and the model-checker (which exits with `status`)*/
-  XBT_ATTRIB_NORETURN void system_exit(ExitStatus status) const;
-
   /* These methods are callbacks called by the model-checking engine
    * to get and display information about the current state of the
    * model-checking algorithm: */
