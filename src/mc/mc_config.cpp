@@ -66,11 +66,11 @@ simgrid::config::Flag<bool> _sg_mc_sleep_set{
     [](bool) { _mc_cfg_cb_check("value to enable/disable the use of sleep-set in the reduction algorithm"); }};
 
 simgrid::config::Flag<std::string> _sg_mc_strategy{
-    "model-check/strategy", "Specify the the kind of heuristic to use for guided model-checking", "none",
-    [](std::string_view value) {
-      if (value != "none" && value != "nb_wait")
-        xbt_die("configuration option 'model-check/guided-mc' can only take 'none' or 'nb_wait' as a value");
-    }};
+    "model-check/strategy",
+    "Specify the the kind of heuristic to use for guided model-checking",
+    "none",
+    {{"none", "No specific strategy: simply pick the first available transistion."},
+     {"nb_wait", "Take any enabled wait transition, to reduce the distance between an async and its wait."}}};
 
 #if SIMGRID_HAVE_STATEFUL_MC
 simgrid::config::Flag<int> _sg_mc_checkpoint{

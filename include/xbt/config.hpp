@@ -261,6 +261,17 @@ public:
   /* A constructor accepting a map of valid values -> their description,
    * and producing an informative error message when an invalid value is passed, or when help is passed as a value.
    */
+  Flag(const char* name, const char* desc, xbt::type_identity_t<T> value,
+       const std::map<std::string, std::string, std::less<>>& valid_values)
+      : value_(value), name_(name)
+  {
+    simgrid::config::bind_flag(value_, name, desc, valid_values, [](std::string) {});
+  }
+
+  /* As earlier, a constructor accepting a map of valid values -> their description,
+   * and producing an informative error message when an invalid value is passed, or when help is passed as a value.
+   * But also take a callback that is invoked before the verification of parameter name validity.
+   */
   template <class F>
   Flag(const char* name, const char* desc, xbt::type_identity_t<T> value,
        const std::map<std::string, std::string, std::less<>>& valid_values, F callback)
