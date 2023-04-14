@@ -86,7 +86,7 @@ void Operation::receive(Operation* source)
         break;
       }
     if (enough_tokens) {
-      for (auto [key, val] : predecessors_)
+      for (auto& [key, val] : predecessors_)
         val--;
       enqueue_execs(1);
     }
