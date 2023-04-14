@@ -25,6 +25,10 @@ A CommOp is a Communication Operation. Its underlying Activity is a :ref:`Comm <
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(Operation, kernel, "Logging specific to the operation plugin");
 
 namespace simgrid::plugins {
+
+xbt::signal<void(Operation*)> Operation::on_start;
+xbt::signal<void(Operation*)> Operation::on_end;
+
 Operation::Operation(const std::string& name, double amount) : name_(name), amount_(amount) {}
 
 std::string Operation::get_name()
@@ -91,8 +95,11 @@ void Operation::receive(Operation* source)
 
 /**
  *  @brief Operation routine when finishing an execution.
- *  @note Set its working status as false. Add 1 to its count of finished executions.
- * Call the on_end() func. Send a token to each of its successors.
+ *  @note Set its working status as false.
+ * Add 1 to its count of finished executions.
+ * Call the on_this_end func.
+ * Fire on_end callback.
+ * Send a token to each of its successors.
  * Start a new execution if possible.
  */
 void Operation::complete()
@@ -102,6 +109,7 @@ void Operation::complete()
     count_++;
   });
   end_func_(this);
+  Operation::on_end(this);
   for (auto const& op : successors_)
     op->receive(this);
   if (ready_to_run())
@@ -174,7 +182,7 @@ void Operation::remove_successor(OperationPtr successor)
  *  @brief Set a function to be called before each execution.
  *  @note The function is called before the underlying Activity starts.
  */
-void Operation::on_start(std::function<void(Operation*)> func)
+void Operation::on_this_start(std::function<void(Operation*)> func)
 {
   simgrid::kernel::actor::simcall_answered([this, func] { start_func_ = func; });
 }
@@ -184,7 +192,7 @@ void Operation::on_start(std::function<void(Operation*)> func)
  *  @brief Set a function to be called after each execution.
  *  @note The function is called after the underlying Activity ends, but before sending tokens to successors.
  */
-void Operation::on_end(std::function<void(Operation*)> func)
+void Operation::on_this_end(std::function<void(Operation*)> func)
 {
   simgrid::kernel::actor::simcall_answered([this, func] { end_func_ = func; });
 }
@@ -213,12 +221,13 @@ ExecOpPtr ExecOp::create(const std::string& name, double flops, simgrid::s4u::Ho
 
 /**
  *  @brief Do one execution of the Operation.
- *  @note Call the on_start() func. Set its working status as true.
+ *  @note Call the on_this_start() func. Set its working status as true.
  *  Create and start the underlying Activity.
  */
 void ExecOp::execute()
 {
   start_func_(this);
+  Operation::on_start(this);
   simgrid::kernel::actor::simcall_answered([this] {
     working_      = true;
     queued_execs_ = std::max(queued_execs_ - 1, 0);
@@ -262,12 +271,13 @@ CommOpPtr CommOp::create(const std::string& name, double bytes, simgrid::s4u::Ho
 
 /**
  *  @brief Do one execution of the Operation.
- *  @note Call the on_start() func. Set its working status as true.
+ *  @note Call the on_this_start() func. Set its working status as true.
  *  Create and start the underlying Activity.
  */
 void CommOp::execute()
 {
   start_func_(this);
+  Operation::on_start(this);
   simgrid::kernel::actor::simcall_answered([this] {
     working_      = true;
     queued_execs_ = std::max(queued_execs_ - 1, 0);

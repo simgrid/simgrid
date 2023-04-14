@@ -45,17 +45,15 @@ int main(int argc, char* argv[])
   exec2->add_successor(comm2);
 
   // Add a function to be called when operations end for log purpose
-  std::vector<simgrid::plugins::OperationPtr> v = {comm0, exec1, exec2, comm1, comm2};
-  for (auto op : v)
-    op->on_end([](simgrid::plugins::Operation* op) {
-      XBT_INFO("Operation %s finished (%d)", op->get_name().c_str(), op->get_count());
-    });
+  simgrid::plugins::Operation::on_end_cb([](simgrid::plugins::Operation* op) {
+    XBT_INFO("Operation %s finished (%d)", op->get_name().c_str(), op->get_count());
+  });
 
   // Add a function to be called before each executions of comm0
   // This function modifies the graph of operations by adding or removing
   // successors to comm0
   int count = 0;
-  comm0->on_start([&](simgrid::plugins::Operation* op) {
+  comm0->on_this_start([&](simgrid::plugins::Operation* op) {
     if (count % 2 == 0) {
       comm0->set_destination(jupiter);
       comm0->add_successor(exec1);

@@ -51,11 +51,9 @@ int main(int argc, char* argv[])
   comm->add_successor(exec);
 
   // Add a function to be called when operations end for log purpose
-  std::vector<simgrid::plugins::OperationPtr> ops{exec, comm};
-  for (auto op : ops)
-    op->on_end([](simgrid::plugins::Operation* op) {
-      XBT_INFO("Operation %s finished (%d)", op->get_name().c_str(), op->get_count());
-    });
+  simgrid::plugins::Operation::on_end_cb([](simgrid::plugins::Operation* op) {
+    XBT_INFO("Operation %s finished (%d)", op->get_name().c_str(), op->get_count());
+  });
 
   // Create the actor that will inject load during the simulation
   simgrid::s4u::Actor::create("input", tremblay, variable_load, comm);

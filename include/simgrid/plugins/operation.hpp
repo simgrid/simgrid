@@ -50,6 +50,9 @@ protected:
   virtual ~Operation()   = default;
   virtual void execute() = 0;
 
+  static xbt::signal<void(Operation*)> on_start;
+  static xbt::signal<void(Operation*)> on_end;
+
 public:
   static void init();
   std::string get_name();
@@ -57,9 +60,17 @@ public:
   void set_amount(double amount);
   void add_successor(OperationPtr op);
   void remove_successor(OperationPtr op);
-  void on_start(std::function<void(Operation*)> func);
-  void on_end(std::function<void(Operation*)> func);
+  void on_this_start(std::function<void(Operation*)> func);
+  void on_this_end(std::function<void(Operation*)> func);
   int get_count();
+
+  /** Add a callback fired before an operation activity start.
+   * Triggered after the on_this_start function**/
+  static void on_start_cb(const std::function<void(Operation*)>& cb) { on_start.connect(cb); }
+  /** Add a callback fired after an operation activity end.
+   * Triggered after the on_this_end function, but before
+   * sending tokens to successors.**/
+  static void on_end_cb(const std::function<void(Operation*)>& cb) { on_end.connect(cb); }
 };
 
 class ExecOp : public Operation {

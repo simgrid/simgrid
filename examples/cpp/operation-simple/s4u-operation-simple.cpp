@@ -38,11 +38,9 @@ int main(int argc, char* argv[])
   comm->add_successor(exec2);
 
   // Add a function to be called when operations end for log purpose
-  std::vector<simgrid::plugins::OperationPtr> ops{exec1, exec2, comm};
-  for (auto op : ops)
-    op->on_end([](simgrid::plugins::Operation* op) {
-      XBT_INFO("Operation %s finished (%d)", op->get_name().c_str(), op->get_count());
-    });
+  simgrid::plugins::Operation::on_end_cb([](simgrid::plugins::Operation* op) {
+    XBT_INFO("Operation %s finished (%d)", op->get_name().c_str(), op->get_count());
+  });
 
   // Enqueue two executions for operation exec1
   exec1->enqueue_execs(2);
