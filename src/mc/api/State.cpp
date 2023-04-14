@@ -22,8 +22,10 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
   XBT_VERB("Creating a guide for the state");
   if (_sg_mc_strategy == "none")
     strategy_ = std::make_shared<BasicStrategy>();
-  if (_sg_mc_strategy == "nb_wait")
+  else if (_sg_mc_strategy == "nb_wait")
     strategy_ = std::make_shared<WaitStrategy>();
+  else
+    THROW_IMPOSSIBLE;
 
   recipe_ = std::list<Transition*>();
 
@@ -42,8 +44,10 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
 {
   if (_sg_mc_strategy == "none")
     strategy_ = std::make_shared<BasicStrategy>();
-  if (_sg_mc_strategy == "nb_wait")
+  else if (_sg_mc_strategy == "nb_wait")
     strategy_ = std::make_shared<WaitStrategy>();
+  else
+    THROW_IMPOSSIBLE;
   *strategy_ = *(parent_state->strategy_);
 
   recipe_ = std::list(parent_state_->get_recipe());
