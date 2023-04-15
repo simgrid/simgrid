@@ -247,8 +247,6 @@ void AppSide::handle_actors_status() const
   // Serialize each transition to describe what each actor is doing
   XBT_DEBUG("Deliver ACTOR_TRANSITION_PROBE payload");
   for (const auto& actor_status : status) {
-    if (not actor_status.enabled)
-      continue;
 
     const auto& actor        = actor_list.at(actor_status.aid);
     const int max_considered = actor_status.max_considered;

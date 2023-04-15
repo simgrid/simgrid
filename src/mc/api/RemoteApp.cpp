@@ -115,6 +115,9 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   //                    <----- send ACTORS_STATUS_REPLY_COUNT
   //                    <----- send `N` ACTORS_STATUS_REPLY_TRANSITION (s_mc_message_actors_status_one_t)
   //                    <----- send `M` ACTORS_STATUS_REPLY_SIMCALL (s_mc_message_simcall_probe_one_t)
+  //
+  // Note that we also receive disabled transitions, because UDPOR needs it.
+
   checker_side_->get_channel().send(MessageType::ACTORS_STATUS);
 
   s_mc_message_actors_status_answer_t answer;
@@ -140,7 +143,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
 
   for (const auto& actor : status) {
     std::vector<std::shared_ptr<Transition>> actor_transitions;
-    int n_transitions = actor.enabled ? actor.max_considered : 0;
+    int n_transitions = actor.max_considered;
     for (int times_considered = 0; times_considered < n_transitions; times_considered++) {
       s_mc_message_simcall_probe_one_t probe;
       ssize_t received = checker_side_->get_channel().receive(probe);
