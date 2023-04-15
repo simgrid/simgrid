@@ -101,7 +101,7 @@ void AppSide::handle_deadlock_check(const s_mc_message_t*) const
   s_mc_message_int_t answer = {};
   answer.type  = MessageType::DEADLOCK_CHECK_REPLY;
   answer.value = deadlock;
-  xbt_assert(channel_.send(answer) == 0, "Could not send response");
+  xbt_assert(channel_.send(answer) == 0, "Could not send response: %s", strerror(errno));
 }
 void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* message) const
 {
@@ -111,7 +111,8 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
   // The client may send some messages to the server while processing the transition
   actor->simcall_handle(message->times_considered_);
   // Say the server that the transition is over and that it should proceed
-  xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send MESSAGE_WAITING to model-checker");
+  xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send MESSAGE_WAITING to model-checker: %s",
+             strerror(errno));
 
   // Finish the RPC from the server: return a serialized observer, to build a Transition on Checker side
   s_mc_message_simcall_execute_answer_t answer = {};
@@ -129,7 +130,7 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
   answer.buffer.back() = '\0';
 
   XBT_DEBUG("send SIMCALL_EXECUTE_ANSWER(%s) ~> '%s'", actor->get_cname(), str.c_str());
-  xbt_assert(channel_.send(answer) == 0, "Could not send response");
+  xbt_assert(channel_.send(answer) == 0, "Could not send response: %s", strerror(errno));
 }
 
 void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
@@ -146,7 +147,7 @@ void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
 #endif
   }
   coverage_checkpoint();
-  xbt_assert(channel_.send(MessageType::FINALIZE_REPLY) == 0, "Could not answer to FINALIZE");
+  xbt_assert(channel_.send(MessageType::FINALIZE_REPLY) == 0, "Could not answer to FINALIZE: %s", strerror(errno));
   std::fflush(stdout);
   if (terminate_asap)
     ::_Exit(0);
@@ -213,7 +214,7 @@ void AppSide::handle_need_meminfo()
   s_mc_message_need_meminfo_reply_t answer = {};
   answer.type                              = MessageType::NEED_MEMINFO_REPLY;
   answer.mmalloc_default_mdp               = mmalloc_get_current_heap();
-  xbt_assert(channel_.send(answer) == 0, "Could not send response to the request for meminfo.");
+  xbt_assert(channel_.send(answer) == 0, "Could not send response to the request for meminfo: %s", strerror(errno));
 #else
   xbt_die("SimGrid was compiled without MC suppport, so liveness and similar features are not available.");
 #endif
@@ -237,10 +238,10 @@ void AppSide::handle_actors_status() const
   answer.type                                       = MessageType::ACTORS_STATUS_REPLY_COUNT;
   answer.count                                      = static_cast<int>(status.size());
 
-  xbt_assert(channel_.send(answer) == 0, "Could not send ACTORS_STATUS_REPLY msg");
+  xbt_assert(channel_.send(answer) == 0, "Could not send ACTORS_STATUS_REPLY msg: %s", strerror(errno));
   if (answer.count > 0) {
     size_t size = status.size() * sizeof(s_mc_message_actors_status_one_t);
-    xbt_assert(channel_.send(status.data(), size) == 0, "Could not send ACTORS_STATUS_REPLY data");
+    xbt_assert(channel_.send(status.data(), size) == 0, "Could not send ACTORS_STATUS_REPLY data: %s", strerror(errno));
   }
 
   // Serialize each transition to describe what each actor is doing
@@ -270,7 +271,7 @@ void AppSide::handle_actors_status() const
       strncpy(probe.buffer.data(), str.c_str(), probe.buffer.size() - 1);
       probe.buffer.back() = '\0';
 
-      xbt_assert(channel_.send(probe) == 0, "Could not send ACTOR_TRANSITION_PROBE payload");
+      xbt_assert(channel_.send(probe) == 0, "Could not send ACTOR_TRANSITION_PROBE payload: %s", strerror(errno));
     }
     // NOTE: We do NOT need to reset `times_considered` for each actor's
     // simcall observer here to the "original" value (i.e. the value BEFORE
@@ -284,7 +285,7 @@ void AppSide::handle_actors_maxpid() const
   s_mc_message_int_t answer = {};
   answer.type               = MessageType::ACTORS_MAXPID_REPLY;
   answer.value              = kernel::actor::ActorImpl::get_maxpid();
-  xbt_assert(channel_.send(answer) == 0, "Could not send response");
+  xbt_assert(channel_.send(answer) == 0, "Could not send response: %s", strerror(errno));
 }
 
 #define assert_msg_size(_name_, _type_)                                                                                \
@@ -303,7 +304,7 @@ void AppSide::handle_messages()
       XBT_DEBUG("Socket closed on the Checker side, bailing out.");
       ::_Exit(0); // Nobody's listening to that process anymore => exit as quickly as possible.
     }
-    xbt_assert(received_size >= 0, "Could not receive commands from the model-checker");
+    xbt_assert(received_size >= 0, "Could not receive commands from the model-checker: %s", strerror(errno));
     xbt_assert(static_cast<size_t>(received_size) >= sizeof(s_mc_message_t), "Cannot handle short message (size=%zd)",
                received_size);
 
@@ -371,14 +372,16 @@ void AppSide::main_loop()
   sthread_enable();
   while (true) {
     simgrid::mc::execute_actors();
-    xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send WAITING message to model-checker");
+    xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send WAITING message to model-checker: %s",
+               strerror(errno));
     this->handle_messages();
   }
 }
 
 void AppSide::report_assertion_failure()
 {
-  xbt_assert(channel_.send(MessageType::ASSERTION_FAILED) == 0, "Could not send assertion to model-checker");
+  xbt_assert(channel_.send(MessageType::ASSERTION_FAILED) == 0, "Could not send assertion to model-checker: %s",
+             strerror(errno));
   this->handle_messages();
 }
 
@@ -392,7 +395,7 @@ void AppSide::ignore_memory(void* addr, std::size_t size) const
   message.type = MessageType::IGNORE_MEMORY;
   message.addr = (std::uintptr_t)addr;
   message.size = size;
-  xbt_assert(channel_.send(message) == 0, "Could not send IGNORE_MEMORY message to model-checker");
+  xbt_assert(channel_.send(message) == 0, "Could not send IGNORE_MEMORY message to model-checker: %s", strerror(errno));
 #else
   xbt_die("Cannot really call ignore_heap() in non-SIMGRID_MC mode.");
 #endif
@@ -419,7 +422,7 @@ void AppSide::ignore_heap(void* address, std::size_t size) const
     heap->heapinfo[message.block].busy_frag.ignore[message.fragment]++;
   }
 
-  xbt_assert(channel_.send(message) == 0, "Could not send ignored region to MCer");
+  xbt_assert(channel_.send(message) == 0, "Could not send ignored region to MCer: %s", strerror(errno));
 #else
   xbt_die("Cannot really call ignore_heap() in non-SIMGRID_MC mode.");
 #endif
@@ -435,7 +438,7 @@ void AppSide::unignore_heap(void* address, std::size_t size) const
   message.type = MessageType::UNIGNORE_HEAP;
   message.addr = (std::uintptr_t)address;
   message.size = size;
-  xbt_assert(channel_.send(message) == 0, "Could not send IGNORE_HEAP message to model-checker");
+  xbt_assert(channel_.send(message) == 0, "Could not send IGNORE_HEAP message to model-checker: %s", strerror(errno));
 #else
   xbt_die("Cannot really call unignore_heap() in non-SIMGRID_MC mode.");
 #endif
@@ -455,7 +458,7 @@ void AppSide::declare_symbol(const char* name, int* value) const
   strncpy(message.name.data(), name, message.name.size() - 1);
   message.callback = nullptr;
   message.data     = value;
-  xbt_assert(channel_.send(message) == 0, "Could send REGISTER_SYMBOL message to model-checker");
+  xbt_assert(channel_.send(message) == 0, "Could send REGISTER_SYMBOL message to model-checker: %s", strerror(errno));
 #else
   xbt_die("Cannot really call declare_symbol() in non-SIMGRID_MC mode.");
 #endif
@@ -485,7 +488,7 @@ void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context) const
   s_mc_message_stack_region_t message = {};
   message.type         = MessageType::STACK_REGION;
   message.stack_region = region;
-  xbt_assert(channel_.send(message) == 0, "Could not send STACK_REGION to model-checker");
+  xbt_assert(channel_.send(message) == 0, "Could not send STACK_REGION to model-checker: %s", strerror(errno));
 #else
   xbt_die("Cannot really call declare_stack() in non-SIMGRID_MC mode.");
 #endif
