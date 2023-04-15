@@ -289,7 +289,8 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
 {
   std::vector<std::string> trace;
   for (std::shared_ptr<Pair> const& pair : exploration_stack_)
-    trace.push_back(pair->app_state_->get_transition()->to_string());
+    if (pair->app_state_->get_transition() != nullptr)
+      trace.push_back(pair->app_state_->get_transition()->to_string());
 
   return trace;
 }

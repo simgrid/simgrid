@@ -45,12 +45,12 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
     checker_side_     = std::make_unique<simgrid::mc::CheckerSide>(app_args_, need_memory_introspection);
     initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_, *checker_side_->get_remote_memory());
 #else
-    xbt_die("SimGrid was compiled without MC support.");
+    xbt_die("SimGrid MC was compiled without memory introspection support.");
 #endif
   } else {
     master_socket_ = socket(AF_UNIX,
 #ifdef __APPLE__
-                            SOCK_STREAM, /* Mac OSX does not have AF_UNIX + SOCK_SEQPACKET, even if that's faster*/
+                            SOCK_STREAM, /* Mac OSX does not have AF_UNIX + SOCK_SEQPACKET, even if that's faster */
 #else
                             SOCK_SEQPACKET,
 #endif

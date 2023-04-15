@@ -27,8 +27,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker]   MUTEX_UNLOCK(mutex: 0, owner: -1) (state=3)
 > [Checker]   MUTEX_UNLOCK(mutex: 0, owner: -1) (state=6)
 > [Checker] 0 actors remain, but none of them need to be interleaved (depth 8).
-> [Checker] Execution came to an end at 1;1;1;2;2;2;0 (state: 7, depth: 7)
-> [Checker] Backtracking from 1;1;1;2;2;2;0
+> [Checker] Execution came to an end at 1;1;1;2;2;2 (state: 7, depth: 7)
+> [Checker] Backtracking from 1;1;1;2;2;2
 > [Checker] Execute 2: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (stack depth: 1, state: 1, 0 interleaves)
 > [Checker] Execute 1: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (stack depth: 2, state: 8, 0 interleaves)
 > [Checker] Dependent Transitions:
@@ -51,8 +51,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker]   MUTEX_UNLOCK(mutex: 0, owner: 1) (state=10)
 > [Checker]   MUTEX_UNLOCK(mutex: 0, owner: -1) (state=12)
 > [Checker] 0 actors remain, but none of them need to be interleaved (depth 8).
-> [Checker] Execution came to an end at 2;1;2;2;1;1;0 (state: 13, depth: 7)
-> [Checker] Backtracking from 2;1;2;2;1;1;0
+> [Checker] Execution came to an end at 2;1;2;2;1;1 (state: 13, depth: 7)
+> [Checker] Backtracking from 2;1;2;2;1;1
 > [Checker] Execute 2: MUTEX_ASYNC_LOCK(mutex: 0, owner: 1) (stack depth: 3, state: 3, 0 interleaves)
 > [Checker] INDEPENDENT Transitions:
 > [Checker]   MUTEX_WAIT(mutex: 0, owner: 1) (state=2)
@@ -73,8 +73,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker]   MUTEX_UNLOCK(mutex: 0, owner: 2) (state=14)
 > [Checker]   MUTEX_UNLOCK(mutex: 0, owner: -1) (state=16)
 > [Checker] 0 actors remain, but none of them need to be interleaved (depth 8).
-> [Checker] Execution came to an end at 1;1;2;1;2;2;0 (state: 17, depth: 7)
-> [Checker] Backtracking from 1;1;2;1;2;2;0
+> [Checker] Execution came to an end at 1;1;2;1;2;2 (state: 17, depth: 7)
+> [Checker] Backtracking from 1;1;2;1;2;2
 > [Checker] DFS exploration ended. 17 unique states visited; 2 backtracks (21 transition replays, 2 states visited overall)
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true -- ${bindir:=.}/s4u-synchro-mutex --cfg=actors:2 --log=s4u_test.thres:critical

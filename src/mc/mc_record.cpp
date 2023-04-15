@@ -98,6 +98,8 @@ std::string simgrid::mc::RecordTrace::to_string() const
 {
   std::ostringstream stream;
   for (auto i = transitions_.begin(); i != transitions_.end(); ++i) {
+    if (*i == nullptr)
+      continue;
     if (i != transitions_.begin())
       stream << ';';
     stream << (*i)->aid_;

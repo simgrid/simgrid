@@ -22,19 +22,11 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   static long expended_states_; /* Count total amount of states, for stats */
 
   /**
-   * @brief An empty transition that leads to this state by default
-   */
-  const std::unique_ptr<Transition> default_transition_ = std::make_unique<Transition>();
-
-  /**
-   * @brief The outgoing transition: what was the last transition that
-   * we took to leave this state?
+   * @brief The outgoing transition: what was the last transition that we took to leave this state?
    *
-   * The owner of the transition is the `ActorState` instance which exists in this state,
-   * or a reference to the internal default transition `Transition()` if no transition has been
-   * set
+   * The owner of the transition is the `ActorState` instance which exists in this state.
    */
-  Transition* transition_ = default_transition_.get();
+  Transition* transition_ = nullptr;
 
   /** @brief A list of transition to be replayed in order to get in this state. */
   std::list<Transition*> recipe_;
