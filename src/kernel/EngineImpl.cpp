@@ -492,10 +492,6 @@ void EngineImpl::presolve() const
         resource->apply_event(event, value);
     }
   }
-
-  XBT_DEBUG("Set every models in the right state by updating them to 0.");
-  for (auto const& model : models_)
-    model->update_actions_state(now_, 0.0);
 }
 
 double EngineImpl::solve(double max_date) const

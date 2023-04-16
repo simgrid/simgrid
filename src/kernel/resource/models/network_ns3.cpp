@@ -310,7 +310,6 @@ static simgrid::config::Flag<std::string> ns3_seed(
 
 namespace simgrid {
 namespace kernel::resource {
-static bool ns3_is_initialized = false;
 
 NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
 {
@@ -341,10 +340,8 @@ NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
 
   s4u::Engine::on_platform_created_cb([]() {
     /* Create the ns3 topology based on routing strategy */
-    xbt_assert(not ns3_is_initialized, "ns-3 initialized twice.");
     ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
     ns3::GlobalRouteManager::InitializeRoutes();
-    ns3_is_initialized = true;
   });
   routing::on_cluster_creation.connect(&clusterCreation_cb);
   routing::NetZoneImpl::on_route_creation.connect(&routeCreation_cb);
@@ -441,11 +438,6 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
 
 #if SIMGRID_HAVE_NS3_GetNextEventTime
   /* If the ns-3 model is idempotent, it won't get updated in next_occurring_event() */
-
-  if (not ns3_is_initialized) {
-    XBT_DEBUG("PRESOLVE, I SEE YOU. Don't run ns3 until after all initializations are done.");
-    return;
-  }
 
   if (delta >= 0) {
     XBT_DEBUG("DO START simulator delta: %f (current simgrid time: %f; current ns3 time: %f)", delta,
