@@ -16,7 +16,7 @@ To activate this plugin, first call :cpp:func:`Operation::init`.
 
 Operations are designed to represent workflows, i.e, graphs of Operations.
 Operations can only be instancied using either
-:cpp:func:`simgrid::plugins::ExecOp::create` or :cpp:func:`simgrid::plugins::CommOp::create`
+:cpp:func:`simgrid::plugins::ExecOp::init` or :cpp:func:`simgrid::plugins::CommOp::init`
 An ExecOp is an Execution Operation. Its underlying Activity is an :ref:`Exec <API_s4u_Exec>`.
 A CommOp is a Communication Operation. Its underlying Activity is a :ref:`Comm <API_s4u_Comm>`.
 
@@ -29,7 +29,7 @@ namespace simgrid::plugins {
 xbt::signal<void(Operation*)> Operation::on_start;
 xbt::signal<void(Operation*)> Operation::on_end;
 
-Operation::Operation(const std::string& name, double amount) : name_(name), amount_(amount) {}
+Operation::Operation(const std::string& name) : name_(name) {}
 
 std::string Operation::get_name()
 {
@@ -208,21 +208,32 @@ int Operation::get_count()
 /**
  *  @brief Default constructor.
  */
-ExecOp::ExecOp(const std::string& name, double flops, simgrid::s4u::Host* host) : Operation(name, flops), host_(host) {}
+ExecOp::ExecOp(const std::string& name) : Operation(name) {}
 
 /** @ingroup plugin_operation
  *  @brief Smart Constructor.
  */
-ExecOpPtr ExecOp::create(const std::string& name, double flops, simgrid::s4u::Host* host)
+ExecOpPtr ExecOp::init(const std::string& name)
 {
-  auto op = ExecOpPtr(new ExecOp(name, flops, host));
+  auto op = ExecOpPtr(new ExecOp(name));
+  return op;
+}
+
+/** @ingroup plugin_operation
+ *  @brief Smart Constructor.
+ */
+ExecOpPtr ExecOp::init(const std::string& name, double flops, simgrid::s4u::Host* host)
+{
+  auto op = ExecOpPtr(new ExecOp(name));
+  op->set_flops(flops);
+  op->set_host(host);
   return op;
 }
 
 /**
  *  @brief Do one execution of the Operation.
  *  @note Call the on_this_start() func. Set its working status as true.
- *  Create and start the underlying Activity.
+ *  Init and start the underlying Activity.
  */
 void ExecOp::execute()
 {
@@ -251,28 +262,45 @@ void ExecOp::set_host(simgrid::s4u::Host* host)
   simgrid::kernel::actor::simcall_answered([this, host] { host_ = host; });
 }
 
+/** @ingroup plugin_operation
+ *  @param flops The amount of flops to set.
+ */
+void ExecOp::set_flops(double flops)
+{
+  simgrid::kernel::actor::simcall_answered([this, flops] { amount_ = flops; });
+}
+
 /**
  *  @brief Default constructor.
  */
-CommOp::CommOp(const std::string& name, double bytes, simgrid::s4u::Host* source, simgrid::s4u::Host* destination)
-    : Operation(name, bytes), source_(source), destination_(destination)
+CommOp::CommOp(const std::string& name) : Operation(name) {}
+
+/** @ingroup plugin_operation
+ *  @brief Smart constructor.
+ */
+CommOpPtr CommOp::init(const std::string& name)
 {
+  auto op = CommOpPtr(new CommOp(name));
+  return op;
 }
 
 /** @ingroup plugin_operation
  *  @brief Smart constructor.
  */
-CommOpPtr CommOp::create(const std::string& name, double bytes, simgrid::s4u::Host* source,
-                         simgrid::s4u::Host* destination)
+CommOpPtr CommOp::init(const std::string& name, double bytes, simgrid::s4u::Host* source,
+                       simgrid::s4u::Host* destination)
 {
-  auto op = CommOpPtr(new CommOp(name, bytes, source, destination));
+  auto op = CommOpPtr(new CommOp(name));
+  op->set_bytes(bytes);
+  op->set_source(source);
+  op->set_destination(destination);
   return op;
 }
 
 /**
  *  @brief Do one execution of the Operation.
  *  @note Call the on_this_start() func. Set its working status as true.
- *  Create and start the underlying Activity.
+ *  Init and start the underlying Activity.
  */
 void CommOp::execute()
 {
@@ -307,6 +335,14 @@ void CommOp::set_source(simgrid::s4u::Host* source)
 void CommOp::set_destination(simgrid::s4u::Host* destination)
 {
   simgrid::kernel::actor::simcall_answered([this, destination] { destination_ = destination; });
+}
+
+/** @ingroup plugin_operation
+ *  @param bytes The amount of bytes to set.
+ */
+void CommOp::set_bytes(double bytes)
+{
+  simgrid::kernel::actor::simcall_answered([this, bytes] { amount_ = bytes; });
 }
 
 } // namespace simgrid::plugins

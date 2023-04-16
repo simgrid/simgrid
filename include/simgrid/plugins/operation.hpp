@@ -46,7 +46,7 @@ protected:
   simgrid::s4u::ActivityPtr current_activity_;
   std::function<void(Operation*)> end_func_   = [](Operation*) {};
   std::function<void(Operation*)> start_func_ = [](Operation*) {};
-  Operation(const std::string& name, double amount);
+  Operation(const std::string& name);
   virtual ~Operation()   = default;
   virtual void execute() = 0;
 
@@ -77,12 +77,14 @@ class ExecOp : public Operation {
 private:
   simgrid::s4u::Host* host_;
 
-  ExecOp(const std::string& name, double flops, simgrid::s4u::Host* host);
+  ExecOp(const std::string& name);
   void execute();
 
 public:
-  static ExecOpPtr create(const std::string& name, double flops, simgrid::s4u::Host* host);
+  static ExecOpPtr init(const std::string& name);
+  static ExecOpPtr init(const std::string& name, double flops, simgrid::s4u::Host* host);
   void set_host(simgrid::s4u::Host* host);
+  void set_flops(double flops);
 };
 
 class CommOp : public Operation {
@@ -90,14 +92,16 @@ private:
   simgrid::s4u::Host* source_;
   simgrid::s4u::Host* destination_;
 
-  CommOp(const std::string& name, double bytes, simgrid::s4u::Host* source, simgrid::s4u::Host* destination);
+  CommOp(const std::string& name);
   void execute();
 
 public:
-  static CommOpPtr create(const std::string& name, double bytes, simgrid::s4u::Host* source,
-                          simgrid::s4u::Host* destination);
+  static CommOpPtr init(const std::string& name);
+  static CommOpPtr init(const std::string& name, double bytes, simgrid::s4u::Host* source,
+                        simgrid::s4u::Host* destination);
   void set_source(simgrid::s4u::Host* source);
   void set_destination(simgrid::s4u::Host* destination);
+  void set_bytes(double bytes);
 };
 } // namespace simgrid::plugins
 #endif

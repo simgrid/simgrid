@@ -33,11 +33,13 @@ int main(int argc, char* argv[])
   auto fafard   = e.host_by_name("Fafard");
 
   // Create operations
-  auto comm0 = simgrid::plugins::CommOp::create("comm0", 1e7, tremblay, jupiter);
-  auto exec1 = simgrid::plugins::ExecOp::create("exec1", 1e9, jupiter);
-  auto exec2 = simgrid::plugins::ExecOp::create("exec2", 1e9, fafard);
-  auto comm1 = simgrid::plugins::CommOp::create("comm1", 1e7, jupiter, tremblay);
-  auto comm2 = simgrid::plugins::CommOp::create("comm2", 1e7, fafard, tremblay);
+  auto comm0 = simgrid::plugins::CommOp::init("comm0");
+  comm0->set_bytes(1e7);
+  comm0->set_source(tremblay);
+  auto exec1 = simgrid::plugins::ExecOp::init("exec1", 1e9, jupiter);
+  auto exec2 = simgrid::plugins::ExecOp::init("exec2", 1e9, fafard);
+  auto comm1 = simgrid::plugins::CommOp::init("comm1", 1e7, jupiter, tremblay);
+  auto comm2 = simgrid::plugins::CommOp::init("comm2", 1e7, fafard, tremblay);
 
   // Create the initial graph by defining dependencies between operations
   comm0->add_successor(exec2);

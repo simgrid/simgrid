@@ -29,9 +29,9 @@ int main(int argc, char* argv[])
   auto jupiter  = e.host_by_name("Jupiter");
 
   // Create operations
-  auto exec1 = simgrid::plugins::ExecOp::create("exec1", 1e9, tremblay);
-  auto exec2 = simgrid::plugins::ExecOp::create("exec2", 1e9, jupiter);
-  auto comm  = simgrid::plugins::CommOp::create("comm", 1e7, tremblay, jupiter);
+  auto exec1 = simgrid::plugins::ExecOp::init("exec1", 1e9, tremblay);
+  auto exec2 = simgrid::plugins::ExecOp::init("exec2", 1e9, jupiter);
+  auto comm  = simgrid::plugins::CommOp::init("comm", 1e7, tremblay, jupiter);
 
   // Create the graph by defining dependencies between operations
   exec1->add_successor(comm);
