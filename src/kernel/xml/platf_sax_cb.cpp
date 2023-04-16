@@ -31,6 +31,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(platf_parse, ker_platform, "Logging specific to 
 std::string simgrid_parsed_filename;                            // Currently parsed file (for the error messages)
 static std::vector<simgrid::s4u::LinkInRoute> parsed_link_list; /* temporary store of current link list of a route */
 
+static bool fire_on_platform_created_callback;
+
 /* Helping functions */
 void simgrid_parse_assert(bool cond, const std::string& msg)
 {
@@ -259,7 +261,8 @@ void STag_simgrid_parse_platform()
 }
 void ETag_simgrid_parse_platform()
 {
-  simgrid::s4u::Engine::on_platform_created();
+  if (fire_on_platform_created_callback)
+    simgrid::s4u::Engine::on_platform_created();
 }
 
 void STag_simgrid_parse_prop()
@@ -947,8 +950,9 @@ void simgrid_parse_close()
 }
 
 /* Call the lexer to parse the currently opened file */
-void simgrid_parse()
+void simgrid_parse(bool fire_on_platform_created_callback_param)
 {
+  fire_on_platform_created_callback = fire_on_platform_created_callback_param;
   bool err = simgrid_parse_lex();
   simgrid_parse_assert(not err, "Flex returned an error code");
 

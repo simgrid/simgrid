@@ -40,7 +40,7 @@ void parse_platform_file(const std::string& file)
   simgrid_parse_open(file);
 
   /* Do the actual parsing */
-  simgrid_parse();
+  simgrid_parse(true);
 
   simgrid_parse_close();
 }

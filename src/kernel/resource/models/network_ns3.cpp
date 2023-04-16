@@ -341,7 +341,7 @@ NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
 
   s4u::Engine::on_platform_created_cb([]() {
     /* Create the ns3 topology based on routing strategy */
-    ns3::GlobalRouteManager::DeleteGlobalRoutes(); // just in case this callback is called twice
+    xbt_assert(not ns3_is_initialized, "ns-3 initialized twice.");
     ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
     ns3::GlobalRouteManager::InitializeRoutes();
     ns3_is_initialized = true;

@@ -23,7 +23,7 @@ XBT_PUBLIC void simgrid_parse_assert_netpoint(const std::string& hostname, const
 XBT_PUBLIC double simgrid_parse_get_double(const std::string& s);
 XBT_PUBLIC int simgrid_parse_get_int(const std::string& s);
 
-XBT_PUBLIC void simgrid_parse(); /* Entry-point to the parser */
+XBT_PUBLIC void simgrid_parse(bool fire_on_platform_created_callback); /* Entry-point to the parser */
 XBT_PUBLIC void parse_platform_file(const std::string& file);
 
 #endif

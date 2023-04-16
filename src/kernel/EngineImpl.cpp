@@ -324,7 +324,7 @@ void EngineImpl::load_deployment(const std::string& file) const
   sg_platf_parser_finalize();
 
   simgrid_parse_open(file);
-  simgrid_parse();
+  simgrid_parse(false);
   simgrid_parse_close();
 }
 
