@@ -755,6 +755,8 @@ SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 add_custom_target(tests    COMMENT "Recompiling the tests")
 add_custom_target(tests-mc COMMENT "Recompiling the MC tests and tools.")
 add_dependencies(tests tests-mc)
+add_custom_target(tests-ns3 COMMENT "Recompiling the ns3 tests and tools.")
+add_dependencies(tests tests-ns3)
 
 ### Build some Maintainer files
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MaintainerMode.cmake)
