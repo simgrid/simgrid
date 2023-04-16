@@ -4,8 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
+#include "src/kernel/resource/Resource.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
+#include <simgrid/s4u/Engine.hpp>
 
 namespace simgrid::kernel::profile {
 
@@ -23,6 +25,23 @@ FutureEvtSet::~FutureEvtSet()
 /** @brief Schedules an event to a future date */
 void FutureEvtSet::add_event(double date, Event* evt)
 {
+  if (heap_.empty())
+    s4u::Engine::on_platform_created_cb([this]() {
+      /* Handle the events of time = 0 right after the platform creation */
+      double next_event_date;
+      while ((next_event_date = this->next_date()) != -1.0) {
+        if (next_event_date > 0)
+          break;
+
+        double value                 = -1.0;
+        resource::Resource* resource = nullptr;
+        while (auto* event = this->pop_leq(next_event_date, &value, &resource)) {
+          if (value >= 0)
+            resource->apply_event(event, value);
+        }
+      }
+    });
+
   heap_.emplace(date, evt);
 }
 

@@ -194,9 +194,6 @@ void EngineImpl::initialize(int* argc, char** argv)
 
   install_signal_handlers();
 
-  /* register a function to be called after the environment creation */
-  s4u::Engine::on_platform_created_cb([this]() { this->presolve(); });
-
   if (cfg_dbg_clean_atexit)
     atexit(shutdown);
 }
@@ -473,23 +470,6 @@ void EngineImpl::display_all_actor_status() const
       XBT_INFO("Actor %ld (%s@%s) simcall %s", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname(),
                (actor->simcall_.observer_ != nullptr ? actor->simcall_.observer_->to_string().c_str()
                                                      : actor->simcall_.get_cname()));
-    }
-  }
-}
-
-void EngineImpl::presolve() const
-{
-  XBT_DEBUG("Consume all trace events occurring before the starting time.");
-  double next_event_date;
-  while ((next_event_date = profile::future_evt_set.next_date()) != -1.0) {
-    if (next_event_date > now_)
-      break;
-
-    double value                 = -1.0;
-    resource::Resource* resource = nullptr;
-    while (auto* event = profile::future_evt_set.pop_leq(next_event_date, &value, &resource)) {
-      if (value >= 0)
-        resource->apply_event(event, value);
     }
   }
 }
