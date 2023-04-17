@@ -25,8 +25,8 @@ public:
     size_t size;
     void* src;
     void* dstn;
-    Region* region0;
-    Region* region;
+    std::unique_ptr<Region> region0;
+    std::unique_ptr<Region> region;
   };
   static prologue_return prologue(int n); // common to the below 5 fxs
   static void read_whole_region();
@@ -68,18 +68,23 @@ snap_test_helper::prologue_return snap_test_helper::prologue(int n)
 
   // Init memory and take snapshots:
   init_memory(source, byte_size);
-  auto* region0 =
-      new simgrid::mc::Region(page_store_, *memory_.get(), simgrid::mc::RegionType::Data, source, byte_size);
+  auto region0 = std::make_unique<simgrid::mc::Region>(page_store_, *memory_.get(), simgrid::mc::RegionType::Data,
+                                                       source, byte_size);
   for (int i = 0; i < n; i += 2) {
     init_memory((char*)source + i * xbt_pagesize, xbt_pagesize);
   }
-  auto* region = new simgrid::mc::Region(page_store_, *memory_.get(), simgrid::mc::RegionType::Data, source, byte_size);
+  auto region = std::make_unique<simgrid::mc::Region>(page_store_, *memory_.get(), simgrid::mc::RegionType::Data,
+                                                      source, byte_size);
 
   void* destination = mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   INFO("Could not allocate destination memory");
   REQUIRE(destination != MAP_FAILED);
 
-  return {.size = byte_size, .src = source, .dstn = destination, .region0 = region0, .region = region};
+  return {.size    = byte_size,
+          .src     = source,
+          .dstn    = destination,
+          .region0 = std::move(region0),
+          .region  = std::move(region)};
 }
 
 void snap_test_helper::read_whole_region()
@@ -92,8 +97,6 @@ void snap_test_helper::read_whole_region()
 
     munmap(ret.dstn, ret.size);
     munmap(ret.src, ret.size);
-    delete ret.region0;
-    delete ret.region;
   }
 }
 
@@ -111,8 +114,6 @@ void snap_test_helper::read_region_parts()
     }
     munmap(ret.dstn, ret.size);
     munmap(ret.src, ret.size);
-    delete ret.region0;
-    delete ret.region;
   }
 }
 
@@ -122,12 +123,10 @@ void snap_test_helper::compare_whole_region()
     prologue_return ret = prologue(n);
 
     INFO("Unexpected match in MC_snapshot_region_memcmp() with previous snapshot");
-    REQUIRE(MC_snapshot_region_memcmp(ret.src, ret.region0, ret.src, ret.region, ret.size));
+    REQUIRE(MC_snapshot_region_memcmp(ret.src, ret.region0.get(), ret.src, ret.region.get(), ret.size));
 
     munmap(ret.dstn, ret.size);
     munmap(ret.src, ret.size);
-    delete ret.region0;
-    delete ret.region;
   }
 }
 
@@ -141,13 +140,11 @@ void snap_test_helper::compare_region_parts()
       size_t size   = simgrid::xbt::random::uniform_int(0, ret.size - offset - 1);
 
       INFO("Mismatch in MC_snapshot_region_memcmp()");
-      REQUIRE(not MC_snapshot_region_memcmp((char*)ret.src + offset, ret.region, (char*)ret.src + offset, ret.region,
-                                            size));
+      REQUIRE(not MC_snapshot_region_memcmp((char*)ret.src + offset, ret.region.get(), (char*)ret.src + offset,
+                                            ret.region.get(), size));
     }
     munmap(ret.dstn, ret.size);
     munmap(ret.src, ret.size);
-    delete ret.region0;
-    delete ret.region;
   }
 }
 
@@ -163,8 +160,6 @@ void snap_test_helper::read_pointer()
 
   munmap(ret.dstn, ret.size);
   munmap(ret.src, ret.size);
-  delete ret.region0;
-  delete ret.region;
 }
 
 /*************** End: class snap_test_helper *****************************/

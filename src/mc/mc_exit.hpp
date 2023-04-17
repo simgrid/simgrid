@@ -23,7 +23,7 @@ enum class ExitStatus {
 
 struct McError : public std::exception {
   const ExitStatus value;
-  McError(ExitStatus v = ExitStatus::ERROR) : value(v) {}
+  explicit McError(ExitStatus v = ExitStatus::ERROR) : value(v) {}
 };
 } // namespace simgrid::mc
 

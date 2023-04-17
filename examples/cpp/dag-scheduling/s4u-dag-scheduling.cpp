@@ -76,7 +76,7 @@ static double finish_on_at(const sg4::ExecPtr task, const sg4::Host* host)
 
 static sg4::Host* get_best_host(const sg4::ExecPtr exec)
 {
-  sg4::Host* best_host;
+  sg4::Host* best_host = nullptr;
   double min_EFT = std::numeric_limits<double>::max();
 
   for (const auto& host : sg4::Engine::get_instance()->get_all_hosts()) {
@@ -193,8 +193,8 @@ int main(int argc, char** argv)
   }
 
   /* Cleanup memory */
-  for (auto const& host : e.get_all_hosts())
-    delete host->get_data<double>();
+  for (auto const& h : e.get_all_hosts())
+    delete h->get_data<double>();
 
   XBT_INFO("Simulation Time: %f", simgrid_get_clock());
 
