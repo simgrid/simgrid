@@ -94,6 +94,15 @@ bool CommTestTransition::depends(const Transition* other) const
   return false; // Comm transitions are INDEP with non-comm transitions
 }
 
+CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, uintptr_t comm_, unsigned mbox_,
+                                       uintptr_t rbuff_, int tag_)
+    : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered)
+    , comm_(comm_)
+    , mbox_(mbox_)
+    , rbuff_(rbuff_)
+    , tag_(tag_)
+{
+}
 CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered)
 {
@@ -148,6 +157,16 @@ bool CommRecvTransition::depends(const Transition* other) const
   return false; // Comm transitions are INDEP with non-comm transitions
 }
 
+CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, uintptr_t comm_, unsigned mbox_,
+                                       uintptr_t sbuff_, size_t size_, int tag_)
+    : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered)
+    , comm_(comm_)
+    , mbox_(mbox_)
+    , sbuff_(sbuff_)
+    , size_(size_)
+    , tag_(tag_)
+{
+}
 CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered)
 {

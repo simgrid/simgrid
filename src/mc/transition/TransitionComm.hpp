@@ -92,6 +92,7 @@ class CommRecvTransition : public Transition {
   int tag_;
 
 public:
+  CommRecvTransition(aid_t issuer, int times_considered, uintptr_t comm_, unsigned mbox_, uintptr_t rbuff_, int tag_);
   CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
@@ -114,6 +115,8 @@ class CommSendTransition : public Transition {
   int tag_;
 
 public:
+  CommSendTransition(aid_t issuer, int times_considered, uintptr_t comm_, unsigned mbox_, uintptr_t sbuff_,
+                     size_t size_, int tag_);
   CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;

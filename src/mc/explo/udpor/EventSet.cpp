@@ -110,6 +110,11 @@ bool EventSet::contains(const UnfoldingEvent* e) const
   return this->events_.find(e) != this->events_.end();
 }
 
+bool EventSet::contains_equivalent_to(const UnfoldingEvent* e) const
+{
+  return std::find_if(begin(), end(), [=](const UnfoldingEvent* e_in_set) { return *e == *e_in_set; }) != end();
+}
+
 bool EventSet::is_subset_of(const EventSet& other) const
 {
   // If there is some element not contained in `other`, then

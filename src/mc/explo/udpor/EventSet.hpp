@@ -28,18 +28,9 @@ public:
   EventSet& operator=(EventSet&&)      = default;
   EventSet(EventSet&&)                 = default;
   explicit EventSet(Configuration&& config);
-  explicit EventSet(std::vector<const UnfoldingEvent*>&& raw_events) : events_(raw_events.begin(), raw_events.end())
-  {
-    xbt_assert(std::none_of(events_.begin(), events_.end(), [](const auto* e) { return e == nullptr; }), "Oh no");
-  }
-  explicit EventSet(std::unordered_set<const UnfoldingEvent*>&& raw_events) : events_(raw_events)
-  {
-    xbt_assert(std::none_of(events_.begin(), events_.end(), [](const auto* e) { return e == nullptr; }), "Oh no");
-  }
-  explicit EventSet(std::initializer_list<const UnfoldingEvent*> event_list) : events_(std::move(event_list))
-  {
-    xbt_assert(std::none_of(events_.begin(), events_.end(), [](const auto* e) { return e == nullptr; }), "Oh no");
-  }
+  explicit EventSet(std::vector<const UnfoldingEvent*>&& raw_events) : events_(raw_events.begin(), raw_events.end()) {}
+  explicit EventSet(std::unordered_set<const UnfoldingEvent*>&& raw_events) : events_(raw_events) {}
+  explicit EventSet(std::initializer_list<const UnfoldingEvent*> event_list) : events_(std::move(event_list)) {}
 
   auto begin() const { return this->events_.begin(); }
   auto end() const { return this->events_.end(); }
@@ -63,8 +54,10 @@ public:
 
   size_t size() const;
   bool empty() const;
+
   bool contains(const UnfoldingEvent*) const;
   bool contains(const History&) const;
+  bool contains_equivalent_to(const UnfoldingEvent*) const;
   bool intersects(const EventSet&) const;
   bool intersects(const History&) const;
   bool is_subset_of(const EventSet&) const;
