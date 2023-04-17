@@ -96,8 +96,6 @@ EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& 
 {
   EventSet exC;
 
-  // TODO: if this is the first action by the actor, no such previous event exists.
-  // How do we react here? Do we say we're dependent with the root event?
   const auto recv_action      = std::static_pointer_cast<CommRecvTransition>(std::move(action));
   const unsigned recv_mailbox = recv_action->get_mailbox();
   const auto pre_event_a_C    = C.pre_event(recv_action->aid_);
@@ -126,7 +124,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& 
     if (transition_type_check) {
       const EventSet K = EventSet({e, pre_event_a_C.value_or(e)}).get_largest_maximal_subset();
 
-      // TODO: Check D_K(a, lambda(e))
+      // TODO: Check D_K(a, lambda(e)) (ony matters in the case of TestAny)
       if (true) {
         const auto* e_prime = U->discover_event(std::move(K), recv_action);
         exC.insert(e_prime);
