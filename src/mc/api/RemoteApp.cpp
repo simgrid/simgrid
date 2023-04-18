@@ -116,7 +116,8 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   //                    <----- send `N` ACTORS_STATUS_REPLY_TRANSITION (s_mc_message_actors_status_one_t)
   //                    <----- send `M` ACTORS_STATUS_REPLY_SIMCALL (s_mc_message_simcall_probe_one_t)
   //
-  // Note that we also receive disabled transitions, because UDPOR needs it.
+  // Note that we also receive disabled transitions, because the guiding strategies need them to decide what could
+  // unlock actors.
 
   checker_side_->get_channel().send(MessageType::ACTORS_STATUS);
 
