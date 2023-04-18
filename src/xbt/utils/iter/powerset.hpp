@@ -29,7 +29,11 @@ namespace simgrid::xbt {
 template <class Iterator>
 struct powerset_iterator : public boost::iterator_facade<powerset_iterator<Iterator>, const std::vector<Iterator>,
                                                          boost::forward_traversal_tag> {
-  powerset_iterator() = default;
+  powerset_iterator()                                                                 = default;
+  powerset_iterator(powerset_iterator<Iterator>&) noexcept                            = default;
+  powerset_iterator(powerset_iterator<Iterator>&&) noexcept                           = default;
+  powerset_iterator<Iterator>& operator=(powerset_iterator<Iterator>&&) noexcept      = default;
+  powerset_iterator<Iterator>& operator=(const powerset_iterator<Iterator>&) noexcept = default;
   explicit powerset_iterator(Iterator begin, Iterator end = Iterator());
 
 private:
@@ -75,8 +79,8 @@ template <typename Iterator> const std::vector<Iterator>& powerset_iterator<Iter
 
 template <typename Iterator> void powerset_iterator<Iterator>::increment()
 {
-  if (!current_subset_iter.has_value() || !current_subset_iter_end.has_value() ||
-      !current_subset_iter.has_value() || !iterator_end.has_value()) {
+  if (!current_subset_iter.has_value() || !current_subset_iter_end.has_value() || !current_subset_iter.has_value() ||
+      !iterator_end.has_value()) {
     return; // We've traversed all subsets at this point, or we're the "last" iterator
   }
 

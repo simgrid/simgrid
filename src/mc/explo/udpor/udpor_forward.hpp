@@ -11,8 +11,13 @@
 #ifndef SIMGRID_MC_UDPOR_FORWARD_HPP
 #define SIMGRID_MC_UDPOR_FORWARD_HPP
 
+#include "src/mc/mc_forward.hpp"
+#include <simgrid/forward.h>
+
 namespace simgrid::mc::udpor {
 
+class Comb;
+class ExtensionSetCalculator;
 class EventSet;
 class Configuration;
 class History;

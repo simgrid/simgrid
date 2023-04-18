@@ -14,6 +14,7 @@
 
 #include <unordered_map>
 
+using namespace simgrid::mc;
 using namespace simgrid::mc::udpor;
 
 TEST_CASE("simgrid::mc::udpor::Configuration: Constructing Configurations")
@@ -26,11 +27,11 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Constructing Configurations")
   //          e3
   //         /  /
   //        e4   e5
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(0));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(1));
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(2));
+  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>(3));
+  UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>(4));
 
   SECTION("Creating a configuration without events")
   {
@@ -95,10 +96,10 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Adding Events")
   //           /
   //         /  /
   //        e3   e4
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(0));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(1));
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(2));
+  UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>(3));
 
   REQUIRE_THROWS_AS(Configuration().add_event(nullptr), std::invalid_argument);
   REQUIRE_THROWS_AS(Configuration().add_event(&e2), std::invalid_argument);
@@ -138,10 +139,10 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order")
   //          e3
   //         /
   //        e4
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(1));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(2));
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(3));
+  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>(4));
 
   SECTION("Topological ordering for entire set")
   {
@@ -196,12 +197,12 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order More Compli
   //        e4   e6
   //        /
   //       e5
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e5(EventSet({&e4}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e6(EventSet({&e3}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(1));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(2));
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(3));
+  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>(4));
+  UnfoldingEvent e5(EventSet({&e4}), std::make_shared<IndependentAction>(5));
+  UnfoldingEvent e6(EventSet({&e3}), std::make_shared<IndependentAction>(6));
 
   SECTION("Topological ordering for subsets")
   {
@@ -305,18 +306,18 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
   //        /   /     /
   //         /  /   /
   //         [   e12    ]
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e8(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e5(EventSet({&e4}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e6(EventSet({&e4}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e7(EventSet({&e2, &e8}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e9(EventSet({&e6, &e7}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e10(EventSet({&e7}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e11(EventSet({&e8}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e12(EventSet({&e5, &e9, &e10}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(1));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(2));
+  UnfoldingEvent e8(EventSet({&e1}), std::make_shared<IndependentAction>(3));
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(4));
+  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>(5));
+  UnfoldingEvent e5(EventSet({&e4}), std::make_shared<IndependentAction>(6));
+  UnfoldingEvent e6(EventSet({&e4}), std::make_shared<IndependentAction>(7));
+  UnfoldingEvent e7(EventSet({&e2, &e8}), std::make_shared<IndependentAction>(8));
+  UnfoldingEvent e9(EventSet({&e6, &e7}), std::make_shared<IndependentAction>(9));
+  UnfoldingEvent e10(EventSet({&e7}), std::make_shared<IndependentAction>(10));
+  UnfoldingEvent e11(EventSet({&e8}), std::make_shared<IndependentAction>(11));
+  UnfoldingEvent e12(EventSet({&e5, &e9, &e10}), std::make_shared<IndependentAction>(12));
   Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12};
 
   SECTION("Test every combination of the maximal configuration (forward graph)")
@@ -407,14 +408,14 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Basic Testing of Maxima
   //           e3    e6
   //           /     / /
   //          e4    e7 e8
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e5(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e6(EventSet({&e5}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e7(EventSet({&e6}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e8(EventSet({&e6}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(0));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(1));
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(2));
+  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>(3));
+  UnfoldingEvent e5(EventSet({&e1}), std::make_shared<IndependentAction>(4));
+  UnfoldingEvent e6(EventSet({&e5}), std::make_shared<IndependentAction>(5));
+  UnfoldingEvent e7(EventSet({&e6}), std::make_shared<IndependentAction>(6));
+  UnfoldingEvent e8(EventSet({&e6}), std::make_shared<IndependentAction>(7));
 
   SECTION("Iteration over an empty configuration yields only the empty set")
   {
@@ -540,24 +541,24 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Stress Test for Maximal
   //               |   e11 e12 e13 e14   e15
   //               |   /      / / /   /  /
   //               +-> e16     e17     e18
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e5(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e6(EventSet({&e3}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e7(EventSet({&e3}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e8(EventSet({&e4}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e9(EventSet({&e4, &e5, &e6}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e10(EventSet({&e6, &e7}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e11(EventSet({&e8}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e12(EventSet({&e8}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e13(EventSet({&e9}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e14(EventSet({&e9}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e15(EventSet({&e10}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e16(EventSet({&e5, &e11}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e17(EventSet({&e12, &e13, &e14}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e18(EventSet({&e14, &e15}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(1));
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(2));
+  UnfoldingEvent e3(EventSet({&e1}), std::make_shared<IndependentAction>(3));
+  UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>(4));
+  UnfoldingEvent e5(EventSet({&e2}), std::make_shared<IndependentAction>(5));
+  UnfoldingEvent e6(EventSet({&e3}), std::make_shared<IndependentAction>(6));
+  UnfoldingEvent e7(EventSet({&e3}), std::make_shared<IndependentAction>(7));
+  UnfoldingEvent e8(EventSet({&e4}), std::make_shared<IndependentAction>(8));
+  UnfoldingEvent e9(EventSet({&e4, &e5, &e6}), std::make_shared<IndependentAction>(9));
+  UnfoldingEvent e10(EventSet({&e6, &e7}), std::make_shared<IndependentAction>(10));
+  UnfoldingEvent e11(EventSet({&e8}), std::make_shared<IndependentAction>(11));
+  UnfoldingEvent e12(EventSet({&e8}), std::make_shared<IndependentAction>(12));
+  UnfoldingEvent e13(EventSet({&e9}), std::make_shared<IndependentAction>(13));
+  UnfoldingEvent e14(EventSet({&e9}), std::make_shared<IndependentAction>(14));
+  UnfoldingEvent e15(EventSet({&e10}), std::make_shared<IndependentAction>(15));
+  UnfoldingEvent e16(EventSet({&e5, &e11}), std::make_shared<IndependentAction>(16));
+  UnfoldingEvent e17(EventSet({&e12, &e13, &e14}), std::make_shared<IndependentAction>(17));
+  UnfoldingEvent e18(EventSet({&e14, &e15}), std::make_shared<IndependentAction>(18));
   Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12, &e13, &e14, &e15, &e16, &e17, &e18};
 
   SECTION("Every subset iterated over is maximal")
@@ -601,7 +602,196 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Stress Test for Maximal
   }
 }
 
-TEST_CASE("simgrid::mc::udpor:Configuration: Computing Full Alternatives in Reader/Writer Example")
+TEST_CASE("simgrid::mc::udpor::Configuration: Latest Transitions")
+{
+  // The following tests concern the given event structure (labeled as "event(actor)")
+  //                  e1(1)
+  //                 /     /
+  //              e2(1)   e3(2)
+  //              /    //     /
+  //            e4(3) e5(2)  e6(1)
+  //                  /   /
+  //               e7(1) e8(1)
+  const auto t1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto t2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto t3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+  const auto t4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
+  const auto t5 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+  const auto t6 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto t7 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto t8 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+
+  const UnfoldingEvent e1(EventSet(), t1);
+  const UnfoldingEvent e2(EventSet({&e1}), t2);
+  const UnfoldingEvent e3(EventSet({&e1}), t3);
+  const UnfoldingEvent e4(EventSet({&e2}), t4);
+  const UnfoldingEvent e5(EventSet({&e2, &e3}), t5);
+  const UnfoldingEvent e6(EventSet({&e3}), t6);
+  const UnfoldingEvent e7(EventSet({&e5}), t7);
+  const UnfoldingEvent e8(EventSet({&e5}), t8);
+
+  SECTION("Test that the latest events are correct on initialization")
+  {
+    SECTION("Empty configuration has no events")
+    {
+      Configuration C;
+      REQUIRE_FALSE(C.get_latest_event_of(1).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+
+      REQUIRE_FALSE(C.get_latest_action_of(1).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+    }
+
+    SECTION("Missing two actors")
+    {
+      Configuration C{&e1};
+      REQUIRE(C.get_latest_event_of(1).has_value());
+      REQUIRE(C.get_latest_event_of(1).value() == &e1);
+
+      REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+
+      REQUIRE(C.get_latest_action_of(1).has_value());
+      REQUIRE(C.get_latest_action_of(1).value() == t1.get());
+
+      REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+    }
+
+    SECTION("Two events with one actor yields the latest event")
+    {
+      Configuration C{&e1, &e2};
+      REQUIRE(C.get_latest_event_of(1).has_value());
+      REQUIRE(C.get_latest_event_of(1).value() == &e2);
+
+      REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+
+      REQUIRE(C.get_latest_action_of(1).has_value());
+      REQUIRE(C.get_latest_action_of(1).value() == t2.get());
+
+      REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+    }
+
+    SECTION("Two events with two actors")
+    {
+      Configuration C{&e1, &e3};
+      REQUIRE(C.get_latest_event_of(1).has_value());
+      REQUIRE(C.get_latest_event_of(1).value() == &e1);
+
+      REQUIRE(C.get_latest_event_of(2).has_value());
+      REQUIRE(C.get_latest_event_of(2).value() == &e3);
+
+      REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+
+      REQUIRE(C.get_latest_action_of(1).has_value());
+      REQUIRE(C.get_latest_action_of(1).value() == t1.get());
+
+      REQUIRE(C.get_latest_action_of(2).has_value());
+      REQUIRE(C.get_latest_action_of(2).value() == t3.get());
+
+      REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+    }
+
+    SECTION("Three different actors actors")
+    {
+      Configuration C{&e1, &e2, &e3, &e4, &e5};
+      REQUIRE(C.get_latest_event_of(1).has_value());
+      REQUIRE(C.get_latest_event_of(1).value() == &e2);
+
+      REQUIRE(C.get_latest_event_of(2).has_value());
+      REQUIRE(C.get_latest_event_of(2).value() == &e5);
+
+      REQUIRE(C.get_latest_event_of(3).has_value());
+      REQUIRE(C.get_latest_event_of(3).value() == &e4);
+
+      REQUIRE(C.get_latest_action_of(1).has_value());
+      REQUIRE(C.get_latest_action_of(1).value() == t2.get());
+
+      REQUIRE(C.get_latest_action_of(2).has_value());
+      REQUIRE(C.get_latest_action_of(2).value() == t5.get());
+
+      REQUIRE(C.get_latest_action_of(3).has_value());
+      REQUIRE(C.get_latest_action_of(3).value() == t4.get());
+    }
+  }
+
+  SECTION("Test that the latest events are correct when adding new events")
+  {
+    Configuration C;
+    REQUIRE_FALSE(C.get_latest_event_of(1).has_value());
+    REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
+    REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(1).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+
+    C.add_event(&e1);
+    REQUIRE(C.get_latest_event_of(1).has_value());
+    REQUIRE(C.get_latest_event_of(1).value() == &e1);
+    REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
+    REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+    REQUIRE(C.get_latest_action_of(1).has_value());
+    REQUIRE(C.get_latest_action_of(1).value() == t1.get());
+    REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+
+    C.add_event(&e2);
+    REQUIRE(C.get_latest_event_of(1).has_value());
+    REQUIRE(C.get_latest_event_of(1).value() == &e2);
+    REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
+    REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+    REQUIRE(C.get_latest_action_of(1).has_value());
+    REQUIRE(C.get_latest_action_of(1).value() == t2.get());
+    REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+
+    C.add_event(&e3);
+    REQUIRE(C.get_latest_event_of(1).has_value());
+    REQUIRE(C.get_latest_event_of(1).value() == &e2);
+    REQUIRE(C.get_latest_event_of(2).has_value());
+    REQUIRE(C.get_latest_event_of(2).value() == &e3);
+    REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+    REQUIRE(C.get_latest_action_of(1).has_value());
+    REQUIRE(C.get_latest_action_of(1).value() == t2.get());
+    REQUIRE(C.get_latest_action_of(2).has_value());
+    REQUIRE(C.get_latest_action_of(2).value() == t3.get());
+    REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+
+    C.add_event(&e4);
+    REQUIRE(C.get_latest_event_of(1).has_value());
+    REQUIRE(C.get_latest_event_of(1).value() == &e2);
+    REQUIRE(C.get_latest_event_of(2).has_value());
+    REQUIRE(C.get_latest_event_of(2).value() == &e3);
+    REQUIRE(C.get_latest_event_of(3).has_value());
+    REQUIRE(C.get_latest_event_of(3).value() == &e4);
+    REQUIRE(C.get_latest_action_of(1).has_value());
+    REQUIRE(C.get_latest_action_of(1).value() == t2.get());
+    REQUIRE(C.get_latest_action_of(2).has_value());
+    REQUIRE(C.get_latest_action_of(2).value() == t3.get());
+    REQUIRE(C.get_latest_action_of(3).has_value());
+    REQUIRE(C.get_latest_action_of(3).value() == t4.get());
+
+    C.add_event(&e5);
+    REQUIRE(C.get_latest_event_of(1).has_value());
+    REQUIRE(C.get_latest_event_of(1).value() == &e2);
+    REQUIRE(C.get_latest_event_of(2).has_value());
+    REQUIRE(C.get_latest_event_of(2).value() == &e5);
+    REQUIRE(C.get_latest_event_of(3).has_value());
+    REQUIRE(C.get_latest_event_of(3).value() == &e4);
+    REQUIRE(C.get_latest_action_of(1).has_value());
+    REQUIRE(C.get_latest_action_of(1).value() == t2.get());
+    REQUIRE(C.get_latest_action_of(2).has_value());
+    REQUIRE(C.get_latest_action_of(2).value() == t5.get());
+    REQUIRE(C.get_latest_action_of(3).has_value());
+    REQUIRE(C.get_latest_action_of(3).value() == t4.get());
+  }
+}
+
+TEST_CASE("simgrid::mc::udpor::Configuration: Computing Full Alternatives in Reader/Writer Example")
 {
   // The following tests concern the given event structure that is given as
   // an example in figure 1 of the original UDPOR paper.
@@ -620,37 +810,48 @@ TEST_CASE("simgrid::mc::udpor:Configuration: Computing Full Alternatives in Read
   // then `e4`, and then `e7`
   Unfolding U;
 
-  auto e0        = std::make_unique<UnfoldingEvent>(EventSet(), std::make_shared<ConditionallyDependentAction>());
+  auto e0 = std::make_unique<UnfoldingEvent>(
+      EventSet(), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 0));
   auto e0_handle = e0.get();
 
-  auto e1        = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}), std::make_shared<DependentAction>());
+  auto e1        = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}),
+                                             std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 0));
   auto e1_handle = e1.get();
 
-  auto e2 = std::make_unique<UnfoldingEvent>(EventSet({e1_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e2 = std::make_unique<UnfoldingEvent>(
+      EventSet({e1_handle}), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1));
   auto e2_handle = e2.get();
 
-  auto e3 = std::make_unique<UnfoldingEvent>(EventSet({e1_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e3 = std::make_unique<UnfoldingEvent>(
+      EventSet({e1_handle}), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2));
   auto e3_handle = e3.get();
 
-  auto e4 = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e4 = std::make_unique<UnfoldingEvent>(
+      EventSet({e0_handle}), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1));
   auto e4_handle = e4.get();
 
-  auto e5        = std::make_unique<UnfoldingEvent>(EventSet({e4_handle}), std::make_shared<DependentAction>());
+  auto e5        = std::make_unique<UnfoldingEvent>(EventSet({e4_handle}),
+                                             std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 0));
   auto e5_handle = e5.get();
 
-  auto e6 = std::make_unique<UnfoldingEvent>(EventSet({e5_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e6 = std::make_unique<UnfoldingEvent>(
+      EventSet({e5_handle}), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2));
   auto e6_handle = e6.get();
 
-  auto e7 = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e7 = std::make_unique<UnfoldingEvent>(
+      EventSet({e0_handle}), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2));
   auto e7_handle = e7.get();
 
-  auto e8 = std::make_unique<UnfoldingEvent>(EventSet({e4_handle, e7_handle}), std::make_shared<DependentAction>());
+  auto e8        = std::make_unique<UnfoldingEvent>(EventSet({e4_handle, e7_handle}),
+                                             std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 0));
   auto e8_handle = e8.get();
 
-  auto e9        = std::make_unique<UnfoldingEvent>(EventSet({e7_handle}), std::make_shared<DependentAction>());
+  auto e9        = std::make_unique<UnfoldingEvent>(EventSet({e7_handle}),
+                                             std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 0));
   auto e9_handle = e9.get();
 
-  auto e10 = std::make_unique<UnfoldingEvent>(EventSet({e9_handle}), std::make_shared<ConditionallyDependentAction>());
+  auto e10 = std::make_unique<UnfoldingEvent>(
+      EventSet({e9_handle}), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1));
   auto e10_handle = e10.get();
 
   SECTION("Alternative computation call 1")

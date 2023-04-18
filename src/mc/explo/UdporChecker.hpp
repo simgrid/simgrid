@@ -15,6 +15,7 @@
 #include "src/mc/mc_record.hpp"
 
 #include <functional>
+#include <list>
 #include <optional>
 
 namespace simgrid::mc::udpor {
@@ -38,19 +39,14 @@ public:
   void run() override;
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;
-
-  inline std::unique_ptr<State> get_current_state() { return std::make_unique<State>(get_remote_app()); }
+  std::unique_ptr<State> get_current_state() { return std::make_unique<State>(get_remote_app()); }
 
 private:
   Unfolding unfolding = Unfolding();
 
-  /**
-   * @brief A collection of specialized functions which can incrementally
-   * compute the extension of a configuration based on the action taken
-   */
-  using ExtensionFunction = std::function<EventSet(const Configuration&, const std::shared_ptr<Transition>)>;
-  std::unordered_map<Transition::Type, ExtensionFunction> incremental_extension_functions =
-      std::unordered_map<Transition::Type, ExtensionFunction>();
+  // The current sequence of states that the checker has
+  // visited in order to reach the current configuration
+  std::list<std::unique_ptr<State>> state_stack;
 
   /**
    * @brief Explores the unfolding of the concurrent system
@@ -67,13 +63,11 @@ private:
    * @param A the set of events to "guide" UDPOR in the correct direction
    * when it returns back to a node in the unfolding and must decide among
    * events to select from `ex(C)`. See [1] for more details
-   * @param stateC the state of the program after having executed `C`,
-   * viz. `state(C)`  using the notation of [1]
    *
    * TODO: Add the optimization where we can check if e == e_prior
    * to prevent repeated work when computing ex(C)
    */
-  void explore(const Configuration& C, EventSet D, EventSet A, std::unique_ptr<State> stateC, EventSet prev_exC);
+  void explore(const Configuration& C, EventSet D, EventSet A, EventSet prev_exC);
 
   /**
    * @brief Identifies the next event from the unfolding of the concurrent system
@@ -87,7 +81,7 @@ private:
    * by the UDPOR algorithm to select new events to search. See the original
    * paper [1] for more details
    */
-  const UnfoldingEvent* select_next_unfolding_event(const EventSet& A, const EventSet& enC);
+  UnfoldingEvent* select_next_unfolding_event(const EventSet& A, const EventSet& enC);
 
   /**
    * @brief Computes the sets `ex(C)` and `en(C)` of the given configuration
@@ -114,38 +108,43 @@ private:
    * @returns the extension set `ex(C)` of `C`
    */
   EventSet compute_exC(const Configuration& C, const State& stateC, const EventSet& prev_exC);
-
-  /**
-   * @brief Computes a portion of the extension set of a configuration given
-   * some action `action` by directly enumerating all maximal subsets of C
-   * (i.e. without specializations based on the action)
-   */
-  EventSet compute_exC_by_enumeration(const Configuration& C, const std::shared_ptr<Transition> action);
-
   EventSet compute_enC(const Configuration& C, const EventSet& exC) const;
 
   /**
    *
    */
-  void move_to_stateCe(State& stateC, const UnfoldingEvent& e);
+  void move_to_stateCe(State* stateC, UnfoldingEvent* e);
 
   /**
-   * @brief Creates a new snapshot of the state of the progam undergoing
-   * model checking
-   *
-   * @returns the handle used to uniquely identify this state later in the
-   * exploration of the unfolding. You provide this handle to an event in the
-   * unfolding to regenerate past states
+   * @brief Creates a new snapshot of the state of the application
+   * as it currently looks
    */
   std::unique_ptr<State> record_current_state();
 
   /**
+   * @brief Move the application side into the state at the top of the
+   * state stack provided
    *
+   * As UDPOR performs its search, it moves the application-side along with
+   * it so that the application is always providing the checker with
+   * the correct information about what each actor is running (and whether
+   * those actors are enabled) at the state reached by the configuration it
+   * decides to search.
+   *
+   * When UDPOR decides to "backtrack" (e.g. after reaching a configuration
+   * whose en(C) is empty), before it attempts to continue the search by taking
+   * a different path from a configuration it visited in the past, it must ensure
+   * that the application-side has moved back into `state(C)`.
+   *
+   * The search may have moved the application arbitrarily deep into its execution,
+   * and the search may backtrack arbitrarily closer to the beginning of the execution.
+   * The UDPOR implementation in SimGrid ensures that the stack is updated appropriately,
+   * but the process must still be regenerated.
    */
-  void restore_program_state_to(const State& stateC);
+  void restore_program_state_with_current_stack();
 
   /**
-   *
+   * @brief Perform the functionality of the `Remove(e, C, D)` function in [1]
    */
   void clean_up_explore(const UnfoldingEvent* e, const Configuration& C, const EventSet& D);
 };

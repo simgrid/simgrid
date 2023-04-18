@@ -142,13 +142,23 @@ bool EventSet::intersects(const History& history) const
   return std::any_of(history.begin(), history.end(), [=](const UnfoldingEvent* e) { return this->contains(e); });
 }
 
+bool EventSet::intersects(const EventSet& other) const
+{
+  return std::any_of(other.begin(), other.end(), [=](const UnfoldingEvent* e) { return this->contains(e); });
+}
+
+EventSet EventSet::get_largest_maximal_subset() const
+{
+  const History history(*this);
+  return history.get_all_maximal_events();
+}
+
 bool EventSet::is_maximal() const
 {
   // A set of events is maximal if no event from
   // the original set is ruled out when traversing
   // the history of the events
-  const History history(*this);
-  return *this == history.get_all_maximal_events();
+  return *this == this->get_largest_maximal_subset();
 }
 
 bool EventSet::is_conflict_free() const
@@ -231,6 +241,18 @@ std::vector<const UnfoldingEvent*> EventSet::get_topological_ordering_of_reverse
   auto topological_events = get_topological_ordering();
   std::reverse(topological_events.begin(), topological_events.end());
   return topological_events;
+}
+
+std::string EventSet::to_string() const
+{
+  std::string contents;
+
+  for (const auto* event : *this) {
+    contents += event->to_string();
+    contents += " + ";
+  }
+
+  return contents;
 }
 
 std::vector<const UnfoldingEvent*> EventSet::move_into_vector() const&&

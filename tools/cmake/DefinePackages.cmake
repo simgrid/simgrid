@@ -568,6 +568,8 @@ set(MC_SRC_STATEFUL
   src/mc/explo/udpor/Configuration.cpp
   src/mc/explo/udpor/EventSet.cpp
   src/mc/explo/udpor/EventSet.hpp
+  src/mc/explo/udpor/ExtensionSetCalculator.cpp
+  src/mc/explo/udpor/ExtensionSetCalculator.hpp
   src/mc/explo/udpor/History.cpp
   src/mc/explo/udpor/History.hpp
   src/mc/explo/udpor/maximal_subsets_iterator.cpp

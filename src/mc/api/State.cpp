@@ -130,7 +130,7 @@ std::pair<aid_t, int> State::next_transition_guided() const
 }
 
 // This should be done in GuidedState, or at least interact with it
-void State::execute_next(aid_t next, RemoteApp& app)
+std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
 {
   // First, warn the guide, so it knows how to build a proper child state
   strategy_->execute_next(next, app);
@@ -165,9 +165,10 @@ void State::execute_next(aid_t next, RemoteApp& app)
   // about a transition AFTER it has executed.
   transition_ = just_executed;
 
-  auto executed_transition = std::unique_ptr<Transition>(just_executed);
-  actor_state.set_transition(std::move(executed_transition), times_considered);
-
+  const auto executed_transition = std::shared_ptr<Transition>(just_executed);
+  actor_state.set_transition(executed_transition, times_considered);
   app.wait_for_requests();
+
+  return executed_transition;
 }
 } // namespace simgrid::mc

@@ -48,7 +48,7 @@ private:
   friend constexpr iterator_wrapping<IteratorType, Arguments...> make_iterator_wrapping_explicit(Arguments... args);
 
 public:
-  iterator_wrapping(Args&&... begin_iteration) : m_args(std::forward<ref_or_value_t<Args>>(begin_iteration)...) {}
+  iterator_wrapping(Args&&... begin_iteration) : m_args(ref_or_value_t<Args>(begin_iteration)...) {}
   iterator_wrapping(const iterator_wrapping&)            = delete;
   iterator_wrapping(iterator_wrapping&&)                 = delete;
   iterator_wrapping& operator=(const iterator_wrapping&) = delete;
@@ -70,7 +70,7 @@ constexpr iterator_wrapping<Iterator, Args...> make_iterator_wrapping(Args&&... 
 template <typename Iterator, typename... Args>
 constexpr iterator_wrapping<Iterator, Args...> make_iterator_wrapping_explicit(Args... args)
 {
-  return iterator_wrapping<Iterator, Args...>(std::forward<Args>(args)...);
+  return iterator_wrapping<Iterator, Args...>(args...);
 }
 
 } // namespace simgrid::xbt

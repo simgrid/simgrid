@@ -119,13 +119,13 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
     //        e4  e5   e7
     //
     // e5 and e6 are in conflict, e5 and e7 are in conflict, e2 and e6, and e2 ands e7 are in conflict
-    UnfoldingEvent e1(EventSet(), std::make_shared<ConditionallyDependentAction>());
-    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<DependentAction>());
-    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-    UnfoldingEvent e4(EventSet({&e3}), std::make_shared<ConditionallyDependentAction>());
-    UnfoldingEvent e5(EventSet({&e3}), std::make_shared<DependentAction>());
-    UnfoldingEvent e6(EventSet({&e1}), std::make_shared<ConditionallyDependentAction>());
-    UnfoldingEvent e7(EventSet({&e6, &e2}), std::make_shared<ConditionallyDependentAction>());
+    UnfoldingEvent e1(EventSet(), std::make_shared<ConditionallyDependentAction>(0));
+    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<DependentAction>(0));
+    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(0));
+    UnfoldingEvent e4(EventSet({&e3}), std::make_shared<ConditionallyDependentAction>(1));
+    UnfoldingEvent e5(EventSet({&e3}), std::make_shared<DependentAction>(1));
+    UnfoldingEvent e6(EventSet({&e1}), std::make_shared<ConditionallyDependentAction>(2));
+    UnfoldingEvent e7(EventSet({&e6, &e2}), std::make_shared<ConditionallyDependentAction>(3));
 
     SECTION("Dependency relation properties")
     {
@@ -180,7 +180,7 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
     }
   }
 
-  SECTION("No conflicts whatsoever")
+  SECTION("Testing with no dependencies whatsoever")
   {
     // The following tests concern the given event structure:
     //                e1
@@ -190,19 +190,20 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
     //          e3   /   /
     //         /  /    /
     //        e4  e5   e7
-    UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-    UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
-    UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>());
-    UnfoldingEvent e6(EventSet({&e1}), std::make_shared<IndependentAction>());
-    UnfoldingEvent e7(EventSet({&e6, &e2}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(0));
+    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(1));
+    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(2));
+    UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>(3));
+    UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>(4));
+    UnfoldingEvent e6(EventSet({&e1}), std::make_shared<IndependentAction>(5));
+    UnfoldingEvent e7(EventSet({&e6, &e2}), std::make_shared<IndependentAction>(6));
 
     // Since everyone's actions are independent of one another, we expect
-    // that there are no conflicts between each pair of events
+    // that there are no conflicts between each pair of events (except with
+    // the same event itself)
     SECTION("Mutual dependencies")
     {
-      CHECK_FALSE(e1.is_dependent_with(&e1));
+      CHECK(e1.is_dependent_with(&e1));
       CHECK_FALSE(e1.is_dependent_with(&e2));
       CHECK_FALSE(e1.is_dependent_with(&e3));
       CHECK_FALSE(e1.is_dependent_with(&e4));
@@ -210,32 +211,32 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
       CHECK_FALSE(e1.is_dependent_with(&e6));
       CHECK_FALSE(e1.is_dependent_with(&e7));
 
-      CHECK_FALSE(e2.is_dependent_with(&e2));
+      CHECK(e2.is_dependent_with(&e2));
       CHECK_FALSE(e2.is_dependent_with(&e3));
       CHECK_FALSE(e2.is_dependent_with(&e4));
       CHECK_FALSE(e2.is_dependent_with(&e5));
       CHECK_FALSE(e2.is_dependent_with(&e6));
       CHECK_FALSE(e2.is_dependent_with(&e7));
 
-      CHECK_FALSE(e3.is_dependent_with(&e3));
+      CHECK(e3.is_dependent_with(&e3));
       CHECK_FALSE(e3.is_dependent_with(&e4));
       CHECK_FALSE(e3.is_dependent_with(&e5));
       CHECK_FALSE(e3.is_dependent_with(&e6));
       CHECK_FALSE(e3.is_dependent_with(&e7));
 
-      CHECK_FALSE(e4.is_dependent_with(&e4));
+      CHECK(e4.is_dependent_with(&e4));
       CHECK_FALSE(e4.is_dependent_with(&e5));
       CHECK_FALSE(e4.is_dependent_with(&e6));
       CHECK_FALSE(e4.is_dependent_with(&e7));
 
-      CHECK_FALSE(e5.is_dependent_with(&e5));
+      CHECK(e5.is_dependent_with(&e5));
       CHECK_FALSE(e5.is_dependent_with(&e6));
       CHECK_FALSE(e5.is_dependent_with(&e7));
 
-      CHECK_FALSE(e6.is_dependent_with(&e6));
+      CHECK(e6.is_dependent_with(&e6));
       CHECK_FALSE(e6.is_dependent_with(&e7));
 
-      CHECK_FALSE(e7.is_dependent_with(&e7));
+      CHECK(e7.is_dependent_with(&e7));
     }
 
     SECTION("Mutual conflicts")
@@ -298,7 +299,7 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
     }
   }
 
-  SECTION("General conflicts")
+  SECTION("Testing with some conflicts")
   {
     // The following tests concern the given event structure:
     //                e1
@@ -308,16 +309,17 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
     //          e3   /   /
     //         /  /    /
     //        e4  e5   e7
-    UnfoldingEvent e1(EventSet(), std::make_shared<DependentAction>());
-    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<DependentAction>());
-    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-    UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
-    UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>());
-    UnfoldingEvent e6(EventSet({&e1}), std::make_shared<IndependentAction>());
-    UnfoldingEvent e7(EventSet({&e6, &e2}), std::make_shared<ConditionallyDependentAction>());
+    UnfoldingEvent e1(EventSet(), std::make_shared<DependentAction>(0));
+    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<DependentAction>(1));
+    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(2));
+    UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>(3));
+    UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>(4));
+    UnfoldingEvent e6(EventSet({&e1}), std::make_shared<IndependentAction>(5));
+    UnfoldingEvent e7(EventSet({&e6, &e2}), std::make_shared<ConditionallyDependentAction>(6));
 
     // Since everyone's actions are independent of one another, we expect
-    // that there are no conflicts between each pair of events
+    // that there are no conflicts between each pair of events (except the pair
+    // with the event and itself)
     SECTION("Mutual dependencies")
     {
       CHECK(e1.is_dependent_with(&e1));
@@ -335,25 +337,25 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
       CHECK_FALSE(e2.is_dependent_with(&e6));
       CHECK(e2.is_dependent_with(&e7));
 
-      CHECK_FALSE(e3.is_dependent_with(&e3));
+      CHECK(e3.is_dependent_with(&e3));
       CHECK_FALSE(e3.is_dependent_with(&e4));
       CHECK_FALSE(e3.is_dependent_with(&e5));
       CHECK_FALSE(e3.is_dependent_with(&e6));
       CHECK_FALSE(e3.is_dependent_with(&e7));
 
-      CHECK_FALSE(e4.is_dependent_with(&e4));
+      CHECK(e4.is_dependent_with(&e4));
       CHECK_FALSE(e4.is_dependent_with(&e5));
       CHECK_FALSE(e4.is_dependent_with(&e6));
       CHECK_FALSE(e4.is_dependent_with(&e7));
 
-      CHECK_FALSE(e5.is_dependent_with(&e5));
+      CHECK(e5.is_dependent_with(&e5));
       CHECK_FALSE(e5.is_dependent_with(&e6));
       CHECK_FALSE(e5.is_dependent_with(&e7));
 
-      CHECK_FALSE(e6.is_dependent_with(&e6));
+      CHECK(e6.is_dependent_with(&e6));
       CHECK_FALSE(e6.is_dependent_with(&e7));
 
-      CHECK_FALSE(e7.is_dependent_with(&e7));
+      CHECK(e7.is_dependent_with(&e7));
     }
 
     SECTION("Mutual conflicts")
@@ -430,13 +432,13 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
     //          e3      /
     //         /  /    e7
     //        e4  e5
-    UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<ConditionallyDependentAction>());
-    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-    UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
-    UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>());
-    UnfoldingEvent e6(EventSet({&e1}), std::make_shared<DependentAction>());
-    UnfoldingEvent e7(EventSet({&e6}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(0));
+    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<ConditionallyDependentAction>(1));
+    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(2));
+    UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>(3));
+    UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>(4));
+    UnfoldingEvent e6(EventSet({&e1}), std::make_shared<DependentAction>(5));
+    UnfoldingEvent e7(EventSet({&e6}), std::make_shared<IndependentAction>(6));
 
     CHECK_FALSE(e1.conflicts_with(&e1));
     CHECK_FALSE(e1.conflicts_with(&e2));

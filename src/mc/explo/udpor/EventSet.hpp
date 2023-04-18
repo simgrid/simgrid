@@ -8,10 +8,12 @@
 
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
+#include <algorithm>
 #include <cstddef>
 #include <initializer_list>
 #include <unordered_set>
 #include <vector>
+#include <xbt/asserts.h>
 
 namespace simgrid::mc::udpor {
 
@@ -26,9 +28,18 @@ public:
   EventSet& operator=(EventSet&&)      = default;
   EventSet(EventSet&&)                 = default;
   explicit EventSet(Configuration&& config);
-  explicit EventSet(std::vector<const UnfoldingEvent*>&& raw_events) : events_(raw_events.begin(), raw_events.end()) {}
-  explicit EventSet(std::unordered_set<const UnfoldingEvent*>&& raw_events) : events_(raw_events) {}
-  explicit EventSet(std::initializer_list<const UnfoldingEvent*> event_list) : events_(std::move(event_list)) {}
+  explicit EventSet(std::vector<const UnfoldingEvent*>&& raw_events) : events_(raw_events.begin(), raw_events.end())
+  {
+    xbt_assert(std::none_of(events_.begin(), events_.end(), [](const auto* e) { return e == nullptr; }), "Oh no");
+  }
+  explicit EventSet(std::unordered_set<const UnfoldingEvent*>&& raw_events) : events_(raw_events)
+  {
+    xbt_assert(std::none_of(events_.begin(), events_.end(), [](const auto* e) { return e == nullptr; }), "Oh no");
+  }
+  explicit EventSet(std::initializer_list<const UnfoldingEvent*> event_list) : events_(std::move(event_list))
+  {
+    xbt_assert(std::none_of(events_.begin(), events_.end(), [](const auto* e) { return e == nullptr; }), "Oh no");
+  }
 
   auto begin() const { return this->events_.begin(); }
   auto end() const { return this->events_.end(); }
@@ -54,11 +65,13 @@ public:
   bool empty() const;
   bool contains(const UnfoldingEvent*) const;
   bool contains(const History&) const;
+  bool intersects(const EventSet&) const;
   bool intersects(const History&) const;
   bool is_subset_of(const EventSet&) const;
 
   bool operator==(const EventSet& other) const { return this->events_ == other.events_; }
   bool operator!=(const EventSet& other) const { return this->events_ != other.events_; }
+  std::string to_string() const;
 
   /**
    * @brief Whether or not this set of events could
@@ -103,6 +116,12 @@ public:
    * anyway.
    */
   bool is_conflict_free() const;
+
+  /**
+   * @brief Produces the largest subset of this
+   * set of events which is maximal
+   */
+  EventSet get_largest_maximal_subset() const;
 
   /**
    * @brief Orders the events of the set such that
