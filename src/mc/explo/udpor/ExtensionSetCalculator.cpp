@@ -182,7 +182,6 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
   // do: `CommWait` will never be enabled in the empty configuration (at
   // least two actions must be executed before)
   if (pre_event_a_C.has_value(); const auto unwrapped_pre_event = pre_event_a_C.value()) {
-
     // A necessary condition is that the issuer be present in
     // config({preEvt(a, C)}); otherwise, the `CommWait` could not
     // be enabled since the communication on which it waits would not
@@ -196,7 +195,6 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
       if (const CommRecvTransition* e_issuer_receive =
               dynamic_cast<const CommRecvTransition*>(e_issuer->get_transition());
           e_issuer_receive != nullptr) {
-
         const unsigned issuer_mailbox = e_issuer_receive->get_mailbox();
 
         // Check from the config -> how many sends have there been
@@ -226,7 +224,6 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
       } else if (const CommSendTransition* e_issuer_send =
                      dynamic_cast<const CommSendTransition*>(e_issuer->get_transition());
                  e_issuer_send != nullptr) {
-
         const unsigned issuer_mailbox = e_issuer_send->get_mailbox();
 
         // Check from e_issuer -> what place is the issuer in?
@@ -268,7 +265,6 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
   for (const auto e : C) {
     if (const CommSendTransition* e_issuer_send = dynamic_cast<const CommSendTransition*>(e_issuer->get_transition());
         e_issuer_send != nullptr) {
-
       // If the provider of the communication for `CommWait` is a
       // `CommSend(m)`, then we only care about `e` if `λ(e) == `CommRecv(m)`.
       // All other actions would be independent with the wait action (including
@@ -321,7 +317,6 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
     } else if (const CommRecvTransition* e_issuer_recv =
                    dynamic_cast<const CommRecvTransition*>(e_issuer->get_transition());
                e_issuer_recv != nullptr) {
-
       // If the provider of the communication for `CommWait` is a
       // `CommRecv(m)`, then we only care about `e` if `λ(e) == `CommSend(m)`.
       // All other actions would be independent with the wait action (including
