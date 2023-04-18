@@ -18,6 +18,20 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_comm, mc_transition,
 
 namespace simgrid::mc {
 
+CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, bool timeout_, uintptr_t comm_,
+                                       aid_t sender_, aid_t receiver_, unsigned mbox_, uintptr_t sbuff_,
+                                       uintptr_t rbuff_, size_t size_)
+    : Transition(Type::COMM_WAIT, issuer, times_considered)
+    , timeout_(timeout_)
+    , comm_(comm_)
+    , sender_(sender_)
+    , receiver_(receiver_)
+    , mbox_(mbox_)
+    , sbuff_(sbuff_)
+    , rbuff_(rbuff_)
+    , size_(size_)
+{
+}
 CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_WAIT, issuer, times_considered)
 {

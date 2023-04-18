@@ -54,7 +54,7 @@ std::string UnfoldingEvent::to_string() const
   for (const auto* e : immediate_causes) {
     dependencies_string += " ";
     dependencies_string += e->to_string();
-    dependencies_string += "and ";
+    dependencies_string += " and ";
   }
   dependencies_string += "]";
 
