@@ -90,6 +90,19 @@ EventSet EventSet::make_union(const Configuration& config) const
   return make_union(config.get_events());
 }
 
+EventSet EventSet::make_intersection(const EventSet& other) const
+{
+  std::unordered_set<const UnfoldingEvent*> result;
+
+  for (const UnfoldingEvent* e : other.events_) {
+    if (contains(e)) {
+      result.insert(e);
+    }
+  }
+
+  return EventSet(std::move(result));
+}
+
 EventSet EventSet::get_local_config() const
 {
   return History(*this).get_all_events();

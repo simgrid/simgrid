@@ -150,6 +150,11 @@ EventSet UdporChecker::compute_exC(const Configuration& C, const State& stateC, 
   EventSet exC                = prev_exC;
   exC.remove(e_cur);
 
+  // IMPORTANT NOTE: In order to have deterministic results, we need to process
+  // the actors in a deterministic manner so that events are discovered by
+  // UDPOR in a deterministic order. The processing done here always processes
+  // actors in a consistent order since `std::map` is by-default ordered using
+  // `std::less<Key>` (see the return type of `State::get_actors_list()`)
   for (const auto& [aid, actor_state] : stateC.get_actors_list()) {
     for (const auto& transition : actor_state.get_enabled_transitions()) {
       XBT_DEBUG("\t Considering partial extension for %s", transition->to_string().c_str());
@@ -236,16 +241,23 @@ UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, con
                                 "empty before attempting to select an event from it?");
   }
 
+  // UDPOR's exploration is non-deterministic (as is DPOR's)
+  // in the sense that at any given point there may
+  // be multiple paths that can be followed. The correctness and optimality
+  // of the algorithm remains unaffected by the route taken by UDPOR when
+  // given multiple choices; but to ensure that SimGrid itself has deterministic
+  // behavior on all platforms, we always pick events with lower id's
+  // to ensure we explore the unfolding deterministically.
   if (A.empty()) {
-    return const_cast<UnfoldingEvent*>(*(enC.begin()));
+    const auto min_event = std::min_element(enC.begin(), enC.end(),
+                                            [](const auto e1, const auto e2) { return e1->get_id() < e2->get_id(); });
+    return const_cast<UnfoldingEvent*>(*min_event);
+  } else {
+    const auto intersection = A.make_intersection(enC);
+    const auto min_event    = std::min_element(intersection.begin(), intersection.end(),
+                                               [](const auto e1, const auto e2) { return e1->get_id() < e2->get_id(); });
+    return const_cast<UnfoldingEvent*>(*min_event);
   }
-
-  for (const auto& event : A) {
-    if (enC.contains(event)) {
-      return const_cast<UnfoldingEvent*>(event);
-    }
-  }
-  return nullptr;
 }
 
 void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration& C, const EventSet& D)

@@ -20,6 +20,8 @@ UnfoldingEvent::UnfoldingEvent(std::initializer_list<const UnfoldingEvent*> init
 UnfoldingEvent::UnfoldingEvent(EventSet immediate_causes, std::shared_ptr<Transition> transition)
     : associated_transition(std::move(transition)), immediate_causes(std::move(immediate_causes))
 {
+  static uint64_t event_id = 0;
+  this->id                 = ++event_id;
 }
 
 bool UnfoldingEvent::operator==(const UnfoldingEvent& other) const
@@ -50,11 +52,13 @@ std::string UnfoldingEvent::to_string() const
 
   dependencies_string += "[";
   for (const auto* e : immediate_causes) {
+    dependencies_string += " ";
     dependencies_string += e->to_string();
+    dependencies_string += "and ";
   }
   dependencies_string += "]";
 
-  return xbt::string_printf("(%p) Actor %ld: %s (%zu dependencies: %s)", this, associated_transition->aid_,
+  return xbt::string_printf("Event %lu, Actor %ld: %s (%zu dependencies: %s)", this->id, associated_transition->aid_,
                             associated_transition->to_string().c_str(), immediate_causes.size(),
                             dependencies_string.c_str());
 }

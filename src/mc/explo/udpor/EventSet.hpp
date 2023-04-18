@@ -50,6 +50,7 @@ public:
   EventSet make_union(const UnfoldingEvent*) const;
   EventSet make_union(const EventSet&) const;
   EventSet make_union(const Configuration&) const;
+  EventSet make_intersection(const EventSet&) const;
   EventSet get_local_config() const;
 
   size_t size() const;

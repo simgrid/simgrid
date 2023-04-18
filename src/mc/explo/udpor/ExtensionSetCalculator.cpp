@@ -65,8 +65,8 @@ EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& 
   }
 
   // 2. foreach e ∈ C s.t. λ(e) ∈ {AsyncSend(m, _), TestAny(Com)} where
-  // Com contains a matching c' = AsyncReceive(m, _) with a
-  for (const auto* e : C) {
+  // Com contains a matching c' = AsyncReceive(m, _) with `action`
+  for (const auto e : C) {
     const bool transition_type_check = [&]() {
       if (const auto* async_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
           async_send != nullptr) {
@@ -111,7 +111,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& 
 
   // 2. foreach e ∈ C s.t. λ(e) ∈ {AsyncSend(m, _), TestAny(Com)} where
   // Com contains a matching c' = AsyncReceive(m, _) with a
-  for (const auto* e : C) {
+  for (const auto e : C) {
     const bool transition_type_check = [&]() {
       if (const auto* async_recv = dynamic_cast<const CommRecvTransition*>(e->get_transition());
           async_recv != nullptr && async_recv->get_mailbox() == recv_mailbox) {
@@ -287,8 +287,6 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
       if (not config_K.contains(e_issuer)) {
         continue;
       }
-
-      // TODO: Compute the send and receive positions
 
       // What send # is the issuer
       const unsigned send_position = std::count_if(e_issuer_history.begin(), e_issuer_history.end(), [=](const auto e) {
