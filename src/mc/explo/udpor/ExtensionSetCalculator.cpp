@@ -27,7 +27,8 @@ EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, Unfold
   const static HandlerMap handlers =
       HandlerMap{{Action::COMM_ASYNC_RECV, &ExtensionSetCalculator::partially_extend_CommRecv},
                  {Action::COMM_ASYNC_SEND, &ExtensionSetCalculator::partially_extend_CommSend},
-                 {Action::COMM_WAIT, &ExtensionSetCalculator::partially_extend_CommWait}};
+                 {Action::COMM_WAIT, &ExtensionSetCalculator::partially_extend_CommWait},
+                 {Action::COMM_TEST, &ExtensionSetCalculator::partially_extend_CommTest}};
 
   if (const auto handler = handlers.find(action->type_); handler != handlers.end()) {
     return handler->second(C, U, std::move(action));
@@ -361,15 +362,174 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
         exC.insert(U->discover_event(std::move(K), wait_action));
       }
     }
+  } else {
+    xbt_die("The transition which created the communication on which `%s` waits "
+            "is neither an async send nor an async receive. The current UDPOR "
+            "implementation does not know how to check if `CommWait` is enabled in "
+            "this case. Was a new transition added?",
+            e_issuer->get_transition()->to_string().c_str());
   }
 
   return exC;
 }
 
 EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration& C, Unfolding* U,
-                                                           std::shared_ptr<Transition> test_action)
+                                                           std::shared_ptr<Transition> action)
 {
-  return EventSet();
+  EventSet exC;
+
+  const auto test_action   = std::static_pointer_cast<CommTestTransition>(std::move(action));
+  const auto test_comm     = test_action->get_comm();
+  const auto test_aid      = test_action->aid_;
+  const auto pre_event_a_C = C.pre_event(test_action->aid_);
+
+  // Add the previous event as a dependency (if it's there)
+  if (pre_event_a_C.has_value()) {
+    const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), test_action);
+    exC.insert(e_prime);
+  }
+
+  // Determine the _issuer_ of the communication of the `CommTest` event
+  // in `C`. The issuer of the `CommTest` in `C` is the event in `C`
+  // whose transition is the `CommRecv` or `CommSend` whose resulting
+  // communication this `CommTest` tests on
+  const auto issuer = std::find_if(C.begin(), C.end(), [=](const UnfoldingEvent* e) {
+    if (const CommRecvTransition* e_issuer_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition());
+        e_issuer_receive != nullptr) {
+      return e_issuer_receive->aid_ == test_aid && test_comm == e_issuer_receive->get_comm();
+    }
+
+    if (const CommSendTransition* e_issuer_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
+        e_issuer_send != nullptr) {
+      return e_issuer_send->aid_ == test_aid && test_comm == e_issuer_send->get_comm();
+    }
+
+    return false;
+  });
+  xbt_assert(issuer != C.end(),
+             "An enabled `CommTest` transition (%s) is testing a communication"
+             "%lu not created by a receive/send "
+             "transition. SimGrid cannot currently handle test actions "
+             "under which a test is performed on a communication that was "
+             "not directly created by a receive/send operation of the same actor.",
+             test_action->to_string(false).c_str(), test_action->get_comm());
+  const UnfoldingEvent* e_issuer = *issuer;
+  const History e_issuer_history(e_issuer);
+
+  // 3. foreach event e in C do
+  if (const CommSendTransition* e_issuer_send = dynamic_cast<const CommSendTransition*>(e_issuer->get_transition());
+      e_issuer_send != nullptr) {
+    for (const auto e : C) {
+      // If the provider of the communication for `CommTest` is a
+      // `CommSend(m)`, then we only care about `e` if `λ(e) == `CommRecv(m)`.
+      // All other actions would be independent with the test action (including
+      // another `CommSend` to the same mailbox: `CommTest` is testing the
+      // corresponding receive action)
+      if (e->get_transition()->type_ != Transition::Type::COMM_ASYNC_RECV) {
+        continue;
+      }
+
+      const auto issuer_mailbox = e_issuer_send->get_mailbox();
+
+      if (const CommRecvTransition* e_recv = dynamic_cast<const CommRecvTransition*>(e->get_transition());
+          e_recv->get_mailbox() != issuer_mailbox) {
+        continue;
+      }
+
+      // If the `issuer` is not in `config(K)`, this implies that
+      // `CommTest()` is always disabled in `config(K)`; hence, it
+      // is independent of any transition in `config(K)` (according
+      // to formal definition of independence)
+      const EventSet K    = EventSet({e, pre_event_a_C.value_or(e)});
+      const auto config_K = History(K);
+      if (not config_K.contains(e_issuer)) {
+        continue;
+      }
+
+      // What send # is the issuer
+      const unsigned send_position = std::count_if(e_issuer_history.begin(), e_issuer_history.end(), [=](const auto e) {
+        const CommSendTransition* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
+        if (e_send != nullptr) {
+          return e_send->get_mailbox() == issuer_mailbox;
+        }
+        return false;
+      });
+
+      // What receive # is the event `e`?
+      const unsigned receive_position = std::count_if(config_K.begin(), config_K.end(), [=](const auto e) {
+        const CommRecvTransition* e_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition());
+        if (e_receive != nullptr) {
+          return e_receive->get_mailbox() == issuer_mailbox;
+        }
+        return false;
+      });
+
+      if (send_position == receive_position) {
+        exC.insert(U->discover_event(std::move(K), test_action));
+      }
+    }
+  } else if (const CommRecvTransition* e_issuer_recv =
+                 dynamic_cast<const CommRecvTransition*>(e_issuer->get_transition());
+             e_issuer_recv != nullptr) {
+
+    for (const auto e : C) {
+      // If the provider of the communication for `CommTest` is a
+      // `CommRecv(m)`, then we only care about `e` if `λ(e) == `CommSend(m)`.
+      // All other actions would be independent with the wait action (including
+      // another `CommRecv` to the same mailbox: `CommWait` is "waiting" for its
+      // corresponding send action)
+      if (e->get_transition()->type_ != Transition::Type::COMM_ASYNC_SEND) {
+        continue;
+      }
+
+      const auto issuer_mailbox        = e_issuer_recv->get_mailbox();
+      const CommSendTransition* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
+      if (e_send->get_mailbox() != issuer_mailbox) {
+        continue;
+      }
+
+      // If the `issuer` is not in `config(K)`, this implies that
+      // `WaitAny()` is always disabled in `config(K)`; hence, it
+      // is independent of any transition in `config(K)` (according
+      // to formal definition of independence)
+      const EventSet K    = EventSet({e, pre_event_a_C.value_or(e)});
+      const auto config_K = History(K);
+      if (not config_K.contains(e_issuer)) {
+        continue;
+      }
+
+      // What receive # is the event `e`?
+      const unsigned send_position = std::count_if(config_K.begin(), config_K.end(), [=](const auto e) {
+        const CommSendTransition* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
+        if (e_send != nullptr) {
+          return e_send->get_mailbox() == issuer_mailbox;
+        }
+        return false;
+      });
+
+      // What send # is the issuer
+      const unsigned receive_position =
+          std::count_if(e_issuer_history.begin(), e_issuer_history.end(), [=](const auto e) {
+            const CommRecvTransition* e_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition());
+            if (e_receive != nullptr) {
+              return e_receive->get_mailbox() == issuer_mailbox;
+            }
+            return false;
+          });
+
+      if (send_position == receive_position) {
+        exC.insert(U->discover_event(std::move(K), test_action));
+      }
+    }
+  } else {
+    xbt_die("The transition which created the communication on which `%s` waits "
+            "is neither an async send nor an async receive. The current UDPOR "
+            "implementation does not know how to check if `CommWait` is enabled in "
+            "this case. Was a new transition added?",
+            e_issuer->get_transition()->to_string().c_str());
+  }
+
+  return exC;
 }
 
 } // namespace simgrid::mc::udpor
