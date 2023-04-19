@@ -64,7 +64,12 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
     // possibility is that we've finished running everything, and
     // we wouldn't be in deadlock then)
     if (enC.empty()) {
-      XBT_VERB("Maximal configuration detected. Checking for deadlock...");
+      XBT_VERB("**************************");
+      XBT_VERB("*** TRACE INVESTIGATED ***");
+      XBT_VERB("**************************");
+      XBT_VERB("Execution sequence:");
+      for (auto const& s : get_textual_trace())
+        XBT_VERB("  %s", s.c_str());
       get_remote_app().check_deadlock();
     }
 
