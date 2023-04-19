@@ -164,7 +164,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
   });
   xbt_assert(issuer != C.end(),
              "Invariant violation! A (supposedly) enabled `CommWait` transition "
-             "waiting on commiunication %lu should not be enabled: the receive/send "
+             "waiting on communication %lu should not be enabled: the receive/send "
              "transition which generated the communication is not an action taken "
              "to reach state(C) (the state of the configuration), which should "
              "be an impossibility if `%s` is enabled. Please report this as "
@@ -249,20 +249,19 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
         }
 
       } else {
-        xbt_assert(false,
-                   "The transition which created the communication on which `%s` waits "
-                   "is neither an async send nor an async receive. The current UDPOR "
-                   "implementation does not know how to check if `CommWait` is enabled in "
-                   "this case. Was a new transition added?",
-                   e_issuer->get_transition()->to_string().c_str());
+        xbt_die("The transition which created the communication on which `%s` waits "
+                "is neither an async send nor an async receive. The current UDPOR "
+                "implementation does not know how to check if `CommWait` is enabled in "
+                "this case. Was a new transition added?",
+                e_issuer->get_transition()->to_string().c_str());
       }
     }
   }
 
   // 3. foreach event e in C do
-  for (const auto* e : C) {
-    if (const CommSendTransition* e_issuer_send = dynamic_cast<const CommSendTransition*>(e_issuer->get_transition());
-        e_issuer_send != nullptr) {
+  if (const CommSendTransition* e_issuer_send = dynamic_cast<const CommSendTransition*>(e_issuer->get_transition());
+      e_issuer_send != nullptr) {
+    for (const auto e : C) {
       // If the provider of the communication for `CommWait` is a
       // `CommSend(m)`, then we only care about `e` if `λ(e) == `CommRecv(m)`.
       // All other actions would be independent with the wait action (including
@@ -309,10 +308,11 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
       if (send_position == receive_position) {
         exC.insert(U->discover_event(std::move(K), wait_action));
       }
-
-    } else if (const CommRecvTransition* e_issuer_recv =
-                   dynamic_cast<const CommRecvTransition*>(e_issuer->get_transition());
-               e_issuer_recv != nullptr) {
+    }
+  } else if (const CommRecvTransition* e_issuer_recv =
+                 dynamic_cast<const CommRecvTransition*>(e_issuer->get_transition());
+             e_issuer_recv != nullptr) {
+    for (const auto e : C) {
       // If the provider of the communication for `CommWait` is a
       // `CommRecv(m)`, then we only care about `e` if `λ(e) == `CommSend(m)`.
       // All other actions would be independent with the wait action (including
