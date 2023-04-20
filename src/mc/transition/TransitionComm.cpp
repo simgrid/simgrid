@@ -67,6 +67,19 @@ bool CommWaitTransition::depends(const Transition* other) const
 
   return false; // Comm transitions are INDEP with non-comm transitions
 }
+CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, uintptr_t comm_, aid_t sender_,
+                                       aid_t receiver_, unsigned mbox_, uintptr_t sbuff_, uintptr_t rbuff_,
+                                       size_t size_)
+    : Transition(Type::COMM_TEST, issuer, times_considered)
+    , comm_(comm_)
+    , sender_(sender_)
+    , receiver_(receiver_)
+    , mbox_(mbox_)
+    , sbuff_(sbuff_)
+    , rbuff_(rbuff_)
+    , size_(size_)
+{
+}
 CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_TEST, issuer, times_considered)
 {
@@ -152,6 +165,11 @@ bool CommRecvTransition::depends(const Transition* other) const
     if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->rbuff_ != rbuff_))
       return false;
 
+    // If the test is checking a paired comm already, we're independent!
+    // If we happen to make up that pair, then we're dependent...
+    if (test->comm_ != comm_)
+      return false;
+
     return true; // DEP with other send transitions
   }
 
@@ -221,6 +239,11 @@ bool CommSendTransition::depends(const Transition* other) const
       return false;
 
     if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->sbuff_ != sbuff_))
+      return false;
+
+    // If the test is checking a paired comm already, we're independent!
+    // If we happen to make up that pair, then we're dependent...
+    if (test->comm_ != comm_)
       return false;
 
     return true; // DEP with other test transitions

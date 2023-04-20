@@ -67,6 +67,8 @@ class CommTestTransition : public Transition {
   friend CommRecvTransition;
 
 public:
+  CommTestTransition(aid_t issuer, int times_considered, uintptr_t comm_, aid_t sender_, aid_t receiver_,
+                     unsigned mbox_, uintptr_t sbuff_, uintptr_t rbuff_, size_t size_);
   CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;

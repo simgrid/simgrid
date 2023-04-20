@@ -28,20 +28,23 @@ EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, Unfold
       HandlerMap{{Action::COMM_ASYNC_RECV, &ExtensionSetCalculator::partially_extend_CommRecv},
                  {Action::COMM_ASYNC_SEND, &ExtensionSetCalculator::partially_extend_CommSend},
                  {Action::COMM_WAIT, &ExtensionSetCalculator::partially_extend_CommWait},
-                 {Action::COMM_TEST, &ExtensionSetCalculator::partially_extend_CommTest}};
+                 {Action::COMM_TEST, &ExtensionSetCalculator::partially_extend_CommTest},
+                 {Action::MUTEX_ASYNC_LOCK, &ExtensionSetCalculator::partially_extend_MutexAsyncLock},
+                 {Action::MUTEX_UNLOCK, &ExtensionSetCalculator::partially_extend_MutexUnlock},
+                 {Action::MUTEX_WAIT, &ExtensionSetCalculator::partially_extend_MutexWait},
+                 {Action::MUTEX_TEST, &ExtensionSetCalculator::partially_extend_MutexTest},
+                 {Action::ACTOR_JOIN, &ExtensionSetCalculator::partially_extend_ActorJoin}};
 
   if (const auto handler = handlers.find(action->type_); handler != handlers.end()) {
     return handler->second(C, U, std::move(action));
   } else {
-    xbt_assert(false,
-               "There is currently no specialized computation for the transition "
-               "'%s' for computing extension sets in UDPOR, so the model checker cannot "
-               "determine how to proceed. Please submit a bug report requesting "
-               "that the transition be supported in SimGrid using UDPOR and consider "
-               "using the other model-checking algorithms supported by SimGrid instead "
-               "in the meantime",
-               action->to_string().c_str());
-    DIE_IMPOSSIBLE;
+    xbt_die("There is currently no specialized computation for the transition "
+            "'%s' for computing extension sets in UDPOR, so the model checker cannot "
+            "determine how to proceed. Please submit a bug report requesting "
+            "that the transition be supported in SimGrid using UDPOR and consider "
+            "using the other model-checking algorithms supported by SimGrid instead "
+            "in the meantime",
+            action->to_string().c_str());
   }
 }
 
@@ -80,7 +83,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& 
     if (transition_type_check) {
       const EventSet K = EventSet({e, pre_event_a_C.value_or(e)}).get_largest_maximal_subset();
 
-      // TODO: Check D_K(a, lambda(e))
+      // TODO: Check D_K(a, lambda(e)) (only matters in the case of CommTest)
       if (true) {
         const auto* e_prime = U->discover_event(std::move(K), send_action);
         exC.insert(e_prime);
@@ -527,6 +530,103 @@ EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration& 
             "implementation does not know how to check if `CommWait` is enabled in "
             "this case. Was a new transition added?",
             e_issuer->get_transition()->to_string().c_str());
+  }
+  return exC;
+}
+
+EventSet ExtensionSetCalculator::partially_extend_MutexAsyncLock(const Configuration& C, Unfolding* U,
+                                                                 std::shared_ptr<Transition> action)
+{
+  EventSet exC;
+  const auto mutex_lock    = std::static_pointer_cast<MutexTransition>(std::move(action));
+  const auto pre_event_a_C = C.pre_event(mutex_lock->aid_);
+
+  // for each event e in C
+  // 1. If lambda(e) := pre(a) -> add it, otherwise don't bother if
+  // it's not there
+  if (pre_event_a_C.has_value()) {
+    const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), mutex_lock);
+    exC.insert(e_prime);
+  }
+
+  // for each event e in C
+  for (const auto e : C) {
+    // Check for other locks on the same mutex
+    if (const MutexTransition* e_mutex = dynamic_cast<const MutexTransition*>(e->get_transition());
+        e_mutex != nullptr) {
+
+      if (e_mutex->type_ == Transition::Type::MUTEX_ASYNC_LOCK && mutex_lock->get_mutex() == e_mutex->get_mutex()) {
+        const EventSet K = EventSet({e, pre_event_a_C.value_or(e)});
+        exC.insert(U->discover_event(std::move(K), mutex_lock));
+      }
+    }
+  }
+  return exC;
+}
+
+EventSet ExtensionSetCalculator::partially_extend_MutexUnlock(const Configuration& C, Unfolding* U,
+                                                              std::shared_ptr<Transition> action)
+{
+  EventSet exC;
+  const auto mutex_unlock  = std::static_pointer_cast<MutexTransition>(std::move(action));
+  const auto pre_event_a_C = C.pre_event(mutex_unlock->aid_);
+
+  // for each event e in C
+  // 1. If lambda(e) := pre(a) -> add it, otherwise don't bother if
+  // it's not there
+  if (pre_event_a_C.has_value()) {
+    const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), mutex_unlock);
+    exC.insert(e_prime);
+  }
+
+  // for each event e in C
+  for (const auto e : C) {
+    // Check for MutexTest
+    if (const MutexTransition* e_mutex = dynamic_cast<const MutexTransition*>(e->get_transition());
+        e_mutex != nullptr) {
+
+      if (e_mutex->type_ == Transition::Type::MUTEX_TEST || e_mutex->type_ == Transition::Type::MUTEX_WAIT) {
+        // TODO: Check if dependent or not
+        // This entails getting information about
+        // the relative position of the mutex in the queue, which
+        // again means we need more context...
+        const EventSet K = EventSet({e, pre_event_a_C.value_or(e)});
+        exC.insert(U->discover_event(std::move(K), mutex_unlock));
+      }
+    }
+  }
+  return exC;
+}
+
+EventSet ExtensionSetCalculator::partially_extend_MutexWait(const Configuration& C, Unfolding* U,
+                                                            std::shared_ptr<Transition> action)
+{
+  return EventSet();
+}
+
+EventSet ExtensionSetCalculator::partially_extend_MutexTest(const Configuration& C, Unfolding* U,
+                                                            std::shared_ptr<Transition> action)
+{
+  return EventSet();
+}
+
+EventSet ExtensionSetCalculator::partially_extend_ActorJoin(const Configuration& C, Unfolding* U,
+                                                            std::shared_ptr<Transition> action)
+{
+  EventSet exC;
+
+  const auto join_action   = std::static_pointer_cast<ActorJoinTransition>(std::move(action));
+  const auto pre_event_a_C = C.pre_event(join_action->aid_);
+
+  // Handling ActorJoin is very simple: it is independent with all
+  // other transitions. Thus the only event it could possibly depend
+  // on is pre(a, C) or the root
+  if (pre_event_a_C.has_value()) {
+    const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), join_action);
+    exC.insert(e_prime);
+  } else {
+    const auto e_prime = U->discover_event(EventSet(), join_action);
+    exC.insert(e_prime);
   }
 
   return exC;
