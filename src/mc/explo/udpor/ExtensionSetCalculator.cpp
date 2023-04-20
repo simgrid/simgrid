@@ -601,13 +601,64 @@ EventSet ExtensionSetCalculator::partially_extend_MutexUnlock(const Configuratio
 EventSet ExtensionSetCalculator::partially_extend_MutexWait(const Configuration& C, Unfolding* U,
                                                             std::shared_ptr<Transition> action)
 {
-  return EventSet();
+  EventSet exC;
+  const auto mutex_wait    = std::static_pointer_cast<MutexTransition>(std::move(action));
+  const auto pre_event_a_C = C.pre_event(mutex_wait->aid_);
+
+  // for each event e in C
+  // 1. If lambda(e) := pre(a) -> add it, otherwise don't bother if
+  // it's not there. In the case of MutexWait, we also check that the
+  // actor which is executing the MutexWait is the owner of the mutex
+  if (pre_event_a_C.has_value() && mutex_wait->get_owner() == mutex_wait->aid_) {
+    const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), mutex_wait);
+    exC.insert(e_prime);
+  }
+
+  // for each event e in C
+  for (const auto e : C) {
+    // Check for any unlocks
+    if (const MutexTransition* e_mutex = dynamic_cast<const MutexTransition*>(e->get_transition());
+        e_mutex != nullptr && e_mutex->type_ == Transition::Type::MUTEX_UNLOCK) {
+      // TODO: Check if dependent or not
+      // This entails getting information about
+      // the relative position of the mutex in the queue, which
+      // again means we need more context...
+      const EventSet K = EventSet({e, pre_event_a_C.value_or(e)});
+      exC.insert(U->discover_event(std::move(K), mutex_wait));
+    }
+  }
+  return exC;
 }
 
 EventSet ExtensionSetCalculator::partially_extend_MutexTest(const Configuration& C, Unfolding* U,
                                                             std::shared_ptr<Transition> action)
 {
-  return EventSet();
+  EventSet exC;
+  const auto mutex_test    = std::static_pointer_cast<MutexTransition>(std::move(action));
+  const auto pre_event_a_C = C.pre_event(mutex_test->aid_);
+
+  // for each event e in C
+  // 1. If lambda(e) := pre(a) -> add it, otherwise don't bother if
+  // it's not there
+  if (pre_event_a_C.has_value()) {
+    const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), mutex_test);
+    exC.insert(e_prime);
+  }
+
+  // for each event e in C
+  for (const auto e : C) {
+    // Check for any unlocks
+    if (const MutexTransition* e_mutex = dynamic_cast<const MutexTransition*>(e->get_transition());
+        e_mutex != nullptr && e_mutex->type_ == Transition::Type::MUTEX_UNLOCK) {
+      // TODO: Check if dependent or not
+      // This entails getting information about
+      // the relative position of the mutex in the queue, which
+      // again means we need more context...
+      const EventSet K = EventSet({e, pre_event_a_C.value_or(e)});
+      exC.insert(U->discover_event(std::move(K), mutex_test));
+    }
+  }
+  return exC;
 }
 
 EventSet ExtensionSetCalculator::partially_extend_ActorJoin(const Configuration& C, Unfolding* U,

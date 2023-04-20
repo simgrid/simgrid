@@ -31,6 +31,7 @@ public:
   bool depends(const Transition* other) const override;
 
   uintptr_t get_mutex() const { return this->mutex_; }
+  aid_t get_owner() const { return this->owner_; }
 };
 
 class SemaphoreTransition : public Transition {
