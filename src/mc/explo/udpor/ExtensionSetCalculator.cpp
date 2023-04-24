@@ -84,10 +84,8 @@ EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& 
       const EventSet K = EventSet({e, pre_event_a_C.value_or(e)}).get_largest_maximal_subset();
 
       // TODO: Check D_K(a, lambda(e)) (only matters in the case of CommTest)
-      if (true) {
-        const auto* e_prime = U->discover_event(std::move(K), send_action);
-        exC.insert(e_prime);
-      }
+      const auto e_prime = U->discover_event(std::move(K), send_action);
+      exC.insert(e_prime);
     }
   }
 
@@ -542,10 +540,14 @@ EventSet ExtensionSetCalculator::partially_extend_MutexAsyncLock(const Configura
   const auto pre_event_a_C = C.pre_event(mutex_lock->aid_);
 
   // for each event e in C
-  // 1. If lambda(e) := pre(a) -> add it, otherwise don't bother if
-  // it's not there
+  // 1. If lambda(e) := pre(a) -> add it. Note that if
+  // pre_event_a_C.has_value() == false, this implies `C` is
+  // empty or which we treat as implicitly containing the bottom event
   if (pre_event_a_C.has_value()) {
     const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), mutex_lock);
+    exC.insert(e_prime);
+  } else {
+    const auto e_prime = U->discover_event(EventSet(), mutex_lock);
     exC.insert(e_prime);
   }
 
@@ -572,10 +574,14 @@ EventSet ExtensionSetCalculator::partially_extend_MutexUnlock(const Configuratio
   const auto pre_event_a_C = C.pre_event(mutex_unlock->aid_);
 
   // for each event e in C
-  // 1. If lambda(e) := pre(a) -> add it, otherwise don't bother if
-  // it's not there
+  // 1. If lambda(e) := pre(a) -> add it. Note that if
+  // pre_event_a_C.has_value() == false, this implies `C` is
+  // empty or which we treat as implicitly containing the bottom event
   if (pre_event_a_C.has_value()) {
     const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), mutex_unlock);
+    exC.insert(e_prime);
+  } else {
+    const auto e_prime = U->discover_event(EventSet(), mutex_unlock);
     exC.insert(e_prime);
   }
 
@@ -606,11 +612,13 @@ EventSet ExtensionSetCalculator::partially_extend_MutexWait(const Configuration&
   const auto pre_event_a_C = C.pre_event(mutex_wait->aid_);
 
   // for each event e in C
-  // 1. If lambda(e) := pre(a) -> add it, otherwise don't bother if
-  // it's not there. In the case of MutexWait, we also check that the
+  // 1. If lambda(e) := pre(a) -> add it. In the case of MutexWait, we also check that the
   // actor which is executing the MutexWait is the owner of the mutex
   if (pre_event_a_C.has_value() && mutex_wait->get_owner() == mutex_wait->aid_) {
     const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), mutex_wait);
+    exC.insert(e_prime);
+  } else {
+    const auto e_prime = U->discover_event(EventSet(), mutex_wait);
     exC.insert(e_prime);
   }
 
@@ -638,10 +646,14 @@ EventSet ExtensionSetCalculator::partially_extend_MutexTest(const Configuration&
   const auto pre_event_a_C = C.pre_event(mutex_test->aid_);
 
   // for each event e in C
-  // 1. If lambda(e) := pre(a) -> add it, otherwise don't bother if
-  // it's not there
+  // 1. If lambda(e) := pre(a) -> add it. Note that if
+  // pre_evevnt_a_C.has_value() == false, this implies `C` is
+  // empty or which we treat as implicitly containing the bottom event
   if (pre_event_a_C.has_value()) {
     const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), mutex_test);
+    exC.insert(e_prime);
+  } else {
+    const auto e_prime = U->discover_event(EventSet(), mutex_test);
     exC.insert(e_prime);
   }
 

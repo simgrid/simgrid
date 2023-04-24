@@ -114,8 +114,8 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
     // that we are searching again from `state(C)`. While the
     // stack of states is properly adjusted to represent
     // `state(C)` all together, the RemoteApp is currently sitting
-    // at some *future* state with resepct to `state(C)` since the
-    // recursive calls have moved it there.
+    // at some *future* state with respect to `state(C)` since the
+    // recursive calls had moved it there.
     restore_program_state_with_current_stack();
 
     // Explore(C, D + {e}, J \ C)

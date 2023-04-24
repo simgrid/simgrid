@@ -185,7 +185,7 @@ bool CommRecvTransition::depends(const Transition* other) const
 
     // If the wait is waiting on a paired comm already, we're independent!
     // If we happen to make up that pair, then we're dependent...
-    if (wait->comm_ != comm_)
+    if ((aid_ != wait->aid_) && wait->comm_ != comm_)
       return false;
 
     return true; // DEP with other wait transitions
@@ -261,7 +261,7 @@ bool CommSendTransition::depends(const Transition* other) const
 
     // If the wait is waiting on a paired comm already, we're independent!
     // If we happen to make up that pair, then we're dependent...
-    if (wait->comm_ != comm_)
+    if ((aid_ != wait->aid_) && wait->comm_ != comm_)
       return false;
 
     return true; // DEP with other wait transitions
