@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_SAFETY_CHECKER_HPP
 #define SIMGRID_MC_SAFETY_CHECKER_HPP
 
+#include "src/mc/api/ClockVector.hpp"
 #include "src/mc/api/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
 
@@ -17,6 +18,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace simgrid::mc {
@@ -24,7 +26,7 @@ namespace simgrid::mc {
 using stack_t = std::list<std::shared_ptr<State>>;
 
 class XBT_PRIVATE DFSExplorer : public Exploration {
-  XBT_DECLARE_ENUM_CLASS(ReductionMode, none, dpor);
+  XBT_DECLARE_ENUM_CLASS(ReductionMode, none, dpor, sdpor);
 
   ReductionMode reduction_mode_;
   unsigned long backtrack_count_      = 0; // for statistics
@@ -93,6 +95,10 @@ private:
 
   /** Stack representing the position in the exploration graph */
   stack_t stack_;
+
+  /** Per-actor clock vectors used to compute the "happens-before" relation */
+  std::unordered_map<aid_t, ClockVector> per_actor_clocks_;
+
 #if SIMGRID_HAVE_STATEFUL_MC
   VisitedStates visited_states_;
   std::unique_ptr<VisitedState> visited_state_;
