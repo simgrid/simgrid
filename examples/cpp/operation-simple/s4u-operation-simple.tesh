@@ -1,0 +1,9 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-operation-simple ${platfdir}/small_platform.xml
+> [10.194200] [operation_simple/INFO] Operation exec1 finished (1)
+> [11.714617] [operation_simple/INFO] Operation comm finished (1)
+> [20.388399] [operation_simple/INFO] Operation exec1 finished (2)
+> [21.908817] [operation_simple/INFO] Operation comm finished (2)
+> [24.821464] [operation_simple/INFO] Operation exec2 finished (1)
+> [37.928311] [operation_simple/INFO] Operation exec2 finished (2)

@@ -454,6 +454,7 @@ set(PLUGINS_SRC
   src/plugins/vm/VmLiveMigration.hpp
   src/plugins/vm/dirty_page_tracking.cpp
   src/plugins/battery.cpp
+  src/plugins/operation.cpp
   )
 
 
@@ -638,12 +639,13 @@ set(headers_to_install
   include/simgrid/exec.h
   include/simgrid/Exception.hpp
   include/simgrid/chrono.hpp
+  include/simgrid/plugins/battery.hpp
   include/simgrid/plugins/dvfs.h
   include/simgrid/plugins/energy.h
-  include/simgrid/plugins/battery.hpp
   include/simgrid/plugins/file_system.h
   include/simgrid/plugins/live_migration.h
   include/simgrid/plugins/load.h
+  include/simgrid/plugins/operation.hpp
   include/simgrid/plugins/ProducerConsumer.hpp
   include/simgrid/instr.h
   include/simgrid/mailbox.h

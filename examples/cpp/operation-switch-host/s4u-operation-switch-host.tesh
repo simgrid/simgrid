@@ -1,0 +1,15 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-operation-switch-host ${platfdir}/small_platform.xml
+> [1.520418] [operation_switch_host/INFO] Operation comm0 finished (1)
+> [2.873012] [operation_switch_host/INFO] Operation comm0 finished (2)
+> [4.393430] [operation_switch_host/INFO] Operation comm0 finished (3)
+> [5.746025] [operation_switch_host/INFO] Operation comm0 finished (4)
+> [14.627265] [operation_switch_host/INFO] Operation exec1 finished (1)
+> [15.979859] [operation_switch_host/INFO] Operation exec2 finished (1)
+> [16.147682] [operation_switch_host/INFO] Operation comm1 finished (1)
+> [17.332454] [operation_switch_host/INFO] Operation comm2 finished (1)
+> [27.734112] [operation_switch_host/INFO] Operation exec1 finished (2)
+> [29.086707] [operation_switch_host/INFO] Operation exec2 finished (2)
+> [29.254529] [operation_switch_host/INFO] Operation comm1 finished (2)
+> [30.439301] [operation_switch_host/INFO] Operation comm2 finished (2)
