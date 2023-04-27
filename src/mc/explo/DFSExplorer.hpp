@@ -46,7 +46,6 @@ public:
   explicit DFSExplorer(const std::vector<char*>& args, bool with_dpor, bool need_memory_info = false);
   void run() override;
   RecordTrace get_record_trace() override;
-  std::vector<std::string> get_textual_trace() override;
   void log_state() override;
 
   /** Called once when the exploration starts */

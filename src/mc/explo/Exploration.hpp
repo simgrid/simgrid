@@ -55,13 +55,11 @@ public:
    * to get and display information about the current state of the
    * model-checking algorithm: */
 
-  /** Show the current trace/stack
-   *
-   *  Could this be handled in the Session/ModelChecker instead? */
+  /** Retrieve the current stack to build an execution trace */
   virtual RecordTrace get_record_trace() = 0;
 
   /** Generate a textual execution trace of the simulated application */
-  virtual std::vector<std::string> get_textual_trace() = 0;
+  std::vector<std::string> get_textual_trace();
 
   /** Log additional information about the state of the model-checker */
   virtual void log_state();

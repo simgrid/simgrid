@@ -258,7 +258,8 @@ RecordTrace LivenessChecker::get_record_trace() // override
 {
   RecordTrace res;
   for (std::shared_ptr<Pair> const& pair : exploration_stack_)
-    res.push_back(pair->app_state_->get_transition_out().get());
+    if (pair->app_state_->get_transition_out() != nullptr)
+      res.push_back(pair->app_state_->get_transition_out().get());
   return res;
 }
 
@@ -283,16 +284,6 @@ void LivenessChecker::show_acceptance_cycle(std::size_t depth)
            get_record_trace().to_string().c_str());
   log_state();
   XBT_INFO("Counter-example depth: %zu", depth);
-}
-
-std::vector<std::string> LivenessChecker::get_textual_trace() // override
-{
-  std::vector<std::string> trace;
-  for (std::shared_ptr<Pair> const& pair : exploration_stack_)
-    if (pair->app_state_->get_transition_out() != nullptr)
-      trace.push_back(pair->app_state_->get_transition_out()->to_string());
-
-  return trace;
 }
 
 std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt_automaton_state_t state,

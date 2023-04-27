@@ -8,6 +8,7 @@
 #include "src/mc/mc_environ.h"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
+#include "xbt/string.hpp"
 
 #if SIMGRID_HAVE_STATEFUL_MC
 #include "src/mc/sosp/RemoteProcessMemory.hpp"
@@ -81,6 +82,15 @@ static const char* signal_name(int status)
       return strsignal(WTERMSIG(status));
   }
 }
+
+std::vector<std::string> Exploration::get_textual_trace()
+{
+  std::vector<std::string> trace;
+  for (auto const& transition : get_record_trace())
+    trace.push_back(xbt::string_printf("%ld: %s", transition->aid_, transition->to_string().c_str()));
+  return trace;
+}
+
 XBT_ATTRIB_NORETURN void Exploration::report_crash(int status)
 {
   XBT_INFO("**************************");

@@ -325,16 +325,6 @@ RecordTrace UdporChecker::get_record_trace()
   return res;
 }
 
-std::vector<std::string> UdporChecker::get_textual_trace()
-{
-  std::vector<std::string> trace;
-  for (auto const& state : state_stack) {
-    const auto t = state->get_transition_out();
-    trace.push_back(xbt::string_printf("%ld: %s", t->aid_, t->to_string().c_str()));
-  }
-  return trace;
-}
-
 } // namespace simgrid::mc::udpor
 
 namespace simgrid::mc {

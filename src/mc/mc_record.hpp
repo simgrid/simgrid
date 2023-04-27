@@ -36,6 +36,8 @@ public:
   std::string to_string() const;
 
   void push_back(Transition* t) { transitions_.push_back(t); }
+  std::vector<Transition*>::const_iterator begin() const { return transitions_.begin(); }
+  std::vector<Transition*>::const_iterator end() const { return transitions_.end(); }
 
   /** Replay all transitions of a trace */
   void replay() const;

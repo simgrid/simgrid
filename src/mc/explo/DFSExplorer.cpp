@@ -71,19 +71,9 @@ RecordTrace DFSExplorer::get_record_trace() // override
   RecordTrace res;
   for (auto const& transition : stack_.back()->get_recipe())
     res.push_back(transition);
-  res.push_back(stack_.back()->get_transition_out().get());
-  return res;
-}
-
-std::vector<std::string> DFSExplorer::get_textual_trace() // override
-{
-  std::vector<std::string> trace;
-  for (auto const& transition : stack_.back()->get_recipe()) {
-    trace.push_back(xbt::string_printf("%ld: %s", transition->aid_, transition->to_string().c_str()));
-  }
   if (const auto trans = stack_.back()->get_transition_out(); trans != nullptr)
-    trace.push_back(xbt::string_printf("%ld: %s", trans->aid_, trans->to_string().c_str()));
-  return trace;
+    res.push_back(stack_.back()->get_transition_out().get());
+  return res;
 }
 
 void DFSExplorer::restore_stack(std::shared_ptr<State> state)
