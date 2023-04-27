@@ -74,11 +74,6 @@ private:
   public:
     using topological_order_position = maximal_subsets_iterator::topological_order_position;
 
-    bookkeeper()                        = default;
-    bookkeeper(bookkeeper&&)            = default;
-    bookkeeper& operator=(bookkeeper&)  = default;
-    bookkeeper& operator=(bookkeeper&&) = default;
-
     void mark_included_in_maximal_set(const UnfoldingEvent*);
     void mark_removed_from_maximal_set(const UnfoldingEvent*);
     topological_order_position find_next_candidate_event(topological_order_position first,
