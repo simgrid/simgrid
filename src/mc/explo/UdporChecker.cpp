@@ -214,7 +214,7 @@ void UdporChecker::restore_program_state_with_current_stack()
   for (const std::unique_ptr<State>& state : state_stack) {
     if (state == state_stack.back()) /* If we are arrived on the target state, don't replay the outgoing transition */
       break;
-    state->get_transition()->replay(get_remote_app());
+    state->get_transition_out()->replay(get_remote_app());
   }
 }
 
@@ -321,7 +321,7 @@ RecordTrace UdporChecker::get_record_trace()
 {
   RecordTrace res;
   for (auto const& state : state_stack)
-    res.push_back(state->get_transition());
+    res.push_back(state->get_transition_out());
   return res;
 }
 
@@ -329,7 +329,7 @@ std::vector<std::string> UdporChecker::get_textual_trace()
 {
   std::vector<std::string> trace;
   for (auto const& state : state_stack) {
-    const auto* t = state->get_transition();
+    const auto* t = state->get_transition_out();
     trace.push_back(xbt::string_printf("%ld: %s", t->aid_, t->to_string().c_str()));
   }
   return trace;

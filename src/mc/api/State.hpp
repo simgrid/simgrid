@@ -28,6 +28,13 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
    */
   Transition* transition_ = nullptr;
 
+  /**
+   * @brief The incoming transition is what led to this state, coming from its parent
+   *
+   * The owner of the transition is the `ActorState` instance of the parent.
+   */
+  Transition* incoming_transition_ = nullptr;
+
   /** @brief A list of transition to be replayed in order to get in this state. */
   std::list<Transition*> recipe_;
 
@@ -77,8 +84,8 @@ public:
   unsigned long consider_all() const { return strategy_->consider_all(); }
 
   bool is_actor_done(aid_t actor) const { return strategy_->actors_to_run_.at(actor).is_done(); }
-  Transition* get_transition() const;
-  void set_transition(Transition* t) { transition_ = t; }
+  Transition* get_transition_out() const { return transition_; }
+  void set_transition_out(Transition* t) { transition_ = t; }
   std::shared_ptr<State> get_parent_state() const { return parent_state_; }
   std::list<Transition*> get_recipe() const { return recipe_; }
 

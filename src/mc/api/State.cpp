@@ -40,7 +40,7 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
 }
 
 State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
-    : num_(++expended_states_), parent_state_(parent_state)
+    : incoming_transition_(parent_state->get_transition_out()), num_(++expended_states_), parent_state_(parent_state)
 {
   if (_sg_mc_strategy == "none")
     strategy_ = std::make_shared<BasicStrategy>();
@@ -51,7 +51,7 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
   *strategy_ = *(parent_state->strategy_);
 
   recipe_ = std::list(parent_state_->get_recipe());
-  recipe_.push_back(parent_state_->get_transition());
+  recipe_.push_back(incoming_transition_);
 
   remote_app.get_actors_status(strategy_->actors_to_run_);
 
@@ -67,7 +67,7 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
      * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
      * it is not explored*/
     for (auto& [aid, transition] : parent_state_->get_sleep_set()) {
-      if (not parent_state_->get_transition()->depends(&transition)) {
+      if (not incoming_transition_->depends(&transition)) {
         sleep_set_.try_emplace(aid, transition);
         if (strategy_->actors_to_run_.count(aid) != 0) {
           XBT_DEBUG("Actor %ld will not be explored, for it is in the sleep set", aid);
@@ -75,8 +75,8 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
           strategy_->actors_to_run_.at(aid).mark_done();
         }
       } else
-        XBT_DEBUG("Transition >>%s<< removed from the sleep set because it was dependent with >>%s<<",
-                  transition.to_string().c_str(), parent_state_->get_transition()->to_string().c_str());
+        XBT_DEBUG("Transition >>%s<< removed from the sleep set because it was dependent with incoming >>%s<<",
+                  transition.to_string().c_str(), incoming_transition_->to_string().c_str());
     }
   }
 }
@@ -94,11 +94,6 @@ std::size_t State::count_todo_multiples() const
       count += actor.get_times_not_considered();
 
   return count;
-}
-
-Transition* State::get_transition() const
-{
-  return transition_;
 }
 
 aid_t State::next_transition() const

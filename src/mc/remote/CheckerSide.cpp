@@ -184,7 +184,7 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) 
   int sockets[2];
   xbt_assert(socketpair(AF_UNIX,
 #ifdef __APPLE__
-                        SOCK_STREAM, /* Mac OSX does not have AF_UNIX + SOCK_SEQPACKET, even if that's faster*/
+                        SOCK_STREAM, /* Mac OSX does not have AF_UNIX + SOCK_SEQPACKET, even if that's faster */
 #else
                         SOCK_SEQPACKET,
 #endif

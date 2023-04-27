@@ -120,8 +120,8 @@ void LivenessChecker::replay()
     std::shared_ptr<State> state = pair->app_state_;
 
     if (pair->exploration_started) {
-      state->get_transition()->replay(get_remote_app());
-      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, state->get_transition()->to_string().c_str(), state.get());
+      state->get_transition_out()->replay(get_remote_app());
+      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, state->get_transition_out()->to_string().c_str(), state.get());
     }
 
     /* Update statistics */
@@ -258,7 +258,7 @@ RecordTrace LivenessChecker::get_record_trace() // override
 {
   RecordTrace res;
   for (std::shared_ptr<Pair> const& pair : exploration_stack_)
-    res.push_back(pair->app_state_->get_transition());
+    res.push_back(pair->app_state_->get_transition_out());
   return res;
 }
 
@@ -289,8 +289,8 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
 {
   std::vector<std::string> trace;
   for (std::shared_ptr<Pair> const& pair : exploration_stack_)
-    if (pair->app_state_->get_transition() != nullptr)
-      trace.push_back(pair->app_state_->get_transition()->to_string());
+    if (pair->app_state_->get_transition_out() != nullptr)
+      trace.push_back(pair->app_state_->get_transition_out()->to_string());
 
   return trace;
 }
@@ -403,7 +403,7 @@ void LivenessChecker::run()
     }
 
     current_pair->app_state_->execute_next(current_pair->app_state_->next_transition(), get_remote_app());
-    XBT_DEBUG("Execute: %s", current_pair->app_state_->get_transition()->to_string().c_str());
+    XBT_DEBUG("Execute: %s", current_pair->app_state_->get_transition_out()->to_string().c_str());
 
     /* Update the dot output */
     if (this->previous_pair_ != 0 && this->previous_pair_ != current_pair->num) {
@@ -411,7 +411,7 @@ void LivenessChecker::run()
       this->previous_request_.clear();
     }
     this->previous_pair_    = current_pair->num;
-    this->previous_request_ = current_pair->app_state_->get_transition()->dot_string();
+    this->previous_request_ = current_pair->app_state_->get_transition_out()->dot_string();
     if (current_pair->search_cycle)
       dot_output("%d [shape=doublecircle];\n", current_pair->num);
 

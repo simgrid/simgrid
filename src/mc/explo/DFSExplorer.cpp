@@ -71,7 +71,7 @@ RecordTrace DFSExplorer::get_record_trace() // override
   RecordTrace res;
   for (auto const& transition : stack_.back()->get_recipe())
     res.push_back(transition);
-  res.push_back(stack_.back()->get_transition());
+  res.push_back(stack_.back()->get_transition_out());
   return res;
 }
 
@@ -81,7 +81,7 @@ std::vector<std::string> DFSExplorer::get_textual_trace() // override
   for (auto const& transition : stack_.back()->get_recipe()) {
     trace.push_back(xbt::string_printf("%ld: %s", transition->aid_, transition->to_string().c_str()));
   }
-  if (const auto* trans = stack_.back()->get_transition(); trans != nullptr)
+  if (const auto* trans = stack_.back()->get_transition_out(); trans != nullptr)
     trace.push_back(xbt::string_printf("%ld: %s", trans->aid_, trans->to_string().c_str()));
   return trace;
 }
@@ -176,12 +176,12 @@ void DFSExplorer::run()
 
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
     state->execute_next(next, get_remote_app());
-    on_transition_execute_signal(state->get_transition(), get_remote_app());
+    on_transition_execute_signal(state->get_transition_out(), get_remote_app());
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_VERB("Execute %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition()->aid_,
-             state->get_transition()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
+    XBT_VERB("Execute %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition_out()->aid_,
+             state->get_transition_out()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     auto next_state = std::make_shared<State>(get_remote_app(), state);
@@ -192,27 +192,27 @@ void DFSExplorer::run()
      * <!> Since the parent sleep set is used to compute the child sleep set, this need to be
      * done after next_state creation */
     XBT_DEBUG("Marking Transition >>%s<< of process %ld done and adding it to the sleep set",
-              state->get_transition()->to_string().c_str(), state->get_transition()->aid_);
-    state->add_sleep_set(state->get_transition()); // Actors are marked done when they are considerd in ActorState
+              state->get_transition_out()->to_string().c_str(), state->get_transition_out()->aid_);
+    state->add_sleep_set(state->get_transition_out()); // Actors are marked done when they are considerd in ActorState
 
     /* DPOR persistent set procedure:
      * for each new transition considered, check if it depends on any other previous transition executed before it
      * on another process. If there exists one, find the more recent, and add its process to the interleave set.
      * If the process is not enabled at this  point, then add every enabled process to the interleave */
     if (reduction_mode_ == ReductionMode::dpor) {
-      aid_t issuer_id   = state->get_transition()->aid_;
+      aid_t issuer_id   = state->get_transition_out()->aid_;
       stack_t tmp_stack = stack_;
       while (not tmp_stack.empty()) {
         if (const State* prev_state = tmp_stack.back().get();
-            state->get_transition()->aid_ == prev_state->get_transition()->aid_) {
-          XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->get_transition()->to_string().c_str(),
-                    prev_state->get_transition()->to_string().c_str(), issuer_id);
+            state->get_transition_out()->aid_ == prev_state->get_transition_out()->aid_) {
+          XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->get_transition_out()->to_string().c_str(),
+                    prev_state->get_transition_out()->to_string().c_str(), issuer_id);
           tmp_stack.pop_back();
           continue;
-        } else if (prev_state->get_transition()->depends(state->get_transition())) {
+        } else if (prev_state->get_transition_out()->depends(state->get_transition_out())) {
           XBT_VERB("Dependent Transitions:");
-          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->get_num());
-          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->get_num());
+          XBT_VERB("  %s (state=%ld)", prev_state->get_transition_out()->to_string().c_str(), prev_state->get_num());
+          XBT_VERB("  %s (state=%ld)", state->get_transition_out()->to_string().c_str(), state->get_num());
 
           if (prev_state->is_actor_enabled(issuer_id)) {
             if (not prev_state->is_actor_done(issuer_id)) {
@@ -231,8 +231,8 @@ void DFSExplorer::run()
           break;
         } else {
           XBT_VERB("INDEPENDENT Transitions:");
-          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->get_num());
-          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->get_num());
+          XBT_VERB("  %s (state=%ld)", prev_state->get_transition_out()->to_string().c_str(), prev_state->get_num());
+          XBT_VERB("  %s (state=%ld)", state->get_transition_out()->to_string().c_str(), state->get_num());
         }
         tmp_stack.pop_back();
       }
@@ -264,12 +264,12 @@ void DFSExplorer::run()
       }
 
       dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
-                 state->get_transition()->dot_string().c_str());
+                 state->get_transition_out()->dot_string().c_str());
 #if SIMGRID_HAVE_STATEFUL_MC
     } else {
       dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(),
                  visited_state_->original_num_ == -1 ? visited_state_->num_ : visited_state_->original_num_,
-                 state->get_transition()->dot_string().c_str());
+                 state->get_transition_out()->dot_string().c_str());
 #endif
     }
   }
