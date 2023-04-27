@@ -27,8 +27,6 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
   else
     THROW_IMPOSSIBLE;
 
-  recipe_ = std::list<Transition*>();
-
   remote_app.get_actors_status(strategy_->actors_to_run_);
 
 #if SIMGRID_HAVE_STATEFUL_MC
@@ -49,9 +47,6 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
   else
     THROW_IMPOSSIBLE;
   *strategy_ = *(parent_state->strategy_);
-
-  recipe_ = std::list(parent_state_->get_recipe());
-  recipe_.push_back(incoming_transition_.get());
 
   remote_app.get_actors_status(strategy_->actors_to_run_);
 
@@ -94,6 +89,16 @@ std::size_t State::count_todo_multiples() const
       count += actor.get_times_not_considered();
 
   return count;
+}
+
+std::deque<Transition*>& State::get_recipe()
+{
+  if (recipe_.empty()) {
+    for (auto* s = this; s != nullptr; s = s->get_parent_state().get())
+      if (s->get_transition_in() != nullptr)
+        recipe_.push_front(s->get_transition_in().get());
+  }
+  return recipe_;
 }
 
 aid_t State::next_transition() const
