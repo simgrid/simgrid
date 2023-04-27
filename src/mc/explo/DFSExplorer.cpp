@@ -151,7 +151,7 @@ void DFSExplorer::run()
 #endif
 
     // Search for the next transition
-    // next_transition returns a pair<aid_t, double> in case we want to consider multiple state (eg. during backtrack)
+    // next_transition returns a pair<aid_t, int> in case we want to consider multiple state (eg. during backtrack)
     auto [next, _] = state->next_transition_guided();
 
     if (next < 0) { // If there is no more transition in the current state, backtrack.
