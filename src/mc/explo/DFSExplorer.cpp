@@ -71,7 +71,7 @@ RecordTrace DFSExplorer::get_record_trace() // override
   RecordTrace res;
   for (auto const& transition : stack_.back()->get_recipe())
     res.push_back(transition);
-  res.push_back(stack_.back()->get_transition_out());
+  res.push_back(stack_.back()->get_transition_out().get());
   return res;
 }
 
@@ -81,7 +81,7 @@ std::vector<std::string> DFSExplorer::get_textual_trace() // override
   for (auto const& transition : stack_.back()->get_recipe()) {
     trace.push_back(xbt::string_printf("%ld: %s", transition->aid_, transition->to_string().c_str()));
   }
-  if (const auto* trans = stack_.back()->get_transition_out(); trans != nullptr)
+  if (const auto trans = stack_.back()->get_transition_out(); trans != nullptr)
     trace.push_back(xbt::string_printf("%ld: %s", trans->aid_, trans->to_string().c_str()));
   return trace;
 }
@@ -176,7 +176,7 @@ void DFSExplorer::run()
 
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
     state->execute_next(next, get_remote_app());
-    on_transition_execute_signal(state->get_transition_out(), get_remote_app());
+    on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
@@ -209,7 +209,7 @@ void DFSExplorer::run()
                     prev_state->get_transition_out()->to_string().c_str(), issuer_id);
           tmp_stack.pop_back();
           continue;
-        } else if (prev_state->get_transition_out()->depends(state->get_transition_out())) {
+        } else if (prev_state->get_transition_out()->depends(state->get_transition_out().get())) {
           XBT_VERB("Dependent Transitions:");
           XBT_VERB("  %s (state=%ld)", prev_state->get_transition_out()->to_string().c_str(), prev_state->get_num());
           XBT_VERB("  %s (state=%ld)", state->get_transition_out()->to_string().c_str(), state->get_num());

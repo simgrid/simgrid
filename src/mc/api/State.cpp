@@ -51,7 +51,7 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
   *strategy_ = *(parent_state->strategy_);
 
   recipe_ = std::list(parent_state_->get_recipe());
-  recipe_.push_back(incoming_transition_);
+  recipe_.push_back(incoming_transition_.get());
 
   remote_app.get_actors_status(strategy_->actors_to_run_);
 
@@ -158,12 +158,11 @@ std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
   //  2. what action actor `next` was able to take given `times_considered`
   // The latter update is important as *more* information is potentially available
   // about a transition AFTER it has executed.
-  transition_ = just_executed;
+  outgoing_transition_ = std::shared_ptr<Transition>(just_executed);
 
-  const auto executed_transition = std::shared_ptr<Transition>(just_executed);
-  actor_state.set_transition(executed_transition, times_considered);
+  actor_state.set_transition(outgoing_transition_, times_considered);
   app.wait_for_requests();
 
-  return executed_transition;
+  return outgoing_transition_;
 }
 } // namespace simgrid::mc

@@ -21,19 +21,11 @@ namespace simgrid::mc {
 class XBT_PRIVATE State : public xbt::Extendable<State> {
   static long expended_states_; /* Count total amount of states, for stats */
 
-  /**
-   * @brief The outgoing transition: what was the last transition that we took to leave this state?
-   *
-   * The owner of the transition is the `ActorState` instance which exists in this state.
-   */
-  Transition* transition_ = nullptr;
+  /** @brief The outgoing transition is the last transition that we took to leave this state.  */
+  std::shared_ptr<Transition> outgoing_transition_ = nullptr;
 
-  /**
-   * @brief The incoming transition is what led to this state, coming from its parent
-   *
-   * The owner of the transition is the `ActorState` instance of the parent.
-   */
-  Transition* incoming_transition_ = nullptr;
+  /** @brief The incoming transition is what led to this state, coming from its parent  */
+  std::shared_ptr<Transition> incoming_transition_ = nullptr;
 
   /** @brief A list of transition to be replayed in order to get in this state. */
   std::list<Transition*> recipe_;
@@ -84,8 +76,7 @@ public:
   unsigned long consider_all() const { return strategy_->consider_all(); }
 
   bool is_actor_done(aid_t actor) const { return strategy_->actors_to_run_.at(actor).is_done(); }
-  Transition* get_transition_out() const { return transition_; }
-  void set_transition_out(Transition* t) { transition_ = t; }
+  std::shared_ptr<Transition> get_transition_out() const { return outgoing_transition_; }
   std::shared_ptr<State> get_parent_state() const { return parent_state_; }
   std::list<Transition*> get_recipe() const { return recipe_; }
 
@@ -98,7 +89,7 @@ public:
   void set_system_state(std::shared_ptr<Snapshot> state) { system_state_ = std::move(state); }
 
   std::map<aid_t, Transition> const& get_sleep_set() const { return sleep_set_; }
-  void add_sleep_set(const Transition* t)
+  void add_sleep_set(std::shared_ptr<Transition> t)
   {
     sleep_set_.insert_or_assign(t->aid_, Transition(t->type_, t->aid_, t->times_considered_));
   }

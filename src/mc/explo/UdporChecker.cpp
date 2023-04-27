@@ -321,7 +321,7 @@ RecordTrace UdporChecker::get_record_trace()
 {
   RecordTrace res;
   for (auto const& state : state_stack)
-    res.push_back(state->get_transition_out());
+    res.push_back(state->get_transition_out().get());
   return res;
 }
 
@@ -329,7 +329,7 @@ std::vector<std::string> UdporChecker::get_textual_trace()
 {
   std::vector<std::string> trace;
   for (auto const& state : state_stack) {
-    const auto* t = state->get_transition_out();
+    const auto t = state->get_transition_out();
     trace.push_back(xbt::string_printf("%ld: %s", t->aid_, t->to_string().c_str()));
   }
   return trace;
