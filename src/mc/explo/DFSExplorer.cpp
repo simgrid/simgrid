@@ -69,10 +69,13 @@ void DFSExplorer::check_non_termination(const State* current_state)
 RecordTrace DFSExplorer::get_record_trace() // override
 {
   RecordTrace res;
-  for (auto const& transition : stack_.back()->get_recipe())
-    res.push_back(transition);
+
   if (const auto trans = stack_.back()->get_transition_out(); trans != nullptr)
-    res.push_back(stack_.back()->get_transition_out().get());
+    res.push_back(trans.get());
+  for (const auto* state = stack_.back().get(); state != nullptr; state = state->get_parent_state().get())
+    if (state->get_transition_in() != nullptr)
+      res.push_front(state->get_transition_in().get());
+
   return res;
 }
 

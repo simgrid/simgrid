@@ -19,13 +19,13 @@
 #include "src/mc/mc_forward.hpp"
 #include "xbt/base.h"
 
+#include <deque>
 #include <string>
-#include <vector>
 
 namespace simgrid::mc {
 
 class RecordTrace {
-  std::vector<Transition*> transitions_;
+  std::deque<Transition*> transitions_;
 
 public:
   RecordTrace() = default;
@@ -35,9 +35,10 @@ public:
   /** Make a string representation that can later be used to create a new trace */
   std::string to_string() const;
 
+  void push_front(Transition* t) { transitions_.push_front(t); }
   void push_back(Transition* t) { transitions_.push_back(t); }
-  std::vector<Transition*>::const_iterator begin() const { return transitions_.begin(); }
-  std::vector<Transition*>::const_iterator end() const { return transitions_.end(); }
+  std::deque<Transition*>::const_iterator begin() const { return transitions_.begin(); }
+  std::deque<Transition*>::const_iterator end() const { return transitions_.end(); }
 
   /** Replay all transitions of a trace */
   void replay() const;
