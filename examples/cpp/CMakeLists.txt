@@ -212,10 +212,6 @@ foreach (example activity-testany activity-waitany
   unset(_${example}_teshfile)
 endforeach()
 
-# Don't run mc-*-liveness tests in parallel, as they can use a lot of memory and timeout.
-get_directory_property(_serial_tests TESTS)
-list(FILTER _serial_tests INCLUDE REGEX "-mc-.*-liveness-")
-set_tests_properties(${_serial_tests} PROPERTIES RUN_SERIAL "TRUE")
 
 # Specific examples
 ###################
