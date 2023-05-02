@@ -12,8 +12,8 @@
 namespace simgrid::xbt {
 
 template <typename T> struct ref_or_value {
-  using type = std::conditional_t<std::is_lvalue_reference<T>::value,
-                                  std::reference_wrapper<typename std::remove_reference<T>::type>, T>;
+  using type =
+      std::conditional_t<std::is_lvalue_reference_v<T>, std::reference_wrapper<typename std::remove_reference_t<T>>, T>;
 };
 template <typename T> using ref_or_value_t = typename ref_or_value<T>::type;
 
