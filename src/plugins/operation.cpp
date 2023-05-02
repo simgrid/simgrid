@@ -105,7 +105,8 @@ void Operation::complete()
     working_ = false;
     count_++;
   });
-  end_func_(this);
+  if (end_func_)
+    end_func_(this);
   Operation::on_end(this);
   for (auto const& op : successors_)
     op->receive(this);
@@ -234,7 +235,8 @@ ExecOpPtr ExecOp::init(const std::string& name, double flops, simgrid::s4u::Host
  */
 void ExecOp::execute()
 {
-  start_func_(this);
+  if (start_func_)
+    start_func_(this);
   Operation::on_start(this);
   simgrid::kernel::actor::simcall_answered([this] {
     working_      = true;
@@ -301,7 +303,8 @@ CommOpPtr CommOp::init(const std::string& name, double bytes, simgrid::s4u::Host
  */
 void CommOp::execute()
 {
-  start_func_(this);
+  if (start_func_)
+    start_func_(this);
   Operation::on_start(this);
   simgrid::kernel::actor::simcall_answered([this] {
     working_      = true;

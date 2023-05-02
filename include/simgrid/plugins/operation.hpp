@@ -44,8 +44,8 @@ protected:
   int count_        = 0;
   bool working_     = false;
   simgrid::s4u::ActivityPtr current_activity_;
-  std::function<void(Operation*)> end_func_   = [](Operation*) {};
-  std::function<void(Operation*)> start_func_ = [](Operation*) {};
+  std::function<void(Operation*)> end_func_;
+  std::function<void(Operation*)> start_func_;
   Operation(const std::string& name);
   virtual ~Operation()   = default;
   virtual void execute() = 0;
