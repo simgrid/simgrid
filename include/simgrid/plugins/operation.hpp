@@ -78,7 +78,7 @@ private:
   simgrid::s4u::Host* host_;
 
   ExecOp(const std::string& name);
-  void execute();
+  void execute() override;
 
 public:
   static ExecOpPtr init(const std::string& name);
@@ -93,7 +93,7 @@ private:
   simgrid::s4u::Host* destination_;
 
   CommOp(const std::string& name);
-  void execute();
+  void execute() override;
 
 public:
   static CommOpPtr init(const std::string& name);
