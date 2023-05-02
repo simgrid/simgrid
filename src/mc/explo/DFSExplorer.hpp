@@ -9,11 +9,13 @@
 #include "src/mc/api/ClockVector.hpp"
 #include "src/mc/api/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/odpor/Execution.hpp"
 
 #if SIMGRID_HAVE_STATEFUL_MC
 #include "src/mc/VisitedState.hpp"
 #endif
 
+#include <deque>
 #include <list>
 #include <memory>
 #include <set>
@@ -23,7 +25,7 @@
 
 namespace simgrid::mc {
 
-using stack_t = std::list<std::shared_ptr<State>>;
+using stack_t = std::deque<std::shared_ptr<State>>;
 
 class XBT_PRIVATE DFSExplorer : public Exploration {
   XBT_DECLARE_ENUM_CLASS(ReductionMode, none, dpor, sdpor);
@@ -95,6 +97,12 @@ private:
 
   /** Stack representing the position in the exploration graph */
   stack_t stack_;
+
+  /**
+   * Provides additional metadata about the position in the exploration graph
+   * which is used by SDPOR and ODPOR
+   */
+  odpor::Execution execution_seq_;
 
   /** Per-actor clock vectors used to compute the "happens-before" relation */
   std::unordered_map<aid_t, ClockVector> per_actor_clocks_;

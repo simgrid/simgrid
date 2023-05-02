@@ -18,10 +18,20 @@ namespace simgrid::mc::odpor {
 
 class Event;
 class Execution;
-class ExecutionSequence;
 class ExecutionView;
 class WakeupTree;
 
 } // namespace simgrid::mc::odpor
+
+namespace simgrid::mc {
+
+// Permit ODPOR or SDPOR to be used as namespaces
+// Many of the structures overlap, so it doesn't
+// make sense to some in one and not the other.
+// Having one for each algorithm makes the corresponding
+// code easier to read
+namespace sdpor = simgrid::mc::odpor;
+
+} // namespace simgrid::mc
 
 #endif

@@ -22,8 +22,10 @@
 #include <cassert>
 #include <cstdio>
 
+#include <algorithm>
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dfs, mc, "DFS exploration algorithm of the model-checker");
@@ -168,7 +170,7 @@ void DFSExplorer::run()
     }
 
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
-    state->execute_next(next, get_remote_app());
+    const auto executed_transition = state->execute_next(next, get_remote_app());
     on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
 
     // If there are processes to interleave and the maximum depth has not been
@@ -229,6 +231,72 @@ void DFSExplorer::run()
         }
         tmp_stack.pop_back();
       }
+    } else if (reduction_mode_ == ReductionMode::sdpor) {
+      /**
+       * SDPOR Source Set Procedure:
+       */
+      execution_seq_.push_transition(executed_transition.get());
+
+      // To determine if the race is reversible, we have to ensure
+      // that actor `p` running `next_E_p` (viz. the event such that
+      // `racing_event -> (E_p) next_E_p` and no other event
+      // "happens-between" the two) is enabled in any equivalent
+      // execution where `racing_event` happens before `next_E_p`.
+      //
+      // Importantly, it is equivalent to checking if in ANY
+      // such equivalent execution sequence where `racing_event`
+      // happens-before `next_E_p` that `p` is enabled in `pre(racing_event, E.p)`.
+      // Thus it suffices to check THIS execution
+      xbt_assert(execution_seq_.get_latest_event_handle().has_value(),
+                 "No events are contained in the SDPOR/OPDPOR execution "
+                 "even though one was just added");
+      const aid_t p       = executed_transition->aid_;
+      const auto next_E_p = execution_seq_.get_latest_event_handle().value();
+
+      for (const auto racing_event_handle : execution_seq_.get_racing_events_of(next_E_p)) {
+        // If the actor `p` is not enabled at s_[E'], it is not a *reversible* race
+        const std::shared_ptr<State> prev_state = stack_[racing_event_handle];
+        if (not prev_state->is_actor_enabled(p)) {
+          continue;
+        }
+
+        // This is a reversible race! First, grab `E' := pre(e, E)`
+        // TODO: Instead of copying around these big structs, it
+        // would behoove us to incorporate some way to reference
+        // portions of an execution. For simplicity and for a
+        // "proof of concept" version, we opt to simply copy
+        // the contents instead of making a view into the execution
+        const sdpor::Execution E_prime_v = execution_seq_.get_prefix_up_to(racing_event_handle);
+
+        // The vector `v` is constructed as `v := notdep(e, E)
+        std::vector<sdpor::Execution::EventHandle> v(execution_seq_.size());
+        std::unordered_set<aid_t> disqualified_actors = state->get_todo_actors();
+
+        for (auto e_prime = racing_event_handle; e_prime <= next_E_p; ++e_prime) {
+          // Any event `e` which occurs after `racing_event_handle` but which does not
+          // happen after `racing_event_handle` is a member of `v`
+          if (not E_prime_v.happens_before(racing_event_handle, e_prime) or e_prime == next_E_p) {
+            v.push_back(e_prime);
+          }
+          const aid_t q = E_prime_v.get_actor_with_handle(e_prime);
+          if (disqualified_actors.count(q) > 0) {
+            continue;
+          }
+
+          const bool is_initial = std::none_of(v.begin(), v.end(), [&E_prime_v, e_prime](const auto& e_star) {
+            return E_prime_v.happens_before(e_star, e_prime);
+          });
+          if (is_initial) {
+            if (not prev_state->is_actor_done(q)) {
+              prev_state->consider_one(q);
+              opened_states_.emplace_back(std::move(prev_state));
+            }
+            break;
+          } else {
+            disqualified_actors.insert(q);
+          }
+        }
+      }
     }
 
     // Before leaving that state, if the transition we just took can be taken multiple times, we
@@ -240,7 +308,8 @@ void DFSExplorer::run()
       this->check_non_termination(next_state.get());
 
 #if SIMGRID_HAVE_STATEFUL_MC
-    /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction) */
+    /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction)
+     */
     if (_sg_mc_max_visited_states > 0)
       visited_state_ = visited_states_.addVisitedState(next_state->get_num(), next_state.get(), get_remote_app());
 #endif

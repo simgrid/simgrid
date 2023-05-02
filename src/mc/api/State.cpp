@@ -9,6 +9,7 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
 
+#include <algorithm>
 #include <boost/range/algorithm.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc, "Logging specific to MC states");
@@ -160,4 +161,16 @@ std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
 
   return outgoing_transition_;
 }
+
+std::unordered_set<aid_t> State::get_todo_actors() const
+{
+  std::unordered_set<aid_t> actors;
+  for (const auto& [aid, state] : get_actors_list()) {
+    if (state.is_todo()) {
+      actors.insert(aid);
+    }
+  }
+  return actors;
+}
+
 } // namespace simgrid::mc

@@ -86,6 +86,7 @@ public:
   Snapshot* get_system_state() const { return system_state_.get(); }
   void set_system_state(std::shared_ptr<Snapshot> state) { system_state_ = std::move(state); }
 
+  std::unordered_set<aid_t> get_todo_actors() const;
   std::map<aid_t, Transition> const& get_sleep_set() const { return sleep_set_; }
   void add_sleep_set(std::shared_ptr<Transition> t)
   {

@@ -7,9 +7,11 @@
 #define SIMGRID_MC_ODPOR_EXECUTION_HPP
 
 #include "src/mc/api/ClockVector.hpp"
+#include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
 
-#include <optonal>
+#include <list>
+#include <optional>
 #include <unordered_set>
 #include <vector>
 
@@ -26,17 +28,16 @@ class Event {
   std::pair<const Transition*, ClockVector> contents_;
 
 public:
-  Event()                         = default;
-  Event(Event&&)                  = default;
-  Event(const Event&)             = default;
-  Event& operator=(const Event&)  = default;
-  Event& operator=(const Event&&) = default;
+  Event()                        = default;
+  Event(Event&&)                 = default;
+  Event(const Event&)            = default;
+  Event& operator=(const Event&) = default;
 
   explicit Event(std::pair<const Transition*, ClockVector> pair) : contents_(std::move(pair)) {}
 
-  const Transition* get_transition() const { return contents_.get<0>(); }
-  const ClockVector& get_clock_vector() const { return contents_.get<1>(); }
-}
+  const Transition* get_transition() const { return std::get<0>(contents_); }
+  const ClockVector& get_clock_vector() const { return std::get<1>(contents_); }
+};
 
 /**
  * @brief An ordered sequence of transitions which describe
@@ -71,8 +72,16 @@ public:
  * the two concepts are analogous if not identical
  */
 class Execution {
+private:
+  /**
+   * @brief The actual steps that are taken by the process
+   * during exploration, relative to the
+   */
+  std::vector<Event> contents_;
+
 public:
-  using Handle = decltype(contents_)::const_iterator;
+  using Handle      = decltype(contents_)::const_iterator;
+  using EventHandle = uint32_t;
 
   Execution()                            = default;
   Execution(const Execution&)            = default;
@@ -87,6 +96,41 @@ public:
 
   bool is_initial(aid_t p, const Hypothetical& w) const;
   bool is_weak_initial(aid_t p, const Hypothetical& w) const;
+
+  const Event& get_event_with_handle(EventHandle handle) const { return contents_[handle]; }
+  aid_t get_actor_with_handle(EventHandle handle) const { return get_event_with_handle(handle).get_transition()->aid_; }
+
+  /**
+   * @brief Returns a set of IDs of events which are in
+   * "immediate conflict" (according to the definition given
+   * in the ODPOR paper) with one another
+   */
+  std::unordered_set<EventHandle> get_racing_events_of(EventHandle) const;
+
+  /**
+   * @brief Returns a handle to the newest event of the execution,
+   * if such an event exists
+   */
+  std::optional<EventHandle> get_latest_event_handle() const
+  {
+    return contents_.empty() ? std::nullopt : std::optional<EventHandle>{static_cast<EventHandle>(size() - 1)};
+  }
+
+  Execution get_prefix_up_to(EventHandle);
+
+  /**
+   * @brief Whether the event represented by `e1`
+   * "happens-before" the event represented by
+   * `e2` in the context of this execution
+   *
+   * In the terminology of the ODPOR paper,
+   * this function computes
+   *
+   * `e1 --->_E e2`
+   *
+   * where `E` is this execution
+   */
+  bool happens_before(EventHandle e1, EventHandle e2) const;
 
   /**
    * @brief Removes the last event of the execution,
@@ -108,23 +152,10 @@ public:
    */
   void push_transition(const Transition*);
 
-  size_t size() const { return this->contents_.size(); }
-  size_t size() const { return this->contents_.size(); }
-
-private:
   /**
-   * @brief A pointer into the execution off of which this
-   * execution extends computation
-   *
-   * Conceptually, the `prior`
+   * @brief The total number of steps contained in the execution
    */
-  std::optional<Handle> prior;
-
-  /**
-   * @brief The actual steps that are taken by the process
-   * during exploration, relative to the
-   */
-  std::list<Event> contents_;
+  size_t size() const { return this->contents_.size(); }
 };
 
 } // namespace simgrid::mc::odpor
