@@ -565,6 +565,9 @@ set(MC_SRC_STATEFUL
   src/mc/explo/LivenessChecker.hpp
   src/mc/explo/UdporChecker.cpp
   src/mc/explo/UdporChecker.hpp
+
+  src/mc/explo/odpor/Execution.cpp
+  src/mc/explo/odpor/Execution.hpp
   
   src/mc/explo/udpor/Comb.hpp
   src/mc/explo/udpor/Configuration.hpp

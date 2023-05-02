@@ -9,16 +9,15 @@
 #include "src/mc/api/ClockVector.hpp"
 #include "src/mc/transition/Transition.hpp"
 
+#include <optonal>
 #include <unordered_set>
 #include <vector>
 
 namespace simgrid::mc::odpor {
 
-/**
- * @brief An ordered sequence of actions
- */
-class ExecutionSequence : public std::list<const Transition*> {};
-using Hypothetical = ExecutionSequence;
+using ProcessSequence   = std::list<aid_t>;
+using ExecutionSequence = std::list<const State*>;
+using Hypothetical      = ExecutionSequence;
 
 /**
  * @brief The occurrence of a transition in an execution
@@ -43,6 +42,13 @@ public:
  * @brief An ordered sequence of transitions which describe
  * the evolution of a process undergoing model checking
  *
+ * An execution conceptually is just a string of actors
+ * ids (e.g. "1.2.3.1.2.2.1.1"), where the `i`th occurrence
+ * of actor id `j` corresponds to the `i`th action executed
+ * by the actor with id `j` (viz. the `i`th step of actor `j`).
+ * Executions can stand alone on their own or can extend
+ * the execution of other sequences
+ *
  * Executions are conceived based on the following papers:
  * 1. "Source Sets: A Foundation for Optimal Dynamic Partial Order Reduction"
  * by Abdulla et al.
@@ -65,20 +71,16 @@ public:
  * the two concepts are analogous if not identical
  */
 class Execution {
-private:
-  /**
-   * @brief The actual steps that are taken by the process
-   * during exploration.
-   */
-  std::list<Event> contents_;
-
 public:
+  using Handle = decltype(contents_)::const_iterator;
+
   Execution()                            = default;
   Execution(const Execution&)            = default;
   Execution& operator=(Execution const&) = default;
   Execution(Execution&&)                 = default;
-  explicit Execution(ExecutionSequence&& seq);
-  explicit Execution(const ExecutionSequence& seq);
+
+  Execution(ExecutionSequence&& seq, std::optional<Handle> base = {});
+  Execution(const ExecutionSequence& seq, std::optional<Handle> base = {});
 
   std::unordered_set<aid_t> get_initials_after(const Hypothetical& w) const;
   std::unordered_set<aid_t> get_weak_initials_after(const Hypothetical& w) const;
@@ -86,7 +88,43 @@ public:
   bool is_initial(aid_t p, const Hypothetical& w) const;
   bool is_weak_initial(aid_t p, const Hypothetical& w) const;
 
-  void take_action(const Transition*);
+  /**
+   * @brief Removes the last event of the execution,
+   * if such an event exists
+   *
+   * @note: When you remove events from an execution, any views
+   * of the execution referring to those removed events
+   * become invalidated
+   */
+  void pop_latest();
+
+  /**
+   * @brief Extends the execution by one more step
+   *
+   * Intutively, pushing a transition `t` onto execution `E`
+   * is equivalent to making the execution become (using the
+   * notation of [1]) `E.proc(t)` where `proc(t)` is the
+   * actor which executed transition `t`.
+   */
+  void push_transition(const Transition*);
+
+  size_t size() const { return this->contents_.size(); }
+  size_t size() const { return this->contents_.size(); }
+
+private:
+  /**
+   * @brief A pointer into the execution off of which this
+   * execution extends computation
+   *
+   * Conceptually, the `prior`
+   */
+  std::optional<Handle> prior;
+
+  /**
+   * @brief The actual steps that are taken by the process
+   * during exploration, relative to the
+   */
+  std::list<Event> contents_;
 };
 
 } // namespace simgrid::mc::odpor

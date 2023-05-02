@@ -2189,6 +2189,8 @@ include src/mc/explo/Exploration.cpp
 include src/mc/explo/Exploration.hpp
 include src/mc/explo/LivenessChecker.cpp
 include src/mc/explo/LivenessChecker.hpp
+include src/mc/explo/odpor/Execution.cpp
+include src/mc/explo/odpor/Execution.hpp
 include src/mc/explo/UdporChecker.cpp
 include src/mc/explo/UdporChecker.hpp
 include src/mc/explo/simgrid_mc.cpp
