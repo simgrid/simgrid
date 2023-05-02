@@ -138,6 +138,9 @@ public:
 
   void complete(Activity::State state)
   {
+    // Ensure that the current activity remains alive until the end of the function, even if its last reference is
+    // released by the on_completion() callbacks.
+    ActivityPtr keepalive(this);
     state_ = state;
     on_completion(*this);
     if (state == State::FINISHED)

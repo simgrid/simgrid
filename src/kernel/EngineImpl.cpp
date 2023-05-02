@@ -356,24 +356,27 @@ void EngineImpl::handle_ended_actions() const
     while (auto* action = model->extract_failed_action()) {
       XBT_DEBUG("   Handling Action %p", action);
       if (action->get_activity() != nullptr) { // Skip vcpu actions
+        activity::ActivityImplPtr activity(action->get_activity());
         // Action failures are not automatically reported when the action is started by maestro (as in SimDAG)
-        if (action->get_activity()->get_actor() == maestro_)
-          action->get_activity()->get_iface()->complete(s4u::Activity::State::FAILED);
+        if (activity->get_actor() == maestro_)
+          activity->get_iface()->complete(s4u::Activity::State::FAILED);
 
-        activity::ActivityImplPtr(action->get_activity())->finish();
+        activity->finish();
       }
     }
     XBT_DEBUG("Handling the terminated actions (if any)");
     while (auto* action = model->extract_done_action()) {
       XBT_DEBUG("   Handling Action %p", action);
       if (action->get_activity() != nullptr) {
+        activity::ActivityImplPtr activity(action->get_activity());
+
         // Action termination are not automatically reported when the action is started by maestro (as in SimDAG)
-        action->get_activity()->set_finish_time(action->get_finish_time());
+        activity->set_finish_time(action->get_finish_time());
 
-        if (action->get_activity()->get_actor() == maestro_)
-          action->get_activity()->get_iface()->complete(s4u::Activity::State::FINISHED);
+        if (activity->get_actor() == maestro_)
+          activity->get_iface()->complete(s4u::Activity::State::FINISHED);
 
-        activity::ActivityImplPtr(action->get_activity())->finish();
+        activity->finish();
       }
     }
   }
