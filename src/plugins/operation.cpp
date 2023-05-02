@@ -61,10 +61,7 @@ void Operation::remove_predecessor(Operation* predecessor)
  */
 bool Operation::ready_to_run() const
 {
-  if (working_ or queued_execs_ <= 0)
-    return false;
-  else
-    return true;
+  return not working_ && queued_execs_ > 0;
 }
 
 /**
