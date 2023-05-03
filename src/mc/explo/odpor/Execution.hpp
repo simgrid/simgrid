@@ -89,15 +89,23 @@ public:
   Execution(const Execution&)            = default;
   Execution& operator=(Execution const&) = default;
   Execution(Execution&&)                 = default;
+  Execution(ExecutionSequence&& seq);
+  Execution(const ExecutionSequence& seq);
 
-  Execution(ExecutionSequence&& seq, std::optional<Handle> base = {});
-  Execution(const ExecutionSequence& seq, std::optional<Handle> base = {});
+  size_t size() const { return this->contents_.size(); }
+  bool empty() const { return this->contents_.empty(); }
 
-  std::unordered_set<aid_t> get_initials_after(const Hypothetical& w) const;
-  std::unordered_set<aid_t> get_weak_initials_after(const Hypothetical& w) const;
+  std::optional<aid_t> get_first_ssdpor_initial_from(EventHandle e, std::unordered_set<aid_t> disqualified) const;
+  std::unordered_set<aid_t> get_ssdpor_initials_from(EventHandle e, std::unordered_set<aid_t> disqualified) const;
 
-  bool is_initial(aid_t p, const Hypothetical& w) const;
-  bool is_weak_initial(aid_t p, const Hypothetical& w) const;
+  // std::unordered_set<aid_t> get_initials_after(const Hypothetical& w) const;
+  // std::unordered_set<aid_t> get_weak_initials_after(const Hypothetical& w) const;
+
+  // std::unordered_set<aid_t> get_initials_after(const Hypothetical& w) const;
+  // std::unordered_set<aid_t> get_weak_initials_after(const Hypothetical& w) const;
+
+  // bool is_initial(aid_t p, const Hypothetical& w) const;
+  // bool is_weak_initial(aid_t p, const Hypothetical& w) const;
 
   const Event& get_event_with_handle(EventHandle handle) const { return contents_[handle]; }
   aid_t get_actor_with_handle(EventHandle handle) const { return get_event_with_handle(handle).get_transition()->aid_; }
@@ -118,7 +126,7 @@ public:
     return contents_.empty() ? std::nullopt : std::optional<EventHandle>{static_cast<EventHandle>(size() - 1)};
   }
 
-  Execution get_prefix_up_to(EventHandle);
+  Execution get_prefix_up_to(EventHandle) const;
 
   /**
    * @brief Whether the event represented by `e1`
@@ -159,11 +167,6 @@ public:
    * actor which executed transition `t`.
    */
   void push_transition(const Transition*);
-
-  /**
-   * @brief The total number of steps contained in the execution
-   */
-  size_t size() const { return this->contents_.size(); }
 };
 
 } // namespace simgrid::mc::odpor

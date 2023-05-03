@@ -94,7 +94,11 @@ void DFSExplorer::restore_stack(std::shared_ptr<State> state)
   XBT_DEBUG("Replaced stack by %s", get_record_trace().to_string().c_str());
 
   if (reduction_mode_ == ReductionMode::sdpor) {
-    execution_seq_ = execution_seq_.get_prefix_up_to(stack_.size());
+    if (stack_.empty()) {
+      execution_seq_ = sdpor::Execution();
+    } else {
+      execution_seq_ = execution_seq_.get_prefix_up_to(stack_.size() - 1);
+    }
     XBT_DEBUG("Additionally replaced corresponding SDPOR execution stack");
   }
 }
@@ -239,19 +243,15 @@ void DFSExplorer::run()
     } else if (reduction_mode_ == ReductionMode::sdpor) {
       /**
        * SDPOR Source Set Procedure:
+       *
+       * Find "reversible races" in the current execution with respect
+       * to the latest action `p`. For each such race, determine one thread
+       * not contained in the backtrack set at the "race point" `r` which
+       * "represents" the trace formed by first executing everything after
+       * `r` and then `p` to flip the race
        */
       execution_seq_.push_transition(executed_transition.get());
 
-      // To determine if the race is reversible, we have to ensure
-      // that actor `p` running `next_E_p` (viz. the event such that
-      // `racing_event -> (E_p) next_E_p` and no other event
-      // "happens-between" the two) is enabled in any equivalent
-      // execution where `racing_event` happens before `next_E_p`.
-      //
-      // Importantly, it is equivalent to checking if in ANY
-      // such equivalent execution sequence where `racing_event`
-      // happens-before `next_E_p` that `p` is enabled in `pre(racing_event, E.p)`.
-      // Thus it suffices to check THIS execution
       xbt_assert(execution_seq_.get_latest_event_handle().has_value(),
                  "No events are contained in the SDPOR/OPDPOR execution "
                  "even though one was just added");
@@ -259,57 +259,28 @@ void DFSExplorer::run()
       const auto next_E_p = execution_seq_.get_latest_event_handle().value();
 
       for (const auto racing_event_handle : execution_seq_.get_racing_events_of(next_E_p)) {
+        // To determine if the race is reversible, we have to ensure
+        // that actor `p` running `next_E_p` (viz. the event such that
+        // `racing_event -> (E_p) next_E_p` and no other event
+        // "happens-between" the two) is enabled in any equivalent
+        // execution where `racing_event` happens before `next_E_p`.
+        //
+        // Importantly, it is equivalent to checking if in ANY
+        // such equivalent execution sequence where `racing_event`
+        // happens-before `next_E_p` that `p` is enabled in `pre(racing_event, E.p)`.
+        // Thus it suffices to check THIS execution
+        //
         // If the actor `p` is not enabled at s_[E'], it is not a *reversible* race
         const std::shared_ptr<State> prev_state = stack_[racing_event_handle];
-        if (not prev_state->is_actor_enabled(p)) {
-          continue;
-        }
-
-        // This is a reversible race! First, grab `E' := pre(e, E)`
-        // TODO: Instead of copying around these big structs, it
-        // would behoove us to incorporate some way to reference
-        // portions of an execution. For simplicity and for a
-        // "proof of concept" version, we opt to simply copy
-        // the contents instead of making a view into the execution
-        sdpor::Execution E_prime_v = execution_seq_.get_prefix_up_to(racing_event_handle);
-
-        // The vector `v` is constructed as `v := notdep(e, E)
-        std::vector<sdpor::Execution::EventHandle> v;
-        std::unordered_set<aid_t> disqualified_actors = state->get_todo_actors();
-
-        for (auto e_prime = racing_event_handle; e_prime <= next_E_p; ++e_prime) {
-          // Any event `e` which occurs after `racing_event_handle` but which does not
-          // happen after `racing_event_handle` is a member of `v`.
-          // In addition to marking the event in `v`, we also "simulate" running
-          // the action `v` from E'.
-          if (not execution_seq_.happens_before(racing_event_handle, e_prime) or e_prime == next_E_p) {
-            v.push_back(e_prime);
-            E_prime_v.push_transition(execution_seq_.get_event_with_handle(e_prime).get_transition());
-          } else {
-            continue;
-          }
-
-          xbt_assert(E_prime_v.get_latest_event_handle().has_value(),
-                     "No events are contained in the SDPOR/OPDPOR execution "
-                     "even though one was just added");
-          const sdpor::Execution::EventHandle e_prime_in_E_prime = E_prime_v.get_latest_event_handle().value();
-
-          const aid_t q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime);
-          if (disqualified_actors.count(q) > 0) {
-            continue;
-          }
-
-          const bool is_initial = std::none_of(v.begin(), v.end(), [&](const auto& e_star) {
-            return E_prime_v.happens_before(e_star, e_prime_in_E_prime);
-          });
-          if (is_initial) {
-            if (not prev_state->is_actor_done(q)) {
-              prev_state->consider_one(q);
-              opened_states_.emplace_back(std::move(prev_state));
-            }
-            break;
-          } else {
-            disqualified_actors.insert(q);
+        if (prev_state->is_actor_enabled(p)) {
+          // NOTE: To incorporate the idea of attempting to select the "best"
+          // backtrack point into SDPOR, instead of selecting the `first` initial,
+          // we should instead compute all choices and decide which is bes
+          const std::optional<aid_t> q =
+              execution_seq_.get_first_ssdpor_initial_from(racing_event_handle, prev_state->get_backtrack_set());
+          if (q.has_value()) {
+            prev_state->consider_one(q.value());
+            opened_states_.emplace_back(std::move(prev_state));
           }
         }
       }

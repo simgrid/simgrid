@@ -86,7 +86,20 @@ public:
   Snapshot* get_system_state() const { return system_state_.get(); }
   void set_system_state(std::shared_ptr<Snapshot> state) { system_state_ = std::move(state); }
 
-  std::unordered_set<aid_t> get_todo_actors() const;
+  /**
+   * @brief Computes the backtrack set for this state
+   * according to its definition in Simgrid.
+   *
+   * The backtrack set as it appears in DPOR, SDPOR, and ODPOR
+   * in SimGrid consists of those actors marked as `todo`
+   * (i.e. those that have yet to be explored) as well as those
+   * marked `done` (i.e. those that have already been explored)
+   * since the pseudcode in none of the above algorithms explicitly
+   * removes elements from the backtrack set. DPOR makes use
+   * explicitly of the `done` set, but we again note that the
+   * backtrack set still contains processes added to the done set.
+   */
+  std::unordered_set<aid_t> get_backtrack_set() const;
   std::map<aid_t, Transition> const& get_sleep_set() const { return sleep_set_; }
   void add_sleep_set(std::shared_ptr<Transition> t)
   {

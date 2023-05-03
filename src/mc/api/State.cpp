@@ -162,11 +162,11 @@ std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
   return outgoing_transition_;
 }
 
-std::unordered_set<aid_t> State::get_todo_actors() const
+std::unordered_set<aid_t> State::get_backtrack_set() const
 {
   std::unordered_set<aid_t> actors;
   for (const auto& [aid, state] : get_actors_list()) {
-    if (state.is_todo()) {
+    if (state.is_todo() or state.is_done()) {
       actors.insert(aid);
     }
   }
