@@ -92,6 +92,11 @@ void DFSExplorer::restore_stack(std::shared_ptr<State> state)
     stack_.emplace_front(current_state);
   }
   XBT_DEBUG("Replaced stack by %s", get_record_trace().to_string().c_str());
+
+  if (reduction_mode_ == ReductionMode::sdpor) {
+    execution_seq_ = execution_seq_.get_prefix_up_to(stack_.size());
+    XBT_DEBUG("Additionally replaced corresponding SDPOR execution stack");
+  }
 }
 
 void DFSExplorer::log_state() // override
@@ -266,25 +271,36 @@ void DFSExplorer::run()
         // portions of an execution. For simplicity and for a
         // "proof of concept" version, we opt to simply copy
         // the contents instead of making a view into the execution
-        const sdpor::Execution E_prime_v = execution_seq_.get_prefix_up_to(racing_event_handle);
+        sdpor::Execution E_prime_v = execution_seq_.get_prefix_up_to(racing_event_handle);
 
         // The vector `v` is constructed as `v := notdep(e, E)
-        std::vector<sdpor::Execution::EventHandle> v(execution_seq_.size());
+        std::vector<sdpor::Execution::EventHandle> v;
         std::unordered_set<aid_t> disqualified_actors = state->get_todo_actors();
 
         for (auto e_prime = racing_event_handle; e_prime <= next_E_p; ++e_prime) {
           // Any event `e` which occurs after `racing_event_handle` but which does not
-          // happen after `racing_event_handle` is a member of `v`
-          if (not E_prime_v.happens_before(racing_event_handle, e_prime) or e_prime == next_E_p) {
+          // happen after `racing_event_handle` is a member of `v`.
+          // In addition to marking the event in `v`, we also "simulate" running
+          // the action `v` from E'.
+          if (not execution_seq_.happens_before(racing_event_handle, e_prime) or e_prime == next_E_p) {
             v.push_back(e_prime);
+            E_prime_v.push_transition(execution_seq_.get_event_with_handle(e_prime).get_transition());
+          } else {
+            continue;
           }
-          const aid_t q = E_prime_v.get_actor_with_handle(e_prime);
+
+          xbt_assert(E_prime_v.get_latest_event_handle().has_value(),
+                     "No events are contained in the SDPOR/OPDPOR execution "
+                     "even though one was just added");
+          const sdpor::Execution::EventHandle e_prime_in_E_prime = E_prime_v.get_latest_event_handle().value();
+
+          const aid_t q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime);
           if (disqualified_actors.count(q) > 0) {
             continue;
           }
 
-          const bool is_initial = std::none_of(v.begin(), v.end(), [&E_prime_v, e_prime](const auto& e_star) {
-            return E_prime_v.happens_before(e_star, e_prime);
+          const bool is_initial = std::none_of(v.begin(), v.end(), [&](const auto& e_star) {
+            return E_prime_v.happens_before(e_star, e_prime_in_E_prime);
           });
           if (is_initial) {
             if (not prev_state->is_actor_done(q)) {

@@ -79,6 +79,8 @@ private:
    */
   std::vector<Event> contents_;
 
+  Execution(std::vector<Event>&& contents) : contents_(std::move(contents)) {}
+
 public:
   using Handle      = decltype(contents_)::const_iterator;
   using EventHandle = uint32_t;
@@ -129,6 +131,12 @@ public:
    * `e1 --->_E e2`
    *
    * where `E` is this execution
+   *
+   * @note: The happens-before relation computed by this
+   * execution is "coarse" in the sense that context-sensitive
+   * independence is not exploited. To include such context-sensitive
+   * dependencies requires a new method of keeping track of
+   * the happens-before procedure, which is nontrivial...
    */
   bool happens_before(EventHandle e1, EventHandle e2) const;
 
