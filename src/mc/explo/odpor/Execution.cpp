@@ -102,6 +102,8 @@ std::optional<aid_t> Execution::get_first_ssdpor_initial_from(EventHandle e,
   Execution E_prime_v = get_prefix_up_to(e);
   std::vector<sdpor::Execution::EventHandle> v;
 
+  // Note `e + 1` here: `notdep(e, E)` is defined as the
+  // set of events that *occur-after* but don't *happen-after* `e`
   for (auto e_prime = e + 1; e_prime <= next_E_p; ++e_prime) {
     // Any event `e*` which occurs after `e` but which does not
     // happen after `e` is a member of `v`. In addition to marking

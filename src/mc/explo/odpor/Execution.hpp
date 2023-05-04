@@ -94,6 +94,8 @@ public:
 
   size_t size() const { return this->contents_.size(); }
   bool empty() const { return this->contents_.empty(); }
+  auto begin() const { return this->contents_.begin(); }
+  auto end() const { return this->contents_.end(); }
 
   std::optional<aid_t> get_first_ssdpor_initial_from(EventHandle e, std::unordered_set<aid_t> disqualified) const;
   std::unordered_set<aid_t> get_ssdpor_initials_from(EventHandle e, std::unordered_set<aid_t> disqualified) const;

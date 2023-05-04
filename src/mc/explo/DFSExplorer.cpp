@@ -93,14 +93,17 @@ void DFSExplorer::restore_stack(std::shared_ptr<State> state)
   }
   XBT_DEBUG("Replaced stack by %s", get_record_trace().to_string().c_str());
 
+  // TODO: See if we can simply take a prefix of what
+  // currently exists instead of performing a recomputation.
+  // There seems to be a subtlety here that at the moment
+  // I can't figure out
   if (reduction_mode_ == ReductionMode::sdpor) {
-    if (stack_.empty()) {
-      execution_seq_ = sdpor::Execution();
-    } else {
-      execution_seq_ = execution_seq_.get_prefix_up_to(stack_.size() - 1);
+    execution_seq_ = sdpor::Execution();
+    for (const auto& state : stack_) {
+      execution_seq_.push_transition(state->get_transition_out().get());
     }
-    XBT_DEBUG("Additionally replaced corresponding SDPOR execution stack");
   }
+  XBT_DEBUG("Additionally replaced corresponding SDPOR execution stack");
 }
 
 void DFSExplorer::log_state() // override

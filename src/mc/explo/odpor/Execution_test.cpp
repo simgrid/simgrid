@@ -17,6 +17,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Constructing Executions")
   Execution execution;
   REQUIRE(execution.empty());
   REQUIRE(execution.size() == 0);
+  REQUIRE_FALSE(execution.get_latest_event_handle().has_value());
 }
 
 TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
@@ -112,7 +113,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
   }
 }
 
-TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events Initials")
+TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
 {
   SECTION("Example 1")
   {
@@ -173,5 +174,26 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events Initials")
 
     // All events are dependent with event 3, but event 0 "happens-before" event 2
     REQUIRE(execution.get_racing_events_of(3) == std::unordered_set<Execution::EventHandle>{1, 2});
+
+    SECTION("Check initials with respect to event 1")
+    {
+      // First, note that v := notdep(1, execution).p == {e2}.{e3} == {e2, e3}
+      // Since e2 -->_E e3, actor 3 is not an initial for E' := pre(1, execution)
+      // with respect to `v`. e2, however, has nothing happening before it in dom_E(v),
+      // so it is an initial of E' wrt. `v`
+      const auto initial_wrt_event1 = execution.get_first_ssdpor_initial_from(1, std::unordered_set<aid_t>{});
+      REQUIRE(initial_wrt_event1.has_value());
+      REQUIRE(initial_wrt_event1.value() == static_cast<aid_t>(1));
+    }
+
+    SECTION("Check initials with respect to event 2")
+    {
+      // First, note that v := notdep(1, execution).p == {}.{e3} == {e3}
+      // e3 has nothing happening before it in dom_E(v), so it is an initial
+      // of E' wrt. `v`
+      const auto initial_wrt_event2 = execution.get_first_ssdpor_initial_from(2, std::unordered_set<aid_t>{});
+      REQUIRE(initial_wrt_event2.has_value());
+      REQUIRE(initial_wrt_event2.value() == static_cast<aid_t>(3));
+    }
   }
 }
