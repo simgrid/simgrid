@@ -102,7 +102,7 @@ std::optional<aid_t> Execution::get_first_ssdpor_initial_from(EventHandle e,
   Execution E_prime_v = get_prefix_up_to(e);
   std::vector<sdpor::Execution::EventHandle> v;
 
-  for (auto e_prime = e; e_prime <= next_E_p; ++e_prime) {
+  for (auto e_prime = e + 1; e_prime <= next_E_p; ++e_prime) {
     // Any event `e*` which occurs after `e` but which does not
     // happen after `e` is a member of `v`. In addition to marking
     // the event in `v`, we also "simulate" running the action `v`
@@ -137,8 +137,9 @@ std::unordered_set<aid_t> Execution::get_ssdpor_initials_from(EventHandle e,
 
 bool Execution::happens_before(Execution::EventHandle e1_handle, Execution::EventHandle e2_handle) const
 {
-  // 1. "happens-before" is a subset of "occurs before"
-  if (e1_handle > e2_handle) {
+  // 1. "happens-before" (-->_E) is a subset of "occurs before" (<_E)
+  // and is an irreflexive relation
+  if (e1_handle >= e2_handle) {
     return false;
   }
 
@@ -146,7 +147,15 @@ bool Execution::happens_before(Execution::EventHandle e1_handle, Execution::Even
   // according to the procedure outlined in section 4 of the original DPOR paper
   const Event& e2     = get_event_with_handle(e2_handle);
   const aid_t proc_e1 = get_actor_with_handle(e1_handle);
-  return e1_handle <= e2.get_clock_vector().get(proc_e1).value_or(0);
+
+  if (const auto e1_in_e2_clock = e2.get_clock_vector().get(proc_e1); e1_in_e2_clock.has_value()) {
+    return e1_handle <= e1_in_e2_clock.value();
+  }
+  // If `e1` does not appear in e2's clock vector, this implies
+  // not only that the transitions associated with `e1` and `e2
+  // are independent, but further that there are no transitive
+  // dependencies between e1 and e2
+  return false;
 }
 
 } // namespace simgrid::mc::odpor
