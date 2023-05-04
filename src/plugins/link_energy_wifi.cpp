@@ -187,7 +187,7 @@ void LinkEnergyWifi::update()
    *  - if idle i.e. get_usage = 0, update P_{stat}
    * P_{tot} = P_{dyn}+P_{stat}
    */
-  if (link_->get_usage() != 0.0) {
+  if (link_->get_load() != 0.0) {
     eDyn_ += /*duration * */ durUsage * ((host_count * pRx_) + pTx_);
     eStat_ += (duration - durUsage) * pIdle_ * (host_count + 1);
     XBT_DEBUG("eDyn +=  %f * ((%f * %f) + %f) | eDyn = %f (durusage =%f)", durUsage, host_count, pRx_, pTx_, eDyn_,

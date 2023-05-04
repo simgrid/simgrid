@@ -128,7 +128,7 @@ double LinkEnergy::get_power() const
 
   double power_slope = busy_ - idle_;
 
-  double normalized_link_usage = link_->get_usage() / link_->get_bandwidth();
+  double normalized_link_usage = link_->get_load() / link_->get_bandwidth();
   double dynamic_power         = power_slope * normalized_link_usage;
 
   return idle_ + dynamic_power;

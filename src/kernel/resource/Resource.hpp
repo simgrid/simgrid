@@ -115,7 +115,7 @@ public:
   /** @brief returns the current load due to activities (in flops per second, byte per second or similar)
    *
    * The load due to external usages modeled by profile files is ignored.*/
-  virtual double get_load() const { return constraint_->get_usage(); }
+  virtual double get_load() const { return constraint_->get_load(); }
 
   bool is_used() const override { return model_->get_maxmin_system()->constraint_used(constraint_); }
 };

@@ -220,8 +220,8 @@ public:
   /** @brief Check how a constraint is shared  */
   SharingPolicy get_sharing_policy() const { return sharing_policy_; }
 
-  /** @brief Get the usage of the constraint after the last lmm solve */
-  double get_usage() const;
+  /** @brief Get the load of the constraint after the last lmm solve */
+  double get_load() const;
 
   /** @brief Sets the concurrency limit for this constraint */
   void set_concurrency_limit(int limit)

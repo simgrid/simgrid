@@ -130,9 +130,9 @@ Link* Link::set_concurrency_limit(int limit)
   return this;
 }
 
-double Link::get_usage() const
+double Link::get_load() const
 {
-  return this->pimpl_->get_constraint()->get_usage();
+  return this->pimpl_->get_constraint()->get_load();
 }
 
 void Link::turn_on()

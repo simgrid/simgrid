@@ -747,7 +747,7 @@ void System::remove_all_modified_cnst_set()
  * If the resource is not shared (ie in FATPIPE mode), then the load is the max (not the sum)
  * of all resource usages located on this resource.
  */
-double Constraint::get_usage() const
+double Constraint::get_load() const
 {
   double result              = 0.0;
   if (sharing_policy_ != SharingPolicy::FATPIPE) {

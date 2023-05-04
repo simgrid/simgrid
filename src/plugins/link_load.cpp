@@ -111,7 +111,7 @@ void LinkLoad::update()
              " Please track your link with sg_link_load_track before trying to access any of its load metrics.",
              link_->get_cname());
 
-  double current_instantaneous_bytes_per_second = link_->get_usage();
+  double current_instantaneous_bytes_per_second = link_->get_load();
   double now                                    = simgrid::s4u::Engine::get_clock();
 
   // Update minimum/maximum observed values if needed
