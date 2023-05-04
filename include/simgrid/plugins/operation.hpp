@@ -24,12 +24,9 @@ using CommOpPtr =  boost::intrusive_ptr<CommOp>;
 XBT_PUBLIC void intrusive_ptr_release(CommOp* c);
 XBT_PUBLIC void intrusive_ptr_add_ref(CommOp* c);
 
-class ExtendedAttributeActivity {
-public:
+struct ExtendedAttributeActivity {
   static simgrid::xbt::Extension<simgrid::s4u::Activity, ExtendedAttributeActivity> EXTENSION_ID;
   Operation* operation_;
-
-  ExtendedAttributeActivity(){};
 };
 
 class Operation {
@@ -53,7 +50,7 @@ protected:
   s4u::ActivityPtr current_activity_;
   std::function<void(Operation*)> end_func_;
   std::function<void(Operation*)> start_func_;
-  Operation(const std::string& name);
+  explicit Operation(const std::string& name);
   virtual ~Operation()   = default;
   virtual void execute() = 0;
 
@@ -63,16 +60,16 @@ protected:
 
 public:
   static void init();
-  const std::string& get_name() { return name_; }
-  const char* get_cname() { return name_.c_str(); }
+  const std::string& get_name() const { return name_; }
+  const char* get_cname() const { return name_.c_str(); }
   void enqueue_execs(int n);
   void set_amount(double amount);
   double get_amount() const { return amount_; }
   void add_successor(OperationPtr op);
   void remove_successor(OperationPtr op);
-  void on_this_start(std::function<void(Operation*)> func);
-  void on_this_end(std::function<void(Operation*)> func);
-  int get_count();
+  void on_this_start(const std::function<void(Operation*)>& func);
+  void on_this_end(const std::function<void(Operation*)>& func);
+  int get_count() const;
 
   /** Add a callback fired before an operation activity start.
    * Triggered after the on_this_start function**/
@@ -98,7 +95,7 @@ class ExecOp : public Operation {
 private:
   s4u::Host* host_;
 
-  ExecOp(const std::string& name);
+  explicit ExecOp(const std::string& name);
   void execute() override;
 
 public:
@@ -117,7 +114,7 @@ private:
   s4u::Host* source_;
   s4u::Host* destination_;
 
-  CommOp(const std::string& name);
+  explicit CommOp(const std::string& name);
   void execute() override;
 
 public:

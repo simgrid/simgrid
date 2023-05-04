@@ -119,7 +119,7 @@ void Operation::init()
     return;
   Operation::inited_                      = true;
   ExtendedAttributeActivity::EXTENSION_ID = simgrid::s4u::Activity::extension_create<ExtendedAttributeActivity>();
-  simgrid::s4u::Activity::on_completion_cb([&](simgrid::s4u::Activity const& activity) {
+  simgrid::s4u::Activity::on_completion_cb([](simgrid::s4u::Activity const& activity) {
     activity.extension<ExtendedAttributeActivity>()->operation_->complete();
   });
 }
@@ -175,9 +175,9 @@ void Operation::remove_successor(OperationPtr successor)
  *  @brief Set a function to be called before each execution.
  *  @note The function is called before the underlying Activity starts.
  */
-void Operation::on_this_start(std::function<void(Operation*)> func)
+void Operation::on_this_start(const std::function<void(Operation*)>& func)
 {
-  simgrid::kernel::actor::simcall_answered([this, func] { start_func_ = func; });
+  simgrid::kernel::actor::simcall_answered([this, &func] { start_func_ = func; });
 }
 
 /** @ingroup plugin_operation
@@ -185,15 +185,15 @@ void Operation::on_this_start(std::function<void(Operation*)> func)
  *  @brief Set a function to be called after each execution.
  *  @note The function is called after the underlying Activity ends, but before sending tokens to successors.
  */
-void Operation::on_this_end(std::function<void(Operation*)> func)
+void Operation::on_this_end(const std::function<void(Operation*)>& func)
 {
-  simgrid::kernel::actor::simcall_answered([this, func] { end_func_ = func; });
+  simgrid::kernel::actor::simcall_answered([this, &func] { end_func_ = func; });
 }
 
 /** @ingroup plugin_operation
  *  @brief Return the number of completed executions.
  */
-int Operation::get_count()
+int Operation::get_count() const
 {
   return count_;
 }
@@ -208,8 +208,7 @@ ExecOp::ExecOp(const std::string& name) : Operation(name) {}
  */
 ExecOpPtr ExecOp::init(const std::string& name)
 {
-  auto op = ExecOpPtr(new ExecOp(name));
-  return op;
+  return ExecOpPtr(new ExecOp(name));
 }
 
 /** @ingroup plugin_operation
@@ -217,7 +216,7 @@ ExecOpPtr ExecOp::init(const std::string& name)
  */
 ExecOpPtr ExecOp::init(const std::string& name, double flops, s4u::Host* host)
 {
-  return ExecOpPtr(new ExecOp(name))->set_flops(flops)->set_host(host);
+  return init(name)->set_flops(flops)->set_host(host);
 }
 
 /**
@@ -273,8 +272,7 @@ CommOp::CommOp(const std::string& name) : Operation(name) {}
  */
 CommOpPtr CommOp::init(const std::string& name)
 {
-  auto op = CommOpPtr(new CommOp(name));
-  return op;
+  return CommOpPtr(new CommOp(name));
 }
 
 /** @ingroup plugin_operation
@@ -283,11 +281,7 @@ CommOpPtr CommOp::init(const std::string& name)
 CommOpPtr CommOp::init(const std::string& name, double bytes, s4u::Host* source,
                        s4u::Host* destination)
 {
-  auto op = CommOpPtr(new CommOp(name));
-  op->set_bytes(bytes);
-  op->set_source(source);
-  op->set_destination(destination);
-  return op;
+  return init(name)->set_bytes(bytes)->set_source(source)->set_destination(destination);
 }
 
 /**

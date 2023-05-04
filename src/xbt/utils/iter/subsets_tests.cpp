@@ -65,8 +65,8 @@ TEST_CASE("simgrid::xbt::powerset_iterator: Iteration General Properties")
       }
     }
 
-    for (const auto& iter : element_counts) {
-      REQUIRE(iter.second == expected_count);
+    for (const auto& [_, count] : element_counts) {
+      REQUIRE(count == expected_count);
     }
   }
 }
