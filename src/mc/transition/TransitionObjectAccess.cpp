@@ -34,6 +34,9 @@ std::string ObjectAccessTransition::to_string(bool verbose) const
 }
 bool ObjectAccessTransition::depends(const Transition* o) const
 {
+  if (o->type_ < type_)
+    return o->depends(this);
+
   if (const auto* other = dynamic_cast<const ObjectAccessTransition*>(o))
     return objaddr_ == other->objaddr_; // dependent only if it's an access to the same object
   return false;
