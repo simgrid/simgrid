@@ -101,7 +101,7 @@ def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], ident: int) 
         host = host_zone.create_host(cpu_name, speed).seal()
         # the first CPU is the gateway
         if i == 0:
-            gateway = host
+            gateway = host.netpoint
         # create split-duplex link
         link = host_zone.create_split_duplex_link("link-" + cpu_name, link_bw)
         link.set_latency(link_lat).seal()
@@ -111,7 +111,7 @@ def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], ident: int) 
 
     # seal newly created netzone
     host_zone.seal()
-    return host_zone.netpoint, gateway.netpoint
+    return host_zone.netpoint, gateway
 
 #####################################################################################################
 
