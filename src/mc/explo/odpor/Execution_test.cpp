@@ -196,4 +196,22 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
       REQUIRE(initial_wrt_event2.value() == static_cast<aid_t>(3));
     }
   }
+
+  SECTION("Example 3: Testing 'Lock' Example")
+  {
+    const auto a1 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto a2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto a3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto a4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto a5 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+
+    Execution execution;
+    execution.push_transition(a1.get());
+    execution.push_transition(a2.get());
+    execution.push_transition(a3.get());
+    execution.push_transition(a4.get());
+    execution.push_transition(a5.get());
+
+    REQUIRE(execution.get_racing_events_of(4) == std::unordered_set<Execution::EventHandle>{0});
+  }
 }

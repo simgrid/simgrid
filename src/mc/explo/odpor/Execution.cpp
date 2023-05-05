@@ -21,9 +21,8 @@ void Execution::push_transition(const Transition* t)
     }
   }
   // The entry in the vector for `t->aid_` is the size
-  // of the new stack, which will have a size one greater
-  // than that before we insert the new events
-  max_clock_vector[t->aid_] = this->size() + 1;
+  // of the stack
+  max_clock_vector[t->aid_] = this->size();
   contents_.push_back(Event({t, max_clock_vector}));
 }
 
@@ -38,7 +37,7 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
   std::unordered_set<Execution::EventHandle> disqualified_events;
 
   // For each event of the execution
-  for (auto e_i = target; e_i > 0 && e_i != std::numeric_limits<Execution::EventHandle>::max(); e_i--) {
+  for (auto e_i = target; e_i != std::numeric_limits<Execution::EventHandle>::max(); e_i--) {
     // We need `e_i -->_E target` as a necessary condition
     if (not happens_before(e_i, target)) {
       continue;
