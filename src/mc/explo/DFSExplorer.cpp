@@ -93,13 +93,17 @@ void DFSExplorer::restore_stack(std::shared_ptr<State> state)
   }
   XBT_DEBUG("Replaced stack by %s", get_record_trace().to_string().c_str());
 
-  // TODO: See if we can simply take a prefix of what
-  // currently exists instead of performing a recomputation.
-  // There seems to be a subtlety here that at the moment
-  // I can't figure out
   if (reduction_mode_ == ReductionMode::sdpor) {
     execution_seq_ = sdpor::Execution();
-    for (const auto& state : stack_) {
+
+    // NOTE: The outgoing transition for the top-most
+    // state of the  stack refers to that which was taken
+    // as part of the last trace explored by the algorithm.
+    // Thus, only the sequence of transitions leading up to,
+    // but not including, the last state must be included
+    // when reconstructing the Exploration for SDPOR.
+    for (auto iter = stack_.begin(); iter != stack_.end() - 1 and iter != stack_.end(); ++iter) {
+      const auto& state = *(iter);
       execution_seq_.push_transition(state->get_transition_out().get());
     }
   }
