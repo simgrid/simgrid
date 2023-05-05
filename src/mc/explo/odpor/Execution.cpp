@@ -109,22 +109,38 @@ std::optional<aid_t> Execution::get_first_ssdpor_initial_from(EventHandle e,
     // the event in `v`, we also "simulate" running the action `v`
     // from E'
     if (not happens_before(e, e_prime) or e_prime == next_E_p) {
-      v.push_back(e_prime);
+      // First, push the transition onto the hypothetical execution
       E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
-    } else {
-      continue;
-    }
-    const EventHandle e_prime_in_E_prime = E_prime_v.get_latest_event_handle().value();
-    const aid_t q                        = E_prime_v.get_actor_with_handle(e_prime_in_E_prime);
-    if (disqualified_actors.count(q) > 0) {
-      continue;
-    }
-    const bool is_initial = std::none_of(
-        v.begin(), v.end(), [&](const auto& e_star) { return E_prime_v.happens_before(e_star, e_prime_in_E_prime); });
-    if (is_initial) {
-      return q;
-    } else {
-      disqualified_actors.insert(q);
+      const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
+
+      // When checking whether any event in `dom_[E'](v)` happens before
+      // `next_[E'](q)` below for thread `q`, we must consider that the
+      // events relative to `E` (this execution) are different than those
+      // relative to `E'.v`. Thus e.g. event `7` in `E` may be event `4`
+      // in `E'.v`. Since we are asking about "happens-before"
+      // `-->_[E'.v]` about `E'.v`, we must build `v` relative to `E'`
+      v.push_back(e_prime_in_E_prime_v);
+
+      // Note that we add `q` to v regardless of whether `q` itself has been
+      // disqualified since `q` may itself disqualify other actors
+      // (i.e. even if `q` is disqualified from being an initial, it
+      // is still contained in the sequence `v`)
+      const aid_t q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v);
+      if (disqualified_actors.count(q) > 0) {
+        continue;
+      }
+      const bool is_initial = std::none_of(v.begin(), v.end(), [&](const auto& e_star) {
+        return E_prime_v.happens_before(e_star, e_prime_in_E_prime_v);
+      });
+      if (is_initial) {
+        return q;
+      } else {
+        // If `q` is disqualified as a candidate, clearly
+        // no event occurring after `e_prime` in `E` executed
+        // by actor `q` will qualify since any (valid) happens-before
+        // relation orders actions taken by each actor
+        disqualified_actors.insert(q);
+      }
     }
   }
   return std::nullopt;
