@@ -20,8 +20,6 @@ void Execution::push_transition(const Transition* t)
       max_clock_vector = ClockVector::max(max_clock_vector, e.get_clock_vector());
     }
   }
-  // The entry in the vector for `t->aid_` is the size
-  // of the stack
   max_clock_vector[t->aid_] = this->size();
   contents_.push_back(Event({t, max_clock_vector}));
 }
@@ -81,8 +79,8 @@ Execution Execution::get_prefix_up_to(Execution::EventHandle handle) const
   return Execution(std::vector<Event>{contents_.begin(), contents_.begin() + handle});
 }
 
-std::optional<aid_t> Execution::get_first_ssdpor_initial_from(EventHandle e,
-                                                              std::unordered_set<aid_t> disqualified_actors) const
+std::optional<aid_t> Execution::get_first_sdpor_initial_from(EventHandle e,
+                                                             std::unordered_set<aid_t> disqualified_actors) const
 {
   // If this execution is empty, there are no initials
   // relative to the last transition added to the execution
@@ -144,12 +142,6 @@ std::optional<aid_t> Execution::get_first_ssdpor_initial_from(EventHandle e,
     }
   }
   return std::nullopt;
-}
-
-std::unordered_set<aid_t> Execution::get_ssdpor_initials_from(EventHandle e,
-                                                              std::unordered_set<aid_t> disqualified) const
-{
-  return std::unordered_set<aid_t>();
 }
 
 bool Execution::happens_before(Execution::EventHandle e1_handle, Execution::EventHandle e2_handle) const

@@ -181,7 +181,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
       // Since e2 -->_E e3, actor 3 is not an initial for E' := pre(1, execution)
       // with respect to `v`. e2, however, has nothing happening before it in dom_E(v),
       // so it is an initial of E' wrt. `v`
-      const auto initial_wrt_event1 = execution.get_first_ssdpor_initial_from(1, std::unordered_set<aid_t>{});
+      const auto initial_wrt_event1 = execution.get_first_sdpor_initial_from(1, std::unordered_set<aid_t>{});
       REQUIRE(initial_wrt_event1.has_value());
       REQUIRE(initial_wrt_event1.value() == static_cast<aid_t>(1));
     }
@@ -191,7 +191,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
       // First, note that v := notdep(1, execution).p == {}.{e3} == {e3}
       // e3 has nothing happening before it in dom_E(v), so it is an initial
       // of E' wrt. `v`
-      const auto initial_wrt_event2 = execution.get_first_ssdpor_initial_from(2, std::unordered_set<aid_t>{});
+      const auto initial_wrt_event2 = execution.get_first_sdpor_initial_from(2, std::unordered_set<aid_t>{});
       REQUIRE(initial_wrt_event2.has_value());
       REQUIRE(initial_wrt_event2.value() == static_cast<aid_t>(3));
     }

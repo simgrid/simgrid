@@ -251,11 +251,15 @@ void DFSExplorer::run()
       /**
        * SDPOR Source Set Procedure:
        *
-       * Find "reversible races" in the current execution with respect
+       * Find "reversible races" in the current execution `E` with respect
        * to the latest action `p`. For each such race, determine one thread
        * not contained in the backtrack set at the "race point" `r` which
        * "represents" the trace formed by first executing everything after
-       * `r` and then `p` to flip the race
+       * `r` that doesn't depend on it (`v := notdep(r, E)`) and then `p` to
+       * flip the race.
+       *
+       * The intuition is that some subsequence of `v` may enable `p`, so
+       * we want to be sure that search "in that direction"
        */
       execution_seq_.push_transition(executed_transition.get());
 
@@ -284,7 +288,7 @@ void DFSExplorer::run()
           // backtrack point into SDPOR, instead of selecting the `first` initial,
           // we should instead compute all choices and decide which is bes
           const std::optional<aid_t> q =
-              execution_seq_.get_first_ssdpor_initial_from(racing_event_handle, prev_state->get_backtrack_set());
+              execution_seq_.get_first_sdpor_initial_from(racing_event_handle, prev_state->get_backtrack_set());
           if (q.has_value()) {
             prev_state->consider_one(q.value());
             opened_states_.emplace_back(std::move(prev_state));

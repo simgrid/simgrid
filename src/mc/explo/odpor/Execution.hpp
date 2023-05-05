@@ -97,27 +97,56 @@ public:
   auto begin() const { return this->contents_.begin(); }
   auto end() const { return this->contents_.end(); }
 
-  std::optional<aid_t> get_first_ssdpor_initial_from(EventHandle e, std::unordered_set<aid_t> disqualified) const;
-  std::unordered_set<aid_t> get_ssdpor_initials_from(EventHandle e, std::unordered_set<aid_t> disqualified) const;
+  /**
+   * @brief Computes the "core" portion the SDPOR algorithm,
+   * viz. the intersection of the backtracking set and the
+   * set of initials with respect to the end
+   *
+   * See the SDPOR algorithm pseudocode in [1] for more
+   * details for the context of the function.
+   *
+   * @invariant: This method assumes that events `e` and
+   * `e' := get_latest_event_handle()` are in a *reversible* race
+   * as is the case in SDPOR
+   *
+   * @returns an actor not contained in `disqualified` which
+   * can serve as an initial to reverse the race between `e`
+   * and `e'`
+   */
+  std::optional<aid_t> get_first_sdpor_initial_from(EventHandle e, std::unordered_set<aid_t> disqualified) const;
 
-  // std::unordered_set<aid_t> get_initials_after(const Hypothetical& w) const;
-  // std::unordered_set<aid_t> get_weak_initials_after(const Hypothetical& w) const;
-
-  // std::unordered_set<aid_t> get_initials_after(const Hypothetical& w) const;
-  // std::unordered_set<aid_t> get_weak_initials_after(const Hypothetical& w) const;
-
-  // bool is_initial(aid_t p, const Hypothetical& w) const;
-  // bool is_weak_initial(aid_t p, const Hypothetical& w) const;
-
+  /**
+   * @brief Determines the event associated with
+   * the given handle `handle`
+   */
   const Event& get_event_with_handle(EventHandle handle) const { return contents_[handle]; }
+
+  /**
+   * @brief Determines the actor associated with
+   * the given event handle `handle`
+   */
   aid_t get_actor_with_handle(EventHandle handle) const { return get_event_with_handle(handle).get_transition()->aid_; }
 
   /**
-   * @brief Returns a set of IDs of events which are in
+   * @brief Returns a set of events which are in
    * "immediate conflict" (according to the definition given
-   * in the ODPOR paper) with one another
+   * in the ODPOR paper) with the given event
+   *
+   * Two events `e` and `e'` in an execution `E` are said to
+   * race iff
+   *
+   * 1. `proc(e) != proc(e')`; that is, the events correspond to
+   * the execution of different actors
+   * 2. `e -->_E e'` and there is no `e''` in `E` such that
+   *  `e -->_E e''` and `e'' -->_E e'`; that is, the two events
+   * "happen-before" one another in `E` and no other event in
+   * `E` "happens-between" `e` and `e'`
+   *
+   * @param handle the event with respect to which races are
+   * computed
+   * @returns a set of event handles from which race with `handle`
    */
-  std::unordered_set<EventHandle> get_racing_events_of(EventHandle) const;
+  std::unordered_set<EventHandle> get_racing_events_of(EventHandle handle) const;
 
   /**
    * @brief Returns a handle to the newest event of the execution,
@@ -128,6 +157,16 @@ public:
     return contents_.empty() ? std::nullopt : std::optional<EventHandle>{static_cast<EventHandle>(size() - 1)};
   }
 
+  /**
+   * @brief Computes `pre(e, E)` as described in ODPOR [1]
+   *
+   * The execution `pre(e, E)` for an event `e` in an
+   * execution `E` is the contiguous prefix of events
+   * `E' <= E` up to by excluding the event `e` itself.
+   * The prefix intuitively represents the "history" of
+   * causes that permitted event `e` to exist (roughly
+   * speaking)
+   */
   Execution get_prefix_up_to(EventHandle) const;
 
   /**
