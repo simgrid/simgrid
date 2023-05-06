@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
   comm->add_successor(exec2);
 
   // Add a function to be called when operations end for log purpose
-  simgrid::plugins::Operation::on_end_cb([](simgrid::plugins::Operation* op) {
+  simgrid::plugins::Operation::on_end_cb([](const simgrid::plugins::Operation* op) {
     XBT_INFO("Operation %s finished (%d)", op->get_name().c_str(), op->get_count());
   });
 
