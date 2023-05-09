@@ -539,6 +539,8 @@ set(MC_SRC_STATELESS
   src/mc/explo/odpor/Execution.hpp
   src/mc/explo/odpor/WakeupTree.cpp
   src/mc/explo/odpor/WakeupTree.hpp
+  src/mc/explo/odpor/WakeupTreeIterator.cpp
+  src/mc/explo/odpor/WakeupTreeIterator.hpp
   src/mc/explo/odpor/odpor_forward.hpp
 
   src/mc/remote/AppSide.cpp

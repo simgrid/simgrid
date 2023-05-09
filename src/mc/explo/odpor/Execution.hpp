@@ -17,10 +17,6 @@
 
 namespace simgrid::mc::odpor {
 
-using ProcessSequence   = std::list<aid_t>;
-using ExecutionSequence = std::list<const State*>;
-using Hypothetical      = ExecutionSequence;
-
 /**
  * @brief The occurrence of a transition in an execution
  *
@@ -100,8 +96,6 @@ public:
   Execution(const Execution&)            = default;
   Execution& operator=(Execution const&) = default;
   Execution(Execution&&)                 = default;
-  Execution(ExecutionSequence&& seq);
-  Execution(const ExecutionSequence& seq);
 
   size_t size() const { return this->contents_.size(); }
   bool empty() const { return this->contents_.empty(); }
@@ -149,6 +143,9 @@ public:
    * and `e'`
    */
   std::optional<aid_t> get_first_sdpor_initial_from(EventHandle e, std::unordered_set<aid_t> backtrack_set) const;
+
+  std::optional<ProcessSequence> get_shortest_odpor_sq_subset_insert(const ProcessSequence& v,
+                                                                     const ExecutionSequence& w) const;
 
   /**
    * @brief Determines the event associated with

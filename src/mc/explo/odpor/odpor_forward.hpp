@@ -12,14 +12,18 @@
 #define SIMGRID_MC_ODPOR_FORWARD_HPP
 
 #include "src/mc/mc_forward.hpp"
+#include <list>
 #include <simgrid/forward.h>
 
 namespace simgrid::mc::odpor {
 
+using ProcessSequence   = std::list<aid_t>;
+using ExecutionSequence = std::list<const Transition*>;
+
 class Event;
 class Execution;
-class ExecutionView;
 class WakeupTree;
+class WakeupTreeIterator;
 
 } // namespace simgrid::mc::odpor
 
