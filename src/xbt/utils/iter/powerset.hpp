@@ -40,8 +40,6 @@ private:
   std::optional<subsets_iterator<Iterator>> current_subset_iter     = std::nullopt;
   std::optional<subsets_iterator<Iterator>> current_subset_iter_end = std::nullopt;
 
-  const std::vector<Iterator> empty_subset = std::vector<Iterator>();
-
   // boost::iterator_facade<...> interface to implement
   void increment();
   bool equal(const powerset_iterator<Iterator>& other) const;
@@ -70,6 +68,7 @@ template <typename Iterator> const std::vector<Iterator>& powerset_iterator<Iter
   if (current_subset_iter.has_value()) {
     return *current_subset_iter.value();
   }
+  static const std::vector<Iterator> empty_subset;
   return empty_subset;
 }
 
