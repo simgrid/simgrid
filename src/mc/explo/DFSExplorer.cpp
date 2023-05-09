@@ -439,20 +439,16 @@ void DFSExplorer::backtrack()
   this->restore_stack(backtracking_point);
 }
 
-DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor, bool need_memory_info)
+DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode, bool need_memory_info)
     : Exploration(args, need_memory_info || _sg_mc_termination
 #if SIMGRID_HAVE_STATEFUL_MC
                             || _sg_mc_checkpoint > 0
 #endif
-      )
+                  )
+    , reduction_mode_(mode)
 {
-  if (with_dpor)
-    reduction_mode_ = ReductionMode::dpor;
-  else
-    reduction_mode_ = ReductionMode::none;
-
   if (_sg_mc_termination) {
-    if (with_dpor) {
+    if (mode != ReductionMode::none) {
       XBT_INFO("Check non progressive cycles (turning DPOR off)");
       reduction_mode_ = ReductionMode::none;
     } else {
@@ -478,9 +474,9 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor, bool ne
     opened_states_.emplace_back(stack_.back());
 }
 
-Exploration* create_dfs_exploration(const std::vector<char*>& args, bool with_dpor)
+Exploration* create_dfs_exploration(const std::vector<char*>& args, ReductionMode mode)
 {
-  return new DFSExplorer(args, with_dpor);
+  return new DFSExplorer(args, mode);
 }
 
 } // namespace simgrid::mc

@@ -10,6 +10,7 @@
 #include "src/mc/api/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/mc_config.hpp"
 
 #if SIMGRID_HAVE_STATEFUL_MC
 #include "src/mc/VisitedState.hpp"
@@ -28,8 +29,7 @@ namespace simgrid::mc {
 using stack_t = std::deque<std::shared_ptr<State>>;
 
 class XBT_PRIVATE DFSExplorer : public Exploration {
-  XBT_DECLARE_ENUM_CLASS(ReductionMode, none, dpor, sdpor);
-
+private:
   ReductionMode reduction_mode_;
   unsigned long backtrack_count_      = 0; // for statistics
   unsigned long visited_states_count_ = 0; // for statistics
@@ -47,7 +47,7 @@ class XBT_PRIVATE DFSExplorer : public Exploration {
   static xbt::signal<void(RemoteApp&)> on_log_state_signal;
 
 public:
-  explicit DFSExplorer(const std::vector<char*>& args, bool with_dpor, bool need_memory_info = false);
+  explicit DFSExplorer(const std::vector<char*>& args, ReductionMode mode, bool need_memory_info = false);
   void run() override;
   RecordTrace get_record_trace() override;
   void log_state() override;

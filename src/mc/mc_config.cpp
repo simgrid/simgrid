@@ -57,8 +57,9 @@ int _sg_mc_max_visited_states = 0;
 static simgrid::config::Flag<std::string> cfg_mc_reduction{
     "model-check/reduction", "Specify the kind of exploration reduction (either none or DPOR)", "dpor",
     [](std::string_view value) {
-      if (value != "none" && value != "dpor")
-        xbt_die("configuration option 'model-check/reduction' can only take 'none' or 'dpor' as a value");
+      if (value != "none" && value != "dpor" && value != "sdpor" && value != "odpor")
+        xbt_die("configuration option 'model-check/reduction' must be one of the following: "
+                " 'none', 'dpor', 'sdpor', or 'odpor'");
     }};
 
 simgrid::config::Flag<bool> _sg_mc_sleep_set{
@@ -135,11 +136,30 @@ simgrid::config::Flag<bool> _sg_mc_termination{
     "model-check/termination", "Whether to enable non progressive cycle detection", false,
     [](bool) { _mc_cfg_cb_check("value to enable/disable the detection of non progressive cycles"); }};
 
-bool simgrid::mc::cfg_use_DPOR()
+simgrid::mc::ReductionMode simgrid::mc::get_model_checking_reduction()
 {
-  if (cfg_mc_reduction.get() == "dpor" && _sg_mc_max_visited_states__ > 0) {
+  if ((cfg_mc_reduction.get() == "dpor" || cfg_mc_reduction.get() == "sdpor" || cfg_mc_reduction.get() == "odpor") &&
+      _sg_mc_max_visited_states__ > 0) {
     XBT_INFO("Disabling DPOR since state-equality reduction is activated with 'model-check/visited'");
-    return false;
+    return simgrid::mc::ReductionMode::none;
   }
-  return cfg_mc_reduction.get() == "dpor";
+
+  if (cfg_mc_reduction.get() == "none") {
+    return ReductionMode::none;
+  } else if (cfg_mc_reduction.get() == "dpor") {
+    return ReductionMode::dpor;
+  } else if (cfg_mc_reduction.get() == "sdpor") {
+    return ReductionMode::sdpor;
+  } else if (cfg_mc_reduction.get() == "odpor") {
+    XBT_INFO("No reduction will be used: ODPOR is not yet supported in SimGrid");
+    return simgrid::mc::ReductionMode::none;
+  } else if (cfg_mc_reduction.get() == "udpor") {
+    XBT_INFO("No reduction will be used: "
+             "UDPOR is has a dedicated invocation 'model-check/unfolding-checker' "
+             "but is not yet supported in SimGrid");
+    return ReductionMode::none;
+  } else {
+    XBT_INFO("Unknown reduction mode: defaulting to no reduction");
+    return ReductionMode::none;
+  }
 }
