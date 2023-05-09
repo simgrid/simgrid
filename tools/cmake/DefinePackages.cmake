@@ -535,6 +535,12 @@ set(MC_SRC_STATELESS
   src/mc/explo/Exploration.cpp
   src/mc/explo/Exploration.hpp
 
+  src/mc/explo/odpor/Execution.cpp
+  src/mc/explo/odpor/Execution.hpp
+  src/mc/explo/odpor/WakeupTree.cpp
+  src/mc/explo/odpor/WakeupTree.hpp
+  src/mc/explo/odpor/odpor_forward.hpp
+
   src/mc/remote/AppSide.cpp
   src/mc/remote/AppSide.hpp
   src/mc/remote/Channel.cpp
@@ -565,9 +571,6 @@ set(MC_SRC_STATEFUL
   src/mc/explo/LivenessChecker.hpp
   src/mc/explo/UdporChecker.cpp
   src/mc/explo/UdporChecker.hpp
-
-  src/mc/explo/odpor/Execution.cpp
-  src/mc/explo/odpor/Execution.hpp
   
   src/mc/explo/udpor/Comb.hpp
   src/mc/explo/udpor/Configuration.hpp
