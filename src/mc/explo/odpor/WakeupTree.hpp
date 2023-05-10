@@ -64,15 +64,17 @@ private:
    */
   std::unordered_map<WakeupTreeNode*, std::unique_ptr<WakeupTreeNode>> nodes_;
 
-  /**
-   * @brief Transfers the lifetime of node `node` to the tree
-   */
   void insert_node(std::unique_ptr<WakeupTreeNode> node);
+  void remove_node(WakeupTreeNode* node);
 
   /**
-   * @brief Creates a new, disconnected node in this tree
+   * @brief Adds a new node to the tree, disconnected from
+   * any other, which represents the partial execution
+   * "fragment" `u`
    */
   WakeupTreeNode* make_node(const PartialExecution& u);
+
+  bool contains(WakeupTreeNode* node) const;
 
   /* Allow the iterator to access the contents of the tree */
   friend WakeupTreeIterator;
@@ -80,10 +82,21 @@ private:
 public:
   WakeupTree();
   explicit WakeupTree(std::unique_ptr<WakeupTreeNode> root);
-  static WakeupTree new_subtree_rooted_at(WakeupTreeNode* root);
 
   auto begin() const { return WakeupTreeIterator(*this); }
   auto end() const { return WakeupTreeIterator(); }
+
+  void remove_subtree_rooted_at(WakeupTreeNode* root);
+  static WakeupTree new_subtree_rooted_at(WakeupTreeNode* root);
+
+  /**
+   * @brief Whether or not this tree is considered empty
+   *
+   * @note Unlike other collection types, a wakeup tree is
+   * considered "empty" if it only contains the root node;
+   * that is, if it is "uninteresting". In such a case,
+   */
+  bool is_empty() const { return nodes_.size() == static_cast<size_t>(1); }
 
   /**
    * @brief Inserts an sequence `seq` of processes into the tree

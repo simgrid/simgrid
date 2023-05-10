@@ -67,6 +67,37 @@ WakeupTree WakeupTree::new_subtree_rooted_at(WakeupTreeNode* root)
   return subtree;
 }
 
+void WakeupTree::remove_subtree_rooted_at(WakeupTreeNode* root)
+{
+  if (not contains(root)) {
+    throw std::invalid_argument("Attempting to remove a subtree pivoted from a node "
+                                "that is not contained in this wakeup tree");
+  }
+
+  std::list<WakeupTreeNode*> subtree_contents;
+  std::list<WakeupTreeNode*> frontier{root};
+  while (not frontier.empty()) {
+    auto node = frontier.front();
+    frontier.pop_front();
+    for (const auto& child : node->get_ordered_children()) {
+      frontier.push_back(child);
+      subtree_contents.push_back(child);
+    }
+  }
+
+  // After having found each node with BFS, now we can
+  // remove them. This prevents the "joys" iteration during mutation
+  for (WakeupTreeNode* node_to_remove : subtree_contents) {
+    this->remove_node(node_to_remove);
+  }
+}
+
+bool WakeupTree::contains(WakeupTreeNode* node) const
+{
+  return std::find_if(this->nodes_.begin(), this->nodes_.end(), [=](const auto& pair) { return pair.first == node; }) !=
+         this->nodes_.end();
+}
+
 WakeupTreeNode* WakeupTree::make_node(const PartialExecution& u)
 {
   auto node                 = std::unique_ptr<WakeupTreeNode>(new WakeupTreeNode(u));
@@ -79,6 +110,11 @@ void WakeupTree::insert_node(std::unique_ptr<WakeupTreeNode> node)
 {
   auto* node_handle         = node.get();
   this->nodes_[node_handle] = std::move(node);
+}
+
+void WakeupTree::remove_node(WakeupTreeNode* node)
+{
+  this->nodes_.erase(node);
 }
 
 void WakeupTree::insert(const Execution& E, const PartialExecution& w)
