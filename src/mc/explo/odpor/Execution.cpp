@@ -149,6 +149,12 @@ std::optional<aid_t> Execution::get_first_sdpor_initial_from(EventHandle e,
   return std::nullopt;
 }
 
+std::optional<ProcessSequence> Execution::get_shortest_odpor_sq_subset_insertion(const ProcessSequence& v,
+                                                                                 const ExecutionSequence& w) const
+{
+  return std::nullopt;
+}
+
 bool Execution::happens_before(Execution::EventHandle e1_handle, Execution::EventHandle e2_handle) const
 {
   // 1. "happens-before" (-->_E) is a subset of "occurs before" (<_E)

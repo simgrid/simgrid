@@ -6,7 +6,7 @@
 #ifndef SIMGRID_MC_ODPOR_WAKEUP_TREE_ITERATOR_HPP
 #define SIMGRID_MC_ODPOR_WAKEUP_TREE_ITERATOR_HPP
 
-#include "src/mc/explo/odpor/WakeupTree.hpp"
+#include "src/mc/explo/odpor/odpor_forward.hpp"
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <list>
@@ -15,13 +15,13 @@
 namespace simgrid::mc::odpor {
 
 struct WakeupTreeIterator
-    : public boost::iterator_facade<WakeupTreeIterator, const WakeupTreeNode*, boost::forward_traversal_tag> {
+    : public boost::iterator_facade<WakeupTreeIterator, WakeupTreeNode*, boost::forward_traversal_tag> {
 public:
   WakeupTreeIterator() = default;
   explicit WakeupTreeIterator(const WakeupTree& tree);
 
 private:
-  using node_handle = std::list<const WakeupTreeNode*>::iterator;
+  using node_handle = std::list<WakeupTreeNode*>::iterator;
 
   /**
    * @brief The current "view" of the iteration in post-order traversal
@@ -36,7 +36,7 @@ private:
   // boost::iterator_facade<...> interface to implement
   void increment();
   bool equal(const WakeupTreeIterator& other) const { return post_order_iteration == other.post_order_iteration; }
-  const WakeupTreeNode*& dereference() const { return *post_order_iteration.top(); }
+  WakeupTreeNode*& dereference() const { return *post_order_iteration.top(); }
 
   // Allows boost::iterator_facade<...> to function properly
   friend class boost::iterator_core_access;

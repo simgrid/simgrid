@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/odpor/WakeupTreeIterator.hpp"
+#include "src/mc/explo/odpor/WakeupTree.hpp"
 
 namespace simgrid::mc::odpor {
 

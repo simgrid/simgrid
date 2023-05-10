@@ -23,6 +23,7 @@ using ExecutionSequence = std::list<const Transition*>;
 class Event;
 class Execution;
 class WakeupTree;
+class WakeupTreeNode;
 class WakeupTreeIterator;
 
 } // namespace simgrid::mc::odpor

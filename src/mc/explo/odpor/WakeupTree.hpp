@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_ODPOR_WAKEUP_TREE_HPP
 #define SIMGRID_MC_ODPOR_WAKEUP_TREE_HPP
 
+#include "src/mc/explo/odpor/WakeupTreeIterator.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 
 #include <memory>
@@ -15,11 +16,16 @@ namespace simgrid::mc::odpor {
 
 class WakeupTreeNode {
 private:
+  explicit WakeupTreeNode(const ProcessSequence& u) : seq_(u) {}
+
   /** An ordered list of children of for this node in the tree */
-  std::list<const WakeupTreeNode*> children_;
+  std::list<WakeupTreeNode*> children_;
 
   /** @brief The contents of the node */
   ProcessSequence seq_;
+
+  /** Allows the owning tree to insert directly into the child */
+  friend WakeupTree;
 
 public:
   const auto begin() const { return this->children_.begin(); }
@@ -28,9 +34,12 @@ public:
   const auto rend() const { return this->children_.rend(); }
 
   const ProcessSequence& get_sequence() const { return seq_; }
-  const std::list<const WakeupTreeNode*>& get_ordered_children() const { return children_; }
+  const std::list<WakeupTreeNode*>& get_ordered_children() const { return children_; }
 
   bool is_leaf() const { return children_.empty(); }
+
+  /** Insert a node `node` as a new child of this node */
+  void add_child(WakeupTreeNode* node) { this->children_.push_back(node); }
 };
 
 class WakeupTree {
@@ -46,13 +55,22 @@ private:
    * of the addresses that are referenced by the nodes WakeupTreeNode and Configuration.
    * ODPOR guarantees that nodes are persisted as long as needed.
    */
-  std::unordered_map<const WakeupTreeNode*, std::unique_ptr<WakeupTreeNode>> nodes_;
+  std::unordered_map<WakeupTreeNode*, std::unique_ptr<WakeupTreeNode>> nodes_;
+
+  /**
+   * @brief Creates a new, disconnected node in this tree
+   */
+  WakeupTreeNode* make_node(const ProcessSequence& u);
 
   /* Allow the iterator to access the contents of the tree */
   friend WakeupTreeIterator;
 
 public:
   WakeupTree();
+  ~WakeupTree() = default;
+
+  auto begin() const { return WakeupTreeIterator(*this); }
+  auto end() const { return WakeupTreeIterator(); }
 
   /**
    * @brief Inserts an sequence `seq` of processes into the tree

@@ -144,8 +144,13 @@ public:
    */
   std::optional<aid_t> get_first_sdpor_initial_from(EventHandle e, std::unordered_set<aid_t> backtrack_set) const;
 
-  std::optional<ProcessSequence> get_shortest_odpor_sq_subset_insert(const ProcessSequence& v,
-                                                                     const ExecutionSequence& w) const;
+  /**
+   * @brief For a given sequence of actors `v` and a sequence of transitions `w`,
+   * computes the sequence, if any, that should be inserted as a child a WakeupTree for
+   * this execution
+   */
+  std::optional<ProcessSequence> get_shortest_odpor_sq_subset_insertion(const ProcessSequence& v,
+                                                                        const ExecutionSequence& w) const;
 
   /**
    * @brief Determines the event associated with
