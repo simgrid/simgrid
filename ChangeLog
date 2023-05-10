@@ -20,6 +20,16 @@ S4U:
    possible.
  - Allow to set a concurrency limit on disks and hosts, as it was already the case for links.
 
+New plugin: Operation
+ - Operations are designed to represent workflows, i.e, graphs of repeatable Activities.
+ - Documentation: https://simgrid.frama.io/simgrid/Plugins.html#operation
+ - Examples: examples/cpp/operation-*
+
+New plugin: Battery
+ - Enable the management of batteries on hosts.
+ - Documentation: https://simgrid.frama.io/simgrid/Plugins.html#battery
+ - Examples: examples/cpp/battery-*
+  
 Kernel:
  - optimize an internal datastructure (use a set instead of a list for ongoing activities),
    leading to a potentially big performance gain, in particular with many detached comms.
