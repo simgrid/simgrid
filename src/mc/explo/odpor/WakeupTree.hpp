@@ -29,6 +29,11 @@ private:
   friend WakeupTree;
 
 public:
+  WakeupTreeNode(const WakeupTreeNode&)            = delete;
+  WakeupTreeNode(WakeupTreeNode&&)                 = default;
+  WakeupTreeNode& operator=(const WakeupTreeNode&) = delete;
+  WakeupTreeNode& operator=(WakeupTreeNode&&)      = default;
+
   const auto begin() const { return this->children_.begin(); }
   const auto end() const { return this->children_.end(); }
   const auto rbegin() const { return this->children_.rbegin(); }
@@ -36,8 +41,8 @@ public:
 
   const PartialExecution& get_sequence() const { return seq_; }
   const std::list<WakeupTreeNode*>& get_ordered_children() const { return children_; }
-
   bool is_leaf() const { return children_.empty(); }
+  bool is_single_process() const { return children_.size() == static_cast<size_t>(1); }
 
   /** Insert a node `node` as a new child of this node */
   void add_child(WakeupTreeNode* node) { this->children_.push_back(node); }
@@ -46,7 +51,7 @@ public:
 class WakeupTree {
 private:
   /** @brief The root node of the tree */
-  const WakeupTreeNode* const root;
+  WakeupTreeNode* const root_;
 
   /**
    * @brief All of the nodes that are currently are a part of the tree
@@ -59,6 +64,11 @@ private:
   std::unordered_map<WakeupTreeNode*, std::unique_ptr<WakeupTreeNode>> nodes_;
 
   /**
+   * @brief Transfers the lifetime of node `node` to the tree
+   */
+  void insert_node(std::unique_ptr<WakeupTreeNode> node);
+
+  /**
    * @brief Creates a new, disconnected node in this tree
    */
   WakeupTreeNode* make_node(const PartialExecution& u);
@@ -68,7 +78,8 @@ private:
 
 public:
   WakeupTree();
-  ~WakeupTree() = default;
+  explicit WakeupTree(std::unique_ptr<WakeupTreeNode> root);
+  static WakeupTree new_subtree_rooted_at(WakeupTreeNode* root);
 
   auto begin() const { return WakeupTreeIterator(*this); }
   auto end() const { return WakeupTreeIterator(); }
@@ -78,7 +89,7 @@ public:
    * such that that this tree is a wakeup tree relative to the
    * given execution
    */
-  void insert(const Execution&, const PartialExecution& seq);
+  void insert(const Execution& E, const PartialExecution& seq);
 };
 
 } // namespace simgrid::mc::odpor

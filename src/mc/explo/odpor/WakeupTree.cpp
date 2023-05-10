@@ -5,19 +5,80 @@
 
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "xbt/asserts.h"
 
 #include <algorithm>
+#include <exception>
+#include <queue>
 
 namespace simgrid::mc::odpor {
 
-WakeupTree::WakeupTree() : root(nullptr) {}
+WakeupTree::WakeupTree() : WakeupTree(std::unique_ptr<WakeupTreeNode>(new WakeupTreeNode({}))) {}
+WakeupTree::WakeupTree(std::unique_ptr<WakeupTreeNode> root) : root_(root.get())
+{
+  this->insert_node(std::move(root));
+}
+
+WakeupTree WakeupTree::new_subtree_rooted_at(WakeupTreeNode* root)
+{
+  if (not root->is_single_process()) {
+    throw std::invalid_argument("Selecting subtrees is only defined for single-process nodes");
+  }
+
+  const aid_t p = (*(root->get_sequence().begin()))->aid_;
+
+  // Perform a BFS search to perform a deep copy of the portion
+  // of the tree underneath and including `root`. Note that `root`
+  // is contained within the context of a *different* wakeup tree;
+  // hence, we have to be careful to update each node's children
+  // appropriately
+  auto subtree                    = WakeupTree();
+  WakeupTreeNode* root_equivalent = subtree.make_node(root->get_sequence());
+
+  std::list<std::pair<WakeupTreeNode*, WakeupTreeNode*>> frontier{std::make_pair(root, root_equivalent)};
+  while (not frontier.empty()) {
+    auto [node_in_other_tree, subtree_equivalent] = frontier.front();
+    frontier.pop_front();
+
+    // For each child of the node corresponding to that in `subtree`,
+    // make clones of each of its children and add them to `frontier`
+    // to that their children are added, and so on. Note that the subtree
+    // **explicitly** removes the first process from each child
+    for (WakeupTreeNode* child_in_other_tree : node_in_other_tree->get_ordered_children()) {
+      auto p_w           = child_in_other_tree->get_sequence();
+      const auto p_again = p_w.front()->aid_;
+
+      // INVARIANT: A nodes of a wakeup tree form a prefix-closed set;
+      // this means that any child node `c` of a node `n` must contain
+      // `n.get_sequence()` as a prefix of `c.get_sequence()`
+      xbt_assert(p_again == p,
+                 "Invariant Violation: The wakeup tree from which a subtree with actor "
+                 "`%ld` is being taken is not prefix free! The child node starts with "
+                 "`%ld` while the parent is `%ld`! This indicates that there "
+                 "is a bug in the insertion logic for the wakeup tree",
+                 p, p_again, p);
+      p_w.pop_front();
+
+      WakeupTreeNode* child_equivalent = subtree.make_node(p_w);
+      subtree_equivalent->add_child(child_equivalent);
+      frontier.push_back(std::make_pair(child_in_other_tree, child_equivalent));
+    }
+  }
+  return subtree;
+}
 
 WakeupTreeNode* WakeupTree::make_node(const PartialExecution& u)
 {
-  auto node                = std::unique_ptr<WakeupTreeNode>(new WakeupTreeNode(u));
-  auto* node_handle        = node.get();
-  this->nodes_[node.get()] = std::move(node);
+  auto node                 = std::unique_ptr<WakeupTreeNode>(new WakeupTreeNode(u));
+  auto* node_handle         = node.get();
+  this->nodes_[node_handle] = std::move(node);
   return node_handle;
+}
+
+void WakeupTree::insert_node(std::unique_ptr<WakeupTreeNode> node)
+{
+  auto* node_handle         = node.get();
+  this->nodes_[node_handle] = std::move(node);
 }
 
 void WakeupTree::insert(const Execution& E, const PartialExecution& w)
