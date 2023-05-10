@@ -8,9 +8,9 @@
 
 namespace simgrid::mc::odpor {
 
-WakeupTreeIterator::WakeupTreeIterator(const WakeupTree& tree)
+WakeupTreeIterator::WakeupTreeIterator(const WakeupTree& tree) : root_list{tree.root_}
 {
-  //   post_order_iteration.push(tree.root);
+  post_order_iteration.push(root_list.begin());
   push_until_left_most_found();
 }
 
@@ -26,6 +26,11 @@ void WakeupTreeIterator::push_until_left_most_found()
     // reverse order (right-most to left-most),
     // we ensure that we'll always process left-most
     // children first
+    auto& children = cur_top_node->children_;
+
+    for (auto iter = children.rbegin(); iter != children.rend(); ++iter) {
+      post_order_iteration.push(iter.base());
+    }
   }
 }
 
@@ -52,12 +57,11 @@ void WakeupTreeIterator::increment()
   // Otherwise, look at the next top node. If
   // `prev_top` is that node's right-most child,
   // then we don't attempt to re-add `next_top`'s
-  // children again for we would have already seen them
-  const auto* next_top_node = *post_order_iteration.top();
-
+  // children again for we would have already seen them.
   // To actually determine "right-most", we check if
   // moving over to the right one spot brings us to the
   // end of the candidate parent's list
+  const auto* next_top_node = *post_order_iteration.top();
   if ((++prev_top_handle) != next_top_node->get_ordered_children().end()) {
     push_until_left_most_found();
   }

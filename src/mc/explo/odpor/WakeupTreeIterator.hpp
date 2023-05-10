@@ -24,12 +24,25 @@ private:
   using node_handle = std::list<WakeupTreeNode*>::iterator;
 
   /**
+   *  @brief A list which is used to "store" the root node of the traversed
+   * wakeup tree
+   *
+   * The root node is, by definition, not the child of any other node. This
+   * means that the root node also is contained in any list into which the
+   * iterator can generate a pointer (iterator). This list takes the role
+   * of allowing the iterator to treat the root node like any other.
+   */
+  std::list<WakeupTreeNode*> root_list;
+
+  /**
    * @brief The current "view" of the iteration in post-order traversal
    */
   std::stack<node_handle> post_order_iteration;
 
   /**
-   *
+   * @brief Search the wakeup tree until a leaf node appears at the front
+   * of the iteration, pushing all children towards the top of the stack
+   * as the search progresses
    */
   void push_until_left_most_found();
 

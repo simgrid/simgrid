@@ -27,6 +27,7 @@ private:
 
   /** Allows the owning tree to insert directly into the child */
   friend WakeupTree;
+  friend WakeupTreeIterator;
 
 public:
   WakeupTreeNode(const WakeupTreeNode&)            = delete;
