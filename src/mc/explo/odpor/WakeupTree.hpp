@@ -16,13 +16,14 @@ namespace simgrid::mc::odpor {
 
 class WakeupTreeNode {
 private:
-  explicit WakeupTreeNode(const ProcessSequence& u) : seq_(u) {}
+  explicit WakeupTreeNode(const PartialExecution& u) : seq_(u) {}
+  explicit WakeupTreeNode(PartialExecution&& u) : seq_(std::move(u)) {}
 
   /** An ordered list of children of for this node in the tree */
   std::list<WakeupTreeNode*> children_;
 
   /** @brief The contents of the node */
-  ProcessSequence seq_;
+  PartialExecution seq_;
 
   /** Allows the owning tree to insert directly into the child */
   friend WakeupTree;
@@ -33,7 +34,7 @@ public:
   const auto rbegin() const { return this->children_.rbegin(); }
   const auto rend() const { return this->children_.rend(); }
 
-  const ProcessSequence& get_sequence() const { return seq_; }
+  const PartialExecution& get_sequence() const { return seq_; }
   const std::list<WakeupTreeNode*>& get_ordered_children() const { return children_; }
 
   bool is_leaf() const { return children_.empty(); }
@@ -60,7 +61,7 @@ private:
   /**
    * @brief Creates a new, disconnected node in this tree
    */
-  WakeupTreeNode* make_node(const ProcessSequence& u);
+  WakeupTreeNode* make_node(const PartialExecution& u);
 
   /* Allow the iterator to access the contents of the tree */
   friend WakeupTreeIterator;
@@ -77,7 +78,7 @@ public:
    * such that that this tree is a wakeup tree relative to the
    * given execution
    */
-  void insert(const Execution&, const ExecutionSequence& seq);
+  void insert(const Execution&, const PartialExecution& seq);
 };
 
 } // namespace simgrid::mc::odpor

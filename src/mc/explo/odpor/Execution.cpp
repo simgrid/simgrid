@@ -4,8 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/odpor/Execution.hpp"
-#include <exception>
+#include "xbt/asserts.h"
+#include <algorithm>
 #include <limits>
+#include <vector>
 
 namespace simgrid::mc::odpor {
 
@@ -95,11 +97,6 @@ std::optional<aid_t> Execution::get_first_sdpor_initial_from(EventHandle e,
   // could happen-before `v` for any valid happens-before relation.
 
   // First, grab `E' := pre(e, E)` and determine what actor `p` is
-  // TODO: Instead of copying around these big structs, it
-  // would behoove us to incorporate some way to reference
-  // portions of an execution. For simplicity and for a
-  // "proof of concept" version, we opt to simply copy
-  // the contents instead of making a view into the execution
   const auto next_E_p = get_latest_event_handle().value();
   Execution E_prime_v = get_prefix_up_to(e);
   std::vector<sdpor::Execution::EventHandle> v;
@@ -149,10 +146,118 @@ std::optional<aid_t> Execution::get_first_sdpor_initial_from(EventHandle e,
   return std::nullopt;
 }
 
-std::optional<ProcessSequence> Execution::get_shortest_odpor_sq_subset_insertion(const ProcessSequence& v,
-                                                                                 const ExecutionSequence& w) const
+bool Execution::is_initial_after_execution(const PartialExecution& w, aid_t p) const
 {
-  return std::nullopt;
+  auto E_w = *this;
+  std::vector<EventHandle> w_handles;
+  for (const auto& w_i : w) {
+    // Take one step in the direction of `w`
+    E_w.push_transition(w_i.get());
+
+    // If that step happened to be executed by `p`,
+    // great: we know that `p` is contained in `w`.
+    // We now need to verify that it doens't "happen-after"
+    // any events which occur before it
+    if (w_i->aid_ == p) {
+      const auto p_handle = E_w.get_latest_event_handle().value();
+      return std::none_of(w_handles.begin(), w_handles.end(),
+                          [&](const auto handle) { return E_w.happens_before(handle, p_handle); });
+    } else {
+      w_handles.push_back(E_w.get_latest_event_handle().value());
+    }
+  }
+  return false;
+}
+
+bool Execution::is_independent_with_execution(const PartialExecution& w, const Transition* next_E_p) const
+{
+  // INVARIANT: Here, we assume that for any process `p_i` of `w`,
+  // the events of this execution followed by the execution of all
+  // actors occurring before `p_i` in `v` (`p_j`, `0 <= j < i`)
+  // are sufficient to enable `p_i`. This is fortunately the case
+  // with what ODPOR requires of us, viz. to ask the question about
+  // `v := notdep(e, E)` for some execution `E` and event `e` of
+  // that execution.
+  auto E_p_w = *this;
+  E_p_w.push_transition(next_E_p);
+  const auto p_handle = E_p_w.get_latest_event_handle().value();
+
+  // As we add events to `w`, verify that none
+  // of them "happen-after" the event associated with
+  // the step `next_E_p` (viz. p_handle)
+  for (const auto& w_i : w) {
+    E_p_w.push_transition(w_i.get());
+    const auto w_i_handle = E_p_w.get_latest_event_handle().value();
+    if (E_p_w.happens_before(p_handle, w_i_handle)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,
+                                                                                  const PartialExecution& w) const
+{
+  // See section 4 of Abdulla. et al.'s 2017 ODPOR paper for details (specifically
+  // where the [iterative] computation of `v ~_[E] w` is described)
+  auto E_v   = *this;
+  auto w_now = w;
+
+  for (const auto& next_p_E : v) {
+    const aid_t p = next_p_E->aid_;
+
+    // Is `p in `I_[E](w)`?
+    if (E_v.is_initial_after_execution(w_now, p)) {
+      // Remove `p` from w and continue
+
+      // TODO: If `p` occurs in `w`, it had better refer to the same
+      // transition referenced by `v`. Unfortunately, we have two
+      // sources of truth here which can be manipulated at the same
+      // time as arguments to the function. If ODPOR works correctly,
+      // they should always refer to the same value; but as a sanity check,
+      // we have an assert that tests that at least the types are the same.
+      const auto action_by_p_in_w =
+          std::find_if(w_now.begin(), w_now.end(), [=](const auto& action) { return action->aid_ == p; });
+      xbt_assert(action_by_p_in_w != w_now.end(), "Invariant violated: actor `p` "
+                                                  "is claimed to be an initial after `w` but is "
+                                                  "not actually contained in `w`. This indicates that there "
+                                                  "is a bug computing initials");
+      const auto& w_action = *action_by_p_in_w;
+      xbt_assert(w_action->type_ == next_p_E->type_,
+                 "Invariant violated: `v` claims that actor `%ld` executes '%s' while "
+                 "`w` claims that it executes '%s'. These two partial executions both "
+                 "refer to `next_[E](p)`, which should be the same",
+                 p, next_p_E->to_string(false).c_str(), w_action->to_string(false).c_str());
+      w_now.erase(action_by_p_in_w);
+    }
+    // Is `E ⊢ p ◇ w`?
+    else if (E_v.is_independent_with_execution(w, next_p_E.get())) {
+      // INVARIANT: Note that it is impossible for `p` to be
+      // excluded from the set `I_[E](w)` BUT ALSO be contained in
+      // `w` itself if `E ⊢ p ◇ w`. We assert this is the case here
+      const auto action_by_p_in_w =
+          std::find_if(w_now.begin(), w_now.end(), [=](const auto& action) { return action->aid_ == p; });
+      xbt_assert(action_by_p_in_w == w_now.end(),
+                 "Invariant violated: We claimed that actor `%ld` is not an initial "
+                 "after `w`, yet it's independent with all actions of `w` AND occurs in `w`."
+                 "This indicates that there is a bug computing initials",
+                 p);
+    } else {
+      // Neither of the two above conditions hold, so the relation fails
+      return std::nullopt;
+    }
+
+    // Move one step forward in the direction of `v` and repeat
+    E_v.push_transition(next_p_E.get());
+  }
+
+  // Construct, finally, v.w' by adding `v` to the front of
+  // what remains of `w` after removing `v` as above
+  for (auto it = v.rbegin(); it != v.rend(); ++it) {
+    w_now.push_front(*it);
+  }
+
+  return std::optional<PartialExecution>{std::move(w_now)};
 }
 
 bool Execution::happens_before(Execution::EventHandle e1_handle, Execution::EventHandle e2_handle) const

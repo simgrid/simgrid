@@ -12,7 +12,7 @@ namespace simgrid::mc::odpor {
 
 WakeupTree::WakeupTree() : root(nullptr) {}
 
-WakeupTreeNode* WakeupTree::make_node(const ProcessSequence& u)
+WakeupTreeNode* WakeupTree::make_node(const PartialExecution& u)
 {
   auto node                = std::unique_ptr<WakeupTreeNode>(new WakeupTreeNode(u));
   auto* node_handle        = node.get();
@@ -20,7 +20,7 @@ WakeupTreeNode* WakeupTree::make_node(const ProcessSequence& u)
   return node_handle;
 }
 
-void WakeupTree::insert(const Execution& E, const ExecutionSequence& w)
+void WakeupTree::insert(const Execution& E, const PartialExecution& w)
 {
   // See section 6.2 of Abdulla. et al.'s 2017 ODPOR paper for details
 

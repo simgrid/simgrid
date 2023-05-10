@@ -13,11 +13,12 @@
 
 #include "src/mc/mc_forward.hpp"
 #include <list>
+#include <memory>
 #include <simgrid/forward.h>
 
 namespace simgrid::mc::odpor {
 
-using ProcessSequence   = std::list<aid_t>;
+using PartialExecution  = std::list<std::shared_ptr<Transition>>;
 using ExecutionSequence = std::list<const Transition*>;
 
 class Event;
