@@ -31,11 +31,6 @@ xbt::signal<void(Operation*)> Operation::on_end;
 
 Operation::Operation(const std::string& name) : name_(name) {}
 
-std::string Operation::get_name()
-{
-  return name_;
-}
-
 /**
  *  @param predecessor The Operation to add.
  *  @brief Add a predecessor to this Operation.
@@ -124,7 +119,7 @@ void Operation::init()
     return;
   Operation::inited_                      = true;
   ExtendedAttributeActivity::EXTENSION_ID = simgrid::s4u::Activity::extension_create<ExtendedAttributeActivity>();
-  simgrid::s4u::Activity::on_completion_cb([&](simgrid::s4u::Activity const& activity) {
+  simgrid::s4u::Activity::on_completion_cb([](simgrid::s4u::Activity const& activity) {
     activity.extension<ExtendedAttributeActivity>()->operation_->complete();
   });
 }
@@ -180,9 +175,9 @@ void Operation::remove_successor(OperationPtr successor)
  *  @brief Set a function to be called before each execution.
  *  @note The function is called before the underlying Activity starts.
  */
-void Operation::on_this_start(std::function<void(Operation*)> func)
+void Operation::on_this_start(const std::function<void(Operation*)>& func)
 {
-  simgrid::kernel::actor::simcall_answered([this, func] { start_func_ = func; });
+  simgrid::kernel::actor::simcall_answered([this, &func] { start_func_ = func; });
 }
 
 /** @ingroup plugin_operation
@@ -190,15 +185,15 @@ void Operation::on_this_start(std::function<void(Operation*)> func)
  *  @brief Set a function to be called after each execution.
  *  @note The function is called after the underlying Activity ends, but before sending tokens to successors.
  */
-void Operation::on_this_end(std::function<void(Operation*)> func)
+void Operation::on_this_end(const std::function<void(Operation*)>& func)
 {
-  simgrid::kernel::actor::simcall_answered([this, func] { end_func_ = func; });
+  simgrid::kernel::actor::simcall_answered([this, &func] { end_func_ = func; });
 }
 
 /** @ingroup plugin_operation
  *  @brief Return the number of completed executions.
  */
-int Operation::get_count()
+int Operation::get_count() const
 {
   return count_;
 }
@@ -213,19 +208,15 @@ ExecOp::ExecOp(const std::string& name) : Operation(name) {}
  */
 ExecOpPtr ExecOp::init(const std::string& name)
 {
-  auto op = ExecOpPtr(new ExecOp(name));
-  return op;
+  return ExecOpPtr(new ExecOp(name));
 }
 
 /** @ingroup plugin_operation
  *  @brief Smart Constructor.
  */
-ExecOpPtr ExecOp::init(const std::string& name, double flops, simgrid::s4u::Host* host)
+ExecOpPtr ExecOp::init(const std::string& name, double flops, s4u::Host* host)
 {
-  auto op = ExecOpPtr(new ExecOp(name));
-  op->set_flops(flops);
-  op->set_host(host);
-  return op;
+  return init(name)->set_flops(flops)->set_host(host);
 }
 
 /**
@@ -238,35 +229,37 @@ void ExecOp::execute()
   if (start_func_)
     start_func_(this);
   Operation::on_start(this);
-  simgrid::kernel::actor::simcall_answered([this] {
+  kernel::actor::simcall_answered([this] {
     working_      = true;
     queued_execs_ = std::max(queued_execs_ - 1, 0);
   });
-  simgrid::s4u::ExecPtr exec = simgrid::s4u::Exec::init();
+  s4u::ExecPtr exec = s4u::Exec::init();
   exec->set_name(name_);
   exec->set_flops_amount(amount_);
   exec->set_host(host_);
   exec->start();
   exec->extension_set(new ExtendedAttributeActivity());
   exec->extension<ExtendedAttributeActivity>()->operation_ = this;
-  simgrid::kernel::actor::simcall_answered([this, exec] { current_activity_ = exec; });
+  kernel::actor::simcall_answered([this, exec] { current_activity_ = exec; });
 }
 
 /** @ingroup plugin_operation
  *  @param host The host to set.
  *  @brief Set a new host.
  */
-void ExecOp::set_host(simgrid::s4u::Host* host)
+ExecOpPtr ExecOp::set_host(s4u::Host* host)
 {
-  simgrid::kernel::actor::simcall_answered([this, host] { host_ = host; });
+  kernel::actor::simcall_answered([this, host] { host_ = host; });
+  return this;
 }
 
 /** @ingroup plugin_operation
  *  @param flops The amount of flops to set.
  */
-void ExecOp::set_flops(double flops)
+ExecOpPtr ExecOp::set_flops(double flops)
 {
-  simgrid::kernel::actor::simcall_answered([this, flops] { amount_ = flops; });
+  kernel::actor::simcall_answered([this, flops] { amount_ = flops; });
+  return this;
 }
 
 /**
@@ -279,21 +272,16 @@ CommOp::CommOp(const std::string& name) : Operation(name) {}
  */
 CommOpPtr CommOp::init(const std::string& name)
 {
-  auto op = CommOpPtr(new CommOp(name));
-  return op;
+  return CommOpPtr(new CommOp(name));
 }
 
 /** @ingroup plugin_operation
  *  @brief Smart constructor.
  */
-CommOpPtr CommOp::init(const std::string& name, double bytes, simgrid::s4u::Host* source,
-                       simgrid::s4u::Host* destination)
+CommOpPtr CommOp::init(const std::string& name, double bytes, s4u::Host* source,
+                       s4u::Host* destination)
 {
-  auto op = CommOpPtr(new CommOp(name));
-  op->set_bytes(bytes);
-  op->set_source(source);
-  op->set_destination(destination);
-  return op;
+  return init(name)->set_bytes(bytes)->set_source(source)->set_destination(destination);
 }
 
 /**
@@ -306,43 +294,46 @@ void CommOp::execute()
   if (start_func_)
     start_func_(this);
   Operation::on_start(this);
-  simgrid::kernel::actor::simcall_answered([this] {
+  kernel::actor::simcall_answered([this] {
     working_      = true;
     queued_execs_ = std::max(queued_execs_ - 1, 0);
   });
-  simgrid::s4u::CommPtr comm = simgrid::s4u::Comm::sendto_init(source_, destination_);
+  s4u::CommPtr comm = s4u::Comm::sendto_init(source_, destination_);
   comm->set_name(name_);
   comm->set_payload_size(amount_);
   comm->start();
   comm->extension_set(new ExtendedAttributeActivity());
   comm->extension<ExtendedAttributeActivity>()->operation_ = this;
-  simgrid::kernel::actor::simcall_answered([this, comm] { current_activity_ = comm; });
+  kernel::actor::simcall_answered([this, comm] { current_activity_ = comm; });
 }
 
 /** @ingroup plugin_operation
  *  @param source The host to set.
  *  @brief Set a new source host.
  */
-void CommOp::set_source(simgrid::s4u::Host* source)
+CommOpPtr CommOp::set_source(s4u::Host* source)
 {
-  simgrid::kernel::actor::simcall_answered([this, source] { source_ = source; });
+  kernel::actor::simcall_answered([this, source] { source_ = source; });
+  return this;
 }
 
 /** @ingroup plugin_operation
  *  @param destination The host to set.
  *  @brief Set a new destination host.
  */
-void CommOp::set_destination(simgrid::s4u::Host* destination)
+CommOpPtr CommOp::set_destination(s4u::Host* destination)
 {
-  simgrid::kernel::actor::simcall_answered([this, destination] { destination_ = destination; });
+  kernel::actor::simcall_answered([this, destination] { destination_ = destination; });
+  return this;
 }
 
 /** @ingroup plugin_operation
  *  @param bytes The amount of bytes to set.
  */
-void CommOp::set_bytes(double bytes)
+CommOpPtr CommOp::set_bytes(double bytes)
 {
-  simgrid::kernel::actor::simcall_answered([this, bytes] { amount_ = bytes; });
+  kernel::actor::simcall_answered([this, bytes] { amount_ = bytes; });
+  return this;
 }
 
 } // namespace simgrid::plugins

@@ -73,7 +73,7 @@ public:
    * to an equivalent event that was already noted by the unfolding
    * at some point in the past
    */
-  template <typename... Args> const UnfoldingEvent* discover_event(Args... args)
+  template <typename... Args> const UnfoldingEvent* discover_event(Args&&... args)
   {
     auto candidate_event = std::make_unique<UnfoldingEvent>(std::forward<Args>(args)...);
     return insert(std::move(candidate_event));

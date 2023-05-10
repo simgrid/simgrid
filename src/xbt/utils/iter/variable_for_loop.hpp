@@ -85,11 +85,11 @@ template <typename IterableType> void variable_for_loop<IterableType>::increment
 
   for (auto j = k; j != std::numeric_limits<size_t>::max(); j--) {
     // Attempt to move to the next element of the `j`th collection
-    const auto& new_position = ++current_subset[j];
+    ++current_subset[j];
 
     // If the `j`th element has reached its own end, reset it
     // back to the beginning and keep moving forward
-    if (new_position == underlying_collections[j].get().cend()) {
+    if (current_subset[j] == underlying_collections[j].get().cend()) {
       current_subset[j] = underlying_collections[j].get().cbegin();
     } else {
       // Otherwise we've found the largest element which needed to

@@ -28,9 +28,9 @@ int main(int argc, char* argv[])
   simgrid::plugins::Operation::init();
 
   // Retrieve hosts
-  auto tremblay = e.host_by_name("Tremblay");
-  auto jupiter  = e.host_by_name("Jupiter");
-  auto fafard   = e.host_by_name("Fafard");
+  auto* tremblay = e.host_by_name("Tremblay");
+  auto* jupiter  = e.host_by_name("Jupiter");
+  auto* fafard   = e.host_by_name("Fafard");
 
   // Create operations
   auto comm0 = simgrid::plugins::CommOp::init("comm0");
@@ -47,15 +47,16 @@ int main(int argc, char* argv[])
   exec2->add_successor(comm2);
 
   // Add a function to be called when operations end for log purpose
-  simgrid::plugins::Operation::on_end_cb([](simgrid::plugins::Operation* op) {
+  simgrid::plugins::Operation::on_end_cb([](const simgrid::plugins::Operation* op) {
     XBT_INFO("Operation %s finished (%d)", op->get_name().c_str(), op->get_count());
   });
 
   // Add a function to be called before each executions of comm0
   // This function modifies the graph of operations by adding or removing
   // successors to comm0
-  int count = 0;
-  comm0->on_this_start([&](simgrid::plugins::Operation* op) {
+  comm0->on_this_start([exec1, exec2, jupiter, fafard](simgrid::plugins::Operation* op) {
+    auto* comm0      = dynamic_cast<simgrid::plugins::CommOp*>(op);
+    static int count = 0;
     if (count % 2 == 0) {
       comm0->set_destination(jupiter);
       comm0->add_successor(exec1);

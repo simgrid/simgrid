@@ -58,7 +58,7 @@ private:
   bool has_started_searching                              = false;
   std::optional<size_t> maximum_subset_size               = std::nullopt;
   std::optional<EventSet> current_maximal_set             = std::nullopt;
-  std::stack<topological_order_position> backtrack_points = std::stack<topological_order_position>();
+  std::stack<topological_order_position, std::vector<topological_order_position>> backtrack_points;
 
   /**
    * @brief A small class which provides functionality for managing

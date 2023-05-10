@@ -94,7 +94,7 @@ std::size_t State::count_todo_multiples() const
 std::deque<Transition*>& State::get_recipe()
 {
   if (recipe_.empty()) {
-    for (auto* s = this; s != nullptr; s = s->get_parent_state().get())
+    for (const auto* s = this; s != nullptr; s = s->get_parent_state().get())
       if (s->get_transition_in() != nullptr)
         recipe_.push_front(s->get_transition_in().get());
   }

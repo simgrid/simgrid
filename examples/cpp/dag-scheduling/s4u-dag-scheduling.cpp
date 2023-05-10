@@ -37,57 +37,56 @@ static std::vector<sg4::Exec*> get_ready_tasks(const std::vector<sg4::ActivityPt
   return ready_tasks;
 }
 
-static double finish_on_at(const sg4::ExecPtr task, const sg4::Host* host)
-{
-  double data_available      = 0.;
-  double last_data_available = -1.0;
-  /* compute last_data_available */
-  for (const auto& parent : task->get_dependencies()) {
-    /* normal case */
-    if (const auto* comm = dynamic_cast<sg4::Comm*>(parent.get())) {
-      auto source = comm->get_source();
-      XBT_DEBUG("transfer from %s to %s", source->get_cname(), host->get_cname());
-      /* Estimate the redistribution time from this parent */
-      double redist_time;
-      if (comm->get_remaining() <= 1e-6) {
-        redist_time = 0;
-      } else {
-        double bandwidth      = std::numeric_limits<double>::max();
-        auto [links, latency] = source->route_to(host);
-        for (auto const& link : links)
-          bandwidth = std::min(bandwidth, link->get_bandwidth());
-
-        redist_time = latency + comm->get_remaining() / bandwidth;
-      }
-      // We use the user data field to store the finish time of the predecessor of the comm, i.e., its potential start
-      // time
-      data_available = *comm->get_data<double>() + redist_time;
-    }
-
-    /* no transfer, control dependency */
-    if (const auto* exec = dynamic_cast<sg4::Exec*>(parent.get()))
-      data_available = exec->get_finish_time();
-
-    if (last_data_available < data_available)
-      last_data_available = data_available;
-  }
-  return std::max(*host->get_data<double>(), last_data_available) + task->get_remaining() / host->get_speed();
-}
-
-static sg4::Host* get_best_host(const sg4::ExecPtr exec)
+static sg4::Host* get_best_host(const sg4::ExecPtr exec, double* min_finish_time)
 {
   sg4::Host* best_host = nullptr;
-  double min_EFT = std::numeric_limits<double>::max();
+  *min_finish_time = std::numeric_limits<double>::max();
 
   for (const auto& host : sg4::Engine::get_instance()->get_all_hosts()) {
-    double EFT = finish_on_at(exec, host);
-    XBT_DEBUG("%s finishes on %s at %f", exec->get_cname(), host->get_cname(), EFT);
+    double data_available      = 0.;
+    double last_data_available = -1.0;
+    /* compute last_data_available */
+    for (const auto& parent : exec->get_dependencies()) {
+      /* normal case */
+      if (const auto* comm = dynamic_cast<sg4::Comm*>(parent.get())) {
+        auto source = comm->get_source();
+        XBT_DEBUG("transfer from %s to %s", source->get_cname(), host->get_cname());
+        /* Estimate the redistribution time from this parent */
+        double redist_time;
+        if (comm->get_remaining() <= 1e-6) {
+          redist_time = 0;
+        } else {
+          double bandwidth      = std::numeric_limits<double>::max();
+          auto [links, latency] = source->route_to(host);
+          for (auto const& link : links)
+            bandwidth = std::min(bandwidth, link->get_bandwidth());
 
-    if (EFT < min_EFT) {
-      min_EFT   = EFT;
-      best_host = host;
+          redist_time = latency + comm->get_remaining() / bandwidth;
+        }
+        // We use the user data field to store the finish time of the predecessor of the comm, i.e., its potential
+        // start time
+        data_available = *comm->get_data<double>() + redist_time;
+     }
+
+      /* no transfer, control dependency */
+      if (const auto* exec = dynamic_cast<sg4::Exec*>(parent.get()))
+        data_available = exec->get_finish_time();
+
+      if (last_data_available < data_available)
+        last_data_available = data_available;
+    }
+
+    double finish_time = std::max(*host->get_data<double>(), last_data_available) +
+                         exec->get_remaining() / host->get_speed();
+
+    XBT_DEBUG("%s finishes on %s at %f", exec->get_cname(), host->get_cname(), finish_time);
+
+    if (finish_time < *min_finish_time) {
+      *min_finish_time = finish_time;
+      best_host        = host;
     }
   }
+
   return best_host;
 }
 
@@ -149,8 +148,9 @@ int main(int argc, char** argv)
   auto dax = sg4::create_DAG_from_DAX(argv[2]);
 
   /* Schedule the root first */
+  double finish_time;
   auto* root = static_cast<sg4::Exec*>(dax.front().get());
-  auto host  = get_best_host(root);
+  auto host  = get_best_host(root, &finish_time);
   schedule_on(root, host);
 
   e.run();
@@ -162,25 +162,25 @@ int main(int argc, char** argv)
     vetoed.clear();
 
     if (ready_tasks.empty()) {
-      /* there is no ready task, let advance the simulation */
+      /* there is no ready exec, let advance the simulation */
       e.run();
       continue;
     }
-    /* For each ready task:
+    /* For each ready exec:
      * get the host that minimizes the completion time.
-     * select the task that has the minimum completion time on its best host.
+     * select the exec that has the minimum completion time on its best host.
      */
-    double min_finish_time            = -1.0;
-    sg4::Exec* selected_task          = nullptr;
-    sg4::Host* selected_host          = nullptr;
+    double min_finish_time   = std::numeric_limits<double>::max();
+    sg4::Exec* selected_task = nullptr;
+    sg4::Host* selected_host = nullptr;
 
-    for (auto task : ready_tasks) {
-      XBT_DEBUG("%s is ready", task->get_cname());
-      host               = get_best_host(task);
-      double finish_time = finish_on_at(task, host);
-      if (min_finish_time < 0 || finish_time < min_finish_time) {
+    for (auto exec : ready_tasks) {
+      XBT_DEBUG("%s is ready", exec->get_cname());
+      double finish_time;
+      host = get_best_host(exec, &finish_time);
+      if (finish_time < min_finish_time) {
         min_finish_time = finish_time;
-        selected_task   = task;
+        selected_task   = exec;
         selected_host   = host;
       }
     }

@@ -92,10 +92,10 @@ XBT_PUBLIC void alias(const char* realname, std::initializer_list<const char*> a
  */
 template <class T>
 XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, T value,
-                             std::function<void(const T&)> callback = std::function<void(const T&)>());
+                             std::function<void(const T&)> callback = nullptr);
 template <class T>
 void declare_flag(const std::string& name, std::initializer_list<const char*> aliases, const std::string& description,
-                  T value, std::function<void(const T&)> callback = std::function<void(const T&)>())
+                  T value, std::function<void(const T&)> callback = nullptr)
 {
   declare_flag(name, description, std::move(value), std::move(callback));
   alias(name.c_str(), aliases);
@@ -265,7 +265,7 @@ public:
        const std::map<std::string, std::string, std::less<>>& valid_values)
       : value_(value), name_(name)
   {
-    simgrid::config::bind_flag(value_, name, desc, valid_values, [](std::string) {});
+    simgrid::config::bind_flag(value_, name, desc, valid_values, [](const std::string&) {});
   }
 
   /* As earlier, a constructor accepting a map of valid values -> their description,
