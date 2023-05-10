@@ -47,6 +47,14 @@ if(SIMGRID_HAVE_STATEFUL_MC)
     add_dependencies(tests-mc s4u-mc-bugged1-liveness-cleaner-off)
   endif()
 
+  ADD_TESH(s4u-mc-synchro-mutex-stateful
+     --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/synchro-mutex
+     --setenv libdir=${CMAKE_BINARY_DIR}/lib
+     --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+     --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/synchro-mutex
+     --cd ${CMAKE_CURRENT_SOURCE_DIR}/synchro-mutex
+      ${CMAKE_HOME_DIRECTORY}/examples/cpp/synchro-mutex/s4u-mc-synchro-mutex-stateful.tesh)
+
   # Model-checking liveness
   if(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64)
     # liveness model-checking works only on 64bits (for now ...)

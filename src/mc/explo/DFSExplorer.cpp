@@ -336,20 +336,48 @@ void DFSExplorer::backtrack()
   }
 #endif
 
+  // Search how to restore the backtracking point
+  State* init_state = nullptr;
+  std::deque<Transition*> replay_recipe;
+  for (auto* s = backtracking_point.get(); s != nullptr; s = s->get_parent_state().get()) {
+#if SIMGRID_HAVE_STATEFUL_MC
+    if (s->get_system_state() != nullptr) { // Found a state that I can restore
+      init_state = s;
+      break;
+    }
+#endif
+    if (s->get_transition_in() != nullptr) // The root has no transition_in
+      replay_recipe.push_front(s->get_transition_in().get());
+  }
+
+  // Restore the init_state, if any
+  if (init_state != nullptr) {
+#if SIMGRID_HAVE_STATEFUL_MC
+    const auto* system_state = init_state->get_system_state();
+    system_state->restore(*get_remote_app().get_remote_process_memory());
+    on_restore_system_state_signal(init_state, get_remote_app());
+#endif
+  } else { // Restore the initial state if no intermediate state was found
+    get_remote_app().restore_initial_state();
+    on_restore_initial_state_signal(get_remote_app());
+  }
+
   /* if no snapshot, we need to restore the initial state and replay the transitions */
-  get_remote_app().restore_initial_state();
-  on_restore_initial_state_signal(get_remote_app());
   /* Traverse the stack from the state at position start and re-execute the transitions */
-  for (auto& state : backtracking_point->get_recipe()) {
-    state->replay(get_remote_app());
-    on_transition_replay_signal(state, get_remote_app());
+  for (auto& transition : replay_recipe) {
+    transition->replay(get_remote_app());
+    on_transition_replay_signal(transition, get_remote_app());
     visited_states_count_++;
   }
   this->restore_stack(backtracking_point);
 }
 
 DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor, bool need_memory_info)
-    : Exploration(args, need_memory_info || _sg_mc_termination)
+    : Exploration(args, need_memory_info || _sg_mc_termination
+#if SIMGRID_HAVE_STATEFUL_MC
+                            || _sg_mc_checkpoint > 0
+#endif
+      )
 {
   if (with_dpor)
     reduction_mode_ = ReductionMode::dpor;
