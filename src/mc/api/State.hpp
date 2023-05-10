@@ -27,9 +27,6 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   /** @brief The incoming transition is what led to this state, coming from its parent  */
   std::shared_ptr<Transition> incoming_transition_ = nullptr;
 
-  /** @brief A list of transition to be replayed in order to get in this state. */
-  std::deque<Transition*> recipe_{};
-
   /** Sequential state ID (used for debugging) */
   long num_ = 0;
 
@@ -79,7 +76,6 @@ public:
   std::shared_ptr<Transition> get_transition_out() const { return outgoing_transition_; }
   std::shared_ptr<Transition> get_transition_in() const { return incoming_transition_; }
   std::shared_ptr<State> get_parent_state() const { return parent_state_; }
-  std::deque<Transition*>& get_recipe();
 
   std::map<aid_t, ActorState> const& get_actors_list() const { return strategy_->actors_to_run_; }
 

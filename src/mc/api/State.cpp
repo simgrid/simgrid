@@ -91,16 +91,6 @@ std::size_t State::count_todo_multiples() const
   return count;
 }
 
-std::deque<Transition*>& State::get_recipe()
-{
-  if (recipe_.empty()) {
-    for (const auto* s = this; s != nullptr; s = s->get_parent_state().get())
-      if (s->get_transition_in() != nullptr)
-        recipe_.push_front(s->get_transition_in().get());
-  }
-  return recipe_;
-}
-
 aid_t State::next_transition() const
 {
   XBT_DEBUG("Search for an actor to run. %zu actors to consider", strategy_->actors_to_run_.size());
