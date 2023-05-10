@@ -34,6 +34,7 @@ else()
   endforeach()
 endif()
 
+set(tesh_files ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/synchro-mutex/s4u-mc-synchro-mutex-stateful.tesh)
 if(SIMGRID_HAVE_STATEFUL_MC)
   if(HAVE_C_STACK_CLEANER)
     add_executable       (s4u-mc-bugged1-liveness-cleaner-on  EXCLUDE_FROM_ALL s4u-mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
