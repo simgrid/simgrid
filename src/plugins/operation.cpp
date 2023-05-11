@@ -170,6 +170,17 @@ void Operation::remove_successor(OperationPtr successor)
   successor->remove_predecessor(this);
 }
 
+void Operation::remove_all_successors()
+{
+  simgrid::kernel::actor::simcall_answered([this] {
+    while (not successors_.empty()) {
+      auto* successor = *(successors_.begin());
+      successor->predecessors_.erase(this);
+      successors_.erase(successor);
+    }
+  });
+}
+
 /** @ingroup plugin_operation
  *  @param func The function to set.
  *  @brief Set a function to be called before each execution.

@@ -67,6 +67,8 @@ public:
   double get_amount() const { return amount_; }
   void add_successor(OperationPtr op);
   void remove_successor(OperationPtr op);
+  void remove_all_successors();
+  const std::set<Operation*>& get_successors() const { return successors_ ;}
   void on_this_start(const std::function<void(Operation*)>& func);
   void on_this_end(const std::function<void(Operation*)>& func);
   int get_count() const;
