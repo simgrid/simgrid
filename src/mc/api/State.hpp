@@ -52,6 +52,7 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
    * and with respect to this state's sleep set
    */
   odpor::WakeupTree wakeup_tree_;
+  bool has_initialized_wakeup_tree = false;
 
 public:
   explicit State(RemoteApp& remote_app);

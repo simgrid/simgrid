@@ -190,6 +190,10 @@ std::unordered_set<aid_t> State::get_backtrack_set() const
 
 void State::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
 {
+  // TODO: It would be better not to have such a flag.
+  if (has_initialized_wakeup_tree) {
+    return;
+  }
   // TODO: Note that the next action taken by the actor may be updated
   // after it executes. But we will have already inserted it into the
   // tree and decided upon "happens-before" at that point for different
@@ -199,6 +203,7 @@ void State::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
       wakeup_tree_.insert(prior, odpor::PartialExecution{strategy_->actors_to_run_.at(next).get_transition()});
     }
   }
+  has_initialized_wakeup_tree = true;
 }
 
 void State::sprout_tree_from_parent_state()
