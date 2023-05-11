@@ -21,7 +21,7 @@ void WakeupTreeIterator::push_until_left_most_found()
   // one node in the tree won't have any children,
   // so the loop will eventually terminate
   auto* cur_top_node = *post_order_iteration.top();
-  while (!cur_top_node->is_leaf()) {
+  while (not cur_top_node->is_leaf()) {
     // INVARIANT: Since we push children in
     // reverse order (right-most to left-most),
     // we ensure that we'll always process left-most
@@ -29,8 +29,11 @@ void WakeupTreeIterator::push_until_left_most_found()
     auto& children = cur_top_node->children_;
 
     for (auto iter = children.rbegin(); iter != children.rend(); ++iter) {
-      post_order_iteration.push(iter.base());
+      // iter.base() points one element past where we seek; hence,
+      // we move it over one position
+      post_order_iteration.push((--iter.base()));
     }
+    cur_top_node = *post_order_iteration.top();
   }
 }
 

@@ -151,8 +151,7 @@ simgrid::mc::ReductionMode simgrid::mc::get_model_checking_reduction()
   } else if (cfg_mc_reduction.get() == "sdpor") {
     return ReductionMode::sdpor;
   } else if (cfg_mc_reduction.get() == "odpor") {
-    XBT_INFO("No reduction will be used: ODPOR is not yet supported in SimGrid");
-    return simgrid::mc::ReductionMode::none;
+    return simgrid::mc::ReductionMode::odpor;
   } else if (cfg_mc_reduction.get() == "udpor") {
     XBT_INFO("No reduction will be used: "
              "UDPOR is has a dedicated invocation 'model-check/unfolding-checker' "

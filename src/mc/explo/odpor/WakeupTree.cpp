@@ -128,7 +128,7 @@ void WakeupTree::insert(const Execution& E, const PartialExecution& w)
         shortest_sequence.has_value()) {
       // Insert the sequence as a child of `node`, but only
       // if the node is not already a leaf
-      if (not node->is_leaf()) {
+      if (not node->is_leaf() or node == this->root_) {
         WakeupTreeNode* new_node = this->make_node(shortest_sequence.value());
         node->add_child(new_node);
       }

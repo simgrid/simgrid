@@ -93,8 +93,8 @@ void DFSExplorer::restore_stack(std::shared_ptr<State> state)
   }
   XBT_DEBUG("Replaced stack by %s", get_record_trace().to_string().c_str());
 
-  if (reduction_mode_ == ReductionMode::sdpor) {
-    execution_seq_ = sdpor::Execution();
+  if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
+    execution_seq_ = odpor::Execution();
 
     // NOTE: The outgoing transition for the top-most
     // state of the  stack refers to that which was taken
@@ -143,8 +143,14 @@ void DFSExplorer::run()
         XBT_ERROR("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\",
                   _sg_mc_max_depth.get());
         XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
-      } else
+      } else if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
+        XBT_ERROR("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
+                  "when stopping at a fixed depth /!\\",
+                  _sg_mc_max_depth.get());
+        XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
+      } else {
         XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+      }
       this->backtrack();
       continue;
     }
@@ -161,9 +167,20 @@ void DFSExplorer::run()
     }
 #endif
 
+    if (reduction_mode_ == ReductionMode::odpor) {
+      // In the case of ODPOR, the wakeup tree for this
+      // state may be empty if we're exploring new territory
+      // (rather than following the partial execution of a
+      // wakeup tree). This corresponds to lines 9 to 13 of
+      // the ODPOR pseudocode
+      state->seed_wakeup_tree_if_needed(execution_seq_);
+    }
+
     // Search for the next transition
-    // next_transition returns a pair<aid_t, int> in case we want to consider multiple state (eg. during backtrack)
-    auto [next, _] = state->next_transition_guided();
+    // next_transition returns a pair<aid_t, int>
+    // in case we want to consider multiple states (eg. during backtrack)
+    const aid_t next = reduction_mode_ == ReductionMode::odpor ? state->next_odpor_transition()
+                                                               : std::get<0>(state->next_transition_guided());
 
     if (next < 0) { // If there is no more transition in the current state, backtrack.
       XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
@@ -295,6 +312,10 @@ void DFSExplorer::run()
           }
         }
       }
+    } else if (reduction_mode_ == ReductionMode::odpor) {
+      // In the case of ODPOR, we simply observe the transition that was executed
+      // until we've reached a maximal trace
+      execution_seq_.push_transition(executed_transition.get());
     }
 
     // Before leaving that state, if the transition we just took can be taken multiple times, we
@@ -373,6 +394,11 @@ std::shared_ptr<State> DFSExplorer::best_opened_state()
 
 void DFSExplorer::backtrack()
 {
+  if (reduction_mode_ == ReductionMode::odpor) {
+    // TODO: In the case of ODPOR, adding in backtrack points occurs
+    // only after a full execution has been realized
+  }
+
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
   XBT_DEBUG("%lu alternatives are yet to be explored:", opened_states_.size());
 

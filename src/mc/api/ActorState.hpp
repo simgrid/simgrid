@@ -115,16 +115,18 @@ public:
   }
   void mark_done() { this->state_ = InterleavingType::done; }
 
-  inline Transition* get_transition(unsigned times_considered) const
+  std::shared_ptr<Transition> get_transition() const { return get_transition(get_times_considered()); }
+
+  std::shared_ptr<Transition> get_transition(unsigned times_considered) const
   {
     xbt_assert(times_considered < this->pending_transitions_.size(),
                "Actor %ld does not have a state available transition with `times_considered = %u`,\n"
                "yet one was asked for",
                aid_, times_considered);
-    return this->pending_transitions_[times_considered].get();
+    return this->pending_transitions_[times_considered];
   }
 
-  inline void set_transition(std::shared_ptr<Transition> t, unsigned times_considered)
+  void set_transition(std::shared_ptr<Transition> t, unsigned times_considered)
   {
     xbt_assert(times_considered < this->pending_transitions_.size(),
                "Actor %ld does not have a state available transition with `times_considered = %u`, "

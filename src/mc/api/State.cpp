@@ -120,6 +120,21 @@ std::pair<aid_t, int> State::next_transition_guided() const
   return strategy_->next_transition();
 }
 
+aid_t State::next_odpor_transition() const
+{
+  const auto first_single_process_branch =
+      std::find_if(wakeup_tree_.begin(), wakeup_tree_.end(),
+                   [=](const odpor::WakeupTreeNode* node) { return node->is_single_process(); });
+  if (first_single_process_branch != wakeup_tree_.end()) {
+    const auto* wakeup_tree_node = *first_single_process_branch;
+    xbt_assert(wakeup_tree_node->get_sequence().size() == 1, "We claimed that the selected branch "
+                                                             "contained only a single process, yet more "
+                                                             "than one process was actually contained in it :(");
+    return wakeup_tree_node->get_sequence().front()->aid_;
+  }
+  return -1;
+}
+
 // This should be done in GuidedState, or at least interact with it
 std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
 {
@@ -132,7 +147,7 @@ std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
   // when simcall_handle will be called on it
   auto& actor_state                        = strategy_->actors_to_run_.at(next);
   const unsigned times_considered          = actor_state.do_consider();
-  const auto* expected_executed_transition = actor_state.get_transition(times_considered);
+  const auto* expected_executed_transition = actor_state.get_transition(times_considered).get();
   xbt_assert(expected_executed_transition != nullptr,
              "Expected a transition with %u times considered to be noted in actor %ld", times_considered, next);
 
@@ -171,6 +186,19 @@ std::unordered_set<aid_t> State::get_backtrack_set() const
     }
   }
   return actors;
+}
+
+void State::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
+{
+  // TODO: Note that the next action taken by the actor may be updated
+  // after it executes. But we will have already inserted it into the
+  // tree and decided upon "happens-before" at that point for different
+  // executions :(
+  if (wakeup_tree_.empty()) {
+    if (const aid_t next = std::get<0>(next_transition_guided()); next >= 0) {
+      wakeup_tree_.insert(prior, odpor::PartialExecution{strategy_->actors_to_run_.at(next).get_transition()});
+    }
+  }
 }
 
 } // namespace simgrid::mc

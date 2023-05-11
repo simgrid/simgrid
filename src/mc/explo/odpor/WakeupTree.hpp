@@ -43,7 +43,7 @@ public:
   const PartialExecution& get_sequence() const { return seq_; }
   const std::list<WakeupTreeNode*>& get_ordered_children() const { return children_; }
   bool is_leaf() const { return children_.empty(); }
-  bool is_single_process() const { return children_.size() == static_cast<size_t>(1); }
+  bool is_single_process() const { return seq_.size() == static_cast<size_t>(1); }
 
   /** Insert a node `node` as a new child of this node */
   void add_child(WakeupTreeNode* node) { this->children_.push_back(node); }
@@ -66,6 +66,7 @@ private:
 
   void insert_node(std::unique_ptr<WakeupTreeNode> node);
   void remove_node(WakeupTreeNode* node);
+  bool contains(WakeupTreeNode* node) const;
 
   /**
    * @brief Adds a new node to the tree, disconnected from
@@ -73,8 +74,6 @@ private:
    * "fragment" `u`
    */
   WakeupTreeNode* make_node(const PartialExecution& u);
-
-  bool contains(WakeupTreeNode* node) const;
 
   /* Allow the iterator to access the contents of the tree */
   friend WakeupTreeIterator;
@@ -96,7 +95,7 @@ public:
    * considered "empty" if it only contains the root node;
    * that is, if it is "uninteresting". In such a case,
    */
-  bool is_empty() const { return nodes_.size() == static_cast<size_t>(1); }
+  bool empty() const { return nodes_.size() == static_cast<size_t>(1); }
 
   /**
    * @brief Inserts an sequence `seq` of processes into the tree
