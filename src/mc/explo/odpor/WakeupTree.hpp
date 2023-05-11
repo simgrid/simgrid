@@ -10,6 +10,7 @@
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
 namespace simgrid::mc::odpor {
@@ -18,6 +19,8 @@ class WakeupTreeNode {
 private:
   explicit WakeupTreeNode(const PartialExecution& u) : seq_(u) {}
   explicit WakeupTreeNode(PartialExecution&& u) : seq_(std::move(u)) {}
+
+  WakeupTreeNode* parent_ = nullptr;
 
   /** An ordered list of children of for this node in the tree */
   std::list<WakeupTreeNode*> children_;
@@ -30,6 +33,7 @@ private:
   friend WakeupTreeIterator;
 
 public:
+  ~WakeupTreeNode();
   WakeupTreeNode(const WakeupTreeNode&)            = delete;
   WakeupTreeNode(WakeupTreeNode&&)                 = default;
   WakeupTreeNode& operator=(const WakeupTreeNode&) = delete;
@@ -47,7 +51,7 @@ public:
   aid_t get_first_actor() const;
 
   /** Insert a node `node` as a new child of this node */
-  void add_child(WakeupTreeNode* node) { this->children_.push_back(node); }
+  void add_child(WakeupTreeNode* node);
 };
 
 class WakeupTree {

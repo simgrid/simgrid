@@ -31,7 +31,7 @@ void WakeupTreeIterator::push_until_left_most_found()
     for (auto iter = children.rbegin(); iter != children.rend(); ++iter) {
       // iter.base() points one element past where we seek; hence,
       // we move it over one position
-      post_order_iteration.push((--iter.base()));
+      post_order_iteration.push(std::prev(iter.base()));
     }
     cur_top_node = *post_order_iteration.top();
   }

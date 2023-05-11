@@ -206,10 +206,10 @@ void State::sprout_tree_from_parent_state()
   xbt_assert(parent_state_ != nullptr, "Attempting to construct a wakeup tree for the root state "
                                        "(or what appears to be, rather for state without a parent defined)");
   const auto p      = parent_state_->get_transition_out()->aid_;
-  const auto branch = std::find_if(wakeup_tree_.begin(), wakeup_tree_.end(), [=](const odpor::WakeupTreeNode* node) {
-    return node->is_single_process() && node->get_first_actor() == p;
-  });
-  xbt_assert(branch != wakeup_tree_.end(),
+  const auto branch = std::find_if(
+      parent_state_->wakeup_tree_.begin(), parent_state_->wakeup_tree_.end(),
+      [=](const odpor::WakeupTreeNode* node) { return node->is_single_process() && node->get_first_actor() == p; });
+  xbt_assert(branch != parent_state_->wakeup_tree_.end(),
              "Attempted to create a subtree from the wakeup tree of the parent "
              "state using actor `%ld`, but no such subtree could be found. "
              "This implies that the wakeup tree management is broken, "

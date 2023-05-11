@@ -23,6 +23,23 @@ aid_t WakeupTreeNode::get_first_actor() const
   return get_sequence().front()->aid_;
 }
 
+void WakeupTreeNode::add_child(WakeupTreeNode* node)
+{
+  this->children_.push_back(node);
+  node->parent_ = this;
+}
+
+WakeupTreeNode::~WakeupTreeNode()
+{
+  if (parent_ != nullptr) {
+    // TODO: We can probably be more clever here: when
+    // we add the child to a node, we could perhaps
+    // try instead to keep a reference to position of the
+    // child in the list of the parent.
+    parent_->children_.remove(this);
+  }
+}
+
 WakeupTree::WakeupTree() : WakeupTree(std::unique_ptr<WakeupTreeNode>(new WakeupTreeNode({}))) {}
 WakeupTree::WakeupTree(std::unique_ptr<WakeupTreeNode> root) : root_(root.get())
 {
@@ -35,17 +52,16 @@ WakeupTree WakeupTree::make_subtree_rooted_at(WakeupTreeNode* root)
     throw std::invalid_argument("Selecting subtrees is only defined for single-process nodes");
   }
 
-  const aid_t p = (*(root->get_sequence().begin()))->aid_;
+  const aid_t p = root->get_first_actor();
 
   // Perform a BFS search to perform a deep copy of the portion
   // of the tree underneath and including `root`. Note that `root`
   // is contained within the context of a *different* wakeup tree;
   // hence, we have to be careful to update each node's children
   // appropriately
-  auto subtree                    = WakeupTree();
-  WakeupTreeNode* root_equivalent = subtree.make_node(root->get_sequence());
+  auto subtree = WakeupTree();
 
-  std::list<std::pair<WakeupTreeNode*, WakeupTreeNode*>> frontier{std::make_pair(root, root_equivalent)};
+  std::list<std::pair<WakeupTreeNode*, WakeupTreeNode*>> frontier{std::make_pair(root, subtree.root_)};
   while (not frontier.empty()) {
     auto [node_in_other_tree, subtree_equivalent] = frontier.front();
     frontier.pop_front();
@@ -70,7 +86,6 @@ WakeupTree WakeupTree::make_subtree_rooted_at(WakeupTreeNode* root)
       p_w.pop_front();
 
       WakeupTreeNode* child_equivalent = subtree.make_node(p_w);
-      subtree_equivalent->add_child(child_equivalent);
       frontier.push_back(std::make_pair(child_in_other_tree, child_equivalent));
     }
   }
@@ -84,7 +99,7 @@ void WakeupTree::remove_subtree_rooted_at(WakeupTreeNode* root)
                                 "that is not contained in this wakeup tree");
   }
 
-  std::list<WakeupTreeNode*> subtree_contents;
+  std::list<WakeupTreeNode*> subtree_contents{root};
   std::list<WakeupTreeNode*> frontier{root};
   while (not frontier.empty()) {
     auto node = frontier.front();
@@ -96,7 +111,7 @@ void WakeupTree::remove_subtree_rooted_at(WakeupTreeNode* root)
   }
 
   // After having found each node with BFS, now we can
-  // remove them. This prevents the "joys" iteration during mutation
+  // remove them. This prevents the "joys" of iteration during mutation
   for (WakeupTreeNode* node_to_remove : subtree_contents) {
     this->remove_node(node_to_remove);
   }
