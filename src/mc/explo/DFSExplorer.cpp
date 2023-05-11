@@ -221,7 +221,20 @@ void DFSExplorer::run()
      * done after next_state creation */
     XBT_DEBUG("Marking Transition >>%s<< of process %ld done and adding it to the sleep set",
               state->get_transition_out()->to_string().c_str(), state->get_transition_out()->aid_);
-    state->add_sleep_set(state->get_transition_out()); // Actors are marked done when they are considerd in ActorState
+    state->add_sleep_set(state->get_transition_out()); // Actors are marked done when they are considered in ActorState
+
+    if (reduction_mode_ == ReductionMode::odpor) {
+      // With ODPOR, after taking a step forward, we must:
+      // 1. remove the subtree whose root is a single-process
+      // node of actor `next` (viz. the action we took) from
+      // the wakeup tree of `state`
+      //
+      // 2. assign a copy of that subtree to the next state
+      //
+      // The latter evidently must be done BEFORE the former
+      next_state->sprout_tree_from_parent_state();
+      state->remove_subtree_starting_with(next);
+    }
 
     /* DPOR persistent set procedure:
      * for each new transition considered, check if it depends on any other previous transition executed before it

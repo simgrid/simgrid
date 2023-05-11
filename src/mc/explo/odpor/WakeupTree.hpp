@@ -44,6 +44,7 @@ public:
   const std::list<WakeupTreeNode*>& get_ordered_children() const { return children_; }
   bool is_leaf() const { return children_.empty(); }
   bool is_single_process() const { return seq_.size() == static_cast<size_t>(1); }
+  aid_t get_first_actor() const;
 
   /** Insert a node `node` as a new child of this node */
   void add_child(WakeupTreeNode* node) { this->children_.push_back(node); }
@@ -51,8 +52,7 @@ public:
 
 class WakeupTree {
 private:
-  /** @brief The root node of the tree */
-  WakeupTreeNode* const root_;
+  WakeupTreeNode* root_;
 
   /**
    * @brief All of the nodes that are currently are a part of the tree
@@ -86,7 +86,7 @@ public:
   auto end() const { return WakeupTreeIterator(); }
 
   void remove_subtree_rooted_at(WakeupTreeNode* root);
-  static WakeupTree new_subtree_rooted_at(WakeupTreeNode* root);
+  static WakeupTree make_subtree_rooted_at(WakeupTreeNode* root);
 
   /**
    * @brief Whether or not this tree is considered empty

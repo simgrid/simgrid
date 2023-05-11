@@ -13,13 +13,23 @@
 
 namespace simgrid::mc::odpor {
 
+aid_t WakeupTreeNode::get_first_actor() const
+{
+  if (seq_.empty()) {
+    throw std::invalid_argument("Attempted to extract the first actor from "
+                                "a node in a wakeup tree representing the "
+                                "empty execution (likely the root node)");
+  }
+  return get_sequence().front()->aid_;
+}
+
 WakeupTree::WakeupTree() : WakeupTree(std::unique_ptr<WakeupTreeNode>(new WakeupTreeNode({}))) {}
 WakeupTree::WakeupTree(std::unique_ptr<WakeupTreeNode> root) : root_(root.get())
 {
   this->insert_node(std::move(root));
 }
 
-WakeupTree WakeupTree::new_subtree_rooted_at(WakeupTreeNode* root)
+WakeupTree WakeupTree::make_subtree_rooted_at(WakeupTreeNode* root)
 {
   if (not root->is_single_process()) {
     throw std::invalid_argument("Selecting subtrees is only defined for single-process nodes");
