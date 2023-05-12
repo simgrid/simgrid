@@ -28,7 +28,11 @@ class RecordTrace {
   std::deque<Transition*> transitions_;
 
 public:
-  RecordTrace() = default;
+  // Use rule-of-three, and implicitely disable the move constructor which cannot be 'noexcept' (as required by C++ Core
+  // Guidelines), due to the std::deque member.
+  RecordTrace()                   = default;
+  RecordTrace(const RecordTrace&) = default;
+  ~RecordTrace()                  = default;
 
   /** Build a trace that can be replayed from a string representation */
   explicit RecordTrace(const char* data);
