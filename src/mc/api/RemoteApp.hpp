@@ -52,8 +52,6 @@ public:
    */
   explicit RemoteApp(const std::vector<char*>& args, bool need_memory_introspection);
 
-  ~RemoteApp();
-
   void restore_initial_state();
   void wait_for_requests();
 

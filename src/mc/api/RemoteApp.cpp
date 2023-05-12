@@ -74,11 +74,6 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
   }
 }
 
-RemoteApp::~RemoteApp()
-{
-  checker_side_     = nullptr;
-}
-
 void RemoteApp::restore_initial_state()
 {
   if (initial_snapshot_ == nullptr) // No memory introspection
