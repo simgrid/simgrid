@@ -8,6 +8,7 @@
 
 #include "src/mc/api/ClockVector.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
 
 #include <list>
@@ -141,7 +142,7 @@ public:
 
   /**
    * @brief For a given sequence of actors `v` and a sequence of transitions `w`,
-   * computes the sequence, if any, that should be inserted as a child a WakeupTree for
+   * computes the sequence, if any, that should be inserted as a child a wakeup tree for
    * this execution
    */
   std::optional<PartialExecution> get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,
@@ -149,10 +150,13 @@ public:
 
   /**
    * @brief For a given reversible race
+   *
+   * @invariant: This method assumes that events `e` and
+   * `e_prime` are in a *reversible* race as is the case
+   * in ODPOR
    */
-  std::optional<PartialExecution> get_odpor_extension_from(EventHandle, EventHandle,
-                                                           std::unordered_set<aid_t> sleep_set,
-                                                           std::unordered_set<aid_t> enabled_actors) const;
+  std::optional<PartialExecution> get_odpor_extension_from(EventHandle e, EventHandle e_prime,
+                                                           const State& state_at_e) const;
 
   bool is_initial_after_execution(const PartialExecution& w, aid_t p) const;
   bool is_independent_with_execution(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const;

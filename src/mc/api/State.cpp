@@ -188,7 +188,7 @@ std::unordered_set<aid_t> State::get_backtrack_set() const
   return actors;
 }
 
-std::unordered_set<aid_t> State::get_sleeping_set() const
+std::unordered_set<aid_t> State::get_sleeping_actors() const
 {
   std::unordered_set<aid_t> actors;
   for (const auto& [aid, _] : get_sleep_set()) {

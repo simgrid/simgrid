@@ -437,13 +437,13 @@ void DFSExplorer::backtrack()
         // Thus it suffices to check THIS execution
         //
         // If the actor `p` is not enabled at s_[E'], it is not a *reversible* race
-        const aid_t p                           = execution_seq_.get_actor_with_handle(e_prime);
-        const std::shared_ptr<State> prev_state = stack_[e];
-        if (prev_state->is_actor_enabled(p)) {
-          const std::optional<odpor::PartialExecution> v = execution_seq_.get_odpor_extension_from(
-              e, e_prime, prev_state->get_sleeping_set(), prev_state->get_enabled_actors());
+        const aid_t p     = execution_seq_.get_actor_with_handle(e_prime);
+        State& prev_state = *stack_[e];
+        if (prev_state.is_actor_enabled(p)) {
+          const std::optional<odpor::PartialExecution> v =
+              execution_seq_.get_odpor_extension_from(e, e_prime, prev_state);
           if (v.has_value()) {
-            prev_state->mark_path_interesting_for_odpor(v.value(), execution_seq_.get_prefix_before(e));
+            prev_state.mark_path_interesting_for_odpor(v.value(), execution_seq_.get_prefix_before(e));
           }
         }
       }

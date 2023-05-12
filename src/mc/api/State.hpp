@@ -115,7 +115,7 @@ public:
    * backtrack set still contains processes added to the done set.
    */
   std::unordered_set<aid_t> get_backtrack_set() const;
-  std::unordered_set<aid_t> get_sleeping_set() const;
+  std::unordered_set<aid_t> get_sleeping_actors() const;
   std::unordered_set<aid_t> get_enabled_actors() const;
   std::map<aid_t, Transition> const& get_sleep_set() const { return sleep_set_; }
   void add_sleep_set(std::shared_ptr<Transition> t)
