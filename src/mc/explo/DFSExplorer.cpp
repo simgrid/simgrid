@@ -234,6 +234,10 @@ void DFSExplorer::run()
       // The latter evidently must be done BEFORE the former
       next_state->sprout_tree_from_parent_state();
       state->remove_subtree_starting_with(next);
+
+      // TODO: Consider what we have to do to handle transitions
+      // with multiple possible executions. We probably have to re-insert
+      // something into `state` and make note of that for later (opened_states_)
     }
 
     /* DPOR persistent set procedure:
@@ -407,9 +411,44 @@ std::shared_ptr<State> DFSExplorer::best_opened_state()
 
 void DFSExplorer::backtrack()
 {
-  if (reduction_mode_ == ReductionMode::odpor) {
-    // TODO: In the case of ODPOR, adding in backtrack points occurs
-    // only after a full execution has been realized
+  if (const auto last_event = execution_seq_.get_latest_event_handle();
+      reduction_mode_ == ReductionMode::odpor and last_event.has_value()) {
+    /**
+     * ODPOR Race Detection Procedure:
+     *
+     * For each reversible race in the current execution, we
+     * note if there are any continuations `C` equivalent to that which
+     * would reverse the race that have already either a) been searched by ODPOR or
+     * b) been *noted* to be searched by the wakeup tree at the
+     * appropriate reversal point, either as `C` directly or
+     * an as equivalent to `C` ("eventually looks like C", viz. the `~_E`
+     * relation)
+     */
+    for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event; e_prime++) {
+      for (const auto e : execution_seq_.get_racing_events_of(e_prime)) {
+        // To determine if the race is reversible, we have to ensure
+        // that actor `p` running `e_i` (viz. the event such that
+        // `racing_event -> (E_p) e_i` and no other event
+        // "happens-between" the two) is enabled in any equivalent
+        // execution where `racing_event` happens before `e_i`.
+        //
+        // Importantly, it is equivalent to checking if in ANY
+        // such equivalent execution sequence where `racing_event`
+        // happens-before `next_E_p` that `p` is enabled in `pre(racing_event, E.p)`.
+        // Thus it suffices to check THIS execution
+        //
+        // If the actor `p` is not enabled at s_[E'], it is not a *reversible* race
+        const aid_t p                           = execution_seq_.get_actor_with_handle(e_prime);
+        const std::shared_ptr<State> prev_state = stack_[e];
+        if (prev_state->is_actor_enabled(p)) {
+          const std::optional<odpor::PartialExecution> v = execution_seq_.get_odpor_extension_from(
+              e, e_prime, prev_state->get_sleeping_set(), prev_state->get_enabled_actors());
+          if (v.has_value()) {
+            prev_state->mark_path_interesting_for_odpor(v.value(), execution_seq_.get_prefix_before(e));
+          }
+        }
+      }
+    }
   }
 
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());

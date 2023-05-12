@@ -115,6 +115,8 @@ public:
    * backtrack set still contains processes added to the done set.
    */
   std::unordered_set<aid_t> get_backtrack_set() const;
+  std::unordered_set<aid_t> get_sleeping_set() const;
+  std::unordered_set<aid_t> get_enabled_actors() const;
   std::map<aid_t, Transition> const& get_sleep_set() const { return sleep_set_; }
   void add_sleep_set(std::shared_ptr<Transition> t)
   {
@@ -149,6 +151,11 @@ public:
    * `N` running actor `p` of this state's wakeup tree
    */
   void remove_subtree_starting_with(aid_t p);
+
+  /**
+   * @brief
+   */
+  void mark_path_interesting_for_odpor(const odpor::PartialExecution&, const odpor::Execution&);
 
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }

@@ -71,7 +71,7 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
   return racing_events;
 }
 
-Execution Execution::get_prefix_up_to(Execution::EventHandle handle) const
+Execution Execution::get_prefix_before(Execution::EventHandle handle) const
 {
   return Execution(std::vector<Event>{contents_.begin(), contents_.begin() + handle});
 }
@@ -98,7 +98,7 @@ std::optional<aid_t> Execution::get_first_sdpor_initial_from(EventHandle e,
 
   // First, grab `E' := pre(e, E)` and determine what actor `p` is
   const auto next_E_p = get_latest_event_handle().value();
-  Execution E_prime_v = get_prefix_up_to(e);
+  Execution E_prime_v = get_prefix_before(e);
   std::vector<sdpor::Execution::EventHandle> v;
 
   // Note `e + 1` here: `notdep(e, E)` is defined as the
@@ -143,6 +143,14 @@ std::optional<aid_t> Execution::get_first_sdpor_initial_from(EventHandle e,
       }
     }
   }
+  return std::nullopt;
+}
+
+std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle e, EventHandle e_prime,
+                                                                    std::unordered_set<aid_t> sleep_set,
+                                                                    std::unordered_set<aid_t> enabled_actors) const
+{
+  // TODO: Implement this :(
   return std::nullopt;
 }
 

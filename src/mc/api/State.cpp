@@ -188,6 +188,26 @@ std::unordered_set<aid_t> State::get_backtrack_set() const
   return actors;
 }
 
+std::unordered_set<aid_t> State::get_sleeping_set() const
+{
+  std::unordered_set<aid_t> actors;
+  for (const auto& [aid, _] : get_sleep_set()) {
+    actors.insert(aid);
+  }
+  return actors;
+}
+
+std::unordered_set<aid_t> State::get_enabled_actors() const
+{
+  std::unordered_set<aid_t> actors;
+  for (const auto& [aid, state] : get_actors_list()) {
+    if (state.is_enabled()) {
+      actors.insert(aid);
+    }
+  }
+  return actors;
+}
+
 void State::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
 {
   // TODO: It would be better not to have such a flag.
@@ -234,6 +254,11 @@ void State::remove_subtree_starting_with(aid_t p)
   xbt_assert(branch != wakeup_tree_.end(), "Attempted to remove a subtree of this state's "
                                            "wakeup tree that does not exist");
   this->wakeup_tree_.remove_subtree_rooted_at(*branch);
+}
+
+void State::mark_path_interesting_for_odpor(const odpor::PartialExecution& pe, const odpor::Execution& E)
+{
+  this->wakeup_tree_.insert(E, pe);
 }
 
 } // namespace simgrid::mc

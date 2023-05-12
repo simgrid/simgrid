@@ -80,12 +80,7 @@ public:
  */
 class Execution {
 private:
-  /**
-   * @brief The actual steps that are taken by the process
-   * during exploration, relative to the
-   */
   std::vector<Event> contents_;
-
   Execution(std::vector<Event>&& contents) : contents_(std::move(contents)) {}
 
 public:
@@ -144,9 +139,6 @@ public:
    */
   std::optional<aid_t> get_first_sdpor_initial_from(EventHandle e, std::unordered_set<aid_t> backtrack_set) const;
 
-  bool is_initial_after_execution(const PartialExecution& w, aid_t p) const;
-  bool is_independent_with_execution(const PartialExecution& w, const Transition* next_E_p) const;
-
   /**
    * @brief For a given sequence of actors `v` and a sequence of transitions `w`,
    * computes the sequence, if any, that should be inserted as a child a WakeupTree for
@@ -154,6 +146,16 @@ public:
    */
   std::optional<PartialExecution> get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,
                                                                          const PartialExecution& w) const;
+
+  /**
+   * @brief For a given reversible race
+   */
+  std::optional<PartialExecution> get_odpor_extension_from(EventHandle, EventHandle,
+                                                           std::unordered_set<aid_t> sleep_set,
+                                                           std::unordered_set<aid_t> enabled_actors) const;
+
+  bool is_initial_after_execution(const PartialExecution& w, aid_t p) const;
+  bool is_independent_with_execution(const PartialExecution& w, const Transition* next_E_p) const;
 
   /**
    * @brief Determines the event associated with
@@ -166,6 +168,15 @@ public:
    * the given event handle `handle`
    */
   aid_t get_actor_with_handle(EventHandle handle) const { return get_event_with_handle(handle).get_transition()->aid_; }
+
+  /**
+   * @brief Returns a handle to the newest event of the execution,
+   * if such an event exists
+   */
+  std::optional<EventHandle> get_latest_event_handle() const
+  {
+    return contents_.empty() ? std::nullopt : std::optional<EventHandle>{static_cast<EventHandle>(size() - 1)};
+  }
 
   /**
    * @brief Returns a set of events which are in
@@ -189,15 +200,6 @@ public:
   std::unordered_set<EventHandle> get_racing_events_of(EventHandle handle) const;
 
   /**
-   * @brief Returns a handle to the newest event of the execution,
-   * if such an event exists
-   */
-  std::optional<EventHandle> get_latest_event_handle() const
-  {
-    return contents_.empty() ? std::nullopt : std::optional<EventHandle>{static_cast<EventHandle>(size() - 1)};
-  }
-
-  /**
    * @brief Computes `pre(e, E)` as described in ODPOR [1]
    *
    * The execution `pre(e, E)` for an event `e` in an
@@ -207,7 +209,7 @@ public:
    * causes that permitted event `e` to exist (roughly
    * speaking)
    */
-  Execution get_prefix_up_to(EventHandle) const;
+  Execution get_prefix_before(EventHandle) const;
 
   /**
    * @brief Whether the event represented by `e1`
