@@ -176,9 +176,12 @@ void AppSide::handle_fork(const s_mc_message_int_t* msg)
     addr.sun_family         = AF_UNIX;
     snprintf(addr.sun_path, 64, "/tmp/simgrid-mc-%" PRIu64, msg->value);
     auto addr_size = offsetof(struct sockaddr_un, sun_path) + strlen(addr.sun_path);
+#ifdef __linux__
+    addr.sun_path[0] = '\0'; // abstract socket
+#endif
 
-    xbt_assert(connect(sock, (struct sockaddr*)&addr, addr_size) >= 0,
-               "Cannot connect to Checker on %s: %s.", addr.sun_path, strerror(errno));
+    xbt_assert(connect(sock, (struct sockaddr*)&addr, addr_size) >= 0, "Cannot connect to Checker on %c%s: %s.",
+               (addr.sun_path[0] ? addr.sun_path[0] : '@'), addr.sun_path + 1, strerror(errno));
 
     channel_.reset_socket(sock);
 

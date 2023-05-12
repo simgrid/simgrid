@@ -31,12 +31,6 @@ XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 namespace simgrid::mc {
 
 static std::string master_socket_name;
-static void cleanup_master_socket()
-{
-  if (not master_socket_name.empty())
-    unlink(master_socket_name.c_str());
-  master_socket_name.clear();
-}
 
 RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspection) : app_args_(args)
 {
@@ -62,10 +56,21 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
     snprintf(serv_addr.sun_path, 64, "/tmp/simgrid-mc-%d", getpid());
     master_socket_name = serv_addr.sun_path;
     auto addr_size = offsetof(struct sockaddr_un, sun_path) + strlen(serv_addr.sun_path);
+#ifdef __linux__
+    serv_addr.sun_path[0] = '\0'; // abstract socket, automatically removed after close
+#else
+    unlink(master_socket_name.c_str()); // remove possible stale socket before bind
+    atexit([]() {
+      if (not master_socket_name.empty())
+        unlink(master_socket_name.c_str());
+      master_socket_name.clear();
+    });
+  }
+#endif
 
     xbt_assert(bind(master_socket_, (struct sockaddr*)&serv_addr, addr_size) >= 0,
-               "Cannot bind the master socket to %s: %s.", serv_addr.sun_path, strerror(errno));
-    atexit(cleanup_master_socket);
+               "Cannot bind the master socket to %c%s: %s.", (serv_addr.sun_path[0] ? serv_addr.sun_path[0] : '@'),
+               serv_addr.sun_path + 1, strerror(errno));
 
     xbt_assert(listen(master_socket_, SOMAXCONN) >= 0, "Cannot listen to the master socket: %s.", strerror(errno));
 
