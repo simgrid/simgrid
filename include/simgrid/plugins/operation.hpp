@@ -129,9 +129,8 @@ public:
   s4u::Host* get_destination() const { return destination_; }
   CommOpPtr set_bytes(double bytes);
   double get_bytes() const { return get_amount(); }
-   friend void inline intrusive_ptr_release(CommOp* c) { intrusive_ptr_release(static_cast<Operation*>(c)); }
+  friend void inline intrusive_ptr_release(CommOp* c) { intrusive_ptr_release(static_cast<Operation*>(c)); }
   friend void inline intrusive_ptr_add_ref(CommOp* c) { intrusive_ptr_add_ref(static_cast<Operation*>(c)); }
-
 };
 } // namespace simgrid::plugins
 #endif
