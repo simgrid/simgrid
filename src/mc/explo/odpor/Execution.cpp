@@ -11,19 +11,19 @@
 
 namespace simgrid::mc::odpor {
 
-void Execution::push_transition(const Transition* t)
+void Execution::push_transition(std::shared_ptr<Transition> t)
 {
   if (t == nullptr) {
     throw std::invalid_argument("Unexpectedly received `nullptr`");
   }
   ClockVector max_clock_vector;
   for (const Event& e : this->contents_) {
-    if (e.get_transition()->depends(t)) {
+    if (e.get_transition()->depends(t.get())) {
       max_clock_vector = ClockVector::max(max_clock_vector, e.get_clock_vector());
     }
   }
   max_clock_vector[t->aid_] = this->size();
-  contents_.push_back(Event({t, max_clock_vector}));
+  contents_.push_back(Event({std::move(t), max_clock_vector}));
 }
 
 std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execution::EventHandle target) const
@@ -160,7 +160,7 @@ bool Execution::is_initial_after_execution(const PartialExecution& w, aid_t p) c
   std::vector<EventHandle> w_handles;
   for (const auto& w_i : w) {
     // Take one step in the direction of `w`
-    E_w.push_transition(w_i.get());
+    E_w.push_transition(w_i);
 
     // If that step happened to be executed by `p`,
     // great: we know that `p` is contained in `w`.
@@ -177,7 +177,7 @@ bool Execution::is_initial_after_execution(const PartialExecution& w, aid_t p) c
   return false;
 }
 
-bool Execution::is_independent_with_execution(const PartialExecution& w, const Transition* next_E_p) const
+bool Execution::is_independent_with_execution(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const
 {
   // INVARIANT: Here, we assume that for any process `p_i` of `w`,
   // the events of this execution followed by the execution of all
@@ -187,14 +187,14 @@ bool Execution::is_independent_with_execution(const PartialExecution& w, const T
   // `v := notdep(e, E)` for some execution `E` and event `e` of
   // that execution.
   auto E_p_w = *this;
-  E_p_w.push_transition(next_E_p);
+  E_p_w.push_transition(std::move(next_E_p));
   const auto p_handle = E_p_w.get_latest_event_handle().value();
 
   // As we add events to `w`, verify that none
   // of them "happen-after" the event associated with
   // the step `next_E_p` (viz. p_handle)
   for (const auto& w_i : w) {
-    E_p_w.push_transition(w_i.get());
+    E_p_w.push_transition(w_i);
     const auto w_i_handle = E_p_w.get_latest_event_handle().value();
     if (E_p_w.happens_before(p_handle, w_i_handle)) {
       return false;
@@ -211,8 +211,8 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
   auto E_v   = *this;
   auto w_now = w;
 
-  for (const auto& next_p_E : v) {
-    const aid_t p = next_p_E->aid_;
+  for (const auto& next_E_p : v) {
+    const aid_t p = next_E_p->aid_;
 
     // Is `p in `I_[E](w)`?
     if (E_v.is_initial_after_execution(w_now, p)) {
@@ -239,7 +239,7 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
       w_now.erase(action_by_p_in_w);
     }
     // Is `E ⊢ p ◇ w`?
-    else if (E_v.is_independent_with_execution(w, next_p_E.get())) {
+    else if (E_v.is_independent_with_execution(w, next_E_p)) {
       // INVARIANT: Note that it is impossible for `p` to be
       // excluded from the set `I_[E](w)` BUT ALSO be contained in
       // `w` itself if `E ⊢ p ◇ w`. We assert this is the case here
@@ -256,7 +256,7 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
     }
 
     // Move one step forward in the direction of `v` and repeat
-    E_v.push_transition(next_p_E.get());
+    E_v.push_transition(next_p_E);
   }
 
   // Construct, finally, v.w' by adding `v` to the front of

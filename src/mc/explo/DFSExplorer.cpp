@@ -104,7 +104,7 @@ void DFSExplorer::restore_stack(std::shared_ptr<State> state)
     // when reconstructing the Exploration for SDPOR.
     for (auto iter = stack_.begin(); iter != stack_.end() - 1 and iter != stack_.end(); ++iter) {
       const auto& state = *(iter);
-      execution_seq_.push_transition(state->get_transition_out().get());
+      execution_seq_.push_transition(state->get_transition_out());
     }
   }
   XBT_DEBUG("Additionally replaced corresponding SDPOR execution stack");
@@ -295,14 +295,13 @@ void DFSExplorer::run()
        * The intuition is that some subsequence of `v` may enable `p`, so
        * we want to be sure that search "in that direction"
        */
-      execution_seq_.push_transition(executed_transition.get());
-
+      const aid_t p = executed_transition->aid_;
+      execution_seq_.push_transition(std::move(executed_transition));
       xbt_assert(execution_seq_.get_latest_event_handle().has_value(),
                  "No events are contained in the SDPOR/OPDPOR execution "
                  "even though one was just added");
-      const aid_t p       = executed_transition->aid_;
-      const auto next_E_p = execution_seq_.get_latest_event_handle().value();
 
+      const auto next_E_p = execution_seq_.get_latest_event_handle().value();
       for (const auto racing_event_handle : execution_seq_.get_racing_events_of(next_E_p)) {
         // To determine if the race is reversible, we have to ensure
         // that actor `p` running `next_E_p` (viz. the event such that
@@ -332,7 +331,7 @@ void DFSExplorer::run()
     } else if (reduction_mode_ == ReductionMode::odpor) {
       // In the case of ODPOR, we simply observe the transition that was executed
       // until we've reached a maximal trace
-      execution_seq_.push_transition(executed_transition.get());
+      execution_seq_.push_transition(std::move(executed_transition));
     }
 
     // Before leaving that state, if the transition we just took can be taken multiple times, we

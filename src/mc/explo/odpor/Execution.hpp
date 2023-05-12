@@ -25,16 +25,16 @@ namespace simgrid::mc::odpor {
  * actor `j`
  */
 class Event {
-  std::pair<const Transition*, ClockVector> contents_;
+  std::pair<std::shared_ptr<Transition>, ClockVector> contents_;
 
 public:
   Event()                        = default;
   Event(Event&&)                 = default;
   Event(const Event&)            = default;
   Event& operator=(const Event&) = default;
-  explicit Event(std::pair<const Transition*, ClockVector> pair) : contents_(std::move(pair)) {}
+  explicit Event(std::pair<std::shared_ptr<Transition>, ClockVector> pair) : contents_(std::move(pair)) {}
 
-  const Transition* get_transition() const { return std::get<0>(contents_); }
+  std::shared_ptr<Transition> get_transition() const { return std::get<0>(contents_); }
   const ClockVector& get_clock_vector() const { return std::get<1>(contents_); }
 };
 
@@ -155,7 +155,7 @@ public:
                                                            std::unordered_set<aid_t> enabled_actors) const;
 
   bool is_initial_after_execution(const PartialExecution& w, aid_t p) const;
-  bool is_independent_with_execution(const PartialExecution& w, const Transition* next_E_p) const;
+  bool is_independent_with_execution(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const;
 
   /**
    * @brief Determines the event associated with
@@ -239,7 +239,7 @@ public:
    * notation of [1]) `E.proc(t)` where `proc(t)` is the
    * actor which executed transition `t`.
    */
-  void push_transition(const Transition*);
+  void push_transition(std::shared_ptr<Transition>);
 };
 
 } // namespace simgrid::mc::odpor
