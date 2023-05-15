@@ -219,7 +219,8 @@ void State::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
   // tree and decided upon "happens-before" at that point for different
   // executions :(
   if (wakeup_tree_.empty()) {
-    if (const aid_t next = std::get<0>(next_transition_guided()); next >= 0) {
+    strategy_->consider_best();
+    if (const aid_t next = std::get<0>(strategy_->next_transition()); next >= 0) {
       wakeup_tree_.insert(prior, odpor::PartialExecution{strategy_->actors_to_run_.at(next).get_transition()});
     }
   }

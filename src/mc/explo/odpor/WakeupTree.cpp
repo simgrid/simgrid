@@ -162,6 +162,10 @@ void WakeupTree::insert(const Execution& E, const PartialExecution& w)
       return;
     }
   }
+  xbt_die("Insertion should always succeed with the root node (which contains no "
+          "prior execution). If we've reached this point, this implies either that "
+          "the wakeup tree traversal is broken or that computation of the shortest "
+          "sequence to insert into the tree is broken");
 }
 
 } // namespace simgrid::mc::odpor

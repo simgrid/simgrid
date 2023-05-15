@@ -173,6 +173,11 @@ void DFSExplorer::run()
       // (rather than following the partial execution of a
       // wakeup tree). This corresponds to lines 9 to 13 of
       // the ODPOR pseudocode
+      //
+      // INVARIANT: The execution sequence should be consistent
+      // with the state when seeding the tree. If the sequence
+      // gets out of sync with the state, selection will not
+      // work as we intend
       state->seed_wakeup_tree_if_needed(execution_seq_);
     }
 
@@ -375,6 +380,12 @@ void DFSExplorer::run()
 
 std::shared_ptr<State> DFSExplorer::best_opened_state()
 {
+  if (reduction_mode_ == ReductionMode::odpor) {
+    const auto first =
+        std::find_if(stack_.rbegin(), stack_.rend(), [](const auto& state) { return !state->has_empty_tree(); });
+    return *first;
+  }
+
   int best_prio = 0; // cache the value for the best priority found so far (initialized to silence gcc)
   auto best     = end(opened_states_);   // iterator to the state to explore having the best priority
   auto valid    = begin(opened_states_); // iterator marking the limit between states still to explore, and already

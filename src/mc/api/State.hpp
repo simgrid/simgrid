@@ -152,6 +152,8 @@ public:
    */
   void remove_subtree_starting_with(aid_t p);
 
+  bool has_empty_tree() const { return this->wakeup_tree_.empty(); }
+
   /**
    * @brief
    */
