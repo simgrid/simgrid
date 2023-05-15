@@ -9,6 +9,7 @@
 #include "simgrid/forward.h"
 
 #include <cstdint>
+#include <initializer_list>
 #include <optional>
 #include <unordered_map>
 
@@ -28,6 +29,7 @@ public:
   ClockVector(const ClockVector&)            = default;
   ClockVector& operator=(ClockVector const&) = default;
   ClockVector(ClockVector&&)                 = default;
+  ClockVector(std::initializer_list<std::pair<const aid_t, uint32_t>> init) : contents(std::move(init)) {}
 
   /**
    * @brief The number of components in this
