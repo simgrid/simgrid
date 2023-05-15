@@ -86,8 +86,8 @@ static void get_set_disk_data(simgrid::s4u::Disk* disk)
 
 static void dump_platform_disks()
 {
-  for (auto const& h : simgrid::s4u::Engine::get_instance()->get_all_hosts())
-    for (auto const& d : h->get_disks()) {
+  for (auto const* h : simgrid::s4u::Engine::get_instance()->get_all_hosts())
+    for (auto* d : h->get_disks()) {
       if (h == d->get_host())
         XBT_INFO("%s is attached to %s", d->get_cname(), d->get_host()->get_cname());
       d->set_property("other usage", "gpfs");
@@ -98,7 +98,7 @@ static void disk_info(const simgrid::s4u::Host* host)
 {
   XBT_INFO("*** Disk info on %s ***", host->get_cname());
 
-  for (auto const& disk : host->get_disks()) {
+  for (auto const* disk : host->get_disks()) {
     const char* mount_name = sg_disk_get_mount_point(disk);
     XBT_INFO("  Disk name: %s, mount name: %s", disk->get_cname(), mount_name);
 

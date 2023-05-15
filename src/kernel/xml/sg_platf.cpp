@@ -373,12 +373,12 @@ static void sg_platf_build_hostlink(simgrid::kernel::routing::StarZone* zone,
                                     const simgrid::kernel::routing::HostLinkCreationArgs* hostlink,
                                     const simgrid::s4u::Link* backbone)
 {
-  const auto engine = simgrid::s4u::Engine::get_instance();
-  auto netpoint     = engine->host_by_name(hostlink->id)->get_netpoint();
+  const auto* engine = simgrid::s4u::Engine::get_instance();
+  auto* netpoint     = engine->host_by_name(hostlink->id)->get_netpoint();
   xbt_assert(netpoint, "Host '%s' not found!", hostlink->id.c_str());
 
-  const auto linkUp   = engine->link_by_name_or_null(hostlink->link_up);
-  const auto linkDown = engine->link_by_name_or_null(hostlink->link_down);
+  const auto* linkUp   = engine->link_by_name_or_null(hostlink->link_up);
+  const auto* linkDown = engine->link_by_name_or_null(hostlink->link_down);
 
   xbt_assert(linkUp, "Link '%s' not found!", hostlink->link_up.c_str());
   xbt_assert(linkDown, "Link '%s' not found!", hostlink->link_down.c_str());

@@ -622,8 +622,8 @@ void NetZoneImpl::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xb
 {
   std::vector<NetPoint*> vertices = get_vertices();
 
-  for (auto const& my_src : vertices) {
-    for (auto const& my_dst : vertices) {
+  for (auto const* my_src : vertices) {
+    for (auto const* my_dst : vertices) {
       if (my_src == my_dst)
         continue;
 

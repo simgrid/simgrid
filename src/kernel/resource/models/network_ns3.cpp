@@ -465,7 +465,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
 
       std::vector<StandardLinkImpl*> route;
       action->get_src().route_to(&action->get_dst(), route, nullptr);
-      for (auto const& link : route)
+      for (auto const* link : route)
         instr::resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(),
                                         data_delta_sent / delta, now - delta, delta);
 

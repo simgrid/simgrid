@@ -535,7 +535,7 @@ void ETag_simgrid_parse_link()
 
 void STag_simgrid_parse_link___ctn()
 {
-  const auto engine = simgrid::s4u::Engine::get_instance();
+  const auto* engine = simgrid::s4u::Engine::get_instance();
   const simgrid::s4u::Link* link;
   simgrid::s4u::LinkInRoute::Direction direction = simgrid::s4u::LinkInRoute::Direction::NONE;
   switch (A_simgrid_parse_link___ctn_direction) {
@@ -957,7 +957,7 @@ void simgrid_parse(bool fire_on_platform_created_callback_param)
   simgrid_parse_assert(not err, "Flex returned an error code");
 
   /* Actually connect the traces now that every elements are created */
-  const auto engine = simgrid::s4u::Engine::get_instance();
+  const auto* engine = simgrid::s4u::Engine::get_instance();
 
   for (auto const& [trace, name] : trace_connect_list_host_avail) {
     simgrid_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),

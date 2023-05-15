@@ -90,7 +90,7 @@ static void on_exec_creation(simgrid::s4u::Exec const& e)
 
 static void on_exec_completion(const simgrid::s4u::Activity& e)
 {
-  const auto exec = dynamic_cast<simgrid::kernel::activity::ExecImpl*>(e.get_impl());
+  const auto* exec = dynamic_cast<simgrid::kernel::activity::ExecImpl*>(e.get_impl());
   if (exec == nullptr)
     return;
   const simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec->get_host());

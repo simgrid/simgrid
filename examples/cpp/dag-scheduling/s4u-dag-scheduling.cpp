@@ -193,7 +193,7 @@ int main(int argc, char** argv)
   }
 
   /* Cleanup memory */
-  for (auto const& h : e.get_all_hosts())
+  for (auto const* h : e.get_all_hosts())
     delete h->get_data<double>();
 
   XBT_INFO("Simulation Time: %f", simgrid_get_clock());

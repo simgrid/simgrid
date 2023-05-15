@@ -60,10 +60,10 @@ static void host_state_change(s4u::Host const& host)
   if (not host.is_on()) { // just turned off.
     std::vector<s4u::VirtualMachine*> trash;
     /* Find all VMs living on that host */
-    for (s4u::VirtualMachine* const& vm : VirtualMachineImpl::allVms_)
+    for (auto* vm : VirtualMachineImpl::allVms_)
       if (vm->get_pm() == &host)
         trash.push_back(vm);
-    for (s4u::VirtualMachine* vm : trash)
+    for (auto* vm : trash)
       vm->shutdown();
   }
 }
@@ -157,7 +157,7 @@ double VMModel::next_occurring_event(double now)
    **/
 
   /* iterate for all virtual machines */
-  for (s4u::VirtualMachine* const& ws_vm : VirtualMachineImpl::allVms_) {
+  for (auto const* ws_vm : VirtualMachineImpl::allVms_) {
     if (ws_vm->get_state() == s4u::VirtualMachine::State::SUSPENDED) // Ignore suspended VMs
       continue;
 
@@ -249,7 +249,7 @@ void VirtualMachineImpl::start()
       not physical_host_->extension<s4u::VmHostExt>()->overcommit) { /* Need to verify that we don't overcommit */
     /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
     size_t total_ramsize_of_vms = 0;
-    for (auto* const& ws_vm : allVms_)
+    for (auto const* ws_vm : allVms_)
       if (physical_host_ == ws_vm->get_pm())
         total_ramsize_of_vms += ws_vm->get_ramsize();
 
