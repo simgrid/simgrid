@@ -19,6 +19,28 @@ namespace simgrid::mc {
  * @brief A multi-dimensional vector used to keep track of
  * happens-before relation between dependent events in an
  * execution of DPOR, SDPOR, or ODPOR
+ *
+ * Clock vectors permit actors in a distributed system
+ * to determine whether two events occurred one after the other
+ * but they may not have); i.e. they permit actors to keep track of "time".
+ * A clever observation made in the original DPOR paper is that a
+ * transition-based "happens-before" relation can be computed for
+ * any particular trace `S` using clock vectors, effectively
+ * treating dependency like the passing of a message (the context
+ * in which vector clocks are typically used).
+ *
+ * Support, however, needs to be added to clock vectors since
+ * Simgrid permits the *creation* of new actors during execution.
+ * Since we don't know this size before-hand, we have to allow
+ * clock vectors to behave as if they were "infinitely" large. To
+ * do so, all newly mapped elements, if not assigned a value, are
+ * defaulted to `0`. This corresponds to the value this actor would
+ * have had regardless had its creation been known to have evnetually
+ * occurred: no actions taken by that actor had occurred prior, so
+ * there's no way the clock vector would have been updated. In other
+ * words, when comparing clock vectors of different sizes, it's equivalent
+ * to imagine both of the same size with elements absent in one or
+ * the other implicitly mapped to zero.
  */
 struct ClockVector final {
 private:

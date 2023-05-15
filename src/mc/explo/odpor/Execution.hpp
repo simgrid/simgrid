@@ -23,6 +23,10 @@ using Hypothetical      = ExecutionSequence;
 
 /**
  * @brief The occurrence of a transition in an execution
+ *
+ * An execution is set of *events*, where each element represents
+ * the occurrence or execution of the `i`th step of a particular
+ * actor `j`
  */
 class Event {
   std::pair<const Transition*, ClockVector> contents_;
@@ -32,7 +36,6 @@ public:
   Event(Event&&)                 = default;
   Event(const Event&)            = default;
   Event& operator=(const Event&) = default;
-
   explicit Event(std::pair<const Transition*, ClockVector> pair) : contents_(std::move(pair)) {}
 
   const Transition* get_transition() const { return std::get<0>(contents_); }
@@ -57,8 +60,16 @@ public:
  * In addition to representing an actual steps taken,
  * an execution keeps track of the "happens-before"
  * relation among the transitions in the execution
- * by following the procedure outlined in the
- * original DPOR paper with clock vectors
+ * by following the procedure outlined in section 4 of the
+ * original DPOR paper with clock vectors.
+ * As new transitions are added to the execution, clock vectors are
+ * computed as appropriate and associated with the corresponding position
+ * in the execution. This allows us to determine “happens-before” in
+ * constant-time between points in the execution (called events
+ * [which is unfortunately the same name used in UDPOR for a slightly
+ * different concept]), albeit for an up-front cost of traversing the
+ * execution stack. The happens-before relation is important in many
+ * places in SDPOR and ODPOR.
  *
  * @note: For more nuanced happens-before relations, clock
  * vectors may not always suffice. Clock vectors work
