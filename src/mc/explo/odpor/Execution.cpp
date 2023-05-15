@@ -242,6 +242,11 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   // Now we add `e_prime := <q, i>` to `E'.v` and repeat the same work
   {
     E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
+    v.push_back(get_event_with_handle(e_prime).get_transition());
+
+    const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
+    v_handles.push_back(e_prime_in_E_prime_v);
+
     if (not located_actor_in_initial) {
       // It's possible `proc(e_prime)` is an initial
       const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();

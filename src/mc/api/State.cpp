@@ -262,4 +262,12 @@ void State::mark_path_interesting_for_odpor(const odpor::PartialExecution& pe, c
   this->wakeup_tree_.insert(E, pe);
 }
 
+void State::do_odpor_backtrack_cleanup()
+{
+  if (auto out_transition = get_transition_out(); out_transition != nullptr) {
+    remove_subtree_starting_with(out_transition->aid_);
+    add_sleep_set(std::move(out_transition));
+  }
+}
+
 } // namespace simgrid::mc

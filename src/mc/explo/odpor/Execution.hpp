@@ -9,6 +9,7 @@
 #include "src/mc/api/ClockVector.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_record.hpp"
 #include "src/mc/transition/Transition.hpp"
 
 #include <list>

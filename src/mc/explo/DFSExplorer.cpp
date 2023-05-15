@@ -220,29 +220,28 @@ void DFSExplorer::run()
     auto next_state = std::make_shared<State>(get_remote_app(), state);
     on_state_creation_signal(next_state.get(), get_remote_app());
 
-    /* Sleep set procedure:
-     * adding the taken transition to the sleep set of the original state.
-     * <!> Since the parent sleep set is used to compute the child sleep set, this need to be
-     * done after next_state creation */
-    XBT_DEBUG("Marking Transition >>%s<< of process %ld done and adding it to the sleep set",
-              state->get_transition_out()->to_string().c_str(), state->get_transition_out()->aid_);
-    state->add_sleep_set(state->get_transition_out()); // Actors are marked done when they are considered in ActorState
-
     if (reduction_mode_ == ReductionMode::odpor) {
-      // With ODPOR, after taking a step forward, we must:
-      // 1. remove the subtree whose root is a single-process
-      // node of actor `next` (viz. the action we took) from
-      // the wakeup tree of `state`
+      // With ODPOR, after taking a step forward, we must
+      // assign a copy of that subtree to the next state.
       //
-      // 2. assign a copy of that subtree to the next state
-      //
-      // The latter evidently must be done BEFORE the former
+      // NOTE: We only add actions to the sleep set AFTER
+      // we've regenerated states. We must perform the search
+      // fully down a single path before we consider adding
+      // any elements to the sleep set according to the pseudocode
       next_state->sprout_tree_from_parent_state();
-      state->remove_subtree_starting_with(next);
 
       // TODO: Consider what we have to do to handle transitions
       // with multiple possible executions. We probably have to re-insert
       // something into `state` and make note of that for later (opened_states_)
+    } else {
+      /* Sleep set procedure:
+       * adding the taken transition to the sleep set of the original state.
+       * <!> Since the parent sleep set is used to compute the child sleep set, this need to be
+       * done after next_state creation */
+      XBT_DEBUG("Marking Transition >>%s<< of process %ld done and adding it to the sleep set",
+                state->get_transition_out()->to_string().c_str(), state->get_transition_out()->aid_);
+      state->add_sleep_set(
+          state->get_transition_out()); // Actors are marked done when they are considered in ActorState
     }
 
     /* DPOR persistent set procedure:
@@ -380,12 +379,6 @@ void DFSExplorer::run()
 
 std::shared_ptr<State> DFSExplorer::best_opened_state()
 {
-  if (reduction_mode_ == ReductionMode::odpor) {
-    const auto first =
-        std::find_if(stack_.rbegin(), stack_.rend(), [](const auto& state) { return !state->has_empty_tree(); });
-    return *first;
-  }
-
   int best_prio = 0; // cache the value for the best priority found so far (initialized to silence gcc)
   auto best     = end(opened_states_);   // iterator to the state to explore having the best priority
   auto valid    = begin(opened_states_); // iterator marking the limit between states still to explore, and already
@@ -419,6 +412,19 @@ std::shared_ptr<State> DFSExplorer::best_opened_state()
   return best_state;
 }
 
+std::shared_ptr<State> DFSExplorer::next_odpor_state()
+{
+  for (auto iter = stack_.rbegin(); iter != stack_.rend(); ++iter) {
+    const auto& state = *iter;
+    state->do_odpor_backtrack_cleanup();
+    if (!state->has_empty_tree()) {
+      return state;
+    }
+  }
+  xbt_die("There are no more states for ODPOR");
+  return nullptr;
+}
+
 void DFSExplorer::backtrack()
 {
   if (const auto last_event = execution_seq_.get_latest_event_handle();
@@ -434,7 +440,7 @@ void DFSExplorer::backtrack()
      * an as equivalent to `C` ("eventually looks like C", viz. the `~_E`
      * relation)
      */
-    for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event; e_prime++) {
+    for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
       for (const auto e : execution_seq_.get_racing_events_of(e_prime)) {
         // To determine if the race is reversible, we have to ensure
         // that actor `p` running `e_i` (viz. the event such that
@@ -468,7 +474,7 @@ void DFSExplorer::backtrack()
   get_remote_app().check_deadlock();
 
   // Take the point with smallest distance
-  auto backtracking_point = best_opened_state();
+  auto backtracking_point = reduction_mode_ == ReductionMode::odpor ? next_odpor_state() : best_opened_state();
 
   // if no backtracking point, then set the stack_ to empty so we can end the exploration
   if (not backtracking_point) {

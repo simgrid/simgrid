@@ -151,13 +151,15 @@ public:
    * `N` running actor `p` of this state's wakeup tree
    */
   void remove_subtree_starting_with(aid_t p);
-
   bool has_empty_tree() const { return this->wakeup_tree_.empty(); }
 
   /**
    * @brief
    */
   void mark_path_interesting_for_odpor(const odpor::PartialExecution&, const odpor::Execution&);
+
+  /** */
+  void do_odpor_backtrack_cleanup();
 
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }
