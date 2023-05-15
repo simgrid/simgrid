@@ -57,7 +57,7 @@ public:
   void wait_for_requests();
 
   /* Create a new CheckerSide by forking the currently existing one, and connect it through the master_socket */
-  std::unique_ptr<CheckerSide> clone(int master_socket);
+  std::unique_ptr<CheckerSide> clone(int master_socket, const std::string& master_socket_name);
 
   /** Ask the application to run post-mortem analysis, and maybe to stop ASAP */
   void finalize(bool terminate_asap = false);

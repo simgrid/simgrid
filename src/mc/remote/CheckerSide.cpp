@@ -258,11 +258,12 @@ CheckerSide::CheckerSide(int socket, CheckerSide* child_checker)
   wait_for_requests();
 }
 
-std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket)
+std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket, const std::string& master_socket_name)
 {
-  s_mc_message_int_t m = {};
-  m.type               = MessageType::FORK;
-  m.value              = getpid();
+  s_mc_message_fork_t m = {};
+  m.type                = MessageType::FORK;
+  xbt_assert(master_socket_name.size() == MC_SOCKET_NAME_LEN);
+  std::copy_n(begin(master_socket_name), MC_SOCKET_NAME_LEN, begin(m.socket_name));
   xbt_assert(get_channel().send(m) == 0, "Could not ask the app to fork on need.");
 
   int sock = accept(master_socket, nullptr /* I know who's connecting*/, nullptr);

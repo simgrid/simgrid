@@ -152,7 +152,7 @@ void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
   if (terminate_asap)
     ::_Exit(0);
 }
-void AppSide::handle_fork(const s_mc_message_int_t* msg)
+void AppSide::handle_fork(const s_mc_message_fork_t* msg)
 {
   int status;
   int pid;
@@ -174,13 +174,9 @@ void AppSide::handle_fork(const s_mc_message_int_t* msg)
 
     struct sockaddr_un addr = {};
     addr.sun_family         = AF_UNIX;
-    snprintf(addr.sun_path, 64, "/tmp/simgrid-mc-%" PRIu64, msg->value);
-    auto addr_size = offsetof(struct sockaddr_un, sun_path) + strlen(addr.sun_path);
-#ifdef __linux__
-    addr.sun_path[0] = '\0'; // abstract socket
-#endif
+    std::copy_n(begin(msg->socket_name), MC_SOCKET_NAME_LEN, addr.sun_path);
 
-    xbt_assert(connect(sock, (struct sockaddr*)&addr, addr_size) >= 0, "Cannot connect to Checker on %c%s: %s.",
+    xbt_assert(connect(sock, (struct sockaddr*)&addr, sizeof addr) >= 0, "Cannot connect to Checker on %c%s: %s.",
                (addr.sun_path[0] ? addr.sun_path[0] : '@'), addr.sun_path + 1, strerror(errno));
 
     channel_.reset_socket(sock);
@@ -330,8 +326,8 @@ void AppSide::handle_messages()
         break;
 
       case MessageType::FORK:
-        assert_msg_size("FORK", s_mc_message_int_t);
-        handle_fork((s_mc_message_int_t*)message_buffer.data());
+        assert_msg_size("FORK", s_mc_message_fork_t);
+        handle_fork((s_mc_message_fork_t*)message_buffer.data());
         break;
 
       case MessageType::WAIT_CHILD:

@@ -51,13 +51,11 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
                             0);
     xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
 
-    struct sockaddr_un serv_addr = {};
-    serv_addr.sun_family         = AF_UNIX;
-    snprintf(serv_addr.sun_path, 64, "/tmp/simgrid-mc-%d", getpid());
-    master_socket_name = serv_addr.sun_path;
-    auto addr_size = offsetof(struct sockaddr_un, sun_path) + strlen(serv_addr.sun_path);
+    master_socket_name = "/tmp/simgrid-mc-" + std::to_string(getpid());
+    master_socket_name.resize(MC_SOCKET_NAME_LEN); // truncate socket name if it's too long
+    master_socket_name.back() = '\0';              // ensure the data are null-terminated
 #ifdef __linux__
-    serv_addr.sun_path[0] = '\0'; // abstract socket, automatically removed after close
+    master_socket_name[0] = '\0'; // abstract socket, automatically removed after close
 #else
     unlink(master_socket_name.c_str()); // remove possible stale socket before bind
     atexit([]() {
@@ -68,21 +66,25 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
   }
 #endif
 
-    xbt_assert(bind(master_socket_, (struct sockaddr*)&serv_addr, addr_size) >= 0,
+    struct sockaddr_un serv_addr = {};
+    serv_addr.sun_family         = AF_UNIX;
+    master_socket_name.copy(serv_addr.sun_path, MC_SOCKET_NAME_LEN);
+
+    xbt_assert(bind(master_socket_, (struct sockaddr*)&serv_addr, sizeof serv_addr) >= 0,
                "Cannot bind the master socket to %c%s: %s.", (serv_addr.sun_path[0] ? serv_addr.sun_path[0] : '@'),
                serv_addr.sun_path + 1, strerror(errno));
 
     xbt_assert(listen(master_socket_, SOMAXCONN) >= 0, "Cannot listen to the master socket: %s.", strerror(errno));
 
     application_factory_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_, need_memory_introspection);
-    checker_side_        = application_factory_->clone(master_socket_);
+    checker_side_        = application_factory_->clone(master_socket_, master_socket_name);
   }
 }
 
 void RemoteApp::restore_initial_state()
 {
   if (initial_snapshot_ == nullptr) // No memory introspection
-    checker_side_ = application_factory_->clone(master_socket_);
+    checker_side_ = application_factory_->clone(master_socket_, master_socket_name);
 #if SIMGRID_HAVE_STATEFUL_MC
   else
     initial_snapshot_->restore(*checker_side_->get_remote_memory());

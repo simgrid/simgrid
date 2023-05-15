@@ -19,6 +19,7 @@
 
 #include <array>
 #include <cstdint>
+#include <sys/un.h>
 
 // ***** Messages
 namespace simgrid::mc {
@@ -32,6 +33,7 @@ XBT_DECLARE_ENUM_CLASS(MessageType, NONE, NEED_MEMINFO, NEED_MEMINFO_REPLY, FORK
 } // namespace simgrid::mc
 
 constexpr unsigned MC_MESSAGE_LENGTH                 = 512;
+constexpr unsigned MC_SOCKET_NAME_LEN                = sizeof(sockaddr_un::sun_path);
 constexpr unsigned SIMCALL_SERIALIZATION_BUFFER_SIZE = 2048;
 
 /** Basic structure for a MC message
@@ -85,6 +87,11 @@ struct s_mc_message_register_symbol_t {
 struct s_mc_message_need_meminfo_reply_t {
   simgrid::mc::MessageType type;
   xbt_mheap_t mmalloc_default_mdp;
+};
+
+struct s_mc_message_fork_t {
+  simgrid::mc::MessageType type;
+  std::array<char, MC_SOCKET_NAME_LEN> socket_name;
 };
 
 struct s_mc_message_simcall_execute_t {
