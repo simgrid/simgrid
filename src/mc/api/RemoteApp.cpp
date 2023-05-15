@@ -63,7 +63,6 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
         unlink(master_socket_name.c_str());
       master_socket_name.clear();
     });
-  }
 #endif
 
     struct sockaddr_un serv_addr = {};
