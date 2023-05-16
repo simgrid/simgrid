@@ -173,4 +173,11 @@ Operation
 
 .. doxygengroup:: plugin_operation
 
+.. _plugin_photovoltaic:
+
+Photovoltaic
+===========
+
+.. doxygengroup:: plugin_photovoltaic
+
 ..  LocalWords:  SimGrid

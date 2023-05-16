@@ -356,6 +356,8 @@ include examples/cpp/operation-switch-host/s4u-operation-switch-host.cpp
 include examples/cpp/operation-switch-host/s4u-operation-switch-host.tesh
 include examples/cpp/operation-variable-load/s4u-operation-variable-load.cpp
 include examples/cpp/operation-variable-load/s4u-operation-variable-load.tesh
+include examples/cpp/photovoltaic-simple/s4u-photovoltaic-simple.cpp
+include examples/cpp/photovoltaic-simple/s4u-photovoltaic-simple.tesh
 include examples/cpp/platform-comm-serialize/s4u-platform-comm-serialize.cpp
 include examples/cpp/platform-comm-serialize/s4u-platform-comm-serialize.tesh
 include examples/cpp/platform-failures/s4u-platform-failures.cpp
@@ -1832,6 +1834,7 @@ include examples/platforms/onelink.xml
 include examples/platforms/optorsim/gridpp_grid_2004.conf
 include examples/platforms/optorsim/lcg_sept2004_grid.conf
 include examples/platforms/optorsim/transform_optorsim_platform.pl
+include examples/platforms/photovoltaic_platform.xml
 include examples/platforms/profiles/fafard_state.profile
 include examples/platforms/profiles/faulty_host.profile
 include examples/platforms/profiles/ginette_state.profile
@@ -1932,6 +1935,7 @@ include include/simgrid/plugins/live_migration.h
 include include/simgrid/plugins/load.h
 include include/simgrid/plugins/ns3.hpp
 include include/simgrid/plugins/operation.hpp
+include include/simgrid/plugins/photovoltaic.hpp
 include include/simgrid/s4u.hpp
 include include/simgrid/s4u/Activity.hpp
 include include/simgrid/s4u/Actor.hpp
@@ -2290,6 +2294,7 @@ include src/plugins/link_energy.cpp
 include src/plugins/link_energy_wifi.cpp
 include src/plugins/link_load.cpp
 include src/plugins/operation.cpp
+include src/plugins/photovoltaic.cpp
 include src/plugins/vm/VmLiveMigration.cpp
 include src/plugins/vm/VmLiveMigration.hpp
 include src/plugins/vm/dirty_page_tracking.cpp

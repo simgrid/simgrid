@@ -30,6 +30,11 @@ New plugin: Battery
  - Enable the management of batteries on hosts.
  - Documentation: https://simgrid.frama.io/simgrid/Plugins.html#battery
  - Examples: examples/cpp/battery-*
+
+New plugin: Photovoltaic
+ - Enable the management of photovoltaic panels on hosts.
+ - Documentation: https://simgrid.frama.io/simgrid/Plugins.html#photovoltaic
+ - Examples: examples/cpp/photovoltaic-*
   
 Kernel:
  - optimize an internal datastructure (use a set instead of a list for ongoing activities),
