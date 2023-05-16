@@ -32,10 +32,10 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
     const auto a4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 4);
 
     Execution execution;
-    execution.push_transition(a1.get());
-    execution.push_transition(a2.get());
-    execution.push_transition(a3.get());
-    execution.push_transition(a4.get());
+    execution.push_transition(a1);
+    execution.push_transition(a2);
+    execution.push_transition(a3);
+    execution.push_transition(a4);
 
     SECTION("Happens-before is irreflexive")
     {
@@ -78,10 +78,10 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
     // the another
 
     Execution execution;
-    execution.push_transition(a1.get());
-    execution.push_transition(a2.get());
-    execution.push_transition(a3.get());
-    execution.push_transition(a4.get());
+    execution.push_transition(a1);
+    execution.push_transition(a2);
+    execution.push_transition(a3);
+    execution.push_transition(a4);
 
     SECTION("Happens-before is irreflexive")
     {
@@ -124,11 +124,11 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
     const auto a5 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
 
     Execution execution;
-    execution.push_transition(a1.get());
-    execution.push_transition(a2.get());
-    execution.push_transition(a3.get());
-    execution.push_transition(a4.get());
-    execution.push_transition(a5.get());
+    execution.push_transition(a1);
+    execution.push_transition(a2);
+    execution.push_transition(a3);
+    execution.push_transition(a4);
+    execution.push_transition(a5);
 
     // Nothing comes before event 0
     REQUIRE(execution.get_racing_events_of(0) == std::unordered_set<Execution::EventHandle>{});
@@ -158,10 +158,10 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
     const auto a4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
 
     Execution execution;
-    execution.push_transition(a1.get());
-    execution.push_transition(a2.get());
-    execution.push_transition(a3.get());
-    execution.push_transition(a4.get());
+    execution.push_transition(a1);
+    execution.push_transition(a2);
+    execution.push_transition(a3);
+    execution.push_transition(a4);
 
     // Nothing comes before event 0
     REQUIRE(execution.get_racing_events_of(0) == std::unordered_set<Execution::EventHandle>{});
@@ -207,11 +207,11 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
     const auto a5 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
 
     Execution execution;
-    execution.push_transition(a1.get());
-    execution.push_transition(a2.get());
-    execution.push_transition(a3.get());
-    execution.push_transition(a4.get());
-    execution.push_transition(a5.get());
+    execution.push_transition(a1);
+    execution.push_transition(a2);
+    execution.push_transition(a3);
+    execution.push_transition(a4);
+    execution.push_transition(a5);
 
     REQUIRE(execution.get_racing_events_of(4) == std::unordered_set<Execution::EventHandle>{0});
   }
@@ -230,16 +230,16 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
     const auto a9 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
 
     Execution execution;
-    execution.push_transition(a0.get());
-    execution.push_transition(a1.get());
-    execution.push_transition(a2.get());
-    execution.push_transition(a3.get());
-    execution.push_transition(a4.get());
-    execution.push_transition(a5.get());
-    execution.push_transition(a6.get());
-    execution.push_transition(a7.get());
-    execution.push_transition(a8.get());
-    execution.push_transition(a9.get());
+    execution.push_transition(a0);
+    execution.push_transition(a1);
+    execution.push_transition(a2);
+    execution.push_transition(a3);
+    execution.push_transition(a4);
+    execution.push_transition(a5);
+    execution.push_transition(a6);
+    execution.push_transition(a7);
+    execution.push_transition(a8);
+    execution.push_transition(a9);
 
     // Nothing comes before event 0
     REQUIRE(execution.get_racing_events_of(0) == std::unordered_set<Execution::EventHandle>{});

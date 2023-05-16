@@ -134,6 +134,7 @@ set(MC_UNIT_TESTS src/mc/sosp/Snapshot_test.cpp
                   src/mc/sosp/PageStore_test.cpp
                   src/mc/explo/odpor/ClockVector_test.cpp
                   src/mc/explo/odpor/Execution_test.cpp
+                  src/mc/explo/odpor/WakeupTree_test.cpp
                   src/mc/explo/udpor/EventSet_test.cpp
                   src/mc/explo/udpor/Unfolding_test.cpp
                   src/mc/explo/udpor/UnfoldingEvent_test.cpp

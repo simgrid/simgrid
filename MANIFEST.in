@@ -2197,6 +2197,7 @@ include src/mc/explo/odpor/Execution.hpp
 include src/mc/explo/odpor/Execution_test.cpp
 include src/mc/explo/odpor/WakeupTree.cpp
 include src/mc/explo/odpor/WakeupTree.hpp
+include src/mc/explo/odpor/WakeupTree_test.cpp
 include src/mc/explo/odpor/WakeupTreeIterator.cpp
 include src/mc/explo/odpor/WakeupTreeIterator.hpp
 include src/mc/explo/odpor/odpor_forward.hpp
