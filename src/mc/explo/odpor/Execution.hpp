@@ -142,15 +142,19 @@ public:
   std::optional<aid_t> get_first_sdpor_initial_from(EventHandle e, std::unordered_set<aid_t> backtrack_set) const;
 
   /**
-   * @brief For a given sequence of actors `v` and a sequence of transitions `w`,
-   * computes the sequence, if any, that should be inserted as a child a wakeup tree for
-   * this execution
-   */
-  std::optional<PartialExecution> get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,
-                                                                         const PartialExecution& w) const;
-
-  /**
-   * @brief For a given reversible race
+   * @brief Computes the analogous lines from the SDPOR algorithm
+   * in the ODPOR algorithm, viz. the intersection of the slee set
+   * and the set of weak initials with respect to the given pair
+   * of racing events
+   *
+   * This method computes lines 4-6 of the ODPOR pseudocode, viz.:
+   *
+   * 4 | let E' := pre(E, e)
+   * 5 | let v := notdep(e, E).e'^
+   * 6 | if sleep(E') ∩ WI_[E'](v) = empty then ...
+   *
+   * The sequence `v` is computed and returned as needed, based on whether
+   * the check on line 6 passes.
    *
    * @invariant: This method assumes that events `e` and
    * `e_prime` are in a *reversible* race as is the case
@@ -159,7 +163,61 @@ public:
   std::optional<PartialExecution> get_odpor_extension_from(EventHandle e, EventHandle e_prime,
                                                            const State& state_at_e) const;
 
+  /**
+   * @brief For a given sequence of actors `v` and a sequence of transitions `w`,
+   * computes the sequence, if any, that should be inserted as a child in wakeup tree for
+   * this execution
+   *
+   * Recall that the procedure for implementing the insertion
+   * is outlined in section 6.2 of Abdulla et al. 2017 as follows:
+   *
+   * | Let `v` be the smallest (w.r.t to "<") sequence in [the tree] B
+   * | such that `v ~_[E] w`. If `v` is a leaf node, the tree can be left
+   * | unmodified.
+   * |
+   * | Otherwise let `w'` be the shortest sequence such that `w [=_[E] v.w'`
+   * | and add `v.w'` as a new leaf, ordered after all already existing nodes
+   * | of the form `v.w''`
+   *
+   * This method computes the result `v.w'` as needed (viz. only if `v ~_[E] w`
+   * with respect to this execution `E`)
+   *
+   * The procedure for determining `v ~_[E] w` is given as Lemma 4.6 of
+   * Abdulla et al. 2017:
+   *
+   * | The relation `v ~_[E] w` holds if either
+   * | (1) v = <>, or
+   * | (2) v := p.v' and either
+   * |     (a) p in I_[E](w) and `v' ~_[E.p] (w \ p)`
+   * |     (b) E ⊢ p ◊ w and `v' ~_[E.p] w`
+   *
+   * @invariant: This method assumes that `E.v` is a valid execution, viz.
+   * that the events of `E` are sufficient to enabled `v_0` and that
+   * `v_0, ..., v_{i - 1}` are sufficient to enable `v_i`. This is the
+   * case when e.g. `v := notdep(e, E).p` for example in ODPOR
+   *
+   * @returns a partial execution `v.w'` that should be inserted
+   * as a child of a wakeup tree node with the associated sequence `v`.
+   */
+  std::optional<PartialExecution> get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,
+                                                                         const PartialExecution& w) const;
+
+  /**
+   * @brief For a given sequence `w`, determines whether p in I_[E](w)
+   *
+   * @note: You may notice that some of the other methods compute this
+   * value as well. What we notice, though, in those cases is that
+   * we are repeatedly asking about initials with respect to an execution.
+   * It is better, then, to bunch the work together in those cases to
+   * get asymptotically better results (e.g. instead of calling with all
+   * `N` actors, we can process them "in-parallel" as is done with the
+   * computation of SDPOR initials)
+   */
   bool is_initial_after_execution(const PartialExecution& w, aid_t p) const;
+
+  /**
+   * @brief Determines whether `E ⊢ p ◊ w` given the next action taken by `p`
+   */
   bool is_independent_with_execution(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const;
 
   /**

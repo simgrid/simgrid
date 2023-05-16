@@ -14,6 +14,18 @@
 
 namespace simgrid::mc::odpor {
 
+/**
+ * @brief A forward-iterator that performs a postorder traversal
+ * of the nodes of a WakeupTree
+ *
+ * Inserting a sequence `w` into a wakeup tree `B` with respect to
+ * some execution `E` requires determining the "<-minimal" node `N`
+ * with sequence `v` in the tree such that `v ~_[E] w`. The "<" relation
+ * over a wakeup tree orders its nodes by first recursively ordering all
+ * children of a node `N` followed by the node `N` itself, viz. a postorder.
+ * This iterator provides such a postorder traversal over the nodes in the
+ * wakeup tree.
+ */
 struct WakeupTreeIterator
     : public boost::iterator_facade<WakeupTreeIterator, WakeupTreeNode*, boost::forward_traversal_tag> {
 public:

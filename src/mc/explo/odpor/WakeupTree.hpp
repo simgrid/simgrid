@@ -63,7 +63,7 @@ private:
    *
    * @invariant Each node event maps itself to the owner of that node,
    * i.e. the unique pointer that manages the data at the address. The tree owns all
-   * of the addresses that are referenced by the nodes WakeupTreeNode and Configuration.
+   * of the addresses that are referenced by the nodes WakeupTreeNode.
    * ODPOR guarantees that nodes are persisted as long as needed.
    */
   std::unordered_map<WakeupTreeNode*, std::unique_ptr<WakeupTreeNode>> nodes_;
@@ -105,6 +105,26 @@ public:
    * @brief Inserts an sequence `seq` of processes into the tree
    * such that that this tree is a wakeup tree relative to the
    * given execution
+   *
+   * A key component of managing wakeup trees in ODPOR is
+   * determining what should be inserted into a wakeup tree.
+   * The procedure for implementing the insertion is outlined in section 6.2
+   * of Abdulla et al. 2017 as follows:
+   *
+   * | Let `v` be the smallest (w.r.t to "<") sequence in [the tree] B
+   * | such that `v ~_[E] w`. If `v` is a leaf node, the tree can be left
+   * | unmodified.
+   * |
+   * | Otherwise let `w'` be the shortest sequence such that `w [=_[E] v.w'`
+   * | and add `v.w'` as a new leaf, ordered after all already existing nodes
+   * | of the form `v.w''`
+   *
+   * This method performs the postorder search of part one and the insertion of
+   * `v.w'` of part two of the above procedure. Note that the execution will
+   * provide `v.w'` (see `Execution::get_shortest_odpor_sq_subset_insertion()`).
+   *
+   * @invariant: It is assumed that this tree is a wakeup tree
+   * with respect to the given execution `E`
    */
   void insert(const Execution& E, const PartialExecution& seq);
 };
