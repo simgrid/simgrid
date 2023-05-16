@@ -278,3 +278,19 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
     REQUIRE(execution.get_racing_events_of(9) == std::unordered_set<Execution::EventHandle>{6});
   }
 }
+
+TEST_CASE("simgrid::mc::odpor::Execution: Testing Races and Conditions")
+{
+  const auto a1 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
+  const auto a2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+  const auto a3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+  const auto a4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto a5 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+
+  Execution execution;
+  execution.push_transition(a1);
+  execution.push_transition(a2);
+  execution.push_transition(a3);
+  execution.push_transition(a4);
+  execution.push_transition(a5);
+}

@@ -154,6 +154,9 @@ void WakeupTree::insert(const Execution& E, const PartialExecution& w)
       // Insert the sequence as a child of `node`, but only
       // if the node is not already a leaf
       if (not node->is_leaf() or node == this->root_) {
+        xbt_assert(!shortest_sequence.value().empty(), "A successful insertion into an interior"
+                                                       "node of a wakeup tree should never involve "
+                                                       "an empty sequence (yet here we are, with an empty sequence)");
         WakeupTreeNode* new_node = this->make_node(shortest_sequence.value());
         node->add_child(new_node);
       }
