@@ -199,6 +199,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
 
   SECTION("Example 3: Testing 'Lock' Example")
   {
+    // In this example,
     const auto a1 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
     const auto a2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
     const auto a3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
@@ -213,5 +214,67 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
     execution.push_transition(a5.get());
 
     REQUIRE(execution.get_racing_events_of(4) == std::unordered_set<Execution::EventHandle>{0});
+  }
+
+  SECTION("Example 4: Indirect Races")
+  {
+    const auto a0 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto a1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto a2 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto a3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto a4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 6);
+    const auto a5 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto a6 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto a7 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto a8 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
+    const auto a9 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
+
+    Execution execution;
+    execution.push_transition(a0.get());
+    execution.push_transition(a1.get());
+    execution.push_transition(a2.get());
+    execution.push_transition(a3.get());
+    execution.push_transition(a4.get());
+    execution.push_transition(a5.get());
+    execution.push_transition(a6.get());
+    execution.push_transition(a7.get());
+    execution.push_transition(a8.get());
+    execution.push_transition(a9.get());
+
+    // Nothing comes before event 0
+    REQUIRE(execution.get_racing_events_of(0) == std::unordered_set<Execution::EventHandle>{});
+
+    // Events 0 and 1 are independent
+    REQUIRE(execution.get_racing_events_of(1) == std::unordered_set<Execution::EventHandle>{});
+
+    // Events 1 and 2 are independent
+    REQUIRE(execution.get_racing_events_of(2) == std::unordered_set<Execution::EventHandle>{});
+
+    // Events 1 and 3 are independent; the rest are executed by the same actor
+    REQUIRE(execution.get_racing_events_of(3) == std::unordered_set<Execution::EventHandle>{});
+
+    // 1. Events 3 and 4 race
+    // 2. Events 2 and 4 do NOT race since 2 --> 3 --> 4
+    // 3. Events 1 and 4 do NOT race since 1 is independent of 4
+    // 4. Events 0 and 4 do NOT race since 0 --> 2 --> 4
+    REQUIRE(execution.get_racing_events_of(4) == std::unordered_set<Execution::EventHandle>{3});
+
+    // Events 4 and 5 race; and because everyone before 4 (including 3) either
+    // a) happens-before, b) races, or c) does not race with 4, 4 is the race
+    REQUIRE(execution.get_racing_events_of(5) == std::unordered_set<Execution::EventHandle>{4});
+
+    // The same logic that applied to event 5 applies to event 6
+    REQUIRE(execution.get_racing_events_of(6) == std::unordered_set<Execution::EventHandle>{5});
+
+    // The same logic applies, except that this time since events 6 and 7 are run
+    // by the same actor, they don'tt actually race with one another
+    REQUIRE(execution.get_racing_events_of(7) == std::unordered_set<Execution::EventHandle>{});
+
+    // Event 8 is independent with everything
+    REQUIRE(execution.get_racing_events_of(8) == std::unordered_set<Execution::EventHandle>{});
+
+    // Event 9 is independent with events 7 and 8; event 6, however, is in race with 9.
+    // The same logic above eliminates events before 6
+    REQUIRE(execution.get_racing_events_of(9) == std::unordered_set<Execution::EventHandle>{6});
   }
 }

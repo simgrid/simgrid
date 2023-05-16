@@ -111,20 +111,44 @@ public:
   /**
    * @brief Computes the "core" portion the SDPOR algorithm,
    * viz. the intersection of the backtracking set and the
-   * set of initials with respect to the end
+   * set of initials with respect to the *last* event added
+   * to the execution
+   *
+   * The "core" portion of the SDPOR algorithm is found on
+   * lines 6-9 of the pseudocode:
+   *
+   * 6 | let E' := pre(E, e)
+   * 7 | let v :=  notdep(e, E).p
+   * 8 | if I_[E'](v) ∩ backtrack(E') = empty then
+   * 9 |    --> add some q in I_[E'](v) to backtrack(E')
+   *
+   * This method computes all of the lines simultaneously,
+   * returning some actor `q` if it passes line 8 and exists.
+   * The event `e` and the set `backtrack(E')` are the provided
+   * arguments to the method.
+   *
+   * @param e the event with respect to which to determine
+   * whether a backtrack point needs to be added for the
+   * prefix corresponding to the execution prior to `e`
+   *
+   * @param backtrack_set The set of actors which should
+   * not be considered for selection as an SDPOR initial.
+   * While this set need not necessarily correspond to the
+   * backtrack set `backtrack(E')`, doing so provides what
+   * is expected for SDPOR
    *
    * See the SDPOR algorithm pseudocode in [1] for more
    * details for the context of the function.
    *
    * @invariant: This method assumes that events `e` and
    * `e' := get_latest_event_handle()` are in a *reversible* race
-   * as is the case in SDPOR
+   * as is explicitly the case in SDPOR
    *
    * @returns an actor not contained in `disqualified` which
    * can serve as an initial to reverse the race between `e`
    * and `e'`
    */
-  std::optional<aid_t> get_first_sdpor_initial_from(EventHandle e, std::unordered_set<aid_t> disqualified) const;
+  std::optional<aid_t> get_first_sdpor_initial_from(EventHandle e, std::unordered_set<aid_t> backtrack_set) const;
 
   /**
    * @brief Determines the event associated with
@@ -199,16 +223,6 @@ public:
    * the happens-before procedure, which is nontrivial...
    */
   bool happens_before(EventHandle e1, EventHandle e2) const;
-
-  /**
-   * @brief Removes the last event of the execution,
-   * if such an event exists
-   *
-   * @note: When you remove events from an execution, any views
-   * of the execution referring to those removed events
-   * become invalidated
-   */
-  void pop_latest();
 
   /**
    * @brief Extends the execution by one more step

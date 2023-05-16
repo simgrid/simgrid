@@ -10,14 +10,45 @@ using namespace simgrid::mc;
 
 TEST_CASE("simgrid::mc::ClockVector: Constructing Vectors")
 {
-  ClockVector cv;
-  REQUIRE(cv.size() == 0);
+  SECTION("Without values")
+  {
+    ClockVector cv;
+    REQUIRE(cv.size() == 0);
 
-  // Verify `cv` doesn't map any values
-  REQUIRE_FALSE(cv.get(0).has_value());
-  REQUIRE_FALSE(cv.get(1).has_value());
-  REQUIRE_FALSE(cv.get(2).has_value());
-  REQUIRE_FALSE(cv.get(3).has_value());
+    // Verify `cv` doesn't map any values
+    REQUIRE_FALSE(cv.get(0).has_value());
+    REQUIRE_FALSE(cv.get(1).has_value());
+    REQUIRE_FALSE(cv.get(2).has_value());
+    REQUIRE_FALSE(cv.get(3).has_value());
+  }
+
+  SECTION("With initial values")
+  {
+    ClockVector cv{
+        {1, 5}, {3, 1}, {7, 10}, {6, 5}, {8, 1}, {10, 10},
+    };
+    REQUIRE(cv.size() == 6);
+
+    // Verify `cv` maps each value
+    REQUIRE(cv.get(1).has_value());
+    REQUIRE(cv.get(1).value() == 5);
+    REQUIRE(cv[1] == 5);
+    REQUIRE(cv.get(3).has_value());
+    REQUIRE(cv.get(3).value() == 1);
+    REQUIRE(cv[3] == 1);
+    REQUIRE(cv.get(7).has_value());
+    REQUIRE(cv.get(7).value() == 10);
+    REQUIRE(cv[7] == 10);
+    REQUIRE(cv.get(6).has_value());
+    REQUIRE(cv.get(6).value() == 5);
+    REQUIRE(cv[6] == 5);
+    REQUIRE(cv.get(8).has_value());
+    REQUIRE(cv.get(8).value() == 1);
+    REQUIRE(cv[8] == 1);
+    REQUIRE(cv.get(10).has_value());
+    REQUIRE(cv.get(10).value() == 10);
+    REQUIRE(cv[10] == 10);
+  }
 }
 
 TEST_CASE("simgrid::mc::ClockVector: Testing operator[]")

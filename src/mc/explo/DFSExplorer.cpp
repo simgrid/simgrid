@@ -286,7 +286,7 @@ void DFSExplorer::run()
         if (prev_state->is_actor_enabled(p)) {
           // NOTE: To incorporate the idea of attempting to select the "best"
           // backtrack point into SDPOR, instead of selecting the `first` initial,
-          // we should instead compute all choices and decide which is bes
+          // we should instead compute all choices and decide which is best
           const std::optional<aid_t> q =
               execution_seq_.get_first_sdpor_initial_from(racing_event_handle, prev_state->get_backtrack_set());
           if (q.has_value()) {

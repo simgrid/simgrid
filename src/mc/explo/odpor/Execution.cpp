@@ -24,11 +24,6 @@ void Execution::push_transition(const Transition* t)
   contents_.push_back(Event({t, max_clock_vector}));
 }
 
-void Execution::pop_latest()
-{
-  contents_.pop_back();
-}
-
 std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execution::EventHandle target) const
 {
   std::unordered_set<Execution::EventHandle> racing_events;
@@ -88,6 +83,16 @@ std::optional<aid_t> Execution::get_first_sdpor_initial_from(EventHandle e,
   if (empty()) {
     return std::nullopt;
   }
+
+  // To actually compute `I_[E'](v) ∩ backtrack(E')`, we must
+  // first compute `E'` and "move" in the direction of `v`.
+  // We perform a scan over `E` (this execution) and make
+  // note of any events which occur after `e` but don't
+  // "happen-after" `e` by pushing them onto `E'`. Note that
+  // correctness is still preserved in computing `v` "on-the-fly"
+  // to determine if an actor `q` is an initial for `E'` after `v`:
+  // only those events that "occur-before" `v`
+  // could happen-before `v` for any valid happens-before relation.
 
   // First, grab `E' := pre(e, E)` and determine what actor `p` is
   // TODO: Instead of copying around these big structs, it
