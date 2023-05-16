@@ -12,32 +12,31 @@ namespace simgrid::mc {
 
 class Strategy {
 protected:
-  /** State's exploration status by actor. Not all the actors are there, only the ones that are ready-to-run in this
-   * state */
+  /** State's exploration status by actor. All actors should be present, eventually disabled for now. */
   std::map<aid_t, ActorState> actors_to_run_;
 
 public:
-  Strategy()                = default;
-  virtual ~Strategy()       = default;
-  Strategy(const Strategy&) = delete;
-  Strategy& operator=(const Strategy&)
-  { /* nothing to copy over while cloning */
-    return *this;
-  }
+  virtual void copy_from(const Strategy*) = 0;
+  Strategy()                              = default;
+  virtual ~Strategy()                     = default;
 
   virtual std::pair<aid_t, int> next_transition() const = 0;
   virtual void execute_next(aid_t aid, RemoteApp& app)  = 0;
-  virtual void consider_best()                          = 0;
 
   // Mark the first enabled and not yet done transition as todo
   // If there's already a transition marked as todo, does nothing
+  virtual void consider_best() = 0;
+
+  // Mark aid as todo. If it makes no sense, ie. if it is already done or not enabled,
+  // raise an error
   void consider_one(aid_t aid)
   {
     xbt_assert(actors_to_run_.at(aid).is_enabled() and not actors_to_run_.at(aid).is_done(),
                "Tried to mark as TODO actor %ld but it is either not enabled or already done", aid);
     actors_to_run_.at(aid).mark_todo();
   }
-  // Matk as todo all actors enabled that are not done yet
+  // Mark as todo all actors enabled that are not done yet and return the number
+  // of marked actors
   unsigned long consider_all()
   {
     unsigned long count = 0;

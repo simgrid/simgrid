@@ -623,8 +623,10 @@ set(MC_SRC_STATEFUL
   src/mc/mc_record.cpp
 
   src/mc/api/strategy/BasicStrategy.hpp
+  src/mc/api/strategy/MaxMatchComm.hpp
+  src/mc/api/strategy/MinMatchComm.hpp
   src/mc/api/strategy/Strategy.hpp
-  src/mc/api/strategy/WaitStrategy.hpp
+  src/mc/api/strategy/UniformStrategy.hpp
   
   src/xbt/mmalloc/mm_interface.c
   )

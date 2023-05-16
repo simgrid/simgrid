@@ -283,7 +283,7 @@ std::shared_ptr<State> DFSExplorer::best_opened_state()
       continue;
     if (valid != current)
       *valid = std::move(*current);
-    if (best == end(opened_states_) || prio > best_prio) {
+    if (best == end(opened_states_) || prio < best_prio) {
       best_prio = prio;
       best      = valid;
     }

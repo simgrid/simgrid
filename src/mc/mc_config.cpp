@@ -69,8 +69,11 @@ simgrid::config::Flag<std::string> _sg_mc_strategy{
     "model-check/strategy",
     "Specify the the kind of heuristic to use for guided model-checking",
     "none",
-    {{"none", "No specific strategy: simply pick the first available transistion."},
-     {"nb_wait", "Take any enabled wait transition, to reduce the distance between an async and its wait."}}};
+    {{"none", "No specific strategy: simply pick the first available transistion and act as a DFS."},
+     {"max_match_comm", "Try to minimize the number of in-fly communication by appairing matching send and receive."},
+     {"min_match_comm", "Try to maximize the number of in-fly communication by not appairing matching send and receive."},
+     {"uniform", "No specific strategy: choices are made randomly based on a uniform sampling."}
+    }};
 
 #if SIMGRID_HAVE_STATEFUL_MC
 simgrid::config::Flag<int> _sg_mc_checkpoint{

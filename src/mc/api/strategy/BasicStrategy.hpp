@@ -8,16 +8,21 @@
 
 namespace simgrid::mc {
 
-/** Basic MC guiding class which corresponds to no guide at all (random choice) */
+/** Basic MC guiding class which corresponds to no guide. When asked for different states
+ *  it will follow a depth first search politics to minize the number of opened states. */
 class BasicStrategy : public Strategy {
+    int depth_ = 100000; // Arbitrary starting point. next_transition must return a positiv value to work with threshold in DFSExplorer
+
 public:
+  void copy_from(const Strategy* strategy) override
+  {
+    const BasicStrategy* cast_strategy = static_cast<BasicStrategy const*>(strategy);
+    xbt_assert(cast_strategy != nullptr);
+    depth_ = cast_strategy->depth_ - 1;
+    xbt_assert(depth_ > 0, "The exploration reached a depth greater than 100000. We will stop here to prevent weird interaction with DFSExplorer.");
+  }
   BasicStrategy()                     = default;
   ~BasicStrategy() override           = default;
-  BasicStrategy(const BasicStrategy&) = delete;
-  BasicStrategy& operator=(const BasicStrategy&)
-  { /* nothing to copy over while cloning */
-    return *this;
-  }
 
   std::pair<aid_t, int> next_transition() const override
   {
@@ -27,9 +32,9 @@ public:
         continue;
       }
 
-      return std::make_pair(aid, 1);
+      return std::make_pair(aid, depth_);
     }
-    return std::make_pair(-1, 0);
+    return std::make_pair(-1, depth_);
   }
   void execute_next(aid_t aid, RemoteApp& app) override { return; }
 
