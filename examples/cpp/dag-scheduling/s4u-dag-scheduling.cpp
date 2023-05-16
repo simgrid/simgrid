@@ -66,11 +66,11 @@ static sg4::Host* get_best_host(const sg4::ExecPtr exec, double* min_finish_time
         // We use the user data field to store the finish time of the predecessor of the comm, i.e., its potential
         // start time
         data_available = *comm->get_data<double>() + redist_time;
-     }
+      }
 
       /* no transfer, control dependency */
-      if (const auto* exec = dynamic_cast<sg4::Exec*>(parent.get()))
-        data_available = exec->get_finish_time();
+      if (const auto* parent_exec = dynamic_cast<sg4::Exec*>(parent.get()))
+        data_available = parent_exec->get_finish_time();
 
       if (last_data_available < data_available)
         last_data_available = data_available;
@@ -148,9 +148,9 @@ int main(int argc, char** argv)
   auto dax = sg4::create_DAG_from_DAX(argv[2]);
 
   /* Schedule the root first */
-  double finish_time;
+  double root_finish_time;
   auto* root = static_cast<sg4::Exec*>(dax.front().get());
-  auto host  = get_best_host(root, &finish_time);
+  auto* host = get_best_host(root, &root_finish_time);
   schedule_on(root, host);
 
   e.run();
