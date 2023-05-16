@@ -261,7 +261,8 @@ public:
 
   AnyActivity* set_tracing_category(const std::string& category)
   {
-    xbt_assert(get_state() == State::INITED, "Cannot change the tracing category of an activity after its start");
+    xbt_assert(get_state() == State::INITED || get_state() == State::STARTING,
+               "Cannot change the tracing category of an activity after its start");
     tracing_category_ = category;
     return static_cast<AnyActivity*>(this);
   }
