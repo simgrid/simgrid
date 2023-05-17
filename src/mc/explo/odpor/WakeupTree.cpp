@@ -6,6 +6,7 @@
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "xbt/asserts.h"
+#include "xbt/string.hpp"
 
 #include <algorithm>
 #include <exception>
@@ -13,29 +14,34 @@
 
 namespace simgrid::mc::odpor {
 
-aid_t WakeupTreeNode::get_first_actor() const
-{
-  if (seq_.empty()) {
-    throw std::invalid_argument("Attempted to extract the first actor from "
-                                "a node in a wakeup tree representing the "
-                                "empty execution (likely the root node)");
-  }
-  return get_sequence().front()->aid_;
-}
-
 void WakeupTreeNode::add_child(WakeupTreeNode* node)
 {
   this->children_.push_back(node);
   node->parent_ = this;
 }
 
-WakeupTreeNode::~WakeupTreeNode()
+PartialExecution WakeupTreeNode::get_sequence() const
+{
+  // TODO: Prevent having to compute this at the node level
+  // and instead track this with the iterator
+  PartialExecution seq_;
+  const WakeupTreeNode* cur_node = this;
+  while (cur_node != nullptr and !cur_node->is_root()) {
+    seq_.push_front(cur_node->action_);
+    cur_node = cur_node->parent_;
+  }
+  return seq_;
+}
+
+void WakeupTreeNode::detatch_from_parent()
 {
   if (parent_ != nullptr) {
-    // TODO: We can probably be more clever here: when
-    // we add the child to a node, we could perhaps
-    // try instead to keep a reference to position of the
-    // child in the list of the parent.
+    // TODO: There may be a better method
+    // of keeping track of a node's reference to
+    // its parent, perhaps keeping track
+    // of a std::list<>::iterator instead.
+    // This would allow us to detach a node
+    // in O(1) instead of O(|children|) time
     parent_->children_.remove(this);
   }
 }
@@ -46,14 +52,40 @@ WakeupTree::WakeupTree(std::unique_ptr<WakeupTreeNode> root) : root_(root.get())
   this->insert_node(std::move(root));
 }
 
+std::vector<std::string> WakeupTree::get_single_process_texts() const
+{
+  std::vector<std::string> trace;
+  for (const auto* child : root_->children_) {
+    const auto t       = child->get_action();
+    const auto message = xbt::string_printf("Actor %ld: %s", t->aid_, t->to_string(true).c_str());
+    trace.push_back(std::move(message));
+  }
+  return trace;
+}
+
+std::optional<aid_t> WakeupTree::get_min_single_process_actor() const
+{
+  if (const auto node = get_min_single_process_node(); node.has_value()) {
+    return node.value()->get_actor();
+  }
+  return std::nullopt;
+}
+
+std::optional<WakeupTreeNode*> WakeupTree::get_min_single_process_node() const
+{
+  if (empty()) {
+    return std::nullopt;
+  }
+  // INVARIANT: The induced post-order relation always places children
+  // in order before the parent. The list of children maintained by
+  // each node represents that ordering, and the first child of
+  // the root is by definition the smallest of the single-process nodes
+  xbt_assert(not this->root_->children_.empty(), "What the");
+  return this->root_->children_.front();
+}
+
 WakeupTree WakeupTree::make_subtree_rooted_at(WakeupTreeNode* root)
 {
-  if (not root->is_single_process()) {
-    throw std::invalid_argument("Selecting subtrees is only defined for single-process nodes");
-  }
-
-  const aid_t p = root->get_first_actor();
-
   // Perform a BFS search to perform a deep copy of the portion
   // of the tree underneath and including `root`. Note that `root`
   // is contained within the context of a *different* wakeup tree;
@@ -68,24 +100,10 @@ WakeupTree WakeupTree::make_subtree_rooted_at(WakeupTreeNode* root)
 
     // For each child of the node corresponding to that in `subtree`,
     // make clones of each of its children and add them to `frontier`
-    // to that their children are added, and so on. Note that the subtree
-    // **explicitly** removes the first process from each child
+    // to that their children are added, and so on.
     for (WakeupTreeNode* child_in_other_tree : node_in_other_tree->get_ordered_children()) {
-      auto p_w           = child_in_other_tree->get_sequence();
-      const auto p_again = p_w.front()->aid_;
-
-      // INVARIANT: A nodes of a wakeup tree form a prefix-closed set;
-      // this means that any child node `c` of a node `n` must contain
-      // `n.get_sequence()` as a prefix of `c.get_sequence()`
-      xbt_assert(p_again == p,
-                 "Invariant Violation: The wakeup tree from which a subtree with actor "
-                 "`%ld` is being taken is not prefix free! The child node starts with "
-                 "`%ld` while the parent is `%ld`! This indicates that there "
-                 "is a bug in the insertion logic for the wakeup tree",
-                 p, p_again, p);
-      p_w.pop_front();
-
-      WakeupTreeNode* child_equivalent = subtree.make_node(p_w);
+      WakeupTreeNode* child_equivalent = subtree.make_node(child_in_other_tree->get_action());
+      subtree_equivalent->add_child(child_equivalent);
       frontier.push_back(std::make_pair(child_in_other_tree, child_equivalent));
     }
   }
@@ -111,9 +129,19 @@ void WakeupTree::remove_subtree_rooted_at(WakeupTreeNode* root)
   }
 
   // After having found each node with BFS, now we can
-  // remove them. This prevents the "joys" of iteration during mutation
+  // remove them. This prevents the "joys" of iteration during mutation.
+  // We also remove the `root` from being referenced by its own parent (since
+  // it will soon be destroyed)
+  root->detatch_from_parent();
   for (WakeupTreeNode* node_to_remove : subtree_contents) {
     this->remove_node(node_to_remove);
+  }
+}
+
+void WakeupTree::remove_min_single_process_subtree()
+{
+  if (const auto node = get_min_single_process_node(); node.has_value()) {
+    remove_subtree_rooted_at(node.value());
   }
 }
 
@@ -123,9 +151,9 @@ bool WakeupTree::contains(WakeupTreeNode* node) const
          this->nodes_.end();
 }
 
-WakeupTreeNode* WakeupTree::make_node(const PartialExecution& u)
+WakeupTreeNode* WakeupTree::make_node(std::shared_ptr<Transition> u)
 {
-  auto node                 = std::unique_ptr<WakeupTreeNode>(new WakeupTreeNode(u));
+  auto node                 = std::unique_ptr<WakeupTreeNode>(new WakeupTreeNode(std::move(u)));
   auto* node_handle         = node.get();
   this->nodes_[node_handle] = std::move(node);
   return node_handle;
@@ -157,8 +185,7 @@ void WakeupTree::insert(const Execution& E, const PartialExecution& w)
         xbt_assert(!shortest_sequence.value().empty(), "A successful insertion into an interior"
                                                        "node of a wakeup tree should never involve "
                                                        "an empty sequence (yet here we are, with an empty sequence)");
-        WakeupTreeNode* new_node = this->make_node(shortest_sequence.value());
-        node->add_child(new_node);
+        this->insert_sequence_after(node, shortest_sequence.value());
       }
       // Since we're following the post-order traversal of the tree,
       // the first such node we see is the smallest w.r.t "<"
@@ -169,6 +196,16 @@ void WakeupTree::insert(const Execution& E, const PartialExecution& w)
           "prior execution). If we've reached this point, this implies either that "
           "the wakeup tree traversal is broken or that computation of the shortest "
           "sequence to insert into the tree is broken");
+}
+
+void WakeupTree::insert_sequence_after(WakeupTreeNode* node, const PartialExecution& w)
+{
+  WakeupTreeNode* cur_node = node;
+  for (const auto& w_i : w) {
+    WakeupTreeNode* new_node = this->make_node(w_i);
+    cur_node->add_child(new_node);
+    cur_node = new_node;
+  }
 }
 
 } // namespace simgrid::mc::odpor

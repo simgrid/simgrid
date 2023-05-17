@@ -241,19 +241,19 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
 
   // Now we add `e_prime := <q, i>` to `E'.v` and repeat the same work
   {
-    E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
     v.push_back(get_event_with_handle(e_prime).get_transition());
-
-    const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
-    v_handles.push_back(e_prime_in_E_prime_v);
 
     if (not located_actor_in_initial) {
       // It's possible `proc(e_prime)` is an initial
+      E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
       const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
       v_handles.push_back(e_prime_in_E_prime_v);
-      located_actor_in_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& e_loc) {
-        return E_prime_v.happens_before(e_loc, e_prime_in_E_prime_v);
-      });
+
+      const aid_t q            = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v);
+      located_actor_in_initial = disqualified_actors.count(q) == 0 and
+                                 std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& e_loc) {
+                                   return E_prime_v.happens_before(e_loc, e_prime_in_E_prime_v);
+                                 });
     }
   }
 
@@ -269,8 +269,9 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   // any of them are independent with this execution after `v`. This
   // completes the check for weak initials
   for (const auto& [aid, astate] : state_at_e.get_actors_list()) {
-    if (sleeping_actors.count(astate.get_transition()->aid_) == 0 and
-        pre_E_e.is_independent_with_execution(v, astate.get_transition())) {
+    // TODO: We have to be able to react appropriately here when adding new
+    // types of transitions (multiple choices can be made :( )
+    if (sleeping_actors.count(aid) == 0 and pre_E_e.is_independent_with_execution(v, astate.get_transition(0))) {
       return v;
     }
   }
@@ -382,13 +383,6 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
     // Move one step forward in the direction of `v` and repeat
     E_v.push_transition(next_E_p);
   }
-
-  // Construct, finally, v.w' by adding `v` to the front of
-  // what remains of `w` after removing `v` as above
-  for (auto it = v.rbegin(); it != v.rend(); ++it) {
-    w_now.push_front(*it);
-  }
-
   return std::optional<PartialExecution>{std::move(w_now)};
 }
 

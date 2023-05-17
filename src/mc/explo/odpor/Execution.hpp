@@ -196,7 +196,7 @@ public:
    * `v_0, ..., v_{i - 1}` are sufficient to enable `v_i`. This is the
    * case when e.g. `v := notdep(e, E).p` for example in ODPOR
    *
-   * @returns a partial execution `v.w'` that should be inserted
+   * @returns a partial execution `w'` that should be inserted
    * as a child of a wakeup tree node with the associated sequence `v`.
    */
   std::optional<PartialExecution> get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,

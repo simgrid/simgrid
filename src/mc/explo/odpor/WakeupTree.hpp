@@ -8,17 +8,24 @@
 
 #include "src/mc/explo/odpor/WakeupTreeIterator.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
+#include "src/mc/transition/Transition.hpp"
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace simgrid::mc::odpor {
 
+/**
+ * @brief A single node in a wakeup tree
+ *
+ * Each node in a wakeup tree contains
+ */
 class WakeupTreeNode {
 private:
-  explicit WakeupTreeNode(const PartialExecution& u) : seq_(u) {}
-  explicit WakeupTreeNode(PartialExecution&& u) : seq_(std::move(u)) {}
+  explicit WakeupTreeNode(std::shared_ptr<Transition> u) : action_(u) {}
 
   WakeupTreeNode* parent_ = nullptr;
 
@@ -26,14 +33,17 @@ private:
   std::list<WakeupTreeNode*> children_;
 
   /** @brief The contents of the node */
-  PartialExecution seq_;
+  std::shared_ptr<Transition> action_;
+
+  /** @brief Removes the node as a child from the parent */
+  void detatch_from_parent();
 
   /** Allows the owning tree to insert directly into the child */
   friend WakeupTree;
   friend WakeupTreeIterator;
 
 public:
-  ~WakeupTreeNode();
+  ~WakeupTreeNode()                                = default;
   WakeupTreeNode(const WakeupTreeNode&)            = delete;
   WakeupTreeNode(WakeupTreeNode&&)                 = default;
   WakeupTreeNode& operator=(const WakeupTreeNode&) = delete;
@@ -44,16 +54,40 @@ public:
   const auto rbegin() const { return this->children_.rbegin(); }
   const auto rend() const { return this->children_.rend(); }
 
-  const PartialExecution& get_sequence() const { return seq_; }
-  const std::list<WakeupTreeNode*>& get_ordered_children() const { return children_; }
   bool is_leaf() const { return children_.empty(); }
-  bool is_single_process() const { return seq_.size() == static_cast<size_t>(1); }
-  aid_t get_first_actor() const;
+  bool is_root() const { return parent_ == nullptr; }
+  aid_t get_actor() const { return action_->aid_; }
+  PartialExecution get_sequence() const;
+  std::shared_ptr<Transition> get_action() const { return action_; }
+  const std::list<WakeupTreeNode*>& get_ordered_children() const { return children_; }
 
   /** Insert a node `node` as a new child of this node */
   void add_child(WakeupTreeNode* node);
 };
 
+/**
+ * @brief The structure used by ODPOR to maintains paths of execution
+ * that should be followed in the future
+ *
+ * The wakeup tree data structure is formally defined in the Abdulla et al.
+ * 2017 ODPOR paper. Conceptually, the tree consists of nodes which are
+ * mapped to actions. Each node represents a partial extension of an execution,
+ * the complete extension being the transitions taken in sequence from
+ * the root of the tree to the node itself. Leaf nodes in the tree conceptually,
+ * then, represent paths that are guaranteed to explore different parts
+ * of the search space.
+ *
+ * Iteration over a wakeup tree occurs as a post-order traversal of its nodes
+ *
+ * @note A wakeup tree is defined relative to some execution `E`. The
+ * structure itself does not hold onto a reference of the execution with
+ * respect to which it is a wakeup tree.
+ *
+ * @todo: If the idea of execution "views"  is ever added -- viz. being able
+ * to share the contents of a single execution -- then a wakeup tree could
+ * contain a reference to such a view which would then be maintained by the
+ * manipulator of the tree
+ */
 class WakeupTree {
 private:
   WakeupTreeNode* root_;
@@ -69,15 +103,25 @@ private:
   std::unordered_map<WakeupTreeNode*, std::unique_ptr<WakeupTreeNode>> nodes_;
 
   void insert_node(std::unique_ptr<WakeupTreeNode> node);
+  void insert_sequence_after(WakeupTreeNode* node, const PartialExecution& w);
   void remove_node(WakeupTreeNode* node);
   bool contains(WakeupTreeNode* node) const;
+
+  /**
+   * @brief Removes the node `root` and all of its descendants from
+   * this wakeup tree
+   *
+   * @throws: If the node `root` is not contained in this tree, an
+   * exception is raised
+   */
+  void remove_subtree_rooted_at(WakeupTreeNode* root);
 
   /**
    * @brief Adds a new node to the tree, disconnected from
    * any other, which represents the partial execution
    * "fragment" `u`
    */
-  WakeupTreeNode* make_node(const PartialExecution& u);
+  WakeupTreeNode* make_node(std::shared_ptr<Transition> u);
 
   /* Allow the iterator to access the contents of the tree */
   friend WakeupTreeIterator;
@@ -86,11 +130,29 @@ public:
   WakeupTree();
   explicit WakeupTree(std::unique_ptr<WakeupTreeNode> root);
 
+  /**
+   * @brief Creates a copy of the subtree whose root is the node
+   * `root` in this tree
+   */
+  static WakeupTree make_subtree_rooted_at(WakeupTreeNode* root);
+
   auto begin() const { return WakeupTreeIterator(*this); }
   auto end() const { return WakeupTreeIterator(); }
 
-  void remove_subtree_rooted_at(WakeupTreeNode* root);
-  static WakeupTree make_subtree_rooted_at(WakeupTreeNode* root);
+  std::vector<std::string> get_single_process_texts() const;
+
+  /**
+   * @brief Remove the subtree of the smallest (with respect
+   * to the tree's "<" relation) single-process node.
+   *
+   * A "single-process" node is one whose execution represents
+   * taking a single action (i.e. those of the root node). The
+   * smallest under "<" is that which is continuously selected and
+   * removed by ODPOR.
+   *
+   * If the tree is empty, this method has no effect.
+   */
+  void remove_min_single_process_subtree();
 
   /**
    * @brief Whether or not this tree is considered empty
@@ -100,6 +162,22 @@ public:
    * that is, if it is "uninteresting". In such a case,
    */
   bool empty() const { return nodes_.size() == static_cast<size_t>(1); }
+
+  /**
+   * @brief Gets the actor of the node that is the "smallest" (with respect
+   * to the tree's "<" relation) single-process node.
+   *
+   * If the tree is empty, returns std::nullopt
+   */
+  std::optional<aid_t> get_min_single_process_actor() const;
+
+  /**
+   * @brief Gets the node itself that is the "smallest" (with respect
+   * to the tree's "<" relation) single-process node.
+   *
+   * If the tree is empty, returns std::nullopt
+   */
+  std::optional<WakeupTreeNode*> get_min_single_process_node() const;
 
   /**
    * @brief Inserts an sequence `seq` of processes into the tree
@@ -119,7 +197,7 @@ public:
    * | and add `v.w'` as a new leaf, ordered after all already existing nodes
    * | of the form `v.w''`
    *
-   * This method performs the postorder search of part one and the insertion of
+   * This method performs the post-order search of part one and the insertion of
    * `v.w'` of part two of the above procedure. Note that the execution will
    * provide `v.w'` (see `Execution::get_shortest_odpor_sq_subset_insertion()`).
    *

@@ -150,7 +150,7 @@ public:
    * @brief Removes the subtree rooted at the single-process node
    * `N` running actor `p` of this state's wakeup tree
    */
-  void remove_subtree_starting_with(aid_t p);
+  void remove_subtree_using_current_out_transition();
   bool has_empty_tree() const { return this->wakeup_tree_.empty(); }
 
   /**
