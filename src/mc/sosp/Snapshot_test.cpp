@@ -15,68 +15,61 @@
 /**************** Class BOOST_tests *************************/
 using simgrid::mc::Region;
 class snap_test_helper {
-  static simgrid::mc::PageStore page_store_;
-  static std::unique_ptr<simgrid::mc::RemoteProcessMemory> memory_;
+  simgrid::mc::PageStore page_store_{500};
+  simgrid::mc::RemoteProcessMemory memory_{getpid(), nullptr};
 
-public:
-  static void init_memory(void* mem, size_t size);
-  static void Init();
   struct prologue_return {
     size_t size;
-    void* src;
-    void* dstn;
+    std::byte* src;
+    std::byte* dstn;
     std::unique_ptr<Region> region0;
     std::unique_ptr<Region> region;
   };
-  static prologue_return prologue(int n); // common to the below 5 fxs
-  static void read_whole_region();
-  static void read_region_parts();
-  static void compare_whole_region();
-  static void compare_region_parts();
-  static void read_pointer();
+  prologue_return prologue(int n); // common to the below 5 fxs
 
-  static void cleanup() { memory_ = nullptr; }
+public:
+  void read_whole_region();
+  void read_region_parts();
+  void compare_whole_region();
+  void compare_region_parts();
+  void read_pointer();
+
+  static void init_memory(std::byte* mem, size_t size);
+  static void basic_requirements();
 };
 
-// static member variables init.
-simgrid::mc::PageStore snap_test_helper::page_store_(500);
-std::unique_ptr<simgrid::mc::RemoteProcessMemory> snap_test_helper::memory_ = nullptr;
-
-void snap_test_helper::init_memory(void* mem, size_t size)
+void snap_test_helper::init_memory(std::byte* mem, size_t size)
 {
-  auto* dest = static_cast<char*>(mem);
-  for (size_t i = 0; i < size; ++i) {
-    dest[i] = simgrid::xbt::random::uniform_int(0, 0xff);
-  }
+  std::generate_n(mem, size, []() { return static_cast<std::byte>(simgrid::xbt::random::uniform_int(0, 0xff)); });
 }
 
-void snap_test_helper::Init()
+void snap_test_helper::basic_requirements()
 {
   REQUIRE(xbt_pagesize == getpagesize());
   REQUIRE(1 << xbt_pagebits == xbt_pagesize);
-
-  memory_ = std::make_unique<simgrid::mc::RemoteProcessMemory>(getpid(), nullptr);
 }
 
 snap_test_helper::prologue_return snap_test_helper::prologue(int n)
 {
   // Store region page(s):
   size_t byte_size = n * xbt_pagesize;
-  void* source     = mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  auto* source =
+      static_cast<std::byte*>(mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
   INFO("Could not allocate source memory");
   REQUIRE(source != MAP_FAILED);
 
   // Init memory and take snapshots:
   init_memory(source, byte_size);
-  auto region0 = std::make_unique<simgrid::mc::Region>(page_store_, *memory_.get(), simgrid::mc::RegionType::Data,
-                                                       source, byte_size);
+  auto region0 =
+      std::make_unique<simgrid::mc::Region>(page_store_, memory_, simgrid::mc::RegionType::Data, source, byte_size);
   for (int i = 0; i < n; i += 2) {
-    init_memory((char*)source + i * xbt_pagesize, xbt_pagesize);
+    init_memory(source + i * xbt_pagesize, xbt_pagesize);
   }
-  auto region = std::make_unique<simgrid::mc::Region>(page_store_, *memory_.get(), simgrid::mc::RegionType::Data,
-                                                      source, byte_size);
+  auto region =
+      std::make_unique<simgrid::mc::Region>(page_store_, memory_, simgrid::mc::RegionType::Data, source, byte_size);
 
-  void* destination = mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  auto* destination =
+      static_cast<std::byte*>(mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
   INFO("Could not allocate destination memory");
   REQUIRE(destination != MAP_FAILED);
 
@@ -149,12 +142,12 @@ void snap_test_helper::compare_region_parts()
 }
 
 const int some_global_variable  = 42;
-const void* some_global_pointer = &some_global_variable;
+const void* const some_global_pointer = &some_global_variable;
 void snap_test_helper::read_pointer()
 {
   prologue_return ret = prologue(1);
   memcpy(ret.src, &some_global_pointer, sizeof(void*));
-  const simgrid::mc::Region region2(page_store_, *memory_.get(), simgrid::mc::RegionType::Data, ret.src, ret.size);
+  const simgrid::mc::Region region2(page_store_, memory_, simgrid::mc::RegionType::Data, ret.src, ret.size);
   INFO("Mismtach in MC_region_read_pointer()");
   REQUIRE(MC_region_read_pointer(&region2, ret.src) == some_global_pointer);
 
@@ -168,22 +161,22 @@ TEST_CASE("MC::Snapshot: A copy/snapshot of a given memory region", "MC::Snapsho
 {
   INFO("Sparse snapshot (using pages)");
 
-  snap_test_helper::Init();
+  snap_test_helper::basic_requirements();
+
+  snap_test_helper snap_test;
 
   INFO("Read whole region");
-  snap_test_helper::read_whole_region();
+  snap_test.read_whole_region();
 
   INFO("Read region parts");
-  snap_test_helper::read_region_parts();
+  snap_test.read_region_parts();
 
   INFO("Compare whole region");
-  snap_test_helper::compare_whole_region();
+  snap_test.compare_whole_region();
 
   INFO("Compare region parts");
-  snap_test_helper::compare_region_parts();
+  snap_test.compare_region_parts();
 
   INFO("Read pointer");
-  snap_test_helper::read_pointer();
-
-  snap_test_helper::cleanup();
+  snap_test.read_pointer();
 }
