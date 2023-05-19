@@ -46,6 +46,22 @@ $ ${bindir:=.}/s4u-network-ns3 ${platfdir}/onelink.xml ${srcdir}/onelink_d.xml -
 > [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
 > [C1:worker(2) 1.104600] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
 
+p 2hosts 1link NewReno (no timing change)
+
+$ ${bindir:=.}/s4u-network-ns3 ${platfdir}/onelink.xml ${srcdir}/onelink_d.xml --cfg=network/model:ns-3 --cfg=ns3/TcpModel:NewReno "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'ns3/TcpModel' to 'NewReno'
+> [:maestro(0) 0.000000] [res_ns3/INFO] Switching Tcp protocol to 'NewReno'
+> [C1:worker(2) 1.104600] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
+
+p 2hosts 1link Cubic (no timing change)
+
+$ ${bindir:=.}/s4u-network-ns3 ${platfdir}/onelink.xml ${srcdir}/onelink_d.xml --cfg=network/model:ns-3 --cfg=ns3/TcpModel:Cubic "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'ns3/TcpModel' to 'Cubic'
+> [:maestro(0) 0.000000] [res_ns3/INFO] Switching Tcp protocol to 'Cubic'
+> [C1:worker(2) 1.104600] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
+
 p Crosstraffic TCP option DISABLED
 $ ${bindir:=.}/s4u-network-ns3 ${platfdir}/crosstraffic.xml ${srcdir}/crosstraffic_d.xml --cfg=network/model:ns-3 --cfg=network/crosstraffic:0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'

@@ -288,8 +288,9 @@ static void XBT_ATTRIB_CONSTRUCTOR(800) simgrid_ns3_network_model_register()
       });
 }
 
-static simgrid::config::Flag<std::string>
-    ns3_tcp_model("ns3/TcpModel", "The ns-3 tcp model can be: NewReno or Reno or Tahoe", "default");
+static simgrid::config::Flag<std::string> ns3_tcp_model(
+    "ns3/TcpModel", 
+    "The ns-3 tcp model can be: NewReno or Cubic", "default");
 static simgrid::config::Flag<std::string> ns3_seed(
     "ns3/seed",
     "The random seed provided to ns-3. Either 'time' to seed with time(), blank to not set (default), or a number.", "",
@@ -317,20 +318,20 @@ NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
              "LinkEnergy plugin and ns-3 network models are not compatible. Are you looking for Ecofen, maybe?");
 
   NetPointNs3::EXTENSION_ID = routing::NetPoint::extension_create<NetPointNs3>();
+  auto const& TcpProtocol   = ns3_tcp_model.get();
 
-  ns3::Config::SetDefault("ns3::TcpSocket::SegmentSize", ns3::UintegerValue(1000));
-  ns3::Config::SetDefault("ns3::TcpSocket::DelAckCount", ns3::UintegerValue(1));
-  ns3::Config::SetDefault("ns3::TcpSocketBase::Timestamp", ns3::BooleanValue(false));
+  if (TcpProtocol != "UDP") {
+    ns3::Config::SetDefault("ns3::TcpSocket::SegmentSize", ns3::UintegerValue(1000));
+    ns3::Config::SetDefault("ns3::TcpSocket::DelAckCount", ns3::UintegerValue(1));
+    ns3::Config::SetDefault("ns3::TcpSocketBase::Timestamp", ns3::BooleanValue(false));
+  }
 
-  if (auto const& TcpProtocol = ns3_tcp_model.get(); TcpProtocol == "default") {
-    /* nothing to do */
-
-  } else if (TcpProtocol == "Reno" || TcpProtocol == "NewReno" || TcpProtocol == "Tahoe") {
+  if (TcpProtocol == "NewReno" || TcpProtocol == "Cubic") {
     XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
     ns3::Config::SetDefault("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::Tcp" + TcpProtocol));
 
-  } else {
-    xbt_die("The ns3/TcpModel must be: NewReno or Reno or Tahoe");
+  } else if (TcpProtocol != "default") {
+    xbt_die("The ns3/TcpModel must be: NewReno or Cubic");
   }
 
   routing::NetPoint::on_creation.connect([](routing::NetPoint& pt) {

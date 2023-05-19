@@ -552,8 +552,7 @@ Configuring ns-3
 When using ns-3, there is an extra item ``ns3/TcpModel``, corresponding
 to the ``ns3::TcpL4Protocol::SocketType`` configuration item in
 ns-3. The only valid values (enforced on the SimGrid side) are
-'default' (no change to the ns-3 configuration), 'NewReno' or 'Reno' or
-'Tahoe'.
+'default' (no change to the ns-3 configuration), 'NewReno' or 'Cubic'.
 
 **Option** ``ns3/seed`` **Default:** "" (don't set the seed in ns-3)
 
