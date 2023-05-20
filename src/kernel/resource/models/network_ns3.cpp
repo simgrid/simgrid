@@ -50,7 +50,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_ns3, res_network, "Network model based on ns
  *****************/
 
 extern std::map<std::string, SgFlow*, std::less<>> flow_from_sock;
-extern std::map<std::string, ns3::ApplicationContainer, std::less<>> sink_from_sock;
 
 static int number_of_links    = 1;
 static int number_of_networks = 1;
@@ -508,7 +507,6 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     }
     delete flow;
     flow_from_sock.erase(ns3_socket);
-    sink_from_sock.erase(ns3_socket);
   }
 }
 
@@ -586,7 +584,7 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
              dst->get_netpoint()->get_cname());
 
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress(ns3::Ipv4Address::GetAny(), port_number));
-  ns3::ApplicationContainer apps = sink.Install(dst_node);
+  sink.Install(dst_node);
 
   ns3::Ptr<ns3::Socket> sock = ns3::Socket::CreateSocket(src_node, ns3::TcpSocketFactory::GetTypeId());
 
@@ -595,7 +593,6 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
             src->get_cname(), dst->get_cname(), addr.c_str());
 
   flow_from_sock.try_emplace(sock_addr, new SgFlow(static_cast<uint32_t>(totalBytes), this));
-  sink_from_sock.try_emplace(sock_addr, apps);
 
   sock->Bind(ns3::InetSocketAddress(port_number));
 
@@ -629,8 +626,9 @@ void NetworkNS3Action::update_remains_lazy(double /*now*/)
 
 ns3::Ptr<ns3::Node> get_ns3node_from_sghost(const simgrid::s4u::Host* host)
 {
-  xbt_assert(host->get_netpoint()->extension<NetPointNs3>() != nullptr, "Please only use this function on ns-3 nodes");
-  return host->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
+  auto* netext = host->get_netpoint()->extension<NetPointNs3>();
+  xbt_assert(netext != nullptr, "Please only use this function on ns-3 nodes");
+  return netext->ns3_node_;
 }
 } // namespace simgrid
 
