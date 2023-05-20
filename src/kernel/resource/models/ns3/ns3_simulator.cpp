@@ -25,11 +25,6 @@ static void datasent_cb(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent);
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_ns3);
 
-SgFlow::SgFlow(uint32_t totalBytes, simgrid::kernel::resource::NetworkNS3Action* action)
-    : total_bytes_(totalBytes), remaining_(totalBytes), action_(action)
-{
-}
-
 static SgFlow* getFlowFromSocket(ns3::Ptr<ns3::Socket> socket)
 {
   auto it = flow_from_sock.find(transform_socket_ptr(socket));
@@ -141,10 +136,11 @@ XBT_ATTRIB_NORETURN static void failedConnect_callback(ns3::Ptr<ns3::Socket> soc
 void start_flow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number)
 {
   SgFlow* flow = getFlowFromSocket(sock);
-  ns3::InetSocketAddress serverAddr(to, port_number);
 
+  ns3::InetSocketAddress serverAddr(to, port_number);
   sock->Connect(serverAddr);
-  // tell the tcp implementation to call send_cb again
+
+  // tell the network implementation to call send_cb again
   // if we blocked and new tx buffer space becomes available
   sock->SetSendCallback(MakeCallback(&send_cb));
   // Notice when we actually sent some data (mostly for the TRACING module)

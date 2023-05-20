@@ -547,12 +547,12 @@ are meant to be detached as well.
 Configuring ns-3
 ^^^^^^^^^^^^^^^^
 
-**Option** ``ns3/TcpModel`` **Default:** "default" (ns-3 default)
+**Option** ``ns3/NetworkModel`` **Default:** "default" (ns-3 default TCP)
 
-When using ns-3, there is an extra item ``ns3/TcpModel``, corresponding
-to the ``ns3::TcpL4Protocol::SocketType`` configuration item in
-ns-3. The only valid values (enforced on the SimGrid side) are
-'default' (no change to the ns-3 configuration), 'NewReno' or 'Cubic'.
+When using ns-3, the item ``ns3/NetworkModel`` can be used to switch between TCP or UDP, and switch the used TCP variante. If
+the item is left unchanged, ns-3 uses the default TCP implementation. With a value of "UDP", ns-3 is set to use UDP instead.
+With the value of either 'NewReno' or 'Cubic', the ``ns3::TcpL4Protocol::SocketType`` configuration item in ns-3 is set to the
+corresponding protocol.
 
 **Option** ``ns3/seed`` **Default:** "" (don't set the seed in ns-3)
 

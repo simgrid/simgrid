@@ -11,6 +11,7 @@
 
 #include <ns3/node.h>
 #include <ns3/tcp-socket-factory.h>
+#include <ns3/udp-socket-factory.h>
 #include <ns3/wifi-module.h>
 
 #include <cstdint>
@@ -31,7 +32,10 @@ XBT_PRIVATE void ns3_add_direct_route(const simgrid::kernel::routing::NetPoint* 
 
 class XBT_PRIVATE SgFlow {
 public:
-  SgFlow(uint32_t total_bytes, simgrid::kernel::resource::NetworkNS3Action* action);
+  SgFlow(uint32_t totalBytes, simgrid::kernel::resource::NetworkNS3Action* action)
+      : total_bytes_(totalBytes), remaining_(totalBytes), action_(action)
+  {
+  }
 
   // private:
   std::uint32_t buffered_bytes_ = 0;
