@@ -118,15 +118,12 @@ int main(int argc, char** argv)
   std::set<sg4::Activity*> vetoed;
   e.track_vetoed_activities(&vetoed);
 
-  sg4::Activity::on_completion_cb([](sg4::Activity const& activity) {
+  sg4::Exec::on_completion_cb([](sg4::Exec const& exec) {
     // when an Exec completes, we need to set the potential start time of all its ouput comms
-    const auto* exec = dynamic_cast<sg4::Exec const*>(&activity);
-    if (exec == nullptr) // Only Execs are concerned here
-      return;
-    for (const auto& succ : exec->get_successors()) {
+    for (const auto& succ : exec.get_successors()) {
       auto* comm = dynamic_cast<sg4::Comm*>(succ.get());
       if (comm != nullptr) {
-        auto* finish_time = new double(exec->get_finish_time());
+        auto* finish_time = new double(exec.get_finish_time());
         // We use the user data field to store the finish time of the predecessor of the comm, i.e., its potential start
         // time
         comm->set_data(finish_time);

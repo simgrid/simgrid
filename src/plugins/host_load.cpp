@@ -247,12 +247,9 @@ void sg_host_load_plugin_init()
       XBT_WARN("HostLoad plugin currently does not support executions on several hosts");
     }
   });
-  simgrid::s4u::Activity::on_completion_cb([](simgrid::s4u::Activity const& activity) {
-    const auto* exec = dynamic_cast<simgrid::s4u::Exec const*>(&activity);
-    if (exec == nullptr) // Only Execs are concerned here
-      return;
-    if (exec->get_host_number() == 1) { // We only run on one host
-      simgrid::s4u::Host* host               = exec->get_host();
+  simgrid::s4u::Exec::on_completion_cb([](simgrid::s4u::Exec const& exec) {
+    if (exec.get_host_number() == 1) { // We only run on one host
+      simgrid::s4u::Host* host = exec.get_host();
       if (const auto* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host))
         host = vm->get_pm();
       xbt_assert(host != nullptr);

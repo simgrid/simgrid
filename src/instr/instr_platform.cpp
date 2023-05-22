@@ -499,16 +499,20 @@ void define_callbacks()
       else
         Container::by_name(pid)->get_state("ACTOR_STATE")->push_event("execute");
     });
-    s4u::Activity::on_completion_cb([](const s4u::Activity& a) {
+
+    s4u::Exec::on_completion_cb([](const s4u::Exec& e) {
       std::string pid = instr_pid(*s4u::Actor::self());
-      std::string hostname;
-      if (pid == "-0") { //activity is launched directly by Maestro, use the host as container
-        if (const auto e = dynamic_cast<const s4u::Exec*>(&a))
-          Container::by_name(e->get_host()->get_name())->get_state("HOST_STATE")->pop_event();
-        if (const auto c = dynamic_cast<const s4u::Comm*>(&a)) {
-          Container::by_name(c->get_source()->get_name())->get_state("HOST_STATE")->pop_event();
-          Container::by_name(c->get_destination()->get_name())->get_state("HOST_STATE")->pop_event();
-        }
+      if (pid == "-0") //Exec is launched directly by Maestro, use the host as container
+        Container::by_name(e.get_host()->get_name())->get_state("HOST_STATE")->pop_event();
+      else
+        Container::by_name(pid)->get_state("ACTOR_STATE")->pop_event();
+    });
+
+    s4u::Comm::on_completion_cb([](const s4u::Comm& c) {
+      std::string pid = instr_pid(*s4u::Actor::self());
+      if (pid == "-0") { //Comm is launched directly by Maestro, use the host as container
+          Container::by_name(c.get_source()->get_name())->get_state("HOST_STATE")->pop_event();
+          Container::by_name(c.get_destination()->get_name())->get_state("HOST_STATE")->pop_event();
       } else
         Container::by_name(pid)->get_state("ACTOR_STATE")->pop_event();
     });
@@ -535,7 +539,7 @@ void define_callbacks()
           ->get_state("MPI_STATE")
           ->push_event("computing", new CpuTIData("compute", exec.get_cost()));
     });
-    s4u::Activity::on_completion_cb([](const s4u::Activity&) {
+    s4u::Exec::on_completion_cb([](const s4u::Exec&) {
       Container::by_name("rank-" + std::to_string(s4u::Actor::self()->get_pid()))->get_state("MPI_STATE")->pop_event();
     });
   }

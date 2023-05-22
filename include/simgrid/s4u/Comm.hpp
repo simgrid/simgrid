@@ -51,6 +51,7 @@ public:
   static void on_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
   static void on_recv_cb(const std::function<void(Comm const&)>& cb) { on_recv.connect(cb); }
   static void on_start_cb(const std::function<void(Comm const&)>& cb) { on_start.connect(cb); }
+  void fire_this_completion() const { on_completion(*this); }
   /* More callbacks */
   CommPtr set_copy_data_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback);
   XBT_ATTRIB_DEPRECATED_v337("Please manifest if you actually need this function") static void copy_buffer_callback(

@@ -52,6 +52,7 @@ public:
 #endif
   /*! Signal fired each time that an execution actually starts (no veto) */
   static void on_start_cb(const std::function<void(Exec const&)>& cb) { on_start.connect(cb); }
+  void fire_this_completion() const { on_completion(*this); }
 
   static ExecPtr init();
 

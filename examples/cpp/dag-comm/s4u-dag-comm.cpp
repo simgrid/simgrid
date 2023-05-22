@@ -25,12 +25,12 @@ int main(int argc, char* argv[])
              (a.dependencies_solved() ? "solved" : "NOT solved"), (a.is_assigned() ? "assigned" : "NOT assigned"));
   });
 
-  sg4::Activity::on_completion_cb([](sg4::Activity const& activity) {
-    if (const auto* exec = dynamic_cast<sg4::Exec const*>(&activity))
-      XBT_INFO("Activity '%s' is complete (start time: %f, finish time: %f)", exec->get_cname(), exec->get_start_time(),
-               exec->get_finish_time());
-    if (const auto* comm = dynamic_cast<sg4::Comm const*>(&activity))
-      XBT_INFO("Activity '%s' is complete", comm->get_cname());
+  sg4::Exec::on_completion_cb([](sg4::Exec const& exec) {
+    XBT_INFO("Exec '%s' is complete (start time: %f, finish time: %f)", exec.get_cname(), exec.get_start_time(),
+             exec.get_finish_time());
+  });
+  sg4::Comm::on_completion_cb([](sg4::Comm const& comm) {
+    XBT_INFO("Comm '%s' is complete", comm.get_cname());
   });
 
   // Create a small DAG: parent->transfer->child

@@ -119,8 +119,11 @@ void Operation::init()
     return;
   Operation::inited_                      = true;
   ExtendedAttributeActivity::EXTENSION_ID = simgrid::s4u::Activity::extension_create<ExtendedAttributeActivity>();
-  simgrid::s4u::Activity::on_completion_cb([](simgrid::s4u::Activity const& activity) {
-    activity.extension<ExtendedAttributeActivity>()->operation_->complete();
+  simgrid::s4u::Exec::on_completion_cb([](simgrid::s4u::Exec const& exec) {
+    exec.extension<ExtendedAttributeActivity>()->operation_->complete();
+  });
+  simgrid::s4u::Comm::on_completion_cb([](simgrid::s4u::Comm const& comm) {
+    comm.extension<ExtendedAttributeActivity>()->operation_->complete();
   });
 }
 
