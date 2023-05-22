@@ -347,6 +347,15 @@ static void on_host_creation(s4u::Host const& host)
     root->get_type()->by_name_or_create("MIGRATE_LINK", mpi, mpi);
     mpi->by_name_or_create<StateType>("MIGRATE_STATE");
   }
+
+   if (TRACE_actor_is_enabled()) {
+    auto* host_type = container->get_type();
+    auto* state     = host_type->by_name_or_create<StateType>("HOST_STATE");
+    state->set_calling_container(container);
+    state->add_entity_value("receive", "1 0 0");
+    state->add_entity_value("send", "0 0 1");
+    state->add_entity_value("execute", "0 1 1");
+  }
 }
 
 static void on_action_state_change(kernel::resource::Action const& action,
@@ -482,17 +491,40 @@ void define_callbacks()
     });
     s4u::Actor::on_wake_up_cb(
         [](s4u::Actor const& actor) { Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->pop_event(); });
-    s4u::Exec::on_start_cb([](s4u::Exec const&) {
-      Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("execute");
+
+    s4u::Exec::on_start_cb([](s4u::Exec const& e) {
+      std::string pid = instr_pid(*s4u::Actor::self());
+      if (pid == "-0") //Exec is launched directly by Maestro, use the host as container
+        Container::by_name(e.get_host()->get_name())->get_state("HOST_STATE")->push_event("execute");
+      else
+        Container::by_name(pid)->get_state("ACTOR_STATE")->push_event("execute");
     });
-    s4u::Activity::on_completion_cb([](const s4u::Activity&) {
-      Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->pop_event();
+    s4u::Activity::on_completion_cb([](const s4u::Activity& a) {
+      std::string pid = instr_pid(*s4u::Actor::self());
+      std::string hostname;
+      if (pid == "-0") { //activity is launched directly by Maestro, use the host as container
+        if (const auto e = dynamic_cast<const s4u::Exec*>(&a))
+          Container::by_name(e->get_host()->get_name())->get_state("HOST_STATE")->pop_event();
+        if (const auto c = dynamic_cast<const s4u::Comm*>(&a)) {
+          Container::by_name(c->get_source()->get_name())->get_state("HOST_STATE")->pop_event();
+          Container::by_name(c->get_destination()->get_name())->get_state("HOST_STATE")->pop_event();
+        }
+      } else
+        Container::by_name(pid)->get_state("ACTOR_STATE")->pop_event();
     });
-    s4u::Comm::on_send_cb([](s4u::Comm const&) {
-      Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("send");
+    s4u::Comm::on_send_cb([](s4u::Comm const& c) {
+      std::string pid = instr_pid(*s4u::Actor::self());
+      if (pid == "-0") //Comm is launched directly by Maestro, use the host as container
+        Container::by_name(c.get_source()->get_name())->get_state("HOST_STATE")->push_event("send");
+      else
+        Container::by_name(pid)->get_state("ACTOR_STATE")->push_event("send");
     });
-    s4u::Comm::on_recv_cb([](s4u::Comm const&) {
-      Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("receive");
+    s4u::Comm::on_recv_cb([](s4u::Comm const& c) {
+      std::string pid = instr_pid(*s4u::Actor::self());
+      if (pid == "-0") //Comm is launched directly by Maestro, use the host as container
+        Container::by_name(c.get_destination()->get_name())->get_state("HOST_STATE")->push_event("receive");
+      else
+        Container::by_name(pid)->get_state("ACTOR_STATE")->push_event("receive");
     });
     s4u::Actor::on_host_change_cb(on_actor_host_change);
   }
