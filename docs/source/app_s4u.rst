@@ -612,12 +612,19 @@ Signals
 
       .. doxygenfunction:: simgrid::s4u::Actor::on_creation_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_this_suspend_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_host_change_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_this_host_change_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_resume_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_this_resume_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_sleep_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_this_sleep_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_wake_up_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_this_wake_up_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_termination_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_this_termination_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_destruction_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_this_destruction_cb
 
 .. _API_s4u_this_actor:
 

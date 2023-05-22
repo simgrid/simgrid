@@ -44,8 +44,10 @@ ActorImpl::ActorImpl(const std::string& name, s4u::Host* host, aid_t ppid)
 
 ActorImpl::~ActorImpl()
 {
-  if (EngineImpl::has_instance() && not EngineImpl::get_instance()->is_maestro(this))
+  if (EngineImpl::has_instance() && not EngineImpl::get_instance()->is_maestro(this)) {
     s4u::Actor::on_destruction(*get_ciface());
+    get_ciface()->on_this_destruction(*get_ciface());
+  }
 }
 
 /* Become an actor in the simulation
@@ -129,6 +131,7 @@ void ActorImpl::cleanup_from_kernel()
 
   undaemonize();
   s4u::Actor::on_termination(*get_ciface());
+  get_ciface()->on_this_termination(*get_ciface());
 
   while (not mailboxes_.empty())
     mailboxes_.back()->set_receiver(nullptr);

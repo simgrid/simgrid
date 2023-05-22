@@ -20,6 +20,10 @@ S4U:
    possible.
  - Allow to set a concurrency limit on disks and hosts, as it was already the case for links.
  - Rename Link::get_usage() to Link::get_load() for consistency with Host::
+ - Every signal now come with a static version that is invoked for every object of that class,
+   and an instance version that is invoked for this specific object only. For example, 
+   s4u::Actor::on_suspend_cb() adds a callback that is invoked for the suspend of any actor while
+   s4u::Actor::on_this_suspend_cb() adds a callback for this specific actor only.
 
 New S4U plugins:
  - Operation: They are designed to represent workflows, i.e, graphs of repeatable Activities.

@@ -164,6 +164,7 @@ void Actor::set_host(Host* new_host)
   });
 
   s4u::Actor::on_host_change(*this, *previous_location);
+  s4u::Actor::on_this_host_change(*this, *previous_location);
 }
 
 s4u::Host* Actor::get_host() const
@@ -213,6 +214,7 @@ void Actor::suspend()
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::ActorImpl* target = pimpl_;
   s4u::Actor::on_suspend(*this);
+  s4u::Actor::on_this_suspend(*this);
   kernel::actor::simcall_blocking([issuer, target]() {
     target->suspend();
     if (target != issuer) {
@@ -226,6 +228,7 @@ void Actor::resume()
 {
   kernel::actor::simcall_answered([this] { pimpl_->resume(); });
   s4u::Actor::on_resume(*this);
+  s4u::Actor::on_this_resume(*this);
 }
 
 bool Actor::is_suspended() const
@@ -326,6 +329,7 @@ void sleep_for(double duration)
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   Actor::on_sleep(*issuer->get_ciface());
+  issuer->get_ciface()->on_this_sleep(*issuer->get_ciface());
 
   kernel::actor::simcall_blocking([issuer, duration]() {
     if (MC_is_active() || MC_record_replay_is_active()) {
@@ -338,6 +342,7 @@ void sleep_for(double duration)
   });
 
   Actor::on_wake_up(*issuer->get_ciface());
+  issuer->get_ciface()->on_this_wake_up(*issuer->get_ciface());
 }
 
 void yield()
@@ -442,6 +447,7 @@ void suspend()
 {
   kernel::actor::ActorImpl* self = simgrid::kernel::actor::ActorImpl::self();
   s4u::Actor::on_suspend(*self->get_ciface());
+  self->get_ciface()->on_this_suspend(*self->get_ciface());
   kernel::actor::simcall_blocking([self] { self->suspend(); });
 }
 

@@ -71,11 +71,17 @@ Partial list of existing signals in s4u:
 
 - :cpp:func:`Actor::on_creation <simgrid::s4u::Actor::on_creation_cb>`
   :cpp:func:`Actor::on_suspend <simgrid::s4u::Actor::on_suspend_cb>`
+  :cpp:func:`Actor::on_this_suspend <simgrid::s4u::Actor::on_this_suspend_cb>`
   :cpp:func:`Actor::on_resume <simgrid::s4u::Actor::on_resume_cb>`
+  :cpp:func:`Actor::on_this_resume <simgrid::s4u::Actor::on_this_resume_cb>`
   :cpp:func:`Actor::on_sleep <simgrid::s4u::Actor::on_sleep_cb>`
+  :cpp:func:`Actor::on_this_sleep <simgrid::s4u::Actor::on_this_sleep_cb>`
   :cpp:func:`Actor::on_wake_up <simgrid::s4u::Actor::on_wake_up_cb>`
+  :cpp:func:`Actor::on_this_wake_up <simgrid::s4u::Actor::on_this_wake_up_cb>`
   :cpp:func:`Actor::on_host_change <simgrid::s4u::Actor::on_host_change_cb>`
+  :cpp:func:`Actor::on_this_host_change <simgrid::s4u::Actor::on_this_host_change_cb>`
   :cpp:func:`Actor::on_termination <simgrid::s4u::Actor::on_termination_cb>`
+  :cpp:func:`Actor::on_this_termination <simgrid::s4u::Actor::on_this_termination_cb>`
   :cpp:func:`Actor::on_destruction <simgrid::s4u::Actor::on_destruction_cb>`
 - :cpp:func:`Comm::on_send <simgrid::s4u::Comm::on_send_cb>`
   :cpp:func:`Comm::on_recv <simgrid::s4u::Comm::on_recv_cb>`
