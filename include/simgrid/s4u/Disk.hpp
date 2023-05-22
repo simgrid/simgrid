@@ -135,15 +135,21 @@ public:
   /* The signals */
   /** @brief Add a callback fired when a new Disk is created */
   static void on_creation_cb(const std::function<void(Disk&)>& cb) { on_creation.connect(cb); }
-  /** @brief Add a callback fired when a Disk is destroyed */
+  /** @brief Add a callback fired when any Disk is destroyed */
   static void on_destruction_cb(const std::function<void(Disk const&)>& cb) { on_destruction.connect(cb); }
-  /** @brief Add a callback fired when a Disk's state changes */
+  /** @brief Add a callback fired when this specific Disk is destroyed */
+  void on_this_destruction_cb(const std::function<void(Disk const&)>& cb) { on_this_destruction.connect(cb); }
+  /** @brief Add a callback fired when the state of any Disk changes */
   static void on_state_change_cb(const std::function<void(Disk const&)>& cb) { on_state_change.connect(cb); }
+  /** @brief Add a callback fired when the state of this specific Disk changes */
+  void on_this_state_change_cb(const std::function<void(Disk const&)>& cb) { on_this_state_change.connect(cb); }
 
 private:
   static xbt::signal<void(Disk&)> on_creation;
   static xbt::signal<void(Disk const&)> on_destruction;
+  xbt::signal<void(Disk const&)> on_this_destruction;
   static xbt::signal<void(Disk const&)> on_state_change;
+  xbt::signal<void(Disk const&)> on_this_state_change;
 };
 
 } // namespace s4u

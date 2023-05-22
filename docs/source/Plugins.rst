@@ -90,7 +90,9 @@ Partial list of existing signals in s4u:
   :cpp:func:`CommImpl::on_completion <simgrid::s4u::Comm::on_completion_cb>`
 - :cpp:func:`Disk::on_creation <simgrid::s4u::Disk::on_creation_cb>`
   :cpp:func:`Disk::on_destruction <simgrid::s4u::Disk::on_destruction_cb>`
+  :cpp:func:`Disk::on_this_destruction <simgrid::s4u::Disk::on_this_destruction_cb>`
   :cpp:func:`Disk::on_state_change <simgrid::s4u::Disk::on_state_change_cb>`
+  :cpp:func:`Disk::on_this_state_change <simgrid::s4u::Disk::on_this_state_change_cb>`
 - :cpp:func:`Engine::on_platform_creation <simgrid::s4u::Engine::on_platform_creation_cb>`
   :cpp:func:`Engine::on_platform_created <simgrid::s4u::Engine::on_platform_created_cb>`
   :cpp:func:`Engine::on_time_advance <simgrid::s4u::Engine::on_time_advance_cb>`

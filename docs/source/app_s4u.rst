@@ -1212,7 +1212,9 @@ Signals
 
       .. doxygenfunction:: simgrid::s4u::Disk::on_creation_cb
       .. doxygenfunction:: simgrid::s4u::Disk::on_destruction_cb
+      .. doxygenfunction:: simgrid::s4u::Disk::on_this_destruction_cb
       .. doxygenfunction:: simgrid::s4u::Disk::on_state_change_cb
+      .. doxygenfunction:: simgrid::s4u::Disk::on_this_state_change_cb
 
 
 .. _API_s4u_Host:
