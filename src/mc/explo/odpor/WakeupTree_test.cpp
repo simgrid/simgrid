@@ -33,10 +33,12 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Constructing Trees")
     REQUIRE(tree.empty());
     REQUIRE(tree.get_num_entries() == 0);
     REQUIRE(tree.get_num_nodes() == 1);
+    REQUIRE_FALSE(tree.get_min_single_process_node().has_value());
+    REQUIRE_FALSE(tree.get_min_single_process_actor().has_value());
     test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{}});
   }
 
-  SECTION("Testing Subtree Rooting")
+  SECTION("Testing subtree creation and manipulation")
   {
     // Here, we make everything dependent. This will ensure that each unique sequence
     // inserted into the tree never "eventually looks like"
@@ -76,6 +78,12 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Constructing Trees")
     tree.insert(Execution(), {a1, a3, a5});
     tree.insert(Execution(), {a4, a2, a1, a3});
     REQUIRE(tree.get_num_nodes() == 13);
+    test_tree_iterator(tree, std::vector<PartialExecution>{
+                                 PartialExecution{a1, a2, a3, a4}, PartialExecution{a1, a2, a3},
+                                 PartialExecution{a1, a2}, PartialExecution{a1, a3, a2, a4},
+                                 PartialExecution{a1, a3, a2}, PartialExecution{a1, a3, a5}, PartialExecution{a1, a3},
+                                 PartialExecution{a1}, PartialExecution{a4, a2, a1, a3}, PartialExecution{a4, a2, a1},
+                                 PartialExecution{a4, a2}, PartialExecution{a4}, PartialExecution{}});
 
     SECTION("Cloning a tree from the root produces the same tree")
     {
@@ -120,6 +128,31 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Constructing Trees")
       // is now the root.
       test_tree_iterator(clone, std::vector<PartialExecution>{PartialExecution{a2, a1, a3}, PartialExecution{a2, a1},
                                                               PartialExecution{a2}, PartialExecution{}});
+    }
+
+    SECTION("Removing the first single-process subtree")
+    {
+      // Prior to removal, the first `a1` was the first single-process node
+      REQUIRE(tree.get_min_single_process_node().has_value());
+      REQUIRE(tree.get_min_single_process_actor().has_value());
+      REQUIRE(tree.get_min_single_process_actor().value() == a1->aid_);
+
+      tree.remove_min_single_process_subtree();
+
+      // Now the first `a4` is
+      REQUIRE(tree.get_min_single_process_node().has_value());
+      REQUIRE(tree.get_min_single_process_actor().has_value());
+      REQUIRE(tree.get_min_single_process_actor().value() == a4->aid_);
+
+      REQUIRE(tree.get_num_nodes() == 5);
+      test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a4, a2, a1, a3},
+                                                             PartialExecution{a4, a2, a1}, PartialExecution{a4, a2},
+                                                             PartialExecution{a4}, PartialExecution{}});
+      tree.remove_min_single_process_subtree();
+
+      // At this point, we've removed each single-process subtree, so
+      // the tree should be empty
+      REQUIRE(tree.empty());
     }
   }
 }
