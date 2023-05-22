@@ -179,7 +179,7 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
       test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{}});
     }
 
-    SECTION("Stress test with multiple branch points")
+    SECTION("Stress test with multiple branch points: `~_E` with different looking sequences")
     {
       tree.insert(Execution(), {a0});
       tree.insert(Execution(), {a2, a0});
@@ -189,6 +189,27 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
       test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{a2, a0},
                                                              PartialExecution{a2, a3}, PartialExecution{a2, a5},
                                                              PartialExecution{a2}, PartialExecution{}});
+      SECTION("Adding more stress")
+      {
+        // In this case, `a2` and `a1` can be interchanged with each other.
+        // Thus `a2.a1 == a1.a2`. Since there is already an interior node
+        // containing `a2`, we attempt to add the what remains (viz. `a1`) to the
+        // series. HOWEVER: we notice that `a2.a5` is "eventually equivalent to"
+        // (that is `~` with) `a1.a2` since `a2` is an initial of the latter and
+        // `a1` and `a5` are independent of each other
+        tree.insert(Execution(), {a1, a2});
+        REQUIRE(tree.get_num_nodes() == 6);
+        test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{a2, a0},
+                                                               PartialExecution{a2, a3}, PartialExecution{a2, a5},
+                                                               PartialExecution{a2}, PartialExecution{}});
+
+        tree.insert(Execution(), {a3, a0});
+        REQUIRE(tree.get_num_nodes() == 8);
+        test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{a2, a0},
+                                                               PartialExecution{a2, a3}, PartialExecution{a2, a5},
+                                                               PartialExecution{a2}, PartialExecution{a3, a0},
+                                                               PartialExecution{a3}, PartialExecution{}});
+      }
     }
   }
 }
