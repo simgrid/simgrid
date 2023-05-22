@@ -164,6 +164,17 @@ public:
   bool empty() const { return nodes_.size() == static_cast<size_t>(1); }
 
   /**
+   * @brief Returns the number of *non-empty* entries in the tree, viz. the
+   * number of nodes in the tree that have an action mapped to them
+   */
+  size_t get_num_entries() const { return !empty() ? (nodes_.size() - 1) : static_cast<size_t>(0); }
+
+  /**
+   * @brief Returns the number of nodes in the tree, including the root node
+   */
+  size_t get_num_nodes() const { return nodes_.size(); }
+
+  /**
    * @brief Gets the actor of the node that is the "smallest" (with respect
    * to the tree's "<" relation) single-process node.
    *

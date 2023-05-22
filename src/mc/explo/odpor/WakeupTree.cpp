@@ -182,9 +182,16 @@ void WakeupTree::insert(const Execution& E, const PartialExecution& w)
       // Insert the sequence as a child of `node`, but only
       // if the node is not already a leaf
       if (not node->is_leaf() or node == this->root_) {
-        xbt_assert(!shortest_sequence.value().empty(), "A successful insertion into an interior"
-                                                       "node of a wakeup tree should never involve "
-                                                       "an empty sequence (yet here we are, with an empty sequence)");
+        // NOTE: It's entirely possible that the shortest
+        // sequence we are inserting is empty. Consider the
+        // following two cases:
+        //
+        // 1. `w` is itself empty. Evidently, insertion succeeds but nothing needs
+        // to happen
+        //
+        // 2. a leaf node in the tree already contains `w` exactly.
+        // In this case, the empty `w'` returned (viz. `shortest_seq`)
+        // such that `w [=_[E] v.w'` would be empty
         this->insert_sequence_after(node, shortest_sequence.value());
       }
       // Since we're following the post-order traversal of the tree,
