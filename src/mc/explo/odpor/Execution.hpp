@@ -213,12 +213,12 @@ public:
    * `N` actors, we can process them "in-parallel" as is done with the
    * computation of SDPOR initials)
    */
-  bool is_initial_after_execution(const PartialExecution& w, aid_t p) const;
+  bool is_initial_after_execution_of(const PartialExecution& w, aid_t p) const;
 
   /**
    * @brief Determines whether `E ⊢ p ◊ w` given the next action taken by `p`
    */
-  bool is_independent_with_execution(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const;
+  bool is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const;
 
   /**
    * @brief Determines the event associated with

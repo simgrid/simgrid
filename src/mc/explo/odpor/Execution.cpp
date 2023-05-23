@@ -271,7 +271,7 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   for (const auto& [aid, astate] : state_at_e.get_actors_list()) {
     // TODO: We have to be able to react appropriately here when adding new
     // types of transitions (multiple choices can be made :( )
-    if (sleeping_actors.count(aid) == 0 and pre_E_e.is_independent_with_execution(v, astate.get_transition(0))) {
+    if (sleeping_actors.count(aid) == 0 and pre_E_e.is_independent_with_execution_of(v, astate.get_transition(0))) {
       return v;
     }
   }
@@ -279,7 +279,7 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   return std::nullopt;
 }
 
-bool Execution::is_initial_after_execution(const PartialExecution& w, aid_t p) const
+bool Execution::is_initial_after_execution_of(const PartialExecution& w, aid_t p) const
 {
   auto E_w = *this;
   std::vector<EventHandle> w_handles;
@@ -302,7 +302,7 @@ bool Execution::is_initial_after_execution(const PartialExecution& w, aid_t p) c
   return false;
 }
 
-bool Execution::is_independent_with_execution(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const
+bool Execution::is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const
 {
   // INVARIANT: Here, we assume that for any process `p_i` of `w`,
   // the events of this execution followed by the execution of all
@@ -340,7 +340,7 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
     const aid_t p = next_E_p->aid_;
 
     // Is `p in `I_[E](w)`?
-    if (E_v.is_initial_after_execution(w_now, p)) {
+    if (E_v.is_initial_after_execution_of(w_now, p)) {
       // Remove `p` from w and continue
 
       // TODO: If `p` occurs in `w`, it had better refer to the same
@@ -364,7 +364,7 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
       w_now.erase(action_by_p_in_w);
     }
     // Is `E ⊢ p ◇ w`?
-    else if (E_v.is_independent_with_execution(w, next_E_p)) {
+    else if (E_v.is_independent_with_execution_of(w, next_E_p)) {
       // INVARIANT: Note that it is impossible for `p` to be
       // excluded from the set `I_[E](w)` BUT ALSO be contained in
       // `w` itself if `E ⊢ p ◇ w`. We assert this is the case here

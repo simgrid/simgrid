@@ -229,10 +229,6 @@ void DFSExplorer::run()
       // fully down a single path before we consider adding
       // any elements to the sleep set according to the pseudocode
       next_state->sprout_tree_from_parent_state();
-
-      // TODO: Consider what we have to do to handle transitions
-      // with multiple possible executions. We probably have to re-insert
-      // something into `state` and make note of that for later (opened_states_)
     } else {
       /* Sleep set procedure:
        * adding the taken transition to the sleep set of the original state.

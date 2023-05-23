@@ -97,6 +97,7 @@ public:
       mark_done();
     return times_considered_++;
   }
+  unsigned int get_max_considered() const { return max_consider_; }
   unsigned int get_times_considered() const { return times_considered_; }
   unsigned int get_times_not_considered() const { return max_consider_ - times_considered_; }
   aid_t get_aid() const { return aid_; }

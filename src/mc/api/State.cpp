@@ -209,9 +209,18 @@ void State::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
   // tree and decided upon "happens-before" at that point for different
   // executions :(
   if (wakeup_tree_.empty()) {
-    strategy_->consider_best();
-    if (const aid_t next = std::get<0>(strategy_->next_transition()); next >= 0) {
-      wakeup_tree_.insert(prior, odpor::PartialExecution{strategy_->actors_to_run_.at(next).get_transition()});
+    // Find an enabled transition to pick
+    for (const auto& [_, actor] : get_actors_list()) {
+      if (actor.is_enabled()) {
+        // For each variant of the transition, we want
+        // to insert the action into the tree. This ensures
+        // that all variants are searched?
+        //
+        // TODO: How do we modify sleep sets then?
+        for (unsigned times = 0; times < actor.get_max_considered(); ++times) {
+          wakeup_tree_.insert(prior, odpor::PartialExecution{actor.get_transition(times)});
+        }
+      }
     }
   }
   has_initialized_wakeup_tree = true;

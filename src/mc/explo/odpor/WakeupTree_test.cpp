@@ -257,15 +257,6 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
     const auto a3 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
     const auto a4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
     const auto a5 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
-
-    Execution execution;
-    execution.push_transition(a0);
-    execution.push_transition(a1);
-    execution.push_transition(a2);
-    execution.push_transition(a3);
-    execution.push_transition(a4);
-    execution.push_transition(a5);
-
     WakeupTree tree;
 
     SECTION("Attempting to insert the empty sequence into an empty tree should have no effect")

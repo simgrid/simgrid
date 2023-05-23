@@ -294,3 +294,99 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Races and Conditions")
   execution.push_transition(a4);
   execution.push_transition(a5);
 }
+
+TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
+{
+  SECTION("Complete independence")
+  {
+    // Every transition is independent with every other and run by different actors. Hopefully
+    // we say that the events are independent with each other...
+    const auto a0 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto a1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto a2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto a3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
+    const auto a4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 5);
+    const auto a5 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 6);
+    const auto a6 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 7);
+    const auto a7 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 7);
+    Execution execution;
+    execution.push_transition(a0);
+    execution.push_transition(a1);
+    execution.push_transition(a2);
+    execution.push_transition(a3);
+
+    REQUIRE(execution.is_independent_with_execution_of(PartialExecution{a4, a5}, a6));
+
+    // In this case, we notice that `a6` and `a7` are executed by the same actor.
+    // Hence, a6 cannot be independent with extending the execution with a4.a5.a7.
+    // Notice that we are treating *a6* as the next step of actor 7 (that is what we
+    // supplied as an argument)
+    REQUIRE_FALSE(execution.is_independent_with_execution_of(PartialExecution{a4, a5, a7}, a6));
+  }
+
+  SECTION("Dependencies stopping independence from being possible")
+  {
+    const auto a0    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto a1    = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto a2    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto a3    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+    const auto a4    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+    const auto a5    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto a6    = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto a7    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto a8    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+    const auto indep = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+    Execution execution;
+    execution.push_transition(a0);
+    execution.push_transition(a1);
+    execution.push_transition(a2);
+    execution.push_transition(a3);
+
+    // We see that although `a4` comes after `a1` with which it is dependent, it
+    // would come before "a6" in the partial execution `w`, so it would not be independent
+    REQUIRE_FALSE(execution.is_independent_with_execution_of(PartialExecution{a5, a6, a7}, a4));
+
+    // Removing `a6` from the picture, though, gives us the independence we're looking for.
+    REQUIRE(execution.is_independent_with_execution_of(PartialExecution{a5, a7}, a4));
+
+    // BUT, we we ask about a transition which is run by the same actor, even if they would be
+    // independent otherwise, we again lose independence
+    REQUIRE_FALSE(execution.is_independent_with_execution_of(PartialExecution{a5, a7, a8}, a4));
+
+    // This is a more interesting case:
+    // `indep` clearly is independent with the rest of the series, even though
+    // there are dependencies among the other events in the partial execution
+    REQUIRE(Execution().is_independent_with_execution_of(PartialExecution{a1, a6, a7}, indep));
+  }
+}
+
+TEST_CASE("simgrid::mc::odpor::Execution: ODPOR Smallest Sequence Tests")
+{
+  const auto a0 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
+  const auto a1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
+  const auto a2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
+  const auto a3 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto a4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+  const auto a5 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+
+  SECTION("Equivalent insertions")
+  {
+    // TODO: Is this even a sensible question to ask if the two sequences
+    // don't agree upon what each actor executed after `E`?
+    const auto insertion =
+        Execution().get_shortest_odpor_sq_subset_insertion(PartialExecution{a1, a2}, PartialExecution{a2, a5});
+    REQUIRE(insertion.has_value());
+    REQUIRE(insertion.value() == PartialExecution{});
+  }
+
+  SECTION("")
+  {
+    Execution execution;
+    execution.push_transition(a0);
+    execution.push_transition(a1);
+    execution.push_transition(a2);
+    execution.push_transition(a3);
+    execution.push_transition(a4);
+    execution.push_transition(a5);
+  }
+}
