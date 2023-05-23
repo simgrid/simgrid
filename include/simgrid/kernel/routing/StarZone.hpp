@@ -11,9 +11,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 
 /** @ingroup ROUTING_API
  *  @brief NetZone where components are connected following a star topology
@@ -93,8 +91,6 @@ private:
                              bool symmetrical) const;
   std::unordered_map<unsigned long, StarRoute> routes_;
 };
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing
 
 #endif /* SIMGRID_KERNEL_ROUTING_STARZONE_HPP_ */

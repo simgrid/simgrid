@@ -12,9 +12,7 @@
 #include <random>
 #include <string>
 
-namespace simgrid {
-namespace xbt {
-namespace random {
+namespace simgrid::xbt::random {
 
 /** A random number generator.
  *
@@ -162,8 +160,6 @@ double exponential(double lambda);
  * @param sd Standard deviation of the normal distribution
  */
 double normal(double mean, double sd);
-} // namespace random
-} // namespace xbt
-} // namespace simgrid
+} // namespace simgrid::xbt::random
 
 #endif

@@ -10,8 +10,7 @@
 #include <map>
 #include <utility>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 template <class S> class signal;
 
@@ -43,7 +42,6 @@ public:
   /** Remove all callbacks */
   void disconnect_slots() { handlers_.clear(); }
 };
-}
-}
+} // namespace simgrid::xbt
 
 #endif

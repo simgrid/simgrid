@@ -11,8 +11,7 @@
 
 #include <string>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /** I/O Activity, representing the asynchronous disk access.
  *
@@ -65,7 +64,6 @@ public:
   bool is_assigned() const override;
 };
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_IO_HPP */

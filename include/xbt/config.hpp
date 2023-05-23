@@ -22,8 +22,7 @@
 #include <xbt/sysdep.h>
 #include <xbt/utility.hpp>
 
-namespace simgrid {
-namespace config {
+namespace simgrid::config {
 
 class Config;
 
@@ -325,7 +324,6 @@ XBT_PUBLIC void finalize();
 XBT_PUBLIC void show_aliases();
 XBT_PUBLIC void help();
 
-} // namespace config
-} // namespace simgrid
+} // namespace simgrid::config
 
 #endif

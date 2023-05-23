@@ -11,8 +11,7 @@
 #include <simgrid/s4u/Actor.hpp>
 #include <xbt/ex.h>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /** Computation Activity, representing the asynchronous executions.
  *
@@ -89,7 +88,6 @@ public:
   bool is_assigned() const override;
 };
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_EXEC_HPP */

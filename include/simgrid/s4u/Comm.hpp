@@ -12,8 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 /** @brief Communication async
  *
  * Represents all asynchronous communications, that you can test or wait onto.
@@ -178,7 +177,6 @@ public:
    * occurs). */
   static size_t wait_all_for(const std::vector<CommPtr>& comms, double timeout);
 };
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_COMM_HPP */

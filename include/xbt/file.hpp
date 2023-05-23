@@ -10,8 +10,7 @@
 #include <vector>
 #include <xbt/base.h>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 void path_push(std::string const& str);
 void path_pop();
@@ -38,6 +37,6 @@ public:
 private:
   std::string path_;
 };
-}}
+} // namespace simgrid::xbt
 
 #endif                          /* XBT_FILE_HPP */

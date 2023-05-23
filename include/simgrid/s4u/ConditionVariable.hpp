@@ -14,8 +14,7 @@
 
 #include <future>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /**
  * @beginrst
@@ -117,7 +116,6 @@ public:
   void notify_all();
 };
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif

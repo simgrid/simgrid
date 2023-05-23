@@ -10,8 +10,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 /** @brief a PropertyHolder can be given a set of textual properties
  *
@@ -32,7 +31,6 @@ public:
   template <class Assoc> void set_properties(const Assoc& properties);
 };
 
-} // namespace xbt
-} // namespace simgrid
+} // namespace simgrid::xbt
 
 #endif

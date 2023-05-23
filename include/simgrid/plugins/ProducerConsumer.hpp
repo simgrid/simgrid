@@ -22,8 +22,7 @@ XBT_LOG_EXTERNAL_CATEGORY(producer_consumer);
 
 /** Stock implementation of a generic monitored queue to solve the producer-consumer problem */
 
-namespace simgrid {
-namespace plugin {
+namespace simgrid::plugin {
 
 template <typename T> class ProducerConsumer;
 template <typename T> using ProducerConsumerPtr = boost::intrusive_ptr<ProducerConsumer<T>>;
@@ -214,7 +213,6 @@ public:
   }
 };
 
-} // namespace plugin
-} // namespace simgrid
+} // namespace simgrid::plugin
 
 #endif // SIMGRID_PLUGIN_PRODUCERCONSUMER_HPP

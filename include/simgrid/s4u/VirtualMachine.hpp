@@ -10,8 +10,7 @@
 #include <simgrid/s4u/Host.hpp>
 #include <xbt/utility.hpp>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /** @brief Host extension for the VMs */
 class VmHostExt {
@@ -105,7 +104,6 @@ public:
     on_migration_end.connect(cb);
   }
 };
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif

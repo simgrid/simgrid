@@ -16,9 +16,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 
 class Route {
 public:
@@ -287,8 +285,6 @@ private:
   virtual resource::StandardLinkImpl* do_create_link(const std::string& name, const std::vector<double>& bandwidths);
   void add_child(NetZoneImpl* new_zone);
 };
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing
 
 #endif /* SIMGRID_ROUTING_NETZONEIMPL_HPP */

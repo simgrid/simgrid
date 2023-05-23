@@ -16,8 +16,7 @@ namespace simgrid {
 
 extern template class XBT_PUBLIC xbt::Extendable<kernel::routing::NetPoint>;
 
-namespace kernel {
-namespace routing {
+namespace kernel::routing {
 
 /** @ingroup ROUTING_API
  *  @brief Network cards are the vertices in the graph representing the network, used to compute paths between nodes.
@@ -54,8 +53,7 @@ private:
   NetPoint::Type component_type_;
   NetZoneImpl* englobing_zone_ = nullptr;
 };
-} // namespace routing
-} // namespace kernel
+} // namespace kernel::routing
 } // namespace simgrid
 
 XBT_PUBLIC simgrid::kernel::routing::NetPoint* sg_netpoint_by_name_or_null(const char* name);

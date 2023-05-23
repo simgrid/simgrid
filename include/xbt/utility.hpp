@@ -31,8 +31,7 @@
   }                                                                                                                    \
   enum class EnumType { __VA_ARGS__ } /* defined here to handle trailing semicolon */
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 /** @brief Replacement for C++20's std::type_identity_t
  */
@@ -80,6 +79,5 @@ template <class List, class Elem> inline void intrusive_erase(List& list, Elem& 
   list.erase(list.iterator_to(elem));
 }
 
-} // namespace xbt
-} // namespace simgrid
+} // namespace simgrid::xbt
 #endif

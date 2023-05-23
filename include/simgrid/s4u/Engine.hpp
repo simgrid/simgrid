@@ -18,8 +18,7 @@
 #include <utility>
 #include <vector>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 /** @brief Simulation engine
  *
  * This is a singleton containing all the main functions of the simulation.
@@ -282,7 +281,6 @@ XBT_PRIVATE void get_filtered_netzones_recursive(const s4u::NetZone* current, st
   }
 }
 #endif
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_ENGINE_HPP */

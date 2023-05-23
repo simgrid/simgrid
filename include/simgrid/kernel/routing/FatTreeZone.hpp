@@ -8,9 +8,7 @@
 
 #include <simgrid/kernel/routing/ClusterZone.hpp>
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 
 class XBT_PRIVATE FatTreeLink;
 
@@ -159,8 +157,6 @@ public:
   void build_upper_levels(const s4u::ClusterCallbacks& set_callbacks);
   void generate_dot_file(const std::string& filename = "fat_tree.dot") const;
 };
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing
 
 #endif

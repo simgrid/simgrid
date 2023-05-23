@@ -12,9 +12,7 @@
 
 #include <boost/heap/fibonacci_heap.hpp>
 
-namespace simgrid {
-namespace kernel {
-namespace timer {
+namespace simgrid::kernel::timer {
 
 inline auto& kernel_timers() // avoid static initialization order fiasco
 {
@@ -48,8 +46,6 @@ public:
   static bool execute_all();
 };
 
-} // namespace timer
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::timer
 
 #endif /* SRC_KERNEL_TIMER_TIMER_HPP_ */

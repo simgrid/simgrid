@@ -8,8 +8,7 @@
 
 #include <simgrid/forward.h>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /** @brief A classical semaphore, but blocking in the simulation world
  *
@@ -57,7 +56,6 @@ public:
   bool would_block() const;
 };
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_SEMAPHORE_HPP */

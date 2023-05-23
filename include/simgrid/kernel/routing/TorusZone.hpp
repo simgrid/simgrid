@@ -10,9 +10,7 @@
 
 #include <vector>
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 
 /** @ingroup ROUTING_API
  * @brief NetZone using a Torus topology
@@ -32,7 +30,5 @@ public:
   static std::vector<unsigned long> parse_topo_parameters(const std::string& topo_parameters);
 };
 
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing
 #endif

@@ -11,8 +11,7 @@
 
 #include <xbt/automaton.h>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 /** Add a proposition to an automaton (the C++ way)
  *
@@ -26,6 +25,5 @@ template <class F> xbt_automaton_propositional_symbol_t add_proposition(const_xb
       a, id, [](auto* cb) -> int { return (*(F*)cb)(); }, callback, [](auto* cb) -> void { delete (F*)cb; });
 }
 
-}
-}
+} // namespace simgrid::xbt
 #endif

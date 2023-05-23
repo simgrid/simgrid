@@ -23,8 +23,7 @@
 #include <utility>
 #include <vector>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 template <class F> class MainFunction {
   F code_;
@@ -260,6 +259,5 @@ template <class F, class... Args> auto make_task(F code, Args... args) -> Task<d
   return Task<decltype(code(std::move(args)...))()>(std::move(task));
 }
 
-} // namespace xbt
-} // namespace simgrid
+} // namespace simgrid::xbt
 #endif
