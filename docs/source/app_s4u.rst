@@ -2062,13 +2062,21 @@ Signals
 
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_creation_cb
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_destruction_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_this_destruction_cb
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_migration_end_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_this_migration_end_cb
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_migration_start_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_this_migration_start_cb
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_resume_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_this_resume_cb
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_shutdown_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_this_shutdown_cb
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_start_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_this_start_cb
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_started_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_this_started_cb
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_this_suspend_cb
 
 .. _API_s4u_Activity:
 

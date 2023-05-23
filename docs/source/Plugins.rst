@@ -118,11 +118,17 @@ Partial list of existing signals in s4u:
   - :cpp:func:`NetZone::on_creation <simgrid::s4u::NetZone::on_creation_cb>`
     :cpp:func:`NetZone::on_seal <simgrid::s4u::NetZone::on_seal_cb>`
   - :cpp:func:`VirtualMachine::on_start <simgrid::s4u::VirtualMachine::on_start_cb>`
+    :cpp:func:`VirtualMachine::on_this_start <simgrid::s4u::VirtualMachine::on_this_start_cb>`
     :cpp:func:`VirtualMachine::on_started <simgrid::s4u::VirtualMachine::on_started_cb>`
+    :cpp:func:`VirtualMachine::on_this_started <simgrid::s4u::VirtualMachine::on_this_started_cb>`
     :cpp:func:`VirtualMachine::on_suspend <simgrid::s4u::VirtualMachine::on_suspend_cb>`
+    :cpp:func:`VirtualMachine::on_this_suspend <simgrid::s4u::VirtualMachine::on_this_suspend_cb>`
     :cpp:func:`VirtualMachine::on_resume <simgrid::s4u::VirtualMachine::on_resume_cb>`
+    :cpp:func:`VirtualMachine::on_this_resume <simgrid::s4u::VirtualMachine::on_this_resume_cb>`
     :cpp:func:`VirtualMachine::on_migration_start <simgrid::s4u::VirtualMachine::on_migration_start_cb>`
+    :cpp:func:`VirtualMachine::on_this_migration_start <simgrid::s4u::VirtualMachine::on_this_migration_start_cb>`
     :cpp:func:`VirtualMachine::on_migration_end <simgrid::s4u::VirtualMachine::on_migration_end_cb>`
+    :cpp:func:`VirtualMachine::on_this_migration_end <simgrid::s4u::VirtualMachine::on_this_migration_end_cb>`
 
 - In activities:
 

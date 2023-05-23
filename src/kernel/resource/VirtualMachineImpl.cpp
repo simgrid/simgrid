@@ -236,6 +236,7 @@ void VirtualMachineImpl::vm_destroy()
 void VirtualMachineImpl::start()
 {
   s4u::VirtualMachine::on_start(*get_iface());
+  get_iface()->on_this_start(*get_iface());
   s4u::VmHostExt::ensureVmExtInstalled();
 
   if (physical_host_->extension<s4u::VmHostExt>() == nullptr)
@@ -261,11 +262,13 @@ void VirtualMachineImpl::start()
   vm_state_ = s4u::VirtualMachine::State::RUNNING;
 
   s4u::VirtualMachine::on_started(*get_iface());
+  get_iface()->on_this_started(*get_iface());
 }
 
 void VirtualMachineImpl::suspend(const actor::ActorImpl* issuer)
 {
   s4u::VirtualMachine::on_suspend(*get_iface());
+  get_iface()->on_this_suspend(*get_iface());
 
   if (vm_state_ != s4u::VirtualMachine::State::RUNNING)
     throw VmFailureException(XBT_THROW_POINT,
@@ -305,6 +308,7 @@ void VirtualMachineImpl::resume()
 
   vm_state_ = s4u::VirtualMachine::State::RUNNING;
   s4u::VirtualMachine::on_resume(*get_iface());
+  get_iface()->on_this_resume(*get_iface());
 }
 
 /** @brief Power off a VM.
@@ -331,6 +335,7 @@ void VirtualMachineImpl::shutdown(actor::ActorImpl* issuer)
   set_state(s4u::VirtualMachine::State::DESTROYED);
 
   s4u::VirtualMachine::on_shutdown(*get_iface());
+  get_iface()->on_this_shutdown(*get_iface());
 }
 
 /** @brief Change the physical host on which the given VM is running
@@ -399,12 +404,14 @@ void VirtualMachineImpl::start_migration()
 {
   is_migrating_ = true;
   s4u::VirtualMachine::on_migration_start(*get_iface());
+  get_iface()->on_this_migration_start(*get_iface());
 }
 
 void VirtualMachineImpl::end_migration()
 {
   is_migrating_ = false;
   s4u::VirtualMachine::on_migration_end(*get_iface());
+  get_iface()->on_this_migration_end(*get_iface());
 }
 
 void VirtualMachineImpl::seal()

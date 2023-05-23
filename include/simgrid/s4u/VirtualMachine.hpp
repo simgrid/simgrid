@@ -36,13 +36,21 @@ class XBT_PUBLIC VirtualMachine : public s4u::Host {
   /* Signals about the life cycle of the VM */
   static xbt::signal<void(VirtualMachine&)> on_vm_creation;
   static xbt::signal<void(VirtualMachine const&)> on_start;
+  xbt::signal<void(VirtualMachine const&)> on_this_start;
   static xbt::signal<void(VirtualMachine const&)> on_started;
+  xbt::signal<void(VirtualMachine const&)> on_this_started;
   static xbt::signal<void(VirtualMachine const&)> on_shutdown;
+  xbt::signal<void(VirtualMachine const&)> on_this_shutdown;
   static xbt::signal<void(VirtualMachine const&)> on_suspend;
+  xbt::signal<void(VirtualMachine const&)> on_this_suspend;
   static xbt::signal<void(VirtualMachine const&)> on_resume;
+  xbt::signal<void(VirtualMachine const&)> on_this_resume;
   static xbt::signal<void(VirtualMachine const&)> on_migration_start;
+  xbt::signal<void(VirtualMachine const&)> on_this_migration_start;
   static xbt::signal<void(VirtualMachine const&)> on_migration_end;
+  xbt::signal<void(VirtualMachine const&)> on_this_migration_end;
   static xbt::signal<void(VirtualMachine const&)> on_vm_destruction;
+  xbt::signal<void(VirtualMachine const&)> on_this_vm_destruction;
 
 #ifndef DOXYGEN
   friend kernel::resource::VirtualMachineImpl; // calls signals from Impl
@@ -90,18 +98,50 @@ public:
   /* Callbacks on signals */
   static void on_creation_cb(const std::function<void(VirtualMachine&)>& cb) { on_vm_creation.connect(cb); }
   static void on_start_cb(const std::function<void(VirtualMachine const&)>& cb) { on_start.connect(cb); }
+  void on_this_start_cb(const std::function<void(VirtualMachine const&)>& cb)
+  {
+    on_this_start.connect(cb);
+  }
   static void on_started_cb(const std::function<void(VirtualMachine const&)>& cb) { on_started.connect(cb); }
+  void on_this_started_cb(const std::function<void(VirtualMachine const&)>& cb)
+  {
+    on_this_started.connect(cb);
+  }
   static void on_shutdown_cb(const std::function<void(VirtualMachine const&)>& cb) { on_shutdown.connect(cb); }
+  void on_this_shutdown_cb(const std::function<void(VirtualMachine const&)>& cb)
+  {
+    on_this_shutdown.connect(cb);
+  }
   static void on_suspend_cb(const std::function<void(VirtualMachine const&)>& cb) { on_suspend.connect(cb); }
+  void on_this_suspend_cb(const std::function<void(VirtualMachine const&)>& cb)
+  {
+    on_this_suspend.connect(cb);
+  }
   static void on_resume_cb(const std::function<void(VirtualMachine const&)>& cb) { on_resume.connect(cb); }
+  void on_this_resume_cb(const std::function<void(VirtualMachine const&)>& cb)
+  {
+    on_this_resume.connect(cb);
+  }
   static void on_destruction_cb(const std::function<void(VirtualMachine const&)>& cb) { on_vm_destruction.connect(cb); }
+  void on_this_destruction_cb(const std::function<void(VirtualMachine const&)>& cb)
+  {
+    on_this_vm_destruction.connect(cb);
+  }
   static void on_migration_start_cb(const std::function<void(VirtualMachine const&)>& cb)
   {
     on_migration_start.connect(cb);
   }
+  void on_this_migration_start_cb(const std::function<void(VirtualMachine const&)>& cb)
+  {
+    on_this_migration_start.connect(cb);
+  }
   static void on_migration_end_cb(const std::function<void(VirtualMachine const&)>& cb)
   {
     on_migration_end.connect(cb);
+  }
+  void on_this_migration_end_cb(const std::function<void(VirtualMachine const&)>& cb)
+  {
+    on_this_migration_end.connect(cb);
   }
 };
 } // namespace simgrid::s4u

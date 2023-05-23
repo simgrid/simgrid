@@ -74,6 +74,7 @@ void VirtualMachine::destroy()
 
     XBT_DEBUG("destroy %s", get_cname());
     on_vm_destruction(*this);
+    on_this_vm_destruction(*this);
     /* Then, destroy the VM object */
     kernel::actor::simcall_answered(
         [this]() { get_vm_impl()->get_physical_host()->get_impl()->destroy_vm(get_name()); });
