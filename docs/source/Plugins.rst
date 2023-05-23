@@ -69,7 +69,8 @@ kind of objects, please let us now.
 
 Partial list of existing signals in s4u:
 
-- :cpp:func:`Actor::on_creation <simgrid::s4u::Actor::on_creation_cb>`
+- In actors:
+  :cpp:func:`Actor::on_creation <simgrid::s4u::Actor::on_creation_cb>`
   :cpp:func:`Actor::on_suspend <simgrid::s4u::Actor::on_suspend_cb>`
   :cpp:func:`Actor::on_this_suspend <simgrid::s4u::Actor::on_this_suspend_cb>`
   :cpp:func:`Actor::on_resume <simgrid::s4u::Actor::on_resume_cb>`
@@ -83,49 +84,57 @@ Partial list of existing signals in s4u:
   :cpp:func:`Actor::on_termination <simgrid::s4u::Actor::on_termination_cb>`
   :cpp:func:`Actor::on_this_termination <simgrid::s4u::Actor::on_this_termination_cb>`
   :cpp:func:`Actor::on_destruction <simgrid::s4u::Actor::on_destruction_cb>`
-- :cpp:func:`Comm::on_send <simgrid::s4u::Comm::on_send_cb>`
-  :cpp:func:`Comm::on_recv <simgrid::s4u::Comm::on_recv_cb>`
-  :cpp:func:`Comm::on_completion <simgrid::s4u::Comm::on_completion_cb>`
-- :cpp:func:`CommImpl::on_start <simgrid::s4u::CommImpl::on_start_cb>`
-  :cpp:func:`CommImpl::on_completion <simgrid::s4u::CommImpl::on_completion_cb>`
-- :cpp:func:`Disk::on_creation <simgrid::s4u::Disk::on_creation_cb>`
-  :cpp:func:`Disk::on_destruction <simgrid::s4u::Disk::on_destruction_cb>`
-  :cpp:func:`Disk::on_this_destruction <simgrid::s4u::Disk::on_this_destruction_cb>`
-  :cpp:func:`Disk::on_state_change <simgrid::s4u::Disk::on_state_change_cb>`
-  :cpp:func:`Disk::on_this_state_change <simgrid::s4u::Disk::on_this_state_change_cb>`
-- :cpp:func:`Engine::on_platform_creation <simgrid::s4u::Engine::on_platform_creation_cb>`
+- In the engine:
+  :cpp:func:`Engine::on_platform_creation <simgrid::s4u::Engine::on_platform_creation_cb>`
   :cpp:func:`Engine::on_platform_created <simgrid::s4u::Engine::on_platform_created_cb>`
   :cpp:func:`Engine::on_time_advance <simgrid::s4u::Engine::on_time_advance_cb>`
   :cpp:func:`Engine::on_simulation_end <simgrid::s4u::Engine::on_simulation_end_cb>`
   :cpp:func:`Engine::on_deadlock <simgrid::s4u::Engine::on_deadlock_cb>`
-- :cpp:func:`Exec::on_start <simgrid::s4u::Exec::on_start_cb>`
-  :cpp:func:`Exec::on_completion <simgrid::s4u::Exec::on_completion_cb>`
-- :cpp:func:`Host::on_creation <simgrid::s4u::Host::on_creation_cb>`
-  :cpp:func:`Host::on_destruction <simgrid::s4u::Host::on_destruction_cb>`
-  :cpp:func:`Host::on_this_destruction <simgrid::s4u::Host::on_this_destruction_cb>`
-  :cpp:func:`Host::on_state_change <simgrid::s4u::Host::on_state_change_cb>`
-  :cpp:func:`Host::on_this_state_change <simgrid::s4u::Host::on_this_state_change_cb>`
-  :cpp:func:`Host::on_speed_change <simgrid::s4u::Host::on_speed_change_cb>`
-  :cpp:func:`Host::on_this_speed_change <simgrid::s4u::Host::on_this_speed_change_cb>`
-  :cpp:func:`Host::on_exec_state_change <simgrid::s4u::Host::on_exec_state_change_cb>`
-- :cpp:func:`Io::on_start <simgrid::s4u::Io::on_start_cb>`
-  :cpp:func:`Io::on_completion <simgrid::s4u::Io::on_completion_cb>`
-- :cpp:func:`Link::on_creation <simgrid::s4u::Link::on_creation_cb>`
-  :cpp:func:`Link::on_destruction <simgrid::s4u::Link::on_destruction_cb>`
-  :cpp:func:`Link::on_this_destruction <simgrid::s4u::Link::on_this_destruction_cb>`
-  :cpp:func:`Link::on_state_change <simgrid::s4u::Link::on_state_change_cb>`
-  :cpp:func:`Link::on_this_state_change <simgrid::s4u::Link::on_this_state_change_cb>`
-  :cpp:func:`Link::on_bandwidth_change <simgrid::s4u::Link::on_bandwidth_change_cb>`
-  :cpp:func:`Link::on_this_bandwidth_change <simgrid::s4u::Link::on_this_bandwidth_change_cb>`
-  :cpp:func:`Link::on_communication_state_change <simgrid::s4u::Link::on_communication_state_change_cb>`
-- :cpp:func:`NetZone::on_creation <simgrid::s4u::NetZone::on_creation_cb>`
-  :cpp:func:`NetZone::on_seal <simgrid::s4u::NetZone::on_seal_cb>`
-- :cpp:func:`VirtualMachine::on_start <simgrid::s4u::VirtualMachine::on_start_cb>`
-  :cpp:func:`VirtualMachine::on_started <simgrid::s4u::VirtualMachine::on_started_cb>`
-  :cpp:func:`VirtualMachine::on_suspend <simgrid::s4u::VirtualMachine::on_suspend_cb>`
-  :cpp:func:`VirtualMachine::on_resume <simgrid::s4u::VirtualMachine::on_resume_cb>`
-  :cpp:func:`VirtualMachine::on_migration_start <simgrid::s4u::VirtualMachine::on_migration_start_cb>`
-  :cpp:func:`VirtualMachine::on_migration_end <simgrid::s4u::VirtualMachine::on_migration_end_cb>`
+
+- In resources:
+
+  - :cpp:func:`Disk::on_creation <simgrid::s4u::Disk::on_creation_cb>`
+    :cpp:func:`Disk::on_destruction <simgrid::s4u::Disk::on_destruction_cb>`
+    :cpp:func:`Disk::on_this_destruction <simgrid::s4u::Disk::on_this_destruction_cb>`
+    :cpp:func:`Disk::on_onoff <simgrid::s4u::Disk::on_onoff_cb>`
+    :cpp:func:`Disk::on_this_onoff <simgrid::s4u::Disk::on_this_onoff_cb>`
+  - :cpp:func:`Host::on_creation <simgrid::s4u::Host::on_creation_cb>`
+    :cpp:func:`Host::on_destruction <simgrid::s4u::Host::on_destruction_cb>`
+    :cpp:func:`Host::on_this_destruction <simgrid::s4u::Host::on_this_destruction_cb>`
+    :cpp:func:`Host::on_onoff <simgrid::s4u::Host::on_onoff_cb>`
+    :cpp:func:`Host::on_this_onoff <simgrid::s4u::Host::on_this_onoff_cb>`
+    :cpp:func:`Host::on_speed_change <simgrid::s4u::Host::on_speed_change_cb>`
+    :cpp:func:`Host::on_this_speed_change <simgrid::s4u::Host::on_this_speed_change_cb>`
+    :cpp:func:`Host::on_exec_state_change <simgrid::s4u::Host::on_exec_state_change_cb>`
+  - :cpp:func:`Link::on_creation <simgrid::s4u::Link::on_creation_cb>`
+    :cpp:func:`Link::on_destruction <simgrid::s4u::Link::on_destruction_cb>`
+    :cpp:func:`Link::on_this_destruction <simgrid::s4u::Link::on_this_destruction_cb>`
+    :cpp:func:`Link::on_onoff <simgrid::s4u::Link::on_onoff_cb>`
+    :cpp:func:`Link::on_this_onoff <simgrid::s4u::Link::on_this_onoff_cb>`
+    :cpp:func:`Link::on_bandwidth_change <simgrid::s4u::Link::on_bandwidth_change_cb>`
+    :cpp:func:`Link::on_this_bandwidth_change <simgrid::s4u::Link::on_this_bandwidth_change_cb>`
+    :cpp:func:`Link::on_communication_state_change <simgrid::s4u::Link::on_communication_state_change_cb>`
+
+  - :cpp:func:`NetZone::on_creation <simgrid::s4u::NetZone::on_creation_cb>`
+    :cpp:func:`NetZone::on_seal <simgrid::s4u::NetZone::on_seal_cb>`
+  - :cpp:func:`VirtualMachine::on_start <simgrid::s4u::VirtualMachine::on_start_cb>`
+    :cpp:func:`VirtualMachine::on_started <simgrid::s4u::VirtualMachine::on_started_cb>`
+    :cpp:func:`VirtualMachine::on_suspend <simgrid::s4u::VirtualMachine::on_suspend_cb>`
+    :cpp:func:`VirtualMachine::on_resume <simgrid::s4u::VirtualMachine::on_resume_cb>`
+    :cpp:func:`VirtualMachine::on_migration_start <simgrid::s4u::VirtualMachine::on_migration_start_cb>`
+    :cpp:func:`VirtualMachine::on_migration_end <simgrid::s4u::VirtualMachine::on_migration_end_cb>`
+
+- In activities:
+
+  - :cpp:func:`Comm::on_send <simgrid::s4u::Comm::on_send_cb>`
+    :cpp:func:`Comm::on_recv <simgrid::s4u::Comm::on_recv_cb>`
+    :cpp:func:`Comm::on_completion <simgrid::s4u::Comm::on_completion_cb>`
+  - :cpp:func:`CommImpl::on_start <simgrid::s4u::CommImpl::on_start_cb>`
+    :cpp:func:`CommImpl::on_completion <simgrid::s4u::CommImpl::on_completion_cb>`
+  - :cpp:func:`Exec::on_start <simgrid::s4u::Exec::on_start_cb>`
+    :cpp:func:`Exec::on_completion <simgrid::s4u::Exec::on_completion_cb>`
+  - :cpp:func:`Io::on_start <simgrid::s4u::Io::on_start_cb>`
+    :cpp:func:`Io::on_completion <simgrid::s4u::Io::on_completion_cb>`
 
 Existing Plugins
 ****************

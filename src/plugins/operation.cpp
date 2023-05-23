@@ -394,9 +394,7 @@ IoOpPtr IoOp::set_bytes(double bytes)
   return this;
 }
 
-/** @ingroup plugin_operation
- *  @param bytes The amount of bytes to set.
- */
+/** @ingroup plugin_operation */
 IoOpPtr IoOp::set_op_type(s4u::Io::OpType type)
 {
   kernel::actor::simcall_answered([this, type] { type_ = type; });
