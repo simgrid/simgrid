@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(tuto_network)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/" "../../../")
 find_package(SimGrid REQUIRED)
