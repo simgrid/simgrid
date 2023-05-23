@@ -22,7 +22,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(operation_simple, "Messages specific for this opera
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  sg_storage_file_system_init();
   e.load_platform(argv[1]);
   simgrid::plugins::Operation::init();
 
