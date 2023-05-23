@@ -25,3 +25,6 @@ odr_violation:^stored_vtable$
 odr_violation:^cfg_bmf_max_iteration$
 # size=40 'cfg_bmf_precision' ../src/kernel/lmm/bmf.hpp:80:47
 odr_violation:^cfg_bmf_precision$
+
+# size=56 'on_completion' ../include/simgrid/s4u/Activity.hpp:242:55
+odr_violation:^on_completion$
