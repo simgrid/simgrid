@@ -198,7 +198,7 @@ void sg_link_energy_plugin_init()
     }
   });
 
-  simgrid::s4u::Link::on_state_change_cb([](simgrid::s4u::Link const& link) {
+  simgrid::s4u::Link::on_onoff_cb([](simgrid::s4u::Link const& link) {
     if (link.get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI)
       link.extension<LinkEnergy>()->update();
   });

@@ -66,18 +66,26 @@ protected:
 public:
   static xbt::signal<void(Host const&)> on_speed_change;
   xbt::signal<void(Host const&)> on_this_speed_change;
-  static xbt::signal<void(Host const&)> on_state_change;
-  xbt::signal<void(Host const&)> on_this_state_change;
+  static xbt::signal<void(Host const&)> on_onoff;
+  xbt::signal<void(Host const&)> on_this_onoff;
 
 #endif
   /** Add a callback fired on each newly created host */
   static void on_creation_cb(const std::function<void(Host&)>& cb) { on_creation.connect(cb); }
   /** Add a callback fired when any machine is turned on or off (called AFTER the change) */
-  static void on_state_change_cb(const std::function<void(Host const&)>& cb) { on_state_change.connect(cb); }
-  /** Add a callback fired when this specific machine is turned on or off (called AFTER the change) */
-  void on_this_state_change_cb(const std::function<void(Host const&)>& cb)
+  static void on_onoff_cb(const std::function<void(Host const&)>& cb)
   {
-    on_this_state_change.connect(cb);
+    on_onoff.connect(cb);
+  }
+  XBT_ATTRIB_DEPRECATED_v337("Please use on_onoff_cb() instead") static void on_state_change_cb(
+      const std::function<void(Host const&)>& cb)
+  {
+    on_onoff.connect(cb);
+  }
+  /** Add a callback fired when this specific machine is turned on or off (called AFTER the change) */
+  void on_this_onoff_cb(const std::function<void(Host const&)>& cb)
+  {
+    on_this_onoff.connect(cb);
   }
   /** Add a callback fired when the speed of any machine is changed (called AFTER the change)
    * (either because of a pstate switch or because of an external load event coming from the profile) */

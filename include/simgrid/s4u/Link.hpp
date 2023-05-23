@@ -157,8 +157,8 @@ public:
 private:
 #ifndef DOXYGEN
   static xbt::signal<void(Link&)> on_creation;
-  static xbt::signal<void(Link const&)> on_state_change;
-  xbt::signal<void(Link const&)> on_this_state_change;
+  static xbt::signal<void(Link const&)> on_onoff;
+  xbt::signal<void(Link const&)> on_this_onoff;
   static xbt::signal<void(Link const&)> on_bandwidth_change;
   xbt::signal<void(Link const&)> on_this_bandwidth_change;
   static xbt::signal<void(kernel::resource::NetworkAction&, kernel::resource::Action::State)>
@@ -171,12 +171,15 @@ public:
   /* The signals */
   /** @brief Add a callback fired when a new Link is created */
   static void on_creation_cb(const std::function<void(Link&)>& cb) { on_creation.connect(cb); }
-  /** @brief Add a callback fired when the state of any Link changes (when it is turned on or off) */
-  static void on_state_change_cb(const std::function<void(Link const&)>& cb) { on_state_change.connect(cb); }
-  /** @brief Add a callback fired when the state of this specific Link changes (when it is turned on or off) */
-  void on_this_state_change_cb(const std::function<void(Link const&)>& cb)
+  /** @brief Add a callback fired when any Link is turned on or off */
+  static void on_onoff_cb(const std::function<void(Link const&)>& cb)
   {
-    on_this_state_change.connect(cb);
+    on_onoff.connect(cb);
+  }
+  /** @brief Add a callback fired when this specific Link is turned on or off */
+  void on_this_onoff_cb(const std::function<void(Link const&)>& cb)
+  {
+    on_this_onoff.connect(cb);
   }
   /** @brief Add a callback fired when the bandwidth of any Link changes */
   static void on_bandwidth_change_cb(const std::function<void(Link const&)>& cb) { on_bandwidth_change.connect(cb); }
@@ -197,6 +200,12 @@ public:
   void on_this_destruction_cb(const std::function<void(Link const&)>& cb)
   {
     on_this_destruction.connect(cb);
+  }
+
+  XBT_ATTRIB_DEPRECATED_v337("Please use on_onoff_cb() instead") static void on_state_change_cb(
+      const std::function<void(Link const&)>& cb)
+  {
+    on_onoff.connect(cb);
   }
 };
 

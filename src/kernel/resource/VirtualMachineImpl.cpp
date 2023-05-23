@@ -55,7 +55,7 @@ std::deque<s4u::VirtualMachine*> VirtualMachineImpl::allVms_;
  */
 const double virt_overhead = 1; // 0.95
 
-static void host_state_change(s4u::Host const& host)
+static void host_onoff(s4u::Host const& host)
 {
   if (not host.is_on()) { // just turned off.
     std::vector<s4u::VirtualMachine*> trash;
@@ -120,7 +120,7 @@ static void remove_active_activity(s4u::Activity const& act)
 
 VMModel::VMModel(const std::string& name) : HostModel(name)
 {
-  s4u::Host::on_state_change_cb(host_state_change);
+  s4u::Host::on_onoff_cb(host_onoff);
   s4u::Exec::on_start_cb(add_active_exec);
   s4u::Exec::on_completion_cb(remove_active_exec);
   s4u::Activity::on_resume_cb(add_active_activity);

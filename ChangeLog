@@ -28,6 +28,8 @@ S4U:
    s4u::Actor::on_this_suspend_cb() adds a callback for this specific actor only.
  - Activity::on_suspended_cb() is renamed to Activity::on_suspend_cb(), and fired right before the suspend.
  - Activity::on_resumed_cb() is renamed to Activity::on_resume_cb(), and fired right before the resume.
+ - Resource::on_state_change_cb() is renamed to Resource::on_onoff_cb() to distinguish from the
+   Activity::on_state_change_cb() that is related to the activity state machine, not on/off.
 
 New S4U plugins:
  - Operation: They are designed to represent workflows, i.e, graphs of repeatable Activities.

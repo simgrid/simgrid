@@ -494,7 +494,7 @@ void sg_host_energy_plugin_init()
   HostEnergy::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostEnergy>();
 
   simgrid::s4u::Host::on_creation_cb(&on_creation);
-  simgrid::s4u::Host::on_state_change_cb(&on_host_change);
+  simgrid::s4u::Host::on_onoff_cb(&on_host_change);
   simgrid::s4u::Host::on_speed_change_cb(&on_host_change);
   simgrid::s4u::Host::on_destruction_cb(&on_host_destruction);
   simgrid::s4u::Host::on_exec_state_change_cb(&on_action_state_change);

@@ -22,7 +22,7 @@ namespace s4u {
 
 xbt::signal<void(Link&)> Link::on_creation;
 xbt::signal<void(Link const&)> Link::on_destruction;
-xbt::signal<void(Link const&)> Link::on_state_change;
+xbt::signal<void(Link const&)> Link::on_onoff;
 xbt::signal<void(Link const&)> Link::on_bandwidth_change;
 xbt::signal<void(kernel::resource::NetworkAction&, kernel::resource::Action::State)>
     Link::on_communication_state_change;
@@ -137,19 +137,11 @@ double Link::get_load() const
 
 void Link::turn_on()
 {
-  kernel::actor::simcall_answered([this]() {
-    this->pimpl_->turn_on();
-    on_state_change(*this);
-    on_this_state_change(*this);
-  });
+  kernel::actor::simcall_answered([this]() { this->pimpl_->turn_on(); });
 }
 void Link::turn_off()
 {
-  kernel::actor::simcall_answered([this]() {
-    this->pimpl_->turn_off();
-    on_state_change(*this);
-    on_this_state_change(*this);
-  });
+  kernel::actor::simcall_answered([this]() { this->pimpl_->turn_off(); });
 }
 Link* Link::seal()
 {

@@ -82,7 +82,8 @@ void StandardLinkImpl::turn_on()
 {
   if (not is_on()) {
     Resource::turn_on();
-    s4u::Link::on_state_change(piface_);
+    s4u::Link::on_onoff(piface_);
+    piface_.on_this_onoff(piface_);
   }
 }
 
@@ -90,7 +91,8 @@ void StandardLinkImpl::turn_off()
 {
   if (is_on()) {
     Resource::turn_off();
-    s4u::Link::on_state_change(piface_);
+    s4u::Link::on_onoff(piface_);
+    piface_.on_this_onoff(piface_);
 
     const kernel::lmm::Element* elem = nullptr;
     double now                       = EngineImpl::get_clock();

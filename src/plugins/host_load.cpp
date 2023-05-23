@@ -24,8 +24,7 @@ It attaches an extension to each host to store some data, and places callbacks i
   - :cpp:func:`simgrid::s4u::Host::on_creation_cb`: Attach a new extension to the newly created host.
   - :cpp:func:`simgrid::s4u::Exec::on_start_cb`: Make note that a new execution started, increasing the load.
   - :cpp:func:`simgrid::s4u::Exec::on_completion_cb`: Make note that an execution completed, decreasing the load.
-  - :cpp:func:`simgrid::s4u::Host::on_state_change_cb`: Do what is appropriate when the host gets suspended, turned off
-    or similar.
+  - :cpp:func:`simgrid::s4u::Host::on_onoff_cb`: Do what is appropriate when the host gets turned off or on.
   - :cpp:func:`simgrid::s4u::Host::on_speed_change_cb`: Do what is appropriate when the DVFS is modified.
 
   Note that extensions are automatically destroyed when the host gets destroyed.
@@ -258,7 +257,7 @@ void sg_host_load_plugin_init()
       XBT_WARN("HostLoad plugin currently does not support executions on several hosts");
     }
   });
-  simgrid::s4u::Host::on_state_change_cb(&on_host_change);
+  simgrid::s4u::Host::on_onoff_cb(&on_host_change);
   simgrid::s4u::Host::on_speed_change_cb(&on_host_change);
 }
 
