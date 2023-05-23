@@ -137,11 +137,19 @@ double Link::get_load() const
 
 void Link::turn_on()
 {
-  kernel::actor::simcall_answered([this]() { this->pimpl_->turn_on(); });
+  kernel::actor::simcall_answered([this]() {
+    this->pimpl_->turn_on();
+    on_state_change(*this);
+    on_this_state_change(*this);
+  });
 }
 void Link::turn_off()
 {
-  kernel::actor::simcall_answered([this]() { this->pimpl_->turn_off(); });
+  kernel::actor::simcall_answered([this]() {
+    this->pimpl_->turn_off();
+    on_state_change(*this);
+    on_this_state_change(*this);
+  });
 }
 Link* Link::seal()
 {

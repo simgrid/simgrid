@@ -158,28 +158,46 @@ private:
 #ifndef DOXYGEN
   static xbt::signal<void(Link&)> on_creation;
   static xbt::signal<void(Link const&)> on_state_change;
+  xbt::signal<void(Link const&)> on_this_state_change;
   static xbt::signal<void(Link const&)> on_bandwidth_change;
+  xbt::signal<void(Link const&)> on_this_bandwidth_change;
   static xbt::signal<void(kernel::resource::NetworkAction&, kernel::resource::Action::State)>
       on_communication_state_change;
   static xbt::signal<void(Link const&)> on_destruction;
+  xbt::signal<void(Link const&)> on_this_destruction;
 #endif
 
 public:
   /* The signals */
   /** @brief Add a callback fired when a new Link is created */
   static void on_creation_cb(const std::function<void(Link&)>& cb) { on_creation.connect(cb); }
-  /** @brief Add a callback fired when the state of a Link changes (when it is turned on or off) */
+  /** @brief Add a callback fired when the state of any Link changes (when it is turned on or off) */
   static void on_state_change_cb(const std::function<void(Link const&)>& cb) { on_state_change.connect(cb); }
-  /** @brief Add a callback fired when the bandwidth of a Link changes */
+  /** @brief Add a callback fired when the state of this specific Link changes (when it is turned on or off) */
+  void on_this_state_change_cb(const std::function<void(Link const&)>& cb)
+  {
+    on_this_state_change.connect(cb);
+  }
+  /** @brief Add a callback fired when the bandwidth of any Link changes */
   static void on_bandwidth_change_cb(const std::function<void(Link const&)>& cb) { on_bandwidth_change.connect(cb); }
+  /** @brief Add a callback fired when the bandwidth of this specific Link changes */
+  void on_this_bandwidth_change_cb(const std::function<void(Link const&)>& cb)
+  {
+    on_this_bandwidth_change.connect(cb);
+  }
   /** @brief Add a callback fired when a communication changes it state (ready/done/cancel) */
   static void on_communication_state_change_cb(
       const std::function<void(kernel::resource::NetworkAction&, kernel::resource::Action::State)>& cb)
   {
     on_communication_state_change.connect(cb);
   }
-  /** @brief Add a callback fired when a Link is destroyed */
+  /** @brief Add a callback fired when any Link is destroyed */
   static void on_destruction_cb(const std::function<void(Link const&)>& cb) { on_destruction.connect(cb); }
+  /** @brief Add a callback fired when this specific Link is destroyed */
+  void on_this_destruction_cb(const std::function<void(Link const&)>& cb)
+  {
+    on_this_destruction.connect(cb);
+  }
 };
 
 /**

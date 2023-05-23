@@ -37,6 +37,7 @@ void StandardLinkImpl::Deleter::operator()(resource::StandardLinkImpl* link) con
 void StandardLinkImpl::destroy()
 {
   s4u::Link::on_destruction(piface_);
+  piface_.on_this_destruction(piface_);
   delete this;
 }
 
@@ -115,6 +116,7 @@ void StandardLinkImpl::seal()
 void StandardLinkImpl::on_bandwidth_change() const
 {
   s4u::Link::on_bandwidth_change(piface_);
+  piface_.on_this_bandwidth_change(piface_);
 }
 
 void StandardLinkImpl::set_bandwidth_profile(profile::Profile* profile)

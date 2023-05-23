@@ -1712,10 +1712,13 @@ Signals
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Link::on_bandwidth_change_cb
+      .. doxygenfunction:: simgrid::s4u::Link::on_this_bandwidth_change_cb
       .. doxygenfunction:: simgrid::s4u::Link::on_communication_state_change_cb
       .. doxygenfunction:: simgrid::s4u::Link::on_creation_cb
       .. doxygenfunction:: simgrid::s4u::Link::on_destruction_cb
+      .. doxygenfunction:: simgrid::s4u::Link::on_this_destruction_cb
       .. doxygenfunction:: simgrid::s4u::Link::on_state_change_cb
+      .. doxygenfunction:: simgrid::s4u::Link::on_this_state_change_cb
 
 .. _API_s4u_NetZone:
 

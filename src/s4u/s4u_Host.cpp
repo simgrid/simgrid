@@ -103,6 +103,7 @@ void Host::turn_on()
       this->pimpl_cpu_->turn_on();
       this->pimpl_->turn_on();
       on_state_change(*this);
+      on_this_state_change(*this);
     });
   }
 }
@@ -117,6 +118,7 @@ void Host::turn_off()
       this->pimpl_->turn_off(self);
 
       on_state_change(*this);
+      on_this_state_change(*this);
     });
   }
 }

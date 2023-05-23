@@ -107,12 +107,16 @@ Partial list of existing signals in s4u:
   :cpp:func:`Host::on_this_state_change <simgrid::s4u::Host::on_this_state_change_cb>`
   :cpp:func:`Host::on_speed_change <simgrid::s4u::Host::on_speed_change_cb>`
   :cpp:func:`Host::on_this_speed_change <simgrid::s4u::Host::on_this_speed_change_cb>`
+  :cpp:func:`Host::on_exec_state_change <simgrid::s4u::Host::on_exec_state_change_cb>`
 - :cpp:func:`Io::on_start <simgrid::s4u::Io::on_start_cb>`
   :cpp:func:`Io::on_completion <simgrid::s4u::Io::on_completion_cb>`
 - :cpp:func:`Link::on_creation <simgrid::s4u::Link::on_creation_cb>`
   :cpp:func:`Link::on_destruction <simgrid::s4u::Link::on_destruction_cb>`
+  :cpp:func:`Link::on_this_destruction <simgrid::s4u::Link::on_this_destruction_cb>`
   :cpp:func:`Link::on_state_change <simgrid::s4u::Link::on_state_change_cb>`
-  :cpp:func:`Link::on_speed_change <simgrid::s4u::Link::on_bandwidth_change_cb>`
+  :cpp:func:`Link::on_this_state_change <simgrid::s4u::Link::on_this_state_change_cb>`
+  :cpp:func:`Link::on_bandwidth_change <simgrid::s4u::Link::on_bandwidth_change_cb>`
+  :cpp:func:`Link::on_this_bandwidth_change <simgrid::s4u::Link::on_this_bandwidth_change_cb>`
   :cpp:func:`Link::on_communication_state_change <simgrid::s4u::Link::on_communication_state_change_cb>`
 - :cpp:func:`NetZone::on_creation <simgrid::s4u::NetZone::on_creation_cb>`
   :cpp:func:`NetZone::on_seal <simgrid::s4u::NetZone::on_seal_cb>`

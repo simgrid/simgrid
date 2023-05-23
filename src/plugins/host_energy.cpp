@@ -505,7 +505,7 @@ void sg_host_energy_plugin_init()
   simgrid::s4u::Engine::on_simulation_end_cb(&on_simulation_end);
   // We may only have one actor on a node. If that actor executes something like
   //   compute -> recv -> compute
-  // the recv operation will not trigger a "CpuAction::on_state_change". This means
+  // the recv operation will not trigger a "Host::on_exec_state_change_cb". This means
   // that the next trigger would be the 2nd compute, hence ignoring the idle time
   // during the recv call. By updating at the beginning of a compute, we can
   // fix that. (If the cpu is not idle, this is not required.)
