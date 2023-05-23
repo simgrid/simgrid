@@ -14,6 +14,7 @@
 #include <xbt/graph.h>
 
 #include "src/instr/instr_private.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
 
@@ -362,10 +363,15 @@ static void on_action_state_change(kernel::resource::Action const& action,
       resource_set_utilization("HOST", "speed_used", cpu->get_cname(), action.get_category(), value,
                                action.get_last_update(), simgrid_get_clock() - action.get_last_update());
 
-    if (const auto* link = dynamic_cast<kernel::resource::StandardLinkImpl*>(resource))
+    else if (const auto* link = dynamic_cast<kernel::resource::StandardLinkImpl*>(resource))
       resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action.get_category(), value,
                                action.get_last_update(), simgrid_get_clock() - action.get_last_update());
   }
+}
+
+static void on_activity_suspend_resume(s4u::Activity const& activity)
+{
+  on_action_state_change(*activity.get_impl()->model_action_, /*ignored*/ kernel::resource::Action::State::STARTED);
 }
 
 static void on_platform_created()
@@ -462,8 +468,10 @@ void define_callbacks()
 
   s4u::NetZone::on_creation_cb(on_netzone_creation);
 
-  kernel::resource::CpuAction::on_state_change.connect(on_action_state_change);
+  s4u::Host::on_exec_state_change_cb(on_action_state_change);
   s4u::Link::on_communication_state_change_cb(on_action_state_change);
+  s4u::Activity::on_suspend_cb(on_activity_suspend_resume);
+  s4u::Activity::on_resume_cb(on_activity_suspend_resume);
 
   if (TRACE_actor_is_enabled()) {
     s4u::Actor::on_creation_cb(on_actor_creation);

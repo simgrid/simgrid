@@ -24,6 +24,8 @@ S4U:
    and an instance version that is invoked for this specific object only. For example, 
    s4u::Actor::on_suspend_cb() adds a callback that is invoked for the suspend of any actor while
    s4u::Actor::on_this_suspend_cb() adds a callback for this specific actor only.
+ - Activity::on_suspended_cb() is renamed to Activity::on_suspend_cb(), and fired right before the suspend.
+ - Activity::on_resumed_cb() is renamed to Activity::on_resume_cb(), and fired right before the resume.
 
 New S4U plugins:
  - Operation: They are designed to represent workflows, i.e, graphs of repeatable Activities.

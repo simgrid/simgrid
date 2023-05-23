@@ -34,6 +34,7 @@ xbt::signal<void(Host&)> Host::on_creation;
 xbt::signal<void(Host const&)> Host::on_destruction;
 xbt::signal<void(Host const&)> Host::on_state_change;
 xbt::signal<void(Host const&)> Host::on_speed_change;
+xbt::signal<void(kernel::resource::CpuAction&, kernel::resource::Action::State)> Host::on_exec_state_change;
 #endif
 
 Host* Host::set_cpu(kernel::resource::CpuImpl* cpu)

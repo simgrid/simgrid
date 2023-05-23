@@ -86,8 +86,8 @@ Partial list of existing signals in s4u:
 - :cpp:func:`Comm::on_send <simgrid::s4u::Comm::on_send_cb>`
   :cpp:func:`Comm::on_recv <simgrid::s4u::Comm::on_recv_cb>`
   :cpp:func:`Comm::on_completion <simgrid::s4u::Comm::on_completion_cb>`
-- :cpp:func:`CommImpl::on_start <simgrid::s4u::Comm::on_start_cb>`
-  :cpp:func:`CommImpl::on_completion <simgrid::s4u::Comm::on_completion_cb>`
+- :cpp:func:`CommImpl::on_start <simgrid::s4u::CommImpl::on_start_cb>`
+  :cpp:func:`CommImpl::on_completion <simgrid::s4u::CommImpl::on_completion_cb>`
 - :cpp:func:`Disk::on_creation <simgrid::s4u::Disk::on_creation_cb>`
   :cpp:func:`Disk::on_destruction <simgrid::s4u::Disk::on_destruction_cb>`
   :cpp:func:`Disk::on_this_destruction <simgrid::s4u::Disk::on_this_destruction_cb>`
@@ -102,8 +102,11 @@ Partial list of existing signals in s4u:
   :cpp:func:`Exec::on_completion <simgrid::s4u::Exec::on_completion_cb>`
 - :cpp:func:`Host::on_creation <simgrid::s4u::Host::on_creation_cb>`
   :cpp:func:`Host::on_destruction <simgrid::s4u::Host::on_destruction_cb>`
+  :cpp:func:`Host::on_this_destruction <simgrid::s4u::Host::on_this_destruction_cb>`
   :cpp:func:`Host::on_state_change <simgrid::s4u::Host::on_state_change_cb>`
+  :cpp:func:`Host::on_this_state_change <simgrid::s4u::Host::on_this_state_change_cb>`
   :cpp:func:`Host::on_speed_change <simgrid::s4u::Host::on_speed_change_cb>`
+  :cpp:func:`Host::on_this_speed_change <simgrid::s4u::Host::on_this_speed_change_cb>`
 - :cpp:func:`Io::on_start <simgrid::s4u::Io::on_start_cb>`
   :cpp:func:`Io::on_completion <simgrid::s4u::Io::on_completion_cb>`
 - :cpp:func:`Link::on_creation <simgrid::s4u::Link::on_creation_cb>`

@@ -232,13 +232,13 @@ private:
 public:
   /** Add a callback fired when a new actor has been created **/
   static void on_creation_cb(const std::function<void(Actor&)>& cb) { on_creation.connect(cb); }
-  /** Add a callback fired when any actor is suspended**/
+  /** Add a callback fired when any actor is suspended (right before the suspend) **/
   static void on_suspend_cb(const std::function<void(Actor const&)>& cb) { on_suspend.connect(cb); }
-  /** Add a callback fired when this specific actor is suspended**/
+  /** Add a callback fired when this specific actor is suspended (right before the suspend) **/
   void on_this_suspend_cb(const std::function<void(Actor const&)>& cb) { on_this_suspend.connect(cb); }
-  /** Add a callback fired when any actor is resumed **/
+  /** Add a callback fired when any actor is resumed (right before the resume) **/
   static void on_resume_cb(const std::function<void(Actor const&)>& cb) { on_resume.connect(cb); }
-  /** Add a callback fired when any actor is resumed **/
+  /** Add a callback fired when any actor is resumed (right before the resume) **/
   void on_this_resume_cb(const std::function<void(Actor const&)>& cb) { on_this_resume.connect(cb); }
   /** Add a callback fired when any actor starts sleeping **/
   static void on_sleep_cb(const std::function<void(Actor const&)>& cb) { on_sleep.connect(cb); }
