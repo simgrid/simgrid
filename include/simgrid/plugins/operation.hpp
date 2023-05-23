@@ -48,8 +48,8 @@ protected:
   int count_        = 0;
   bool working_     = false;
   s4u::ActivityPtr current_activity_;
-  std::function<void(Operation*)> end_func_;
-  std::function<void(Operation*)> start_func_;
+  std::vector<std::function<void(Operation*)>> end_func_handlers_;
+  std::vector<std::function<void(Operation*)>> start_func_handlers_;
   explicit Operation(const std::string& name);
   virtual ~Operation()   = default;
   virtual void execute() = 0;

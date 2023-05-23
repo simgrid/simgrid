@@ -100,8 +100,8 @@ void Operation::complete()
     working_ = false;
     count_++;
   });
-  if (end_func_)
-    end_func_(this);
+  for (auto end_func : end_func_handlers_)
+    end_func(this);
   Operation::on_end(this);
   for (auto const& op : successors_)
     op->receive(this);
@@ -191,7 +191,7 @@ void Operation::remove_all_successors()
  */
 void Operation::on_this_start(const std::function<void(Operation*)>& func)
 {
-  simgrid::kernel::actor::simcall_answered([this, &func] { start_func_ = func; });
+  simgrid::kernel::actor::simcall_answered([this, &func] { start_func_handlers_.push_back(func); });
 }
 
 /** @ingroup plugin_operation
@@ -201,7 +201,7 @@ void Operation::on_this_start(const std::function<void(Operation*)>& func)
  */
 void Operation::on_this_end(const std::function<void(Operation*)>& func)
 {
-  simgrid::kernel::actor::simcall_answered([this, &func] { end_func_ = func; });
+  simgrid::kernel::actor::simcall_answered([this, &func] { end_func_handlers_.push_back(func); });
 }
 
 /** @ingroup plugin_operation
@@ -240,8 +240,8 @@ ExecOpPtr ExecOp::init(const std::string& name, double flops, s4u::Host* host)
  */
 void ExecOp::execute()
 {
-  if (start_func_)
-    start_func_(this);
+  for (auto start_func : start_func_handlers_)
+    start_func(this);
   Operation::on_start(this);
   kernel::actor::simcall_answered([this] {
     working_      = true;
@@ -305,8 +305,8 @@ CommOpPtr CommOp::init(const std::string& name, double bytes, s4u::Host* source,
  */
 void CommOp::execute()
 {
-  if (start_func_)
-    start_func_(this);
+  for (auto start_func : start_func_handlers_)
+    start_func(this);
   Operation::on_start(this);
   kernel::actor::simcall_answered([this] {
     working_      = true;
