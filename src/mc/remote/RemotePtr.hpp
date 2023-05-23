@@ -37,7 +37,7 @@ public:
   std::size_t get_buffer_size() const { return sizeof(T); }
   operator T() const
   {
-    static_assert(std::is_trivial<T>::value, "Cannot convert non trivial type");
+    static_assert(std::is_trivial_v<T>, "Cannot convert non trivial type");
     return *get_buffer();
   }
   void clear() { std::memset(&buffer, 0, sizeof buffer); }

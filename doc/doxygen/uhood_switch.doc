@@ -411,7 +411,7 @@ type and properly handles exceptions:
 
 @code{cpp}
 template<class F>
-typename std::result_of<F()>::type kernelImmediate(F&& code)
+typename std::result_of_t<F()> kernelImmediate(F&& code)
 {
   // If we are in the simulation kernel, we take the fast path and
   // execute the code directly without simcall
@@ -421,7 +421,7 @@ typename std::result_of<F()>::type kernelImmediate(F&& code)
 
   // If we are in the application, pass the code to the simulation
   // kernel which executes it for us and reports the result:
-  typedef typename std::result_of<F()>::type R;
+  typedef typename std::result_of_t<F()> R;
   simgrid::xbt::Result<R> result;
   simcall_run_kernel([&]{
     xbt_assert(SIMIX_is_maestro(), "Not in maestro");

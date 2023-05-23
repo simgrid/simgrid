@@ -139,7 +139,7 @@ void bind_flag(T& value, const char* name, std::initializer_list<const char*> al
  */
 // F is a checker, F : T& -> ()
 template <class T, class F>
-typename std::enable_if_t<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>
+typename std::enable_if_t<std::is_same_v<void, decltype(std::declval<F>()(std::declval<const T&>()))>, void>
 bind_flag(T& value, const char* name, const char* description, F callback)
 {
   declare_flag(name, description, value, std::function<void(const T&)>([&value, callback](const T& val) {
@@ -149,7 +149,7 @@ bind_flag(T& value, const char* name, const char* description, F callback)
 }
 
 template <class T, class F>
-typename std::enable_if_t<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>
+typename std::enable_if_t<std::is_same_v<void, decltype(std::declval<F>()(std::declval<const T&>()))>, void>
 bind_flag(T& value, const char* name, std::initializer_list<const char*> aliases, const char* description, F callback)
 {
   bind_flag(value, name, description, std::move(callback));
@@ -157,8 +157,7 @@ bind_flag(T& value, const char* name, std::initializer_list<const char*> aliases
 }
 
 template <class F>
-typename std::enable_if_t<std::is_same<void, decltype(std::declval<F>()(std::declval<const std::string&>()))>::value,
-                          void>
+typename std::enable_if_t<std::is_same_v<void, decltype(std::declval<F>()(std::declval<const std::string&>()))>, void>
 bind_flag(std::string& value, const char* name, const char* description,
           const std::map<std::string, std::string, std::less<>>& valid_values, F callback)
 {
@@ -180,8 +179,7 @@ bind_flag(std::string& value, const char* name, const char* description,
                }));
 }
 template <class F>
-typename std::enable_if_t<std::is_same<void, decltype(std::declval<F>()(std::declval<const std::string&>()))>::value,
-                          void>
+typename std::enable_if_t<std::is_same_v<void, decltype(std::declval<F>()(std::declval<const std::string&>()))>, void>
 bind_flag(std::string& value, const char* name, std::initializer_list<const char*> aliases, const char* description,
           const std::map<std::string, std::string, std::less<>>& valid_values, F callback)
 {
@@ -198,7 +196,7 @@ bind_flag(std::string& value, const char* name, std::initializer_list<const char
  */
 // F is a predicate, F : T const& -> bool
 template <class T, class F>
-typename std::enable_if_t<std::is_same<bool, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>
+typename std::enable_if_t<std::is_same_v<bool, decltype(std::declval<F>()(std::declval<const T&>()))>, void>
 bind_flag(T& value, const char* name, const char* description, F callback)
 {
   declare_flag(name, description, value, std::function<void(const T&)>([&value, callback](const T& val) {

@@ -39,7 +39,7 @@ template <class T> inline void hash_combine(std::size_t& seed, T const& v)
 }
 
 // Recursive template code derived from Matthieu M.
-template <class Tuple, size_t Index = std::tuple_size<Tuple>::value - 1> class HashValueImpl {
+template <class Tuple, size_t Index = std::tuple_size_v<Tuple> - 1> class HashValueImpl {
 public:
   static void apply(size_t& seed, Tuple const& tuple)
   {
