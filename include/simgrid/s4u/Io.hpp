@@ -34,7 +34,7 @@ public:
   enum class OpType { READ, WRITE };
 
   static void on_start_cb(const std::function<void(Io const&)>& cb) { on_start.connect(cb); }
-  void fire_this_completion() const override{ on_completion(*this); }
+  void fire_this_completion() const override { on_completion(*this); }
 
   static IoPtr init();
   /*! take a vector of s4u::IoPtr and return when one of them is finished.
