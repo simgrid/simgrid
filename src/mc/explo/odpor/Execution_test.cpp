@@ -316,12 +316,23 @@ TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
     execution.push_transition(a3);
 
     REQUIRE(execution.is_independent_with_execution_of(PartialExecution{a4, a5}, a6));
+    REQUIRE(execution.is_independent_with_execution_of(PartialExecution{a6, a5}, a1));
+    REQUIRE(execution.is_independent_with_execution_of(PartialExecution{a6, a1}, a0));
+    REQUIRE(Execution().is_independent_with_execution_of(PartialExecution{a7, a7, a1}, a3));
+    REQUIRE(Execution().is_independent_with_execution_of(PartialExecution{a4, a0, a1}, a3));
+    REQUIRE(Execution().is_independent_with_execution_of(PartialExecution{a0, a7, a1}, a2));
 
     // In this case, we notice that `a6` and `a7` are executed by the same actor.
     // Hence, a6 cannot be independent with extending the execution with a4.a5.a7.
     // Notice that we are treating *a6* as the next step of actor 7 (that is what we
     // supplied as an argument)
     REQUIRE_FALSE(execution.is_independent_with_execution_of(PartialExecution{a4, a5, a7}, a6));
+  }
+
+  SECTION("Independence is trivial with an empty extension")
+  {
+    REQUIRE(Execution().is_independent_with_execution_of(
+        PartialExecution{}, std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1)));
   }
 
   SECTION("Dependencies stopping independence from being possible")
@@ -357,6 +368,86 @@ TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
     // `indep` clearly is independent with the rest of the series, even though
     // there are dependencies among the other events in the partial execution
     REQUIRE(Execution().is_independent_with_execution_of(PartialExecution{a1, a6, a7}, indep));
+
+    // This ensures that independence is trivial with an empty partial execution
+    REQUIRE(execution.is_independent_with_execution_of(PartialExecution{}, a1));
+  }
+}
+
+TEST_CASE("simgrid::mc::odpor::Execution: Initials Test")
+{
+  const auto a0    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto a1    = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto a2    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
+  const auto a3    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+  const auto a4    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+  const auto a5    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
+  const auto a6    = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+  const auto a7    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto a8    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+  const auto indep = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+  Execution execution;
+  execution.push_transition(a0);
+  execution.push_transition(a1);
+  execution.push_transition(a2);
+  execution.push_transition(a3);
+
+  SECTION("Initials trivial with empty executions")
+  {
+    // There are no initials for an empty extension since
+    // a requirement is that the actor be contained in the
+    // extension itself
+    REQUIRE_FALSE(execution.is_initial_after_execution_of(PartialExecution{}, 0));
+    REQUIRE_FALSE(execution.is_initial_after_execution_of(PartialExecution{}, 1));
+    REQUIRE_FALSE(execution.is_initial_after_execution_of(PartialExecution{}, 2));
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{}, 0));
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{}, 1));
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{}, 2));
+  }
+
+  SECTION("The first actor is always an initial")
+  {
+    // Even in the case that the action is dependent with every
+    // other, if it is the first action to occur as part of the
+    // extension of the execution sequence, by definition it is
+    // an initial (recall that initials intuitively tell you which
+    // actions can be run starting from an execution `E`; if we claim
+    // to witness `E.w`, then clearly at least the first step of `w` is an initial)
+    REQUIRE(execution.is_initial_after_execution_of(PartialExecution{a3}, a3->aid_));
+    REQUIRE(execution.is_initial_after_execution_of(PartialExecution{a2, a3, a6}, a2->aid_));
+    REQUIRE(execution.is_initial_after_execution_of(PartialExecution{a6, a1, a0}, a6->aid_));
+    REQUIRE(Execution().is_initial_after_execution_of(PartialExecution{a0, a1, a2, a3}, a0->aid_));
+    REQUIRE(Execution().is_initial_after_execution_of(PartialExecution{a5, a2, a8, a7, a6, a0}, a5->aid_));
+    REQUIRE(Execution().is_initial_after_execution_of(PartialExecution{a8, a7, a1}, a8->aid_));
+  }
+
+  SECTION("Example: Disqualified and re-qualified after switching ordering")
+  {
+    // Even though actor `2` executes an independent
+    // transition later on, it is blocked since its first transition
+    // is dependent with actor 1's transition
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{a1, a5, indep}, 2));
+
+    // However, if actor 2 executes its independent action first, it DOES become an initial
+    REQUIRE(Execution().is_initial_after_execution_of(PartialExecution{a1, indep, a5}, 2));
+  }
+
+  SECTION("Example: Large partial executions")
+  {
+    // The record trace is `1 3 4 4 3 1 4 2`
+
+    // Actor 1 starts the execution
+    REQUIRE(Execution().is_initial_after_execution_of(PartialExecution{a1, a2, a3, a4, a6, a7, a8, indep}, 1));
+
+    // Actor 2 all the way at the end is independent with everybody: despite
+    // the tangle that comes before it, we can more it to the front with no issue
+    REQUIRE(Execution().is_initial_after_execution_of(PartialExecution{a1, a2, a3, a4, a6, a7, a8, indep}, 2));
+
+    // Actor 3 is eliminated since `a1` is dependent with `a2`
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{a1, a2, a3, a4, a6, a7, a8, indep}, 3));
+
+    // Likewise with actor 4
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{a1, a2, a3, a4, a6, a7, a8, indep}, 4));
   }
 }
 
@@ -369,24 +460,61 @@ TEST_CASE("simgrid::mc::odpor::Execution: ODPOR Smallest Sequence Tests")
   const auto a4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
   const auto a5 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
 
+  Execution execution;
+  execution.push_transition(a0);
+  execution.push_transition(a1);
+  execution.push_transition(a2);
+  execution.push_transition(a3);
+  execution.push_transition(a4);
+  execution.push_transition(a5);
+
   SECTION("Equivalent insertions")
   {
-    // TODO: Is this even a sensible question to ask if the two sequences
-    // don't agree upon what each actor executed after `E`?
-    const auto insertion =
-        Execution().get_shortest_odpor_sq_subset_insertion(PartialExecution{a1, a2}, PartialExecution{a2, a5});
-    REQUIRE(insertion.has_value());
-    REQUIRE(insertion.value() == PartialExecution{});
+    SECTION("Example: Eliminated through independence")
+    {
+      // TODO: Is this even a sensible question to ask if the two sequences
+      // don't agree upon what each actor executed after `E`?
+      const auto insertion =
+          Execution().get_shortest_odpor_sq_subset_insertion(PartialExecution{a1, a2}, PartialExecution{a2, a5});
+      REQUIRE(insertion.has_value());
+      REQUIRE(insertion.value() == PartialExecution{});
+    }
+
+    SECTION("Exact match yields empty set")
+    {
+      const auto insertion =
+          Execution().get_shortest_odpor_sq_subset_insertion(PartialExecution{a1, a2}, PartialExecution{a1, a2});
+      REQUIRE(insertion.has_value());
+      REQUIRE(insertion.value() == PartialExecution{});
+    }
   }
 
-  SECTION("")
+  SECTION("Match against empty executions")
   {
-    Execution execution;
-    execution.push_transition(a0);
-    execution.push_transition(a1);
-    execution.push_transition(a2);
-    execution.push_transition(a3);
-    execution.push_transition(a4);
-    execution.push_transition(a5);
+    SECTION("Empty `v` trivially yields `w`")
+    {
+      auto insertion =
+          Execution().get_shortest_odpor_sq_subset_insertion(PartialExecution{}, PartialExecution{a1, a5, a2});
+      REQUIRE(insertion.has_value());
+      REQUIRE(insertion.value() == PartialExecution{a1, a5, a2});
+
+      insertion = execution.get_shortest_odpor_sq_subset_insertion(PartialExecution{}, PartialExecution{a1, a5, a2});
+      REQUIRE(insertion.has_value());
+      REQUIRE(insertion.value() == PartialExecution{a1, a5, a2});
+    }
+
+    SECTION("Empty `w` yields empty execution")
+    {
+      auto insertion =
+          Execution().get_shortest_odpor_sq_subset_insertion(PartialExecution{a1, a4, a5}, PartialExecution{});
+      REQUIRE(insertion.has_value());
+      REQUIRE(insertion.value() == PartialExecution{});
+
+      insertion = execution.get_shortest_odpor_sq_subset_insertion(PartialExecution{a1, a5, a2}, PartialExecution{});
+      REQUIRE(insertion.has_value());
+      REQUIRE(insertion.value() == PartialExecution{});
+    }
   }
+
+  SECTION("") {}
 }
