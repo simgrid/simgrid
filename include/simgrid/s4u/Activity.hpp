@@ -123,12 +123,12 @@ public:
     on_resume.connect(cb);
   }
 
-  XBT_ATTRIB_DEPRECATED_v334("Please use on_suspend_cb() instead") static void on_suspended_cb(
+  XBT_ATTRIB_DEPRECATED_v337("Please use on_suspend_cb() instead") static void on_suspended_cb(
       const std::function<void(Activity const&)>& cb)
   {
     on_suspend.connect(cb);
   }
-  XBT_ATTRIB_DEPRECATED_v334("Please use on_resume_cb() instead") static void on_resumed_cb(
+  XBT_ATTRIB_DEPRECATED_v337("Please use on_resume_cb() instead") static void on_resumed_cb(
       const std::function<void(Activity const&)>& cb)
   {
     on_resume.connect(cb);
