@@ -239,7 +239,7 @@ template <class AnyActivity> class Activity_T : public Activity {
   std::string tracing_category_ = "";
 
 public:
-  static xbt::signal<void(AnyActivity const&)> on_completion;
+  inline static xbt::signal<void(AnyActivity const&)> on_completion;
   /*! Add a callback fired when the activity completes (either normally, cancelled or failed) */
   static void on_completion_cb(const std::function<void(AnyActivity const&)>& cb) { on_completion.connect(cb); }
 
