@@ -51,7 +51,6 @@ public:
   bool has_no_successor() const { return successors_.empty(); }
   const std::set<ActivityPtr>& get_dependencies() const { return dependencies_; }
   const std::vector<ActivityPtr>& get_successors() const { return successors_; }
-  virtual void fire_this_completion() const = 0;
 
 protected:
   Activity()  = default;
@@ -102,6 +101,8 @@ protected:
    *
    * It is forbidden to change the amount of work once the Activity is started */
   Activity* set_remaining(double remains);
+
+  virtual void fire_this_completion() const = 0;
 
 private:
   static xbt::signal<void(Activity&)> on_veto;
@@ -255,8 +256,10 @@ template <class AnyActivity> class Activity_T : public Activity {
   std::string name_             = "unnamed";
   std::string tracing_category_ = "";
 
-public:
+protected:
   inline static xbt::signal<void(AnyActivity const&)> on_completion;
+
+public:
   /*! Add a callback fired when the activity completes (either normally, cancelled or failed) */
   static void on_completion_cb(const std::function<void(AnyActivity const&)>& cb) { on_completion.connect(cb); }
 
