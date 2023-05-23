@@ -103,7 +103,7 @@ public:
    */
   ProducerConsumer* set_max_queue_size(unsigned int max_queue_size)
   {
-    const std::lock_guard<s4u::Mutex> lock(*mutex_);
+    const std::scoped_lock lock(*mutex_);
     max_queue_size_ = max_queue_size;
     return this;
   }

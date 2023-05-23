@@ -34,8 +34,8 @@ public:
   /** Fire that signal, invoking all callbacks */
   R operator()(P... args) const
   {
-    for (auto const& handler : handlers_)
-      handler.second(args...);
+    for (auto const& [_, callback] : handlers_)
+      callback(args...);
   }
   /** Remove a callback */
   void disconnect(unsigned int id) { handlers_.erase(id); }
