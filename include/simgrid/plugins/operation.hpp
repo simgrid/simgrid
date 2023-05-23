@@ -145,7 +145,9 @@ public:
   static IoOpPtr init(const std::string& name);
   static IoOpPtr init(const std::string& name, double bytes, s4u::Disk* disk, s4u::Io::OpType type);
   IoOpPtr set_disk(s4u::Disk* disk);
+  s4u::Disk* get_disk() const { return disk_; }
   IoOpPtr set_bytes(double bytes);
+  double get_bytes() { return get_amount(); }
   IoOpPtr set_op_type(s4u::Io::OpType type);
 
   friend void inline intrusive_ptr_release(IoOp* i) { intrusive_ptr_release(static_cast<Operation*>(i)); }
