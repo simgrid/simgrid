@@ -9,9 +9,7 @@
 #include <simgrid/kernel/routing/ClusterZone.hpp>
 #include <simgrid/s4u/Link.hpp>
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 
 class DragonflyRouter {
 public:
@@ -109,7 +107,5 @@ private:
   unsigned int num_links_per_link_     = 1; // splitduplex -> 2, only for local link
   std::vector<DragonflyRouter> routers_;
 };
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing
 #endif

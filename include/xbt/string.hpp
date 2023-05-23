@@ -12,8 +12,7 @@
 #include <cstdlib>
 #include <string>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 /** Create a C++ string from a C-style format
  *
@@ -27,6 +26,5 @@ XBT_PUBLIC std::string string_printf(const char* fmt, ...) XBT_ATTRIB_PRINTF(1, 
  */
 XBT_PUBLIC std::string string_vprintf(const char* fmt, va_list ap) XBT_ATTRIB_PRINTF(1, 0);
 
-} // namespace xbt
-}
+} // namespace simgrid::xbt
 #endif

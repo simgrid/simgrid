@@ -15,8 +15,7 @@
 #include <atomic>
 #include <future>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 class XBT_PUBLIC Barrier {
   kernel::activity::BarrierImpl* pimpl_;
@@ -43,7 +42,6 @@ public:
   friend XBT_PUBLIC void intrusive_ptr_release(Barrier* barrier);
 #endif
 };
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif

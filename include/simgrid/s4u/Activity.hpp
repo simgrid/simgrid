@@ -51,6 +51,7 @@ public:
   bool has_no_successor() const { return successors_.empty(); }
   const std::set<ActivityPtr>& get_dependencies() const { return dependencies_; }
   const std::vector<ActivityPtr>& get_successors() const { return successors_; }
+  virtual void fire_this_completion() const = 0;
 
 protected:
   Activity()  = default;
@@ -104,7 +105,6 @@ protected:
 
 private:
   static xbt::signal<void(Activity&)> on_veto;
-  static xbt::signal<void(Activity const&)> on_completion;
   static xbt::signal<void(Activity const&)> on_suspend;
   static xbt::signal<void(Activity const&)> on_resume;
 
@@ -112,8 +112,6 @@ public:
   /*! Add a callback fired each time that the activity fails to start because of a veto (e.g., unsolved dependency or no
    * resource assigned) */
   static void on_veto_cb(const std::function<void(Activity&)>& cb) { on_veto.connect(cb); }
-  /*! Add a callback fired when the activity completes (either normally, cancelled or failed) */
-  static void on_completion_cb(const std::function<void(Activity const&)>& cb) { on_completion.connect(cb); }
   /*! Add a callback fired when the activity is suspended */
   static void on_suspend_cb(const std::function<void(Activity const&)>& cb)
   {
@@ -159,7 +157,7 @@ public:
     // released by the on_completion() callbacks.
     ActivityPtr keepalive(this);
     state_ = state;
-    on_completion(*this);
+    fire_this_completion();
     if (state == State::FINISHED)
       release_dependencies();
   }
@@ -258,6 +256,10 @@ template <class AnyActivity> class Activity_T : public Activity {
   std::string tracing_category_ = "";
 
 public:
+  inline static xbt::signal<void(AnyActivity const&)> on_completion;
+  /*! Add a callback fired when the activity completes (either normally, cancelled or failed) */
+  static void on_completion_cb(const std::function<void(AnyActivity const&)>& cb) { on_completion.connect(cb); }
+
   AnyActivity* add_successor(ActivityPtr a)
   {
     Activity::add_successor(a);
@@ -278,7 +280,8 @@ public:
 
   AnyActivity* set_tracing_category(const std::string& category)
   {
-    xbt_assert(get_state() == State::INITED, "Cannot change the tracing category of an activity after its start");
+    xbt_assert(get_state() == State::INITED || get_state() == State::STARTING,
+               "Cannot change the tracing category of an activity after its start");
     tracing_category_ = category;
     return static_cast<AnyActivity*>(this);
   }
@@ -306,7 +309,9 @@ public:
 
   AnyActivity* cancel() { return static_cast<AnyActivity*>(Activity::cancel()); }
   AnyActivity* wait() { return wait_for(-1.0); }
-  virtual AnyActivity* wait_for(double timeout) { return static_cast<AnyActivity*>(Activity::wait_for(timeout)); }
+  virtual AnyActivity* wait_for(double timeout) {
+    return static_cast<AnyActivity*>(Activity::wait_for(timeout));
+  }
 
 #ifndef DOXYGEN
   /* The refcounting is done in the ancestor class, Activity, but we want each of the classes benefiting of the CRTP

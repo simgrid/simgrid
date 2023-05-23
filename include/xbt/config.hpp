@@ -22,8 +22,7 @@
 #include <xbt/sysdep.h>
 #include <xbt/utility.hpp>
 
-namespace simgrid {
-namespace config {
+namespace simgrid::config {
 
 class Config;
 
@@ -140,7 +139,7 @@ void bind_flag(T& value, const char* name, std::initializer_list<const char*> al
  */
 // F is a checker, F : T& -> ()
 template <class T, class F>
-typename std::enable_if_t<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>
+typename std::enable_if_t<std::is_same_v<void, decltype(std::declval<F>()(std::declval<const T&>()))>, void>
 bind_flag(T& value, const char* name, const char* description, F callback)
 {
   declare_flag(name, description, value, std::function<void(const T&)>([&value, callback](const T& val) {
@@ -150,7 +149,7 @@ bind_flag(T& value, const char* name, const char* description, F callback)
 }
 
 template <class T, class F>
-typename std::enable_if_t<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>
+typename std::enable_if_t<std::is_same_v<void, decltype(std::declval<F>()(std::declval<const T&>()))>, void>
 bind_flag(T& value, const char* name, std::initializer_list<const char*> aliases, const char* description, F callback)
 {
   bind_flag(value, name, description, std::move(callback));
@@ -158,8 +157,7 @@ bind_flag(T& value, const char* name, std::initializer_list<const char*> aliases
 }
 
 template <class F>
-typename std::enable_if_t<std::is_same<void, decltype(std::declval<F>()(std::declval<const std::string&>()))>::value,
-                          void>
+typename std::enable_if_t<std::is_same_v<void, decltype(std::declval<F>()(std::declval<const std::string&>()))>, void>
 bind_flag(std::string& value, const char* name, const char* description,
           const std::map<std::string, std::string, std::less<>>& valid_values, F callback)
 {
@@ -175,14 +173,13 @@ bind_flag(std::string& value, const char* name, const char* description,
                    mesg += std::string("Possible values for option ") + name + ":\n";
                  else
                    mesg += "Invalid value '" + val + "' for option " + name + ". Possible values:\n";
-                 for (auto const& kv : valid_values)
-                   mesg += "  - '" + kv.first + "': " + kv.second + (kv.first == value ? "  <=== DEFAULT" : "") + "\n";
+                 for (auto const& [v, descr] : valid_values)
+                   mesg += "  - '" + v + "': " + descr + (v == value ? "  <=== DEFAULT" : "") + "\n";
                  xbt_die("%s", mesg.c_str());
                }));
 }
 template <class F>
-typename std::enable_if_t<std::is_same<void, decltype(std::declval<F>()(std::declval<const std::string&>()))>::value,
-                          void>
+typename std::enable_if_t<std::is_same_v<void, decltype(std::declval<F>()(std::declval<const std::string&>()))>, void>
 bind_flag(std::string& value, const char* name, std::initializer_list<const char*> aliases, const char* description,
           const std::map<std::string, std::string, std::less<>>& valid_values, F callback)
 {
@@ -199,7 +196,7 @@ bind_flag(std::string& value, const char* name, std::initializer_list<const char
  */
 // F is a predicate, F : T const& -> bool
 template <class T, class F>
-typename std::enable_if_t<std::is_same<bool, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>
+typename std::enable_if_t<std::is_same_v<bool, decltype(std::declval<F>()(std::declval<const T&>()))>, void>
 bind_flag(T& value, const char* name, const char* description, F callback)
 {
   declare_flag(name, description, value, std::function<void(const T&)>([&value, callback](const T& val) {
@@ -325,7 +322,6 @@ XBT_PUBLIC void finalize();
 XBT_PUBLIC void show_aliases();
 XBT_PUBLIC void help();
 
-} // namespace config
-} // namespace simgrid
+} // namespace simgrid::config
 
 #endif

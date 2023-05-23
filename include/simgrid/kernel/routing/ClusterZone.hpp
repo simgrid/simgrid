@@ -11,9 +11,7 @@
 
 #include <unordered_map>
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 
 /**
  * @brief Placeholder for old ClusterZone class
@@ -150,8 +148,6 @@ public:
     return node_pos_with_loopback(id) + (has_limiter_ ? 1 : 0);
   }
 };
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing
 
 #endif /* SIMGRID_ROUTING_CLUSTER_HPP_ */

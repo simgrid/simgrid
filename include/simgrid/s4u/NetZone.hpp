@@ -18,8 +18,7 @@
 #include <utility>
 #include <vector>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /** @brief Networking Zones
  *
@@ -329,7 +328,6 @@ XBT_PUBLIC NetZone* create_dragonfly_zone(const std::string& name, const NetZone
                                           const DragonflyParams& parameters, const ClusterCallbacks& set_callbacks,
                                           double bandwidth, double latency, Link::SharingPolicy sharing_policy);
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_NETZONE_HPP */

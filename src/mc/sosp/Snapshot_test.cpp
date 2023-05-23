@@ -12,8 +12,6 @@
 #include <sys/mman.h>
 #include <xbt/random.hpp>
 
-/**************** Class BOOST_tests *************************/
-using simgrid::mc::Region;
 class snap_test_helper {
   simgrid::mc::PageStore page_store_{500};
   simgrid::mc::RemoteProcessMemory memory_{getpid(), nullptr};
@@ -22,10 +20,12 @@ class snap_test_helper {
     size_t size;
     std::byte* src;
     std::byte* dstn;
-    std::unique_ptr<Region> region0;
-    std::unique_ptr<Region> region;
+    std::unique_ptr<simgrid::mc::Region> region0;
+    std::unique_ptr<simgrid::mc::Region> region;
   };
   prologue_return prologue(int n); // common to the below 5 fxs
+
+  static void init_memory(std::byte* mem, size_t size);
 
 public:
   void read_whole_region();
@@ -34,7 +34,6 @@ public:
   void compare_region_parts();
   void read_pointer();
 
-  static void init_memory(std::byte* mem, size_t size);
   static void basic_requirements();
 };
 

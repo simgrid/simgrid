@@ -11,8 +11,7 @@
 #include <simgrid/s4u/Actor.hpp>
 #include <xbt/ex.h>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /** Computation Activity, representing the asynchronous executions.
  *
@@ -52,6 +51,7 @@ public:
 #endif
   /*! Signal fired each time that an execution actually starts (no veto) */
   static void on_start_cb(const std::function<void(Exec const&)>& cb) { on_start.connect(cb); }
+  void fire_this_completion() const override { on_completion(*this); }
 
   static ExecPtr init();
 
@@ -88,7 +88,6 @@ public:
   bool is_assigned() const override;
 };
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_EXEC_HPP */

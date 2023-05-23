@@ -14,8 +14,7 @@
 #include <memory>
 #include <string>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /** @brief Mailboxes: Network rendez-vous points. */
 class XBT_PUBLIC Mailbox {
@@ -151,7 +150,6 @@ template <typename T> T* Mailbox::get(double timeout)
   get_async<T>(&res)->wait_for(timeout);
   return res;
 }
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_MAILBOX_HPP */

@@ -12,8 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 /** @brief Communication async
  *
  * Represents all asynchronous communications, that you can test or wait onto.
@@ -51,6 +50,7 @@ public:
   static void on_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
   static void on_recv_cb(const std::function<void(Comm const&)>& cb) { on_recv.connect(cb); }
   static void on_start_cb(const std::function<void(Comm const&)>& cb) { on_start.connect(cb); }
+  void fire_this_completion() const override { on_completion(*this); }
   /* More callbacks */
   CommPtr set_copy_data_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback);
   XBT_ATTRIB_DEPRECATED_v337("Please manifest if you actually need this function") static void copy_buffer_callback(
@@ -177,7 +177,6 @@ public:
    * occurs). */
   static size_t wait_all_for(const std::vector<CommPtr>& comms, double timeout);
 };
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_COMM_HPP */

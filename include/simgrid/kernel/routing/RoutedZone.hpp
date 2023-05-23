@@ -8,9 +8,7 @@
 
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 
 /** @ingroup ROUTING_API
  *  @brief NetZone with an explicit routing (abstract class)
@@ -59,8 +57,6 @@ protected:
   void add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                               const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical) const;
 };
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing
 
 #endif /* SIMGRID_ROUTING_GENERIC_HPP_ */

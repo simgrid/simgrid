@@ -15,8 +15,7 @@
 #include <queue>
 #include <unordered_map>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 /* To split the file if a unique one is given (specific variable for the other case live in runner()) */
 using ReplayAction = std::vector<std::string>;
 
@@ -26,8 +25,7 @@ using ReplayAction = std::vector<std::string>;
  * xbt_replay_set_tracefile(). If trace_filename is not nullptr, then it's not shared and this trace file is for this
  * actor only */
 XBT_PUBLIC int replay_runner(const char* actor_name, const char* trace_filename = nullptr);
-}
-}
+} // namespace simgrid::xbt
 
 using action_fun = std::function<void(simgrid::xbt::ReplayAction&)>;
 XBT_PUBLIC void xbt_replay_action_register(const char* action_name, const action_fun& function);

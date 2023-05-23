@@ -8,9 +8,7 @@
 
 #include <simgrid/kernel/routing/RoutedZone.hpp>
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 
 /** @ingroup ROUTING_API
  *  @brief NetZone modeling a Wifi zone
@@ -33,8 +31,6 @@ public:
   void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) override;
   NetPoint* get_access_point() const { return access_point_; }
 };
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing
 
 #endif /* SIMGRID_ROUTING_WIFI_HPP_ */

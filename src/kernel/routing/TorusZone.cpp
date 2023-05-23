@@ -17,7 +17,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_torus, ker_platform, "Kernel Torus Routing");
 
 namespace simgrid {
-namespace kernel ::routing {
+namespace kernel::routing {
 
 void TorusZone::create_torus_links(unsigned long id, int rank, unsigned long position)
 {

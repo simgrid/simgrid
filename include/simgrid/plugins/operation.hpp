@@ -2,6 +2,7 @@
 #define SIMGRID_PLUGINS_OPERATION_H_
 
 #include <simgrid/s4u/Activity.hpp>
+#include <simgrid/s4u/Io.hpp>
 #include <xbt/Extendable.hpp>
 
 #include <atomic>
@@ -23,6 +24,10 @@ class CommOp;
 using CommOpPtr =  boost::intrusive_ptr<CommOp>;
 XBT_PUBLIC void intrusive_ptr_release(CommOp* c);
 XBT_PUBLIC void intrusive_ptr_add_ref(CommOp* c);
+class IoOp;
+using IoOpPtr =  boost::intrusive_ptr<IoOp>;
+XBT_PUBLIC void intrusive_ptr_release(IoOp* i);
+XBT_PUBLIC void intrusive_ptr_add_ref(IoOp* i);
 
 struct ExtendedAttributeActivity {
   static simgrid::xbt::Extension<simgrid::s4u::Activity, ExtendedAttributeActivity> EXTENSION_ID;
@@ -30,7 +35,6 @@ struct ExtendedAttributeActivity {
 };
 
 class Operation {
-private:
   static bool inited_;
   std::set<Operation*> successors_                 = {};
   std::map<Operation*, unsigned int> predecessors_ = {};
@@ -48,8 +52,8 @@ protected:
   int count_        = 0;
   bool working_     = false;
   s4u::ActivityPtr current_activity_;
-  std::function<void(Operation*)> end_func_;
-  std::function<void(Operation*)> start_func_;
+  std::vector<std::function<void(Operation*)>> end_func_handlers_;
+  std::vector<std::function<void(Operation*)>> start_func_handlers_;
   explicit Operation(const std::string& name);
   virtual ~Operation()   = default;
   virtual void execute() = 0;
@@ -94,7 +98,6 @@ public:
 };
 
 class ExecOp : public Operation {
-private:
   s4u::Host* host_;
 
   explicit ExecOp(const std::string& name);
@@ -112,7 +115,6 @@ public:
 };
 
 class CommOp : public Operation {
-private:
   s4u::Host* source_;
   s4u::Host* destination_;
 
@@ -131,6 +133,23 @@ public:
   double get_bytes() const { return get_amount(); }
   friend void inline intrusive_ptr_release(CommOp* c) { intrusive_ptr_release(static_cast<Operation*>(c)); }
   friend void inline intrusive_ptr_add_ref(CommOp* c) { intrusive_ptr_add_ref(static_cast<Operation*>(c)); }
+};
+
+class IoOp : public Operation {
+  s4u::Disk* disk_;
+  s4u::Io::OpType type_;
+  explicit IoOp(const std::string& name);
+  void execute() override;
+
+public:
+  static IoOpPtr init(const std::string& name);
+  static IoOpPtr init(const std::string& name, double bytes, s4u::Disk* disk, s4u::Io::OpType type);
+  IoOpPtr set_disk(s4u::Disk* disk);
+  IoOpPtr set_bytes(double bytes);
+  IoOpPtr set_op_type(s4u::Io::OpType type);
+
+  friend void inline intrusive_ptr_release(IoOp* i) { intrusive_ptr_release(static_cast<Operation*>(i)); }
+  friend void inline intrusive_ptr_add_ref(IoOp* i) { intrusive_ptr_add_ref(static_cast<Operation*>(i)); }
 };
 } // namespace simgrid::plugins
 #endif

@@ -23,8 +23,7 @@
 #include <utility>
 #include <vector>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 template <class F> class MainFunction {
   F code_;
@@ -74,12 +73,12 @@ constexpr auto apply(F&& f, Tuple&& t, std::index_sequence<I...>)
  *  @endcode
  **/
 template <class F, class Tuple>
-constexpr auto apply(F&& f, Tuple&& t) -> decltype(
-    simgrid::xbt::bits::apply(std::forward<F>(f), std::forward<Tuple>(t),
-                              std::make_index_sequence<std::tuple_size<typename std::decay_t<Tuple>>::value>()))
+constexpr auto apply(F&& f, Tuple&& t)
+    -> decltype(simgrid::xbt::bits::apply(std::forward<F>(f), std::forward<Tuple>(t),
+                                          std::make_index_sequence<std::tuple_size_v<typename std::decay_t<Tuple>>>()))
 {
   return simgrid::xbt::bits::apply(std::forward<F>(f), std::forward<Tuple>(t),
-                                   std::make_index_sequence<std::tuple_size<typename std::decay_t<Tuple>>::value>());
+                                   std::make_index_sequence<std::tuple_size_v<typename std::decay_t<Tuple>>>());
 }
 
 template<class T> class Task;
@@ -179,7 +178,7 @@ private:
         return code(std::forward<Args>(args)...);
       },
       // Destroy:
-      std::is_trivially_destructible<F>::value ?
+      std::is_trivially_destructible_v<F> ?
       static_cast<destroy_function>(nullptr) :
       [](TaskUnion& buffer) {
         auto* code = reinterpret_cast<F*>(&buffer);
@@ -260,6 +259,5 @@ template <class F, class... Args> auto make_task(F code, Args... args) -> Task<d
   return Task<decltype(code(std::move(args)...))()>(std::move(task));
 }
 
-} // namespace xbt
-} // namespace simgrid
+} // namespace simgrid::xbt
 #endif

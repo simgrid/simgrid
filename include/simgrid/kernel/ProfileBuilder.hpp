@@ -9,10 +9,7 @@
 #include <simgrid/forward.h>
 #include <functional>
 
-namespace simgrid {
-namespace kernel {
-namespace profile {
-
+namespace simgrid::kernel::profile {
 
 /** @brief Modeling of the availability profile (due to an external load) or the churn
  *
@@ -75,8 +72,6 @@ public:
   static Profile* from_callback(const std::string& name, const std::function<UpdateCb>& cb, double repeat_delay);
 };
 
-} // namespace profile
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::profile
 
 #endif /* SIMGRID_KERNEL_PROFILEBUILDER_HPP */

@@ -9,8 +9,7 @@
 #include <simgrid/forward.h>
 #include <xbt/asserts.h>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /** @brief A classical mutex, but blocking in the simulation world.
  *
@@ -55,7 +54,6 @@ public:
   bool try_lock();
 };
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_MUTEX_HPP */

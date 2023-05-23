@@ -350,6 +350,8 @@ include examples/cpp/network-ns3/s4u-network-ns3-timed.tesh
 include examples/cpp/network-ns3/s4u-network-ns3.cpp
 include examples/cpp/network-wifi/s4u-network-wifi.cpp
 include examples/cpp/network-wifi/s4u-network-wifi.tesh
+include examples/cpp/operation-io/s4u-operation-io.cpp
+include examples/cpp/operation-io/s4u-operation-io.tesh
 include examples/cpp/operation-simple/s4u-operation-simple.cpp
 include examples/cpp/operation-simple/s4u-operation-simple.tesh
 include examples/cpp/operation-switch-host/s4u-operation-switch-host.cpp

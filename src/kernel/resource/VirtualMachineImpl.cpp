@@ -79,17 +79,14 @@ static void add_active_exec(s4u::Exec const& task)
   }
 }
 
-static void remove_active_exec(s4u::Activity const& task)
+static void remove_active_exec(s4u::Exec const& exec)
 {
-  const auto* exec = dynamic_cast<s4u::Exec const*>(&task);
-  if (exec == nullptr)
+  if (not exec.is_assigned())
     return;
-  if (not exec->is_assigned())
-    return;
-  const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(exec->get_host());
+  const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(exec.get_host());
   if (vm != nullptr) {
     VirtualMachineImpl* vm_impl = vm->get_vm_impl();
-    for (int i = 1; i <= exec->get_thread_count(); i++)
+    for (int i = 1; i <= exec.get_thread_count(); i++)
       vm_impl->remove_active_exec();
     vm_impl->update_action_weight();
   }
@@ -125,7 +122,7 @@ VMModel::VMModel(const std::string& name) : HostModel(name)
 {
   s4u::Host::on_state_change_cb(host_state_change);
   s4u::Exec::on_start_cb(add_active_exec);
-  s4u::Activity::on_completion_cb(remove_active_exec);
+  s4u::Exec::on_completion_cb(remove_active_exec);
   s4u::Activity::on_resume_cb(add_active_activity);
   s4u::Activity::on_suspend_cb(remove_active_activity);
 }

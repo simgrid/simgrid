@@ -22,8 +22,7 @@ XBT_LOG_EXTERNAL_CATEGORY(producer_consumer);
 
 /** Stock implementation of a generic monitored queue to solve the producer-consumer problem */
 
-namespace simgrid {
-namespace plugin {
+namespace simgrid::plugin {
 
 template <typename T> class ProducerConsumer;
 template <typename T> using ProducerConsumerPtr = boost::intrusive_ptr<ProducerConsumer<T>>;
@@ -104,7 +103,7 @@ public:
    */
   ProducerConsumer* set_max_queue_size(unsigned int max_queue_size)
   {
-    const std::lock_guard<s4u::Mutex> lock(*mutex_);
+    const std::scoped_lock lock(*mutex_);
     max_queue_size_ = max_queue_size;
     return this;
   }
@@ -214,7 +213,6 @@ public:
   }
 };
 
-} // namespace plugin
-} // namespace simgrid
+} // namespace simgrid::plugin
 
 #endif // SIMGRID_PLUGIN_PRODUCERCONSUMER_HPP

@@ -16,9 +16,7 @@
 
 static constexpr double NO_MAX_DURATION = -1.0;
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 using heap_element_type = std::pair<double, Action*>;
 using heap_type =
@@ -273,7 +271,5 @@ public:
   void set_suspend_state(Action::SuspendStates state) { suspended_ = state; }
 };
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 #endif

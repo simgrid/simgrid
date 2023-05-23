@@ -9,8 +9,7 @@
 #include <simgrid/Exception.hpp>
 #include <xbt/log.h>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 /** Display information about an exception
  *
@@ -23,7 +22,6 @@ XBT_PUBLIC void log_exception(e_xbt_log_priority_t priority, const char* context
 
 XBT_PUBLIC void install_exception_handler();
 
-} // namespace xbt
-} // namespace simgrid
+} // namespace simgrid::xbt
 
 #endif

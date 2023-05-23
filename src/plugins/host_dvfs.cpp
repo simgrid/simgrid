@@ -289,14 +289,11 @@ public:
       if (activity.get_host() == get_host())
         pre_task();
     });
-    simgrid::s4u::Activity::on_completion_cb([this](simgrid::s4u::Activity const& activity) {
-      const auto* exec = dynamic_cast<simgrid::s4u::Exec const*>(&activity);
-      if (exec == nullptr) // Only Execs are concerned here
-        return;
+    simgrid::s4u::Exec::on_completion_cb([this](simgrid::s4u::Exec const& exec) {
       // For more than one host (not yet supported), we can access the host via
       // simcalls_.front()->issuer->get_iface()->get_host()
-      if (exec->get_host() == get_host() && iteration_running) {
-        comp_timer += exec->get_finish_time() - exec->get_start_time();
+      if (exec.get_host() == get_host() && iteration_running) {
+        comp_timer += exec.get_finish_time() - exec.get_start_time();
       }
     });
     // FIXME I think that this fires at the same time for all hosts, so when the src sends something,

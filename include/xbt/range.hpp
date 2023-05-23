@@ -8,8 +8,7 @@
 
 #include <algorithm>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 /** Describes a contiguous inclusive-exclusive [a,b) range of values */
 template<class T> class Range {
@@ -27,7 +26,6 @@ public:
   bool contain(T const& x) const { return begin_ <= x && end_ > x; }
 };
 
-}
-}
+} // namespace simgrid::xbt
 
 #endif

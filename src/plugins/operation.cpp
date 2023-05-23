@@ -2,6 +2,7 @@
 #include <simgrid/plugins/operation.hpp>
 #include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/Exec.hpp>
+#include <simgrid/s4u/Io.hpp>
 #include <simgrid/simix.hpp>
 
 #include "src/simgrid/module.hpp"
@@ -100,8 +101,8 @@ void Operation::complete()
     working_ = false;
     count_++;
   });
-  if (end_func_)
-    end_func_(this);
+  for (auto end_func : end_func_handlers_)
+    end_func(this);
   Operation::on_end(this);
   for (auto const& op : successors_)
     op->receive(this);
@@ -119,8 +120,14 @@ void Operation::init()
     return;
   Operation::inited_                      = true;
   ExtendedAttributeActivity::EXTENSION_ID = simgrid::s4u::Activity::extension_create<ExtendedAttributeActivity>();
-  simgrid::s4u::Activity::on_completion_cb([](simgrid::s4u::Activity const& activity) {
-    activity.extension<ExtendedAttributeActivity>()->operation_->complete();
+  simgrid::s4u::Exec::on_completion_cb([](simgrid::s4u::Exec const& exec) {
+    exec.extension<ExtendedAttributeActivity>()->operation_->complete();
+  });
+  simgrid::s4u::Comm::on_completion_cb([](simgrid::s4u::Comm const& comm) {
+    comm.extension<ExtendedAttributeActivity>()->operation_->complete();
+  });
+  simgrid::s4u::Io::on_completion_cb([](simgrid::s4u::Io const& io) {
+    io.extension<ExtendedAttributeActivity>()->operation_->complete();
   });
 }
 
@@ -188,7 +195,7 @@ void Operation::remove_all_successors()
  */
 void Operation::on_this_start(const std::function<void(Operation*)>& func)
 {
-  simgrid::kernel::actor::simcall_answered([this, &func] { start_func_ = func; });
+  simgrid::kernel::actor::simcall_answered([this, &func] { start_func_handlers_.push_back(func); });
 }
 
 /** @ingroup plugin_operation
@@ -198,7 +205,7 @@ void Operation::on_this_start(const std::function<void(Operation*)>& func)
  */
 void Operation::on_this_end(const std::function<void(Operation*)>& func)
 {
-  simgrid::kernel::actor::simcall_answered([this, &func] { end_func_ = func; });
+  simgrid::kernel::actor::simcall_answered([this, &func] { end_func_handlers_.push_back(func); });
 }
 
 /** @ingroup plugin_operation
@@ -237,8 +244,8 @@ ExecOpPtr ExecOp::init(const std::string& name, double flops, s4u::Host* host)
  */
 void ExecOp::execute()
 {
-  if (start_func_)
-    start_func_(this);
+  for (auto start_func : start_func_handlers_)
+    start_func(this);
   Operation::on_start(this);
   kernel::actor::simcall_answered([this] {
     working_      = true;
@@ -302,8 +309,8 @@ CommOpPtr CommOp::init(const std::string& name, double bytes, s4u::Host* source,
  */
 void CommOp::execute()
 {
-  if (start_func_)
-    start_func_(this);
+  for (auto start_func : start_func_handlers_)
+    start_func(this);
   Operation::on_start(this);
   kernel::actor::simcall_answered([this] {
     working_      = true;
@@ -346,6 +353,76 @@ CommOpPtr CommOp::set_bytes(double bytes)
   kernel::actor::simcall_answered([this, bytes] { amount_ = bytes; });
   return this;
 }
+
+/**
+ *  @brief Default constructor.
+ */
+IoOp::IoOp(const std::string& name) : Operation(name) {}
+
+/** @ingroup plugin_operation
+ *  @brief Smart Constructor.
+ */
+IoOpPtr IoOp::init(const std::string& name)
+{
+  return IoOpPtr(new IoOp(name));
+}
+
+/** @ingroup plugin_operation
+ *  @brief Smart Constructor.
+ */
+IoOpPtr IoOp::init(const std::string& name, double bytes, s4u::Disk* disk, s4u::Io::OpType type)
+{
+  return init(name)->set_bytes(bytes)->set_disk(disk)->set_op_type(type);
+}
+
+/** @ingroup plugin_operation
+ *  @param disk The disk to set.
+ *  @brief Set a new disk.
+ */
+IoOpPtr IoOp::set_disk(s4u::Disk* disk)
+{
+  kernel::actor::simcall_answered([this, disk] { disk_ = disk; });
+  return this;
+}
+
+/** @ingroup plugin_operation
+ *  @param bytes The amount of bytes to set.
+ */
+IoOpPtr IoOp::set_bytes(double bytes)
+{
+  kernel::actor::simcall_answered([this, bytes] { amount_ = bytes; });
+  return this;
+}
+
+/** @ingroup plugin_operation
+ *  @param bytes The amount of bytes to set.
+ */
+IoOpPtr IoOp::set_op_type(s4u::Io::OpType type)
+{
+  kernel::actor::simcall_answered([this, type] { type_ = type; });
+  return this;
+}
+
+void IoOp::execute()
+{
+  for (auto start_func : start_func_handlers_)
+    start_func(this);
+  Operation::on_start(this);
+  kernel::actor::simcall_answered([this] {
+    working_      = true;
+    queued_execs_ = std::max(queued_execs_ - 1, 0);
+  });
+  s4u::IoPtr io = s4u::Io::init();
+  io->set_name(name_);
+  io->set_size(amount_);
+  io->set_disk(disk_);
+  io->set_op_type(type_);
+  io->start();
+  io->extension_set(new ExtendedAttributeActivity());
+  io->extension<ExtendedAttributeActivity>()->operation_ = this;
+  kernel::actor::simcall_answered([this, io] { current_activity_ = io; });
+}
+
 
 } // namespace simgrid::plugins
 
