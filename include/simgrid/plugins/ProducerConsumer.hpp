@@ -140,7 +140,7 @@ public:
    */
   s4u::CommPtr put_async(T* data, size_t simulated_size_in_bytes)
   {
-    std::unique_lock<s4u::Mutex> lock(*mutex_);
+    std::unique_lock lock(*mutex_);
     s4u::CommPtr comm = nullptr;
     XBT_CVERB(producer_consumer, (size() < max_queue_size_) ? "can put" : "must wait");
 
@@ -177,7 +177,7 @@ public:
    */
   s4u::CommPtr get_async(T** data)
   {
-    std::unique_lock<s4u::Mutex> lock(*mutex_);
+    std::unique_lock lock(*mutex_);
     s4u::CommPtr comm = nullptr;
     XBT_CVERB(producer_consumer, empty() ? "must wait" : "can get");
     while (empty())

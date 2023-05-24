@@ -12,6 +12,7 @@
 #include <simgrid/forward.h>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <xbt/Extendable.hpp>
 #include <xbt/asserts.h>
@@ -74,8 +75,8 @@ protected:
   {
     if(this == a)
       throw std::invalid_argument("Cannot be its own successor");
-    auto p = std::find_if(successors_.begin(), successors_.end(), [a](ActivityPtr const& i){ return i.get() == a.get(); });
-    if (p != successors_.end())
+
+    if (std::any_of(begin(successors_), end(successors_), [a](ActivityPtr const& i) { return i.get() == a.get(); }))
       throw std::invalid_argument("Dependency already exists");
 
     successors_.push_back(a);
@@ -87,12 +88,13 @@ protected:
     if(this == a)
       throw std::invalid_argument("Cannot ask to remove itself from successors list");
 
-    auto p = std::find_if(successors_.begin(), successors_.end(), [a](ActivityPtr const& i){ return i.get() == a.get(); });
-    if (p != successors_.end()){
-      successors_.erase(p);
-      a->dependencies_.erase({this});
-    } else
+    auto p =
+        std::find_if(successors_.begin(), successors_.end(), [a](ActivityPtr const& i) { return i.get() == a.get(); });
+    if (p == successors_.end())
       throw std::invalid_argument("Dependency does not exist. Can not be removed.");
+
+    successors_.erase(p);
+    a->dependencies_.erase({this});
   }
 
   static std::set<Activity*>* vetoed_activities_;
@@ -262,7 +264,7 @@ public:
     Activity::remove_successor(a);
     return static_cast<AnyActivity*>(this);
   }
-  AnyActivity* set_name(const std::string& name)
+  AnyActivity* set_name(std::string_view name)
   {
     name_ = name;
     return static_cast<AnyActivity*>(this);
@@ -270,7 +272,7 @@ public:
   const std::string& get_name() const override { return name_; }
   const char* get_cname() const override { return name_.c_str(); }
 
-  AnyActivity* set_tracing_category(const std::string& category)
+  AnyActivity* set_tracing_category(std::string_view category)
   {
     xbt_assert(get_state() == State::INITED || get_state() == State::STARTING,
                "Cannot change the tracing category of an activity after its start");
