@@ -25,17 +25,21 @@ static void test_tree_iterator(const WakeupTree& tree, const std::vector<Partial
   REQUIRE(num_nodes_traversed == tree.get_num_nodes());
 }
 
+static void test_tree_empty(const WakeupTree& tree)
+{
+  REQUIRE(tree.empty());
+  REQUIRE(tree.get_num_entries() == 0);
+  REQUIRE(tree.get_num_nodes() == 1);
+  REQUIRE_FALSE(tree.get_min_single_process_node().has_value());
+  REQUIRE_FALSE(tree.get_min_single_process_actor().has_value());
+  test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{}});
+}
+
 TEST_CASE("simgrid::mc::odpor::WakeupTree: Constructing Trees")
 {
   SECTION("Constructing empty trees")
   {
-    WakeupTree tree;
-    REQUIRE(tree.empty());
-    REQUIRE(tree.get_num_entries() == 0);
-    REQUIRE(tree.get_num_nodes() == 1);
-    REQUIRE_FALSE(tree.get_min_single_process_node().has_value());
-    REQUIRE_FALSE(tree.get_min_single_process_actor().has_value());
-    test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{}});
+    test_tree_empty(WakeupTree());
   }
 
   SECTION("Testing subtree creation and manipulation")
@@ -153,6 +157,18 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Constructing Trees")
       // At this point, we've removed each single-process subtree, so
       // the tree should be empty
       REQUIRE(tree.empty());
+    }
+
+    SECTION("Removing the first single-process subtree from an empty tree has no effect")
+    {
+      WakeupTree empty_tree;
+      test_tree_empty(empty_tree);
+
+      empty_tree.remove_min_single_process_subtree();
+
+      // There should be no effect: the tree should still be empty
+      // and the function should have no effect
+      test_tree_empty(empty_tree);
     }
   }
 }
@@ -352,5 +368,25 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
                                                                PartialExecution{a3}, PartialExecution{}});
       }
     }
+  }
+
+  SECTION("Insertion with non-obvious equivalent leaf")
+  {
+    const auto cd_1 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto i_2  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto i_3  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto d_1  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto d_2  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
+    WakeupTree complex_tree;
+    // After the insertions below, the tree looks like the following:
+    //                {}
+    //              /    /
+    //            a0     a2
+    //                 /  |  /
+    //               a0  a3   a5
+    complex_tree.insert(Execution(), {cd_1, i_2, d_1, i_3, d_2, d_2});
+    complex_tree.insert(Execution(), {i_2, d_2, cd_1, d_1, i_3, d_2});
+    complex_tree.insert(Execution(), {i_2, d_2, cd_1, i_3, d_2, d_1});
+    REQUIRE(complex_tree.get_num_nodes() == 16);
   }
 }

@@ -367,7 +367,10 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
     else if (E_v.is_independent_with_execution_of(w, next_E_p)) {
       // INVARIANT: Note that it is impossible for `p` to be
       // excluded from the set `I_[E](w)` BUT ALSO be contained in
-      // `w` itself if `E ⊢ p ◇ w`. We assert this is the case here
+      // `w` itself if `E ⊢ p ◇ w` (intuitively, the fact that `E ⊢ p ◇ w`
+      // means that are able to move `p` anywhere in `w` IF it occurred, so
+      // if it really does occur we know it must then be an initial).
+      // We assert this is the case here
       const auto action_by_p_in_w =
           std::find_if(w_now.begin(), w_now.end(), [=](const auto& action) { return action->aid_ == p; });
       xbt_assert(action_by_p_in_w == w_now.end(),
