@@ -72,6 +72,12 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
   return racing_events;
 }
 
+std::unordered_set<Execution::EventHandle> Execution::get_reversible_races_of(EventHandle handle) const
+{
+  // TODO: Implement this
+  return std::unordered_set<EventHandle>{};
+}
+
 Execution Execution::get_prefix_before(Execution::EventHandle handle) const
 {
   return Execution(std::vector<Event>{contents_.begin(), contents_.begin() + handle});

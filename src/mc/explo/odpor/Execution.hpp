@@ -263,6 +263,25 @@ public:
   std::unordered_set<EventHandle> get_racing_events_of(EventHandle handle) const;
 
   /**
+   * @brief Returns a set of events which are in a reversible
+   * race with the given event handle `handle`
+   *
+   * Two events `e` and `e'` in an execution `E` are said to
+   * be in a reversible race iff
+   *
+   * 1. `e` and `e'` race
+   * 2. In any equivalent execution sequence `E'` to `E`
+   * where `e` occurs immediately before `e'`, the actor
+   * running `e'` was enabled in the state prior to `e`
+   *
+   * @param handle the event with respect to which
+   * reversible races are computed
+   * @returns a set of event handles from which are in a reversible
+   * race with `handle`
+   */
+  std::unordered_set<EventHandle> get_reversible_races_of(EventHandle handle) const;
+
+  /**
    * @brief Computes `pre(e, E)` as described in ODPOR [1]
    *
    * The execution `pre(e, E)` for an event `e` in an

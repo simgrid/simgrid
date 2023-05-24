@@ -537,6 +537,8 @@ set(MC_SRC_STATELESS
 
   src/mc/explo/odpor/Execution.cpp
   src/mc/explo/odpor/Execution.hpp
+  src/mc/explo/odpor/ReversibleRaceCalculator.cpp
+  src/mc/explo/odpor/ReversibleRaceCalculator.hpp
   src/mc/explo/odpor/WakeupTree.cpp
   src/mc/explo/odpor/WakeupTree.hpp
   src/mc/explo/odpor/WakeupTreeIterator.cpp
