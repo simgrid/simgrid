@@ -6,8 +6,8 @@
 #ifndef SIMGRID_MC_ODPOR_REVERSIBLE_RACE_CALCULATOR_HPP
 #define SIMGRID_MC_ODPOR_REVERSIBLE_RACE_CALCULATOR_HPP
 
-#include "src/mc/explo/udpor/EventSet.hpp"
-#include "src/mc/explo/udpor/udpor_forward.hpp"
+#include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/transition/TransitionActorJoin.hpp"
 #include "src/mc/transition/TransitionAny.hpp"
@@ -30,13 +30,13 @@ namespace simgrid::mc::odpor {
  * is only sensible in the context of a race
  */
 struct ReversibleRaceCalculator final {
-  static EventSet is_race_reversible(const Execution&, Execution::Handle e1, std::shared_ptr<Transition>);
-  static EventSet is_race_reversible(const Execution&, Execution::Handle e1, std::shared_ptr<Transition>);
-  static EventSet is_race_reversible(const Execution&, Execution::Handle e1, std::shared_ptr<Transition>);
-  static EventSet is_race_reversible(const Execution&, Execution::Handle e1, std::shared_ptr<Transition>);
+  static bool is_race_reversible_CommRecv(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_CommSend(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_CommWait(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_CommTest(const Execution&, Execution::EventHandle e1, const Transition* e2);
 
 public:
-  static EventSet is_race_reversible(const Execution&, Execution::Handle e1, Execution::Handle e2);
+  static bool is_race_reversible(const Execution&, Execution::EventHandle e1, Execution::EventHandle e2);
 };
 
 } // namespace simgrid::mc::odpor

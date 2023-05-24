@@ -86,7 +86,6 @@ private:
   Execution(std::vector<Event>&& contents) : contents_(std::move(contents)) {}
 
 public:
-  using Handle      = decltype(contents_)::const_iterator;
   using EventHandle = uint32_t;
 
   Execution()                            = default;
@@ -231,6 +230,14 @@ public:
    * the given event handle `handle`
    */
   aid_t get_actor_with_handle(EventHandle handle) const { return get_event_with_handle(handle).get_transition()->aid_; }
+
+  /**
+   * @brief Determines the transition associated with the given handle `handle`
+   */
+  const Transition* get_transition_for_handle(EventHandle handle) const
+  {
+    return get_event_with_handle(handle).get_transition().get();
+  }
 
   /**
    * @brief Returns a handle to the newest event of the execution,

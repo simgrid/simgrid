@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/api/State.hpp"
+#include "src/mc/explo/odpor/ReversibleRaceCalculator.hpp"
 #include "xbt/asserts.h"
 #include <algorithm>
 #include <limits>
@@ -74,8 +75,13 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
 
 std::unordered_set<Execution::EventHandle> Execution::get_reversible_races_of(EventHandle handle) const
 {
-  // TODO: Implement this
-  return std::unordered_set<EventHandle>{};
+  std::unordered_set<EventHandle> reversible_races;
+  for (EventHandle race : get_racing_events_of(handle)) {
+    if (ReversibleRaceCalculator::is_race_reversible(*this, race, handle)) {
+      reversible_races.insert(race);
+    }
+  }
+  return reversible_races;
 }
 
 Execution Execution::get_prefix_before(Execution::EventHandle handle) const

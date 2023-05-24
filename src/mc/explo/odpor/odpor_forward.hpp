@@ -18,11 +18,11 @@
 
 namespace simgrid::mc::odpor {
 
-using PartialExecution  = std::list<std::shared_ptr<Transition>>;
-using ExecutionSequence = std::list<const Transition*>;
+using PartialExecution = std::list<std::shared_ptr<Transition>>;
 
 class Event;
 class Execution;
+class ReversibleRaceCalculator;
 class WakeupTree;
 class WakeupTreeNode;
 class WakeupTreeIterator;
