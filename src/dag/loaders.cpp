@@ -21,6 +21,11 @@
 #include "dax_dtd.c"
 
 #if SIMGRID_HAVE_JSON
+// Disable implicit conversions. See https://github.com/nlohmann/json#implicit-conversions
+#ifdef JSON_USE_IMPLICIT_CONVERSIONS
+#undef JSON_USE_IMPLICIT_CONVERSIONS
+#endif
+#define JSON_USE_IMPLICIT_CONVERSIONS 0
 #include <nlohmann/json.hpp>
 #include <sstream>
 #endif
@@ -101,14 +106,19 @@ std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename)
   
   for (auto const& task: data["workflow"]["tasks"]) {
     if (task["type"] == "compute") {
-      current = Exec::init()->set_name(task["name"])->set_flops_amount(task["runtime"]);
+      current =
+          Exec::init()->set_name(task["name"].get<std::string>())->set_flops_amount(task["runtime"].get<double>());
       if (task.contains("machine"))
-        dynamic_cast<Exec*>(current.get())->set_host(simgrid::s4u::Engine::get_instance()->host_by_name(task["machine"]));
+        dynamic_cast<Exec*>(current.get())
+            ->set_host(simgrid::s4u::Engine::get_instance()->host_by_name(task["machine"].get<std::string>()));
     }
     else if (task["type"] == "transfer"){
-      current = Comm::sendto_init()->set_name(task["name"])->set_payload_size(task["bytesWritten"]);
+      current = Comm::sendto_init()
+                    ->set_name(task["name"].get<std::string>())
+                    ->set_payload_size(task["bytesWritten"].get<double>());
       if (task.contains("machine"))
-        comms_destinations[current] = simgrid::s4u::Engine::get_instance()->host_by_name(task["machine"]);
+        comms_destinations[current] =
+            simgrid::s4u::Engine::get_instance()->host_by_name(task["machine"].get<std::string>());
       if (task["parents"].size() == 1) {
         ActivityPtr parent_activity;
         for (auto const& activity: dag) {
@@ -130,7 +140,7 @@ std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename)
 
     dag.push_back(current);
     for (auto const& parent : task["parents"])
-      successors[parent].push_back(current);
+      successors[parent.get<std::string>()].push_back(current);
   }
   // Assign successors
   for (auto const& [parent, successors_list] : successors)
