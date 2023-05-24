@@ -123,8 +123,8 @@ VMModel::VMModel(const std::string& name) : HostModel(name)
   s4u::Host::on_onoff_cb(host_onoff);
   s4u::Exec::on_start_cb(add_active_exec);
   s4u::Exec::on_completion_cb(remove_active_exec);
-  s4u::Activity::on_resume_cb(add_active_activity);
-  s4u::Activity::on_suspend_cb(remove_active_activity);
+  s4u::Exec::on_resume_cb(add_active_activity);
+  s4u::Exec::on_suspend_cb(remove_active_activity);
 }
 
 double VMModel::next_occurring_event(double now)

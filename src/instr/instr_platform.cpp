@@ -479,8 +479,8 @@ void define_callbacks()
 
   s4u::Host::on_exec_state_change_cb(on_action_state_change);
   s4u::Link::on_communication_state_change_cb(on_action_state_change);
-  s4u::Activity::on_suspend_cb(on_activity_suspend_resume);
-  s4u::Activity::on_resume_cb(on_activity_suspend_resume);
+  s4u::Exec::on_suspend_cb(on_activity_suspend_resume);
+  s4u::Exec::on_resume_cb(on_activity_suspend_resume);
 
   if (TRACE_actor_is_enabled()) {
     s4u::Actor::on_creation_cb(on_actor_creation);

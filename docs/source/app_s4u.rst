@@ -2150,17 +2150,6 @@ Suspending and resuming an activity
       .. doxygenfunction:: simgrid::s4u::Activity::resume
       .. doxygenfunction:: simgrid::s4u::Activity::is_suspended
 
-Signals
--------
-
-.. tabs::
-
-   .. group-tab:: C++
-
-      .. doxygenfunction:: simgrid::s4u::Activity::on_completion_cb
-      .. doxygenfunction:: simgrid::s4u::Activity::on_suspended_cb
-      .. doxygenfunction:: simgrid::s4u::Activity::on_resumed_cb
-
 .. _API_s4u_Comm:
 
 =============
@@ -2325,6 +2314,11 @@ Signals
       .. doxygenfunction:: simgrid::s4u::Comm::on_recv_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_send_cb
 
+      .. doxygenfunction:: simgrid::s4u::Comm::on_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_suspended_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_resumed_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_veto_cb
+
 .. _API_s4u_Exec:
 
 =============
@@ -2461,6 +2455,11 @@ Signals
       .. doxygenfunction:: simgrid::s4u::Exec::on_start_cb
       .. doxygenfunction:: simgrid::s4u::Exec::on_completion_cb
 
+      .. doxygenfunction:: simgrid::s4u::Exec::on_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_suspended_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_resumed_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_veto_cb
+
 .. _API_s4u_Io:
 
 ===========
@@ -2531,6 +2530,11 @@ Signals
 
       .. doxygenfunction:: simgrid::s4u::Io::on_start_cb
       .. doxygenfunction:: simgrid::s4u::Io::on_completion_cb
+
+      .. doxygenfunction:: simgrid::s4u::Io::on_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_suspended_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_resumed_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_veto_cb
 
 .. _API_s4u_Synchronizations:
 

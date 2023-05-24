@@ -20,9 +20,13 @@ int main(int argc, char* argv[])
   auto carl = e.host_by_name("carl");
 
   // Display the details on vetoed activities
-  sg4::Activity::on_veto_cb([](const sg4::Activity& a) {
-    XBT_INFO("Activity '%s' vetoed. Dependencies: %s; Ressources: %s", a.get_cname(),
-             (a.dependencies_solved() ? "solved" : "NOT solved"), (a.is_assigned() ? "assigned" : "NOT assigned"));
+  sg4::Exec::on_veto_cb([](sg4::Exec const& exec) {
+    XBT_INFO("Exec '%s' vetoed. Dependencies: %s; Ressources: %s", exec.get_cname(),
+             (exec.dependencies_solved() ? "solved" : "NOT solved"), (exec.is_assigned() ? "assigned" : "NOT assigned"));
+  });
+  sg4::Io::on_veto_cb([](sg4::Io const& io) {
+    XBT_INFO("Io '%s' vetoed. Dependencies: %s; Ressources: %s", io.get_cname(),
+             (io.dependencies_solved() ? "solved" : "NOT solved"), (io.is_assigned() ? "assigned" : "NOT assigned"));
   });
 
   sg4::Exec::on_completion_cb([](sg4::Exec const& exec) {

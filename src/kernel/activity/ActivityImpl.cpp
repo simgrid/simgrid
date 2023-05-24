@@ -181,7 +181,7 @@ void ActivityImpl::suspend()
     return;
   }
   XBT_VERB("This activity is suspended (remain: %f)", model_action_->get_remains());
-  s4u::Activity::on_suspend(*get_iface());
+  get_iface()->fire_on_suspend();
   model_action_->suspend();
 }
 
@@ -190,7 +190,7 @@ void ActivityImpl::resume()
   if (model_action_ == nullptr)
     return;
   XBT_VERB("This activity is resumed (remain: %f)", model_action_->get_remains());
-  s4u::Activity::on_resume(*get_iface());
+  get_iface()->fire_on_resume();
   model_action_->resume();
 }
 

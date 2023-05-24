@@ -43,7 +43,10 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
   static xbt::signal<void(Comm const&)> on_start;
 
 protected:
-  void fire_this_completion() const override { on_completion(*this); }
+  void fire_on_completion() const override { on_completion(*this); }
+  void fire_on_veto() const override { on_veto(const_cast<Comm&>(*this)); }
+  void fire_on_suspend() const override { on_suspend(*this); }
+  void fire_on_resume() const override { on_resume(*this); }
 
 public:
   static void on_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }

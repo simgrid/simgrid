@@ -102,39 +102,12 @@ protected:
    * It is forbidden to change the amount of work once the Activity is started */
   Activity* set_remaining(double remains);
 
-  virtual void fire_this_completion() const = 0;
-
-private:
-  static xbt::signal<void(Activity&)> on_veto;
-  static xbt::signal<void(Activity const&)> on_suspend;
-  static xbt::signal<void(Activity const&)> on_resume;
+  virtual void fire_on_completion() const = 0;
+  virtual void fire_on_veto() const = 0;
+  virtual void fire_on_suspend() const = 0;
+  virtual void fire_on_resume() const = 0;
 
 public:
-  /*! Add a callback fired each time that the activity fails to start because of a veto (e.g., unsolved dependency or no
-   * resource assigned) */
-  static void on_veto_cb(const std::function<void(Activity&)>& cb) { on_veto.connect(cb); }
-  /*! Add a callback fired when the activity is suspended */
-  static void on_suspend_cb(const std::function<void(Activity const&)>& cb)
-  {
-    on_suspend.connect(cb);
-  }
-  /*! Add a callback fired when the activity is resumed after being suspended */
-  static void on_resume_cb(const std::function<void(Activity const&)>& cb)
-  {
-    on_resume.connect(cb);
-  }
-
-  XBT_ATTRIB_DEPRECATED_v337("Please use on_suspend_cb() instead") static void on_suspended_cb(
-      const std::function<void(Activity const&)>& cb)
-  {
-    on_suspend.connect(cb);
-  }
-  XBT_ATTRIB_DEPRECATED_v337("Please use on_resume_cb() instead") static void on_resumed_cb(
-      const std::function<void(Activity const&)>& cb)
-  {
-    on_resume.connect(cb);
-  }
-
   XBT_ATTRIB_DEPRECATED_v334("All start() are vetoable now. Please use start() ") void vetoable_start()
   {
     start();
@@ -148,7 +121,7 @@ public:
     } else {
       if (vetoed_activities_ != nullptr)
         vetoed_activities_->insert(this);
-      on_veto(*this);
+      fire_on_veto();
     }
   }
 
@@ -158,7 +131,7 @@ public:
     // released by the on_completion() callbacks.
     ActivityPtr keepalive(this);
     state_ = state;
-    fire_this_completion();
+    fire_on_completion();
     if (state == State::FINISHED)
       release_dependencies();
   }
@@ -258,10 +231,26 @@ template <class AnyActivity> class Activity_T : public Activity {
 
 protected:
   inline static xbt::signal<void(AnyActivity const&)> on_completion;
+  inline static xbt::signal<void(AnyActivity&)> on_veto;
+  inline static xbt::signal<void(AnyActivity const&)> on_suspend;
+  inline static xbt::signal<void(AnyActivity const&)> on_resume;
 
 public:
   /*! Add a callback fired when the activity completes (either normally, cancelled or failed) */
   static void on_completion_cb(const std::function<void(AnyActivity const&)>& cb) { on_completion.connect(cb); }
+  /*! Add a callback fired each time that the activity fails to start because of a veto (e.g., unsolved dependency or no
+   * resource assigned) */
+  static void on_veto_cb(const std::function<void(AnyActivity&)>& cb) { on_veto.connect(cb); }
+  /*! Add a callback fired when the activity is suspended */
+  static void on_suspend_cb(const std::function<void(AnyActivity const&)>& cb) { on_suspend.connect(cb); }
+  /*! Add a callback fired when the activity is resumed after being suspended */
+  static void on_resume_cb(const std::function<void(AnyActivity const&)>& cb) { on_resume.connect(cb); }
+
+  XBT_ATTRIB_DEPRECATED_v337("Please use on_suspend_cb() instead") static void on_suspended_cb(
+      const std::function<void(Activity const&)>& cb) { on_suspend.connect(cb); }
+  XBT_ATTRIB_DEPRECATED_v337("Please use on_resume_cb() instead") static void on_resumed_cb(
+      const std::function<void(Activity const&)>& cb) { on_resume.connect(cb);  }
+
 
   AnyActivity* add_successor(ActivityPtr a)
   {

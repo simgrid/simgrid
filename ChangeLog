@@ -30,6 +30,8 @@ S4U:
  - Activity::on_resumed_cb() is renamed to Activity::on_resume_cb(), and fired right before the resume.
  - Resource::on_state_change_cb() is renamed to Resource::on_onoff_cb() to distinguish from the
    Activity::on_state_change_cb() that is related to the activity state machine, not on/off.
+ - Activity signals (veto, suspend, resume, completion) are now specialized by activity class.
+   That is, callbacks registered in Exec::on_suspend_cb will not be fired for Comms nor Ios.
 
 New S4U plugins:
  - Operation: They are designed to represent workflows, i.e, graphs of repeatable Activities.

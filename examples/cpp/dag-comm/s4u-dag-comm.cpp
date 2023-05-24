@@ -20,9 +20,13 @@ int main(int argc, char* argv[])
   auto jupiter  = e.host_by_name("Jupiter");
 
   // Display the details on vetoed activities
-  sg4::Activity::on_veto_cb([](const sg4::Activity& a) {
-    XBT_INFO("Activity '%s' vetoed. Dependencies: %s; Ressources: %s", a.get_cname(),
-             (a.dependencies_solved() ? "solved" : "NOT solved"), (a.is_assigned() ? "assigned" : "NOT assigned"));
+  sg4::Exec::on_veto_cb([](sg4::Exec const& exec) {
+    XBT_INFO("Execution '%s' vetoed. Dependencies: %s; Ressources: %s", exec.get_cname(),
+             (exec.dependencies_solved() ? "solved" : "NOT solved"), (exec.is_assigned() ? "assigned" : "NOT assigned"));
+  });
+  sg4::Comm::on_veto_cb([](sg4::Comm const& comm) {
+    XBT_INFO("Communication '%s' vetoed. Dependencies: %s; Ressources: %s", comm.get_cname(),
+             (comm.dependencies_solved() ? "solved" : "NOT solved"), (comm.is_assigned() ? "assigned" : "NOT assigned"));
   });
 
   sg4::Exec::on_completion_cb([](sg4::Exec const& exec) {
