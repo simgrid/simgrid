@@ -220,6 +220,7 @@ void State::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
         for (unsigned times = 0; times < actor.get_max_considered(); ++times) {
           wakeup_tree_.insert(prior, odpor::PartialExecution{actor.get_transition(times)});
         }
+        break; // Only one actor gets inserted (see pseudocode)
       }
     }
   }
@@ -235,26 +236,31 @@ void State::sprout_tree_from_parent_state()
                                            "parent with an empty wakeup tree. This indicates either that ODPOR "
                                            "actor selection in State.cpp is incorrect, or that the code "
                                            "deciding when to make subtrees in ODPOR is incorrect");
-
-  // TODO: This assert should even be bolstered to check that the
-  // the transitions themselves are identical -- not only just
-  // that the actors are the same. When we have to consider
-  // multiple paths for a transition, things get trickier
-  xbt_assert(parent_state_->get_transition_out()->aid_ == min_process_node.value()->get_actor(),
-             "We tried to make a subtree from a parent state who claimed to have executed %ld "
-             "but whose wakeup tree indicates it should have executed %ld. This indicates "
+  xbt_assert((parent_state_->get_transition_out()->aid_ == min_process_node.value()->get_actor()) &&
+                 (parent_state_->get_transition_out()->type_ == min_process_node.value()->get_action()->type_),
+             "We tried to make a subtree from a parent state who claimed to have executed `%s` "
+             "but whose wakeup tree indicates it should have executed `%s`. This indicates "
              "that exploration is not following ODPOR. Are you sure you're choosing actors "
              "to schedule from the wakeup tree?",
-             parent_state_->get_transition_out()->aid_, min_process_node.value()->get_actor());
+             parent_state_->get_transition_out()->to_string(false).c_str(),
+             min_process_node.value()->get_action()->to_string(false).c_str());
   this->wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(min_process_node.value());
 }
 
 void State::remove_subtree_using_current_out_transition()
 {
   if (auto out_transition = get_transition_out(); out_transition != nullptr) {
-    // TODO: Add invariant check here
+    if (const auto min_process_node = wakeup_tree_.get_min_single_process_node(); min_process_node.has_value()) {
+      xbt_assert((out_transition->aid_ == min_process_node.value()->get_actor()) &&
+                     (out_transition->type_ == min_process_node.value()->get_action()->type_),
+                 "We tried to make a subtree from a parent state who claimed to have executed `%s` "
+                 "but whose wakeup tree indicates it should have executed `%s`. This indicates "
+                 "that exploration is not following ODPOR. Are you sure you're choosing actors "
+                 "to schedule from the wakeup tree?",
+                 out_transition->to_string(false).c_str(),
+                 min_process_node.value()->get_action()->to_string(false).c_str());
+    }
   }
-
   wakeup_tree_.remove_min_single_process_subtree();
 }
 

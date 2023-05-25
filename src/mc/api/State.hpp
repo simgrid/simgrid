@@ -122,6 +122,11 @@ public:
   {
     sleep_set_.insert_or_assign(t->aid_, Transition(t->type_, t->aid_, t->times_considered_));
   }
+  bool is_actor_sleeping(aid_t actor) const
+  {
+    return std::find_if(sleep_set_.begin(), sleep_set_.end(), [=](const auto& pair) { return pair.first == actor; }) !=
+           sleep_set_.end();
+  }
 
   /**
    * @brief Inserts an arbitrary enabled actor into the wakeup tree

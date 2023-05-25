@@ -186,6 +186,11 @@ void DFSExplorer::run()
     // in case we want to consider multiple states (eg. during backtrack)
     const aid_t next = reduction_mode_ == ReductionMode::odpor ? state->next_odpor_transition()
                                                                : std::get<0>(state->next_transition_guided());
+    xbt_assert(!state->is_actor_sleeping(next),
+               "We decided to schedule an actor (%ld) that is in the sleep set "
+               "of the current state. By definition, this should be impossible; "
+               "and yet it happened, somehow...",
+               next);
 
     if (next < 0) { // If there is no more transition in the current state, backtrack.
       XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),

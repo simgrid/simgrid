@@ -53,7 +53,7 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
       // 2. disqualified_events.count(e_j) > 0
       // then e_i --->_E target indirectly (either through
       // e_j directly, or transitively through e_j)
-      if (happens_before(e_i, e_j) and disqualified_events.count(e_j) > 0) {
+      if (disqualified_events.count(e_j) > 0 and happens_before(e_i, e_j)) {
         disqualified_events.insert(e_i);
         break;
       }
@@ -283,7 +283,8 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   for (const auto& [aid, astate] : state_at_e.get_actors_list()) {
     // TODO: We have to be able to react appropriately here when adding new
     // types of transitions (multiple choices can be made :( )
-    if (sleeping_actors.count(aid) == 0 and pre_E_e.is_independent_with_execution_of(v, astate.get_transition(0))) {
+    if (astate.is_enabled() and sleeping_actors.count(aid) == 0 and
+        pre_E_e.is_independent_with_execution_of(v, astate.get_transition(0))) {
       return v;
     }
   }
