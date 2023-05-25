@@ -209,7 +209,7 @@ void DFSExplorer::run()
     if (_sg_mc_sleep_set && XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose)) {
       XBT_VERB("Sleep set actually containing:");
       for (auto& [aid, transition] : state->get_sleep_set())
-        XBT_VERB("  <%ld,%s>", aid, transition.to_string().c_str());
+        XBT_VERB("  <%ld,%s>", aid, transition->to_string().c_str());
     }
 
     /* Actually answer the request: let's execute the selected request (MCed does one step) */

@@ -44,7 +44,7 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   /* Sleep sets are composed of the actor and the corresponding transition that made it being added to the sleep
    * set. With this information, it is check whether it should be removed from it or not when exploring a new
    * transition */
-  std::map<aid_t, Transition> sleep_set_;
+  std::map<aid_t, std::shared_ptr<Transition>> sleep_set_;
 
   /**
    * The wakeup tree with respect to the execution represented
@@ -117,11 +117,8 @@ public:
   std::unordered_set<aid_t> get_backtrack_set() const;
   std::unordered_set<aid_t> get_sleeping_actors() const;
   std::unordered_set<aid_t> get_enabled_actors() const;
-  std::map<aid_t, Transition> const& get_sleep_set() const { return sleep_set_; }
-  void add_sleep_set(std::shared_ptr<Transition> t)
-  {
-    sleep_set_.insert_or_assign(t->aid_, Transition(t->type_, t->aid_, t->times_considered_));
-  }
+  std::map<aid_t, std::shared_ptr<Transition>> const& get_sleep_set() const { return sleep_set_; }
+  void add_sleep_set(std::shared_ptr<Transition> t) { sleep_set_.insert_or_assign(t->aid_, std::move(t)); }
   bool is_actor_sleeping(aid_t actor) const
   {
     return std::find_if(sleep_set_.begin(), sleep_set_.end(), [=](const auto& pair) { return pair.first == actor; }) !=
