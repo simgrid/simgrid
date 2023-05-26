@@ -221,10 +221,11 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   }
 
   PartialExecution v;
+  std::vector<Execution::EventHandle> v_handles;
+  std::unordered_set<aid_t> WI_E_prime_v;
+  std::unordered_set<aid_t> disqualified_actors;
   Execution E_prime_v                           = get_prefix_before(e);
-  std::unordered_set<aid_t> disqualified_actors = state_at_e.get_sleeping_actors();
-  std::vector<sdpor::Execution::EventHandle> v_handles;
-  bool located_actor_in_initial = false;
+  const std::unordered_set<aid_t> sleep_E_prime = state_at_e.get_sleeping_actors();
 
   // Note `e + 1` here: `notdep(e, E)` is defined as the
   // set of events that *occur-after* but don't *happen-after* `e`
@@ -240,7 +241,7 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   // SUBTLE NOTE: Observe that any event that "happens-after" `e'`
   // must necessarily "happen-after" `e` as well, since `e` and
   // `e'` are presumed to be in a reversible race. Hence, we know that
-  // all events `e_star` that `e` "happens-before" cannot affect
+  // all events `e_star` such that `e` "happens-before" `e_star` cannot affect
   // the enabledness of `e'`; furthermore, `e'` cannot affect the enabledness
   // of any event independent with `e` that "occurs-after" `e'`
   for (auto e_star = e + 1; e_star <= get_latest_event_handle().value(); ++e_star) {
@@ -267,25 +268,26 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
       // `-->_[E'.v]` about `E'.v`, we must build `v` relative to `E'`
       v_handles.push_back(e_star_in_E_prime_v);
 
-      if (located_actor_in_initial) {
-        // It suffices that we find one initial. If we've already found
-        // one, we simply need to finish building `v`
-        continue;
-      }
-
       // Note that we add `q` to v regardless of whether `q` itself has been
       // disqualified since `q` may itself disqualify other actors
       // (i.e. even if `q` is disqualified from being an initial, it
       // is still contained in the sequence `v`)
       const aid_t q = E_prime_v.get_actor_with_handle(e_star_in_E_prime_v);
-      if (disqualified_actors.count(q) > 0) {
+      if (disqualified_actors.count(q) > 0) { // Did we already note that `q` is not an initial?
         continue;
       }
-      const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& e_loc) {
-        return E_prime_v.happens_before(e_loc, e_star_in_E_prime_v);
+      const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& e_star) {
+        return E_prime_v.happens_before(e_star, e_star_in_E_prime_v);
       });
       if (is_initial) {
-        located_actor_in_initial = true;
+        // If the sleep set already contains `q`, we're done:
+        // we've found an initial contained in the sleep set and
+        // so the intersection is non-empty
+        if (sleep_E_prime.count(q) > 0) {
+          return std::nullopt;
+        } else {
+          WI_E_prime_v.insert(q);
+        }
       } else {
         // If `q` is disqualified as a candidate, clearly
         // no event occurring after `e_prime` in `E` executed
@@ -297,44 +299,45 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   }
 
   // Now we add `e_prime := <q, i>` to `E'.v` and repeat the same work
+  // It's possible `proc(e_prime)` is an initial
+  //
+  // Note the form of `v` in the pseudocode:
+  //  `v := notdep(e, E).e'^
   {
+    E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
     v.push_back(get_event_with_handle(e_prime).get_transition());
 
-    if (not located_actor_in_initial) {
-      // It's possible `proc(e_prime)` is an initial
-      E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
-      const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
-      v_handles.push_back(e_prime_in_E_prime_v);
+    const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
+    v_handles.push_back(e_prime_in_E_prime_v);
 
-      const aid_t q            = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v);
-      located_actor_in_initial = disqualified_actors.count(q) == 0 and
-                                 std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& e_loc) {
-                                   return E_prime_v.happens_before(e_loc, e_prime_in_E_prime_v);
-                                 });
+    const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& e_star) {
+      return E_prime_v.happens_before(e_star, e_prime_in_E_prime_v);
+    });
+    if (is_initial) {
+      if (const aid_t q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v); sleep_E_prime.count(q) > 0) {
+        return std::nullopt;
+      } else {
+        WI_E_prime_v.insert(q);
+      }
     }
   }
+  {
+    const Execution pre_E_e    = get_prefix_before(e);
+    const auto sleeping_actors = state_at_e.get_sleeping_actors();
 
-  /** Some actor `p` in `v` is an initial for `E' := pre(e, E)`*/
-  if (located_actor_in_initial) {
-    return v;
-  }
-
-  const Execution pre_E_e    = get_prefix_before(e);
-  const auto sleeping_actors = state_at_e.get_sleeping_actors();
-
-  // Otherwise, for each enabled actor also not in the sleep set, check if
-  // any of them are independent with this execution after `v`. This
-  // completes the check for weak initials
-  for (const auto& [aid, astate] : state_at_e.get_actors_list()) {
-    // TODO: We have to be able to react appropriately here when adding new
-    // types of transitions (multiple choices can be made :( )
-    if (astate.is_enabled() and sleeping_actors.count(aid) == 0 and
-        pre_E_e.is_independent_with_execution_of(v, astate.get_transition(0))) {
-      return v;
+    // Check if any enabled actor independent with this execution after `v`
+    // is contained in the sleep set
+    for (const auto& [aid, astate] : state_at_e.get_actors_list()) {
+      // TODO: We have to be able to react appropriately here when adding new
+      // types of transitions (multiple choices can be made :( )
+      if (astate.is_enabled() and pre_E_e.is_independent_with_execution_of(v, astate.get_transition(0))) {
+        if (sleeping_actors.count(aid) > 0) {
+          return std::nullopt;
+        }
+      }
     }
   }
-
-  return std::nullopt;
+  return v;
 }
 
 bool Execution::is_initial_after_execution_of(const PartialExecution& w, aid_t p) const
