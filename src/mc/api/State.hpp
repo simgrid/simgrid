@@ -158,10 +158,18 @@ public:
   /**
    * @brief
    */
-  void mark_path_interesting_for_odpor(const odpor::PartialExecution&, const odpor::Execution&);
+  odpor::WakeupTree::InsertionResult insert_into_wakeup_tree(const odpor::PartialExecution&, const odpor::Execution&);
 
-  /** */
-  void do_odpor_backtrack_cleanup();
+  /** @brief Prepares the state for re-exploration following
+   * another after having followed ODPOR from this state with
+   * the current out transition
+   *
+   * After ODPOR has completed searching a maximal trace, it
+   * finds the first point in the execution with a nonempty wakeup
+   * tree. This method corresponds to lines 20 and 21 in the ODPOR
+   * pseudocode
+   */
+  void do_odpor_unwind();
 
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }

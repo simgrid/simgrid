@@ -84,6 +84,7 @@ RecordTrace DFSExplorer::get_record_trace() // override
 void DFSExplorer::restore_stack(std::shared_ptr<State> state)
 {
   stack_.clear();
+  execution_seq_     = odpor::Execution();
   auto current_state = state;
   stack_.emplace_front(current_state);
   // condition corresponds to reaching initial state
@@ -92,22 +93,18 @@ void DFSExplorer::restore_stack(std::shared_ptr<State> state)
     stack_.emplace_front(current_state);
   }
   XBT_DEBUG("Replaced stack by %s", get_record_trace().to_string().c_str());
-
   if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
-    execution_seq_ = odpor::Execution();
-
     // NOTE: The outgoing transition for the top-most
     // state of the  stack refers to that which was taken
     // as part of the last trace explored by the algorithm.
     // Thus, only the sequence of transitions leading up to,
     // but not including, the last state must be included
     // when reconstructing the Exploration for SDPOR.
-    for (auto iter = stack_.begin(); iter != stack_.end() - 1 and iter != stack_.end(); ++iter) {
-      const auto& state = *(iter);
-      execution_seq_.push_transition(state->get_transition_out());
+    for (auto iter = std::next(stack_.begin()); iter != stack_.end(); ++iter) {
+      execution_seq_.push_transition((*iter)->get_transition_in());
     }
+    XBT_DEBUG("Replaced SDPOR/ODPOR execution to reflect the new stack");
   }
-  XBT_DEBUG("Additionally replaced corresponding SDPOR execution stack");
 }
 
 void DFSExplorer::log_state() // override
@@ -186,11 +183,6 @@ void DFSExplorer::run()
     // in case we want to consider multiple states (eg. during backtrack)
     const aid_t next = reduction_mode_ == ReductionMode::odpor ? state->next_odpor_transition()
                                                                : std::get<0>(state->next_transition_guided());
-    xbt_assert(!state->is_actor_sleeping(next),
-               "We decided to schedule an actor (%ld) that is in the sleep set "
-               "of the current state. By definition, this should be impossible; "
-               "and yet it happened, somehow...",
-               next);
 
     if (next < 0) { // If there is no more transition in the current state, backtrack.
       XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
@@ -402,12 +394,11 @@ std::shared_ptr<State> DFSExplorer::next_odpor_state()
 {
   for (auto iter = stack_.rbegin(); iter != stack_.rend(); ++iter) {
     const auto& state = *iter;
-    state->do_odpor_backtrack_cleanup();
+    state->do_odpor_unwind();
     if (!state->has_empty_tree()) {
       return state;
     }
   }
-  xbt_die("There are no more states for ODPOR");
   return nullptr;
 }
 
@@ -431,10 +422,32 @@ void DFSExplorer::backtrack()
         XBT_DEBUG("ODPOR: Reversible race detected between events `%u` and `%u`", e, e_prime);
         State& prev_state = *stack_[e];
         if (const auto v = execution_seq_.get_odpor_extension_from(e, e_prime, prev_state); v.has_value()) {
-          XBT_DEBUG("ODPOR: Reversible race unaccounted for in the wakeup tree for "
-                    "the execution prior to event `%u`, inserting a sequence",
-                    e);
-          prev_state.mark_path_interesting_for_odpor(v.value(), execution_seq_.get_prefix_before(e));
+          const auto result = prev_state.insert_into_wakeup_tree(v.value(), execution_seq_.get_prefix_before(e));
+          switch (result) {
+            case odpor::WakeupTree::InsertionResult::root: {
+              XBT_DEBUG("ODPOR: Reversible race with `%u` unaccounted for in the wakeup tree for "
+                        "the execution prior to event `%u`:",
+                        e_prime, e);
+              break;
+            }
+            case odpor::WakeupTree::InsertionResult::interior_node: {
+              XBT_DEBUG("ODPOR: Reversible race with `%u` partially accounted for in the wakeup tree for "
+                        "the execution prior to event `%u`:",
+                        e_prime, e);
+              break;
+            }
+            case odpor::WakeupTree::InsertionResult::leaf: {
+              XBT_DEBUG("ODPOR: Reversible race with `%u` accounted for in the wakeup tree for "
+                        "the execution prior to event `%u`:",
+                        e_prime, e);
+              break;
+            }
+          }
+          for (const auto& seq : simgrid::mc::odpor::get_textual_trace(v.value())) {
+            XBT_DEBUG(" %s", seq.c_str());
+          }
+        } else {
+          XBT_DEBUG("ODPOR: Ignoring race: `sleep(E')` intersects `WI_[E'](v := notdep(%u, E))`", e);
         }
       }
     }

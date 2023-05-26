@@ -190,6 +190,9 @@ public:
    */
   std::optional<WakeupTreeNode*> get_min_single_process_node() const;
 
+  /** @brief Describes how a tree insertion was carried out */
+  enum class InsertionResult { leaf, interior_node, root };
+
   /**
    * @brief Inserts an sequence `seq` of processes into the tree
    * such that that this tree is a wakeup tree relative to the
@@ -214,8 +217,11 @@ public:
    *
    * @invariant: It is assumed that this tree is a wakeup tree
    * with respect to the given execution `E`
+   *
+   * @return Whether a sequence equivalent to `seq` is already contained
+   * as a leaf node in the tree
    */
-  void insert(const Execution& E, const PartialExecution& seq);
+  InsertionResult insert(const Execution& E, const PartialExecution& seq);
 };
 
 } // namespace simgrid::mc::odpor

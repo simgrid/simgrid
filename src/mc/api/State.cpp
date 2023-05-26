@@ -263,12 +263,13 @@ void State::remove_subtree_using_current_out_transition()
   wakeup_tree_.remove_min_single_process_subtree();
 }
 
-void State::mark_path_interesting_for_odpor(const odpor::PartialExecution& pe, const odpor::Execution& E)
+odpor::WakeupTree::InsertionResult State::insert_into_wakeup_tree(const odpor::PartialExecution& pe,
+                                                                  const odpor::Execution& E)
 {
-  this->wakeup_tree_.insert(E, pe);
+  return this->wakeup_tree_.insert(E, pe);
 }
 
-void State::do_odpor_backtrack_cleanup()
+void State::do_odpor_unwind()
 {
   if (auto out_transition = get_transition_out(); out_transition != nullptr) {
     remove_subtree_using_current_out_transition();

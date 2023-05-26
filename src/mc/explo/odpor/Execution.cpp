@@ -7,11 +7,22 @@
 #include "src/mc/api/State.hpp"
 #include "src/mc/explo/odpor/ReversibleRaceCalculator.hpp"
 #include "xbt/asserts.h"
+#include "xbt/string.hpp"
 #include <algorithm>
 #include <limits>
 #include <vector>
 
 namespace simgrid::mc::odpor {
+
+std::vector<std::string> get_textual_trace(const PartialExecution& w)
+{
+  std::vector<std::string> trace;
+  for (const auto& t : w) {
+    const auto a = xbt::string_printf("Actor %ld: %s", t->aid_, t->to_string(true).c_str());
+    trace.push_back(std::move(a));
+  }
+  return trace;
+}
 
 void Execution::push_transition(std::shared_ptr<Transition> t)
 {
@@ -26,6 +37,17 @@ void Execution::push_transition(std::shared_ptr<Transition> t)
   }
   max_clock_vector[t->aid_] = this->size();
   contents_.push_back(Event({std::move(t), max_clock_vector}));
+}
+
+std::vector<std::string> Execution::get_textual_trace() const
+{
+  std::vector<std::string> trace;
+  for (const auto& t : this->contents_) {
+    const auto a =
+        xbt::string_printf("Actor %ld: %s", t.get_transition()->aid_, t.get_transition()->to_string(true).c_str());
+    trace.push_back(std::move(a));
+  }
+  return trace;
 }
 
 std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execution::EventHandle target) const

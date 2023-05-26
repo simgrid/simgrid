@@ -170,7 +170,7 @@ void WakeupTree::remove_node(WakeupTreeNode* node)
   this->nodes_.erase(node);
 }
 
-void WakeupTree::insert(const Execution& E, const PartialExecution& w)
+WakeupTree::InsertionResult WakeupTree::insert(const Execution& E, const PartialExecution& w)
 {
   // See section 6.2 of Abdulla. et al.'s 2017 ODPOR paper for details
 
@@ -193,10 +193,11 @@ void WakeupTree::insert(const Execution& E, const PartialExecution& w)
         // In this case, the empty `w'` returned (viz. `shortest_seq`)
         // such that `w [=_[E] v.w'` would be empty
         this->insert_sequence_after(node, shortest_sequence.value());
+        return node == this->root_ ? InsertionResult::root : InsertionResult::interior_node;
       }
       // Since we're following the post-order traversal of the tree,
       // the first such node we see is the smallest w.r.t "<"
-      return;
+      return InsertionResult::leaf;
     }
   }
   xbt_die("Insertion should always succeed with the root node (which contains no "

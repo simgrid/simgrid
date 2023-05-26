@@ -19,6 +19,8 @@
 
 namespace simgrid::mc::odpor {
 
+std::vector<std::string> get_textual_trace(const PartialExecution& w);
+
 /**
  * @brief The occurrence of a transition in an execution
  *
@@ -92,6 +94,8 @@ public:
   Execution(const Execution&)            = default;
   Execution& operator=(Execution const&) = default;
   Execution(Execution&&)                 = default;
+
+  std::vector<std::string> get_textual_trace() const;
 
   size_t size() const { return this->contents_.size(); }
   bool empty() const { return this->contents_.empty(); }
