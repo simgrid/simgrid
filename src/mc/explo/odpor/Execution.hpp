@@ -142,7 +142,8 @@ public:
    * can serve as an initial to reverse the race between `e`
    * and `e'`
    */
-  std::optional<aid_t> get_first_sdpor_initial_from(EventHandle e, std::unordered_set<aid_t> backtrack_set) const;
+  std::unordered_set<aid_t> get_missing_source_set_actors_from(EventHandle e,
+                                                               const std::unordered_set<aid_t>& backtrack_set) const;
 
   /**
    * @brief Computes the analogous lines from the SDPOR algorithm

@@ -293,20 +293,20 @@ void DFSExplorer::run()
        * we want to be sure that search "in that direction"
        */
       execution_seq_.push_transition(std::move(executed_transition));
-      xbt_assert(execution_seq_.get_latest_event_handle().has_value(),
-                 "No events are contained in the SDPOR/OPDPOR execution "
-                 "even though one was just added");
+      xbt_assert(execution_seq_.get_latest_event_handle().has_value(), "No events are contained in the SDPOR execution "
+                                                                       "even though one was just added");
 
       const auto next_E_p = execution_seq_.get_latest_event_handle().value();
-      for (const auto racing_event_handle : execution_seq_.get_reversible_races_of(next_E_p)) {
-        const std::shared_ptr<State> prev_state = stack_[racing_event_handle];
-        // NOTE: To incorporate the idea of attempting to select the "best"
-        // backtrack point into SDPOR, instead of selecting the `first` initial,
-        // we should instead compute all choices and decide which is best
-        if (const auto q =
-                execution_seq_.get_first_sdpor_initial_from(racing_event_handle, prev_state->get_backtrack_set());
-            q.has_value()) {
-          prev_state->consider_one(q.value());
+      for (const auto e_race : execution_seq_.get_reversible_races_of(next_E_p)) {
+        State* prev_state  = stack_[e_race].get();
+        const auto choices = execution_seq_.get_missing_source_set_actors_from(e_race, prev_state->get_backtrack_set());
+        if (!choices.empty()) {
+          // NOTE: To incorporate the idea of attempting to select the "best"
+          // backtrack point into SDPOR, instead of selecting the `first` initial,
+          // we should instead compute all choices and decide which is best
+          const auto q =
+              std::min_element(choices.begin(), choices.end(), [](const aid_t a1, const aid_t a2) { return a1 < a2; });
+          prev_state->consider_one(*q);
           opened_states_.emplace_back(std::move(prev_state));
         }
       }

@@ -111,14 +111,14 @@ Execution Execution::get_prefix_before(Execution::EventHandle handle) const
   return Execution(std::vector<Event>{contents_.begin(), contents_.begin() + handle});
 }
 
-std::optional<aid_t> Execution::get_first_sdpor_initial_from(EventHandle e,
-                                                             std::unordered_set<aid_t> disqualified_actors) const
+std::unordered_set<aid_t>
+Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordered_set<aid_t>& backtrack_set) const
 {
   // If this execution is empty, there are no initials
   // relative to the last transition added to the execution
   // since such a transition does not exist
   if (empty()) {
-    return std::nullopt;
+    return std::unordered_set<aid_t>{};
   }
 
   // To actually compute `I_[E'](v) ∩ backtrack(E')`, we must
@@ -127,14 +127,23 @@ std::optional<aid_t> Execution::get_first_sdpor_initial_from(EventHandle e,
   // note of any events which occur after `e` but don't
   // "happen-after" `e` by pushing them onto `E'`. Note that
   // correctness is still preserved in computing `v` "on-the-fly"
-  // to determine if an actor `q` is an initial for `E'` after `v`:
-  // only those events that "occur-before" `v`
-  // could happen-before `v` for any valid happens-before relation.
+  // to determine if an event `e` by actor `q` is an initial for `E'`
+  // after `v`: only those events that "occur-before" `e` in `v` could
+  // "happen-before" `ve for any valid "happens-before" relation
+  // (see property 1 in the ODPOR paper, viz. "is included in <_E")
 
   // First, grab `E' := pre(e, E)` and determine what actor `p` is
   const auto next_E_p = get_latest_event_handle().value();
+  xbt_assert(e != next_E_p,
+             "This method assumes that the event `e` (%u) and `next_[E](p)` (%u)"
+             "are in a reversible race, yet we claim to have such a race between the"
+             "same event. This indicates the the SDPOR pseudocode implementation is broken "
+             "as it supplies these values.",
+             e, next_E_p);
   Execution E_prime_v = get_prefix_before(e);
   std::vector<sdpor::Execution::EventHandle> v;
+  std::unordered_set<aid_t> I_E_prime_v;
+  std::unordered_set<aid_t> disqualified_actors;
 
   // Note `e + 1` here: `notdep(e, E)` is defined as the
   // set of events that *occur-after* but don't *happen-after* `e`
@@ -153,22 +162,29 @@ std::optional<aid_t> Execution::get_first_sdpor_initial_from(EventHandle e,
       // events relative to `E` (this execution) are different than those
       // relative to `E'.v`. Thus e.g. event `7` in `E` may be event `4`
       // in `E'.v`. Since we are asking about "happens-before"
-      // `-->_[E'.v]` about `E'.v`, we must build `v` relative to `E'`
+      // `-->_[E'.v]` about `E'.v`, we must build `v` relative to `E'`.
+      //
+      // Note that we add `q` to v regardless of whether `q` itself has been
+      // disqualified since  we've determined that `e_prime` "occurs-after" but
+      // does not "happen-after" `e`
       v.push_back(e_prime_in_E_prime_v);
 
-      // Note that we add `q` to v regardless of whether `q` itself has been
-      // disqualified since `q` may itself disqualify other actors
-      // (i.e. even if `q` is disqualified from being an initial, it
-      // is still contained in the sequence `v`)
       const aid_t q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v);
-      if (disqualified_actors.count(q) > 0) {
+      if (disqualified_actors.count(q) > 0) { // Did we already note that `q` is not an initial?
         continue;
       }
       const bool is_initial = std::none_of(v.begin(), v.end(), [&](const auto& e_star) {
         return E_prime_v.happens_before(e_star, e_prime_in_E_prime_v);
       });
       if (is_initial) {
-        return q;
+        // If the backtrack set already contains `q`, we're done:
+        // they've made note to search for (or have already searched for)
+        // this initial
+        if (backtrack_set.count(q) > 0) {
+          return std::unordered_set<aid_t>{};
+        } else {
+          I_E_prime_v.insert(q);
+        }
       } else {
         // If `q` is disqualified as a candidate, clearly
         // no event occurring after `e_prime` in `E` executed
@@ -178,7 +194,14 @@ std::optional<aid_t> Execution::get_first_sdpor_initial_from(EventHandle e,
       }
     }
   }
-  return std::nullopt;
+  xbt_assert(!I_E_prime_v.empty(),
+             "For any non-empty execution, we know that "
+             "at minimum one actor is an initial since "
+             "some execution is possible with respect to a "
+             "prefix before event `%u`, yet we didn't find anyone. "
+             "This implies the implementation of this function is broken.",
+             e);
+  return I_E_prime_v;
 }
 
 std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle e, EventHandle e_prime,
