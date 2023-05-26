@@ -30,10 +30,25 @@ namespace simgrid::mc::odpor {
  * is only sensible in the context of a race
  */
 struct ReversibleRaceCalculator final {
+  static bool is_race_reversible_ActorJoin(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_BarrierAsyncLock(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_BarrierWait(const Execution&, Execution::EventHandle e1, const Transition* e2);
   static bool is_race_reversible_CommRecv(const Execution&, Execution::EventHandle e1, const Transition* e2);
   static bool is_race_reversible_CommSend(const Execution&, Execution::EventHandle e1, const Transition* e2);
   static bool is_race_reversible_CommWait(const Execution&, Execution::EventHandle e1, const Transition* e2);
   static bool is_race_reversible_CommTest(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_MutexAsyncLock(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_MutexTest(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_MutexTrylock(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_MutexUnlock(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_MutexWait(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_SemAsyncLock(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_SemUnlock(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_SemWait(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_ObjectAccess(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_Random(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_TestAny(const Execution&, Execution::EventHandle e1, const Transition* e2);
+  static bool is_race_reversible_WaitAny(const Execution&, Execution::EventHandle e1, const Transition* e2);
 
 public:
   static bool is_race_reversible(const Execution&, Execution::EventHandle e1, Execution::EventHandle e2);
