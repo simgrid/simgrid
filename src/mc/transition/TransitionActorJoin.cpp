@@ -33,6 +33,10 @@ bool ActorJoinTransition::depends(const Transition* other) const
     return true;
   }
 
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
+
   // Otherwise, joining is indep with any other transitions:
   // - It is only enabled once the target ends, and after this point it's enabled no matter what
   // - Other joins don't affect it, and it does not impact on the enabledness of any other transition

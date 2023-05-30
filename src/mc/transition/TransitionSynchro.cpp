@@ -63,6 +63,10 @@ bool MutexTransition::depends(const Transition* o) const
   if (o->type_ < type_)
     return o->depends(this);
 
+  // Actions executed by the same actor are always dependent
+  if (o->aid_ == aid_)
+    return true;
+
   // type_ <= other->type_ in  MUTEX_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT,
 
   if (auto* other = dynamic_cast<const MutexTransition*>(o)) {
