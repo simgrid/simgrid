@@ -149,6 +149,7 @@ public:
   IoOpPtr set_bytes(double bytes);
   double get_bytes() { return get_amount(); }
   IoOpPtr set_op_type(s4u::Io::OpType type);
+  s4u::Io::OpType get_op_type() { return type_; }
 
   friend void inline intrusive_ptr_release(IoOp* i) { intrusive_ptr_release(static_cast<Operation*>(i)); }
   friend void inline intrusive_ptr_add_ref(IoOp* i) { intrusive_ptr_add_ref(static_cast<Operation*>(i)); }

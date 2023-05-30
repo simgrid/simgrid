@@ -474,6 +474,14 @@ include examples/python/io-degradation/io-degradation.py
 include examples/python/io-degradation/io-degradation.tesh
 include examples/python/network-nonlinear/network-nonlinear.py
 include examples/python/network-nonlinear/network-nonlinear.tesh
+include examples/python/operation-io/operation-io.py
+include examples/python/operation-io/operation-io.tesh
+include examples/python/operation-simple/operation-simple.py
+include examples/python/operation-simple/operation-simple.tesh
+include examples/python/operation-switch-host/operation-switch-host.py
+include examples/python/operation-switch-host/operation-switch-host.tesh
+include examples/python/operation-variable-load/operation-variable-load.py
+include examples/python/operation-variable-load/operation-variable-load.tesh
 include examples/python/platform-comm-serialize/platform-comm-serialize.py
 include examples/python/platform-comm-serialize/platform-comm-serialize.tesh
 include examples/python/platform-failures/platform-failures.py
