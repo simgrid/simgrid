@@ -81,11 +81,11 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/sleep-set' to 'true'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'actors' to '2'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 130 unique states visited; 27 backtracks (308 transition replays, 151 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 66 unique states visited; 11 backtracks (126 transition replays, 49 states visited overall)
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/strategy:nb_wait -- ${bindir:=.}/s4u-synchro-mutex  --cfg=actors:3 --log=s4u_test.thres:critical
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/sleep-set' to 'true'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/strategy' to 'nb_wait'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'actors' to '3'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 3492 unique states visited; 743 backtracks (12498 transition replays, 8263 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 296 unique states visited; 52 backtracks (765 transition replays, 417 states visited overall)
