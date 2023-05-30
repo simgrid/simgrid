@@ -144,7 +144,7 @@ void DFSExplorer::run()
         XBT_ERROR("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
                   "when stopping at a fixed depth /!\\",
                   _sg_mc_max_depth.get());
-        XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
+        XBT_ERROR("/!\\ If bad things happen, disable the reduction with --cfg=model-check/reduction:none /!\\");
       } else {
         XBT_WARN("/!\\ Max depth reached ! /!\\ ");
       }
@@ -395,6 +395,9 @@ std::shared_ptr<State> DFSExplorer::next_odpor_state()
   for (auto iter = stack_.rbegin(); iter != stack_.rend(); ++iter) {
     const auto& state = *iter;
     state->do_odpor_unwind();
+    XBT_DEBUG("\tPerformed ODPOR 'clean-up'. Sleep set has:");
+    for (auto& [aid, transition] : state->get_sleep_set())
+      XBT_DEBUG("\t  <%ld,%s>", aid, transition->to_string().c_str());
     if (!state->has_empty_tree()) {
       return state;
     }
@@ -448,6 +451,9 @@ void DFSExplorer::backtrack()
           }
         } else {
           XBT_DEBUG("ODPOR: Ignoring race: `sleep(E')` intersects `WI_[E'](v := notdep(%u, E))`", e);
+          XBT_DEBUG("Sleep set contains:");
+          for (auto& [aid, transition] : prev_state.get_sleep_set())
+            XBT_DEBUG("  <%ld,%s>", aid, transition->to_string().c_str());
         }
       }
     }
@@ -552,6 +558,14 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode, boo
   }
   if (stack_.back()->count_todo_multiples() > 1)
     opened_states_.emplace_back(stack_.back());
+
+  if (mode == ReductionMode::odpor && !_sg_mc_sleep_set) {
+    // ODPOR requires the use of sleep sets; SDPOR
+    // "likes" using sleep sets but it is not strictly
+    // required
+    XBT_INFO("Forcing the use of sleep sets for use with ODPOR");
+    _sg_mc_sleep_set = true;
+  }
 }
 
 Exploration* create_dfs_exploration(const std::vector<char*>& args, ReductionMode mode)
