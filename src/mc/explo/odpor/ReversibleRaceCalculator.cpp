@@ -45,15 +45,13 @@ bool ReversibleRaceCalculator::is_race_reversible(const Execution& E, Execution:
   if (const auto handler = handlers.find(e2_action->type_); handler != handlers.end()) {
     return handler->second(E, e1, e2_action);
   } else {
-    xbt_assert(false,
-               "There is currently no specialized computation for the transition "
-               "'%s' for computing reversible races in ODPOR, so the model checker cannot "
-               "determine how to proceed. Please submit a bug report requesting "
-               "that the transition be supported in SimGrid using ODPPR and consider "
-               "using the other model-checking algorithms supported by SimGrid instead "
-               "in the meantime",
-               e2_action->to_string().c_str());
-    DIE_IMPOSSIBLE;
+    xbt_die("There is currently no specialized computation for the transition "
+            "'%s' for computing reversible races in ODPOR, so the model checker cannot "
+            "determine how to proceed. Please submit a bug report requesting "
+            "that the transition be supported in SimGrid using ODPPR and consider "
+            "using the other model-checking algorithms supported by SimGrid instead "
+            "in the meantime",
+            e2_action->to_string().c_str());
   }
 }
 

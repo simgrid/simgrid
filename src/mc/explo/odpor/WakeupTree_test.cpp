@@ -193,12 +193,14 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
     const auto a1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
     const auto a2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
     const auto a3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+    const auto a4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
 
     Execution execution;
     execution.push_transition(a0);
     execution.push_transition(a1);
     execution.push_transition(a2);
     execution.push_transition(a3);
+    execution.push_transition(a4);
 
     REQUIRE(execution.get_racing_events_of(2) == std::unordered_set<Execution::EventHandle>{0});
     REQUIRE(execution.get_racing_events_of(3) == std::unordered_set<Execution::EventHandle>{0});
@@ -253,15 +255,35 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
       //               /    /
       //             a0     a1
       //                   /   /
-      //                  a3   a2
+      //                  a3   a4
       //
       // Recall that new nodes (in this case the one with
       // action `a2`) are added such that they are "greater than" (under
       // the tree's `<` relation) all those that exist under the given parent.
-      tree.insert(Execution(), {a1, a2});
+      tree.insert(Execution(), {a1, a4});
       test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{a1, a3},
-                                                             PartialExecution{a1, a2}, PartialExecution{a1},
+                                                             PartialExecution{a1, a4}, PartialExecution{a1},
                                                              PartialExecution{}});
+    }
+
+    SECTION("Inserting an equivalent sequence to a leaf should preserve the tree as-is")
+    {
+      // `a1.a2` is equivalent to `a1.a3` since `a2` and `a3` are independent
+      // (`E ⊢ p ◊ w` where `p := proc(a2)` and `w := a3`). Thus, the tree
+      // should now STILL look as follows:
+      //
+      //                 {}
+      //               /    /
+      //             a0     a1
+      //                   /
+      //                  a3
+      //
+      // Recall that new nodes (in this case the one with
+      // action `a2`) are added such that they are "greater than" (under
+      // the tree's `<` relation) all those that exist under the given parent.
+      tree.insert(Execution(), {a1, a3});
+      test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{a1, a3},
+                                                             PartialExecution{a1}, PartialExecution{}});
     }
   }
 

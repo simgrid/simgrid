@@ -111,6 +111,29 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
       REQUIRE_FALSE(execution.happens_before(3, 2));
     }
   }
+
+  SECTION("Example 3: Happens-before is transitively-closed")
+  {
+    // Given a reversible race between events `e1` and `e3` in a simulation,
+    // we assert that `e5` would be eliminated from being contained in
+    // the sequence `notdep(e1, E)`
+    const auto e0 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto e1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto e2 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto e3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto e4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+
+    Execution execution;
+    execution.push_transition(e0);
+    execution.push_transition(e1);
+    execution.push_transition(e2);
+    execution.push_transition(e3);
+    execution.push_transition(e4);
+
+    REQUIRE(execution.happens_before(0, 2));
+    REQUIRE(execution.happens_before(2, 4));
+    REQUIRE(execution.happens_before(0, 4));
+  }
 }
 
 TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
@@ -197,20 +220,20 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
 
   SECTION("Example 3: Testing 'Lock' Example")
   {
-    // In this example,
-    const auto a1 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto a2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto a3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto a4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a5 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+    // In this example, `e0` and `e1` are lock actions that
+    // are in a race. We assert that
+    const auto e0 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto e1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto e2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto e3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto e4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
 
     Execution execution;
-    execution.push_transition(a1);
-    execution.push_transition(a2);
-    execution.push_transition(a3);
-    execution.push_transition(a4);
-    execution.push_transition(a5);
-
+    execution.push_transition(e0);
+    execution.push_transition(e1);
+    execution.push_transition(e2);
+    execution.push_transition(e3);
+    execution.push_transition(e4);
     REQUIRE(execution.get_racing_events_of(4) == std::unordered_set<Execution::EventHandle>{0});
   }
 
@@ -277,20 +300,25 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
   }
 }
 
-TEST_CASE("simgrid::mc::odpor::Execution: Testing Races and Conditions")
+TEST_CASE("simgrid::mc::odpor::Execution: notdep(e, E) Simulation")
 {
-  const auto a1 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
-  const auto a2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-  const auto a3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-  const auto a4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
-  const auto a5 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+  // Given a reversible race between events `e1` and `e3` in a simulation,
+  // we assert that `e5` would be eliminated from being contained in
+  // the sequence `notdep(e1, E)`
+  const auto e0 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
+  const auto e1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto e2 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+  const auto e3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto e4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
 
   Execution execution;
-  execution.push_transition(a1);
-  execution.push_transition(a2);
-  execution.push_transition(a3);
-  execution.push_transition(a4);
-  execution.push_transition(a5);
+  execution.push_transition(e0);
+  execution.push_transition(e1);
+  execution.push_transition(e2);
+  execution.push_transition(e3);
+  execution.push_transition(e4);
+
+  REQUIRE(execution.happens_before(0, 4));
 }
 
 TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
@@ -513,6 +541,4 @@ TEST_CASE("simgrid::mc::odpor::Execution: ODPOR Smallest Sequence Tests")
       REQUIRE(insertion.value() == PartialExecution{});
     }
   }
-
-  SECTION("") {}
 }
