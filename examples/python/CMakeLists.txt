@@ -3,6 +3,7 @@ foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate ac
         comm-wait comm-waitall comm-waitallfor comm-waitany comm-failure comm-host2host comm-pingpong
         comm-ready comm-suspend comm-testany comm-throttling comm-waitallfor comm-waituntil
         exec-async exec-basic exec-dvfs exec-remote exec-ptask
+        operation-io operation-simple operation-switch-host operation-variable-load
         platform-comm-serialize platform-profile platform-failures
         network-nonlinear clusters-multicpu io-degradation exec-cpu-nonlinear
         synchro-barrier synchro-mutex synchro-semaphore)
