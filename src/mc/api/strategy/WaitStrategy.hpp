@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_WAITSTRATEGY_HPP
 #define SIMGRID_MC_WAITSTRATEGY_HPP
 
+#include "Strategy.hpp"
 #include "src/mc/transition/Transition.hpp"
 
 namespace simgrid::mc {

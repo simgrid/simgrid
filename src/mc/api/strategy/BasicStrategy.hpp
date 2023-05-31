@@ -6,6 +6,8 @@
 #ifndef SIMGRID_MC_BASICSTRATEGY_HPP
 #define SIMGRID_MC_BASICSTRATEGY_HPP
 
+#include "Strategy.hpp"
+
 namespace simgrid::mc {
 
 /** Basic MC guiding class which corresponds to no guide at all (random choice) */

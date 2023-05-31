@@ -3,14 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef HOST_L07_HPP_
+#define HOST_L07_HPP_
+
 #include "src/kernel/resource/HostImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
+#include "src/simgrid/math_utils.h"
 #include <cstdlib>
 #include <vector>
 #include <xbt/base.h>
-
-#ifndef HOST_L07_HPP_
-#define HOST_L07_HPP_
 
 namespace simgrid::kernel::resource {
 
