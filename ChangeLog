@@ -38,6 +38,8 @@ New S4U plugins:
    See the examples under examples/cpp/operation-* and the documentation in the Plugins page.
  - Battery: Enable the management of batteries on hosts.
    See the examples under examples/cpp/battery-* and the documentation in the Plugins page.
+ - Photovoltaic: Enable the management of photovoltaic panels on hosts.
+   See the examples under examples/cpp/photovoltaic-* and the documentation in the Plugins page.
 
 Kernel:
  - optimize an internal datastructure (use a set instead of a list for ongoing activities),
