@@ -592,6 +592,79 @@ TEST_CASE("simgrid::mc::odpor::Execution: Initials Test")
   }
 }
 
+TEST_CASE("simgrid::mc::odpor::Execution: SDPOR Backtracking Simulation")
+{
+  // This test case assumes that each detected race is detected to also
+  // be reversible. For each reversible
+  const auto e0 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto e1 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto e2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
+  const auto e3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+  const auto e4 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+  const auto e5 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
+  const auto e6 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+  const auto e7 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+
+  Execution execution;
+
+  execution.push_transition(e0);
+  REQUIRE(execution.get_racing_events_of(0) == std::unordered_set<Execution::EventHandle>{});
+
+  execution.push_transition(e1);
+  REQUIRE(execution.get_racing_events_of(1) == std::unordered_set<Execution::EventHandle>{});
+
+  // Actor 3, since it starts the extension from event 1, clearly is an initial from there
+  execution.push_transition(e2);
+  REQUIRE(execution.get_racing_events_of(2) == std::unordered_set<Execution::EventHandle>{1});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<aid_t>{}) == std::unordered_set<aid_t>{3});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<aid_t>{4, 5}) ==
+        std::unordered_set<aid_t>{3});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<aid_t>{3}) == std::unordered_set<aid_t>{});
+
+  // e1 and e3 are in an reversible race. Actor 4 is not hindered from being moved to
+  // the front since e2 is independent with e3; hence, it is an initial
+  execution.push_transition(e3);
+  REQUIRE(execution.get_racing_events_of(3) == std::unordered_set<Execution::EventHandle>{1});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<aid_t>{}) == std::unordered_set<aid_t>{4});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<aid_t>{3, 5}) ==
+        std::unordered_set<aid_t>{4});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<aid_t>{4}) == std::unordered_set<aid_t>{});
+
+  // e4 is not in a race since e3 is run by the same actor and occurs before e4
+  execution.push_transition(e4);
+  REQUIRE(execution.get_racing_events_of(4) == std::unordered_set<Execution::EventHandle>{});
+
+  // e5 is independent with everything between e1 and e5, and `proc(e5) == 2`
+  execution.push_transition(e5);
+  REQUIRE(execution.get_racing_events_of(5) == std::unordered_set<Execution::EventHandle>{1});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<aid_t>{}) == std::unordered_set<aid_t>{2});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<aid_t>{4, 5}) ==
+        std::unordered_set<aid_t>{2});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<aid_t>{2}) == std::unordered_set<aid_t>{});
+
+  // Event 6 has two races: one with event 4 and one with event 5. In the latter race, actor 3 follows
+  // immediately after and so is evidently a source set actor; in the former race, only actor 2 can
+  // be brought to the front of the queue
+  execution.push_transition(e6);
+  REQUIRE(execution.get_racing_events_of(6) == std::unordered_set<Execution::EventHandle>{4, 5});
+  CHECK(execution.get_missing_source_set_actors_from(4, std::unordered_set<aid_t>{}) == std::unordered_set<aid_t>{2});
+  CHECK(execution.get_missing_source_set_actors_from(4, std::unordered_set<aid_t>{6, 7}) ==
+        std::unordered_set<aid_t>{2});
+  CHECK(execution.get_missing_source_set_actors_from(4, std::unordered_set<aid_t>{2}) == std::unordered_set<aid_t>{});
+  CHECK(execution.get_missing_source_set_actors_from(5, std::unordered_set<aid_t>{}) == std::unordered_set<aid_t>{3});
+  CHECK(execution.get_missing_source_set_actors_from(5, std::unordered_set<aid_t>{6, 7}) ==
+        std::unordered_set<aid_t>{3});
+  CHECK(execution.get_missing_source_set_actors_from(5, std::unordered_set<aid_t>{3}) == std::unordered_set<aid_t>{});
+
+  // Finally, event e7 races with e6 and `proc(e7) = 1` is brought forward
+  execution.push_transition(e7);
+  REQUIRE(execution.get_racing_events_of(7) == std::unordered_set<Execution::EventHandle>{6});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<aid_t>{}) == std::unordered_set<aid_t>{1});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<aid_t>{4, 5}) ==
+        std::unordered_set<aid_t>{1});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<aid_t>{1}) == std::unordered_set<aid_t>{});
+}
+
 TEST_CASE("simgrid::mc::odpor::Execution: ODPOR Smallest Sequence Tests")
 {
   const auto a0 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
