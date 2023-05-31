@@ -19,7 +19,7 @@ class WaitStrategy : public Strategy {
 public:
   WaitStrategy()                     = default;
   ~WaitStrategy() override           = default;
-  WaitStrategy(const BasicStrategy&) = delete;
+  WaitStrategy(const WaitStrategy&)  = delete;
   WaitStrategy& operator=(const WaitStrategy& guide)
   {
     taken_wait_ = guide.taken_wait_;
