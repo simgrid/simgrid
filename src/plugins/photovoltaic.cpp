@@ -24,6 +24,12 @@ To activate this plugin, first call :cpp:func:`sg_photovoltaic_plugin_init()`.
 This plugin allows evaluation of photovoltaic panels power generation during simulation depending on size, solar
 irradiance and conversion factor.
 
+The power model is taken from the paper `"Reinforcement Learning Based Load Balancing for
+Geographically Distributed Data Centres" <https://dro.dur.ac.uk/33395/1/33395.pdf?DDD280+kkgc95+vbdv77>`_ by Max Mackie et. al.
+
+The cost model is taken from the chapter 4 of the thesis `Sizing and Operation of Multi-Energy Hydrogen-Based
+Microgrids <https://tel.archives-ouvertes.fr/tel-02077668/document>`_ by Bei Li.
+
 Photovoltaic Panel properties
 ....................
 
@@ -53,11 +59,6 @@ The different properties are:
   @endrst
  */
 
-/*These equations are taken from  the paper "Reinforcement Learning Based Load Balancing for
-Geographically Distributed Data Centres"  of Max Mackie et. al
-https://dro.dur.ac.uk/33395/1/33395.pdf?DDD280+kkgc95+vbdv77
-*/
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(photovoltaic, kernel, "Logging specific to the photovoltaic plugin");
 
 namespace simgrid::plugin {
@@ -74,7 +75,6 @@ private:
   double power_w_      = 0;
   double last_updated_ = 0;
 
-  // Calculation of costs from Bei Li thesis (link :https://tel.archives-ouvertes.fr/tel-02077668/document) (chapter 4)
   bool eval_cost_                 = false;
   double cumulative_cost_         = 0;
   int lifespan_years_             = 0;
