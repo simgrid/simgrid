@@ -42,7 +42,8 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
 protected:
   static xbt::signal<void(Comm const&)> on_send;
   static xbt::signal<void(Comm const&)> on_recv;
-  static xbt::signal<void(Comm const&)> on_start;
+  inline static xbt::signal<void(Comm const&)> on_start;
+  xbt::signal<void(Comm const&)> on_this_start;
 
   void fire_on_completion() const override {
     /* The completion signal of a Comm has to be thrown only once and not by the sender AND the receiver.
@@ -57,6 +58,7 @@ public:
   static void on_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
   static void on_recv_cb(const std::function<void(Comm const&)>& cb) { on_recv.connect(cb); }
   static void on_start_cb(const std::function<void(Comm const&)>& cb) { on_start.connect(cb); }
+  void on_this_start_cb(const std::function<void(Comm const&)>& cb) { on_this_start.connect(cb); }
 
   CommPtr set_copy_data_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback);
   XBT_ATTRIB_DEPRECATED_v337("Please manifest if you actually need this function") static void copy_buffer_callback(

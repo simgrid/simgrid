@@ -14,7 +14,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_io, s4u_activity, "S4U asynchronous I/Os");
 
 namespace simgrid::s4u {
-xbt::signal<void(Io const&)> Io::on_start;
 
 Io::Io(kernel::activity::IoImplPtr pimpl)
 {
@@ -91,6 +90,7 @@ Io* Io::do_start()
 
   state_ = State::STARTED;
   on_start(*this);
+  on_this_start(*this);
   return this;
 }
 

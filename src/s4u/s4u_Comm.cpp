@@ -21,7 +21,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm, s4u_activity, "S4U asynchronous commun
 namespace simgrid::s4u {
 xbt::signal<void(Comm const&)> Comm::on_send;
 xbt::signal<void(Comm const&)> Comm::on_recv;
-xbt::signal<void(Comm const&)> Comm::on_start;
 
 CommPtr Comm::set_copy_data_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback)
 {
@@ -358,8 +357,10 @@ Comm* Comm::do_start()
     pimpl_->set_iface(this);
     pimpl_->set_actor(sender_);
     // Only throw the signal when both sides are here and the status is READY
-    if (pimpl_->get_state() != kernel::activity::State::WAITING)
+    if (pimpl_->get_state() != kernel::activity::State::WAITING) {
       on_start(*this);
+      on_this_start(*this);
+    }
   }
 
   state_ = State::STARTED;

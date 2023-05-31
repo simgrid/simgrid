@@ -42,7 +42,8 @@ protected:
 
   void reset() const;
 
-  static xbt::signal<void(Exec const&)> on_start;
+  inline static xbt::signal<void(Exec const&)> on_start;
+  xbt::signal<void(Exec const&)> on_this_start;
   void fire_on_completion() const override { on_completion(*this); }
   void fire_on_veto() const override { on_veto(const_cast<Exec&>(*this)); }
   void fire_on_suspend() const override { on_suspend(*this); }
@@ -55,6 +56,7 @@ public:
 #endif
   /*! Signal fired each time that an execution actually starts (no veto) */
   static void on_start_cb(const std::function<void(Exec const&)>& cb) { on_start.connect(cb); }
+  void on_this_start_cb(const std::function<void(Exec const&)>& cb) { on_this_start.connect(cb); }
 
   static ExecPtr init();
 

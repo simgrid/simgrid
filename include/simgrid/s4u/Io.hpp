@@ -24,7 +24,8 @@ class XBT_PUBLIC Io : public Activity_T<Io> {
   friend kernel::EngineImpl;
 #endif
 
-  static xbt::signal<void(Io const&)> on_start;
+  inline static xbt::signal<void(Io const&)> on_start;
+  xbt::signal<void(Io const&)> on_this_start;
 
 protected:
   explicit Io(kernel::activity::IoImplPtr pimpl);
@@ -38,6 +39,7 @@ public:
   enum class OpType { READ, WRITE };
 
   static void on_start_cb(const std::function<void(Io const&)>& cb) { on_start.connect(cb); }
+  void on_this_start_cb(const std::function<void(Io const&)>& cb) { on_this_start.connect(cb); }
 
   static IoPtr init();
   /*! take a vector of s4u::IoPtr and return when one of them is finished.
