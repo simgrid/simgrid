@@ -94,6 +94,7 @@ public:
   Execution(const Execution&)            = default;
   Execution& operator=(Execution const&) = default;
   Execution(Execution&&)                 = default;
+  Execution(const PartialExecution&);
 
   std::vector<std::string> get_textual_trace() const;
 
@@ -334,6 +335,11 @@ public:
    * actor which executed transition `t`.
    */
   void push_transition(std::shared_ptr<Transition>);
+
+  /**
+   * @brief Extends the execution by a sequence of steps
+   */
+  void push_partial_execution(const PartialExecution&);
 };
 
 } // namespace simgrid::mc::odpor

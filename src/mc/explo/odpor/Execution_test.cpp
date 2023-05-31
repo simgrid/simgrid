@@ -5,7 +5,7 @@
 
 #include "src/3rd-party/catch.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
-#include "src/mc/explo/udpor/udpor_tests_private.hpp"
+#include "src/mc/explo/odpor/odpor_tests_private.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
 
 using namespace simgrid::mc;
@@ -112,27 +112,59 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
     }
   }
 
-  SECTION("Example 3: Happens-before is transitively-closed")
+  SECTION("Happens-before is transitively-closed")
   {
-    // Given a reversible race between events `e1` and `e3` in a simulation,
-    // we assert that `e5` would be eliminated from being contained in
-    // the sequence `notdep(e1, E)`
-    const auto e0 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto e1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto e2 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto e3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto e4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+    SECTION("Example 1")
+    {
+      // Given a reversible race between events `e1` and `e3` in a simulation,
+      // we assert that `e5` would be eliminated from being contained in
+      // the sequence `notdep(e1, E)`
+      const auto e0 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
+      const auto e1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+      const auto e2 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+      const auto e3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+      const auto e4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
 
-    Execution execution;
-    execution.push_transition(e0);
-    execution.push_transition(e1);
-    execution.push_transition(e2);
-    execution.push_transition(e3);
-    execution.push_transition(e4);
+      Execution execution;
+      execution.push_partial_execution(PartialExecution{e0, e1, e2, e3, e4});
+      REQUIRE(execution.happens_before(0, 2));
+      REQUIRE(execution.happens_before(2, 4));
+      REQUIRE(execution.happens_before(0, 4));
+    }
 
-    REQUIRE(execution.happens_before(0, 2));
-    REQUIRE(execution.happens_before(2, 4));
-    REQUIRE(execution.happens_before(0, 4));
+    SECTION("Stress testing transitivity of the happens-before relation")
+    {
+      // This test verifies that for each triple of events
+      // in the execution, for a modestly intersting one,
+      // that transitivity holds
+      const auto e0  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+      const auto e1  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
+      const auto e2  = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+      const auto e3  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 2, -10);
+      const auto e4  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
+      const auto e5  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 0);
+      const auto e6  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 2, -5);
+      const auto e7  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
+      const auto e8  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 0);
+      const auto e9  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 2, -10);
+      const auto e10 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
+
+      Execution execution;
+      execution.push_partial_execution(PartialExecution{e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10});
+
+      const auto max_handle = execution.get_latest_event_handle();
+      for (Execution::EventHandle e_i = 0; e_i < max_handle; ++e_i) {
+        for (Execution::EventHandle e_j = 0; e_j < max_handle; ++e_j) {
+          for (Execution::EventHandle e_k = 0; e_k < max_handle; ++e_k) {
+            const bool e_i_before_e_j = execution.happens_before(e_i, e_j);
+            const bool e_j_before_e_k = execution.happens_before(e_j, e_k);
+            const bool e_i_before_e_k = execution.happens_before(e_i, e_k);
+            // Logical equivalent of `e_i_before_e_j ^ e_j_before_e_k --> e_i_before_e_k`
+            REQUIRE((!(e_i_before_e_j and e_j_before_e_k) or e_i_before_e_k));
+          }
+        }
+      }
+    }
   }
 }
 
@@ -239,28 +271,18 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
 
   SECTION("Example 4: Indirect Races")
   {
-    const auto a0 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto a2 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 6);
-    const auto a5 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto a6 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto a7 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto a8 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
-    const auto a9 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto e0 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto e1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto e2 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto e3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto e4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 6);
+    const auto e5 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto e6 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto e7 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto e8 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
+    const auto e9 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
 
-    Execution execution;
-    execution.push_transition(a0);
-    execution.push_transition(a1);
-    execution.push_transition(a2);
-    execution.push_transition(a3);
-    execution.push_transition(a4);
-    execution.push_transition(a5);
-    execution.push_transition(a6);
-    execution.push_transition(a7);
-    execution.push_transition(a8);
-    execution.push_transition(a9);
+    Execution execution(PartialExecution{e0, e1, e2, e3, e4, e5, e6, e7, e8, e9});
 
     // Nothing comes before event 0
     REQUIRE(execution.get_racing_events_of(0) == std::unordered_set<Execution::EventHandle>{});
@@ -298,27 +320,73 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
     // The same logic above eliminates events before 6
     REQUIRE(execution.get_racing_events_of(9) == std::unordered_set<Execution::EventHandle>{6});
   }
-}
 
-TEST_CASE("simgrid::mc::odpor::Execution: notdep(e, E) Simulation")
-{
-  // Given a reversible race between events `e1` and `e3` in a simulation,
-  // we assert that `e5` would be eliminated from being contained in
-  // the sequence `notdep(e1, E)`
-  const auto e0 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
-  const auto e1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
-  const auto e2 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
-  const auto e3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
-  const auto e4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+  SECTION("Example 5: Stress testing race detection")
+  {
+    const auto e0  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto e1  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto e2  = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto e3  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 2, -10);
+    const auto e4  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto e5  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 0);
+    const auto e6  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 2, -5);
+    const auto e7  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 1, -5);
+    const auto e8  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 0, 4);
+    const auto e9  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 2, -10);
+    const auto e10 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
 
-  Execution execution;
-  execution.push_transition(e0);
-  execution.push_transition(e1);
-  execution.push_transition(e2);
-  execution.push_transition(e3);
-  execution.push_transition(e4);
+    Execution execution(PartialExecution{e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10});
 
-  REQUIRE(execution.happens_before(0, 4));
+    // Nothing comes before event 0
+    CHECK(execution.get_racing_events_of(0) == std::unordered_set<Execution::EventHandle>{});
+
+    // Events 0 and 1 are independent
+    CHECK(execution.get_racing_events_of(1) == std::unordered_set<Execution::EventHandle>{});
+
+    // Events 1 and 2 are executed by the same actor, even though they are dependent
+    CHECK(execution.get_racing_events_of(2) == std::unordered_set<Execution::EventHandle>{});
+
+    // Events 2 and 3 are independent while events 1 and 2 are dependent
+    CHECK(execution.get_racing_events_of(3) == std::unordered_set<Execution::EventHandle>{1});
+
+    // Event 4 is independent with everything so it can never be in a race
+    CHECK(execution.get_racing_events_of(4) == std::unordered_set<Execution::EventHandle>{});
+
+    // Event 5 is independent with event 4. Since events 2 and 3 are dependent with event 5,
+    // but are independent of each other, both events are in a race with event 5
+    CHECK(execution.get_racing_events_of(5) == std::unordered_set<Execution::EventHandle>{2, 3});
+
+    // Events 5 and 6 are dependent. Everyone before 5 who's dependent with 5
+    // cannot be in a race with 6; everyone before 5 who's independent with 5
+    // could not race with 6
+    CHECK(execution.get_racing_events_of(6) == std::unordered_set<Execution::EventHandle>{5});
+
+    // Same goes for event 7 as for 6
+    CHECK(execution.get_racing_events_of(7) == std::unordered_set<Execution::EventHandle>{6});
+
+    // Events 5 and 8 are both run by the same actor; events in-between are independent
+    CHECK(execution.get_racing_events_of(8) == std::unordered_set<Execution::EventHandle>{});
+
+    // Event 6 blocks event 9 from racing with event 6
+    CHECK(execution.get_racing_events_of(9) == std::unordered_set<Execution::EventHandle>{});
+
+    // Event 10 is independent with everything so it can never be in a race
+    CHECK(execution.get_racing_events_of(10) == std::unordered_set<Execution::EventHandle>{});
+  }
+
+  SECTION("Example with many races for one event")
+  {
+    const auto e0 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto e1 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto e2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto e3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+    const auto e4 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 5);
+    const auto e5 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 6);
+    const auto e6 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 7);
+
+    Execution execution(PartialExecution{e0, e1, e2, e3, e4, e5, e6});
+    REQUIRE(execution.get_racing_events_of(6) == std::unordered_set<Execution::EventHandle>{0, 1, 2, 3, 4, 5});
+  }
 }
 
 TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
@@ -335,11 +403,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
     const auto a5 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 6);
     const auto a6 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 7);
     const auto a7 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 7);
-    Execution execution;
-    execution.push_transition(a0);
-    execution.push_transition(a1);
-    execution.push_transition(a2);
-    execution.push_transition(a3);
+    Execution execution(PartialExecution{a0, a1, a2, a3});
 
     REQUIRE(execution.is_independent_with_execution_of(PartialExecution{a4, a5}, a6));
     REQUIRE(execution.is_independent_with_execution_of(PartialExecution{a6, a5}, a1));
@@ -373,11 +437,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
     const auto a7    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
     const auto a8    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
     const auto indep = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-    Execution execution;
-    execution.push_transition(a0);
-    execution.push_transition(a1);
-    execution.push_transition(a2);
-    execution.push_transition(a3);
+    Execution execution(PartialExecution{a0, a1, a2, a3});
 
     // We see that although `a4` comes after `a1` with which it is dependent, it
     // would come before "a6" in the partial execution `w`, so it would not be independent
@@ -398,6 +458,37 @@ TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
     // This ensures that independence is trivial with an empty partial execution
     REQUIRE(execution.is_independent_with_execution_of(PartialExecution{}, a1));
   }
+
+  SECTION("More interesting dependencies stopping independence")
+  {
+    const auto e0 = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 1, 5);
+    const auto e1 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto e2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto e3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto e4 = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 3, 5);
+    const auto e5 = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 4, 4);
+    Execution execution(PartialExecution{e0, e1, e2, e3, e4, e5});
+
+    SECTION("Action run by same actor disqualifies independence")
+    {
+      const auto w_1 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+      const auto w_2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+      const auto w_3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+      const auto w_4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
+      const auto w   = PartialExecution{w_1, w_2, w_3};
+
+      const auto actor4_action  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
+      const auto actor4_action2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+
+      // Action `actor4_action` is independent with everything EXCEPT the last transition
+      // which is executed by the same actor
+      execution.is_independent_with_execution_of(w, actor4_action);
+
+      // Action `actor4_action2` is independent with everything
+      // EXCEPT the last transition which is executed by the same actor
+      execution.is_independent_with_execution_of(w, actor4_action);
+    }
+  }
 }
 
 TEST_CASE("simgrid::mc::odpor::Execution: Initials Test")
@@ -412,11 +503,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Initials Test")
   const auto a7    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
   const auto a8    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
   const auto indep = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-  Execution execution;
-  execution.push_transition(a0);
-  execution.push_transition(a1);
-  execution.push_transition(a2);
-  execution.push_transition(a3);
+  Execution execution(PartialExecution{a0, a1, a2, a3});
 
   SECTION("Initials trivial with empty executions")
   {
@@ -474,6 +561,34 @@ TEST_CASE("simgrid::mc::odpor::Execution: Initials Test")
 
     // Likewise with actor 4
     REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{a1, a2, a3, a4, a6, a7, a8, indep}, 4));
+  }
+
+  SECTION("Example: Stress tests for initials computation")
+  {
+    const auto v_1 = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 1, 3);
+    const auto v_2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
+    const auto v_3 = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 2, 3);
+    const auto v_4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto v_5 = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 3, 8);
+    const auto v_6 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto v_7 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto v_8 = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 4, 3);
+    const auto v   = PartialExecution{v_1, v_2, v_3, v_4};
+
+    // Actor 1 being the first actor in the expansion, it is clearly an initial
+    REQUIRE(Execution().is_initial_after_execution_of(v, 1));
+
+    // Actor 2 can't be switched before actor 1 without creating an trace
+    // that leads to a different state than that of `E.v := ().v := v`
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(v, 2));
+
+    // The first action of Actor 3 is independent with what comes before it, so it can
+    // be moved forward. Note that this is the case even though it later executes and action
+    // that's dependent with most everyone else
+    REQUIRE(Execution().is_initial_after_execution_of(v, 3));
+
+    // Actor 4 is blocked actor 3's second action `v_7`
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(v, 4));
   }
 }
 
