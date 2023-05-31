@@ -44,7 +44,11 @@ protected:
   static xbt::signal<void(Comm const&)> on_recv;
   static xbt::signal<void(Comm const&)> on_start;
 
-  void fire_on_completion() const override { /* Do nothing */ }
+  void fire_on_completion() const override {
+    /* The completion signal of a Comm has to be thrown only once and not by the sender AND the receiver.
+       then Comm::on_completion is thrown in the kernel in CommImpl::finish.
+     */
+  }
   void fire_on_veto() const override { on_veto(const_cast<Comm&>(*this)); }
   void fire_on_suspend() const override { on_suspend(*this); }
   void fire_on_resume() const override { on_resume(*this); }
