@@ -134,20 +134,17 @@ Partial list of existing signals in s4u:
 
   - :cpp:func:`Comm::on_send <simgrid::s4u::Comm::on_send_cb>`
     :cpp:func:`Comm::on_recv <simgrid::s4u::Comm::on_recv_cb>`
+  - :cpp:func:`Comm::on_start <simgrid::s4u::Comm::on_start_cb>`
     :cpp:func:`Comm::on_completion <simgrid::s4u::Comm::on_completion_cb>`
     :cpp:func:`Comm::on_suspend <simgrid::s4u::Comm::on_suspend_cb>`
     :cpp:func:`Comm::on_resume <simgrid::s4u::Comm::on_resume_cb>`
     :cpp:func:`Comm::on_veto <simgrid::s4u::Comm::on_veto_cb>`
-  - :cpp:func:`CommImpl::on_start <simgrid::s4u::CommImpl::on_start_cb>`
-    :cpp:func:`CommImpl::on_completion <simgrid::s4u::CommImpl::on_completion_cb>`
   - :cpp:func:`Exec::on_start <simgrid::s4u::Exec::on_start_cb>`
-    :cpp:func:`Exec::on_completion <simgrid::s4u::Exec::on_completion_cb>`
     :cpp:func:`Exec::on_completion <simgrid::s4u::Exec::on_completion_cb>`
     :cpp:func:`Exec::on_suspend <simgrid::s4u::Exec::on_suspend_cb>`
     :cpp:func:`Exec::on_resume <simgrid::s4u::Exec::on_resume_cb>`
     :cpp:func:`Exec::on_veto <simgrid::s4u::Exec::on_veto_cb>`
   - :cpp:func:`Io::on_start <simgrid::s4u::Io::on_start_cb>`
-    :cpp:func:`Io::on_completion <simgrid::s4u::Io::on_completion_cb>`
     :cpp:func:`Io::on_completion <simgrid::s4u::Io::on_completion_cb>`
     :cpp:func:`Io::on_suspend <simgrid::s4u::Io::on_suspend_cb>`
     :cpp:func:`Io::on_resume <simgrid::s4u::Io::on_resume_cb>`

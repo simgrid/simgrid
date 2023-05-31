@@ -133,7 +133,6 @@ CommImpl* CommImpl::start()
     model_action_->set_category(get_tracing_category());
     set_start_time(model_action_->get_start_time());
     set_state(State::RUNNING);
-    on_start(*this);
 
     XBT_DEBUG("Starting communication %p from '%s' to '%s' (model action: %p; state: %s)", this, from_->get_cname(),
               to_->get_cname(), model_action_, get_state_str());
@@ -471,7 +470,7 @@ void CommImpl::finish()
   XBT_DEBUG("CommImpl::finish() comm %p, state %s, src_proc %p, dst_proc %p, detached: %d", this, get_state_str(),
             src_actor_.get(), dst_actor_.get(), detached_);
 
-  on_completion(*this);
+  s4u::Comm::on_completion(static_cast<const s4u::Comm&>(*this->get_iface()));
 
   /* Update synchro state */
   if (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FINISHED)

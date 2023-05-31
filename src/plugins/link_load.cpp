@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/plugins/load.h>
+#include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/Engine.hpp>
 
 #include "src/kernel/activity/CommImpl.hpp"
@@ -161,9 +162,10 @@ double LinkLoad::get_average_bytes()
 using simgrid::plugin::LinkLoad;
 
 /* **************************** events  callback *************************** */
-static void on_communication(const simgrid::kernel::activity::CommImpl& comm)
+static void on_communication(const simgrid::s4u::Comm& comm)
 {
-  for (const auto* link : comm.get_traversed_links()) {
+  auto* pimpl = static_cast<simgrid::kernel::activity::CommImpl*>(comm.get_impl());
+  for (auto const* link : pimpl->get_traversed_links()) {
     if (link != nullptr && link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
       auto* link_load = link->extension<LinkLoad>();
       XBT_DEBUG("Update %s on Comm Start/End", link->get_cname());
@@ -199,8 +201,8 @@ void sg_link_load_plugin_init()
   });
 
   // Call this plugin on some of the links' events.
-  simgrid::kernel::activity::CommImpl::on_start.connect(&on_communication);
-  simgrid::kernel::activity::CommImpl::on_completion.connect(&on_communication);
+  simgrid::s4u::Comm::on_start_cb(&on_communication);
+  simgrid::s4u::Comm::on_completion_cb(&on_communication);
 
   simgrid::s4u::Link::on_onoff_cb([](simgrid::s4u::Link const& link) {
     if (link.get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {

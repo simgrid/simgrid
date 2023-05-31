@@ -11,8 +11,8 @@ $ ${bindir:=.}/s4u-dag-comm ${platfdir}/two_hosts.xml --log=s4u_activity.t:verbo
 > [  1.000000] (0:maestro@) Exec 'parent' is complete (start time: 0.000000, finish time: 1.000000)
 > [  1.000000] (0:maestro@) Remove a dependency from 'parent' on 'transfer'
 > [  1.000000] (0:maestro@) 'transfer' is assigned to a resource and all dependencies are solved. Let's start
-> [  2.083775] (0:maestro@) Comm 'transfer' is complete
 > [  2.083775] (0:maestro@) Remove a dependency from 'transfer' on 'child'
 > [  2.083775] (0:maestro@) 'child' is assigned to a resource and all dependencies are solved. Let's start
+> [  2.083775] (0:maestro@) Comm 'transfer' is complete
 > [  3.083775] (0:maestro@) Exec 'child' is complete (start time: 2.083775, finish time: 3.083775)
 > [  3.083775] (0:maestro@) Simulation time 3.08378

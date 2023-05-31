@@ -517,12 +517,13 @@ void define_callbacks()
     });
 
     s4u::Comm::on_completion_cb([](const s4u::Comm& c) {
-      std::string pid = instr_pid(*s4u::Actor::self());
-      if (pid == "-0") { //Comm is launched directly by Maestro, use the host as container
-          Container::by_name(c.get_source()->get_name())->get_state("HOST_STATE")->pop_event();
-          Container::by_name(c.get_destination()->get_name())->get_state("HOST_STATE")->pop_event();
-      } else
-        Container::by_name(pid)->get_state("ACTOR_STATE")->pop_event();
+      if (c.get_sender()) {
+        Container::by_name(instr_pid(*c.get_sender()))->get_state("ACTOR_STATE")->pop_event();
+        Container::by_name(instr_pid(*c.get_receiver()))->get_state("ACTOR_STATE")->pop_event();
+      } else {
+        Container::by_name(c.get_source()->get_name())->get_state("HOST_STATE")->pop_event();
+        Container::by_name(c.get_destination()->get_name())->get_state("HOST_STATE")->pop_event();
+      }
     });
     s4u::Comm::on_send_cb([](s4u::Comm const& c) {
       std::string pid = instr_pid(*s4u::Actor::self());

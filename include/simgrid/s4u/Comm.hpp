@@ -19,6 +19,7 @@ namespace simgrid::s4u {
  */
 class XBT_PUBLIC Comm : public Activity_T<Comm> {
   friend Mailbox; // Factory of comms
+  friend kernel::activity::CommImpl;
   /* specified for normal mailbox-based communications*/
   Mailbox* mailbox_                   = nullptr;
   kernel::actor::ActorImpl* sender_   = nullptr;
@@ -38,12 +39,12 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
   Comm() = default;
   Comm* do_start() override;
 
+protected:
   static xbt::signal<void(Comm const&)> on_send;
   static xbt::signal<void(Comm const&)> on_recv;
   static xbt::signal<void(Comm const&)> on_start;
 
-protected:
-  void fire_on_completion() const override { on_completion(*this); }
+  void fire_on_completion() const override { /* Do nothing */ }
   void fire_on_veto() const override { on_veto(const_cast<Comm&>(*this)); }
   void fire_on_suspend() const override { on_suspend(*this); }
   void fire_on_resume() const override { on_resume(*this); }
@@ -150,6 +151,7 @@ public:
 
   bool is_assigned() const override;
   Actor* get_sender() const;
+  Actor* get_receiver() const;
 
   /* Comm life cycle */
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
