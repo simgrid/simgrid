@@ -470,7 +470,9 @@ void CommImpl::finish()
   XBT_DEBUG("CommImpl::finish() comm %p, state %s, src_proc %p, dst_proc %p, detached: %d", this, get_state_str(),
             src_actor_.get(), dst_actor_.get(), detached_);
 
-  s4u::Comm::on_completion(static_cast<const s4u::Comm&>(*this->get_iface()));
+  auto* piface = static_cast<const s4u::Comm*>(this->get_iface());
+  s4u::Comm::on_completion(*piface);
+  piface->on_this_completion(*piface);
 
   /* Update synchro state */
   if (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FINISHED)

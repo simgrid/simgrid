@@ -105,6 +105,7 @@ protected:
   Activity* set_remaining(double remains);
 
   virtual void fire_on_completion() const = 0;
+  virtual void fire_on_this_completion() const = 0;
   virtual void fire_on_veto() const = 0;
   virtual void fire_on_suspend() const = 0;
   virtual void fire_on_resume() const = 0;
@@ -134,6 +135,7 @@ public:
     ActivityPtr keepalive(this);
     state_ = state;
     fire_on_completion();
+    fire_on_this_completion();
     if (state == State::FINISHED)
       release_dependencies();
   }
@@ -233,6 +235,7 @@ template <class AnyActivity> class Activity_T : public Activity {
 
 protected:
   inline static xbt::signal<void(AnyActivity const&)> on_completion;
+  xbt::signal<void(AnyActivity const&)> on_this_completion;
   inline static xbt::signal<void(AnyActivity&)> on_veto;
   inline static xbt::signal<void(AnyActivity const&)> on_suspend;
   inline static xbt::signal<void(AnyActivity const&)> on_resume;
@@ -240,6 +243,7 @@ protected:
 public:
   /*! Add a callback fired when the activity completes (either normally, cancelled or failed) */
   static void on_completion_cb(const std::function<void(AnyActivity const&)>& cb) { on_completion.connect(cb); }
+  static void on_this_completion_cb(const std::function<void(AnyActivity const&)>& cb) { on_this_completion.connect(cb); }
   /*! Add a callback fired each time that the activity fails to start because of a veto (e.g., unsolved dependency or no
    * resource assigned) */
   static void on_veto_cb(const std::function<void(AnyActivity&)>& cb) { on_veto.connect(cb); }
