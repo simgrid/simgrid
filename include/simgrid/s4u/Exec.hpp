@@ -46,11 +46,12 @@ protected:
   xbt::signal<void(Exec const&)> on_this_start;
   void fire_on_completion() const override { on_completion(*this); }
   void fire_on_this_completion() const override { on_this_completion(*this); }
-  void fire_on_veto() const override { on_veto(const_cast<Exec&>(*this)); }
   void fire_on_suspend() const override { on_suspend(*this); }
   void fire_on_this_suspend() const override { on_this_suspend(*this); }
   void fire_on_resume() const override { on_resume(*this); }
   void fire_on_this_resume() const override { on_this_resume(*this); }
+  void fire_on_veto() const override { on_veto(const_cast<Exec&>(*this)); }
+  void fire_on_this_veto() const override { on_this_veto(const_cast<Exec&>(*this)); }
 
 public:
 #ifndef DOXYGEN
