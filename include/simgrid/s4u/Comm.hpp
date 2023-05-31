@@ -57,7 +57,9 @@ protected:
   }
   void fire_on_veto() const override { on_veto(const_cast<Comm&>(*this)); }
   void fire_on_suspend() const override { on_suspend(*this); }
+  void fire_on_this_suspend() const override { on_this_suspend(*this); }
   void fire_on_resume() const override { on_resume(*this); }
+  void fire_on_this_resume() const override { on_this_resume(*this); }
 
 public:
   static void on_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }

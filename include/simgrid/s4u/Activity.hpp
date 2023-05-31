@@ -108,7 +108,9 @@ protected:
   virtual void fire_on_this_completion() const = 0;
   virtual void fire_on_veto() const = 0;
   virtual void fire_on_suspend() const = 0;
+  virtual void fire_on_this_suspend() const = 0;
   virtual void fire_on_resume() const = 0;
+  virtual void fire_on_this_resume() const = 0;
 
 public:
   XBT_ATTRIB_DEPRECATED_v334("All start() are vetoable now. Please use start() ") void vetoable_start()
@@ -238,19 +240,23 @@ protected:
   xbt::signal<void(AnyActivity const&)> on_this_completion;
   inline static xbt::signal<void(AnyActivity&)> on_veto;
   inline static xbt::signal<void(AnyActivity const&)> on_suspend;
+  xbt::signal<void(AnyActivity const&)> on_this_suspend;
   inline static xbt::signal<void(AnyActivity const&)> on_resume;
+  xbt::signal<void(AnyActivity const&)> on_this_resume;
 
 public:
   /*! Add a callback fired when the activity completes (either normally, cancelled or failed) */
   static void on_completion_cb(const std::function<void(AnyActivity const&)>& cb) { on_completion.connect(cb); }
-  static void on_this_completion_cb(const std::function<void(AnyActivity const&)>& cb) { on_this_completion.connect(cb); }
+  void on_this_completion_cb(const std::function<void(AnyActivity const&)>& cb) { on_this_completion.connect(cb); }
   /*! Add a callback fired each time that the activity fails to start because of a veto (e.g., unsolved dependency or no
    * resource assigned) */
   static void on_veto_cb(const std::function<void(AnyActivity&)>& cb) { on_veto.connect(cb); }
   /*! Add a callback fired when the activity is suspended */
   static void on_suspend_cb(const std::function<void(AnyActivity const&)>& cb) { on_suspend.connect(cb); }
+  void on_this_suspend_cb(const std::function<void(AnyActivity const&)>& cb) { on_this_suspend.connect(cb); }
   /*! Add a callback fired when the activity is resumed after being suspended */
   static void on_resume_cb(const std::function<void(AnyActivity const&)>& cb) { on_resume.connect(cb); }
+  void on_this_resume_cb(const std::function<void(AnyActivity const&)>& cb) { on_this_resume.connect(cb); }
 
   XBT_ATTRIB_DEPRECATED_v337("Please use on_suspend_cb() instead") static void on_suspended_cb(
       const std::function<void(Activity const&)>& cb) { on_suspend.connect(cb); }
