@@ -2199,9 +2199,9 @@ include src/mc/explo/odpor/ReversibleRaceCalculator.cpp
 include src/mc/explo/odpor/ReversibleRaceCalculator.hpp
 include src/mc/explo/odpor/WakeupTree.cpp
 include src/mc/explo/odpor/WakeupTree.hpp
-include src/mc/explo/odpor/WakeupTree_test.cpp
 include src/mc/explo/odpor/WakeupTreeIterator.cpp
 include src/mc/explo/odpor/WakeupTreeIterator.hpp
+include src/mc/explo/odpor/WakeupTree_test.cpp
 include src/mc/explo/odpor/odpor_forward.hpp
 include src/mc/explo/simgrid_mc.cpp
 include src/mc/explo/udpor/Comb.hpp

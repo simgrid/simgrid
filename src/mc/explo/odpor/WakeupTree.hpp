@@ -49,10 +49,10 @@ public:
   WakeupTreeNode& operator=(const WakeupTreeNode&) = delete;
   WakeupTreeNode& operator=(WakeupTreeNode&&)      = default;
 
-  const auto begin() const { return this->children_.begin(); }
-  const auto end() const { return this->children_.end(); }
-  const auto rbegin() const { return this->children_.rbegin(); }
-  const auto rend() const { return this->children_.rend(); }
+  auto begin() const { return this->children_.begin(); }
+  auto end() const { return this->children_.end(); }
+  auto rbegin() const { return this->children_.rbegin(); }
+  auto rend() const { return this->children_.rend(); }
 
   bool is_leaf() const { return children_.empty(); }
   bool is_root() const { return parent_ == nullptr; }

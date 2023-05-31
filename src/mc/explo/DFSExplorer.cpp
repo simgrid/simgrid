@@ -304,6 +304,9 @@ void DFSExplorer::run()
           // NOTE: To incorporate the idea of attempting to select the "best"
           // backtrack point into SDPOR, instead of selecting the `first` initial,
           // we should instead compute all choices and decide which is best
+          //
+          // Here, we choose the actor with the lowest ID to ensure
+          // we get deterministic results
           const auto q =
               std::min_element(choices.begin(), choices.end(), [](const aid_t a1, const aid_t a2) { return a1 < a2; });
           prev_state->consider_one(*q);
