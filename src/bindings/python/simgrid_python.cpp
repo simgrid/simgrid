@@ -324,7 +324,7 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("name", &simgrid::s4u::NetZone::get_name,
                              "The name of this network zone (read-only property).")
       .def(
-          "__repr__", [](const simgrid::s4u::NetZone net) { return "<simgrid.NetZone " + net.get_name() + ">"; },
+          "__repr__", [](const simgrid::s4u::NetZone net) { return "NetZone(" + net.get_name() + ")"; },
           "Textual representation of the NetZone");
 
   /* Class ClusterCallbacks */
@@ -475,7 +475,7 @@ PYBIND11_MODULE(simgrid, m)
           },
           "")
       .def(
-          "__repr__", [](const Host* h) { return "<simgrid.Host " + h->get_name() + ">"; },
+          "__repr__", [](const Host* h) { return "Host(" + h->get_name() + ")"; },
           "Textual representation of the Host");
 
   py::enum_<simgrid::s4u::Host::SharingPolicy>(host, "SharingPolicy")
@@ -500,7 +500,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("seal", &simgrid::s4u::Disk::seal, py::call_guard<py::gil_scoped_release>(), "Seal this disk")
       .def_property_readonly("name", &simgrid::s4u::Disk::get_name, "The name of this disk (read-only property).")
       .def(
-          "__repr__", [](const Disk* d) { return "<simgrid.Disk " + d->get_name() + ">"; },
+          "__repr__", [](const Disk* d) { return "Disk(" + d->get_name() + ")"; },
           "Textual representation of the Disk");
   py::enum_<simgrid::s4u::Disk::SharingPolicy>(disk, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Disk::SharingPolicy::NONLINEAR)
@@ -599,7 +599,7 @@ PYBIND11_MODULE(simgrid, m)
                              "The bandwidth (in bytes per second) (read-only property).")
       .def_property_readonly("latency", &Link::get_latency, "The latency (in seconds) (read-only property).")
       .def(
-          "__repr__", [](const Link* l) { return "<simgrid.Link " + l->get_name() + ">"; },
+          "__repr__", [](const Link* l) { return "Link(" + l->get_name() + ")"; },
           "Textual representation of the Link");
   py::enum_<Link::SharingPolicy>(link, "SharingPolicy")
       .value("NONLINEAR", Link::SharingPolicy::NONLINEAR)
@@ -643,7 +643,7 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(
       m, "Mailbox", "Mailbox. See the C++ documentation for details.")
       .def(
-          "__repr__", [](const Mailbox* self) { return "<simgrid.Mailbox " + self->get_name() + ">"; },
+          "__repr__", [](const Mailbox* self) { return "Mailbox(" + self->get_name() + ")"; },
           "Textual representation of the Mailbox")
       .def_static("by_name", &Mailbox::by_name, py::call_guard<py::gil_scoped_release>(), py::arg("name"),
                   "Retrieve a Mailbox from its name")
@@ -911,7 +911,7 @@ PYBIND11_MODULE(simgrid, m)
       .def_static("kill_all", &Actor::kill_all, py::call_guard<py::gil_scoped_release>(),
                   "Kill all actors but the caller.")
       .def(
-          "__repr__", [](const ActorPtr a) { return "<simgrid.Actor " + a->get_name() + ">"; },
+          "__repr__", [](const ActorPtr a) { return "Actor(" + a->get_name() + ")"; },
           "Textual representation of the Actor");
 
   /* Enum Class IoOpType */
@@ -962,7 +962,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("on_this_end", py::overload_cast<const std::function<void(Operation*)>&>(&Operation::on_this_end),
            py::arg("func"), "Add a callback called when this operation ends.")
       .def(
-          "__repr__", [](const OperationPtr op) { return "<simgrid.Operation " + op->get_name() + ">"; },
+          "__repr__", [](const OperationPtr op) { return "Operation(" + op->get_name() + ")"; },
           "Textual representation of the Operation");
 
   /* Class CommOp */
@@ -978,7 +978,7 @@ PYBIND11_MODULE(simgrid, m)
                     "The destination of the communication.")
       .def_property("bytes", &CommOp::get_bytes, &CommOp::set_bytes, "The amount of bytes to send.")
       .def(
-          "__repr__", [](const CommOpPtr c) { return "<simgrid.CommOp " + c->get_name() + ">"; },
+          "__repr__", [](const CommOpPtr c) { return "CommOp(" + c->get_name() + ")"; },
           "Textual representation of the CommOp");
 
   /* Class ExecOp */
@@ -991,7 +991,7 @@ PYBIND11_MODULE(simgrid, m)
       .def_property("host", &ExecOp::get_host, &ExecOp::set_host, "The host of the execution.")
       .def_property("flops", &ExecOp::get_flops, &ExecOp::set_flops, "The amount of flops to execute.")
       .def(
-          "__repr__", [](const ExecOpPtr e) { return "<simgrid.ExecOp " + e->get_name() + ">"; },
+          "__repr__", [](const ExecOpPtr e) { return "ExecOp(" + e->get_name() + ")"; },
           "Textual representation of the ExecOp");
 
   /* Class IoOp */
@@ -1005,6 +1005,6 @@ PYBIND11_MODULE(simgrid, m)
       .def_property("bytes", &IoOp::get_bytes, &IoOp::set_bytes, "The amount of bytes to process.")
       .def_property("type", &IoOp::get_bytes, &IoOp::set_bytes, "The type of IO.")
       .def(
-          "__repr__", [](const IoOpPtr io) { return "<simgrid.IoOp " + io->get_name() + ">"; },
+          "__repr__", [](const IoOpPtr io) { return "IoOp(" + io->get_name() + ")"; },
           "Textual representation of the IoOp");
 }
