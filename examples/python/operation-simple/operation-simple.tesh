@@ -1,9 +1,9 @@
 #!/usr/bin/env tesh
 
 $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/operation-simple.py --platform ${platfdir}/small_platform.xml
-> [10.194199500484224] Operation exec1 finished (1)
-> [11.714617112501687] Operation comm finished (1)
-> [20.388399000968448] Operation exec1 finished (2)
-> [21.90881661298591] Operation comm finished (2)
-> [24.82146412938331] Operation exec2 finished (1)
-> [37.92831114626493] Operation exec2 finished (2)
+> [10.194199500484224] Operation ExecOp(exec1) finished (1)
+> [11.714617112501687] Operation CommOp(comm) finished (1)
+> [20.388399000968448] Operation ExecOp(exec1) finished (2)
+> [21.90881661298591] Operation CommOp(comm) finished (2)
+> [24.82146412938331] Operation ExecOp(exec2) finished (1)
+> [37.92831114626493] Operation ExecOp(exec2) finished (2)
