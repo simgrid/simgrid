@@ -33,14 +33,14 @@
 #include <vector>
 
 namespace py = pybind11;
-using simgrid::plugins::Operation;
-using simgrid::plugins::OperationPtr;
 using simgrid::plugins::CommOp;
 using simgrid::plugins::CommOpPtr;
 using simgrid::plugins::ExecOp;
 using simgrid::plugins::ExecOpPtr;
 using simgrid::plugins::IoOp;
 using simgrid::plugins::IoOpPtr;
+using simgrid::plugins::Operation;
+using simgrid::plugins::OperationPtr;
 using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 using simgrid::s4u::Barrier;
@@ -247,7 +247,7 @@ PYBIND11_MODULE(simgrid, m)
                   params[i - 1] = py::cast(args[i]);
 
                 const auto fun_or_class = py::reinterpret_borrow<py::object>(fun_or_class_p);
-                py::object res = fun_or_class(*params);
+                py::object res          = fun_or_class(*params);
                 /* If I was passed a class, I just built an instance, so I need to call it now */
                 if (py::isinstance<py::function>(res))
                   res();
@@ -322,7 +322,10 @@ PYBIND11_MODULE(simgrid, m)
                              "Retrieve the netpoint associated to this zone")
       .def("seal", &simgrid::s4u::NetZone::seal, "Seal this NetZone")
       .def_property_readonly("name", &simgrid::s4u::NetZone::get_name,
-                             "The name of this network zone (read-only property).");
+                             "The name of this network zone (read-only property).")
+      .def(
+          "__repr__", [](const simgrid::s4u::NetZone net) { return "<simgrid.NetZone " + net.get_name() + ">"; },
+          "Textual representation of the NetZone");
 
   /* Class ClusterCallbacks */
   py::class_<simgrid::s4u::ClusterCallbacks>(m, "ClusterCallbacks", "Callbacks used to create cluster zones")
@@ -470,7 +473,10 @@ PYBIND11_MODULE(simgrid, m)
               }
             });
           },
-          "");
+          "")
+      .def(
+          "__repr__", [](const Host* h) { return "<simgrid.Host " + h->get_name() + ">"; },
+          "Textual representation of the Host");
 
   py::enum_<simgrid::s4u::Host::SharingPolicy>(host, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Host::SharingPolicy::NONLINEAR)
@@ -492,7 +498,10 @@ PYBIND11_MODULE(simgrid, m)
            "Set sharing policy for this disk", py::arg("op"), py::arg("policy"),
            py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
       .def("seal", &simgrid::s4u::Disk::seal, py::call_guard<py::gil_scoped_release>(), "Seal this disk")
-      .def_property_readonly("name", &simgrid::s4u::Disk::get_name, "The name of this disk (read-only property).");
+      .def_property_readonly("name", &simgrid::s4u::Disk::get_name, "The name of this disk (read-only property).")
+      .def(
+          "__repr__", [](const Disk* d) { return "<simgrid.Disk " + d->get_name() + ">"; },
+          "Textual representation of the Disk");
   py::enum_<simgrid::s4u::Disk::SharingPolicy>(disk, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Disk::SharingPolicy::NONLINEAR)
       .value("LINEAR", simgrid::s4u::Disk::SharingPolicy::LINEAR)
@@ -588,8 +597,10 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("name", &Link::get_name, "The name of this link")
       .def_property_readonly("bandwidth", &Link::get_bandwidth,
                              "The bandwidth (in bytes per second) (read-only property).")
-      .def_property_readonly("latency", &Link::get_latency, "The latency (in seconds) (read-only property).");
-
+      .def_property_readonly("latency", &Link::get_latency, "The latency (in seconds) (read-only property).")
+      .def(
+          "__repr__", [](const Link* l) { return "<simgrid.Link " + l->get_name() + ">"; },
+          "Textual representation of the Link");
   py::enum_<Link::SharingPolicy>(link, "SharingPolicy")
       .value("NONLINEAR", Link::SharingPolicy::NONLINEAR)
       .value("WIFI", Link::SharingPolicy::WIFI)
@@ -632,8 +643,8 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(
       m, "Mailbox", "Mailbox. See the C++ documentation for details.")
       .def(
-          "__str__", [](const Mailbox* self) { return "Mailbox(" + self->get_name() + ")"; },
-          "Textual representation of the Mailbox`")
+          "__repr__", [](const Mailbox* self) { return "<simgrid.Mailbox " + self->get_name() + ">"; },
+          "Textual representation of the Mailbox")
       .def_static("by_name", &Mailbox::by_name, py::call_guard<py::gil_scoped_release>(), py::arg("name"),
                   "Retrieve a Mailbox from its name")
       .def_property_readonly("name", &Mailbox::get_name, "The name of that mailbox (read-only property).")
@@ -807,8 +818,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("acquire_timeout", &Semaphore::acquire_timeout, py::call_guard<py::gil_scoped_release>(), py::arg("timeout"),
            "Acquire on the semaphore object with no timeout. Blocks until the semaphore is acquired or return "
            "true if it has not been acquired after the specified timeout.")
-      .def("release", &Semaphore::release, py::call_guard<py::gil_scoped_release>(),
-           "Release the semaphore.")
+      .def("release", &Semaphore::release, py::call_guard<py::gil_scoped_release>(), "Release the semaphore.")
       .def_property_readonly("capacity", &Semaphore::get_capacity, py::call_guard<py::gil_scoped_release>(),
                              "Get the semaphore capacity.")
       .def_property_readonly("would_block", &Semaphore::would_block, py::call_guard<py::gil_scoped_release>(),
@@ -830,12 +840,12 @@ PYBIND11_MODULE(simgrid, m)
       .def("unlock", &Mutex::unlock, py::call_guard<py::gil_scoped_release>(), "Release the mutex.")
       // Allow mutexes to be automatically acquired/released with a context manager: `with mutex: ...`
       .def("__enter__", &Mutex::lock, py::call_guard<py::gil_scoped_release>())
-      .def("__exit__", [](Mutex* self, const py::object&, const py::object&, const py::object&) { self->unlock(); },
-           py::call_guard<py::gil_scoped_release>());
+      .def(
+          "__exit__", [](Mutex* self, const py::object&, const py::object&, const py::object&) { self->unlock(); },
+          py::call_guard<py::gil_scoped_release>());
 
   /* Class Barrier */
-  py::class_<Barrier, BarrierPtr>(m, "Barrier",
-                                  "A classical barrier, but blocking in the simulation world.")
+  py::class_<Barrier, BarrierPtr>(m, "Barrier", "A classical barrier, but blocking in the simulation world.")
       .def(py::init<>(&Barrier::create), py::call_guard<py::gil_scoped_release>(), py::arg("expected_actors"),
            "Barrier constructor.")
       .def("wait", &Barrier::wait, py::call_guard<py::gil_scoped_release>(),
@@ -899,18 +909,22 @@ PYBIND11_MODULE(simgrid, m)
       .def("resume", &Actor::resume, py::call_guard<py::gil_scoped_release>(),
            "Resume that actor, that was previously suspend()ed.")
       .def_static("kill_all", &Actor::kill_all, py::call_guard<py::gil_scoped_release>(),
-                  "Kill all actors but the caller.");
-     
-     /* Enum Class IoOpType */
-     py::enum_<simgrid::s4u::Io::OpType>(m, "IoOpType")
+                  "Kill all actors but the caller.")
+      .def(
+          "__repr__", [](const ActorPtr a) { return "<simgrid.Actor " + a->get_name() + ">"; },
+          "Textual representation of the Actor");
+
+  /* Enum Class IoOpType */
+  py::enum_<simgrid::s4u::Io::OpType>(m, "IoOpType")
       .value("READ", simgrid::s4u::Io::OpType::READ)
       .value("WRITE", simgrid::s4u::Io::OpType::WRITE);
 
-     /* Class Operation */
-     py::class_<Operation, OperationPtr>(m, "Operation",
-                                            "Operation. See the C++ documentation for details.")
+  /* Class Operation */
+  py::class_<Operation, OperationPtr>(m, "Operation", "Operation. See the C++ documentation for details.")
       .def_static("init", &Operation::init)
-      .def_static("on_start_cb", [](py::object cb) {
+      .def_static(
+          "on_start_cb",
+          [](py::object cb) {
             cb.inc_ref(); // keep alive after return
             const py::gil_scoped_release gil_release;
             Operation::on_start_cb([cb](Operation* op) {
@@ -919,7 +933,9 @@ PYBIND11_MODULE(simgrid, m)
             });
           },
           "Add a callback called when each operation starts.")
-      .def_static("on_end_cb", [](py::object cb) {
+      .def_static(
+          "on_end_cb",
+          [](py::object cb) {
             cb.inc_ref(); // keep alive after return
             const py::gil_scoped_release gil_release;
             Operation::on_end_cb([cb](Operation* op) {
@@ -931,46 +947,64 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("name", &Operation::get_name, "The name of this operation (read-only).")
       .def_property_readonly("count", &Operation::get_count, "The execution count of this operation (read-only).")
       .def_property_readonly("successors", &Operation::get_successors, "The successors of this operation (read-only).")
-      .def_property("amount", &Operation::get_amount, &Operation::set_amount, "The amount of work to do for this operation.")
-      .def("enqueue_execs", py::overload_cast<int>(&Operation::enqueue_execs), py::call_guard<py::gil_scoped_release>(), py::arg("n"), "Enqueue executions for this operation.")
-      .def("add_successor", py::overload_cast<OperationPtr>(&Operation::add_successor), py::call_guard<py::gil_scoped_release>(), py::arg("op"), "Add a successor to this operation.")
-      .def("remove_successor", py::overload_cast<OperationPtr>(&Operation::remove_successor), py::call_guard<py::gil_scoped_release>(), py::arg("op"), "Remove a successor of this operation.")
-      .def("remove_all_successors", &Operation::remove_all_successors, py::call_guard<py::gil_scoped_release>(), "Remove all successors of this operation.")
-      .def("on_this_start", py::overload_cast<const std::function<void(Operation*)>&>(&Operation::on_this_start), py::arg("func"), "Add a callback called when this operation starts.")
-      .def("on_this_end", py::overload_cast<const std::function<void(Operation*)>&>(&Operation::on_this_end), py::arg("func"), "Add a callback called when this operation ends.")
-      .def("__repr__", [](const OperationPtr op) {
-          return op->get_name();
-      });
-     
-     /* Class CommOp */
-     py::class_<CommOp, CommOpPtr, Operation>(m, "CommOp",
-                                            "Communication Operation. See the C++ documentation for details.")
-      .def_static("init", py::overload_cast<const std::string&>(&CommOp::init), py::call_guard<py::gil_scoped_release>(),
-               py::arg("name"), "CommOp constructor")
-      .def_static("init", py::overload_cast<const std::string&, double, Host*, Host*>(&CommOp::init), py::call_guard<py::gil_scoped_release>(),
-               py::arg("name"), py::arg("bytes"), py::arg("source"), py::arg("destination"), "CommOp constructor")
+      .def_property("amount", &Operation::get_amount, &Operation::set_amount,
+                    "The amount of work to do for this operation.")
+      .def("enqueue_execs", py::overload_cast<int>(&Operation::enqueue_execs), py::call_guard<py::gil_scoped_release>(),
+           py::arg("n"), "Enqueue executions for this operation.")
+      .def("add_successor", py::overload_cast<OperationPtr>(&Operation::add_successor),
+           py::call_guard<py::gil_scoped_release>(), py::arg("op"), "Add a successor to this operation.")
+      .def("remove_successor", py::overload_cast<OperationPtr>(&Operation::remove_successor),
+           py::call_guard<py::gil_scoped_release>(), py::arg("op"), "Remove a successor of this operation.")
+      .def("remove_all_successors", &Operation::remove_all_successors, py::call_guard<py::gil_scoped_release>(),
+           "Remove all successors of this operation.")
+      .def("on_this_start", py::overload_cast<const std::function<void(Operation*)>&>(&Operation::on_this_start),
+           py::arg("func"), "Add a callback called when this operation starts.")
+      .def("on_this_end", py::overload_cast<const std::function<void(Operation*)>&>(&Operation::on_this_end),
+           py::arg("func"), "Add a callback called when this operation ends.")
+      .def(
+          "__repr__", [](const OperationPtr op) { return "<simgrid.Operation " + op->get_name() + ">"; },
+          "Textual representation of the Operation");
+
+  /* Class CommOp */
+  py::class_<CommOp, CommOpPtr, Operation>(m, "CommOp",
+                                           "Communication Operation. See the C++ documentation for details.")
+      .def_static("init", py::overload_cast<const std::string&>(&CommOp::init),
+                  py::call_guard<py::gil_scoped_release>(), py::arg("name"), "CommOp constructor")
+      .def_static("init", py::overload_cast<const std::string&, double, Host*, Host*>(&CommOp::init),
+                  py::call_guard<py::gil_scoped_release>(), py::arg("name"), py::arg("bytes"), py::arg("source"),
+                  py::arg("destination"), "CommOp constructor")
       .def_property("source", &CommOp::get_source, &CommOp::set_source, "The source of the communication.")
-      .def_property("destination", &CommOp::get_destination, &CommOp::set_destination, "The destination of the communication.")
-      .def_property("bytes", &CommOp::get_bytes, &CommOp::set_bytes, "The amount of bytes to send.");
-      
-     /* Class ExecOp */
-     py::class_<ExecOp, ExecOpPtr, Operation>(m, "ExecOp",
-                                            "Execution Operation. See the C++ documentation for details.")
-      .def_static("init", py::overload_cast<const std::string&>(&ExecOp::init), py::call_guard<py::gil_scoped_release>(),
-               py::arg("name"), "ExecOp constructor")
-      .def_static("init", py::overload_cast<const std::string&, double, Host*>(&ExecOp::init), py::call_guard<py::gil_scoped_release>(),
-               py::arg("name"), py::arg("flops"), py::arg("host"), "CommOp constructor.")
+      .def_property("destination", &CommOp::get_destination, &CommOp::set_destination,
+                    "The destination of the communication.")
+      .def_property("bytes", &CommOp::get_bytes, &CommOp::set_bytes, "The amount of bytes to send.")
+      .def(
+          "__repr__", [](const CommOpPtr c) { return "<simgrid.CommOp " + c->get_name() + ">"; },
+          "Textual representation of the CommOp");
+
+  /* Class ExecOp */
+  py::class_<ExecOp, ExecOpPtr, Operation>(m, "ExecOp", "Execution Operation. See the C++ documentation for details.")
+      .def_static("init", py::overload_cast<const std::string&>(&ExecOp::init),
+                  py::call_guard<py::gil_scoped_release>(), py::arg("name"), "ExecOp constructor")
+      .def_static("init", py::overload_cast<const std::string&, double, Host*>(&ExecOp::init),
+                  py::call_guard<py::gil_scoped_release>(), py::arg("name"), py::arg("flops"), py::arg("host"),
+                  "CommOp constructor.")
       .def_property("host", &ExecOp::get_host, &ExecOp::set_host, "The host of the execution.")
-      .def_property("flops", &ExecOp::get_flops, &ExecOp::set_flops, "The amount of flops to execute.");
-     
-     /* Class IoOp */
-     py::class_<IoOp, IoOpPtr, Operation>(m, "IoOp",
-                                            "IO Operation. See the C++ documentation for details.")
+      .def_property("flops", &ExecOp::get_flops, &ExecOp::set_flops, "The amount of flops to execute.")
+      .def(
+          "__repr__", [](const ExecOpPtr e) { return "<simgrid.ExecOp " + e->get_name() + ">"; },
+          "Textual representation of the ExecOp");
+
+  /* Class IoOp */
+  py::class_<IoOp, IoOpPtr, Operation>(m, "IoOp", "IO Operation. See the C++ documentation for details.")
       .def_static("init", py::overload_cast<const std::string&>(&IoOp::init), py::call_guard<py::gil_scoped_release>(),
-               py::arg("name"), "IoOp constructor")
-      .def_static("init", py::overload_cast<const std::string&, double, Disk*, Io::OpType>(&IoOp::init), py::call_guard<py::gil_scoped_release>(),
-               py::arg("name"), py::arg("bytes"), py::arg("disk"), py::arg("type"), "IoOp constructor.")
+                  py::arg("name"), "IoOp constructor")
+      .def_static("init", py::overload_cast<const std::string&, double, Disk*, Io::OpType>(&IoOp::init),
+                  py::call_guard<py::gil_scoped_release>(), py::arg("name"), py::arg("bytes"), py::arg("disk"),
+                  py::arg("type"), "IoOp constructor.")
       .def_property("disk", &IoOp::get_disk, &IoOp::set_disk, "The disk of the IO.")
       .def_property("bytes", &IoOp::get_bytes, &IoOp::set_bytes, "The amount of bytes to process.")
-      .def_property("type", &IoOp::get_bytes, &IoOp::set_bytes, "The type of IO.");
+      .def_property("type", &IoOp::get_bytes, &IoOp::set_bytes, "The type of IO.")
+      .def(
+          "__repr__", [](const IoOpPtr io) { return "<simgrid.IoOp " + io->get_name() + ">"; },
+          "Textual representation of the IoOp");
 }
