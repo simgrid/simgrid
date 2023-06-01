@@ -337,15 +337,17 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
     const Execution pre_E_e    = get_prefix_before(e);
     const auto sleeping_actors = state_at_e.get_sleeping_actors();
 
-    // Check if any enabled actor independent with this execution after `v`
-    // is contained in the sleep set
+    // Check if any enabled actor that is independent with
+    // this execution after `v` is contained in the sleep set
     for (const auto& [aid, astate] : state_at_e.get_actors_list()) {
-      // TODO: We have to be able to react appropriately here when adding new
-      // types of transitions (multiple choices can be made :( )
-      if (astate.is_enabled() and pre_E_e.is_independent_with_execution_of(v, astate.get_transition(0))) {
-        if (sleeping_actors.count(aid) > 0) {
-          return std::nullopt;
-        }
+      const bool is_in_WI_E =
+          astate.is_enabled() and pre_E_e.is_independent_with_execution_of(v, astate.get_transition());
+      const bool is_in_sleep_set = sleeping_actors.count(aid) > 0;
+
+      // `action(aid)` is in `WI_[E](v)` but also is contained in the sleep set.
+      // This implies that the intersection between the two is non-empty
+      if (is_in_WI_E && is_in_sleep_set) {
+        return std::nullopt;
       }
     }
   }

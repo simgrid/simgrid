@@ -213,9 +213,7 @@ void State::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
       if (actor.is_enabled()) {
         // For each variant of the transition, we want
         // to insert the action into the tree. This ensures
-        // that all variants are searched?
-        //
-        // TODO: How do we modify sleep sets then?
+        // that all variants are searched
         for (unsigned times = 0; times < actor.get_max_considered(); ++times) {
           wakeup_tree_.insert(prior, odpor::PartialExecution{actor.get_transition(times)});
         }
@@ -273,7 +271,15 @@ void State::do_odpor_unwind()
 {
   if (auto out_transition = get_transition_out(); out_transition != nullptr) {
     remove_subtree_using_current_out_transition();
-    add_sleep_set(std::move(out_transition));
+
+    // Only when we've exhausted all variants of the transition which
+    // can be chosen from this state do we finally add the actor to the
+    // sleep set. This ensures that the current logic handling sleep sets
+    // works with ODPOR in the way we intend it to work. There is not a
+    // good way to perform transition equality in SimGrid; instead, we
+    // effectively simply check for the presence of an actor in the sleep set.
+    if (!get_actors_list().at(out_transition->aid_).has_more_to_consider())
+      add_sleep_set(std::move(out_transition));
   }
 }
 
