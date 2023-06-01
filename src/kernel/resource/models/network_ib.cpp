@@ -41,7 +41,7 @@ SIMGRID_REGISTER_NETWORK_MODEL(
       engine->get_netzone_root()->set_network_model(net_model);
 
       simgrid::s4u::Link::on_communication_state_change_cb(NetworkIBModel::IB_action_state_changed_callback);
-      simgrid::kernel::activity::CommImpl::on_start.connect(NetworkIBModel::IB_comm_start_callback);
+      simgrid::s4u::Comm::on_start_cb(NetworkIBModel::IB_comm_start_callback);
       simgrid::s4u::Host::on_creation_cb(NetworkIBModel::IB_create_host_callback);
       simgrid::config::set_default<double>("network/weight-S", 8775);
     });
@@ -68,9 +68,9 @@ void NetworkIBModel::IB_action_state_changed_callback(NetworkAction& action, Act
   ibModel->active_comms.erase(&action);
 }
 
-void NetworkIBModel::IB_comm_start_callback(const activity::CommImpl& comm)
+void NetworkIBModel::IB_comm_start_callback(const s4u::Comm& comm)
 {
-  auto* action  = static_cast<NetworkAction*>(comm.model_action_);
+  auto* action  = static_cast<NetworkAction*>(static_cast<activity::CommImpl*>(comm.get_impl())->model_action_);
   auto* ibModel = static_cast<NetworkIBModel*>(action->get_model());
   auto* act_src = &ibModel->active_nodes.at(action->get_src().get_name());
   auto* act_dst = &ibModel->active_nodes.at(action->get_dst().get_name());

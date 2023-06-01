@@ -298,9 +298,9 @@ public:
     });
     // FIXME I think that this fires at the same time for all hosts, so when the src sends something,
     // the dst will be notified even though it didn't even arrive at the recv yet
-    kernel::activity::CommImpl::on_start.connect([this](const kernel::activity::CommImpl& comm) {
-      const auto* act = static_cast<kernel::resource::NetworkAction*>(comm.model_action_);
-      if ((get_host() == &act->get_src() || get_host() == &act->get_dst()) && iteration_running) {
+    simgrid::s4u::Comm::on_start_cb([this](const s4u::Comm& comm) {
+      if ((get_host() == comm.get_sender()->get_host() || get_host() == comm.get_receiver()->get_host()) &&
+           iteration_running) {
         post_task();
       }
     });
