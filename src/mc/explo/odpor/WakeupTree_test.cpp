@@ -392,7 +392,7 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
     }
   }
 
-  SECTION("Insertion with non-obvious equivalent leaf")
+  SECTION("Insertion with more subtle equivalents")
   {
     const auto cd_1 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
     const auto i_2  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
@@ -401,14 +401,69 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
     const auto d_2  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
     WakeupTree complex_tree;
     // After the insertions below, the tree looks like the following:
-    //                {}
-    //              /    /
-    //            a0     a2
-    //                 /  |  /
-    //               a0  a3   a5
+    //                              {}
+    //                           /     /
+    //                       cd_1      i_2
+    //                       /            /
+    //                    i_2              d_2
+    //                   /                  /
+    //                 d_1                 cd_1
+    //                 /                 /      /
+    //               i_3               d_1      i_3
+    //              /                  /          /
+    //            d_2                i_3          d_2
+    //            /                  /              /
+    //          d_2                d_2              d_1
+    //
+    // d_1.i_3.d_2 is equivalent to i_3.d_2.d_1
     complex_tree.insert(Execution(), {cd_1, i_2, d_1, i_3, d_2, d_2});
     complex_tree.insert(Execution(), {i_2, d_2, cd_1, d_1, i_3, d_2});
     complex_tree.insert(Execution(), {i_2, d_2, cd_1, i_3, d_2, d_1});
+    REQUIRE(complex_tree.get_num_nodes() == 16);
+    test_tree_iterator(complex_tree, std::vector<PartialExecution>{{cd_1, i_2, d_1, i_3, d_2, d_2},
+                                                                   {cd_1, i_2, d_1, i_3, d_2},
+                                                                   {cd_1, i_2, d_1, i_3},
+                                                                   {cd_1, i_2, d_1},
+                                                                   {cd_1, i_2},
+                                                                   {cd_1},
+                                                                   {i_2, d_2, cd_1, d_1, i_3, d_2},
+                                                                   {i_2, d_2, cd_1, d_1, i_3},
+                                                                   {i_2, d_2, cd_1, d_1},
+                                                                   {i_2, d_2, cd_1, i_3, d_2, d_1},
+                                                                   {i_2, d_2, cd_1, i_3, d_2},
+                                                                   {i_2, d_2, cd_1, i_3},
+                                                                   {i_2, d_2, cd_1},
+                                                                   {i_2, d_2},
+                                                                   {i_2},
+                                                                   {}});
+    // Here we note that the sequence that we are attempting to insert, viz.
+    //
+    //    i_3.i_2.d_2.cd_1.d_2.d_1
+    //
+    // is already equivalent to
+    //
+    //    i_2.d_2.cd_1.i_3.d_2.d_1
+    complex_tree.insert(Execution(), {i_3, i_2, d_2, cd_1, d_2, d_1});
+    REQUIRE(complex_tree.get_num_nodes() == 16);
+
+    // Here we note that the sequence that we are attempting to insert, viz.
+    //
+    //    i_2.d_2.cd_1.d_1.i_3
+    //
+    // is already equivalent to
+    //
+    //    i_2.d_2.cd_1.i_3.d_2.d_1
+    complex_tree.insert(Execution(), {i_2, d_2, cd_1, d_1, i_3});
+    REQUIRE(complex_tree.get_num_nodes() == 16);
+
+    // Here we note that the sequence that we are attempting to insert, viz.
+    //
+    //    i_2.d_2.cd_1
+    //
+    // is accounted for by an interior node of the tree. Since there is no
+    // "extra" portions that are different from what is already
+    // contained in the tree, nothing is added and the tree stays the same
+    complex_tree.insert(Execution(), {i_2, d_2, cd_1});
     REQUIRE(complex_tree.get_num_nodes() == 16);
   }
 }

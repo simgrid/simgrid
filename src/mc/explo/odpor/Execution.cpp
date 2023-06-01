@@ -416,7 +416,7 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
     if (E_v.is_initial_after_execution_of(w_now, p)) {
       // Remove `p` from w and continue
 
-      // TODO: If `p` occurs in `w`, it had better refer to the same
+      // INVARIANT: If `p` occurs in `w`, it had better refer to the same
       // transition referenced by `v`. Unfortunately, we have two
       // sources of truth here which can be manipulated at the same
       // time as arguments to the function. If ODPOR works correctly,
