@@ -161,10 +161,16 @@ EventSet UdporChecker::compute_exC(const Configuration& C, const State& stateC, 
   // actors in a consistent order since `std::map` is by-default ordered using
   // `std::less<Key>` (see the return type of `State::get_actors_list()`)
   for (const auto& [aid, actor_state] : stateC.get_actors_list()) {
-    for (const auto& transition : actor_state.get_enabled_transitions()) {
-      XBT_DEBUG("\t Considering partial extension for %s", transition->to_string().c_str());
-      EventSet extension = ExtensionSetCalculator::partially_extend(C, &unfolding, transition);
-      exC.form_union(extension);
+    const auto& enabled_transitions = actor_state.get_enabled_transitions();
+    if (enabled_transitions.empty()) {
+      XBT_DEBUG("\t Actor `%ld` is disabled: no partial extensions need to be considered", aid);
+    } else {
+      XBT_DEBUG("\t Actor `%ld` is enabled", aid);
+      for (const auto& transition : enabled_transitions) {
+        XBT_DEBUG("\t Considering partial extension for %s", transition->to_string().c_str());
+        EventSet extension = ExtensionSetCalculator::partially_extend(C, &unfolding, transition);
+        exC.form_union(extension);
+      }
     }
   }
   return exC;
