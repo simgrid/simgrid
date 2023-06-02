@@ -471,8 +471,7 @@ void CommImpl::finish()
   if (get_iface()) {
     const auto& piface = static_cast<const s4u::Comm&>(*get_iface());
     s4u::Comm::on_completion(piface);
-    if (not MC_is_active()) // MC doesn't like when we access user interface from the kernel.
-      piface.on_this_completion(piface);
+    piface.on_this_completion(piface);
   }
 
   /* Update synchro state */
