@@ -1,5 +1,5 @@
 #include <simgrid/Exception.hpp>
-#include <simgrid/plugins/operation.hpp>
+#include <simgrid/plugins/task.hpp>
 #include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Io.hpp>
@@ -7,68 +7,68 @@
 
 #include "src/simgrid/module.hpp"
 
-SIMGRID_REGISTER_PLUGIN(operation, "Battery management", nullptr)
-/** @defgroup plugin_operation plugin_operation Plugin Operation
+SIMGRID_REGISTER_PLUGIN(task, "Battery management", nullptr)
+/** @defgroup plugin_task plugin_task Plugin Task
 
   @beginrst
 
-This is the operation plugin, enabling management of Operations.
-To activate this plugin, first call :cpp:func:`Operation::init`.
+This is the task plugin, enabling management of Tasks.
+To activate this plugin, first call :cpp:func:`Task::init`.
 
-Operations are designed to represent workflows, i.e, graphs of Operations.
-Operations can only be instancied using either
-:cpp:func:`simgrid::plugins::ExecOp::init` or :cpp:func:`simgrid::plugins::CommOp::init`
-An ExecOp is an Execution Operation. Its underlying Activity is an :ref:`Exec <API_s4u_Exec>`.
-A CommOp is a Communication Operation. Its underlying Activity is a :ref:`Comm <API_s4u_Comm>`.
+Tasks are designed to represent dataflows, i.e, graphs of Tasks.
+Tasks can only be instancied using either
+:cpp:func:`simgrid::plugins::ExecTask::init` or :cpp:func:`simgrid::plugins::CommTask::init`
+An ExecTask is an Execution Task. Its underlying Activity is an :ref:`Exec <API_s4u_Exec>`.
+A CommTask is a Communication Task. Its underlying Activity is a :ref:`Comm <API_s4u_Comm>`.
 
   @endrst
  */
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(Operation, kernel, "Logging specific to the operation plugin");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(Task, kernel, "Logging specific to the task plugin");
 
 namespace simgrid::plugins {
 
-xbt::signal<void(Operation*)> Operation::on_start;
-xbt::signal<void(Operation*)> Operation::on_end;
+xbt::signal<void(Task*)> Task::on_start;
+xbt::signal<void(Task*)> Task::on_end;
 
-Operation::Operation(const std::string& name) : name_(name) {}
+Task::Task(const std::string& name) : name_(name) {}
 
 /**
- *  @param predecessor The Operation to add.
- *  @brief Add a predecessor to this Operation.
+ *  @param predecessor The Task to add.
+ *  @brief Add a predecessor to this Task.
  */
-void Operation::add_predecessor(Operation* predecessor)
+void Task::add_predecessor(Task* predecessor)
 {
   if (predecessors_.find(predecessor) == predecessors_.end())
     simgrid::kernel::actor::simcall_answered([this, predecessor] { predecessors_[predecessor] = 0; });
 }
 
 /**
- *  @param predecessor The Operation to remove.
- *  @brief Remove a predecessor from this Operation.
+ *  @param predecessor The Task to remove.
+ *  @brief Remove a predecessor from this Task.
  */
-void Operation::remove_predecessor(Operation* predecessor)
+void Task::remove_predecessor(Task* predecessor)
 {
   simgrid::kernel::actor::simcall_answered([this, predecessor] { predecessors_.erase(predecessor); });
 }
 
 /**
- *  @brief Return True if the Operation can start a new Activity.
- *  @note The Operation is ready if not already doing something and there is at least one execution waiting in queue.
+ *  @brief Return True if the Task can start a new Activity.
+ *  @note The Task is ready if not already doing something and there is at least one execution waiting in queue.
  */
-bool Operation::ready_to_run() const
+bool Task::ready_to_run() const
 {
   return not working_ && queued_execs_ > 0;
 }
 
 /**
  *  @param source The sender.
- *  @brief Receive a token from another Operation.
- *  @note Check upon reception if the Operation has received a token from each of its predecessors,
+ *  @brief Receive a token from another Task.
+ *  @note Check upon reception if the Task has received a token from each of its predecessors,
  * and in this case consumes those tokens and enqueue an execution.
  */
-void Operation::receive(Operation* source)
+void Task::receive(Task* source)
 {
-  XBT_DEBUG("Operation %s received a token from %s", name_.c_str(), source->name_.c_str());
+  XBT_DEBUG("Task %s received a token from %s", name_.c_str(), source->name_.c_str());
   auto it = predecessors_.find(source);
   simgrid::kernel::actor::simcall_answered([this, it] {
     it->second++;
@@ -87,7 +87,7 @@ void Operation::receive(Operation* source)
 }
 
 /**
- *  @brief Operation routine when finishing an execution.
+ *  @brief Task routine when finishing an execution.
  *  @note Set its working status as false.
  * Add 1 to its count of finished executions.
  * Call the on_this_end func.
@@ -95,7 +95,7 @@ void Operation::receive(Operation* source)
  * Send a token to each of its successors.
  * Start a new execution if possible.
  */
-void Operation::complete()
+void Task::complete()
 {
   simgrid::kernel::actor::simcall_answered([this] {
     working_ = false;
@@ -103,81 +103,78 @@ void Operation::complete()
   });
   for (auto end_func : end_func_handlers_)
     end_func(this);
-  Operation::on_end(this);
-  for (auto const& op : successors_)
-    op->receive(this);
+  Task::on_end(this);
+  for (auto const& t : successors_)
+    t->receive(this);
   if (ready_to_run())
-    execute();
+    fire();
 }
 
-/** @ingroup plugin_operation
- *  @brief Init the Operation plugin.
- *  @note Add a completion callback to all Activities to call Operation::complete().
+/** @ingroup plugin_task
+ *  @brief Init the Task plugin.
+ *  @note Add a completion callback to all Activities to call Task::complete().
  */
-void Operation::init()
+void Task::init()
 {
-  if (Operation::inited_)
+  if (Task::inited_)
     return;
-  Operation::inited_                      = true;
+  Task::inited_                           = true;
   ExtendedAttributeActivity::EXTENSION_ID = simgrid::s4u::Activity::extension_create<ExtendedAttributeActivity>();
-  simgrid::s4u::Exec::on_completion_cb([](simgrid::s4u::Exec const& exec) {
-    exec.extension<ExtendedAttributeActivity>()->operation_->complete();
-  });
-  simgrid::s4u::Comm::on_completion_cb([](simgrid::s4u::Comm const& comm) {
-    comm.extension<ExtendedAttributeActivity>()->operation_->complete();
-  });
-  simgrid::s4u::Io::on_completion_cb([](simgrid::s4u::Io const& io) {
-    io.extension<ExtendedAttributeActivity>()->operation_->complete();
-  });
+  simgrid::s4u::Exec::on_completion_cb(
+      [](simgrid::s4u::Exec const& exec) { exec.extension<ExtendedAttributeActivity>()->task_->complete(); });
+  simgrid::s4u::Comm::on_completion_cb(
+      [](simgrid::s4u::Comm const& comm) { comm.extension<ExtendedAttributeActivity>()->task_->complete(); });
+  simgrid::s4u::Io::on_completion_cb(
+      [](simgrid::s4u::Io const& io) { io.extension<ExtendedAttributeActivity>()->task_->complete(); });
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @param n The number of executions to enqueue.
  *  @brief Enqueue executions.
  *  @note Immediatly starts an execution if possible.
  */
-void Operation::enqueue_execs(int n)
+void Task::enqueue_execs(int n)
 {
   simgrid::kernel::actor::simcall_answered([this, n] {
     queued_execs_ += n;
     if (ready_to_run())
-      execute();
+      fire();
   });
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @param amount The amount to set.
  *  @brief Set the amout of work to do.
- *  @note Amount in flop for ExecOp and in bytes for CommOp.
+ *  @note Amount in flop for ExecTask and in bytes for CommTask.
  */
-void Operation::set_amount(double amount)
+void Task::set_amount(double amount)
 {
   simgrid::kernel::actor::simcall_answered([this, amount] { amount_ = amount; });
 }
 
-/** @ingroup plugin_operation
- *  @param successor The Operation to add.
- *  @brief Add a successor to this Operation.
+/** @ingroup plugin_task
+ *  @param successor The Task to add.
+ *  @brief Add a successor to this Task.
  *  @note It also adds this as a predecessor of successor.
  */
-void Operation::add_successor(OperationPtr successor)
+void Task::add_successor(TaskPtr successor)
 {
   simgrid::kernel::actor::simcall_answered([this, successor] { successors_.insert(successor.get()); });
   successor->add_predecessor(this);
 }
 
-/** @ingroup plugin_operation
- *  @param successor The Operation to remove.
- *  @brief Remove a successor from this Operation.
+/** @ingroup plugin_task
+ *  @param successor The Task to remove.
+ *  @brief Remove a successor from this Task.
  *  @note It also remove this from the predecessors of successor.
  */
-void Operation::remove_successor(OperationPtr successor)
+void Task::remove_successor(TaskPtr successor)
 {
   simgrid::kernel::actor::simcall_answered([this, successor] { successors_.erase(successor.get()); });
   successor->remove_predecessor(this);
 }
 
-void Operation::remove_all_successors()
+void Task::remove_all_successors()
 {
   simgrid::kernel::actor::simcall_answered([this] {
     while (not successors_.empty()) {
@@ -188,30 +185,30 @@ void Operation::remove_all_successors()
   });
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @param func The function to set.
  *  @brief Set a function to be called before each execution.
  *  @note The function is called before the underlying Activity starts.
  */
-void Operation::on_this_start(const std::function<void(Operation*)>& func)
+void Task::on_this_start(const std::function<void(Task*)>& func)
 {
   simgrid::kernel::actor::simcall_answered([this, &func] { start_func_handlers_.push_back(func); });
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @param func The function to set.
  *  @brief Set a function to be called after each execution.
  *  @note The function is called after the underlying Activity ends, but before sending tokens to successors.
  */
-void Operation::on_this_end(const std::function<void(Operation*)>& func)
+void Task::on_this_end(const std::function<void(Task*)>& func)
 {
   simgrid::kernel::actor::simcall_answered([this, &func] { end_func_handlers_.push_back(func); });
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @brief Return the number of completed executions.
  */
-int Operation::get_count() const
+int Task::get_count() const
 {
   return count_;
 }
@@ -219,34 +216,34 @@ int Operation::get_count() const
 /**
  *  @brief Default constructor.
  */
-ExecOp::ExecOp(const std::string& name) : Operation(name) {}
+ExecTask::ExecTask(const std::string& name) : Task(name) {}
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @brief Smart Constructor.
  */
-ExecOpPtr ExecOp::init(const std::string& name)
+ExecTaskPtr ExecTask::init(const std::string& name)
 {
-  return ExecOpPtr(new ExecOp(name));
+  return ExecTaskPtr(new ExecTask(name));
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @brief Smart Constructor.
  */
-ExecOpPtr ExecOp::init(const std::string& name, double flops, s4u::Host* host)
+ExecTaskPtr ExecTask::init(const std::string& name, double flops, s4u::Host* host)
 {
   return init(name)->set_flops(flops)->set_host(host);
 }
 
 /**
- *  @brief Do one execution of the Operation.
+ *  @brief Do one execution of the Task.
  *  @note Call the on_this_start() func. Set its working status as true.
  *  Init and start the underlying Activity.
  */
-void ExecOp::execute()
+void ExecTask::fire()
 {
   for (auto start_func : start_func_handlers_)
     start_func(this);
-  Operation::on_start(this);
+  Task::on_start(this);
   kernel::actor::simcall_answered([this] {
     working_      = true;
     queued_execs_ = std::max(queued_execs_ - 1, 0);
@@ -257,24 +254,24 @@ void ExecOp::execute()
   exec->set_host(host_);
   exec->start();
   exec->extension_set(new ExtendedAttributeActivity());
-  exec->extension<ExtendedAttributeActivity>()->operation_ = this;
+  exec->extension<ExtendedAttributeActivity>()->task_ = this;
   kernel::actor::simcall_answered([this, exec] { current_activity_ = exec; });
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @param host The host to set.
  *  @brief Set a new host.
  */
-ExecOpPtr ExecOp::set_host(s4u::Host* host)
+ExecTaskPtr ExecTask::set_host(s4u::Host* host)
 {
   kernel::actor::simcall_answered([this, host] { host_ = host; });
   return this;
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @param flops The amount of flops to set.
  */
-ExecOpPtr ExecOp::set_flops(double flops)
+ExecTaskPtr ExecTask::set_flops(double flops)
 {
   kernel::actor::simcall_answered([this, flops] { amount_ = flops; });
   return this;
@@ -283,35 +280,34 @@ ExecOpPtr ExecOp::set_flops(double flops)
 /**
  *  @brief Default constructor.
  */
-CommOp::CommOp(const std::string& name) : Operation(name) {}
+CommTask::CommTask(const std::string& name) : Task(name) {}
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @brief Smart constructor.
  */
-CommOpPtr CommOp::init(const std::string& name)
+CommTaskPtr CommTask::init(const std::string& name)
 {
-  return CommOpPtr(new CommOp(name));
+  return CommTaskPtr(new CommTask(name));
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @brief Smart constructor.
  */
-CommOpPtr CommOp::init(const std::string& name, double bytes, s4u::Host* source,
-                       s4u::Host* destination)
+CommTaskPtr CommTask::init(const std::string& name, double bytes, s4u::Host* source, s4u::Host* destination)
 {
   return init(name)->set_bytes(bytes)->set_source(source)->set_destination(destination);
 }
 
 /**
- *  @brief Do one execution of the Operation.
+ *  @brief Do one execution of the Task.
  *  @note Call the on_this_start() func. Set its working status as true.
  *  Init and start the underlying Activity.
  */
-void CommOp::execute()
+void CommTask::fire()
 {
   for (auto start_func : start_func_handlers_)
     start_func(this);
-  Operation::on_start(this);
+  Task::on_start(this);
   kernel::actor::simcall_answered([this] {
     working_      = true;
     queued_execs_ = std::max(queued_execs_ - 1, 0);
@@ -321,34 +317,34 @@ void CommOp::execute()
   comm->set_payload_size(amount_);
   comm->start();
   comm->extension_set(new ExtendedAttributeActivity());
-  comm->extension<ExtendedAttributeActivity>()->operation_ = this;
+  comm->extension<ExtendedAttributeActivity>()->task_ = this;
   kernel::actor::simcall_answered([this, comm] { current_activity_ = comm; });
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @param source The host to set.
  *  @brief Set a new source host.
  */
-CommOpPtr CommOp::set_source(s4u::Host* source)
+CommTaskPtr CommTask::set_source(s4u::Host* source)
 {
   kernel::actor::simcall_answered([this, source] { source_ = source; });
   return this;
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @param destination The host to set.
  *  @brief Set a new destination host.
  */
-CommOpPtr CommOp::set_destination(s4u::Host* destination)
+CommTaskPtr CommTask::set_destination(s4u::Host* destination)
 {
   kernel::actor::simcall_answered([this, destination] { destination_ = destination; });
   return this;
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @param bytes The amount of bytes to set.
  */
-CommOpPtr CommOp::set_bytes(double bytes)
+CommTaskPtr CommTask::set_bytes(double bytes)
 {
   kernel::actor::simcall_answered([this, bytes] { amount_ = bytes; });
   return this;
@@ -357,55 +353,55 @@ CommOpPtr CommOp::set_bytes(double bytes)
 /**
  *  @brief Default constructor.
  */
-IoOp::IoOp(const std::string& name) : Operation(name) {}
+IoTask::IoTask(const std::string& name) : Task(name) {}
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @brief Smart Constructor.
  */
-IoOpPtr IoOp::init(const std::string& name)
+IoTaskPtr IoTask::init(const std::string& name)
 {
-  return IoOpPtr(new IoOp(name));
+  return IoTaskPtr(new IoTask(name));
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @brief Smart Constructor.
  */
-IoOpPtr IoOp::init(const std::string& name, double bytes, s4u::Disk* disk, s4u::Io::OpType type)
+IoTaskPtr IoTask::init(const std::string& name, double bytes, s4u::Disk* disk, s4u::Io::OpType type)
 {
   return init(name)->set_bytes(bytes)->set_disk(disk)->set_op_type(type);
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @param disk The disk to set.
  *  @brief Set a new disk.
  */
-IoOpPtr IoOp::set_disk(s4u::Disk* disk)
+IoTaskPtr IoTask::set_disk(s4u::Disk* disk)
 {
   kernel::actor::simcall_answered([this, disk] { disk_ = disk; });
   return this;
 }
 
-/** @ingroup plugin_operation
+/** @ingroup plugin_task
  *  @param bytes The amount of bytes to set.
  */
-IoOpPtr IoOp::set_bytes(double bytes)
+IoTaskPtr IoTask::set_bytes(double bytes)
 {
   kernel::actor::simcall_answered([this, bytes] { amount_ = bytes; });
   return this;
 }
 
-/** @ingroup plugin_operation */
-IoOpPtr IoOp::set_op_type(s4u::Io::OpType type)
+/** @ingroup plugin_task */
+IoTaskPtr IoTask::set_op_type(s4u::Io::OpType type)
 {
   kernel::actor::simcall_answered([this, type] { type_ = type; });
   return this;
 }
 
-void IoOp::execute()
+void IoTask::fire()
 {
   for (auto start_func : start_func_handlers_)
     start_func(this);
-  Operation::on_start(this);
+  Task::on_start(this);
   kernel::actor::simcall_answered([this] {
     working_      = true;
     queued_execs_ = std::max(queued_execs_ - 1, 0);
@@ -417,13 +413,12 @@ void IoOp::execute()
   io->set_op_type(type_);
   io->start();
   io->extension_set(new ExtendedAttributeActivity());
-  io->extension<ExtendedAttributeActivity>()->operation_ = this;
+  io->extension<ExtendedAttributeActivity>()->task_ = this;
   kernel::actor::simcall_answered([this, io] { current_activity_ = io; });
 }
-
 
 } // namespace simgrid::plugins
 
 simgrid::xbt::Extension<simgrid::s4u::Activity, simgrid::plugins::ExtendedAttributeActivity>
     simgrid::plugins::ExtendedAttributeActivity::EXTENSION_ID;
-bool simgrid::plugins::Operation::inited_ = false;
+bool simgrid::plugins::Task::inited_ = false;

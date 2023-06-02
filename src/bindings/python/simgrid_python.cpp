@@ -11,7 +11,7 @@
 #include "simgrid/kernel/ProfileBuilder.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include <simgrid/Exception.hpp>
-#include <simgrid/plugins/operation.hpp>
+#include <simgrid/plugins/task.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Barrier.hpp>
 #include <simgrid/s4u/Comm.hpp>
@@ -33,14 +33,14 @@
 #include <vector>
 
 namespace py = pybind11;
-using simgrid::plugins::CommOp;
-using simgrid::plugins::CommOpPtr;
-using simgrid::plugins::ExecOp;
-using simgrid::plugins::ExecOpPtr;
-using simgrid::plugins::IoOp;
-using simgrid::plugins::IoOpPtr;
-using simgrid::plugins::Operation;
-using simgrid::plugins::OperationPtr;
+using simgrid::plugins::CommTask;
+using simgrid::plugins::CommTaskPtr;
+using simgrid::plugins::ExecTask;
+using simgrid::plugins::ExecTaskPtr;
+using simgrid::plugins::IoTask;
+using simgrid::plugins::IoTaskPtr;
+using simgrid::plugins::Task;
+using simgrid::plugins::TaskPtr;
 using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 using simgrid::s4u::Barrier;
@@ -919,92 +919,90 @@ PYBIND11_MODULE(simgrid, m)
       .value("READ", simgrid::s4u::Io::OpType::READ)
       .value("WRITE", simgrid::s4u::Io::OpType::WRITE);
 
-  /* Class Operation */
-  py::class_<Operation, OperationPtr>(m, "Operation", "Operation. See the C++ documentation for details.")
-      .def_static("init", &Operation::init)
+  /* Class Task */
+  py::class_<Task, TaskPtr>(m, "Task", "Task. See the C++ documentation for details.")
+      .def_static("init", &Task::init)
       .def_static(
           "on_start_cb",
           [](py::object cb) {
             cb.inc_ref(); // keep alive after return
             const py::gil_scoped_release gil_release;
-            Operation::on_start_cb([cb](Operation* op) {
+            Task::on_start_cb([cb](Task* op) {
               const py::gil_scoped_acquire py_context; // need a new context for callback
               py::reinterpret_borrow<py::function>(cb.ptr())(op);
             });
           },
-          "Add a callback called when each operation starts.")
+          "Add a callback called when each task starts.")
       .def_static(
           "on_end_cb",
           [](py::object cb) {
             cb.inc_ref(); // keep alive after return
             const py::gil_scoped_release gil_release;
-            Operation::on_end_cb([cb](Operation* op) {
+            Task::on_end_cb([cb](Task* op) {
               const py::gil_scoped_acquire py_context; // need a new context for callback
               py::reinterpret_borrow<py::function>(cb.ptr())(op);
             });
           },
-          "Add a callback called when each operation ends.")
-      .def_property_readonly("name", &Operation::get_name, "The name of this operation (read-only).")
-      .def_property_readonly("count", &Operation::get_count, "The execution count of this operation (read-only).")
-      .def_property_readonly("successors", &Operation::get_successors, "The successors of this operation (read-only).")
-      .def_property("amount", &Operation::get_amount, &Operation::set_amount,
-                    "The amount of work to do for this operation.")
-      .def("enqueue_execs", py::overload_cast<int>(&Operation::enqueue_execs), py::call_guard<py::gil_scoped_release>(),
-           py::arg("n"), "Enqueue executions for this operation.")
-      .def("add_successor", py::overload_cast<OperationPtr>(&Operation::add_successor),
-           py::call_guard<py::gil_scoped_release>(), py::arg("op"), "Add a successor to this operation.")
-      .def("remove_successor", py::overload_cast<OperationPtr>(&Operation::remove_successor),
-           py::call_guard<py::gil_scoped_release>(), py::arg("op"), "Remove a successor of this operation.")
-      .def("remove_all_successors", &Operation::remove_all_successors, py::call_guard<py::gil_scoped_release>(),
-           "Remove all successors of this operation.")
-      .def("on_this_start", py::overload_cast<const std::function<void(Operation*)>&>(&Operation::on_this_start),
-           py::arg("func"), "Add a callback called when this operation starts.")
-      .def("on_this_end", py::overload_cast<const std::function<void(Operation*)>&>(&Operation::on_this_end),
-           py::arg("func"), "Add a callback called when this operation ends.")
+          "Add a callback called when each task ends.")
+      .def_property_readonly("name", &Task::get_name, "The name of this task (read-only).")
+      .def_property_readonly("count", &Task::get_count, "The execution count of this task (read-only).")
+      .def_property_readonly("successors", &Task::get_successors, "The successors of this task (read-only).")
+      .def_property("amount", &Task::get_amount, &Task::set_amount, "The amount of work to do for this task.")
+      .def("enqueue_execs", py::overload_cast<int>(&Task::enqueue_execs), py::call_guard<py::gil_scoped_release>(),
+           py::arg("n"), "Enqueue executions for this task.")
+      .def("add_successor", py::overload_cast<TaskPtr>(&Task::add_successor), py::call_guard<py::gil_scoped_release>(),
+           py::arg("op"), "Add a successor to this task.")
+      .def("remove_successor", py::overload_cast<TaskPtr>(&Task::remove_successor),
+           py::call_guard<py::gil_scoped_release>(), py::arg("op"), "Remove a successor of this task.")
+      .def("remove_all_successors", &Task::remove_all_successors, py::call_guard<py::gil_scoped_release>(),
+           "Remove all successors of this task.")
+      .def("on_this_start", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_start), py::arg("func"),
+           "Add a callback called when this task starts.")
+      .def("on_this_end", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_end), py::arg("func"),
+           "Add a callback called when this task ends.")
       .def(
-          "__repr__", [](const OperationPtr op) { return "Operation(" + op->get_name() + ")"; },
-          "Textual representation of the Operation");
+          "__repr__", [](const TaskPtr op) { return "Task(" + op->get_name() + ")"; },
+          "Textual representation of the Task");
 
-  /* Class CommOp */
-  py::class_<CommOp, CommOpPtr, Operation>(m, "CommOp",
-                                           "Communication Operation. See the C++ documentation for details.")
-      .def_static("init", py::overload_cast<const std::string&>(&CommOp::init),
-                  py::call_guard<py::gil_scoped_release>(), py::arg("name"), "CommOp constructor")
-      .def_static("init", py::overload_cast<const std::string&, double, Host*, Host*>(&CommOp::init),
+  /* Class CommTask */
+  py::class_<CommTask, CommTaskPtr, Task>(m, "CommTask", "Communication Task. See the C++ documentation for details.")
+      .def_static("init", py::overload_cast<const std::string&>(&CommTask::init),
+                  py::call_guard<py::gil_scoped_release>(), py::arg("name"), "CommTask constructor")
+      .def_static("init", py::overload_cast<const std::string&, double, Host*, Host*>(&CommTask::init),
                   py::call_guard<py::gil_scoped_release>(), py::arg("name"), py::arg("bytes"), py::arg("source"),
-                  py::arg("destination"), "CommOp constructor")
-      .def_property("source", &CommOp::get_source, &CommOp::set_source, "The source of the communication.")
-      .def_property("destination", &CommOp::get_destination, &CommOp::set_destination,
+                  py::arg("destination"), "CommTask constructor")
+      .def_property("source", &CommTask::get_source, &CommTask::set_source, "The source of the communication.")
+      .def_property("destination", &CommTask::get_destination, &CommTask::set_destination,
                     "The destination of the communication.")
-      .def_property("bytes", &CommOp::get_bytes, &CommOp::set_bytes, "The amount of bytes to send.")
+      .def_property("bytes", &CommTask::get_bytes, &CommTask::set_bytes, "The amount of bytes to send.")
       .def(
-          "__repr__", [](const CommOpPtr c) { return "CommOp(" + c->get_name() + ")"; },
-          "Textual representation of the CommOp");
+          "__repr__", [](const CommTaskPtr c) { return "CommTask(" + c->get_name() + ")"; },
+          "Textual representation of the CommTask");
 
-  /* Class ExecOp */
-  py::class_<ExecOp, ExecOpPtr, Operation>(m, "ExecOp", "Execution Operation. See the C++ documentation for details.")
-      .def_static("init", py::overload_cast<const std::string&>(&ExecOp::init),
-                  py::call_guard<py::gil_scoped_release>(), py::arg("name"), "ExecOp constructor")
-      .def_static("init", py::overload_cast<const std::string&, double, Host*>(&ExecOp::init),
+  /* Class ExecTask */
+  py::class_<ExecTask, ExecTaskPtr, Task>(m, "ExecTask", "Execution Task. See the C++ documentation for details.")
+      .def_static("init", py::overload_cast<const std::string&>(&ExecTask::init),
+                  py::call_guard<py::gil_scoped_release>(), py::arg("name"), "ExecTask constructor")
+      .def_static("init", py::overload_cast<const std::string&, double, Host*>(&ExecTask::init),
                   py::call_guard<py::gil_scoped_release>(), py::arg("name"), py::arg("flops"), py::arg("host"),
-                  "CommOp constructor.")
-      .def_property("host", &ExecOp::get_host, &ExecOp::set_host, "The host of the execution.")
-      .def_property("flops", &ExecOp::get_flops, &ExecOp::set_flops, "The amount of flops to execute.")
+                  "CommTask constructor.")
+      .def_property("host", &ExecTask::get_host, &ExecTask::set_host, "The host of the execution.")
+      .def_property("flops", &ExecTask::get_flops, &ExecTask::set_flops, "The amount of flops to execute.")
       .def(
-          "__repr__", [](const ExecOpPtr e) { return "ExecOp(" + e->get_name() + ")"; },
-          "Textual representation of the ExecOp");
+          "__repr__", [](const ExecTaskPtr e) { return "ExecTask(" + e->get_name() + ")"; },
+          "Textual representation of the ExecTask");
 
-  /* Class IoOp */
-  py::class_<IoOp, IoOpPtr, Operation>(m, "IoOp", "IO Operation. See the C++ documentation for details.")
-      .def_static("init", py::overload_cast<const std::string&>(&IoOp::init), py::call_guard<py::gil_scoped_release>(),
-                  py::arg("name"), "IoOp constructor")
-      .def_static("init", py::overload_cast<const std::string&, double, Disk*, Io::OpType>(&IoOp::init),
+  /* Class IoTask */
+  py::class_<IoTask, IoTaskPtr, Task>(m, "IoTask", "IO Task. See the C++ documentation for details.")
+      .def_static("init", py::overload_cast<const std::string&>(&IoTask::init),
+                  py::call_guard<py::gil_scoped_release>(), py::arg("name"), "IoTask constructor")
+      .def_static("init", py::overload_cast<const std::string&, double, Disk*, Io::OpType>(&IoTask::init),
                   py::call_guard<py::gil_scoped_release>(), py::arg("name"), py::arg("bytes"), py::arg("disk"),
-                  py::arg("type"), "IoOp constructor.")
-      .def_property("disk", &IoOp::get_disk, &IoOp::set_disk, "The disk of the IO.")
-      .def_property("bytes", &IoOp::get_bytes, &IoOp::set_bytes, "The amount of bytes to process.")
-      .def_property("type", &IoOp::get_bytes, &IoOp::set_bytes, "The type of IO.")
+                  py::arg("type"), "IoTask constructor.")
+      .def_property("disk", &IoTask::get_disk, &IoTask::set_disk, "The disk of the IO.")
+      .def_property("bytes", &IoTask::get_bytes, &IoTask::set_bytes, "The amount of bytes to process.")
+      .def_property("type", &IoTask::get_bytes, &IoTask::set_bytes, "The type of IO.")
       .def(
-          "__repr__", [](const IoOpPtr io) { return "IoOp(" + io->get_name() + ")"; },
-          "Textual representation of the IoOp");
+          "__repr__", [](const IoTaskPtr io) { return "IoTask(" + io->get_name() + ")"; },
+          "Textual representation of the IoTask");
 }

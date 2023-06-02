@@ -1,0 +1,19 @@
+#!/usr/bin/env tesh
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/task-variable-load.py --platform ${platfdir}/small_platform.xml
+> --- Small load ---
+> [1.5204176120174615] CommTask(comm) finished (1)
+> [14.62726462889908] ExecTask(exec) finished (1)
+> [101.52041761201747] CommTask(comm) finished (2)
+> [114.62726462889908] ExecTask(exec) finished (2)
+> [201.52041761201744] CommTask(comm) finished (3)
+> [214.62726462889907] ExecTask(exec) finished (3)
+> --- Heavy load ---
+> [1301.5204176120174] CommTask(comm) finished (4)
+> [1303.0408352240347] CommTask(comm) finished (5)
+> [1304.561252836052] CommTask(comm) finished (6)
+> [1314.627264628899] ExecTask(exec) finished (4)
+> [1327.7341116457806] ExecTask(exec) finished (5)
+> [1340.8409586626622] ExecTask(exec) finished (6)
+
+

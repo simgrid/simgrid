@@ -34,8 +34,8 @@ S4U:
    That is, callbacks registered in Exec::on_suspend_cb will not be fired for Comms nor Ios.
 
 New S4U plugins:
- - Operation: They are designed to represent workflows, i.e, graphs of repeatable Activities.
-   See the examples under examples/cpp/operation-* and the documentation in the Plugins page.
+ - Task: They are designed to represent dataflows, i.e, graphs of repeatable Activities.
+   See the examples under examples/cpp/task-* and the documentation in the Plugins page.
  - Battery: Enable the management of batteries on hosts.
    See the examples under examples/cpp/battery-* and the documentation in the Plugins page.
  - Photovoltaic: Enable the management of photovoltaic panels on hosts.
