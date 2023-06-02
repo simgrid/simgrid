@@ -58,6 +58,8 @@ Comm::~Comm()
       XBT_INFO("pimpl_ is null");
     xbt_backtrace_display_current();
   }
+  if (pimpl_ != nullptr)
+    pimpl_->set_iface(nullptr);
 }
 
 void Comm::send(kernel::actor::ActorImpl* sender, const Mailbox* mbox, double task_size, double rate, void* src_buff,
