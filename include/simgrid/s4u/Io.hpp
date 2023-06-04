@@ -42,14 +42,17 @@ protected:
 public:
   enum class OpType { READ, WRITE };
 
+   /*! \static Signal fired each time that any I/O actually starts (no veto) */
   static void on_start_cb(const std::function<void(Io const&)>& cb) { on_start.connect(cb); }
+   /*! Signal fired each time this specific I/O actually starts (no veto) */
   void on_this_start_cb(const std::function<void(Io const&)>& cb) { on_this_start.connect(cb); }
 
+   /*! \static Initiate the creation of an I/O. Setters have to be called afterwards */
   static IoPtr init();
-  /*! take a vector of s4u::IoPtr and return when one of them is finished.
+  /*! \static take a vector of s4u::IoPtr and return when one of them is finished.
    * The return value is the rank of the first finished IoPtr. */
   static ssize_t wait_any(const std::vector<IoPtr>& ios) { return wait_any_for(ios, -1); }
-  /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
+  /*! \static Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
   static ssize_t wait_any_for(const std::vector<IoPtr>& ios, double timeout);
 
   double get_remaining() const override;

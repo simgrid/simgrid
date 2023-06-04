@@ -93,7 +93,9 @@ private:
 #endif
 
 public:
+  /** \static Add a callback fired on each newly created NetZone */
   static void on_creation_cb(const std::function<void(NetZone const&)>& cb) { on_creation.connect(cb); }
+  /** \static Add a callback fired on each newly sealed NetZone */
   static void on_seal_cb(const std::function<void(NetZone const&)>& cb) { on_seal.connect(cb); }
 
   /**

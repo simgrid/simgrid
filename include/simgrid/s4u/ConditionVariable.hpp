@@ -43,7 +43,7 @@ private:
 #endif
 
 public:
-  /** Create a new condition variable and return a smart pointer
+  /** \static Create a new condition variable and return a smart pointer
    *
    * @beginrst
    * You should only manipulate :cpp:type:`simgrid::s4u::ConditionVariablePtr`, as created by this function (see also :ref:`s4u_raii`).

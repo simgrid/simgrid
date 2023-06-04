@@ -70,9 +70,9 @@ public:
   xbt::signal<void(Host const&)> on_this_onoff;
 
 #endif
-  /** Add a callback fired on each newly created host */
+  /** \static Add a callback fired on each newly created host */
   static void on_creation_cb(const std::function<void(Host&)>& cb) { on_creation.connect(cb); }
-  /** Add a callback fired when any machine is turned on or off (called AFTER the change) */
+  /** \static Add a callback fired when any machine is turned on or off (called AFTER the change) */
   static void on_onoff_cb(const std::function<void(Host const&)>& cb)
   {
     on_onoff.connect(cb);
@@ -87,7 +87,7 @@ public:
   {
     on_this_onoff.connect(cb);
   }
-  /** Add a callback fired when the speed of any machine is changed (called AFTER the change)
+  /** \static Add a callback fired when the speed of any machine is changed (called AFTER the change)
    * (either because of a pstate switch or because of an external load event coming from the profile) */
   static void on_speed_change_cb(const std::function<void(Host const&)>& cb) { on_speed_change.connect(cb); }
   /** Add a callback fired when the speed of this specific machine is changed (called AFTER the change)
@@ -96,14 +96,14 @@ public:
   {
     on_this_speed_change.connect(cb);
   }
-  /** Add a callback fired just before destructing any host */
+  /** \static Add a callback fired just before destructing any host */
   static void on_destruction_cb(const std::function<void(Host const&)>& cb) { on_destruction.connect(cb); }
   /** Add a callback fired just before destructing this specific host */
   void on_this_destruction_cb(const std::function<void(Host const&)>& cb)
   {
     on_this_destruction.connect(cb);
   }
-  /** Add a callback fired when the state of any exec activity changes */
+  /** \static Add a callback fired when the state of any exec activity changes */
   static void on_exec_state_change_cb(
       const std::function<void(kernel::resource::CpuAction&, kernel::resource::Action::State previous)>& cb)
   {
@@ -117,11 +117,11 @@ public:
   Host& operator=(Host const&) = delete;
 #endif
 
-  /** Retrieve a host from its name, or return nullptr */
+  /** \static Retrieve a host from its name, or return nullptr */
   static Host* by_name_or_null(const std::string& name);
-  /** Retrieve a host from its name, or die */
+  /** \static Retrieve a host from its name, or die */
   static Host* by_name(const std::string& name);
-  /** Retrieves the host on which the running actor is located */
+  /** \static Retrieves the host on which the running actor is located */
   static Host* current();
 
   /** Retrieves the name of that host as a C++ string */
@@ -180,7 +180,7 @@ public:
   Host* set_concurrency_limit(int limit);
   int get_concurrency_limit() const;
 
-  /** @brief Convert the CPU's speed from string to double */
+  /** \static @brief Convert the CPU's speed from string to double */
   static std::vector<double> convert_pstate_speed_vector(const std::vector<std::string>& speed_per_state);
   /**
    * @brief Set the CPU's speed

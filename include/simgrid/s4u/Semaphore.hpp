@@ -45,7 +45,7 @@ class XBT_PUBLIC Semaphore {
 #endif
 
 public:
-  /** Constructs a new semaphore */
+  /** \static Constructs a new semaphore */
   static SemaphorePtr create(unsigned int initial_capacity);
 
   void acquire();

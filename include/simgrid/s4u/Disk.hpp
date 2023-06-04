@@ -133,13 +133,13 @@ public:
   Disk* seal();
 
   /* The signals */
-  /** @brief Add a callback fired when a new Disk is created */
+  /** @brief \static Add a callback fired when a new Disk is created */
   static void on_creation_cb(const std::function<void(Disk&)>& cb) { on_creation.connect(cb); }
-  /** @brief Add a callback fired when any Disk is destroyed */
+  /** @brief \static Add a callback fired when any Disk is destroyed */
   static void on_destruction_cb(const std::function<void(Disk const&)>& cb) { on_destruction.connect(cb); }
   /** @brief Add a callback fired when this specific Disk is destroyed */
   void on_this_destruction_cb(const std::function<void(Disk const&)>& cb) { on_this_destruction.connect(cb); }
-  /** @brief Add a callback fired when any Disk is turned on or off */
+  /** @brief \static Add a callback fired when any Disk is turned on or off */
   static void on_onoff_cb(const std::function<void(Disk const&)>& cb)
   {
     on_onoff.connect(cb);

@@ -96,49 +96,66 @@ public:
   State get_state() const;
 
   /* Callbacks on signals */
+  /*! \static Add a callback fired when any VM is created */
   static void on_creation_cb(const std::function<void(VirtualMachine&)>& cb) { on_vm_creation.connect(cb); }
+  /*! \static Add a callback fired when any VM starts */
   static void on_start_cb(const std::function<void(VirtualMachine const&)>& cb) { on_start.connect(cb); }
+  /*! Add a callback fired when this specific VM starts */
   void on_this_start_cb(const std::function<void(VirtualMachine const&)>& cb)
   {
     on_this_start.connect(cb);
   }
+  /*! \static Add a callback fired when any VM is actually started */
   static void on_started_cb(const std::function<void(VirtualMachine const&)>& cb) { on_started.connect(cb); }
+  /*! Add a callback fired when this specific VM is actually started */
   void on_this_started_cb(const std::function<void(VirtualMachine const&)>& cb)
   {
     on_this_started.connect(cb);
   }
+  /*! \static Add a callback fired when any VM is shut down */
   static void on_shutdown_cb(const std::function<void(VirtualMachine const&)>& cb) { on_shutdown.connect(cb); }
+  /*! Add a callback fired when this specific VM is shut down */
   void on_this_shutdown_cb(const std::function<void(VirtualMachine const&)>& cb)
   {
     on_this_shutdown.connect(cb);
   }
+  /*! \static Add a callback fired when any VM is suspended*/
   static void on_suspend_cb(const std::function<void(VirtualMachine const&)>& cb) { on_suspend.connect(cb); }
+  /*! Add a callback fired when this specific VM is suspended*/
   void on_this_suspend_cb(const std::function<void(VirtualMachine const&)>& cb)
   {
     on_this_suspend.connect(cb);
   }
+  /*! \static Add a callback fired when any VM is resumed*/
   static void on_resume_cb(const std::function<void(VirtualMachine const&)>& cb) { on_resume.connect(cb); }
+  /*! Add a callback fired when this specific VM is resumed*/
   void on_this_resume_cb(const std::function<void(VirtualMachine const&)>& cb)
   {
     on_this_resume.connect(cb);
   }
+  /*! \static Add a callback fired when any VM is destroyed*/
   static void on_destruction_cb(const std::function<void(VirtualMachine const&)>& cb) { on_vm_destruction.connect(cb); }
+  /*! Add a callback fired when this specific VM is destroyed*/
   void on_this_destruction_cb(const std::function<void(VirtualMachine const&)>& cb)
   {
     on_this_vm_destruction.connect(cb);
   }
+  /*! \static Add a callback fired when any VM starts a migration*/
   static void on_migration_start_cb(const std::function<void(VirtualMachine const&)>& cb)
   {
     on_migration_start.connect(cb);
   }
+  /*! Add a callback fired when this specific VM starts a migration*/
   void on_this_migration_start_cb(const std::function<void(VirtualMachine const&)>& cb)
   {
     on_this_migration_start.connect(cb);
   }
+  /*! \static Add a callback fired when any VM ends a migration*/
   static void on_migration_end_cb(const std::function<void(VirtualMachine const&)>& cb)
   {
     on_migration_end.connect(cb);
   }
+  /*! Add a callback fired when this specific VM ends a migration*/
   void on_this_migration_end_cb(const std::function<void(VirtualMachine const&)>& cb)
   {
     on_this_migration_end.connect(cb);

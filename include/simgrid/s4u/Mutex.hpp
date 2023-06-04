@@ -47,7 +47,7 @@ class XBT_PUBLIC Mutex {
 #endif
 
 public:
-  /** Constructs a new mutex */
+  /** \static Constructs a new mutex */
   static MutexPtr create();
   void lock();
   void unlock();

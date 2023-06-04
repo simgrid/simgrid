@@ -58,16 +58,18 @@ public:
   Exec(Exec const&) = delete;
   Exec& operator=(Exec const&) = delete;
 #endif
-  /*! Signal fired each time that an execution actually starts (no veto) */
+  /*! \static Signal fired each time that any execution actually starts (no veto) */
   static void on_start_cb(const std::function<void(Exec const&)>& cb) { on_start.connect(cb); }
+  /*! Signal fired each time that this specific execution actually starts (no veto) */
   void on_this_start_cb(const std::function<void(Exec const&)>& cb) { on_this_start.connect(cb); }
 
+  /*! \static Initiate the creation of an Exec. Setters have to be called afterwards */
   static ExecPtr init();
 
-  /*! take a vector of s4u::ExecPtr and return when one of them is finished.
+  /*! \static take a vector of s4u::ExecPtr and return when one of them is finished.
    * The return value is the rank of the first finished ExecPtr. */
   static ssize_t wait_any(const std::vector<ExecPtr>& execs) { return wait_any_for(execs, -1); }
-  /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
+  /*! \static Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
   static ssize_t wait_any_for(const std::vector<ExecPtr>& execs, double timeout);
 
   /** @brief On sequential executions, returns the amount of flops that remain to be done; This cannot be used on

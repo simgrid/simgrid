@@ -63,9 +63,13 @@ protected:
   void fire_on_this_veto() const override { on_this_veto(const_cast<Comm&>(*this)); }
 
 public:
+  /*! \static Add a callback fired when the send of any Comm is posted  */
   static void on_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
+  /*! \static Add a callback fired when the recv of any Comm is posted  */
   static void on_recv_cb(const std::function<void(Comm const&)>& cb) { on_recv.connect(cb); }
+  /*! \static Add a callback fired when any Comm starts  */
   static void on_start_cb(const std::function<void(Comm const&)>& cb) { on_start.connect(cb); }
+  /*!  Add a callback fired when this specific Comm starts  */
   void on_this_start_cb(const std::function<void(Comm const&)>& cb) { on_this_start.connect(cb); }
 
   CommPtr set_copy_data_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback);
@@ -86,7 +90,8 @@ public:
                    const std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)>& copy_data_fun,
                    void* data, double timeout, double rate);
 
-  /* "One-sided" communications. This way of communicating bypasses the mailbox and actors mechanism. It creates a
+  /* \static
+   * "One-sided" communications. This way of communicating bypasses the mailbox and actors mechanism. It creates a
    * communication (vetoabled, asynchronous, or synchronous) directly between two hosts. There is really no limit on
    * the hosts involved. In particular, the actor creating such a communication does not have to be on one of the
    * involved hosts! Enjoy the comfort of the simulator :)
@@ -179,19 +184,19 @@ public:
 
   Comm* wait_for(double timeout) override;
 
-  /*! take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */
+  /*! \static take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */
   static ssize_t test_any(const std::vector<CommPtr>& comms);
 
-  /*! take a vector s4u::CommPtr and return when one of them is finished.
+  /*! \static take a vector s4u::CommPtr and return when one of them is finished.
    * The return value is the rank of the first finished CommPtr. */
   static ssize_t wait_any(const std::vector<CommPtr>& comms) { return wait_any_for(comms, -1); }
-  /*! Same as wait_any, but with a timeout. Return -1 if the timeout occurs.*/
+  /*! \static Same as wait_any, but with a timeout. Return -1 if the timeout occurs.*/
   static ssize_t wait_any_for(const std::vector<CommPtr>& comms, double timeout);
 
-  /*! take a vector s4u::CommPtr and return when all of them is finished. */
+  /*! \static take a vector s4u::CommPtr and return when all of them is finished. */
   static void wait_all(const std::vector<CommPtr>& comms);
-  /*! Same as wait_all, but with a timeout. Return the number of terminated comm (less than comms.size() if the timeout
-   * occurs). */
+  /*! \static Same as wait_all, but with a timeout. Return the number of terminated comm (less than comms.size() if
+   *  the timeout occurs). */
   static size_t wait_all_for(const std::vector<CommPtr>& comms, double timeout);
 };
 } // namespace simgrid::s4u
