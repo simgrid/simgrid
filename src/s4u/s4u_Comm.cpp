@@ -315,13 +315,16 @@ Comm* Comm::do_start()
                "Direct host-to-host communications cannot carry any data.");
     XBT_DEBUG("host-to-host Comm. Pimpl already created and set, just start it.");
     on_send(*this);
+    on_this_send(*this);
     on_recv(*this);
+    on_this_recv(*this);
     kernel::actor::simcall_answered([this] {
       pimpl_->set_state(kernel::activity::State::READY);
       boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->start();
     });
   } else if (src_buff_ != nullptr) { // Sender side
     on_send(*this);
+    on_this_send(*this);
     kernel::actor::CommIsendSimcall observer{sender_,
                                              mailbox_->get_impl(),
                                              remains_,
@@ -338,6 +341,7 @@ Comm* Comm::do_start()
   } else if (dst_buff_ != nullptr) { // Receiver side
     xbt_assert(not detached_, "Receive cannot be detached");
     on_recv(*this);
+    on_this_recv(*this);
     kernel::actor::CommIrecvSimcall observer{receiver_,
                                              mailbox_->get_impl(),
                                              static_cast<unsigned char*>(dst_buff_),
@@ -408,11 +412,13 @@ Comm* Comm::wait_for(double timeout)
         return start()->wait_for(timeout); // In the case of host2host comm, do it in two simcalls
       } else if (src_buff_ != nullptr) {
         on_send(*this);
+        on_this_send(*this);
         send(sender_, mailbox_, remains_, rate_, src_buff_, src_buff_size_, match_fun_, copy_data_function_,
              get_data<void>(), timeout);
 
       } else { // Receiver
         on_recv(*this);
+        on_this_recv(*this);
         recv(receiver_, mailbox_, dst_buff_, &dst_buff_size_, match_fun_, copy_data_function_, get_data<void>(),
              timeout, rate_);
       }

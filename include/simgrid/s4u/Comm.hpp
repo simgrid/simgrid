@@ -41,7 +41,9 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
 
 protected:
   static xbt::signal<void(Comm const&)> on_send;
+  xbt::signal<void(Comm const&)> on_this_send;
   static xbt::signal<void(Comm const&)> on_recv;
+  xbt::signal<void(Comm const&)> on_this_recv;
   inline static xbt::signal<void(Comm const&)> on_start;
   xbt::signal<void(Comm const&)> on_this_start;
 
@@ -65,8 +67,12 @@ protected:
 public:
   /*! \static Add a callback fired when the send of any Comm is posted  */
   static void on_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
+  /*! Add a callback fired when the send of this specific Comm is posted  */
+  void on_this_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
   /*! \static Add a callback fired when the recv of any Comm is posted  */
   static void on_recv_cb(const std::function<void(Comm const&)>& cb) { on_recv.connect(cb); }
+  /*! Add a callback fired when the recv of this specific Comm is posted  */
+  void on_this_recv_cb(const std::function<void(Comm const&)>& cb) { on_this_recv.connect(cb); }
   /*! \static Add a callback fired when any Comm starts  */
   static void on_start_cb(const std::function<void(Comm const&)>& cb) { on_start.connect(cb); }
   /*!  Add a callback fired when this specific Comm starts  */
