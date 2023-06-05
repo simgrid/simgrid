@@ -310,7 +310,6 @@ void ETag_simgrid_parse_platform()
   simgrid::s4u::Engine::on_simulation_end_cb(&remove_remote_disks);
   if (fire_on_platform_created_callback)
     simgrid::s4u::Engine::on_platform_created();
-
 }
 
 void STag_simgrid_parse_prop()

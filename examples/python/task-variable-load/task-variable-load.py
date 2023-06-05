@@ -27,10 +27,10 @@ def parse():
     )
     return parser.parse_args()
 
-def callback( t):
-    print(f'[{Engine.clock}] { t} finished ({ t.count})')
+def callback(t):
+    print(f'[{Engine.clock}] {t} finished ({t.count})')
 
-def variable_load( t):
+def variable_load(t):
     print('--- Small load ---')
     for _ in range(3):
         t.enqueue_execs(1)
