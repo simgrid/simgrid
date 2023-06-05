@@ -7,7 +7,6 @@
 #define SIMGRID_MC_UNIFORMSTRATEGY_HPP
 
 #include "src/mc/transition/Transition.hpp"
-#include "src/plugins/cfg/CFGMap.hpp"
 
 namespace simgrid::mc {
 

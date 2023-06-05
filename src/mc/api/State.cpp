@@ -31,7 +31,7 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
     strategy_ = std::make_shared<MaxMatchComm>();
   else if (_sg_mc_strategy == "min_match_comm")
     strategy_ = std::make_shared<MinMatchComm>();
-  else if (_sg_mc_strategy == "uniform") {
+  else if (_sg_mc_strategy == "uniform") 
     strategy_ = std::make_shared<UniformStrategy>();
   else
     THROW_IMPOSSIBLE;
@@ -56,7 +56,7 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
     strategy_ = std::make_shared<MaxMatchComm>();
   else if (_sg_mc_strategy == "min_match_comm")
     strategy_ = std::make_shared<MinMatchComm>();
-  else if (_sg_mc_strategy == "uniform") {
+  else if (_sg_mc_strategy == "uniform") 
     strategy_ = std::make_shared<UniformStrategy>();
   else
     THROW_IMPOSSIBLE;

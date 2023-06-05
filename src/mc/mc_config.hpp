@@ -24,6 +24,7 @@ extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_send_determinism;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_unfolding_checker;
 extern XBT_PRIVATE simgrid::config::Flag<bool> _sg_mc_timeout;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_max_depth;
+extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_random_seed;
 extern "C" XBT_PUBLIC int _sg_mc_max_visited_states;
 extern XBT_PRIVATE simgrid::config::Flag<std::string> _sg_mc_dot_output_file;
 extern XBT_PRIVATE simgrid::config::Flag<bool> _sg_mc_termination;

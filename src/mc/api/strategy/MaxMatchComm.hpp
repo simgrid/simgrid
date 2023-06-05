@@ -36,7 +36,7 @@ public:
       mailbox_[cast_strategy->last_mailbox_]++;
 
     for (auto const& [_, val] : mailbox_)
-	value_of_state += std::abs(val);
+	value_of_state_ += std::abs(val);
   }
   MaxMatchComm()                     = default;
   ~MaxMatchComm() override           = default;

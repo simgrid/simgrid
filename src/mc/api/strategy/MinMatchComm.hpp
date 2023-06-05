@@ -37,7 +37,7 @@ public:
 	  mailbox_[cast_strategy->last_mailbox_]++;
 
       for (auto const& [_, val] : mailbox_) 
-	  value_of_state -= std::abs(val);
+	  value_of_state_ -= std::abs(val);
       if (value_of_state_ < 0)
 	  value_of_state_ = 0;
   }

@@ -75,6 +75,10 @@ simgrid::config::Flag<std::string> _sg_mc_strategy{
      {"uniform", "No specific strategy: choices are made randomly based on a uniform sampling."}
     }};
 
+simgrid::config::Flag<int> _sg_mc_random_seed{"model-check/rand-seed",
+                                              "give a specific random seed to initialize the uniform distribution", 0,
+                                              [](int) { _mc_cfg_cb_check("Random seed"); }};
+
 #if SIMGRID_HAVE_STATEFUL_MC
 simgrid::config::Flag<int> _sg_mc_checkpoint{
     "model-check/checkpoint", "Specify the amount of steps between checkpoints during stateful model-checking "
