@@ -86,7 +86,7 @@ pip:
 pages:
   stage: deploy
   script:
-  - apt install python3-breathe python3-sphinx python3-sphinx-rtd-theme python3-sphinx-copybutton python3-sphinx-tabs
+  - apt install -y python3-breathe python3-sphinx python3-sphinx-rtd-theme python3-sphinx-copybutton python3-sphinx-tabs
  # - pip3 install --requirement docs/requirements.txt # Forbidden in Debian:12
   - cd docs
   - LC_ALL=C.UTF-8 ./Build.sh
