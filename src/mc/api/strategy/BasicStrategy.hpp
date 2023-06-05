@@ -38,18 +38,18 @@ public:
     }
     return std::make_pair(-1, depth_);
   }
-  void execute_next(aid_t aid, RemoteApp& app) override { return; }
 
   void consider_best() override
   {
-    for (auto& [_, actor] : actors_to_run_) {
-      if (actor.is_todo())
-        return;
-      if (actor.is_enabled() and not actor.is_done()) {
-        actor.mark_todo();
-        return;
-      }
-    }
+    for (auto& [_, actor] : actors_to_run_) 
+	if (actor.is_todo())
+	    return;
+
+    for (auto& [_, actor] : actors_to_run_) 
+	if (actor.is_enabled() and not actor.is_done()) 
+	    actor.mark_todo();
+      
+    
   }
 };
 
