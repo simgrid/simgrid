@@ -14,8 +14,7 @@
 #include <memory>
 #include <string>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /** @brief Mailboxes: Network rendez-vous points. */
 class XBT_PUBLIC Mailbox {
@@ -39,7 +38,7 @@ public:
   /** @brief Retrieves the name of that mailbox as a C string */
   const char* get_cname() const;
 
-  /** Retrieve the mailbox associated to the given name. Mailboxes are created on demand. */
+  /** \static Retrieve the mailbox associated to the given name. Mailboxes are created on demand. */
   static Mailbox* by_name(const std::string& name);
 
   /** Returns whether the mailbox contains queued communications */
@@ -151,7 +150,6 @@ template <typename T> T* Mailbox::get(double timeout)
   get_async<T>(&res)->wait_for(timeout);
   return res;
 }
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_MAILBOX_HPP */

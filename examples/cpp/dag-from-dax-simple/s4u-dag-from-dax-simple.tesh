@@ -1,12 +1,12 @@
 #!/usr/bin/env tesh
 
 $ ${bindir:=.}/s4u-dag-from-dax-simple --log=no_loc ${platfdir}/small_platform.xml ${srcdir:=.}/dag.xml
-> [0.000000] [dag_from_dax_simple/INFO] Activity 'root' is complete (start time: 0.000000, finish time: 0.000000)
-> [33.394394] [dag_from_dax_simple/INFO] Activity 'root_i2_2@c2' is complete (start time: 0.000000, finish time: 33.394394)
-> [39.832311] [dag_from_dax_simple/INFO] Activity 'root_i1_1@c1' is complete (start time: 0.000000, finish time: 39.832311)
-> [467.988690] [dag_from_dax_simple/INFO] Activity '1@c1' is complete (start time: 39.832311, finish time: 467.988690)
-> [543.077868] [dag_from_dax_simple/INFO] Activity '1@c1_o1_3@c3' is complete (start time: 467.988690, finish time: 543.077868)
-> [2785.832267] [dag_from_dax_simple/INFO] Activity '2@c2' is complete (start time: 33.394394, finish time: 2785.832267)
-> [3886.807417] [dag_from_dax_simple/INFO] Activity '3@c3' is complete (start time: 2785.832267, finish time: 3886.807417)
-> [3887.221639] [dag_from_dax_simple/INFO] Activity '3@c3_o3_end' is complete (start time: 3886.807417, finish time: 3887.221639)
-> [3887.221639] [dag_from_dax_simple/INFO] Activity 'end' is complete (start time: 3887.221639, finish time: 3887.221639)
+> [0.000000] [dag_from_dax_simple/INFO] Exec 'root' is complete (start time: 0.000000, finish time: 0.000000)
+> [33.394394] [dag_from_dax_simple/INFO] Comm 'root_i2_2@c2' is complete (start time: 0.000000, finish time: 33.394394)
+> [39.832311] [dag_from_dax_simple/INFO] Comm 'root_i1_1@c1' is complete (start time: 0.000000, finish time: 39.832311)
+> [467.988690] [dag_from_dax_simple/INFO] Exec '1@c1' is complete (start time: 39.832311, finish time: 467.988690)
+> [543.077868] [dag_from_dax_simple/INFO] Comm '1@c1_o1_3@c3' is complete (start time: 467.988690, finish time: 543.077868)
+> [2785.832267] [dag_from_dax_simple/INFO] Exec '2@c2' is complete (start time: 33.394394, finish time: 2785.832267)
+> [3886.807417] [dag_from_dax_simple/INFO] Exec '3@c3' is complete (start time: 2785.832267, finish time: 3886.807417)
+> [3887.221639] [dag_from_dax_simple/INFO] Comm '3@c3_o3_end' is complete (start time: 3886.807417, finish time: 3887.221639)
+> [3887.221639] [dag_from_dax_simple/INFO] Exec 'end' is complete (start time: 3887.221639, finish time: 3887.221639)

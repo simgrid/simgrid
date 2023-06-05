@@ -58,6 +58,8 @@ Comm::~Comm()
       XBT_INFO("pimpl_ is null");
     xbt_backtrace_display_current();
   }
+  if (pimpl_ != nullptr)
+    pimpl_->set_iface(nullptr);
 }
 
 void Comm::send(kernel::actor::ActorImpl* sender, const Mailbox* mbox, double task_size, double rate, void* src_buff,
@@ -289,6 +291,14 @@ Actor* Comm::get_sender() const
   return sender ? sender->get_ciface() : nullptr;
 }
 
+Actor* Comm::get_receiver() const
+{
+  kernel::actor::ActorImplPtr receiver = nullptr;
+  if (pimpl_)
+    receiver = boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->dst_actor_;
+  return receiver ? receiver->get_ciface() : nullptr;
+}
+
 bool Comm::is_assigned() const
 {
   return (pimpl_ && boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->is_assigned()) ||
@@ -304,12 +314,15 @@ Comm* Comm::do_start()
     xbt_assert(src_buff_ == nullptr && dst_buff_ == nullptr,
                "Direct host-to-host communications cannot carry any data.");
     XBT_DEBUG("host-to-host Comm. Pimpl already created and set, just start it.");
+    on_start(*this);
+    on_this_start(*this);
     kernel::actor::simcall_answered([this] {
       pimpl_->set_state(kernel::activity::State::READY);
       boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->start();
     });
   } else if (src_buff_ != nullptr) { // Sender side
     on_send(*this);
+    on_this_send(*this);
     kernel::actor::CommIsendSimcall observer{sender_,
                                              mailbox_->get_impl(),
                                              remains_,
@@ -326,6 +339,7 @@ Comm* Comm::do_start()
   } else if (dst_buff_ != nullptr) { // Receiver side
     xbt_assert(not detached_, "Receive cannot be detached");
     on_recv(*this);
+    on_this_recv(*this);
     kernel::actor::CommIrecvSimcall observer{receiver_,
                                              mailbox_->get_impl(),
                                              static_cast<unsigned char*>(dst_buff_),
@@ -346,6 +360,11 @@ Comm* Comm::do_start()
   if (not detached_) {
     pimpl_->set_iface(this);
     pimpl_->set_actor(sender_);
+    // Only throw the signal when both sides are here and the status is READY
+    if (pimpl_->get_state() != kernel::activity::State::WAITING) {
+      on_start(*this);
+      on_this_start(*this);
+    }
   }
 
   state_ = State::STARTED;
@@ -391,11 +410,13 @@ Comm* Comm::wait_for(double timeout)
         return start()->wait_for(timeout); // In the case of host2host comm, do it in two simcalls
       } else if (src_buff_ != nullptr) {
         on_send(*this);
+        on_this_send(*this);
         send(sender_, mailbox_, remains_, rate_, src_buff_, src_buff_size_, match_fun_, copy_data_function_,
              get_data<void>(), timeout);
 
       } else { // Receiver
         on_recv(*this);
+        on_this_recv(*this);
         recv(receiver_, mailbox_, dst_buff_, &dst_buff_size_, match_fun_, copy_data_function_, get_data<void>(),
              timeout, rate_);
       }

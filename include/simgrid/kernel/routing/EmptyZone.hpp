@@ -9,9 +9,7 @@
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <xbt/asserts.h>
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 
 /** @ingroup ROUTING_API
  *  @brief NetZone with no routing, useful with the constant network model
@@ -32,8 +30,6 @@ public:
   void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* /*nodes*/,
                  std::map<std::string, xbt_edge_t, std::less<>>* /*edges*/) override;
 };
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing
 
 #endif /* SIMGRID_ROUTING_NONE_HPP_ */

@@ -13,24 +13,27 @@ namespace sg4 = simgrid::s4u;
 int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
-  sg_storage_file_system_init();
   e.load_platform(argv[1]);
 
   auto tremblay = e.host_by_name("Tremblay");
   auto jupiter  = e.host_by_name("Jupiter");
 
   // Display the details on vetoed activities
-  sg4::Activity::on_veto_cb([](const sg4::Activity& a) {
-    XBT_INFO("Activity '%s' vetoed. Dependencies: %s; Ressources: %s", a.get_cname(),
-             (a.dependencies_solved() ? "solved" : "NOT solved"), (a.is_assigned() ? "assigned" : "NOT assigned"));
+  sg4::Exec::on_veto_cb([](sg4::Exec const& exec) {
+    XBT_INFO("Execution '%s' vetoed. Dependencies: %s; Ressources: %s", exec.get_cname(),
+             (exec.dependencies_solved() ? "solved" : "NOT solved"), (exec.is_assigned() ? "assigned" : "NOT assigned"));
+  });
+  sg4::Comm::on_veto_cb([](sg4::Comm const& comm) {
+    XBT_INFO("Communication '%s' vetoed. Dependencies: %s; Ressources: %s", comm.get_cname(),
+             (comm.dependencies_solved() ? "solved" : "NOT solved"), (comm.is_assigned() ? "assigned" : "NOT assigned"));
   });
 
-  sg4::Activity::on_completion_cb([](sg4::Activity const& activity) {
-    if (const auto* exec = dynamic_cast<sg4::Exec const*>(&activity))
-      XBT_INFO("Activity '%s' is complete (start time: %f, finish time: %f)", exec->get_cname(), exec->get_start_time(),
-               exec->get_finish_time());
-    if (const auto* comm = dynamic_cast<sg4::Comm const*>(&activity))
-      XBT_INFO("Activity '%s' is complete", comm->get_cname());
+  sg4::Exec::on_completion_cb([](sg4::Exec const& exec) {
+    XBT_INFO("Exec '%s' is complete (start time: %f, finish time: %f)", exec.get_cname(), exec.get_start_time(),
+             exec.get_finish_time());
+  });
+  sg4::Comm::on_completion_cb([](sg4::Comm const& comm) {
+    XBT_INFO("Comm '%s' is complete", comm.get_cname());
   });
 
   // Create a small DAG: parent->transfer->child

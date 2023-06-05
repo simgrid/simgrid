@@ -454,7 +454,8 @@ set(PLUGINS_SRC
   src/plugins/vm/VmLiveMigration.hpp
   src/plugins/vm/dirty_page_tracking.cpp
   src/plugins/battery.cpp
-  src/plugins/operation.cpp
+  src/plugins/task.cpp
+  src/plugins/photovoltaic.cpp
   )
 
 
@@ -523,6 +524,8 @@ set(MC_SRC_BASE
   
 set(MC_SRC_STATELESS
   src/mc/api/ActorState.hpp
+  src/mc/api/ClockVector.cpp
+  src/mc/api/ClockVector.hpp
   src/mc/api/State.cpp
   src/mc/api/State.hpp
   src/mc/api/RemoteApp.cpp
@@ -532,6 +535,17 @@ set(MC_SRC_STATELESS
   src/mc/explo/DFSExplorer.hpp
   src/mc/explo/Exploration.cpp
   src/mc/explo/Exploration.hpp
+
+  src/mc/explo/odpor/Execution.cpp
+  src/mc/explo/odpor/Execution.hpp
+  src/mc/explo/odpor/ReversibleRaceCalculator.cpp
+  src/mc/explo/odpor/ReversibleRaceCalculator.hpp
+  src/mc/explo/odpor/WakeupTree.cpp
+  src/mc/explo/odpor/WakeupTree.hpp
+  src/mc/explo/odpor/WakeupTreeIterator.cpp
+  src/mc/explo/odpor/WakeupTreeIterator.hpp
+  src/mc/explo/odpor/odpor_forward.hpp
+  src/mc/explo/odpor/odpor_tests_private.hpp
 
   src/mc/remote/AppSide.cpp
   src/mc/remote/AppSide.hpp
@@ -647,7 +661,8 @@ set(headers_to_install
   include/simgrid/plugins/file_system.h
   include/simgrid/plugins/live_migration.h
   include/simgrid/plugins/load.h
-  include/simgrid/plugins/operation.hpp
+  include/simgrid/plugins/task.hpp
+  include/simgrid/plugins/photovoltaic.hpp
   include/simgrid/plugins/ProducerConsumer.hpp
   include/simgrid/instr.h
   include/simgrid/mailbox.h
@@ -1125,6 +1140,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/optorsim/gridpp_grid_2004.conf
   examples/platforms/optorsim/lcg_sept2004_grid.conf
   examples/platforms/optorsim/transform_optorsim_platform.pl
+  examples/platforms/photovoltaic_platform.xml
   examples/platforms/profiles/fafard_state.profile
   examples/platforms/profiles/faulty_host.profile
   examples/platforms/profiles/ginette_state.profile

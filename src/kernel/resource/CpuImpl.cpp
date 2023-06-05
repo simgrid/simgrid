@@ -98,6 +98,7 @@ double CpuImpl::get_pstate_peak_speed(unsigned long pstate_index) const
 void CpuImpl::on_speed_change()
 {
   s4u::Host::on_speed_change(*piface_);
+  piface_->on_this_speed_change(*piface_);
 }
 
 CpuImpl* CpuImpl::set_core_count(int core_count)
@@ -193,27 +194,11 @@ void CpuAction::update_remains_lazy(double now)
   set_last_value(get_rate());
 }
 
-xbt::signal<void(CpuAction const&, Action::State)> CpuAction::on_state_change;
-
-void CpuAction::suspend()
-{
-  Action::State previous = get_state();
-  on_state_change(*this, previous);
-  Action::suspend();
-}
-
-void CpuAction::resume()
-{
-  Action::State previous = get_state();
-  on_state_change(*this, previous);
-  Action::resume();
-}
-
 void CpuAction::set_state(Action::State state)
 {
   Action::State previous = get_state();
   Action::set_state(state);
-  on_state_change(*this, previous);
+  s4u::Host::on_exec_state_change(*this, previous);
 }
 
 /** @brief returns a list of all CPUs that this action is using */

@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/Host.hpp>
 
 #include "src/kernel/activity/CommImpl.hpp"
@@ -15,6 +16,21 @@ namespace simgrid::kernel::resource {
 /************
  * Resource *
  ************/
+static void update_bw_comm_start(const s4u::Comm& comm)
+{
+  auto* pimpl = static_cast<activity::CommImpl*>(comm.get_impl());
+
+  auto const* actionWifi = dynamic_cast<const kernel::resource::WifiLinkAction*>(pimpl->model_action_);
+  if (actionWifi == nullptr)
+    return;
+
+  if (auto* link_src = actionWifi->get_src_link()) {
+    link_src->inc_active_flux();
+  }
+  if (auto* link_dst = actionWifi->get_dst_link()) {
+    link_dst->inc_active_flux();
+  }
+}
 
 WifiLinkImpl::WifiLinkImpl(const std::string& name, const std::vector<double>& bandwidths, lmm::System* system)
     : StandardLinkImpl(name)
@@ -22,7 +38,7 @@ WifiLinkImpl::WifiLinkImpl(const std::string& name, const std::vector<double>& b
   this->set_constraint(system->constraint_new(this, 1));
   for (auto bandwidth : bandwidths)
     bandwidths_.push_back({bandwidth, 1.0, nullptr});
-  kernel::activity::CommImpl::on_start.connect(&update_bw_comm_start);
+  s4u::Comm::on_start_cb(&update_bw_comm_start);
   s4u::Link::on_communication_state_change_cb(&update_bw_comm_end);
 }
 
@@ -77,20 +93,6 @@ void WifiLinkImpl::dec_active_flux()
 {
   xbt_assert(nb_active_flux_ > 0, "Negative nb_active_flux should not exist");
   nb_active_flux_--;
-}
-
-void WifiLinkImpl::update_bw_comm_start(const kernel::activity::CommImpl& comm)
-{
-  auto const* actionWifi = dynamic_cast<const simgrid::kernel::resource::WifiLinkAction*>(comm.model_action_);
-  if (actionWifi == nullptr)
-    return;
-
-  if (auto* link_src = actionWifi->get_src_link()) {
-    link_src->inc_active_flux();
-  }
-  if (auto* link_dst = actionWifi->get_dst_link()) {
-    link_dst->inc_active_flux();
-  }
 }
 
 void WifiLinkImpl::update_bw_comm_end(const simgrid::kernel::resource::NetworkAction& action,

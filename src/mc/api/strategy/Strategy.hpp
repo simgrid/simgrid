@@ -3,10 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/asserts.h"
-
 #ifndef SIMGRID_MC_STRATEGY_HPP
 #define SIMGRID_MC_STRATEGY_HPP
+
+#include "simgrid/forward.h"
+#include "src/mc/api/RemoteApp.hpp"
+#include "xbt/asserts.h"
+#include <map>
+#include <utility>
 
 namespace simgrid::mc {
 

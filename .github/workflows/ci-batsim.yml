@@ -12,7 +12,7 @@ jobs:
     container: simgrid/unstable
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build and test BatSim
         run: |
           set -e

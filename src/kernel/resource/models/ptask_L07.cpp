@@ -194,7 +194,7 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
       host_list_[k / host_nb]->route_to(host_list_[k % host_nb], route, &lat);
       latency = std::max(latency, lat);
 
-      for (auto const& link : route)
+      for (auto const* link : route)
         affected_links.insert(link->get_cname());
     }
 
@@ -223,7 +223,7 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
       std::vector<StandardLinkImpl*> route;
       host_list_[k / host_nb]->route_to(host_list_[k % host_nb], route, nullptr);
 
-      for (auto const& link : route)
+      for (auto const* link : route)
         model->get_maxmin_system()->expand(link->get_constraint(), this->get_variable(), bytes_amount[k]);
     }
   }

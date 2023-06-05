@@ -1,13 +1,15 @@
 SimGrid (3.32.1) not released yet (target december 22)
 
 General:
+ - SimGrid now requires a compiler with C++17 support for public headers too.
+   Sibling projects should upgrade their FindSimGrid.cmake
  - Remove the MSG API: its EOL was scheduled for 2020.
  - Remove the Java bindings: they were limited to the MSG interface.
  - On Windows, you now need to install WSL2 as the native builds are now disabled.
    It was not really working anyway.
  - Support for 32bits architecture is not tested anymore on our CI infrastructure.
    It may break in the future, but we think that nobody's using SimGrid on 32 bits.
- - Remove the surf module. It was replaced by the kernel/models module, and that 
+ - Remove the surf module. It was replaced by the kernel/models module, and that
    refactoring took almost 10 years to properly complete.
 
 S4U:
@@ -20,17 +22,25 @@ S4U:
    possible.
  - Allow to set a concurrency limit on disks and hosts, as it was already the case for links.
  - Rename Link::get_usage() to Link::get_load() for consistency with Host::
+ - Every signal now come with a static version that is invoked for every object of that class,
+   and an instance version that is invoked for this specific object only. For example, 
+   s4u::Actor::on_suspend_cb() adds a callback that is invoked for the suspend of any actor while
+   s4u::Actor::on_this_suspend_cb() adds a callback for this specific actor only.
+ - Activity::on_suspended_cb() is renamed to Activity::on_suspend_cb(), and fired right before the suspend.
+ - Activity::on_resumed_cb() is renamed to Activity::on_resume_cb(), and fired right before the resume.
+ - Resource::on_state_change_cb() is renamed to Resource::on_onoff_cb() to distinguish from the
+   Activity::on_state_change_cb() that is related to the activity state machine, not on/off.
+ - Activity signals (veto, suspend, resume, completion) are now specialized by activity class.
+   That is, callbacks registered in Exec::on_suspend_cb will not be fired for Comms nor Ios.
 
-New plugin: Operation
- - Operations are designed to represent workflows, i.e, graphs of repeatable Activities.
- - Documentation: https://simgrid.frama.io/simgrid/Plugins.html#operation
- - Examples: examples/cpp/operation-*
+New S4U plugins:
+ - Task: They are designed to represent dataflows, i.e, graphs of repeatable Activities.
+   See the examples under examples/cpp/task-* and the documentation in the Plugins page.
+ - Battery: Enable the management of batteries on hosts.
+   See the examples under examples/cpp/battery-* and the documentation in the Plugins page.
+ - Photovoltaic: Enable the management of photovoltaic panels on hosts.
+   See the examples under examples/cpp/photovoltaic-* and the documentation in the Plugins page.
 
-New plugin: Battery
- - Enable the management of batteries on hosts.
- - Documentation: https://simgrid.frama.io/simgrid/Plugins.html#battery
- - Examples: examples/cpp/battery-*
-  
 Kernel:
  - optimize an internal datastructure (use a set instead of a list for ongoing activities),
    leading to a potentially big performance gain, in particular with many detached comms.
@@ -68,8 +78,8 @@ Model checking:
  - Synchronize the MBI tests with upstream.
  - Show the full actor bactraces when replaying a MC trace (with model-check/replay)
    and the status of all actors on deadlocks in MC mode.
- - The safety/stateless aspects of the MC are now enabled by default in all simgrid builds. 
-   Liveness and stateful aspects are still controled by the enabling_model-checking 
+ - The safety/stateless aspects of the MC are now enabled by default in all simgrid builds.
+   Liveness and stateful aspects are still controled by the enabling_model-checking
    configuration option.
  - Stateless model-checking is now usable on any system, including Mac OSX and ARM processors.
 
@@ -670,7 +680,7 @@ The Release release (the French lockdown was eased today).
 
 Important user-visible changes:
  - SimGrid now requires a compiler with C++14 support.
-   Sibling projects should upgrade their FindSimgrid.cmake
+   Sibling projects should upgrade their FindSimGrid.cmake
  - Surf precision default value is now 1e-9, instead of 1e-5. This was changed as
    several users had difficulties to understand issues when using high bandwidth or
    small latency events. The new value was already the default for SMPI and

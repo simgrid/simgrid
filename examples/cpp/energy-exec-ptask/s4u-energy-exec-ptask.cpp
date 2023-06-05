@@ -141,10 +141,10 @@ static void runner()
 
   // ========= A new ptask with computation and a timeout =========
   start = sg4::Engine::get_clock();
-  std::vector<double> cpu_amounts5{flopAmount, flopAmount};
-  std::vector<double> com_amounts5{0, 0, 0, 0};
   XBT_INFO("Run a task with computation on two hosts and a timeout of 20s.");
   try {
+    std::vector<double> cpu_amounts5{flopAmount, flopAmount};
+    std::vector<double> com_amounts5{0, 0, 0, 0};
     sg4::this_actor::exec_init(hosts, cpu_amounts5, com_amounts5)->wait_for(20);
   } catch (const simgrid::TimeoutException &){
     XBT_INFO("Finished WITH timeout");

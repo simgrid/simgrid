@@ -17,8 +17,7 @@
 #include <utility>
 #include <xbt/ex.h>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 /** A value or an exception (or nothing)
  *
@@ -126,7 +125,6 @@ template <class P, class F> inline void set_promise(P& promise, F&& future)
 {
   fulfill_promise(promise, [&future] { return std::forward<F>(future).get(); });
 }
-}
-}
+} // namespace simgrid::xbt
 
 #endif

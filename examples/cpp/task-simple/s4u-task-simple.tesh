@@ -1,0 +1,9 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-task-simple ${platfdir}/small_platform.xml
+> [10.194200] [task_simple/INFO] Task exec1 finished (1)
+> [11.714617] [task_simple/INFO] Task comm finished (1)
+> [20.388399] [task_simple/INFO] Task exec1 finished (2)
+> [21.908817] [task_simple/INFO] Task comm finished (2)
+> [24.821464] [task_simple/INFO] Task exec2 finished (1)
+> [37.928311] [task_simple/INFO] Task exec2 finished (2)

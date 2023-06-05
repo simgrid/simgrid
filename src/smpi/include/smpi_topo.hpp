@@ -6,7 +6,6 @@
 #ifndef SMPI_TOPO_HPP_INCLUDED
 #define SMPI_TOPO_HPP_INCLUDED
 
-#include "smpi_comm.hpp"
 #include "smpi_status.hpp"
 #include <memory>
 

@@ -1,12 +1,12 @@
 #!/usr/bin/env tesh
 
 $ ${bindir:=.}/s4u-dag-from-dot-simple --log=no_loc ${platfdir}/small_platform.xml ${srcdir:=.}/dag.dot
-> [0.000000] [dag_from_dot_simple/INFO] Activity 'root' is complete (start time: 0.000000, finish time: 0.000000)
-> [33.394394] [dag_from_dot_simple/INFO] Activity 'root->c2' is complete (start time: 0.000000, finish time: 33.394394)
-> [39.832311] [dag_from_dot_simple/INFO] Activity 'root->c1' is complete (start time: 0.000000, finish time: 39.832311)
-> [50.026511] [dag_from_dot_simple/INFO] Activity 'c1' is complete (start time: 39.832311, finish time: 50.026511)
-> [98.928629] [dag_from_dot_simple/INFO] Activity 'c2' is complete (start time: 33.394394, finish time: 98.928629)
-> [125.115689] [dag_from_dot_simple/INFO] Activity 'c1->c3' is complete (start time: 50.026511, finish time: 125.115689)
-> [151.329383] [dag_from_dot_simple/INFO] Activity 'c3' is complete (start time: 125.115689, finish time: 151.329383)
-> [151.743605] [dag_from_dot_simple/INFO] Activity 'c3->end' is complete (start time: 151.329383, finish time: 151.743605)
-> [151.743605] [dag_from_dot_simple/INFO] Activity 'end' is complete (start time: 151.743605, finish time: 151.743605)
+> [0.000000] [dag_from_dot_simple/INFO] Exec 'root' is complete (start time: 0.000000, finish time: 0.000000)
+> [33.394394] [dag_from_dot_simple/INFO] Comm 'root->c2' is complete (start time: 0.000000, finish time: 33.394394)
+> [39.832311] [dag_from_dot_simple/INFO] Comm 'root->c1' is complete (start time: 0.000000, finish time: 39.832311)
+> [50.026511] [dag_from_dot_simple/INFO] Exec 'c1' is complete (start time: 39.832311, finish time: 50.026511)
+> [98.928629] [dag_from_dot_simple/INFO] Exec 'c2' is complete (start time: 33.394394, finish time: 98.928629)
+> [125.115689] [dag_from_dot_simple/INFO] Comm 'c1->c3' is complete (start time: 50.026511, finish time: 125.115689)
+> [151.329383] [dag_from_dot_simple/INFO] Exec 'c3' is complete (start time: 125.115689, finish time: 151.329383)
+> [151.743605] [dag_from_dot_simple/INFO] Comm 'c3->end' is complete (start time: 151.329383, finish time: 151.743605)
+> [151.743605] [dag_from_dot_simple/INFO] Exec 'end' is complete (start time: 151.743605, finish time: 151.743605)

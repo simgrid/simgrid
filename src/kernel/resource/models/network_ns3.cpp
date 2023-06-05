@@ -50,7 +50,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_ns3, res_network, "Network model based on ns
  *****************/
 
 extern std::map<std::string, SgFlow*, std::less<>> flow_from_sock;
-extern std::map<std::string, ns3::ApplicationContainer, std::less<>> sink_from_sock;
 
 static int number_of_links    = 1;
 static int number_of_networks = 1;
@@ -288,8 +287,9 @@ static void XBT_ATTRIB_CONSTRUCTOR(800) simgrid_ns3_network_model_register()
       });
 }
 
-static simgrid::config::Flag<std::string>
-    ns3_tcp_model("ns3/TcpModel", "The ns-3 tcp model can be: NewReno or Reno or Tahoe", "default");
+static simgrid::config::Flag<std::string> ns3_network_model_name("ns3/NetworkModel", {"ns3/TcpModel"},
+                                                                 "The ns-3 tcp model can be: NewReno or Cubic",
+                                                                 "default", [](const std::string&) {});
 static simgrid::config::Flag<std::string> ns3_seed(
     "ns3/seed",
     "The random seed provided to ns-3. Either 'time' to seed with time(), blank to not set (default), or a number.", "",
@@ -317,20 +317,34 @@ NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
              "LinkEnergy plugin and ns-3 network models are not compatible. Are you looking for Ecofen, maybe?");
 
   NetPointNs3::EXTENSION_ID = routing::NetPoint::extension_create<NetPointNs3>();
+  auto const& NetworkProtocol = ns3_network_model_name.get();
 
-  ns3::Config::SetDefault("ns3::TcpSocket::SegmentSize", ns3::UintegerValue(1000));
-  ns3::Config::SetDefault("ns3::TcpSocket::DelAckCount", ns3::UintegerValue(1));
-  ns3::Config::SetDefault("ns3::TcpSocketBase::Timestamp", ns3::BooleanValue(false));
-
-  if (auto const& TcpProtocol = ns3_tcp_model.get(); TcpProtocol == "default") {
-    /* nothing to do */
-
-  } else if (TcpProtocol == "Reno" || TcpProtocol == "NewReno" || TcpProtocol == "Tahoe") {
-    XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
-    ns3::Config::SetDefault("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::Tcp" + TcpProtocol));
-
+  if (NetworkProtocol == "UDP") {
+    /*UdpClient=0
+UdpEchoClientApplication=0
+UdpEchoServerApplication=0
+UdpL4Protocol=0
+UdpServer=0
+UdpSocket=0
+UdpSocketImpl=0
+UdpTraceClient=0*/
+    LogComponentEnable("UdpSocket", ns3::LOG_LEVEL_DEBUG);
+    LogComponentEnable("UdpL4Protocol", ns3::LOG_LEVEL_DEBUG);
   } else {
-    xbt_die("The ns3/TcpModel must be: NewReno or Reno or Tahoe");
+    ns3::Config::SetDefault("ns3::TcpSocket::SegmentSize", ns3::UintegerValue(1000));
+    ns3::Config::SetDefault("ns3::TcpSocket::DelAckCount", ns3::UintegerValue(1));
+    ns3::Config::SetDefault("ns3::TcpSocketBase::Timestamp", ns3::BooleanValue(false));
+  }
+
+  if (NetworkProtocol == "NewReno" || NetworkProtocol == "Cubic") {
+    XBT_INFO("Switching Tcp protocol to '%s'", NetworkProtocol.c_str());
+    ns3::Config::SetDefault("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::Tcp" + NetworkProtocol));
+
+  } else if (NetworkProtocol == "UDP") {
+    XBT_INFO("Switching network protocol to UDP.");
+
+  } else if (NetworkProtocol != "default") {
+    xbt_die("The ns3/NetworkModel must be: NewReno, Cubic or UDP but it's '%s'", NetworkProtocol.c_str());
   }
 
   routing::NetPoint::on_creation.connect([](routing::NetPoint& pt) {
@@ -465,7 +479,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
 
       std::vector<StandardLinkImpl*> route;
       action->get_src().route_to(&action->get_dst(), route, nullptr);
-      for (auto const& link : route)
+      for (auto const* link : route)
         instr::resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(),
                                         data_delta_sent / delta, now - delta, delta);
 
@@ -493,7 +507,6 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     }
     delete flow;
     flow_from_sock.erase(ns3_socket);
-    sink_from_sock.erase(ns3_socket);
   }
 }
 
@@ -571,17 +584,18 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
              dst->get_netpoint()->get_cname());
 
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress(ns3::Ipv4Address::GetAny(), port_number));
-  ns3::ApplicationContainer apps = sink.Install(dst_node);
+  sink.Install(dst_node);
 
   ns3::Ptr<ns3::Socket> sock = ns3::Socket::CreateSocket(src_node, ns3::TcpSocketFactory::GetTypeId());
 
-  XBT_DEBUG("Create socket %s for a flow of %.0f Bytes from %s to %s with Interface %s",
-            transform_socket_ptr(sock).c_str(), totalBytes, src->get_cname(), dst->get_cname(), addr.c_str());
+  auto sock_addr = transform_socket_ptr(sock);
+  XBT_DEBUG("Create socket %s for a flow of %.0f Bytes from %s to %s with Interface %s", sock_addr.c_str(), totalBytes,
+            src->get_cname(), dst->get_cname(), addr.c_str());
 
-  flow_from_sock.try_emplace(transform_socket_ptr(sock), new SgFlow(static_cast<uint32_t>(totalBytes), this));
-  sink_from_sock.try_emplace(transform_socket_ptr(sock), apps);
+  flow_from_sock.try_emplace(sock_addr, new SgFlow(static_cast<uint32_t>(totalBytes), this));
 
   sock->Bind(ns3::InetSocketAddress(port_number));
+
   ns3::Simulator::ScheduleNow(&start_flow, sock, addr.c_str(), port_number);
 
   port_number = 1 + (port_number % UINT16_MAX);
@@ -612,8 +626,9 @@ void NetworkNS3Action::update_remains_lazy(double /*now*/)
 
 ns3::Ptr<ns3::Node> get_ns3node_from_sghost(const simgrid::s4u::Host* host)
 {
-  xbt_assert(host->get_netpoint()->extension<NetPointNs3>() != nullptr, "Please only use this function on ns-3 nodes");
-  return host->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
+  auto* netext = host->get_netpoint()->extension<NetPointNs3>();
+  xbt_assert(netext != nullptr, "Please only use this function on ns-3 nodes");
+  return netext->ns3_node_;
 }
 } // namespace simgrid
 

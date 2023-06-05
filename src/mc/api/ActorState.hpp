@@ -9,6 +9,7 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
 
+#include <algorithm>
 #include <exception>
 #include <vector>
 
@@ -97,8 +98,10 @@ public:
       mark_done();
     return times_considered_++;
   }
+  unsigned int get_max_considered() const { return max_consider_; }
   unsigned int get_times_considered() const { return times_considered_; }
   unsigned int get_times_not_considered() const { return max_consider_ - times_considered_; }
+  bool has_more_to_consider() const { return get_times_not_considered() > 0; }
   aid_t get_aid() const { return aid_; }
 
   /* returns whether the actor is marked as enabled in the application side */
@@ -115,16 +118,42 @@ public:
   }
   void mark_done() { this->state_ = InterleavingType::done; }
 
-  inline Transition* get_transition(unsigned times_considered) const
+  /**
+   * @brief Retrieves the transition that we should consider for execution by
+   * this actor from the State instance with respect to which this ActorState object
+   * is considered
+   */
+  std::shared_ptr<Transition> get_transition() const
+  {
+    // The rationale for this selection is as follows:
+    //
+    // 1. For transitions with only one possibility of execution,
+    // we always wish to select action `0` even if we've
+    // marked the transition already as considered (which
+    // we'll do if we explore a trace following that transition).
+    //
+    // 2. For transitions that can be considered multiple
+    // times, we want to be sure to select the most up-to-date
+    // action. In general, this means selecting that which is
+    // now being considered at this state. If, however, we've
+    // executed the
+    //
+    // The formula satisfies both of the above conditions:
+    //
+    // > std::clamp(times_considered_, 0u, max_consider_ - 1)
+    return get_transition(std::clamp(times_considered_, 0u, max_consider_ - 1));
+  }
+
+  std::shared_ptr<Transition> get_transition(unsigned times_considered) const
   {
     xbt_assert(times_considered < this->pending_transitions_.size(),
                "Actor %ld does not have a state available transition with `times_considered = %u`,\n"
                "yet one was asked for",
                aid_, times_considered);
-    return this->pending_transitions_[times_considered].get();
+    return this->pending_transitions_[times_considered];
   }
 
-  inline void set_transition(std::shared_ptr<Transition> t, unsigned times_considered)
+  void set_transition(std::shared_ptr<Transition> t, unsigned times_considered)
   {
     xbt_assert(times_considered < this->pending_transitions_.size(),
                "Actor %ld does not have a state available transition with `times_considered = %u`, "

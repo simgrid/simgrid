@@ -11,29 +11,29 @@ static void worker()
 {
   simgrid::s4u::Host* other_host = simgrid::s4u::Host::by_name("Fafard");
   unsigned int first =
-      simgrid::s4u::Host::on_state_change.connect([](simgrid::s4u::Host const&) { XBT_INFO("First callback"); });
+      simgrid::s4u::Host::on_onoff.connect([](simgrid::s4u::Host const&) { XBT_INFO("First callback"); });
   unsigned int second =
-      simgrid::s4u::Host::on_state_change.connect([](simgrid::s4u::Host const&) { XBT_INFO("Second callback"); });
+      simgrid::s4u::Host::on_onoff.connect([](simgrid::s4u::Host const&) { XBT_INFO("Second callback"); });
   unsigned int third =
-      simgrid::s4u::Host::on_state_change.connect([](simgrid::s4u::Host const&) { XBT_INFO("Third callback"); });
+      simgrid::s4u::Host::on_onoff.connect([](simgrid::s4u::Host const&) { XBT_INFO("Third callback"); });
 
   XBT_INFO("Turning off: Three callbacks should be triggered");
   other_host->turn_off();
 
   XBT_INFO("Disconnect the second callback");
-  simgrid::s4u::Host::on_state_change.disconnect(second);
+  simgrid::s4u::Host::on_onoff.disconnect(second);
 
   XBT_INFO("Turning on: Two callbacks should be triggered");
   other_host->turn_on();
 
   XBT_INFO("Disconnect the first callback");
-  simgrid::s4u::Host::on_state_change.disconnect(first);
+  simgrid::s4u::Host::on_onoff.disconnect(first);
 
   XBT_INFO("Turning off: One callback should be triggered");
   other_host->turn_off();
 
   XBT_INFO("Disconnect the third callback");
-  simgrid::s4u::Host::on_state_change.disconnect(third);
+  simgrid::s4u::Host::on_onoff.disconnect(third);
   XBT_INFO("Turning on: No more callbacks");
   other_host->turn_on();
 }

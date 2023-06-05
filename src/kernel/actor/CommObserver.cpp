@@ -68,7 +68,7 @@ static std::string to_string_activity_test(const activity::ActivityImpl* act)
 void ActivityTestanySimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::TESTANY << ' ' << activities_.size() << ' ';
-  for (auto const& act : activities_) {
+  for (auto const* act : activities_) {
     serialize_activity_test(act, stream);
     stream << ' ';
   }
@@ -76,7 +76,7 @@ void ActivityTestanySimcall::serialize(std::stringstream& stream) const
 std::string ActivityTestanySimcall::to_string() const
 {
   std::stringstream buffer("TestAny(");
-  for (auto const& act : activities_) {
+  for (auto const* act : activities_) {
     buffer << to_string_activity_test(act);
   }
   return buffer.str();
@@ -127,7 +127,7 @@ void ActivityWaitSimcall::serialize(std::stringstream& stream) const
 void ActivityWaitanySimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::WAITANY << ' ' << activities_.size() << ' ';
-  for (auto const& act : activities_) {
+  for (auto const* act : activities_) {
     serialize_activity_wait(act, timeout_ > 0, stream);
     stream << ' ';
   }
@@ -139,7 +139,7 @@ std::string ActivityWaitSimcall::to_string() const
 std::string ActivityWaitanySimcall::to_string() const
 {
   std::stringstream buffer("WaitAny(");
-  for (auto const& act : activities_) {
+  for (auto const* act : activities_) {
     buffer << to_string_activity_wait(act);
   }
   return buffer.str();

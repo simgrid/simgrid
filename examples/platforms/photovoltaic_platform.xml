@@ -1,0 +1,10 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+  <zone id="world" routing="Floyd">
+    <host id="pv_panel" speed="0f">
+      <prop id="photovoltaic_area" value="4" />
+      <prop id="photovoltaic_conversion_efficiency" value="0.2" />
+    </host>
+  </zone>
+</platform>

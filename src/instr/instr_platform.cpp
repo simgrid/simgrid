@@ -14,6 +14,7 @@
 #include <xbt/graph.h>
 
 #include "src/instr/instr_private.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
 
@@ -347,6 +348,15 @@ static void on_host_creation(s4u::Host const& host)
     root->get_type()->by_name_or_create("MIGRATE_LINK", mpi, mpi);
     mpi->by_name_or_create<StateType>("MIGRATE_STATE");
   }
+
+   if (TRACE_actor_is_enabled()) {
+    auto* host_type = container->get_type();
+    auto* state     = host_type->by_name_or_create<StateType>("HOST_STATE");
+    state->set_calling_container(container);
+    state->add_entity_value("receive", "1 0 0");
+    state->add_entity_value("send", "0 0 1");
+    state->add_entity_value("execute", "0 1 1");
+  }
 }
 
 static void on_action_state_change(kernel::resource::Action const& action,
@@ -362,10 +372,15 @@ static void on_action_state_change(kernel::resource::Action const& action,
       resource_set_utilization("HOST", "speed_used", cpu->get_cname(), action.get_category(), value,
                                action.get_last_update(), simgrid_get_clock() - action.get_last_update());
 
-    if (const auto* link = dynamic_cast<kernel::resource::StandardLinkImpl*>(resource))
+    else if (const auto* link = dynamic_cast<kernel::resource::StandardLinkImpl*>(resource))
       resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action.get_category(), value,
                                action.get_last_update(), simgrid_get_clock() - action.get_last_update());
   }
+}
+
+static void on_activity_suspend_resume(s4u::Activity const& activity)
+{
+  on_action_state_change(*activity.get_impl()->model_action_, /*ignored*/ kernel::resource::Action::State::STARTED);
 }
 
 static void on_platform_created()
@@ -462,8 +477,10 @@ void define_callbacks()
 
   s4u::NetZone::on_creation_cb(on_netzone_creation);
 
-  kernel::resource::CpuAction::on_state_change.connect(on_action_state_change);
+  s4u::Host::on_exec_state_change_cb(on_action_state_change);
   s4u::Link::on_communication_state_change_cb(on_action_state_change);
+  s4u::Exec::on_suspend_cb(on_activity_suspend_resume);
+  s4u::Exec::on_resume_cb(on_activity_suspend_resume);
 
   if (TRACE_actor_is_enabled()) {
     s4u::Actor::on_creation_cb(on_actor_creation);
@@ -482,16 +499,43 @@ void define_callbacks()
     });
     s4u::Actor::on_wake_up_cb(
         [](s4u::Actor const& actor) { Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->pop_event(); });
-    s4u::Exec::on_start_cb([](s4u::Exec const&) {
-      Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("execute");
+
+    s4u::Exec::on_start_cb([](s4u::Exec const& e) {
+      std::string pid = instr_pid(*s4u::Actor::self());
+      if (pid == "-0") //Exec is launched directly by Maestro, use the host as container
+        Container::by_name(e.get_host()->get_name())->get_state("HOST_STATE")->push_event("execute");
+      else
+        Container::by_name(pid)->get_state("ACTOR_STATE")->push_event("execute");
     });
-    s4u::Activity::on_completion_cb([](const s4u::Activity&) {
-      Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->pop_event();
+
+    s4u::Exec::on_completion_cb([](const s4u::Exec& e) {
+      std::string pid = instr_pid(*s4u::Actor::self());
+      if (pid == "-0") //Exec is launched directly by Maestro, use the host as container
+        Container::by_name(e.get_host()->get_name())->get_state("HOST_STATE")->pop_event();
+      else
+        Container::by_name(pid)->get_state("ACTOR_STATE")->pop_event();
     });
-    s4u::Comm::on_send_cb([](s4u::Comm const&) {
+
+    s4u::Comm::on_completion_cb([](const s4u::Comm& c) {
+      if (c.get_sender()) {
+        Container::by_name(instr_pid(*c.get_sender()))->get_state("ACTOR_STATE")->pop_event();
+        Container::by_name(instr_pid(*c.get_receiver()))->get_state("ACTOR_STATE")->pop_event();
+      } else {
+        Container::by_name(c.get_source()->get_name())->get_state("HOST_STATE")->pop_event();
+        Container::by_name(c.get_destination()->get_name())->get_state("HOST_STATE")->pop_event();
+      }
+    });
+    s4u::Comm::on_start_cb([](s4u::Comm const& c) {
+      std::string pid = instr_pid(*s4u::Actor::self());
+      if (pid == "-0") { //Comm is launched directly by Maestro, use the host as container
+        Container::by_name(c.get_source()->get_name())->get_state("HOST_STATE")->push_event("start");
+        Container::by_name(c.get_destination()->get_name())->get_state("HOST_STATE")->push_event("start");
+      }
+    });
+    s4u::Comm::on_send_cb([](s4u::Comm const& c) {
       Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("send");
     });
-    s4u::Comm::on_recv_cb([](s4u::Comm const&) {
+    s4u::Comm::on_recv_cb([](s4u::Comm const& c) {
       Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("receive");
     });
     s4u::Actor::on_host_change_cb(on_actor_host_change);
@@ -503,7 +547,7 @@ void define_callbacks()
           ->get_state("MPI_STATE")
           ->push_event("computing", new CpuTIData("compute", exec.get_cost()));
     });
-    s4u::Activity::on_completion_cb([](const s4u::Activity&) {
+    s4u::Exec::on_completion_cb([](const s4u::Exec&) {
       Container::by_name("rank-" + std::to_string(s4u::Actor::self()->get_pid()))->get_state("MPI_STATE")->pop_event();
     });
   }

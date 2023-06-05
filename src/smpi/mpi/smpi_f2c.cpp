@@ -25,7 +25,7 @@ F2C::F2C() = default;
 int F2C::add_f()
 {
   allocate_lookup();
-  if (auto loc = smpi_process()->call_location(); loc && loc->linenumber != 0)
+  if (auto const* loc = smpi_process()->call_location(); loc && loc->linenumber != 0)
     call_location_= std::string (loc->filename + ":" + std::to_string(loc->linenumber));
   my_f2c_id_                 = global_f2c_id();
   (*f2c_lookup_)[my_f2c_id_] = this;

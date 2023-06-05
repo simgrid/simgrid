@@ -445,7 +445,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   if (cfg_weight_S_parameter > 0) {
     action->sharing_penalty_ = std::accumulate(route.begin(), route.end(), action->sharing_penalty_,
-                                               [](double total, StandardLinkImpl* const& link) {
+                                               [](double total, StandardLinkImpl const* link) {
                                                  return total + cfg_weight_S_parameter / link->get_bandwidth();
                                                });
   }

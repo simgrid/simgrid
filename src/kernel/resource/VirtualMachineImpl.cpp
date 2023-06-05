@@ -55,15 +55,15 @@ std::deque<s4u::VirtualMachine*> VirtualMachineImpl::allVms_;
  */
 const double virt_overhead = 1; // 0.95
 
-static void host_state_change(s4u::Host const& host)
+static void host_onoff(s4u::Host const& host)
 {
   if (not host.is_on()) { // just turned off.
     std::vector<s4u::VirtualMachine*> trash;
     /* Find all VMs living on that host */
-    for (s4u::VirtualMachine* const& vm : VirtualMachineImpl::allVms_)
+    for (auto* vm : VirtualMachineImpl::allVms_)
       if (vm->get_pm() == &host)
         trash.push_back(vm);
-    for (s4u::VirtualMachine* vm : trash)
+    for (auto* vm : trash)
       vm->shutdown();
   }
 }
@@ -79,17 +79,14 @@ static void add_active_exec(s4u::Exec const& task)
   }
 }
 
-static void remove_active_exec(s4u::Activity const& task)
+static void remove_active_exec(s4u::Exec const& exec)
 {
-  const auto* exec = dynamic_cast<s4u::Exec const*>(&task);
-  if (exec == nullptr)
+  if (not exec.is_assigned())
     return;
-  if (not exec->is_assigned())
-    return;
-  const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(exec->get_host());
+  const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(exec.get_host());
   if (vm != nullptr) {
     VirtualMachineImpl* vm_impl = vm->get_vm_impl();
-    for (int i = 1; i <= exec->get_thread_count(); i++)
+    for (int i = 1; i <= exec.get_thread_count(); i++)
       vm_impl->remove_active_exec();
     vm_impl->update_action_weight();
   }
@@ -123,11 +120,11 @@ static void remove_active_activity(s4u::Activity const& act)
 
 VMModel::VMModel(const std::string& name) : HostModel(name)
 {
-  s4u::Host::on_state_change_cb(host_state_change);
+  s4u::Host::on_onoff_cb(host_onoff);
   s4u::Exec::on_start_cb(add_active_exec);
-  s4u::Activity::on_completion_cb(remove_active_exec);
-  s4u::Activity::on_resumed_cb(add_active_activity);
-  s4u::Activity::on_suspended_cb(remove_active_activity);
+  s4u::Exec::on_completion_cb(remove_active_exec);
+  s4u::Exec::on_resume_cb(add_active_activity);
+  s4u::Exec::on_suspend_cb(remove_active_activity);
 }
 
 double VMModel::next_occurring_event(double now)
@@ -157,7 +154,7 @@ double VMModel::next_occurring_event(double now)
    **/
 
   /* iterate for all virtual machines */
-  for (s4u::VirtualMachine* const& ws_vm : VirtualMachineImpl::allVms_) {
+  for (auto const* ws_vm : VirtualMachineImpl::allVms_) {
     if (ws_vm->get_state() == s4u::VirtualMachine::State::SUSPENDED) // Ignore suspended VMs
       continue;
 
@@ -239,6 +236,7 @@ void VirtualMachineImpl::vm_destroy()
 void VirtualMachineImpl::start()
 {
   s4u::VirtualMachine::on_start(*get_iface());
+  get_iface()->on_this_start(*get_iface());
   s4u::VmHostExt::ensureVmExtInstalled();
 
   if (physical_host_->extension<s4u::VmHostExt>() == nullptr)
@@ -249,7 +247,7 @@ void VirtualMachineImpl::start()
       not physical_host_->extension<s4u::VmHostExt>()->overcommit) { /* Need to verify that we don't overcommit */
     /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
     size_t total_ramsize_of_vms = 0;
-    for (auto* const& ws_vm : allVms_)
+    for (auto const* ws_vm : allVms_)
       if (physical_host_ == ws_vm->get_pm())
         total_ramsize_of_vms += ws_vm->get_ramsize();
 
@@ -264,11 +262,13 @@ void VirtualMachineImpl::start()
   vm_state_ = s4u::VirtualMachine::State::RUNNING;
 
   s4u::VirtualMachine::on_started(*get_iface());
+  get_iface()->on_this_started(*get_iface());
 }
 
 void VirtualMachineImpl::suspend(const actor::ActorImpl* issuer)
 {
   s4u::VirtualMachine::on_suspend(*get_iface());
+  get_iface()->on_this_suspend(*get_iface());
 
   if (vm_state_ != s4u::VirtualMachine::State::RUNNING)
     throw VmFailureException(XBT_THROW_POINT,
@@ -308,6 +308,7 @@ void VirtualMachineImpl::resume()
 
   vm_state_ = s4u::VirtualMachine::State::RUNNING;
   s4u::VirtualMachine::on_resume(*get_iface());
+  get_iface()->on_this_resume(*get_iface());
 }
 
 /** @brief Power off a VM.
@@ -334,6 +335,7 @@ void VirtualMachineImpl::shutdown(actor::ActorImpl* issuer)
   set_state(s4u::VirtualMachine::State::DESTROYED);
 
   s4u::VirtualMachine::on_shutdown(*get_iface());
+  get_iface()->on_this_shutdown(*get_iface());
 }
 
 /** @brief Change the physical host on which the given VM is running
@@ -402,12 +404,14 @@ void VirtualMachineImpl::start_migration()
 {
   is_migrating_ = true;
   s4u::VirtualMachine::on_migration_start(*get_iface());
+  get_iface()->on_this_migration_start(*get_iface());
 }
 
 void VirtualMachineImpl::end_migration()
 {
   is_migrating_ = false;
   s4u::VirtualMachine::on_migration_end(*get_iface());
+  get_iface()->on_this_migration_end(*get_iface());
 }
 
 void VirtualMachineImpl::seal()

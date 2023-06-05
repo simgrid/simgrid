@@ -12,14 +12,14 @@
 #include <string>
 #include <vector>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 /** @brief Communication async
  *
  * Represents all asynchronous communications, that you can test or wait onto.
  */
 class XBT_PUBLIC Comm : public Activity_T<Comm> {
   friend Mailbox; // Factory of comms
+  friend kernel::activity::CommImpl;
   /* specified for normal mailbox-based communications*/
   Mailbox* mailbox_                   = nullptr;
   kernel::actor::ActorImpl* sender_   = nullptr;
@@ -39,19 +39,45 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
   Comm() = default;
   Comm* do_start() override;
 
-public:
-  /* signals and related callbacks */
-#ifndef DOXYGEN
-  /* FIXME signals should be private */
+protected:
   static xbt::signal<void(Comm const&)> on_send;
+  xbt::signal<void(Comm const&)> on_this_send;
   static xbt::signal<void(Comm const&)> on_recv;
-  static xbt::signal<void(Comm const&)> on_start;
-#endif
+  xbt::signal<void(Comm const&)> on_this_recv;
+  inline static xbt::signal<void(Comm const&)> on_start;
+  xbt::signal<void(Comm const&)> on_this_start;
 
+  void fire_on_completion() const override {
+    /* The completion signal of a Comm has to be thrown only once and not by the sender AND the receiver.
+       then Comm::on_completion is thrown in the kernel in CommImpl::finish.
+     */
+  }
+  void fire_on_this_completion() const override {
+    /* The completion signal of a Comm has to be thrown only once and not by the sender AND the receiver.
+       then Comm::on_completion is thrown in the kernel in CommImpl::finish.
+     */
+  }
+  void fire_on_suspend() const override { on_suspend(*this); }
+  void fire_on_this_suspend() const override { on_this_suspend(*this); }
+  void fire_on_resume() const override { on_resume(*this); }
+  void fire_on_this_resume() const override { on_this_resume(*this); }
+  void fire_on_veto() const override { on_veto(const_cast<Comm&>(*this)); }
+  void fire_on_this_veto() const override { on_this_veto(const_cast<Comm&>(*this)); }
+
+public:
+  /*! \static Add a callback fired when the send of any Comm is posted  */
   static void on_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
+  /*! Add a callback fired when the send of this specific Comm is posted  */
+  void on_this_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
+  /*! \static Add a callback fired when the recv of any Comm is posted  */
   static void on_recv_cb(const std::function<void(Comm const&)>& cb) { on_recv.connect(cb); }
+  /*! Add a callback fired when the recv of this specific Comm is posted  */
+  void on_this_recv_cb(const std::function<void(Comm const&)>& cb) { on_this_recv.connect(cb); }
+  /*! \static Add a callback fired when any Comm starts  */
   static void on_start_cb(const std::function<void(Comm const&)>& cb) { on_start.connect(cb); }
-  /* More callbacks */
+  /*!  Add a callback fired when this specific Comm starts  */
+  void on_this_start_cb(const std::function<void(Comm const&)>& cb) { on_this_start.connect(cb); }
+
   CommPtr set_copy_data_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback);
   XBT_ATTRIB_DEPRECATED_v337("Please manifest if you actually need this function") static void copy_buffer_callback(
       kernel::activity::CommImpl*, void*, size_t);
@@ -70,7 +96,8 @@ public:
                    const std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)>& copy_data_fun,
                    void* data, double timeout, double rate);
 
-  /* "One-sided" communications. This way of communicating bypasses the mailbox and actors mechanism. It creates a
+  /* \static
+   * "One-sided" communications. This way of communicating bypasses the mailbox and actors mechanism. It creates a
    * communication (vetoabled, asynchronous, or synchronous) directly between two hosts. There is really no limit on
    * the hosts involved. In particular, the actor creating such a communication does not have to be on one of the
    * involved hosts! Enjoy the comfort of the simulator :)
@@ -149,6 +176,7 @@ public:
 
   bool is_assigned() const override;
   Actor* get_sender() const;
+  Actor* get_receiver() const;
 
   /* Comm life cycle */
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
@@ -162,22 +190,21 @@ public:
 
   Comm* wait_for(double timeout) override;
 
-  /*! take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */
+  /*! \static take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */
   static ssize_t test_any(const std::vector<CommPtr>& comms);
 
-  /*! take a vector s4u::CommPtr and return when one of them is finished.
+  /*! \static take a vector s4u::CommPtr and return when one of them is finished.
    * The return value is the rank of the first finished CommPtr. */
   static ssize_t wait_any(const std::vector<CommPtr>& comms) { return wait_any_for(comms, -1); }
-  /*! Same as wait_any, but with a timeout. Return -1 if the timeout occurs.*/
+  /*! \static Same as wait_any, but with a timeout. Return -1 if the timeout occurs.*/
   static ssize_t wait_any_for(const std::vector<CommPtr>& comms, double timeout);
 
-  /*! take a vector s4u::CommPtr and return when all of them is finished. */
+  /*! \static take a vector s4u::CommPtr and return when all of them is finished. */
   static void wait_all(const std::vector<CommPtr>& comms);
-  /*! Same as wait_all, but with a timeout. Return the number of terminated comm (less than comms.size() if the timeout
-   * occurs). */
+  /*! \static Same as wait_all, but with a timeout. Return the number of terminated comm (less than comms.size() if
+   *  the timeout occurs). */
   static size_t wait_all_for(const std::vector<CommPtr>& comms, double timeout);
 };
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_COMM_HPP */

@@ -11,8 +11,7 @@
 
 #include <string>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /** I/O Activity, representing the asynchronous disk access.
  *
@@ -25,22 +24,35 @@ class XBT_PUBLIC Io : public Activity_T<Io> {
   friend kernel::EngineImpl;
 #endif
 
-  static xbt::signal<void(Io const&)> on_start;
+  inline static xbt::signal<void(Io const&)> on_start;
+  xbt::signal<void(Io const&)> on_this_start;
 
 protected:
   explicit Io(kernel::activity::IoImplPtr pimpl);
   Io* do_start() override;
+  void fire_on_completion() const override { on_completion(*this); }
+  void fire_on_this_completion() const override { on_this_completion(*this); }
+  void fire_on_suspend() const override { on_suspend(*this); }
+  void fire_on_this_suspend() const override { on_this_suspend(*this); }
+  void fire_on_resume() const override { on_resume(*this); }
+  void fire_on_this_resume() const override { on_this_resume(*this); }
+  void fire_on_veto() const override { on_veto(const_cast<Io&>(*this)); }
+  void fire_on_this_veto() const override { on_this_veto(const_cast<Io&>(*this)); }
 
 public:
   enum class OpType { READ, WRITE };
 
+   /*! \static Signal fired each time that any I/O actually starts (no veto) */
   static void on_start_cb(const std::function<void(Io const&)>& cb) { on_start.connect(cb); }
+   /*! Signal fired each time this specific I/O actually starts (no veto) */
+  void on_this_start_cb(const std::function<void(Io const&)>& cb) { on_this_start.connect(cb); }
 
+   /*! \static Initiate the creation of an I/O. Setters have to be called afterwards */
   static IoPtr init();
-  /*! take a vector of s4u::IoPtr and return when one of them is finished.
+  /*! \static take a vector of s4u::IoPtr and return when one of them is finished.
    * The return value is the rank of the first finished IoPtr. */
   static ssize_t wait_any(const std::vector<IoPtr>& ios) { return wait_any_for(ios, -1); }
-  /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
+  /*! \static Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
   static ssize_t wait_any_for(const std::vector<IoPtr>& ios, double timeout);
 
   double get_remaining() const override;
@@ -64,7 +76,6 @@ public:
   bool is_assigned() const override;
 };
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_IO_HPP */

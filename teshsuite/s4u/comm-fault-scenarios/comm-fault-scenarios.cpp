@@ -413,7 +413,7 @@ int main(int argc, char* argv[])
                   {sg4::LinkInRoute{link}}, false);
   zone->seal();
 
-  sg4::Host::on_state_change_cb([mbox](sg4::Host const& host) {
+  sg4::Host::on_onoff_cb([mbox](sg4::Host const& host) {
     XBT_DEBUG("Host %s is now %s", host.get_cname(), host.is_on() ? "ON " : "OFF");
     if (not host.is_on()) {
       mbox.eager->clear();
@@ -421,7 +421,7 @@ int main(int argc, char* argv[])
     }
   });
 
-  sg4::Link::on_state_change_cb(
+  sg4::Link::on_onoff_cb(
       [](sg4::Link const& lnk) { XBT_DEBUG("Link %s is now %s", lnk.get_cname(), lnk.is_on() ? "ON " : "OFF"); });
 
   e.run_until(end_time);

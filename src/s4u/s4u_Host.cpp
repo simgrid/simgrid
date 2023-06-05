@@ -32,8 +32,9 @@ namespace s4u {
 #ifndef DOXYGEN
 xbt::signal<void(Host&)> Host::on_creation;
 xbt::signal<void(Host const&)> Host::on_destruction;
-xbt::signal<void(Host const&)> Host::on_state_change;
+xbt::signal<void(Host const&)> Host::on_onoff;
 xbt::signal<void(Host const&)> Host::on_speed_change;
+xbt::signal<void(kernel::resource::CpuAction&, kernel::resource::Action::State)> Host::on_exec_state_change;
 #endif
 
 Host* Host::set_cpu(kernel::resource::CpuImpl* cpu)
@@ -101,7 +102,8 @@ void Host::turn_on()
     kernel::actor::simcall_answered([this] {
       this->pimpl_cpu_->turn_on();
       this->pimpl_->turn_on();
-      on_state_change(*this);
+      on_onoff(*this);
+      on_this_onoff(*this);
     });
   }
 }
@@ -115,7 +117,8 @@ void Host::turn_off()
       this->pimpl_cpu_->turn_off();
       this->pimpl_->turn_off(self);
 
-      on_state_change(*this);
+      on_onoff(*this);
+      on_this_onoff(*this);
     });
   }
 }

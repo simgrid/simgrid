@@ -5,6 +5,7 @@
 
 #include <simgrid/Exception.hpp>
 #include <simgrid/kernel/routing/NetPoint.hpp>
+#include <simgrid/s4u/Disk.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
 #include <xbt/file.hpp>
@@ -259,10 +260,57 @@ void STag_simgrid_parse_platform()
                            "The most recent formalism that this version of SimGrid understands is v4.1.\n"
                            "Please update your code, or use another, more adapted, file.");
 }
+
+static void add_remote_disks()
+{
+  for (auto const& host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
+    const char* remote_disk_str = host->get_property("remote_disk");
+    if (not remote_disk_str)
+      continue;
+    std::vector<std::string> tokens;
+    boost::split(tokens, remote_disk_str, boost::is_any_of(":"));
+    simgrid::s4u::Host* remote_host = simgrid::s4u::Host::by_name_or_null(tokens[2]);
+    xbt_assert(remote_host, "You're trying to access a host that does not exist. Please check your platform file");
+
+    const simgrid::s4u::Disk* disk = nullptr;
+    for (auto const& d : remote_host->get_disks())
+      if (d->get_name() == tokens[1]) {
+        disk = d;
+        break;
+      }
+
+    xbt_assert(disk, "You're trying to mount a disk that does not exist. Please check your platform file");
+    host->add_disk(disk);
+
+    XBT_DEBUG("Host '%s' wants to access a remote disk: %s of %s", host->get_cname(), disk->get_cname(),
+              remote_host->get_cname());
+    XBT_DEBUG("Host '%s' now has %zu disks", host->get_cname(), host->get_disks().size());
+  }
+}
+
+static void remove_remote_disks()
+{
+  XBT_DEBUG("Simulation is over, time to unregister remote disks if any");
+  for (auto const& host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
+    const char* remote_disk_str = host->get_property("remote_disk");
+    if (remote_disk_str) {
+      std::vector<std::string> tokens;
+      boost::split(tokens, remote_disk_str, boost::is_any_of(":"));
+      XBT_DEBUG("Host '%s' wants to unmount a remote disk: %s of %s", host->get_cname(),
+                tokens[1].c_str(), tokens[2].c_str());
+      host->remove_disk(tokens[1]);
+      XBT_DEBUG("Host '%s' now has %zu disks", host->get_cname(), host->get_disks().size());
+    }
+  }
+}
+
 void ETag_simgrid_parse_platform()
 {
+  simgrid::s4u::Engine::on_platform_created_cb(&add_remote_disks);
+  simgrid::s4u::Engine::on_simulation_end_cb(&remove_remote_disks);
   if (fire_on_platform_created_callback)
     simgrid::s4u::Engine::on_platform_created();
+
 }
 
 void STag_simgrid_parse_prop()
@@ -535,7 +583,7 @@ void ETag_simgrid_parse_link()
 
 void STag_simgrid_parse_link___ctn()
 {
-  const auto engine = simgrid::s4u::Engine::get_instance();
+  const auto* engine = simgrid::s4u::Engine::get_instance();
   const simgrid::s4u::Link* link;
   simgrid::s4u::LinkInRoute::Direction direction = simgrid::s4u::LinkInRoute::Direction::NONE;
   switch (A_simgrid_parse_link___ctn_direction) {
@@ -957,7 +1005,7 @@ void simgrid_parse(bool fire_on_platform_created_callback_param)
   simgrid_parse_assert(not err, "Flex returned an error code");
 
   /* Actually connect the traces now that every elements are created */
-  const auto engine = simgrid::s4u::Engine::get_instance();
+  const auto* engine = simgrid::s4u::Engine::get_instance();
 
   for (auto const& [trace, name] : trace_connect_list_host_avail) {
     simgrid_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),

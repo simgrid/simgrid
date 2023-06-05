@@ -13,8 +13,7 @@
 #include <limits>
 #include <vector>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 template<class T, class U> class Extension;
 template<class T>          class Extendable;
@@ -121,7 +120,6 @@ public:
 
 // Initialized with a first element, to save space for void* user data
 template <class T> std::vector<std::function<void(void*)>> Extendable<T>::deleters_{1};
-}
-}
+} // namespace simgrid::xbt
 
 #endif

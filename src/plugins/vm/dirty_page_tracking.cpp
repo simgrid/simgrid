@@ -88,9 +88,9 @@ static void on_exec_creation(simgrid::s4u::Exec const& e)
   }
 }
 
-static void on_exec_completion(const simgrid::s4u::Activity& e)
+static void on_exec_completion(const simgrid::s4u::Exec& e)
 {
-  const auto exec = dynamic_cast<simgrid::kernel::activity::ExecImpl*>(e.get_impl());
+  const auto* exec = dynamic_cast<simgrid::kernel::activity::ExecImpl*>(e.get_impl());
   if (exec == nullptr)
     return;
   const simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec->get_host());
@@ -113,7 +113,7 @@ void sg_vm_dirty_page_tracking_init()
         simgrid::kernel::resource::VirtualMachineImpl::extension_create<DirtyPageTrackingExt>();
     simgrid::s4u::VirtualMachine::on_creation_cb(&on_virtual_machine_creation);
     simgrid::s4u::Exec::on_start_cb(&on_exec_creation);
-    simgrid::s4u::Activity::on_completion_cb(&on_exec_completion);
+    simgrid::s4u::Exec::on_completion_cb(&on_exec_completion);
   }
 }
 

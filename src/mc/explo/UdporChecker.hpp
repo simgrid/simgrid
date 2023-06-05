@@ -7,6 +7,7 @@
 #ifndef SIMGRID_MC_UDPOR_CHECKER_HPP
 #define SIMGRID_MC_UDPOR_CHECKER_HPP
 
+#include "src/mc/api/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/udpor/Configuration.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"

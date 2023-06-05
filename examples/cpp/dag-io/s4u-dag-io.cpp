@@ -13,24 +13,24 @@ namespace sg4 = simgrid::s4u;
 int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
-  sg_storage_file_system_init();
   e.load_platform(argv[1]);
 
   auto bob  = e.host_by_name("bob");
   auto carl = e.host_by_name("carl");
 
   // Display the details on vetoed activities
-  sg4::Activity::on_veto_cb([](const sg4::Activity& a) {
-    XBT_INFO("Activity '%s' vetoed. Dependencies: %s; Ressources: %s", a.get_cname(),
-             (a.dependencies_solved() ? "solved" : "NOT solved"), (a.is_assigned() ? "assigned" : "NOT assigned"));
+  sg4::Exec::on_veto_cb([](sg4::Exec const& exec) {
+    XBT_INFO("Exec '%s' vetoed. Dependencies: %s; Ressources: %s", exec.get_cname(),
+             (exec.dependencies_solved() ? "solved" : "NOT solved"), (exec.is_assigned() ? "assigned" : "NOT assigned"));
+  });
+  sg4::Io::on_veto_cb([](sg4::Io const& io) {
+    XBT_INFO("Io '%s' vetoed. Dependencies: %s; Ressources: %s", io.get_cname(),
+             (io.dependencies_solved() ? "solved" : "NOT solved"), (io.is_assigned() ? "assigned" : "NOT assigned"));
   });
 
-  sg4::Activity::on_completion_cb([](sg4::Activity const& activity) {
-    const auto* exec = dynamic_cast<sg4::Exec const*>(&activity);
-    if (exec == nullptr) // Only Execs are concerned here
-      return;
-    XBT_INFO("Activity '%s' is complete (start time: %f, finish time: %f)", exec->get_cname(), exec->get_start_time(),
-             exec->get_finish_time());
+  sg4::Exec::on_completion_cb([](sg4::Exec const& exec) {
+    XBT_INFO("Exec '%s' is complete (start time: %f, finish time: %f)", exec.get_cname(), exec.get_start_time(),
+             exec.get_finish_time());
   });
 
   // Create a small DAG: parent->write_output->read_input->child

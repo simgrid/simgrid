@@ -42,6 +42,10 @@ bool CommWaitTransition::depends(const Transition* other) const
   if (other->type_ < type_)
     return other->depends(this);
 
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
+
   if (const auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
     if (timeout_ || wait->timeout_)
       return true; // Timeouts are not considered by the independence theorem, thus assumed dependent
@@ -80,6 +84,10 @@ bool CommTestTransition::depends(const Transition* other) const
   if (other->type_ < type_)
     return other->depends(this);
 
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
+
   if (dynamic_cast<const CommTestTransition*>(other) != nullptr)
     return false; // Test & Test are independent
 
@@ -111,6 +119,10 @@ bool CommRecvTransition::depends(const Transition* other) const
 {
   if (other->type_ < type_)
     return other->depends(this);
+
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
 
   if (const auto* recv = dynamic_cast<const CommRecvTransition*>(other))
     return mbox_ == recv->mbox_;
@@ -163,6 +175,10 @@ bool CommSendTransition::depends(const Transition* other) const
 {
   if (other->type_ < type_)
     return other->depends(this);
+
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
 
   if (const auto* other_isend = dynamic_cast<const CommSendTransition*>(other))
     return mbox_ == other_isend->mbox_;

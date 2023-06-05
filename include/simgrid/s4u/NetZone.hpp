@@ -18,8 +18,7 @@
 #include <utility>
 #include <vector>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /** @brief Networking Zones
  *
@@ -94,7 +93,9 @@ private:
 #endif
 
 public:
+  /** \static Add a callback fired on each newly created NetZone */
   static void on_creation_cb(const std::function<void(NetZone const&)>& cb) { on_creation.connect(cb); }
+  /** \static Add a callback fired on each newly sealed NetZone */
   static void on_seal_cb(const std::function<void(NetZone const&)>& cb) { on_seal.connect(cb); }
 
   /**
@@ -329,7 +330,6 @@ XBT_PUBLIC NetZone* create_dragonfly_zone(const std::string& name, const NetZone
                                           const DragonflyParams& parameters, const ClusterCallbacks& set_callbacks,
                                           double bandwidth, double latency, Link::SharingPolicy sharing_policy);
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_NETZONE_HPP */

@@ -1,0 +1,15 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-task-switch-host ${platfdir}/small_platform.xml
+> [1.520418] [task_switch_host/INFO] Task comm0 finished (1)
+> [2.873012] [task_switch_host/INFO] Task comm0 finished (2)
+> [4.393430] [task_switch_host/INFO] Task comm0 finished (3)
+> [5.746025] [task_switch_host/INFO] Task comm0 finished (4)
+> [14.627265] [task_switch_host/INFO] Task exec1 finished (1)
+> [15.979859] [task_switch_host/INFO] Task exec2 finished (1)
+> [16.147682] [task_switch_host/INFO] Task comm1 finished (1)
+> [17.332454] [task_switch_host/INFO] Task comm2 finished (1)
+> [27.734112] [task_switch_host/INFO] Task exec1 finished (2)
+> [29.086707] [task_switch_host/INFO] Task exec2 finished (2)
+> [29.254529] [task_switch_host/INFO] Task comm1 finished (2)
+> [30.439301] [task_switch_host/INFO] Task comm2 finished (2)

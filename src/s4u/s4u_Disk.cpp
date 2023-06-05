@@ -17,7 +17,7 @@ namespace s4u {
 
 xbt::signal<void(Disk&)> Disk::on_creation;
 xbt::signal<void(Disk const&)> Disk::on_destruction;
-xbt::signal<void(Disk const&)> Disk::on_state_change;
+xbt::signal<void(Disk const&)> Disk::on_onoff;
 
 const std::string& Disk::get_name() const
 {

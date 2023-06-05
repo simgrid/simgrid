@@ -13,12 +13,11 @@
 #include <boost/heap/pairing_heap.hpp>
 #include <boost/optional.hpp>
 #include <string>
+#include <string_view>
 
 static constexpr double NO_MAX_DURATION = -1.0;
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 using heap_element_type = std::pair<double, Action*>;
 using heap_type =
@@ -227,7 +226,7 @@ public:
   /** @brief Get the tracing category associated to the current action */
   const std::string& get_category() const { return category_; }
   /** @brief Set the tracing category of the current Action */
-  void set_category(const std::string& category) { category_ = category; }
+  void set_category(std::string_view category) { category_ = category; }
 
   /** @brief Get the sharing_penalty (RTT or 1/thread_count) of the current Action */
   double get_sharing_penalty() const { return sharing_penalty_; };
@@ -273,7 +272,5 @@ public:
   void set_suspend_state(Action::SuspendStates state) { suspended_ = state; }
 };
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 #endif

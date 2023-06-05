@@ -85,7 +85,7 @@ template <typename C> std::string BmfSolver::debug_vector(const C& container) co
 {
   std::stringstream debug;
   std::copy(container.begin(), container.end(),
-            std::ostream_iterator<typename std::remove_reference<decltype(container)>::type::value_type>(debug, " "));
+            std::ostream_iterator<typename std::remove_reference_t<decltype(container)>::value_type>(debug, " "));
   return debug.str();
 }
 

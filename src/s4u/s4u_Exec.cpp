@@ -16,7 +16,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous executions");
 
 namespace simgrid::s4u {
-xbt::signal<void(Exec const&)> Exec::on_start;
 
 Exec::Exec(kernel::activity::ExecImplPtr pimpl)
 {
@@ -48,6 +47,7 @@ Exec* Exec::do_start()
 
   state_      = State::STARTED;
   on_start(*this);
+  on_this_start(*this);
   return this;
 }
 

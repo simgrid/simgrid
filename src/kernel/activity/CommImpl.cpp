@@ -20,8 +20,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_network, kernel, "Kernel network-related synchronization");
 
 namespace simgrid::kernel::activity {
-xbt::signal<void(CommImpl const&)> CommImpl::on_start;
-xbt::signal<void(CommImpl const&)> CommImpl::on_completion;
 
 std::function<void(CommImpl*, void*, size_t)> CommImpl::copy_data_callback_ = [](kernel::activity::CommImpl* comm,
                                                                                  void* buff, size_t buff_size) {
@@ -133,7 +131,6 @@ CommImpl* CommImpl::start()
     model_action_->set_category(get_tracing_category());
     set_start_time(model_action_->get_start_time());
     set_state(State::RUNNING);
-    on_start(*this);
 
     XBT_DEBUG("Starting communication %p from '%s' to '%s' (model action: %p; state: %s)", this, from_->get_cname(),
               to_->get_cname(), model_action_, get_state_str());
@@ -471,7 +468,11 @@ void CommImpl::finish()
   XBT_DEBUG("CommImpl::finish() comm %p, state %s, src_proc %p, dst_proc %p, detached: %d", this, get_state_str(),
             src_actor_.get(), dst_actor_.get(), detached_);
 
-  on_completion(*this);
+  if (get_iface()) {
+    const auto& piface = static_cast<const s4u::Comm&>(*get_iface());
+    s4u::Comm::on_completion(piface);
+    piface.on_this_completion(piface);
+  }
 
   /* Update synchro state */
   if (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FINISHED)

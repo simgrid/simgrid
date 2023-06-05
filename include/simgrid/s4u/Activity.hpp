@@ -12,6 +12,7 @@
 #include <simgrid/forward.h>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <xbt/Extendable.hpp>
 #include <xbt/asserts.h>
@@ -74,8 +75,8 @@ protected:
   {
     if(this == a)
       throw std::invalid_argument("Cannot be its own successor");
-    auto p = std::find_if(successors_.begin(), successors_.end(), [a](ActivityPtr const& i){ return i.get() == a.get(); });
-    if (p != successors_.end())
+
+    if (std::any_of(begin(successors_), end(successors_), [a](ActivityPtr const& i) { return i.get() == a.get(); }))
       throw std::invalid_argument("Dependency already exists");
 
     successors_.push_back(a);
@@ -87,12 +88,13 @@ protected:
     if(this == a)
       throw std::invalid_argument("Cannot ask to remove itself from successors list");
 
-    auto p = std::find_if(successors_.begin(), successors_.end(), [a](ActivityPtr const& i){ return i.get() == a.get(); });
-    if (p != successors_.end()){
-      successors_.erase(p);
-      a->dependencies_.erase({this});
-    } else
+    auto p =
+        std::find_if(successors_.begin(), successors_.end(), [a](ActivityPtr const& i) { return i.get() == a.get(); });
+    if (p == successors_.end())
       throw std::invalid_argument("Dependency does not exist. Can not be removed.");
+
+    successors_.erase(p);
+    a->dependencies_.erase({this});
   }
 
   static std::set<Activity*>* vetoed_activities_;
@@ -102,23 +104,16 @@ protected:
    * It is forbidden to change the amount of work once the Activity is started */
   Activity* set_remaining(double remains);
 
-private:
-  static xbt::signal<void(Activity&)> on_veto;
-  static xbt::signal<void(Activity const&)> on_completion;
-  static xbt::signal<void(Activity const&)> on_suspended;
-  static xbt::signal<void(Activity const&)> on_resumed;
+  virtual void fire_on_completion() const = 0;
+  virtual void fire_on_this_completion() const = 0;
+  virtual void fire_on_suspend() const = 0;
+  virtual void fire_on_this_suspend() const = 0;
+  virtual void fire_on_resume() const = 0;
+  virtual void fire_on_this_resume() const = 0;
+  virtual void fire_on_veto() const = 0;
+  virtual void fire_on_this_veto() const = 0;
 
 public:
-  /*! Add a callback fired each time that the activity fails to start because of a veto (e.g., unsolved dependency or no
-   * resource assigned) */
-  static void on_veto_cb(const std::function<void(Activity&)>& cb) { on_veto.connect(cb); }
-  /*! Add a callback fired when the activity completes (either normally, cancelled or failed) */
-  static void on_completion_cb(const std::function<void(Activity const&)>& cb) { on_completion.connect(cb); }
-  /*! Add a callback fired when the activity is suspended */
-  static void on_suspended_cb(const std::function<void(Activity const&)>& cb) { on_suspended.connect(cb); }
-  /*! Add a callback fired when the activity is resumed after being suspended */
-  static void on_resumed_cb(const std::function<void(Activity const&)>& cb) { on_resumed.connect(cb); }
-
   XBT_ATTRIB_DEPRECATED_v334("All start() are vetoable now. Please use start() ") void vetoable_start()
   {
     start();
@@ -132,7 +127,8 @@ public:
     } else {
       if (vetoed_activities_ != nullptr)
         vetoed_activities_->insert(this);
-      on_veto(*this);
+      fire_on_veto();
+      fire_on_this_veto();
     }
   }
 
@@ -142,7 +138,8 @@ public:
     // released by the on_completion() callbacks.
     ActivityPtr keepalive(this);
     state_ = state;
-    on_completion(*this);
+    fire_on_completion();
+    fire_on_this_completion();
     if (state == State::FINISHED)
       release_dependencies();
   }
@@ -240,7 +237,42 @@ template <class AnyActivity> class Activity_T : public Activity {
   std::string name_             = "unnamed";
   std::string tracing_category_ = "";
 
+protected:
+  inline static xbt::signal<void(AnyActivity const&)> on_completion;
+  xbt::signal<void(AnyActivity const&)> on_this_completion;
+  inline static xbt::signal<void(AnyActivity const&)> on_suspend;
+  xbt::signal<void(AnyActivity const&)> on_this_suspend;
+  inline static xbt::signal<void(AnyActivity const&)> on_resume;
+  xbt::signal<void(AnyActivity const&)> on_this_resume;
+  inline static xbt::signal<void(AnyActivity&)> on_veto;
+  xbt::signal<void(AnyActivity&)> on_this_veto;
+
 public:
+  /*! \static Add a callback fired when any activity completes (either normally, cancelled or failed) */
+  static void on_completion_cb(const std::function<void(AnyActivity const&)>& cb) { on_completion.connect(cb); }
+  /*! Add a callback fired when this specific activity completes (either normally, cancelled or failed) */
+  void on_this_completion_cb(const std::function<void(AnyActivity const&)>& cb) { on_this_completion.connect(cb); }
+  /*! \static Add a callback fired when any activity is suspended */
+  static void on_suspend_cb(const std::function<void(AnyActivity const&)>& cb) { on_suspend.connect(cb); }
+  /*! Add a callback fired when this specific activity is suspended */
+  void on_this_suspend_cb(const std::function<void(AnyActivity const&)>& cb) { on_this_suspend.connect(cb); }
+  /*! \static Add a callback fired when any activity is resumed after being suspended */
+  static void on_resume_cb(const std::function<void(AnyActivity const&)>& cb) { on_resume.connect(cb); }
+  /*! Add a callback fired when this specific activity is resumed after being suspended */
+  void on_this_resume_cb(const std::function<void(AnyActivity const&)>& cb) { on_this_resume.connect(cb); }
+  /*! \static Add a callback fired each time that any activity fails to start because of a veto (e.g., unsolved
+   *  dependency or no resource assigned) */
+  static void on_veto_cb(const std::function<void(AnyActivity&)>& cb) { on_veto.connect(cb); }
+  /*! Add a callback fired each time that this specific activity fails to start because of a veto (e.g., unsolved
+   *  dependency or no resource assigned) */
+  void on_this_veto_cb(const std::function<void(AnyActivity&)>& cb) { on_this_veto.connect(cb); }
+
+  XBT_ATTRIB_DEPRECATED_v337("Please use on_suspend_cb() instead") static void on_suspended_cb(
+      const std::function<void(Activity const&)>& cb) { on_suspend.connect(cb); }
+  XBT_ATTRIB_DEPRECATED_v337("Please use on_resume_cb() instead") static void on_resumed_cb(
+      const std::function<void(Activity const&)>& cb) { on_resume.connect(cb);  }
+
+
   AnyActivity* add_successor(ActivityPtr a)
   {
     Activity::add_successor(a);
@@ -251,7 +283,7 @@ public:
     Activity::remove_successor(a);
     return static_cast<AnyActivity*>(this);
   }
-  AnyActivity* set_name(const std::string& name)
+  AnyActivity* set_name(std::string_view name)
   {
     name_ = name;
     return static_cast<AnyActivity*>(this);
@@ -259,9 +291,10 @@ public:
   const std::string& get_name() const override { return name_; }
   const char* get_cname() const override { return name_.c_str(); }
 
-  AnyActivity* set_tracing_category(const std::string& category)
+  AnyActivity* set_tracing_category(std::string_view category)
   {
-    xbt_assert(get_state() == State::INITED, "Cannot change the tracing category of an activity after its start");
+    xbt_assert(get_state() == State::INITED || get_state() == State::STARTING,
+               "Cannot change the tracing category of an activity after its start");
     tracing_category_ = category;
     return static_cast<AnyActivity*>(this);
   }
@@ -289,7 +322,9 @@ public:
 
   AnyActivity* cancel() { return static_cast<AnyActivity*>(Activity::cancel()); }
   AnyActivity* wait() { return wait_for(-1.0); }
-  virtual AnyActivity* wait_for(double timeout) { return static_cast<AnyActivity*>(Activity::wait_for(timeout)); }
+  virtual AnyActivity* wait_for(double timeout) {
+    return static_cast<AnyActivity*>(Activity::wait_for(timeout));
+  }
 
 #ifndef DOXYGEN
   /* The refcounting is done in the ancestor class, Activity, but we want each of the classes benefiting of the CRTP

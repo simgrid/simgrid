@@ -67,6 +67,7 @@ HostImpl::~HostImpl()
 void HostImpl::destroy()
 {
   s4u::Host::on_destruction(*this->get_iface());
+  this->get_iface()->on_this_destruction(*this->get_iface());
   delete this;
 }
 

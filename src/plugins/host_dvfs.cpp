@@ -289,21 +289,18 @@ public:
       if (activity.get_host() == get_host())
         pre_task();
     });
-    simgrid::s4u::Activity::on_completion_cb([this](simgrid::s4u::Activity const& activity) {
-      const auto* exec = dynamic_cast<simgrid::s4u::Exec const*>(&activity);
-      if (exec == nullptr) // Only Execs are concerned here
-        return;
+    simgrid::s4u::Exec::on_completion_cb([this](simgrid::s4u::Exec const& exec) {
       // For more than one host (not yet supported), we can access the host via
       // simcalls_.front()->issuer->get_iface()->get_host()
-      if (exec->get_host() == get_host() && iteration_running) {
-        comp_timer += exec->get_finish_time() - exec->get_start_time();
+      if (exec.get_host() == get_host() && iteration_running) {
+        comp_timer += exec.get_finish_time() - exec.get_start_time();
       }
     });
     // FIXME I think that this fires at the same time for all hosts, so when the src sends something,
     // the dst will be notified even though it didn't even arrive at the recv yet
-    kernel::activity::CommImpl::on_start.connect([this](const kernel::activity::CommImpl& comm) {
-      const auto* act = static_cast<kernel::resource::NetworkAction*>(comm.model_action_);
-      if ((get_host() == &act->get_src() || get_host() == &act->get_dst()) && iteration_running) {
+    simgrid::s4u::Comm::on_start_cb([this](const s4u::Comm& comm) {
+      if ((get_host() == comm.get_sender()->get_host() || get_host() == comm.get_receiver()->get_host()) &&
+           iteration_running) {
         post_task();
       }
     });

@@ -13,8 +13,7 @@
 #include <set>
 #include <string>
 
-namespace simgrid {
-namespace instr {
+namespace simgrid::instr {
 /* User-variables related functions*/
 /* for host variables */
 XBT_PUBLIC void declare_host_variable(const std::string& variable, const std::string& color = "");
@@ -67,8 +66,7 @@ XBT_PUBLIC const std::set<std::string, std::less<>>& get_tracing_categories();
 XBT_PUBLIC void platform_graph_export_graphviz(const std::string& output_filename);
 /* Function used by graphicator (transform a SimGrid platform file in a CSV file with the network topology) */
 XBT_PUBLIC void platform_graph_export_csv(const std::string& output_filename);
-} // namespace instr
-} // namespace simgrid
+} // namespace simgrid::instr
 
 #endif
 SG_BEGIN_DECL

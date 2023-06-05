@@ -412,49 +412,28 @@ static void on_host_creation(simgrid::s4u::Host& host)
   host.extension_set<FileDescriptorHostExt>(new FileDescriptorHostExt());
 }
 
-static void on_platform_created()
-{
-  for (auto const& host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
-    const char* remote_disk_str = host->get_property("remote_disk");
-    if (not remote_disk_str)
-      continue;
-    std::vector<std::string> tokens;
-    boost::split(tokens, remote_disk_str, boost::is_any_of(":"));
-    std::string mount_point         = tokens[0];
-    simgrid::s4u::Host* remote_host = simgrid::s4u::Host::by_name_or_null(tokens[2]);
-    xbt_assert(remote_host, "You're trying to access a host that does not exist. Please check your platform file");
+ static void on_platform_created()
+ {
+   for (auto const& host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
+     const char* remote_disk_str = host->get_property("remote_disk");
+     if (not remote_disk_str)
+       continue;
+     std::vector<std::string> tokens;
+     boost::split(tokens, remote_disk_str, boost::is_any_of(":"));
+     std::string mount_point = tokens[0];
+     simgrid::s4u::Host* remote_host = simgrid::s4u::Host::by_name_or_null(tokens[2]);
+     xbt_assert(remote_host, "You're trying to access a host that does not exist. Please check your platform file");
 
-    const simgrid::s4u::Disk* disk = nullptr;
-    for (auto const& d : remote_host->get_disks())
-      if (d->get_name() == tokens[1]) {
-        disk = d;
-        break;
-      }
+     const simgrid::s4u::Disk* disk = nullptr;
+     for (auto const& d : remote_host->get_disks())
+       if (d->get_name() == tokens[1]) {
+         disk = d;
+         break;
+       }
 
-    xbt_assert(disk, "You're trying to mount a disk that does not exist. Please check your platform file");
-    disk->extension<FileSystemDiskExt>()->add_remote_mount(remote_host, mount_point);
-    host->add_disk(disk);
-
-    XBT_DEBUG("Host '%s' wants to mount a remote disk: %s of %s mounted on %s", host->get_cname(), disk->get_cname(),
-              remote_host->get_cname(), mount_point.c_str());
-    XBT_DEBUG("Host '%s' now has %zu disks", host->get_cname(), host->get_disks().size());
-  }
-}
-
-static void on_simulation_end()
-{
-  XBT_DEBUG("Simulation is over, time to unregister remote disks if any");
-  for (auto const& host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
-    const char* remote_disk_str = host->get_property("remote_disk");
-    if (remote_disk_str) {
-      std::vector<std::string> tokens;
-      boost::split(tokens, remote_disk_str, boost::is_any_of(":"));
-      XBT_DEBUG("Host '%s' wants to unmount a remote disk: %s of %s mounted on %s", host->get_cname(),
-                tokens[1].c_str(), tokens[2].c_str(), tokens[0].c_str());
-      host->remove_disk(tokens[1]);
-      XBT_DEBUG("Host '%s' now has %zu disks", host->get_cname(), host->get_disks().size());
-    }
-  }
+     xbt_assert(disk, "You're trying to mount a disk that does not exist. Please check your platform file");
+     disk->extension<FileSystemDiskExt>()->add_remote_mount(remote_host, mount_point);
+   }
 }
 
 /* **************************** Public interface *************************** */
@@ -481,7 +460,6 @@ void sg_storage_file_system_init()
     simgrid::s4u::Host::on_creation_cb(&on_host_creation);
   }
   simgrid::s4u::Engine::on_platform_created_cb(&on_platform_created);
-  simgrid::s4u::Engine::on_simulation_end_cb(&on_simulation_end);
 }
 
 sg_file_t sg_file_open(const char* fullpath, void* data)

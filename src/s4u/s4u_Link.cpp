@@ -22,7 +22,7 @@ namespace s4u {
 
 xbt::signal<void(Link&)> Link::on_creation;
 xbt::signal<void(Link const&)> Link::on_destruction;
-xbt::signal<void(Link const&)> Link::on_state_change;
+xbt::signal<void(Link const&)> Link::on_onoff;
 xbt::signal<void(Link const&)> Link::on_bandwidth_change;
 xbt::signal<void(kernel::resource::NetworkAction&, kernel::resource::Action::State)>
     Link::on_communication_state_change;

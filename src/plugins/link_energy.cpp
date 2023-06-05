@@ -6,6 +6,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/host.h"
 #include "simgrid/plugins/energy.h"
+#include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
@@ -161,15 +162,17 @@ static void on_simulation_end()
   XBT_INFO("Total energy over all links: %f", total_energy);
 }
 
-static void on_communication(const simgrid::kernel::activity::CommImpl& comm)
+static void on_communication(const simgrid::s4u::Comm& comm)
 {
-  for (auto const* link : comm.get_traversed_links()) {
+  auto* pimpl = static_cast<simgrid::kernel::activity::CommImpl*>(comm.get_impl());
+  for (auto const* link : pimpl->get_traversed_links()) {
     if (link != nullptr && link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
       XBT_DEBUG("Update %s on Comm Start/End", link->get_cname());
       link->extension<LinkEnergy>()->update();
     }
   }
 }
+
 /* **************************** Public interface *************************** */
 
 int sg_link_energy_is_inited()
@@ -198,7 +201,7 @@ void sg_link_energy_plugin_init()
     }
   });
 
-  simgrid::s4u::Link::on_state_change_cb([](simgrid::s4u::Link const& link) {
+  simgrid::s4u::Link::on_onoff_cb([](simgrid::s4u::Link const& link) {
     if (link.get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI)
       link.extension<LinkEnergy>()->update();
   });
@@ -209,8 +212,8 @@ void sg_link_energy_plugin_init()
                link.extension<LinkEnergy>()->get_consumed_energy());
   });
 
-  simgrid::kernel::activity::CommImpl::on_start.connect(&on_communication);
-  simgrid::kernel::activity::CommImpl::on_completion.connect(&on_communication);
+  simgrid::s4u::Comm::on_start_cb(&on_communication);
+  simgrid::s4u::Comm::on_completion_cb(&on_communication);
 
   simgrid::s4u::Engine::on_simulation_end_cb(&on_simulation_end);
 }

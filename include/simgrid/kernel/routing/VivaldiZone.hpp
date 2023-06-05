@@ -9,9 +9,7 @@
 #include <simgrid/kernel/routing/StarZone.hpp>
 #include <xbt/Extendable.hpp>
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 
 /** @ingroup ROUTING_API
  *  @brief NetZone modeling peers connected to the cloud through a private link
@@ -60,8 +58,6 @@ public:
   std::vector<double> coords;
 };
 } // namespace vivaldi
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing
 
 #endif /* SIMGRID_ROUTING_VIVALDI_HPP_ */

@@ -1,0 +1,6 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-photovoltaic-simple ${platfdir}/photovoltaic_platform.xml
+> [pv_panel:manager:(1) 1.000000] [photovoltaic_simple/INFO] pv_panel power: 8.000000
+> [pv_panel:manager:(1) 100.000000] [photovoltaic_simple/INFO] pv_panel power: 4.000000
+> [pv_panel:manager:(1) 200.000000] [photovoltaic_simple/INFO] pv_panel power: 16.000000

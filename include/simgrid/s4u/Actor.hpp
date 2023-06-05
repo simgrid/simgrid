@@ -209,37 +209,60 @@ public:
   int get_refcount() const;
 
   // ***** Actor creation *****
-  /** Retrieve a reference to myself */
+  /** \static
+   * Retrieve a reference to myself
+   */
   static Actor* self();
 
 private:
   static xbt::signal<void(Actor&)> on_creation;
   static xbt::signal<void(Actor const&)> on_suspend;
+  xbt::signal<void(Actor const&)> on_this_suspend;
   static xbt::signal<void(Actor const&)> on_resume;
+  xbt::signal<void(Actor const&)> on_this_resume;
   static xbt::signal<void(Actor const&)> on_sleep;
+  xbt::signal<void(Actor const&)> on_this_sleep;
   static xbt::signal<void(Actor const&)> on_wake_up;
+  xbt::signal<void(Actor const&)> on_this_wake_up;
   static xbt::signal<void(const Actor&, const Host& previous_location)> on_host_change;
+  xbt::signal<void(const Actor&, const Host& previous_location)> on_this_host_change;
   static xbt::signal<void(Actor const&)> on_termination;
+  xbt::signal<void(Actor const&)> on_this_termination;
   static xbt::signal<void(Actor const&)> on_destruction;
+  xbt::signal<void(Actor const&)> on_this_destruction;
 
 public:
-  /** Add a callback fired when a new actor has been created **/
+  /** \static Add a callback fired when a new actor has been created **/
   static void on_creation_cb(const std::function<void(Actor&)>& cb) { on_creation.connect(cb); }
-  /** Add a callback fired when an actor has been suspended**/
+  /** \static Add a callback fired when any actor is suspended (right before the suspend) **/
   static void on_suspend_cb(const std::function<void(Actor const&)>& cb) { on_suspend.connect(cb); }
-  /** Add a callback fired when an actor has been resumed **/
+  /** Add a callback fired when this specific actor is suspended (right before the suspend) **/
+  void on_this_suspend_cb(const std::function<void(Actor const&)>& cb) { on_this_suspend.connect(cb); }
+  /** \static Add a callback fired when any actor is resumed (right before the resume) **/
   static void on_resume_cb(const std::function<void(Actor const&)>& cb) { on_resume.connect(cb); }
-  /** Add a callback fired when an actor starts sleeping **/
+  /** Add a callback fired when this specific actor is resumed (right before the resume) **/
+  void on_this_resume_cb(const std::function<void(Actor const&)>& cb) { on_this_resume.connect(cb); }
+  /** \static Add a callback fired when any actor starts sleeping **/
   static void on_sleep_cb(const std::function<void(Actor const&)>& cb) { on_sleep.connect(cb); }
-  /** Add a callback fired when an actor wakes up from a sleep **/
+  /** Add a callback fired when this specific actor starts sleeping **/
+  void on_this_sleep_cb(const std::function<void(Actor const&)>& cb) { on_this_sleep.connect(cb); }
+  /** \static Add a callback fired when any actor wakes up from a sleep **/
   static void on_wake_up_cb(const std::function<void(Actor const&)>& cb) { on_wake_up.connect(cb); }
-  /** Add a callback fired when an actor is has been migrated to another host **/
+  /** Add a callback fired when this specific actor wakes up from a sleep **/
+  void on_this_wake_up_cb(const std::function<void(Actor const&)>& cb) { on_this_wake_up.connect(cb); }
+  /** \static Add a callback fired when any actor is has been migrated to another host **/
   static void on_host_change_cb(const std::function<void(const Actor&, const Host& previous_location)>& cb)
   {
     on_host_change.connect(cb);
   }
+  /** Add a callback fired when this specific actor is has been migrated to another host **/
+  void on_this_host_change_cb(const std::function<void(const Actor&, const Host& previous_location)>& cb)
+  {
+    on_this_host_change.connect(cb);
+  }
 
-  /** Add a callback fired when an actor terminates its code.
+  /** \static
+   *  Add a callback fired when any actor terminates its code.
    *  @beginrst
    *  The actor may continue to exist if it is still referenced in the simulation, but it's not active anymore.
    *  If you want to free extra data when the actor's destructor is called, use :cpp:func:`Actor::on_destruction_cb`.
@@ -247,19 +270,28 @@ public:
    *  @endrst
    */
   static void on_termination_cb(const std::function<void(Actor const&)>& cb) { on_termination.connect(cb); }
-  /** Add a callback fired when an actor is about to disappear (its destructor was called).
-   *  This signal is fired for any destructed actor, which is mostly useful when designing plugins and extensions.
-   *  If you want to react to the end of the actor's code, use Actor::on_termination instead.
-   *  If you want to register to the termination of a given actor, use this_actor::on_exit() instead.*/
+  /** Add a callback fired when this specific actor terminates its code.
+   *  @beginrst
+   *  The actor may continue to exist if it is still referenced in the simulation, but it's not active anymore.
+   *  If you want to free extra data when the actor's destructor is called, use :cpp:func:`Actor::on_this_destruction_cb`.
+   *  @endrst
+   */
+  void on_this_termination_cb(const std::function<void(Actor const&)>& cb) { on_this_termination.connect(cb); }
+  /** \static  Add a callback fired when an actor is about to disappear (its destructor was called).
+   *  This signal is fired for any destructed actor, which is mostly useful when designing plugins and extensions. */
   static void on_destruction_cb(const std::function<void(Actor const&)>& cb) { on_destruction.connect(cb); }
+  /** Add a callback fired when this specific actor is about to disappear (its destructor was called). */
+  void on_this_destruction_cb(const std::function<void(Actor const&)>& cb) { on_this_destruction.connect(cb); }
 
-  /** Create an actor from a @c std::function<void()>.
+  /** \static
+   *  Create an actor from a @c std::function<void()>.
    *  If the actor is restarted, it gets a fresh copy of the function.
    *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   static ActorPtr create(const std::string& name, s4u::Host* host, const std::function<void()>& code);
-  /** Create an actor, but don't start it yet.
+  /** \static
+   *  Create an actor, but don't start it yet.
    *
-   * This is useful to set some properties or extension before actually starting it */
+   *  This is useful to set some properties or extension before actually starting it */
   static ActorPtr init(const std::string& name, s4u::Host* host);
   ActorPtr set_stacksize(unsigned stacksize);
   /** Start a previously initialized actor */
@@ -280,14 +312,16 @@ public:
 
   ActorPtr start(const std::function<void()>& code, std::vector<std::string> args);
 
-  /** Create an actor from a callable thing.
+  /** \static
+   * Create an actor from a callable thing.
    *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   template <class F> static ActorPtr create(const std::string& name, s4u::Host* host, F code)
   {
     return create(name, host, std::function<void()>(std::move(code)));
   }
 
-  /** Create an actor using a callable thing and its arguments.
+  /** \static
+   * Create an actor using a callable thing and its arguments.
    *
    * Note that the arguments will be copied, so move-only parameters are forbidden.
    * @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
@@ -303,7 +337,8 @@ public:
     return create(name, host, std::bind(std::move(code), std::move(args)...));
   }
 
-  /** Create actor from function name and a vector of strings as arguments.
+  /** \static
+   *  Create actor from function name and a vector of strings as arguments.
    *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   static ActorPtr create(const std::string& name, s4u::Host* host, const std::string& function,
                          std::vector<std::string> args);
@@ -318,6 +353,7 @@ public:
 
   /** Returns whether or not this actor has been daemonized or not **/
   bool is_daemon() const;
+
   static bool is_maestro();
 
   /** Retrieves the name of that actor as a C++ string */
@@ -391,7 +427,9 @@ public:
    */
   void kill();
 
-  /** Retrieves the actor that have the given PID (or nullptr if not existing) */
+  /** \static
+    * Retrieves the actor that have the given PID (or nullptr if not existing)
+  */
   static ActorPtr by_pid(aid_t pid);
 
   /** Wait for the actor to finish.
@@ -410,7 +448,9 @@ public:
   /** Kill that actor and restart it from start. */
   Actor* restart();
 
-  /** Kill all actors (but the issuer). Being killed is not something that actors can delay or avoid. */
+  /** \static
+   * Kill all actors (but the issuer). Being killed is not something that actors can delay or avoid.
+  */
   static void kill_all();
 
   /** Returns the internal implementation of this actor */

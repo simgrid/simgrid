@@ -12,7 +12,7 @@
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 
-namespace simgrid ::kernel::resource {
+namespace simgrid::kernel::resource {
 
 class NetworkNS3Model : public NetworkModel {
 public:

@@ -54,8 +54,7 @@ int main(int argc, char* argv[])
 
   sg4::Actor::create("worker", e.host_by_name("Fafard"), worker);
 
-  sg4::Activity::on_veto_cb([&e](sg4::Activity& a) {
-    auto& exec = static_cast<sg4::Exec&>(a);
+  sg4::Exec::on_veto_cb([&e](sg4::Exec& exec) {
 
     // First display the situation
     XBT_INFO("Activity '%s' vetoed. Dependencies: %s; Ressources: %s", exec.get_cname(),

@@ -11,6 +11,7 @@
 #include <simgrid/s4u/VirtualMachine.hpp>
 #include <simgrid/simix.hpp>
 
+#include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/simgrid/module.hpp"
 
@@ -420,7 +421,7 @@ static void on_creation(simgrid::s4u::Host& host)
 static void on_action_state_change(simgrid::kernel::resource::CpuAction const& action,
                                    simgrid::kernel::resource::Action::State /*previous*/)
 {
-  for (simgrid::kernel::resource::CpuImpl* const& cpu : action.cpus()) {
+  for (simgrid::kernel::resource::CpuImpl const* cpu : action.cpus()) {
     simgrid::s4u::Host* host = cpu->get_iface();
     if (host != nullptr) {
       // If it's a VM, take the corresponding PM
@@ -438,14 +439,13 @@ static void on_action_state_change(simgrid::kernel::resource::CpuAction const& a
 
 /* This callback is fired either when the host changes its state (on/off) ("onStateChange") or its speed
  * (because the user changed the pstate, or because of external trace events) ("onSpeedChange") */
-static void on_host_change(simgrid::s4u::Host const& host)
+static void on_host_change(simgrid::s4u::Host const& h)
 {
-  if (dynamic_cast<simgrid::s4u::VirtualMachine const*>(&host)) // Ignore virtual machines
-    return;
+  auto* host = &h;
+  if (const auto* vm = dynamic_cast<simgrid::s4u::VirtualMachine const*>(host)) // Take the PM of virtual machines
+    host = vm->get_pm();
 
-  auto* host_energy = host.extension<HostEnergy>();
-
-  host_energy->update();
+  host->extension<HostEnergy>()->update();
 }
 
 static void on_host_destruction(simgrid::s4u::Host const& host)
@@ -473,6 +473,13 @@ static void on_simulation_end()
            used_hosts_energy, total_energy - used_hosts_energy);
 }
 
+static void on_activity_suspend_resume(simgrid::s4u::Activity const& activity)
+{
+  if (auto* action = dynamic_cast<simgrid::kernel::resource::CpuAction*>(activity.get_impl()->model_action_);
+      action != nullptr)
+    on_action_state_change(*action, /*ignored*/ action->get_state());
+}
+
 /* **************************** Public interface *************************** */
 
 /** @ingroup plugin_host_energy
@@ -487,20 +494,24 @@ void sg_host_energy_plugin_init()
   HostEnergy::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostEnergy>();
 
   simgrid::s4u::Host::on_creation_cb(&on_creation);
-  simgrid::s4u::Host::on_state_change_cb(&on_host_change);
+  simgrid::s4u::Host::on_onoff_cb(&on_host_change);
   simgrid::s4u::Host::on_speed_change_cb(&on_host_change);
   simgrid::s4u::Host::on_destruction_cb(&on_host_destruction);
+  simgrid::s4u::Host::on_exec_state_change_cb(&on_action_state_change);
+  simgrid::s4u::VirtualMachine::on_suspend_cb(&on_host_change);
+  simgrid::s4u::VirtualMachine::on_resume_cb(&on_host_change);
+  simgrid::s4u::Exec::on_suspend_cb(on_activity_suspend_resume);
+  simgrid::s4u::Exec::on_resume_cb(on_activity_suspend_resume);
   simgrid::s4u::Engine::on_simulation_end_cb(&on_simulation_end);
-  simgrid::kernel::resource::CpuAction::on_state_change.connect(&on_action_state_change);
   // We may only have one actor on a node. If that actor executes something like
   //   compute -> recv -> compute
-  // the recv operation will not trigger a "CpuAction::on_state_change". This means
+  // the recv operation will not trigger a "Host::on_exec_state_change_cb". This means
   // that the next trigger would be the 2nd compute, hence ignoring the idle time
   // during the recv call. By updating at the beginning of a compute, we can
   // fix that. (If the cpu is not idle, this is not required.)
   simgrid::s4u::Exec::on_start_cb([](simgrid::s4u::Exec const& activity) {
     if (activity.get_host_number() == 1) { // We only run on one host
-      simgrid::s4u::Host* host         = activity.get_host();
+      simgrid::s4u::Host* host = activity.get_host();
       if (const auto* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host))
         host = vm->get_pm();
       xbt_assert(host != nullptr);

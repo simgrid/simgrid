@@ -10,8 +10,7 @@
 #ifdef __cplusplus
 
 #include <boost/intrusive_ptr.hpp>
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 
 class Colls;
 class Comm;
@@ -31,8 +30,7 @@ class Topo_Graph;
 class Topo_Dist_Graph;
 class Win;
 
-}
-}
+} // namespace simgrid::smpi
 
 using SMPI_Comm                = simgrid::smpi::Comm;
 using SMPI_Datatype            = simgrid::smpi::Datatype;

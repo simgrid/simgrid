@@ -10,9 +10,7 @@
 #include <simgrid/kernel/resource/Action.hpp>
 #include <unordered_map>
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 class XBT_PUBLIC Model {
 public:
@@ -110,8 +108,6 @@ private:
   ActionHeap action_heap_;
 };
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 #endif

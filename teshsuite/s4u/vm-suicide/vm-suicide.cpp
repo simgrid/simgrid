@@ -27,14 +27,14 @@ static void print_status(const std::vector<simgrid::s4u::Host*>& hosts)
 {
   XBT_INFO("---- HOSTS and VMS STATUS ----");
   XBT_INFO("--- HOSTS ---");
-  for (auto const& host : hosts) {
+  for (auto const* host : hosts) {
     XBT_INFO("+ Name:%s Load:%f", host->get_cname(), host->get_load());
     for (auto const& actor : host->get_all_actors())
       XBT_INFO("++ actor: %s", actor->get_cname());
   }
   XBT_INFO("--- VMS ---");
-  for (auto const& host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
-    if (auto vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host)) {
+  for (auto const* host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
+    if (auto const* vm = dynamic_cast<const simgrid::s4u::VirtualMachine*>(host)) {
       XBT_INFO("+ Name:%s Host:%s Load:%f State: %s", vm->get_cname(), vm->get_pm()->get_cname(), vm->get_load(),
                simgrid::s4u::VirtualMachine::to_c_str(vm->get_state()));
       for (auto const& actor : host->get_all_actors())

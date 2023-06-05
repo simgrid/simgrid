@@ -13,6 +13,7 @@
 #include "src/kernel/xml/simgrid_dtd.h"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 

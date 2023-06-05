@@ -1,0 +1,11 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-task-io ${platfdir}/hosts_with_disks.xml
+> [1.000000] [task_simple/INFO] Task exec1 finished (1)
+> [1.250000] [task_simple/INFO] Task write finished (1)
+> [1.350000] [task_simple/INFO] Task read finished (1)
+> [2.000000] [task_simple/INFO] Task exec1 finished (2)
+> [2.250000] [task_simple/INFO] Task write finished (2)
+> [2.350000] [task_simple/INFO] Task exec2 finished (1)
+> [2.350000] [task_simple/INFO] Task read finished (2)
+> [3.350000] [task_simple/INFO] Task exec2 finished (2)

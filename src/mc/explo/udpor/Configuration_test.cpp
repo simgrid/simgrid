@@ -466,7 +466,8 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Basic Testing of Maxima
     {
       EventSet interesting_bunch{&e2, &e4, &e7, &e8};
 
-      maximal_subsets_iterator first(C, [&](const UnfoldingEvent* e) { return interesting_bunch.contains(e); });
+      maximal_subsets_iterator first(
+          C, [&interesting_bunch](const UnfoldingEvent* e) { return interesting_bunch.contains(e); });
       maximal_subsets_iterator last;
 
       for (; first != last; ++first) {
@@ -499,7 +500,8 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Basic Testing of Maxima
     {
       EventSet interesting_bunch{&e3, &e5, &e6};
 
-      maximal_subsets_iterator first(C, [&](const UnfoldingEvent* e) { return interesting_bunch.contains(e); });
+      maximal_subsets_iterator first(
+          C, [&interesting_bunch](const UnfoldingEvent* e) { return interesting_bunch.contains(e); });
       maximal_subsets_iterator last;
 
       for (; first != last; ++first) {

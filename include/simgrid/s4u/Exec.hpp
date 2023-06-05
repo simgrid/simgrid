@@ -11,8 +11,7 @@
 #include <simgrid/s4u/Actor.hpp>
 #include <xbt/ex.h>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /** Computation Activity, representing the asynchronous executions.
  *
@@ -43,22 +42,34 @@ protected:
 
   void reset() const;
 
-  static xbt::signal<void(Exec const&)> on_start;
+  inline static xbt::signal<void(Exec const&)> on_start;
+  xbt::signal<void(Exec const&)> on_this_start;
+  void fire_on_completion() const override { on_completion(*this); }
+  void fire_on_this_completion() const override { on_this_completion(*this); }
+  void fire_on_suspend() const override { on_suspend(*this); }
+  void fire_on_this_suspend() const override { on_this_suspend(*this); }
+  void fire_on_resume() const override { on_resume(*this); }
+  void fire_on_this_resume() const override { on_this_resume(*this); }
+  void fire_on_veto() const override { on_veto(const_cast<Exec&>(*this)); }
+  void fire_on_this_veto() const override { on_this_veto(const_cast<Exec&>(*this)); }
 
 public:
 #ifndef DOXYGEN
   Exec(Exec const&) = delete;
   Exec& operator=(Exec const&) = delete;
 #endif
-  /*! Signal fired each time that an execution actually starts (no veto) */
+  /*! \static Signal fired each time that any execution actually starts (no veto) */
   static void on_start_cb(const std::function<void(Exec const&)>& cb) { on_start.connect(cb); }
+  /*! Signal fired each time that this specific execution actually starts (no veto) */
+  void on_this_start_cb(const std::function<void(Exec const&)>& cb) { on_this_start.connect(cb); }
 
+  /*! \static Initiate the creation of an Exec. Setters have to be called afterwards */
   static ExecPtr init();
 
-  /*! take a vector of s4u::ExecPtr and return when one of them is finished.
+  /*! \static take a vector of s4u::ExecPtr and return when one of them is finished.
    * The return value is the rank of the first finished ExecPtr. */
   static ssize_t wait_any(const std::vector<ExecPtr>& execs) { return wait_any_for(execs, -1); }
-  /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
+  /*! \static Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
   static ssize_t wait_any_for(const std::vector<ExecPtr>& execs, double timeout);
 
   /** @brief On sequential executions, returns the amount of flops that remain to be done; This cannot be used on
@@ -88,7 +99,6 @@ public:
   bool is_assigned() const override;
 };
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_EXEC_HPP */

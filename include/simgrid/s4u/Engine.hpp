@@ -18,8 +18,7 @@
 #include <utility>
 #include <vector>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 /** @brief Simulation engine
  *
  * This is a singleton containing all the main functions of the simulation.
@@ -193,7 +192,7 @@ public:
   /** @brief Retrieves all netzones of the type indicated by the template argument */
   template <class T> std::vector<T*> get_filtered_netzones() const
   {
-    static_assert(std::is_base_of<kernel::routing::NetZoneImpl, T>::value,
+    static_assert(std::is_base_of_v<kernel::routing::NetZoneImpl, T>,
                   "Filtering netzones is only possible for subclasses of kernel::routing::NetZoneImpl");
     std::vector<T*> res;
     get_filtered_netzones_recursive(get_netzone_root(), &res);
@@ -272,7 +271,7 @@ std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename);
 template <class T>
 XBT_PRIVATE void get_filtered_netzones_recursive(const s4u::NetZone* current, std::vector<T*>* whereto)
 {
-  static_assert(std::is_base_of<kernel::routing::NetZoneImpl, T>::value,
+  static_assert(std::is_base_of_v<kernel::routing::NetZoneImpl, T>,
                 "Filtering netzones is only possible for subclasses of kernel::routing::NetZoneImpl");
   for (auto const& elem : current->get_children()) {
     get_filtered_netzones_recursive(elem, whereto);
@@ -282,7 +281,6 @@ XBT_PRIVATE void get_filtered_netzones_recursive(const s4u::NetZone* current, st
   }
 }
 #endif
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_ENGINE_HPP */

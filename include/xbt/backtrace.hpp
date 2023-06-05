@@ -17,8 +17,7 @@ SG_BEGIN_DECL
 XBT_PUBLIC void xbt_backtrace_display_current();
 SG_END_DECL
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 class BacktraceImpl;
 /** A backtrace
@@ -38,6 +37,5 @@ public:
   void display() const;
 };
 
-}
-}
+} // namespace simgrid::xbt
 #endif

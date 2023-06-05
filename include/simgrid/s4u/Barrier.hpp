@@ -15,8 +15,7 @@
 #include <atomic>
 #include <future>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 class XBT_PUBLIC Barrier {
   kernel::activity::BarrierImpl* pimpl_;
@@ -30,7 +29,7 @@ public:
   Barrier& operator=(Barrier const&) = delete;
 #endif
 
-  /** Creates a barrier for the given amount of actors */
+  /** \static Creates a barrier for the given amount of actors */
   static BarrierPtr create(unsigned int expected_actors);
   /** Blocks into the barrier. Every waiting actors will be unlocked once the expected amount of actors reaches the barrier */
   int wait();
@@ -43,7 +42,6 @@ public:
   friend XBT_PUBLIC void intrusive_ptr_release(Barrier* barrier);
 #endif
 };
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 #endif

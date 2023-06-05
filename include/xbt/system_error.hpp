@@ -11,8 +11,7 @@
 #ifndef SIMGRID_MC_SYSTEM_ERROR_HPP
 #define SIMGRID_MC_SYSTEM_ERROR_HPP
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 /** A `error_category` suitable to be used with `errno`
  *
@@ -82,7 +81,6 @@ std::system_error errno_error(const char* what)
   return std::system_error(errno_code(), what);
 }
 
-}
-}
+} // namespace simgrid::xbt
 
 #endif

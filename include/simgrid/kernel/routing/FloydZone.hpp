@@ -8,9 +8,7 @@
 
 #include <simgrid/kernel/routing/RoutedZone.hpp>
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 
 /** @ingroup ROUTING_API
  *  @brief NetZone with an explicit routing computed at initialization with Floyd-Warshal
@@ -39,8 +37,6 @@ public:
   void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                  const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical) override;
 };
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing
 
 #endif /* SIMGRID_ROUTING_FLOYD_HPP_ */

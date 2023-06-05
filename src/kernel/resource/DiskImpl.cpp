@@ -53,6 +53,7 @@ DiskImpl* DiskImpl::set_write_constraint(lmm::Constraint* constraint_write)
 void DiskImpl::destroy()
 {
   s4u::Disk::on_destruction(piface_);
+  piface_.on_this_destruction(piface_);
   delete this;
 }
 
@@ -60,14 +61,16 @@ void DiskImpl::turn_on()
 {
   if (not is_on()) {
     Resource::turn_on();
-    s4u::Disk::on_state_change(piface_);
+    s4u::Disk::on_onoff(piface_);
+    piface_.on_this_onoff(piface_);
   }
 }
 void DiskImpl::turn_off()
 {
   if (is_on()) {
     Resource::turn_off();
-    s4u::Disk::on_state_change(piface_);
+    s4u::Disk::on_onoff(piface_);
+    piface_.on_this_onoff(piface_);
 
     const kernel::lmm::Element* elem = nullptr;
     double now                       = EngineImpl::get_clock();

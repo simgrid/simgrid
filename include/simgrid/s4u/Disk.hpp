@@ -133,17 +133,35 @@ public:
   Disk* seal();
 
   /* The signals */
-  /** @brief Add a callback fired when a new Disk is created */
+  /** @brief \static Add a callback fired when a new Disk is created */
   static void on_creation_cb(const std::function<void(Disk&)>& cb) { on_creation.connect(cb); }
-  /** @brief Add a callback fired when a Disk is destroyed */
+  /** @brief \static Add a callback fired when any Disk is destroyed */
   static void on_destruction_cb(const std::function<void(Disk const&)>& cb) { on_destruction.connect(cb); }
-  /** @brief Add a callback fired when a Disk's state changes */
-  static void on_state_change_cb(const std::function<void(Disk const&)>& cb) { on_state_change.connect(cb); }
+  /** @brief Add a callback fired when this specific Disk is destroyed */
+  void on_this_destruction_cb(const std::function<void(Disk const&)>& cb) { on_this_destruction.connect(cb); }
+  /** @brief \static Add a callback fired when any Disk is turned on or off */
+  static void on_onoff_cb(const std::function<void(Disk const&)>& cb)
+  {
+    on_onoff.connect(cb);
+  }
+  /** @brief Add a callback fired when this specific Disk is turned on or off */
+  void on_this_onoff_cb(const std::function<void(Disk const&)>& cb)
+  {
+    on_this_onoff.connect(cb);
+  }
+
+  XBT_ATTRIB_DEPRECATED_v337("Please use on_onoff_cb() instead") static void on_state_change_cb(
+      const std::function<void(Disk const&)>& cb)
+  {
+    on_onoff.connect(cb);
+  }
 
 private:
   static xbt::signal<void(Disk&)> on_creation;
   static xbt::signal<void(Disk const&)> on_destruction;
-  static xbt::signal<void(Disk const&)> on_state_change;
+  xbt::signal<void(Disk const&)> on_this_destruction;
+  static xbt::signal<void(Disk const&)> on_onoff;
+  xbt::signal<void(Disk const&)> on_this_onoff;
 };
 
 } // namespace s4u

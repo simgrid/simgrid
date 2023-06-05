@@ -66,11 +66,11 @@ static sg4::Host* get_best_host(const sg4::ExecPtr exec, double* min_finish_time
         // We use the user data field to store the finish time of the predecessor of the comm, i.e., its potential
         // start time
         data_available = *comm->get_data<double>() + redist_time;
-     }
+      }
 
       /* no transfer, control dependency */
-      if (const auto* exec = dynamic_cast<sg4::Exec*>(parent.get()))
-        data_available = exec->get_finish_time();
+      if (const auto* parent_exec = dynamic_cast<sg4::Exec*>(parent.get()))
+        data_available = parent_exec->get_finish_time();
 
       if (last_data_available < data_available)
         last_data_available = data_available;
@@ -118,15 +118,12 @@ int main(int argc, char** argv)
   std::set<sg4::Activity*> vetoed;
   e.track_vetoed_activities(&vetoed);
 
-  sg4::Activity::on_completion_cb([](sg4::Activity const& activity) {
+  sg4::Exec::on_completion_cb([](sg4::Exec const& exec) {
     // when an Exec completes, we need to set the potential start time of all its ouput comms
-    const auto* exec = dynamic_cast<sg4::Exec const*>(&activity);
-    if (exec == nullptr) // Only Execs are concerned here
-      return;
-    for (const auto& succ : exec->get_successors()) {
+    for (const auto& succ : exec.get_successors()) {
       auto* comm = dynamic_cast<sg4::Comm*>(succ.get());
       if (comm != nullptr) {
-        auto* finish_time = new double(exec->get_finish_time());
+        auto* finish_time = new double(exec.get_finish_time());
         // We use the user data field to store the finish time of the predecessor of the comm, i.e., its potential start
         // time
         comm->set_data(finish_time);
@@ -148,9 +145,9 @@ int main(int argc, char** argv)
   auto dax = sg4::create_DAG_from_DAX(argv[2]);
 
   /* Schedule the root first */
-  double finish_time;
+  double root_finish_time;
   auto* root = static_cast<sg4::Exec*>(dax.front().get());
-  auto host  = get_best_host(root, &finish_time);
+  auto* host = get_best_host(root, &root_finish_time);
   schedule_on(root, host);
 
   e.run();
@@ -193,7 +190,7 @@ int main(int argc, char** argv)
   }
 
   /* Cleanup memory */
-  for (auto const& h : e.get_all_hosts())
+  for (auto const* h : e.get_all_hosts())
     delete h->get_data<double>();
 
   XBT_INFO("Simulation Time: %f", simgrid_get_clock());

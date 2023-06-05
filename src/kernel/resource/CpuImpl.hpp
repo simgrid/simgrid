@@ -180,18 +180,10 @@ class XBT_PUBLIC CpuAction : public Action {
 public:
   using Action::Action;
 
-  /** @brief Signal emitted when the action state changes (ready/running/done, etc)
-   *  Signature: `void(CpuAction const& action, simgrid::kernel::resource::Action::State previous)`
-   */
-  static xbt::signal<void(CpuAction const&, Action::State)> on_state_change;
-
   void set_state(Action::State state) override;
 
   void update_remains_lazy(double now) override;
   std::list<CpuImpl*> cpus() const;
-
-  void suspend() override;
-  void resume() override;
 };
 } // namespace simgrid::kernel::resource
 
