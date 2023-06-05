@@ -470,6 +470,7 @@ void CommImpl::finish()
 
   if (get_iface()) {
     const auto& piface = static_cast<const s4u::Comm&>(*get_iface());
+    set_iface(nullptr); // reset iface to protect against multiple trigger of the on_completion signals
     s4u::Comm::on_completion(piface);
     piface.on_this_completion(piface);
   }
