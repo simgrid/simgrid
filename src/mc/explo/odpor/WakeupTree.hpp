@@ -21,7 +21,17 @@ namespace simgrid::mc::odpor {
 /**
  * @brief A single node in a wakeup tree
  *
- * Each node in a wakeup tree contains
+ * Each node in a wakeup tree represents a single step
+ * taken in an extension of the execution represented
+ * by the tree within which the node is contained. That is,
+ * a node in the tree is one step on a "pre-defined"
+ * path forward for some execution sequence. The partial
+ * execution that is implicitly represented by the node
+ * is that formed by taking each step on the (unique)
+ * path in the tree from the root node to this node.
+ * Thus, the tree itself contains all of the paths
+ * that "should be" searched, while each node is
+ * simply a step on each path.
  */
 class WakeupTreeNode {
 private:
@@ -167,7 +177,7 @@ public:
    * @brief Returns the number of *non-empty* entries in the tree, viz. the
    * number of nodes in the tree that have an action mapped to them
    */
-  size_t get_num_entries() const { return !empty() ? (nodes_.size() - 1) : static_cast<size_t>(0); }
+  size_t get_num_entries() const { return not empty() ? (nodes_.size() - 1) : static_cast<size_t>(0); }
 
   /**
    * @brief Returns the number of nodes in the tree, including the root node
