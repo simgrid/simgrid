@@ -21,7 +21,6 @@ private:
   const int value;
 
 public:
-  DependentIfSameValueAction() = default;
   DependentIfSameValueAction(Type type, aid_t issuer, int value, int times_considered = 0)
       : Transition(type, issuer, times_considered), value(value)
   {
