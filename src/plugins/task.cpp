@@ -101,7 +101,7 @@ void Task::complete()
     working_ = false;
     count_++;
   });
-  for (auto end_func : end_func_handlers_)
+  for (auto const& end_func : end_func_handlers_)
     end_func(this);
   Task::on_end(this);
   for (auto const& t : successors_)
