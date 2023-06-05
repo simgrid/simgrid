@@ -86,12 +86,13 @@ pip:
 pages:
   stage: deploy
   script:
-  - pip3 install --requirement docs/requirements.txt
+  - apt install python3-breathe python3-sphinx python3-sphinx-rtd-theme python3-sphinx-copybutton python3-sphinx-tabs
+ # - pip3 install --requirement docs/requirements.txt # Forbidden in Debian:12
   - cd docs
   - LC_ALL=C.UTF-8 ./Build.sh
   - mv build/html ../public
   # - The CSS contains a reference to a font or something, not something we gonna fix on our side
-#not installed   - linkchecker --ignore-url='.*\.css$' ../public
+# not installed   - linkchecker --ignore-url='.*\.css$' ../public
   # From time to time, we should check external links with the
   # following, but it has a lot of false positive
   # - linkchecker --ignore-url='.*\.css$' --check-extern ../public

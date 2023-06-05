@@ -272,7 +272,6 @@ public:
   XBT_ATTRIB_DEPRECATED_v337("Please use on_resume_cb() instead") static void on_resumed_cb(
       const std::function<void(Activity const&)>& cb) { on_resume.connect(cb);  }
 
-
   AnyActivity* add_successor(ActivityPtr a)
   {
     Activity::add_successor(a);

@@ -1,5 +1,5 @@
-# Base image
-FROM debian:11
+# Base image: bookworm is Debian 12
+FROM debian:bookworm
 
 # Install the dependencies:
 #  - of the website

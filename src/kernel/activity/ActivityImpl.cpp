@@ -176,10 +176,6 @@ void ActivityImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<Acti
 
 void ActivityImpl::suspend()
 {
-  if (model_action_ == nullptr) {
-    XBT_CRITICAL("POUET");
-    return;
-  }
   XBT_VERB("This activity is suspended (remain: %f)", model_action_->get_remains());
   get_iface()->fire_on_suspend();
   get_iface()->fire_on_this_suspend();

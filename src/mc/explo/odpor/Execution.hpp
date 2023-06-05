@@ -118,7 +118,7 @@ public:
    * 9 |    --> add some q in I_[E'](v) to backtrack(E')
    *
    * This method computes all of the lines simultaneously,
-   * returning some actor `q` if it passes line 8 and exists.
+   * returning the set `I_[E'](v)` if condition on line 8 holds.
    * The event `e` and the set `backtrack(E')` are the provided
    * arguments to the method.
    *
@@ -135,20 +135,21 @@ public:
    * See the SDPOR algorithm pseudocode in [1] for more
    * details for the context of the function.
    *
-   * @invariant: This method assumes that events `e` and
-   * `e' := get_latest_event_handle()` are in a *reversible* race
+   * @precondition: This method assumes that events `e` and
+   * `e' := get_latest_event_handle()` are in a *reversible* race,
    * as is explicitly the case in SDPOR
    *
-   * @returns an actor not contained in `disqualified` which
-   * can serve as an initial to reverse the race between `e`
-   * and `e'`
+   * @returns a set of actors not already contained in `backtrack_set`
+   * which serve as an initials to reverse the race between `e`
+   * and `e' := get_latest_event_handle()`; that is, an initial that is
+   * not already contained in the set `backtrack_set`.
    */
   std::unordered_set<aid_t> get_missing_source_set_actors_from(EventHandle e,
                                                                const std::unordered_set<aid_t>& backtrack_set) const;
 
   /**
    * @brief Computes the analogous lines from the SDPOR algorithm
-   * in the ODPOR algorithm, viz. the intersection of the slee set
+   * in the ODPOR algorithm, viz. the intersection of the sleep set
    * and the set of weak initials with respect to the given pair
    * of racing events
    *
@@ -156,14 +157,20 @@ public:
    *
    * 4 | let E' := pre(E, e)
    * 5 | let v := notdep(e, E).e'^
-   * 6 | if sleep(E') ∩ WI_[E'](v) = empty then ...
+   * 6 | if sleep(E') ∩ WI_[E'](v) = empty then
+   * 7 |   --> wut(E') := insert_[E'](v, wut(E'))
    *
    * The sequence `v` is computed and returned as needed, based on whether
    * the check on line 6 passes.
    *
-   * @invariant: This method assumes that events `e` and
-   * `e_prime` are in a *reversible* race as is the case
-   * in ODPOR
+   * @precondition: This method assumes that events `e` and
+   * `e_prime` are in a *reversible* race, as is the case
+   * in ODPOR.
+   *
+   * @returns a partial execution `v := notdep(e, E)` (where `E` refers
+   * to this execution) that should be inserted into a wakeup tree with
+   * respect to this execution if `sleep(E') ∩ WI_[E'](v) = empty`, and
+   * `std::nullopt` otherwise
    */
   std::optional<PartialExecution> get_odpor_extension_from(EventHandle e, EventHandle e_prime,
                                                            const State& state_at_e) const;
@@ -184,10 +191,7 @@ public:
    * | and add `v.w'` as a new leaf, ordered after all already existing nodes
    * | of the form `v.w''`
    *
-   * This method computes the result `v.w'` as needed (viz. only if `v ~_[E] w`
-   * with respect to this execution `E`)
-   *
-   * The procedure for determining `v ~_[E] w` is given as Lemma 4.6 of
+   * The procedure for determining whether `v ~_[E] w` is given as Lemma 4.6 of
    * Abdulla et al. 2017:
    *
    * | The relation `v ~_[E] w` holds if either
@@ -196,13 +200,22 @@ public:
    * |     (a) p in I_[E](w) and `v' ~_[E.p] (w \ p)`
    * |     (b) E ⊢ p ◊ w and `v' ~_[E.p] w`
    *
-   * @invariant: This method assumes that `E.v` is a valid execution, viz.
+   * This method computes the result `v.w'` as needed (viz. only if `v ~_[E] w`
+   * with respect to this execution `E`). The implementation takes advantage
+   * of the fact that determining whether `v ~_[E] w` yields "for free" the
+   * the shortest such `w'` we are looking for; if we ultimately determine
+   * that `v ~_[E] w`, the work we did to do so leaves us precisely with `w'`,
+   * so we can simply prepend `v` to it and call it a day
+   *
+   * @precondition: This method assumes that `E.v` is a valid execution, viz.
    * that the events of `E` are sufficient to enabled `v_0` and that
    * `v_0, ..., v_{i - 1}` are sufficient to enable `v_i`. This is the
    * case when e.g. `v := notdep(e, E).p` for example in ODPOR
    *
-   * @returns a partial execution `w'` that should be inserted
-   * as a child of a wakeup tree node with the associated sequence `v`.
+   * @returns a partial execution `v.w'` that should be inserted
+   * as a child of a wakeup tree node representing the sequence `v`
+   * if `v ~_[E] w`, or `std::nullopt` if that relation does not hold
+   * between the two sequences `v` and `w`
    */
   std::optional<PartialExecution> get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,
                                                                          const PartialExecution& w) const;
@@ -226,14 +239,12 @@ public:
   bool is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const;
 
   /**
-   * @brief Determines the event associated with
-   * the given handle `handle`
+   * @brief Determines the event associated with the given handle `handle`
    */
   const Event& get_event_with_handle(EventHandle handle) const { return contents_[handle]; }
 
   /**
-   * @brief Determines the actor associated with
-   * the given event handle `handle`
+   * @brief Determines the actor associated with the given event handle `handle`
    */
   aid_t get_actor_with_handle(EventHandle handle) const { return get_event_with_handle(handle).get_transition()->aid_; }
 
@@ -246,8 +257,11 @@ public:
   }
 
   /**
-   * @brief Returns a handle to the newest event of the execution,
-   * if such an event exists
+   * @brief Returns a handle to the newest event of the execution, if such an event exists
+   *
+   * @returns the handle to the last event of the execution.
+   * If the sequence is empty, no such handle exists and the
+   * method returns `std::nullopt`
    */
   std::optional<EventHandle> get_latest_event_handle() const
   {
@@ -260,7 +274,7 @@ public:
    * in the ODPOR paper) with the given event
    *
    * Two events `e` and `e'` in an execution `E` are said to
-   * race iff
+   * *race* iff
    *
    * 1. `proc(e) != proc(e')`; that is, the events correspond to
    * the execution of different actors
@@ -271,7 +285,8 @@ public:
    *
    * @param handle the event with respect to which races are
    * computed
-   * @returns a set of event handles from which race with `handle`
+   * @returns a set of event handles, each element of which is an
+   * event in this execution which is in a *race* with event `handle`
    */
   std::unordered_set<EventHandle> get_racing_events_of(EventHandle handle) const;
 
@@ -280,7 +295,7 @@ public:
    * race with the given event handle `handle`
    *
    * Two events `e` and `e'` in an execution `E` are said to
-   * be in a reversible race iff
+   * be in a *reversible race* iff
    *
    * 1. `e` and `e'` race
    * 2. In any equivalent execution sequence `E'` to `E`
@@ -289,8 +304,8 @@ public:
    *
    * @param handle the event with respect to which
    * reversible races are computed
-   * @returns a set of event handles from which are in a reversible
-   * race with `handle`
+   * @returns a set of event handles, each element of which is an event
+   * in this execution which is in a *reversible race* with event `handle`
    */
   std::unordered_set<EventHandle> get_reversible_races_of(EventHandle handle) const;
 
@@ -299,10 +314,10 @@ public:
    *
    * The execution `pre(e, E)` for an event `e` in an
    * execution `E` is the contiguous prefix of events
-   * `E' <= E` up to by excluding the event `e` itself.
-   * The prefix intuitively represents the "history" of
-   * causes that permitted event `e` to exist (roughly
-   * speaking)
+   * `E' <= E` up to but excluding the event `e` itself.
+   * Roughly speaking, the prefix intuitively represents
+   * the "history" of causes which permitted event `e`
+   * to exist
    */
   Execution get_prefix_before(EventHandle) const;
 
@@ -338,6 +353,10 @@ public:
 
   /**
    * @brief Extends the execution by a sequence of steps
+   *
+   * This method has the equivalent effect of pushing the
+   * transitions of the partial execution one-by-one onto
+   * the execution
    */
   void push_partial_execution(const PartialExecution&);
 };
