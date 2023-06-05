@@ -9,6 +9,7 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
 
+#include <algorithm>
 #include <boost/range/algorithm.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc, "Logging specific to MC states");
@@ -62,16 +63,15 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
      * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
      * it is not explored*/
     for (auto& [aid, transition] : parent_state_->get_sleep_set()) {
-      if (not incoming_transition_->depends(&transition)) {
+      if (not incoming_transition_->depends(transition.get())) {
         sleep_set_.try_emplace(aid, transition);
         if (strategy_->actors_to_run_.count(aid) != 0) {
           XBT_DEBUG("Actor %ld will not be explored, for it is in the sleep set", aid);
-
           strategy_->actors_to_run_.at(aid).mark_done();
         }
       } else
         XBT_DEBUG("Transition >>%s<< removed from the sleep set because it was dependent with incoming >>%s<<",
-                  transition.to_string().c_str(), incoming_transition_->to_string().c_str());
+                  transition->to_string().c_str(), incoming_transition_->to_string().c_str());
     }
   }
 }
@@ -119,6 +119,11 @@ std::pair<aid_t, int> State::next_transition_guided() const
   return strategy_->next_transition();
 }
 
+aid_t State::next_odpor_transition() const
+{
+  return wakeup_tree_.get_min_single_process_actor().value_or(-1);
+}
+
 // This should be done in GuidedState, or at least interact with it
 std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
 {
@@ -131,7 +136,7 @@ std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
   // when simcall_handle will be called on it
   auto& actor_state                        = strategy_->actors_to_run_.at(next);
   const unsigned times_considered          = actor_state.do_consider();
-  const auto* expected_executed_transition = actor_state.get_transition(times_considered);
+  const auto* expected_executed_transition = actor_state.get_transition(times_considered).get();
   xbt_assert(expected_executed_transition != nullptr,
              "Expected a transition with %u times considered to be noted in actor %ld", times_considered, next);
 
@@ -160,4 +165,122 @@ std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
 
   return outgoing_transition_;
 }
+
+std::unordered_set<aid_t> State::get_backtrack_set() const
+{
+  std::unordered_set<aid_t> actors;
+  for (const auto& [aid, state] : get_actors_list()) {
+    if (state.is_todo() or state.is_done()) {
+      actors.insert(aid);
+    }
+  }
+  return actors;
+}
+
+std::unordered_set<aid_t> State::get_sleeping_actors() const
+{
+  std::unordered_set<aid_t> actors;
+  for (const auto& [aid, _] : get_sleep_set()) {
+    actors.insert(aid);
+  }
+  return actors;
+}
+
+std::unordered_set<aid_t> State::get_enabled_actors() const
+{
+  std::unordered_set<aid_t> actors;
+  for (const auto& [aid, state] : get_actors_list()) {
+    if (state.is_enabled()) {
+      actors.insert(aid);
+    }
+  }
+  return actors;
+}
+
+void State::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
+{
+  // TODO: It would be better not to have such a flag.
+  if (has_initialized_wakeup_tree) {
+    return;
+  }
+  // TODO: Note that the next action taken by the actor may be updated
+  // after it executes. But we will have already inserted it into the
+  // tree and decided upon "happens-before" at that point for different
+  // executions :(
+  if (wakeup_tree_.empty()) {
+    // Find an enabled transition to pick
+    for (const auto& [_, actor] : get_actors_list()) {
+      if (actor.is_enabled()) {
+        // For each variant of the transition, we want
+        // to insert the action into the tree. This ensures
+        // that all variants are searched
+        for (unsigned times = 0; times < actor.get_max_considered(); ++times) {
+          wakeup_tree_.insert(prior, odpor::PartialExecution{actor.get_transition(times)});
+        }
+        break; // Only one actor gets inserted (see pseudocode)
+      }
+    }
+  }
+  has_initialized_wakeup_tree = true;
+}
+
+void State::sprout_tree_from_parent_state()
+{
+  xbt_assert(parent_state_ != nullptr, "Attempting to construct a wakeup tree for the root state "
+                                       "(or what appears to be, rather for state without a parent defined)");
+  const auto min_process_node = parent_state_->wakeup_tree_.get_min_single_process_node();
+  xbt_assert(min_process_node.has_value(), "Attempting to construct a subtree for a substate from a "
+                                           "parent with an empty wakeup tree. This indicates either that ODPOR "
+                                           "actor selection in State.cpp is incorrect, or that the code "
+                                           "deciding when to make subtrees in ODPOR is incorrect");
+  xbt_assert((get_transition_in()->aid_ == min_process_node.value()->get_actor()) &&
+                 (get_transition_in()->type_ == min_process_node.value()->get_action()->type_),
+             "We tried to make a subtree from a parent state who claimed to have executed `%s` "
+             "but whose wakeup tree indicates it should have executed `%s`. This indicates "
+             "that exploration is not following ODPOR. Are you sure you're choosing actors "
+             "to schedule from the wakeup tree?",
+             get_transition_in()->to_string(false).c_str(),
+             min_process_node.value()->get_action()->to_string(false).c_str());
+  this->wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(min_process_node.value());
+}
+
+void State::remove_subtree_using_current_out_transition()
+{
+  if (auto out_transition = get_transition_out(); out_transition != nullptr) {
+    if (const auto min_process_node = wakeup_tree_.get_min_single_process_node(); min_process_node.has_value()) {
+      xbt_assert((out_transition->aid_ == min_process_node.value()->get_actor()) &&
+                     (out_transition->type_ == min_process_node.value()->get_action()->type_),
+                 "We tried to make a subtree from a parent state who claimed to have executed `%s` "
+                 "but whose wakeup tree indicates it should have executed `%s`. This indicates "
+                 "that exploration is not following ODPOR. Are you sure you're choosing actors "
+                 "to schedule from the wakeup tree?",
+                 out_transition->to_string(false).c_str(),
+                 min_process_node.value()->get_action()->to_string(false).c_str());
+    }
+  }
+  wakeup_tree_.remove_min_single_process_subtree();
+}
+
+odpor::WakeupTree::InsertionResult State::insert_into_wakeup_tree(const odpor::PartialExecution& pe,
+                                                                  const odpor::Execution& E)
+{
+  return this->wakeup_tree_.insert(E, pe);
+}
+
+void State::do_odpor_unwind()
+{
+  if (auto out_transition = get_transition_out(); out_transition != nullptr) {
+    remove_subtree_using_current_out_transition();
+
+    // Only when we've exhausted all variants of the transition which
+    // can be chosen from this state do we finally add the actor to the
+    // sleep set. This ensures that the current logic handling sleep sets
+    // works with ODPOR in the way we intend it to work. There is not a
+    // good way to perform transition equality in SimGrid; instead, we
+    // effectively simply check for the presence of an actor in the sleep set.
+    if (!get_actors_list().at(out_transition->aid_).has_more_to_consider())
+      add_sleep_set(std::move(out_transition));
+  }
+}
+
 } // namespace simgrid::mc

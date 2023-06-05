@@ -524,6 +524,8 @@ set(MC_SRC_BASE
   
 set(MC_SRC_STATELESS
   src/mc/api/ActorState.hpp
+  src/mc/api/ClockVector.cpp
+  src/mc/api/ClockVector.hpp
   src/mc/api/State.cpp
   src/mc/api/State.hpp
   src/mc/api/RemoteApp.cpp
@@ -533,6 +535,17 @@ set(MC_SRC_STATELESS
   src/mc/explo/DFSExplorer.hpp
   src/mc/explo/Exploration.cpp
   src/mc/explo/Exploration.hpp
+
+  src/mc/explo/odpor/Execution.cpp
+  src/mc/explo/odpor/Execution.hpp
+  src/mc/explo/odpor/ReversibleRaceCalculator.cpp
+  src/mc/explo/odpor/ReversibleRaceCalculator.hpp
+  src/mc/explo/odpor/WakeupTree.cpp
+  src/mc/explo/odpor/WakeupTree.hpp
+  src/mc/explo/odpor/WakeupTreeIterator.cpp
+  src/mc/explo/odpor/WakeupTreeIterator.hpp
+  src/mc/explo/odpor/odpor_forward.hpp
+  src/mc/explo/odpor/odpor_tests_private.hpp
 
   src/mc/remote/AppSide.cpp
   src/mc/remote/AppSide.hpp

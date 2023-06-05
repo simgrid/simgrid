@@ -10,11 +10,12 @@
 
 /********************************** Configuration of MC **************************************/
 namespace simgrid::mc {
-bool cfg_use_DPOR(); // "model-check/reduction" == "DPOR"
+XBT_DECLARE_ENUM_CLASS(ReductionMode, none, dpor, sdpor, odpor);
 XBT_DECLARE_ENUM_CLASS(ModelCheckingMode, NONE, APP_SIDE, CHECKER_SIDE, REPLAY);
+ReductionMode get_model_checking_reduction(); // "model-check/reduction" == "DPOR"
 XBT_PUBLIC ModelCheckingMode get_model_checking_mode();
 XBT_PUBLIC void set_model_checking_mode(ModelCheckingMode mode);
-};
+}; // namespace simgrid::mc
 
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_buffering;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_checkpoint;

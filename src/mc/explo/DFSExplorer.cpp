@@ -22,8 +22,10 @@
 #include <cassert>
 #include <cstdio>
 
+#include <algorithm>
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dfs, mc, "DFS exploration algorithm of the model-checker");
@@ -82,6 +84,7 @@ RecordTrace DFSExplorer::get_record_trace() // override
 void DFSExplorer::restore_stack(std::shared_ptr<State> state)
 {
   stack_.clear();
+  execution_seq_     = odpor::Execution();
   auto current_state = state;
   stack_.emplace_front(current_state);
   // condition corresponds to reaching initial state
@@ -90,6 +93,18 @@ void DFSExplorer::restore_stack(std::shared_ptr<State> state)
     stack_.emplace_front(current_state);
   }
   XBT_DEBUG("Replaced stack by %s", get_record_trace().to_string().c_str());
+  if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
+    // NOTE: The outgoing transition for the top-most
+    // state of the  stack refers to that which was taken
+    // as part of the last trace explored by the algorithm.
+    // Thus, only the sequence of transitions leading up to,
+    // but not including, the last state must be included
+    // when reconstructing the Exploration for SDPOR.
+    for (auto iter = std::next(stack_.begin()); iter != stack_.end(); ++iter) {
+      execution_seq_.push_transition((*iter)->get_transition_in());
+    }
+    XBT_DEBUG("Replaced SDPOR/ODPOR execution to reflect the new stack");
+  }
 }
 
 void DFSExplorer::log_state() // override
@@ -125,8 +140,14 @@ void DFSExplorer::run()
         XBT_ERROR("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\",
                   _sg_mc_max_depth.get());
         XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
-      } else
+      } else if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
+        XBT_ERROR("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
+                  "when stopping at a fixed depth /!\\",
+                  _sg_mc_max_depth.get());
+        XBT_ERROR("/!\\ If bad things happen, disable the reduction with --cfg=model-check/reduction:none /!\\");
+      } else {
         XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+      }
       this->backtrack();
       continue;
     }
@@ -143,9 +164,25 @@ void DFSExplorer::run()
     }
 #endif
 
+    if (reduction_mode_ == ReductionMode::odpor) {
+      // In the case of ODPOR, the wakeup tree for this
+      // state may be empty if we're exploring new territory
+      // (rather than following the partial execution of a
+      // wakeup tree). This corresponds to lines 9 to 13 of
+      // the ODPOR pseudocode
+      //
+      // INVARIANT: The execution sequence should be consistent
+      // with the state when seeding the tree. If the sequence
+      // gets out of sync with the state, selection will not
+      // work as we intend
+      state->seed_wakeup_tree_if_needed(execution_seq_);
+    }
+
     // Search for the next transition
-    // next_transition returns a pair<aid_t, int> in case we want to consider multiple state (eg. during backtrack)
-    auto [next, _] = state->next_transition_guided();
+    // next_transition returns a pair<aid_t, int>
+    // in case we want to consider multiple states (eg. during backtrack)
+    const aid_t next = reduction_mode_ == ReductionMode::odpor ? state->next_odpor_transition()
+                                                               : std::get<0>(state->next_transition_guided());
 
     if (next < 0) { // If there is no more transition in the current state, backtrack.
       XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
@@ -164,11 +201,11 @@ void DFSExplorer::run()
     if (_sg_mc_sleep_set && XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose)) {
       XBT_VERB("Sleep set actually containing:");
       for (auto& [aid, transition] : state->get_sleep_set())
-        XBT_VERB("  <%ld,%s>", aid, transition.to_string().c_str());
+        XBT_VERB("  <%ld,%s>", aid, transition->to_string().c_str());
     }
 
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
-    state->execute_next(next, get_remote_app());
+    const auto executed_transition = state->execute_next(next, get_remote_app());
     on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
 
     // If there are processes to interleave and the maximum depth has not been
@@ -180,13 +217,25 @@ void DFSExplorer::run()
     auto next_state = std::make_shared<State>(get_remote_app(), state);
     on_state_creation_signal(next_state.get(), get_remote_app());
 
-    /* Sleep set procedure:
-     * adding the taken transition to the sleep set of the original state.
-     * <!> Since the parent sleep set is used to compute the child sleep set, this need to be
-     * done after next_state creation */
-    XBT_DEBUG("Marking Transition >>%s<< of process %ld done and adding it to the sleep set",
-              state->get_transition_out()->to_string().c_str(), state->get_transition_out()->aid_);
-    state->add_sleep_set(state->get_transition_out()); // Actors are marked done when they are considerd in ActorState
+    if (reduction_mode_ == ReductionMode::odpor) {
+      // With ODPOR, after taking a step forward, we must
+      // assign a copy of that subtree to the next state.
+      //
+      // NOTE: We only add actions to the sleep set AFTER
+      // we've regenerated states. We must perform the search
+      // fully down a single path before we consider adding
+      // any elements to the sleep set according to the pseudocode
+      next_state->sprout_tree_from_parent_state();
+    } else {
+      /* Sleep set procedure:
+       * adding the taken transition to the sleep set of the original state.
+       * <!> Since the parent sleep set is used to compute the child sleep set, this need to be
+       * done after next_state creation */
+      XBT_DEBUG("Marking Transition >>%s<< of process %ld done and adding it to the sleep set",
+                state->get_transition_out()->to_string().c_str(), state->get_transition_out()->aid_);
+      state->add_sleep_set(
+          state->get_transition_out()); // Actors are marked done when they are considered in ActorState
+    }
 
     /* DPOR persistent set procedure:
      * for each new transition considered, check if it depends on any other previous transition executed before it
@@ -229,6 +278,45 @@ void DFSExplorer::run()
         }
         tmp_stack.pop_back();
       }
+    } else if (reduction_mode_ == ReductionMode::sdpor) {
+      /**
+       * SDPOR Source Set Procedure:
+       *
+       * Find "reversible races" in the current execution `E` with respect
+       * to the latest action `p`. For each such race, determine one thread
+       * not contained in the backtrack set at the "race point" `r` which
+       * "represents" the trace formed by first executing everything after
+       * `r` that doesn't depend on it (`v := notdep(r, E)`) and then `p` to
+       * flip the race.
+       *
+       * The intuition is that some subsequence of `v` may enable `p`, so
+       * we want to be sure that search "in that direction"
+       */
+      execution_seq_.push_transition(std::move(executed_transition));
+      xbt_assert(execution_seq_.get_latest_event_handle().has_value(), "No events are contained in the SDPOR execution "
+                                                                       "even though one was just added");
+
+      const auto next_E_p = execution_seq_.get_latest_event_handle().value();
+      for (const auto e_race : execution_seq_.get_reversible_races_of(next_E_p)) {
+        State* prev_state  = stack_[e_race].get();
+        const auto choices = execution_seq_.get_missing_source_set_actors_from(e_race, prev_state->get_backtrack_set());
+        if (!choices.empty()) {
+          // NOTE: To incorporate the idea of attempting to select the "best"
+          // backtrack point into SDPOR, instead of selecting the `first` initial,
+          // we should instead compute all choices and decide which is best
+          //
+          // Here, we choose the actor with the lowest ID to ensure
+          // we get deterministic results
+          const auto q =
+              std::min_element(choices.begin(), choices.end(), [](const aid_t a1, const aid_t a2) { return a1 < a2; });
+          prev_state->consider_one(*q);
+          opened_states_.emplace_back(std::move(prev_state));
+        }
+      }
+    } else if (reduction_mode_ == ReductionMode::odpor) {
+      // In the case of ODPOR, we simply observe the transition that was executed
+      // until we've reached a maximal trace
+      execution_seq_.push_transition(std::move(executed_transition));
     }
 
     // Before leaving that state, if the transition we just took can be taken multiple times, we
@@ -240,7 +328,8 @@ void DFSExplorer::run()
       this->check_non_termination(next_state.get());
 
 #if SIMGRID_HAVE_STATEFUL_MC
-    /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction) */
+    /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction)
+     */
     if (_sg_mc_max_visited_states > 0)
       visited_state_ = visited_states_.addVisitedState(next_state->get_num(), next_state.get(), get_remote_app());
 #endif
@@ -304,8 +393,75 @@ std::shared_ptr<State> DFSExplorer::best_opened_state()
   return best_state;
 }
 
+std::shared_ptr<State> DFSExplorer::next_odpor_state()
+{
+  for (auto iter = stack_.rbegin(); iter != stack_.rend(); ++iter) {
+    const auto& state = *iter;
+    state->do_odpor_unwind();
+    XBT_DEBUG("\tPerformed ODPOR 'clean-up'. Sleep set has:");
+    for (auto& [aid, transition] : state->get_sleep_set())
+      XBT_DEBUG("\t  <%ld,%s>", aid, transition->to_string().c_str());
+    if (!state->has_empty_tree()) {
+      return state;
+    }
+  }
+  return nullptr;
+}
+
 void DFSExplorer::backtrack()
 {
+  if (const auto last_event = execution_seq_.get_latest_event_handle();
+      reduction_mode_ == ReductionMode::odpor and last_event.has_value()) {
+    /**
+     * ODPOR Race Detection Procedure:
+     *
+     * For each reversible race in the current execution, we
+     * note if there are any continuations `C` equivalent to that which
+     * would reverse the race that have already either a) been searched by ODPOR or
+     * b) been *noted* to be searched by the wakeup tree at the
+     * appropriate reversal point, either as `C` directly or
+     * an as equivalent to `C` ("eventually looks like C", viz. the `~_E`
+     * relation)
+     */
+    for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
+      for (const auto e : execution_seq_.get_reversible_races_of(e_prime)) {
+        XBT_DEBUG("ODPOR: Reversible race detected between events `%u` and `%u`", e, e_prime);
+        State& prev_state = *stack_[e];
+        if (const auto v = execution_seq_.get_odpor_extension_from(e, e_prime, prev_state); v.has_value()) {
+          const auto result = prev_state.insert_into_wakeup_tree(v.value(), execution_seq_.get_prefix_before(e));
+          switch (result) {
+            case odpor::WakeupTree::InsertionResult::root: {
+              XBT_DEBUG("ODPOR: Reversible race with `%u` unaccounted for in the wakeup tree for "
+                        "the execution prior to event `%u`:",
+                        e_prime, e);
+              break;
+            }
+            case odpor::WakeupTree::InsertionResult::interior_node: {
+              XBT_DEBUG("ODPOR: Reversible race with `%u` partially accounted for in the wakeup tree for "
+                        "the execution prior to event `%u`:",
+                        e_prime, e);
+              break;
+            }
+            case odpor::WakeupTree::InsertionResult::leaf: {
+              XBT_DEBUG("ODPOR: Reversible race with `%u` accounted for in the wakeup tree for "
+                        "the execution prior to event `%u`:",
+                        e_prime, e);
+              break;
+            }
+          }
+          for (const auto& seq : simgrid::mc::odpor::get_textual_trace(v.value())) {
+            XBT_DEBUG(" %s", seq.c_str());
+          }
+        } else {
+          XBT_DEBUG("ODPOR: Ignoring race: `sleep(E')` intersects `WI_[E'](v := notdep(%u, E))`", e);
+          XBT_DEBUG("Sleep set contains:");
+          for (auto& [aid, transition] : prev_state.get_sleep_set())
+            XBT_DEBUG("  <%ld,%s>", aid, transition->to_string().c_str());
+        }
+      }
+    }
+  }
+
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
   XBT_DEBUG("%lu alternatives are yet to be explored:", opened_states_.size());
 
@@ -313,7 +469,7 @@ void DFSExplorer::backtrack()
   get_remote_app().check_deadlock();
 
   // Take the point with smallest distance
-  auto backtracking_point = best_opened_state();
+  auto backtracking_point = reduction_mode_ == ReductionMode::odpor ? next_odpor_state() : best_opened_state();
 
   // if no backtracking point, then set the stack_ to empty so we can end the exploration
   if (not backtracking_point) {
@@ -372,20 +528,16 @@ void DFSExplorer::backtrack()
   this->restore_stack(backtracking_point);
 }
 
-DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor, bool need_memory_info)
+DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode, bool need_memory_info)
     : Exploration(args, need_memory_info || _sg_mc_termination
 #if SIMGRID_HAVE_STATEFUL_MC
                             || _sg_mc_checkpoint > 0
 #endif
-      )
+                  )
+    , reduction_mode_(mode)
 {
-  if (with_dpor)
-    reduction_mode_ = ReductionMode::dpor;
-  else
-    reduction_mode_ = ReductionMode::none;
-
   if (_sg_mc_termination) {
-    if (with_dpor) {
+    if (mode != ReductionMode::none) {
       XBT_INFO("Check non progressive cycles (turning DPOR off)");
       reduction_mode_ = ReductionMode::none;
     } else {
@@ -409,11 +561,19 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor, bool ne
   }
   if (stack_.back()->count_todo_multiples() > 1)
     opened_states_.emplace_back(stack_.back());
+
+  if (mode == ReductionMode::odpor && !_sg_mc_sleep_set) {
+    // ODPOR requires the use of sleep sets; SDPOR
+    // "likes" using sleep sets but it is not strictly
+    // required
+    XBT_INFO("Forcing the use of sleep sets for use with ODPOR");
+    _sg_mc_sleep_set = true;
+  }
 }
 
-Exploration* create_dfs_exploration(const std::vector<char*>& args, bool with_dpor)
+Exploration* create_dfs_exploration(const std::vector<char*>& args, ReductionMode mode)
 {
-  return new DFSExplorer(args, with_dpor);
+  return new DFSExplorer(args, mode);
 }
 
 } // namespace simgrid::mc

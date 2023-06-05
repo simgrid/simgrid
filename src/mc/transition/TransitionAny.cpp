@@ -35,6 +35,10 @@ std::string TestAnyTransition::to_string(bool verbose) const
 }
 bool TestAnyTransition::depends(const Transition* other) const
 {
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
+
   return transitions_[times_considered_]->depends(other);
 }
 WaitAnyTransition::WaitAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream)
@@ -57,6 +61,9 @@ std::string WaitAnyTransition::to_string(bool verbose) const
 }
 bool WaitAnyTransition::depends(const Transition* other) const
 {
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
   return transitions_[times_considered_]->depends(other);
 }
 
