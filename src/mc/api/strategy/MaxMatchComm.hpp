@@ -48,7 +48,7 @@ public:
       if (not actor.is_todo() || not actor.is_enabled() || actor.is_done())
         continue;
 
-      const Transition* transition = actor.get_transition(actor.get_times_considered());
+      const Transition* transition = actor.get_transition(actor.get_times_considered()).get();
 
       const CommRecvTransition* cast_recv = static_cast<CommRecvTransition const*>(transition);
       if (cast_recv != nullptr and mailbox_.count(cast_recv->get_mailbox()) > 0 and
@@ -68,7 +68,7 @@ public:
 
   void execute_next(aid_t aid, RemoteApp& app) override
   {
-    const Transition* transition = actors_to_run_.at(aid).get_transition(actors_to_run_.at(aid).get_times_considered());
+    const Transition* transition = actors_to_run_.at(aid).get_transition(actors_to_run_.at(aid).get_times_considered()).get();
     last_transition_             = transition->type_;
 
     const CommRecvTransition* cast_recv = static_cast<CommRecvTransition const*>(transition);
@@ -90,7 +90,7 @@ public:
       if (not actor.is_enabled() || actor.is_done())
         continue;
 
-      const Transition* transition = actor.get_transition(actor.get_times_considered());
+      const Transition* transition = actor.get_transition(actor.get_times_considered()).get();
 
       const CommRecvTransition* cast_recv = static_cast<CommRecvTransition const*>(transition);
       if (cast_recv != nullptr and mailbox_.count(cast_recv->get_mailbox()) > 0 and
