@@ -1,0 +1,12 @@
+#!/usr/bin/env tesh
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/task-io.py --platform ${platfdir}/hosts_with_disks.xml
+> [1.0] ExecTask(exec1) finished (1)
+> [1.25] IoTask(write) finished (1)
+> [1.35] IoTask(read) finished (1)
+> [2.0] ExecTask(exec1) finished (2)
+> [2.25] IoTask(write) finished (2)
+> [2.35] ExecTask(exec2) finished (1)
+> [2.35] IoTask(read) finished (2)
+> [3.35] ExecTask(exec2) finished (2)
+

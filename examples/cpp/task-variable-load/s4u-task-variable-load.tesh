@@ -1,0 +1,17 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-task-variable-load ${platfdir}/small_platform.xml
+> [Tremblay:input:(1) 0.000000] [task_variable_load/INFO] --- Small load ---
+> [1.520418] [task_variable_load/INFO] Task comm finished (1)
+> [14.627265] [task_variable_load/INFO] Task exec finished (1)
+> [101.520418] [task_variable_load/INFO] Task comm finished (2)
+> [114.627265] [task_variable_load/INFO] Task exec finished (2)
+> [201.520418] [task_variable_load/INFO] Task comm finished (3)
+> [214.627265] [task_variable_load/INFO] Task exec finished (3)
+> [Tremblay:input:(1) 1000.000000] [task_variable_load/INFO] --- Heavy load ---
+> [1001.520418] [task_variable_load/INFO] Task comm finished (4)
+> [1003.040835] [task_variable_load/INFO] Task comm finished (5)
+> [1004.561253] [task_variable_load/INFO] Task comm finished (6)
+> [1014.627265] [task_variable_load/INFO] Task exec finished (4)
+> [1027.734112] [task_variable_load/INFO] Task exec finished (5)
+> [1040.840959] [task_variable_load/INFO] Task exec finished (6)

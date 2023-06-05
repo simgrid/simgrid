@@ -4,18 +4,18 @@
 # under the terms of the license (GNU LGPL) which comes with this package.
 
 """
-This example demonstrates basic use of the operation plugin.
+This example demonstrates basic use of the task plugin.
 We model the following graph:
 
 exec1 -> comm -> exec2
 
-exec1 and exec2 are execution operations.
-comm is a communication operation.
+exec1 and exec2 are execution tasks.
+comm is a communication task.
 """
 
 from argparse import ArgumentParser
 import sys
-from simgrid import Engine, Operation, CommOp, ExecOp
+from simgrid import Engine, Task, CommTask, ExecTask
 
 def parse():
     parser = ArgumentParser()
@@ -27,32 +27,32 @@ def parse():
     )
     return parser.parse_args()
 
-def callback(op):
-    print(f'[{Engine.clock}] Operation {op} finished ({op.count})')
+def callback( t):
+    print(f'[{Engine.clock}] { t} finished ({ t.count})')
 
 if __name__ == '__main__':
     args = parse()
     e = Engine(sys.argv)
     e.load_platform(args.platform)
-    Operation.init()
+    Task.init()
 
     # Retrieve hosts
     tremblay = e.host_by_name('Tremblay')
     jupiter = e.host_by_name('Jupiter')
 
-    # Create operations
-    exec1 = ExecOp.init("exec1", 1e9, tremblay)
-    exec2 = ExecOp.init("exec2", 1e9, jupiter)
-    comm = CommOp.init("comm", 1e7, tremblay, jupiter)
+    # Create tasks
+    exec1 = ExecTask.init("exec1", 1e9, tremblay)
+    exec2 = ExecTask.init("exec2", 1e9, jupiter)
+    comm = CommTask.init("comm", 1e7, tremblay, jupiter)
 
-    # Create the graph by defining dependencies between operations
+    # Create the graph by defining dependencies between tasks
     exec1.add_successor(comm)
     comm.add_successor(exec2)
 
-    # Add a function to be called when operations end for log purpose
-    Operation.on_end_cb(callback)
+    # Add a function to be called when tasks end for log purpose
+    Task.on_end_cb(callback)
 
-    # Enqueue two executions for operation exec1
+    # Enqueue two executions for task exec1
     exec1.enqueue_execs(2)
 
     # runs the simulation

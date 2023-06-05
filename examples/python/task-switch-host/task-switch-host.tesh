@@ -1,0 +1,15 @@
+#!/usr/bin/env tesh
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/task-switch-host.py --platform ${platfdir}/small_platform.xml
+> [1.5204176120174615] CommTask(comm0) finished (1)
+> [2.873012467069035] CommTask(comm0) finished (2)
+> [4.393430079086497] CommTask(comm0) finished (3)
+> [5.74602493413807] CommTask(comm0) finished (4)
+> [14.62726462889908] ExecTask(exec1) finished (1)
+> [15.979859483950655] ExecTask(exec2) finished (1)
+> [16.14768224091654] CommTask(comm1) finished (1)
+> [17.33245433900223] CommTask(comm2) finished (1)
+> [27.7341116457807] ExecTask(exec1) finished (2)
+> [29.086706500832275] ExecTask(exec2) finished (2)
+> [29.25452925779816] CommTask(comm1) finished (2)
+> [30.43930135588385] CommTask(comm2) finished (2)

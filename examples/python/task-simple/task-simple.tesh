@@ -1,0 +1,9 @@
+#!/usr/bin/env tesh
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/task-simple.py --platform ${platfdir}/small_platform.xml
+> [10.194199500484224] ExecTask(exec1) finished (1)
+> [11.714617112501687] CommTask(comm) finished (1)
+> [20.388399000968448] ExecTask(exec1) finished (2)
+> [21.90881661298591] CommTask(comm) finished (2)
+> [24.82146412938331] ExecTask(exec2) finished (1)
+> [37.92831114626493] ExecTask(exec2) finished (2)

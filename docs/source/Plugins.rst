@@ -219,12 +219,12 @@ Battery
 
 .. doxygengroup:: plugin_battery
 
-.. _plugin_operation:
+.. _plugin_task:
 
-Operation
+Task
 ===========
 
-.. doxygengroup:: plugin_operation
+.. doxygengroup:: plugin_task
 
 .. _plugin_photovoltaic:
 

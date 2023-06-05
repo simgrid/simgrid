@@ -168,7 +168,7 @@ foreach (example activity-testany activity-waitany
                  mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-bugged2-liveness mc-centralized-mutex mc-electric-fence mc-failing-assert
                  network-ns3 network-ns3-wifi network-wifi
                  io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-dependent
-                 operation-io operation-simple operation-variable-load operation-switch-host
+                 task-io task-simple task-variable-load task-switch-host
                  photovoltaic-simple
                  platform-comm-serialize platform-failures platform-profile platform-properties
                  plugin-host-load plugin-link-load plugin-prodcons
