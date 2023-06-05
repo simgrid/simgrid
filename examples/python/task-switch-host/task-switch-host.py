@@ -81,7 +81,7 @@ if __name__ == '__main__':
     # Add a function to be called before each executions of comm0
     # This function modifies the graph of tasks by adding or removing
     # successors to comm0
-    comm0.on_this_start(lambda t: switch(t, [jupiter, fafard], [exec1,exec2]))
+    comm0.on_this_start_cb(lambda t: switch(t, [jupiter, fafard], [exec1,exec2]))
 
     # Enqueue two executions for task exec1
     comm0.enqueue_execs(4)
