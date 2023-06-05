@@ -101,7 +101,7 @@ void Task::complete()
     working_ = false;
     count_++;
   });
-  for (auto end_func : end_func_handlers_)
+  for (auto const& end_func : end_func_handlers_)
     end_func(this);
   Task::on_end(this);
   for (auto const& t : successors_)
@@ -241,7 +241,7 @@ ExecTaskPtr ExecTask::init(const std::string& name, double flops, s4u::Host* hos
  */
 void ExecTask::fire()
 {
-  for (auto start_func : start_func_handlers_)
+  for (auto const& start_func : start_func_handlers_)
     start_func(this);
   Task::on_start(this);
   kernel::actor::simcall_answered([this] {
@@ -305,7 +305,7 @@ CommTaskPtr CommTask::init(const std::string& name, double bytes, s4u::Host* sou
  */
 void CommTask::fire()
 {
-  for (auto start_func : start_func_handlers_)
+  for (auto const& start_func : start_func_handlers_)
     start_func(this);
   Task::on_start(this);
   kernel::actor::simcall_answered([this] {
@@ -399,7 +399,7 @@ IoTaskPtr IoTask::set_op_type(s4u::Io::OpType type)
 
 void IoTask::fire()
 {
-  for (auto start_func : start_func_handlers_)
+  for (auto const& start_func : start_func_handlers_)
     start_func(this);
   Task::on_start(this);
   kernel::actor::simcall_answered([this] {
