@@ -927,9 +927,9 @@ PYBIND11_MODULE(simgrid, m)
           [](py::object cb) {
             cb.inc_ref(); // keep alive after return
             const py::gil_scoped_release gil_release;
-            Task::on_start_cb([cb](Task* op) {
+            Task::on_start_cb([cb_p = cb.ptr()](Task* op) {
               const py::gil_scoped_acquire py_context; // need a new context for callback
-              py::reinterpret_borrow<py::function>(cb.ptr())(op);
+              py::reinterpret_borrow<py::function>(cb_p)(op);
             });
           },
           "Add a callback called when each task starts.")
@@ -938,9 +938,9 @@ PYBIND11_MODULE(simgrid, m)
           [](py::object cb) {
             cb.inc_ref(); // keep alive after return
             const py::gil_scoped_release gil_release;
-            Task::on_end_cb([cb](Task* op) {
+            Task::on_end_cb([cb_p = cb.ptr()](Task* op) {
               const py::gil_scoped_acquire py_context; // need a new context for callback
-              py::reinterpret_borrow<py::function>(cb.ptr())(op);
+              py::reinterpret_borrow<py::function>(cb_p)(op);
             });
           },
           "Add a callback called when each task ends.")
