@@ -29,7 +29,7 @@ namespace simgrid::mc::odpor {
  * execution; indeed, the question the method answers
  * is only sensible in the context of a race
  */
-struct ReversibleRaceCalculator final {
+class ReversibleRaceCalculator final {
   static bool is_race_reversible_ActorJoin(const Execution&, Execution::EventHandle e1, const Transition* e2);
   static bool is_race_reversible_BarrierAsyncLock(const Execution&, Execution::EventHandle e1, const Transition* e2);
   static bool is_race_reversible_BarrierWait(const Execution&, Execution::EventHandle e1, const Transition* e2);
