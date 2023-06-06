@@ -2192,8 +2192,10 @@ include src/mc/api/RemoteApp.hpp
 include src/mc/api/State.cpp
 include src/mc/api/State.hpp
 include src/mc/api/strategy/BasicStrategy.hpp
+include src/mc/api/strategy/MaxMatchComm.hpp
+include src/mc/api/strategy/MinMatchComm.hpp
 include src/mc/api/strategy/Strategy.hpp
-include src/mc/api/strategy/WaitStrategy.hpp
+include src/mc/api/strategy/UniformStrategy.hpp
 include src/mc/compare.cpp
 include src/mc/datatypes.h
 include src/mc/explo/CommunicationDeterminismChecker.cpp
