@@ -121,7 +121,7 @@ void HostLoad::update()
   // This loop updates the flops that the host executed for the ongoing computations
   auto iter = begin(current_activities);
   while (iter != end(current_activities)) {
-    auto& activity                         = iter->first;  // Just an alias
+    const auto& activity                   = iter->first;  // Just an alias
     auto& remaining_cost_after_last_update = iter->second; // Just an alias
     auto& action                           = activity->model_action_;
     auto current_iter                      = iter;

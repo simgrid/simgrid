@@ -96,9 +96,9 @@ static const simgrid::mc::Variable* test_global_variable(const simgrid::mc::Remo
   return variable;
 }
 
-static simgrid::mc::Member* find_member(simgrid::mc::Type& type, const char* name)
+static const simgrid::mc::Member* find_member(const simgrid::mc::Type& type, const char* name)
 {
-  for (simgrid::mc::Member& member : type.members)
+  for (const simgrid::mc::Member& member : type.members)
     if(member.name == name)
       return &member;
   return nullptr;

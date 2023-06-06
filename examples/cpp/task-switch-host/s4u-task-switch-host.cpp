@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
   // Add a function to be called before each executions of comm0
   // This function modifies the graph of tasks by adding or removing
   // successors to comm0
-  comm0->on_this_start([exec1, exec2, jupiter, fafard](simgrid::plugins::Task* t) {
+  comm0->on_this_start_cb([exec1, exec2, jupiter, fafard](simgrid::plugins::Task* t) {
     auto* comm0      = dynamic_cast<simgrid::plugins::CommTask*>(t);
     static int count = 0;
     if (count % 2 == 0) {

@@ -94,7 +94,7 @@ static void remove_active_exec(s4u::Exec const& exec)
 
 static s4u::VirtualMachine* get_vm_from_activity(s4u::Activity const& act)
 {
-  auto* exec = dynamic_cast<kernel::activity::ExecImpl const*>(act.get_impl());
+  const auto* exec = dynamic_cast<kernel::activity::ExecImpl const*>(act.get_impl());
   return exec != nullptr ? dynamic_cast<s4u::VirtualMachine*>(exec->get_host()) : nullptr;
 }
 
@@ -173,7 +173,7 @@ double VMModel::next_occurring_event(double now)
 
 Action* VMModel::execute_thread(const s4u::Host* host, double flops_amount, int thread_count)
 {
-  auto cpu = host->get_cpu();
+  auto* cpu = host->get_cpu();
   return cpu->execution_start(thread_count * flops_amount, thread_count, -1);
 }
 

@@ -100,7 +100,7 @@ public:
   std::vector<unsigned> communication_indices_;
 
   static simgrid::xbt::Extension<simgrid::mc::State, StateCommDet> EXTENSION_ID;
-  explicit StateCommDet(CommDetExtension& checker, RemoteApp const& remote_app)
+  explicit StateCommDet(CommDetExtension const& checker, RemoteApp const& remote_app)
   {
     const unsigned long maxpid = remote_app.get_maxpid();
     for (unsigned long i = 0; i < maxpid; i++) {
@@ -235,7 +235,7 @@ void CommDetExtension::get_comm_pattern(const Transition* transition)
   pattern->index = initial_pattern.index_comm + incomplete_pattern.size();
 
   if (transition->type_ == Transition::Type::COMM_ASYNC_SEND) {
-    auto* send = static_cast<const CommSendTransition*>(transition);
+    const auto* send = static_cast<const CommSendTransition*>(transition);
 
     pattern->type      = PatternCommunicationType::send;
     pattern->comm_addr = send->get_comm();
@@ -244,7 +244,7 @@ void CommDetExtension::get_comm_pattern(const Transition* transition)
     // FIXME: Detached sends should be enforced when the receive is waited
 
   } else if (transition->type_ == Transition::Type::COMM_ASYNC_RECV) {
-    auto* recv = static_cast<const CommRecvTransition*>(transition);
+    const auto* recv = static_cast<const CommRecvTransition*>(transition);
 
     pattern->type      = PatternCommunicationType::receive;
     pattern->comm_addr = recv->get_comm();
@@ -327,8 +327,8 @@ Exploration* create_communication_determinism_checker(const std::vector<char*>& 
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
-  auto base      = new DFSExplorer(args, mode, true);
-  auto extension = new CommDetExtension(*base);
+  auto* base      = new DFSExplorer(args, mode, true);
+  auto* extension = new CommDetExtension(*base);
 
   DFSExplorer::on_exploration_start([extension](RemoteApp const&) {
     XBT_INFO("Check communication determinism");

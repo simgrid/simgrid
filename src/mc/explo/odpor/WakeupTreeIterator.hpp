@@ -26,7 +26,7 @@ namespace simgrid::mc::odpor {
  * This iterator provides such a postorder traversal over the nodes in the
  * wakeup tree.
  */
-struct WakeupTreeIterator
+class WakeupTreeIterator
     : public boost::iterator_facade<WakeupTreeIterator, WakeupTreeNode*, boost::forward_traversal_tag> {
 public:
   WakeupTreeIterator() = default;

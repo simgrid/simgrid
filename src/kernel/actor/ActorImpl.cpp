@@ -372,7 +372,7 @@ activity::ActivityImplPtr ActorImpl::sleep(double duration)
     throw_exception(std::make_exception_ptr(
         HostFailureException(XBT_THROW_POINT, "Host " + host_->get_name() + " failed, you cannot sleep there.")));
 
-  auto sleep_activity = new activity::SleepImpl();
+  auto* sleep_activity = new activity::SleepImpl();
   sleep_activity->set_name("sleep").set_host(host_).set_duration(duration).start();
   return activity::SleepImplPtr(sleep_activity);
 }

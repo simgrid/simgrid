@@ -330,7 +330,7 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
 
     std::for_each(ordered_events.begin(), ordered_events.end(), [&events_seen](const UnfoldingEvent* e) {
       History history(e);
-      for (auto* e_hist : history) {
+      for (const auto* e_hist : history) {
         // In this demo, we want to make sure that
         // we don't mark not yet seeing `e` as an error.
         // The history of `e` traverses `e` itself. All
@@ -358,7 +358,7 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
     std::for_each(ordered_events.begin(), ordered_events.end(), [&events_seen](const UnfoldingEvent* e) {
       History history(e);
 
-      for (auto* e_hist : history) {
+      for (const auto* e_hist : history) {
         // Unlike the test above, we DO want to ensure
         // that `e` itself ALSO isn't yet seen
 
@@ -814,47 +814,47 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Computing Full Alternatives in Rea
 
   auto e0 = std::make_unique<UnfoldingEvent>(
       EventSet(), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 0));
-  auto e0_handle = e0.get();
+  auto* e0_handle = e0.get();
 
   auto e1        = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}),
                                              std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 0));
-  auto e1_handle = e1.get();
+  auto* e1_handle = e1.get();
 
   auto e2 = std::make_unique<UnfoldingEvent>(
       EventSet({e1_handle}), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1));
-  auto e2_handle = e2.get();
+  auto* e2_handle = e2.get();
 
   auto e3 = std::make_unique<UnfoldingEvent>(
       EventSet({e1_handle}), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2));
-  auto e3_handle = e3.get();
+  auto* e3_handle = e3.get();
 
   auto e4 = std::make_unique<UnfoldingEvent>(
       EventSet({e0_handle}), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1));
-  auto e4_handle = e4.get();
+  auto* e4_handle = e4.get();
 
   auto e5        = std::make_unique<UnfoldingEvent>(EventSet({e4_handle}),
                                              std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 0));
-  auto e5_handle = e5.get();
+  auto* e5_handle = e5.get();
 
   auto e6 = std::make_unique<UnfoldingEvent>(
       EventSet({e5_handle}), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2));
-  auto e6_handle = e6.get();
+  auto* e6_handle = e6.get();
 
   auto e7 = std::make_unique<UnfoldingEvent>(
       EventSet({e0_handle}), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2));
-  auto e7_handle = e7.get();
+  auto* e7_handle = e7.get();
 
   auto e8        = std::make_unique<UnfoldingEvent>(EventSet({e4_handle, e7_handle}),
                                              std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 0));
-  auto e8_handle = e8.get();
+  auto* e8_handle = e8.get();
 
   auto e9        = std::make_unique<UnfoldingEvent>(EventSet({e7_handle}),
                                              std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 0));
-  auto e9_handle = e9.get();
+  auto* e9_handle = e9.get();
 
   auto e10 = std::make_unique<UnfoldingEvent>(
       EventSet({e9_handle}), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1));
-  auto e10_handle = e10.get();
+  auto* e10_handle = e10.get();
 
   SECTION("Alternative computation call 1")
   {

@@ -15,8 +15,8 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  auto bob  = e.host_by_name("bob");
-  auto carl = e.host_by_name("carl");
+  auto* bob  = e.host_by_name("bob");
+  auto* carl = e.host_by_name("carl");
 
   // Display the details on vetoed activities
   sg4::Exec::on_veto_cb([](sg4::Exec const& exec) {

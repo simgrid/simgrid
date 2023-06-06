@@ -17,7 +17,7 @@ namespace sg4 = simgrid::s4u;
 /* The guy we will move from host to host. It move alone and then is moved by policeman back  */
 static void emigrant()
 {
-  auto mailbox = sg4::Mailbox::by_name("master_mailbox");
+  auto* mailbox = sg4::Mailbox::by_name("master_mailbox");
 
   sg4::this_actor::sleep_for(2);
 
@@ -35,7 +35,7 @@ static void policeman()
   // I am the master of emigrant actor,
   // I tell it where it must emigrate to.
   auto destinations = {"Tremblay", "Jupiter", "Fafard", "Ginette", "Bourassa", "Fafard", "Tremblay", "Ginette", ""};
-  auto mailbox      = sg4::Mailbox::by_name("master_mailbox");
+  auto* mailbox     = sg4::Mailbox::by_name("master_mailbox");
 
   for (auto const& destination : destinations) {
     mailbox->put_init(new std::string(destination), 0)->set_tracing_category("migration_order")->wait();

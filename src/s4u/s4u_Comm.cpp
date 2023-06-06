@@ -468,7 +468,7 @@ ssize_t Comm::wait_any_for(const std::vector<CommPtr>& comms, double timeout)
 void Comm::wait_all(const std::vector<CommPtr>& comms)
 {
   // TODO: this should be a simcall or something
-  for (auto& comm : comms)
+  for (const auto& comm : comms)
     comm->wait();
 }
 

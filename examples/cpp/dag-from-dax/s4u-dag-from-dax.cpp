@@ -51,8 +51,8 @@ int main(int argc, char** argv)
       cursor++;
     }
     if (auto* comm = dynamic_cast<sg4::Comm*>(a.get())) {
-      auto pred = dynamic_cast<sg4::Exec*>((*comm->get_dependencies().begin()).get());
-      auto succ = dynamic_cast<sg4::Exec*>(comm->get_successors().front().get());
+      const auto* pred = dynamic_cast<sg4::Exec*>((*comm->get_dependencies().begin()).get());
+      const auto* succ = dynamic_cast<sg4::Exec*>(comm->get_successors().front().get());
       comm->set_source(pred->get_host())->set_destination(succ->get_host());
     }
   }

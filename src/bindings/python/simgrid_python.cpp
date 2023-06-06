@@ -956,10 +956,10 @@ PYBIND11_MODULE(simgrid, m)
            py::call_guard<py::gil_scoped_release>(), py::arg("op"), "Remove a successor of this task.")
       .def("remove_all_successors", &Task::remove_all_successors, py::call_guard<py::gil_scoped_release>(),
            "Remove all successors of this task.")
-      .def("on_this_start", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_start), py::arg("func"),
-           "Add a callback called when this task starts.")
-      .def("on_this_end", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_end), py::arg("func"),
-           "Add a callback called when this task ends.")
+      .def("on_this_start_cb", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_start_cb),
+           py::arg("func"), "Add a callback called when this task starts.")
+      .def("on_this_end_cb", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_end_cb),
+           py::arg("func"), "Add a callback called when this task ends.")
       .def(
           "__repr__", [](const TaskPtr op) { return "Task(" + op->get_name() + ")"; },
           "Textual representation of the Task");

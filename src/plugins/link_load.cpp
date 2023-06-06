@@ -164,7 +164,7 @@ using simgrid::plugin::LinkLoad;
 /* **************************** events  callback *************************** */
 static void on_communication(const simgrid::s4u::Comm& comm)
 {
-  auto* pimpl = static_cast<simgrid::kernel::activity::CommImpl*>(comm.get_impl());
+  const auto* pimpl = static_cast<simgrid::kernel::activity::CommImpl*>(comm.get_impl());
   for (auto const* link : pimpl->get_traversed_links()) {
     if (link != nullptr && link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
       auto* link_load = link->extension<LinkLoad>();
@@ -206,7 +206,7 @@ void sg_link_load_plugin_init()
 
   simgrid::s4u::Link::on_onoff_cb([](simgrid::s4u::Link const& link) {
     if (link.get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
-      auto link_load = link.extension<LinkLoad>();
+      auto* link_load = link.extension<LinkLoad>();
       if (link_load->is_tracked())
         link_load->update();
     }
@@ -215,7 +215,7 @@ void sg_link_load_plugin_init()
                                                           simgrid::kernel::resource::Action::State /* previous */) {
     for (auto const* link : action.get_links()) {
       if (link != nullptr && link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
-        auto link_load = link->get_iface()->extension<LinkLoad>();
+        auto* link_load = link->get_iface()->extension<LinkLoad>();
         if (link_load->is_tracked())
           link_load->update();
       }

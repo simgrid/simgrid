@@ -149,14 +149,14 @@ NetworkCm02Model::NetworkCm02Model(const std::string& name) : NetworkModel(name)
 StandardLinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");
-  auto link = new NetworkCm02Link(name, bandwidths[0], get_maxmin_system());
+  auto* link = new NetworkCm02Link(name, bandwidths[0], get_maxmin_system());
   link->set_model(this);
   return link;
 }
 
 StandardLinkImpl* NetworkCm02Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  auto link = new WifiLinkImpl(name, bandwidths, get_maxmin_system());
+  auto* link = new WifiLinkImpl(name, bandwidths, get_maxmin_system());
   link->set_model(this);
   return link;
 }

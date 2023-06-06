@@ -9,7 +9,7 @@
 
 static void runner()
 {
-  auto e                    = simgrid::s4u::Engine::get_instance();
+  auto* e                   = simgrid::s4u::Engine::get_instance();
   simgrid::s4u::Host* host0 = e->host_by_name("c1_0");
   simgrid::s4u::Host* host1 = e->host_by_name("c2_0");
 

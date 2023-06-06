@@ -25,8 +25,8 @@ int main(int argc, char* argv[])
   simgrid::plugins::Task::init();
 
   // Retrieve hosts
-  auto tremblay = e.host_by_name("Tremblay");
-  auto jupiter  = e.host_by_name("Jupiter");
+  auto* tremblay = e.host_by_name("Tremblay");
+  auto* jupiter  = e.host_by_name("Jupiter");
 
   // Create tasks
   auto exec1 = simgrid::plugins::ExecTask::init("exec1", 1e9, tremblay);

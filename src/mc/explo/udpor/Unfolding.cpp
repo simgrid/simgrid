@@ -11,7 +11,7 @@ namespace simgrid::mc::udpor {
 
 void Unfolding::mark_finished(const EventSet& events)
 {
-  for (const auto e : events) {
+  for (const auto* e : events) {
     mark_finished(e);
   }
 }
@@ -50,7 +50,7 @@ const UnfoldingEvent* Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
   // Note, though, that in this case we must move the event in `G` into
   // `U`: we've inserted `e` into the unfolding, so we expect it to be in `U`
   if (auto loc = std::find_if(G.begin(), G.end(), [=](const auto e_i) { return *e_i == *handle; }); loc != G.end()) {
-    const auto e_equiv = *loc;
+    const auto* e_equiv = *loc;
     G.remove(e_equiv);
     U.insert(e_equiv);
     return e_equiv;
@@ -66,7 +66,7 @@ const UnfoldingEvent* Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
 EventSet Unfolding::get_immediate_conflicts_of(const UnfoldingEvent* e) const
 {
   EventSet immediate_conflicts;
-  for (const auto event : U) {
+  for (const auto* event : U) {
     if (event->immediately_conflicts_with(e)) {
       immediate_conflicts.insert(event);
     }

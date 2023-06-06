@@ -17,7 +17,7 @@ static std::vector<sg4::Exec*> get_ready_tasks(const std::vector<sg4::ActivityPt
   std::vector<sg4::Exec*> ready_tasks;
   std::map<sg4::Exec*, unsigned int> candidate_execs;
 
-  for (auto& a : dax) {
+  for (const auto& a : dax) {
     // Only look at activity that have their dependencies solved but are not assigned
     if (a->dependencies_solved() && not a->is_assigned()) {
       // if it is an exec, it's ready
@@ -49,7 +49,7 @@ static sg4::Host* get_best_host(const sg4::ExecPtr exec, double* min_finish_time
     for (const auto& parent : exec->get_dependencies()) {
       /* normal case */
       if (const auto* comm = dynamic_cast<sg4::Comm*>(parent.get())) {
-        auto source = comm->get_source();
+        const auto* source = comm->get_source();
         XBT_DEBUG("transfer from %s to %s", source->get_cname(), host->get_cname());
         /* Estimate the redistribution time from this parent */
         double redist_time;
@@ -171,7 +171,7 @@ int main(int argc, char** argv)
     sg4::Exec* selected_task = nullptr;
     sg4::Host* selected_host = nullptr;
 
-    for (auto exec : ready_tasks) {
+    for (auto* exec : ready_tasks) {
       XBT_DEBUG("%s is ready", exec->get_cname());
       double finish_time;
       host = get_best_host(exec, &finish_time);

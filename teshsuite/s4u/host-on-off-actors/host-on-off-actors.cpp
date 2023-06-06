@@ -39,7 +39,7 @@ static void commRX()
 {
   XBT_INFO("  Start RX");
   try {
-    auto payload = simgrid::s4u::Mailbox::by_name("comm")->get<std::string>();
+    auto* payload = simgrid::s4u::Mailbox::by_name("comm")->get<std::string>();
     XBT_INFO("  Receive message: %s", payload->c_str());
   } catch (const simgrid::HostFailureException&) {
     XBT_INFO("  Receive message: HOST_FAILURE");

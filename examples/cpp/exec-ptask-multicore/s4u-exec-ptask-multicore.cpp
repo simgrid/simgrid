@@ -10,7 +10,7 @@ namespace sg4 = simgrid::s4u;
 
 static void runner()
 {
-  auto e = sg4::Engine::get_instance();
+  auto* e = sg4::Engine::get_instance();
   std::vector<double> comp(2, 1e9);
   std::vector<double> comm(4, 0.0);
   // Different hosts.
@@ -60,7 +60,7 @@ static void runner()
   XBT_INFO("Computed 2-core activity on two different hosts. Took %g s", e->get_clock() - start_time);
 
   // Add a background task and change ptask on the fly
-  auto MyHost1                          = e->host_by_name("MyHost1");
+  auto* MyHost1                         = e->host_by_name("MyHost1");
   sg4::ExecPtr background_task          = MyHost1->exec_async(5e9);
   XBT_INFO("Start a 1-core background task on the 4-core host.");
 

@@ -140,7 +140,7 @@ bool CommRecvTransition::depends(const Transition* other) const
     return true; // DEP with other send transitions
   }
 
-  if (auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
+  if (const auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
     if (wait->timeout_)
       return true;
 

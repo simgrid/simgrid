@@ -80,7 +80,7 @@ int main(int argc, char** argv)
 
   auto* zone  = sg4::create_full_zone("world");
   std::vector<sg4::Host*> hosts;
-  for (auto name : {"Host1", "Host2", "Host3"}) {
+  for (const auto* name : {"Host1", "Host2", "Host3"}) {
     auto* host = zone->create_host(name, "1f");
     hosts.push_back(host);
   }

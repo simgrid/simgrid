@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(example, "this example");
 
 static void server()
 {
-  auto mb = sg4::Mailbox::by_name("mymailbox");
+  auto* mb      = sg4::Mailbox::by_name("mymailbox");
   int value_got = -1;
   for (int count = 0; count < N; count++) {
     int *received = mb->get<int>();

@@ -22,7 +22,7 @@ struct Task {
 
 static void master()
 {
-  auto mbox = sg4::Mailbox::by_name("master_mailbox");
+  auto* mbox = sg4::Mailbox::by_name("master_mailbox");
   for (int i = 0; i < 10; i++) {
     Task task;
     if (i % 2)
@@ -39,7 +39,7 @@ static void master()
 
 static void worker()
 {
-  auto mbox = sg4::Mailbox::by_name("master_mailbox");
+  auto* mbox = sg4::Mailbox::by_name("master_mailbox");
   while (true) {
     auto task = mbox->get_unique<Task>();
     if (task->name == "finalize") {

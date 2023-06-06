@@ -136,9 +136,9 @@ int PMPI_Abort(MPI_Comm comm, int /*errorcode*/)
   smpi_bench_end();
   CHECK_COMM(1)
   XBT_WARN("MPI_Abort was called, something went probably wrong in this simulation ! Killing all processes sharing the same MPI_COMM_WORLD");
-  auto myself = simgrid::kernel::actor::ActorImpl::self();
+  auto* myself = simgrid::kernel::actor::ActorImpl::self();
   for (int i = 0; i < comm->size(); i++){
-    auto actor = simgrid::kernel::EngineImpl::get_instance()->get_actor_by_pid(comm->group()->actor(i));
+    auto* actor = simgrid::kernel::EngineImpl::get_instance()->get_actor_by_pid(comm->group()->actor(i));
     if (actor != nullptr && actor != myself)
       simgrid::kernel::actor::simcall_answered([actor] { actor->exit(); });
   }

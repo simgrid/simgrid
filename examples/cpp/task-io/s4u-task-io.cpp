@@ -26,8 +26,8 @@ int main(int argc, char* argv[])
   simgrid::plugins::Task::init();
 
   // Retrieve hosts
-  auto bob  = e.host_by_name("bob");
-  auto carl = e.host_by_name("carl");
+  auto* bob  = e.host_by_name("bob");
+  auto* carl = e.host_by_name("carl");
 
   // Create tasks
   auto exec1 = simgrid::plugins::ExecTask::init("exec1", 1e9, bob);

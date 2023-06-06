@@ -1120,7 +1120,7 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Topological Ordering Property Observed 
 
       std::for_each(ordered_events.begin(), ordered_events.end(), [&](const UnfoldingEvent* e) {
         History history(e);
-        for (auto* e_hist : history) {
+        for (const auto* e_hist : history) {
           if (e_hist == e)
             continue;
           REQUIRE_FALSE(invalid_events.contains(e_hist));
@@ -1138,7 +1138,7 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Topological Ordering Property Observed 
       std::for_each(ordered_events.begin(), ordered_events.end(), [&events_seen](const UnfoldingEvent* e) {
         History history(e);
 
-        for (auto* e_hist : history) {
+        for (const auto* e_hist : history) {
           // Unlike the test above, we DO want to ensure
           // that `e` itself ALSO isn't yet seen
 

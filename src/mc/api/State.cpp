@@ -76,7 +76,7 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
     /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.
      * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
      * it is not explored*/
-    for (auto& [aid, transition] : parent_state_->get_sleep_set()) {
+    for (const auto& [aid, transition] : parent_state_->get_sleep_set()) {
       if (not incoming_transition_->depends(transition.get())) {
         sleep_set_.try_emplace(aid, transition);
         if (strategy_->actors_to_run_.count(aid) != 0) {

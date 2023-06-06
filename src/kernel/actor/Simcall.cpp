@@ -45,7 +45,7 @@ void ObjectAccessSimcallItem::take_ownership()
 static void simcall(simgrid::kernel::actor::Simcall::Type call, std::function<void()> const& code,
                     simgrid::kernel::actor::SimcallObserver* observer)
 {
-  auto self                = simgrid::kernel::actor::ActorImpl::self();
+  auto* self               = simgrid::kernel::actor::ActorImpl::self();
   self->simcall_.call_     = call;
   self->simcall_.code_     = &code;
   self->simcall_.observer_ = observer;
@@ -74,7 +74,7 @@ void simcall_run_blocking(std::function<void()> const& code, simgrid::kernel::ac
 
 void simcall_run_object_access(std::function<void()> const& code, simgrid::kernel::actor::ObjectAccessSimcallItem* item)
 {
-  auto self = simgrid::kernel::actor::ActorImpl::self();
+  auto* self = simgrid::kernel::actor::ActorImpl::self();
 
   // We only need a simcall if the order of the setters is important (parallel run or MC execution).
   // Otherwise, just call the function with no simcall

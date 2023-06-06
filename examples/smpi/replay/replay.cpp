@@ -22,7 +22,7 @@ static void action_blah(const simgrid::xbt::ReplayAction& /*args*/)
 
 int main(int argc, char* argv[])
 {
-  auto properties = simgrid::s4u::Actor::self()->get_properties();
+  const auto* properties = simgrid::s4u::Actor::self()->get_properties();
 
   const char* instance_id = properties->at("instance_id").c_str();
   const int rank          = static_cast<int>(xbt_str_parse_int(properties->at("rank").c_str(), "Cannot parse rank"));

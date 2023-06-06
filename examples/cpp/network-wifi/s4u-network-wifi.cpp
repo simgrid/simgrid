@@ -35,14 +35,14 @@ int main(int argc, char* argv[])
   e.load_platform(argv[1]);
 
   /* Exchange a message between the 2 stations */
-  auto mailbox  = sg4::Mailbox::by_name("mailbox");
-  auto station1 = e.host_by_name("Station 1");
-  auto station2 = e.host_by_name("Station 2");
+  auto* mailbox  = sg4::Mailbox::by_name("mailbox");
+  auto* station1 = e.host_by_name("Station 1");
+  auto* station2 = e.host_by_name("Station 2");
   sg4::Actor::create("sender", station1, sender, mailbox, 1e7);
   sg4::Actor::create("receiver", station2, receiver, mailbox);
 
   /* Declare that the stations are not at the same distance from their AP */
-  auto ap = e.link_by_name("AP1");
+  const auto* ap = e.link_by_name("AP1");
   ap->set_host_wifi_rate(station1, 1); // The host "Station 1" uses the second level of bandwidths on that AP
   ap->set_host_wifi_rate(station2, 0); // This is perfectly useless as level 0 is used by default
 

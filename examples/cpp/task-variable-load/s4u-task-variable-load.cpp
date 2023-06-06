@@ -40,8 +40,8 @@ int main(int argc, char* argv[])
   simgrid::plugins::Task::init();
 
   // Retreive hosts
-  auto tremblay = e.host_by_name("Tremblay");
-  auto jupiter  = e.host_by_name("Jupiter");
+  auto* tremblay = e.host_by_name("Tremblay");
+  auto* jupiter  = e.host_by_name("Jupiter");
 
   // Create tasks
   auto comm = simgrid::plugins::CommTask::init("comm", 1e7, tremblay, jupiter);

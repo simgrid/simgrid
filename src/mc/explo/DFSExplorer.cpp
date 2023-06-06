@@ -200,7 +200,7 @@ void DFSExplorer::run()
 
     if (_sg_mc_sleep_set && XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose)) {
       XBT_VERB("Sleep set actually containing:");
-      for (auto& [aid, transition] : state->get_sleep_set())
+      for (const auto& [aid, transition] : state->get_sleep_set())
         XBT_VERB("  <%ld,%s>", aid, transition->to_string().c_str());
     }
 
@@ -399,7 +399,7 @@ std::shared_ptr<State> DFSExplorer::next_odpor_state()
     const auto& state = *iter;
     state->do_odpor_unwind();
     XBT_DEBUG("\tPerformed ODPOR 'clean-up'. Sleep set has:");
-    for (auto& [aid, transition] : state->get_sleep_set())
+    for (const auto& [aid, transition] : state->get_sleep_set())
       XBT_DEBUG("\t  <%ld,%s>", aid, transition->to_string().c_str());
     if (!state->has_empty_tree()) {
       return state;
@@ -455,7 +455,7 @@ void DFSExplorer::backtrack()
         } else {
           XBT_DEBUG("ODPOR: Ignoring race: `sleep(E')` intersects `WI_[E'](v := notdep(%u, E))`", e);
           XBT_DEBUG("Sleep set contains:");
-          for (auto& [aid, transition] : prev_state.get_sleep_set())
+          for (const auto& [aid, transition] : prev_state.get_sleep_set())
             XBT_DEBUG("  <%ld,%s>", aid, transition->to_string().c_str());
         }
       }

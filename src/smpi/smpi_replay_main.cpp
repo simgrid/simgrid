@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  auto properties = simgrid::s4u::Actor::self()->get_properties();
+  const auto* properties = simgrid::s4u::Actor::self()->get_properties();
   if (properties->find("smpi_replay") == properties->end()) {
     XBT_ERROR("invalid smpireplaymain execution. Please use smpirun -replay instead.");
     return 1;

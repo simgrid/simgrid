@@ -120,7 +120,7 @@ void WakeupTree::remove_subtree_rooted_at(WakeupTreeNode* root)
   std::list<WakeupTreeNode*> subtree_contents{root};
   std::list<WakeupTreeNode*> frontier{root};
   while (not frontier.empty()) {
-    auto node = frontier.front();
+    const auto* node = frontier.front();
     frontier.pop_front();
     for (const auto& child : node->get_ordered_children()) {
       frontier.push_back(child);
@@ -145,7 +145,7 @@ void WakeupTree::remove_min_single_process_subtree()
   }
 }
 
-bool WakeupTree::contains(WakeupTreeNode* node) const
+bool WakeupTree::contains(const WakeupTreeNode* node) const
 {
   return std::find_if(this->nodes_.begin(), this->nodes_.end(), [=](const auto& pair) { return pair.first == node; }) !=
          this->nodes_.end();

@@ -40,7 +40,7 @@ void ActivityTestanySimcall::prepare(int times_considered)
 }
 static void serialize_activity_test(const activity::ActivityImpl* act, std::stringstream& stream)
 {
-  if (auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
+  if (const auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
     stream << "  " << (short)mc::Transition::Type::COMM_TEST;
     stream << ' ' << (uintptr_t)comm;
     stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
@@ -53,7 +53,7 @@ static void serialize_activity_test(const activity::ActivityImpl* act, std::stri
 }
 static std::string to_string_activity_test(const activity::ActivityImpl* act)
 {
-  if (auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
+  if (const auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
     const std::string src_buff_id = ptr_to_id<unsigned char>(comm->src_buff_);
     const std::string dst_buff_id = ptr_to_id<unsigned char>(comm->dst_buff_);
     return "CommTest(comm_id:" + ptr_to_id<activity::CommImpl const>(comm) +
@@ -92,7 +92,7 @@ std::string ActivityTestSimcall::to_string() const
 }
 static void serialize_activity_wait(const activity::ActivityImpl* act, bool timeout, std::stringstream& stream)
 {
-  if (auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
+  if (const auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
     stream << (short)mc::Transition::Type::COMM_WAIT << ' ';
     stream << timeout << ' ' << (uintptr_t)comm;
 
@@ -106,7 +106,7 @@ static void serialize_activity_wait(const activity::ActivityImpl* act, bool time
 }
 static std::string to_string_activity_wait(const activity::ActivityImpl* act)
 {
-  if (auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
+  if (const auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
     const std::string src_buff_id = ptr_to_id<unsigned char>(comm->src_buff_);
     const std::string dst_buff_id = ptr_to_id<unsigned char>(comm->dst_buff_);
     return "CommWait(comm_id:" + ptr_to_id<activity::CommImpl const>(comm) +

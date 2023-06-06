@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(meh, "meh");
 
 static void worker()
 {
-  auto mbox  = simgrid::s4u::Mailbox::by_name("meh");
+  auto* mbox = simgrid::s4u::Mailbox::by_name("meh");
   int input1 = 42;
   int input2 = 51;
 

@@ -22,10 +22,10 @@ using PartialExecution = std::list<std::shared_ptr<Transition>>;
 
 class Event;
 class Execution;
-struct ReversibleRaceCalculator;
+class ReversibleRaceCalculator;
 class WakeupTree;
 class WakeupTreeNode;
-struct WakeupTreeIterator;
+class WakeupTreeIterator;
 
 } // namespace simgrid::mc::odpor
 

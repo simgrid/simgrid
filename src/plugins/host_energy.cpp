@@ -441,7 +441,7 @@ static void on_action_state_change(simgrid::kernel::resource::CpuAction const& a
  * (because the user changed the pstate, or because of external trace events) ("onSpeedChange") */
 static void on_host_change(simgrid::s4u::Host const& h)
 {
-  auto* host = &h;
+  const auto* host = &h;
   if (const auto* vm = dynamic_cast<simgrid::s4u::VirtualMachine const*>(host)) // Take the PM of virtual machines
     host = vm->get_pm();
 
@@ -475,8 +475,7 @@ static void on_simulation_end()
 
 static void on_activity_suspend_resume(simgrid::s4u::Activity const& activity)
 {
-  if (auto* action = dynamic_cast<simgrid::kernel::resource::CpuAction*>(activity.get_impl()->model_action_);
-      action != nullptr)
+  if (const auto* action = dynamic_cast<simgrid::kernel::resource::CpuAction*>(activity.get_impl()->model_action_))
     on_action_state_change(*action, /*ignored*/ action->get_state());
 }
 
@@ -555,7 +554,7 @@ static void ensure_plugin_inited()
 double sg_host_get_consumed_energy(const_sg_host_t host)
 {
   ensure_plugin_inited();
-  auto host_energy = host->extension<HostEnergy>();
+  auto* host_energy = host->extension<HostEnergy>();
   xbt_assert(host_energy->has_pstate_power_values(), "No power range properties specified for host %s",
              host->get_cname());
   return host_energy->get_consumed_energy();
@@ -609,7 +608,7 @@ double sg_host_get_power_range_slope_at(const_sg_host_t host, int pstate)
 double sg_host_get_current_consumption(const_sg_host_t host)
 {
   ensure_plugin_inited();
-  auto host_energy = host->extension<HostEnergy>();
+  auto* host_energy = host->extension<HostEnergy>();
   xbt_assert(host_energy->has_pstate_power_values(), "No power range properties specified for host %s",
              host->get_cname());
   return host_energy->get_current_watts_value();

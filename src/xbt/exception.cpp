@@ -35,7 +35,7 @@ void log_exception(e_xbt_log_priority_t prio, const char* context, std::exceptio
   try {
     std::string name = boost::core::demangle(typeid(exception).name());
 
-    auto* with_context = dynamic_cast<const simgrid::Exception*>(&exception);
+    const auto* with_context = dynamic_cast<const simgrid::Exception*>(&exception);
     if (with_context != nullptr) {
       XBT_LOG(prio, "%s %s by %s/%ld: %s", context, name.c_str(), with_context->throw_point().procname_.c_str(),
               with_context->throw_point().pid_, exception.what());
@@ -54,7 +54,7 @@ void log_exception(e_xbt_log_priority_t prio, const char* context, std::exceptio
 
   try {
     // Do we have a nested exception?
-    auto* with_nested = dynamic_cast<const std::nested_exception*>(&exception);
+    const auto* with_nested = dynamic_cast<const std::nested_exception*>(&exception);
     if (with_nested != nullptr && with_nested->nested_ptr() != nullptr)
       with_nested->rethrow_nested();
   } catch (const std::exception& nested_exception) {

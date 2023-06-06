@@ -117,7 +117,7 @@ public:
   {
     for (auto const& [_, reqs] : store) {
       aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
-      for (auto& req: reqs){
+      for (const auto& req : reqs) {
         if (req != MPI_REQUEST_NULL && (req->src() == my_proc_id || req->dst() == my_proc_id)) {
           vec.push_back(req);
           req->print_request("MM");
@@ -920,7 +920,7 @@ void smpi_replay_main(int rank, const char* private_trace_filename)
     unsigned int i=0;
 
     for (auto const& [_, reqs] : storage[simgrid::s4u::this_actor::get_pid()].get_store()) {
-      for (auto& req : reqs) {
+      for (const auto& req : reqs) {
         requests[i] = req; // FIXME: overwritten at each iteration?
       }
       i++;
