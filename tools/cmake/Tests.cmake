@@ -128,11 +128,11 @@ set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/xbt/random_test.cpp
                 src/xbt/xbt_str_test.cpp
                 src/xbt/utils/iter/subsets_tests.cpp
-                src/kernel/lmm/maxmin_test.cpp
+                src/kernel/lmm/maxmin_test.cpp)
 
-                src/mc/explo/odpor/ClockVector_test.cpp
-                src/mc/explo/odpor/Execution_test.cpp
-                src/mc/explo/odpor/WakeupTree_test.cpp)
+set(MC_UNIT_TESTS src/mc/explo/odpor/ClockVector_test.cpp
+                  src/mc/explo/odpor/Execution_test.cpp
+                  src/mc/explo/odpor/WakeupTree_test.cpp)
 
 set(STATEFUL_MC_UNIT_TESTS src/mc/sosp/Snapshot_test.cpp
                            src/mc/sosp/PageStore_test.cpp
@@ -142,6 +142,12 @@ set(STATEFUL_MC_UNIT_TESTS src/mc/sosp/Snapshot_test.cpp
                            src/mc/explo/udpor/EventSet_test.cpp
                            src/mc/explo/udpor/History_test.cpp
                            src/mc/explo/udpor/Configuration_test.cpp)
+
+if (SIMGRID_HAVE_MC)
+  set(UNIT_TESTS ${UNIT_TESTS} ${MC_UNIT_TESTS})
+else()
+  set(EXTRA_DIST ${EXTRA_DIST} ${MC_UNIT_TESTS})
+endif()
 if (SIMGRID_HAVE_STATEFUL_MC)
   set(UNIT_TESTS ${UNIT_TESTS} ${STATEFUL_MC_UNIT_TESTS})
 else()
