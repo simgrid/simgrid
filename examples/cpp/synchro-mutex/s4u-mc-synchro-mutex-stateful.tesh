@@ -7,7 +7,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/sleep-set' to 'true'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'actors' to '2'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 66 unique states visited; 11 backtracks (97 transition replays, 20 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 66 unique states visited; 11 backtracks (22 transition replays, 99 states visited overall)
 
 p The stats without checkpoints is:               130 unique states visited; 27 backtracks (308 transition replays, 151 states visited overall)
 p But it runs much faster (0.6 sec vs. 1.6 sec), damn slow checkpointing code.
