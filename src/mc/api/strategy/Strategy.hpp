@@ -8,6 +8,7 @@
 
 #include "simgrid/forward.h"
 #include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/mc_config.hpp"
 #include "xbt/asserts.h"
 #include <map>
 #include <utility>
@@ -24,12 +25,21 @@ public:
   Strategy()                              = default;
   virtual ~Strategy()                     = default;
 
-  virtual std::pair<aid_t, int> next_transition() const = 0;
+  virtual std::pair<aid_t, int> best_transition(bool must_be_todo) const = 0;
+    
+  std::pair<aid_t, int> next_transition() { return best_transition(true); }
   virtual void execute_next(aid_t aid, RemoteApp& app)  = 0;
 
   // Mark the first enabled and not yet done transition as todo
   // If there's already a transition marked as todo, does nothing
-  virtual void consider_best() = 0;
+  void consider_best() {
+	for (auto& [_, actor] :actors_to_run_)
+	    if (actor.is_todo())
+		return;
+	aid_t best_aid = best_transition(false).first;
+	if (best_aid != -1)
+	    actors_to_run_.at(best_aid).mark_todo();
+  }
 
   // Mark aid as todo. If it makes no sense, ie. if it is already done or not enabled,
   // raise an error

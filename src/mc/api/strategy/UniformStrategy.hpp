@@ -8,6 +8,8 @@
 
 #include "src/mc/transition/Transition.hpp"
 
+#define MAX_RAND 100000
+
 namespace simgrid::mc {
 
 /** Guiding strategy that valuate states randomly */
@@ -18,34 +20,34 @@ public:
   UniformStrategy()
   {
     for (long aid = 0; aid < 10; aid++)
-      valuation[aid] = rand() % 1000;
+      valuation[aid] = rand() % 10000;
   }
   void copy_from(const Strategy* strategy) override
   {
     for (auto& [aid, _] : actors_to_run_)
-      valuation[aid] = rand() % 1000;
+      valuation[aid] = rand() % 10000;
   }
 
-  std::pair<aid_t, int> next_transition() const override
+  std::pair<aid_t, int> best_transition(bool must_be_todo) const override
   {
     int possibilities = 0;
 
     // Consider only valid actors
     for (auto const& [aid, actor] : actors_to_run_) {
-      if (actor.is_todo() and (not actor.is_done()) and actor.is_enabled())
+	if ((actor.is_todo() or not must_be_todo) and (not actor.is_done()) and actor.is_enabled())
         possibilities++;
     }
 
     int chosen;
     if (possibilities == 0)
-      return std::make_pair(-1, 100000);
+      return std::make_pair(-1, 0);
     if (possibilities == 1)
       chosen = 0;
     else
       chosen = rand() % possibilities;
 
     for (auto const& [aid, actor] : actors_to_run_) {
-      if ((not actor.is_todo()) or actor.is_done() or (not actor.is_enabled()))
+	if (((not actor.is_todo()) and must_be_todo) or actor.is_done() or (not actor.is_enabled()))
         continue;
       if (chosen == 0) {
         return std::make_pair(aid, valuation.at(aid));
@@ -53,46 +55,12 @@ public:
       chosen--;
     }
 
-    return std::make_pair(-1, 100000);
+    return std::make_pair(-1, 0);
   }
 
+    
   void execute_next(aid_t aid, RemoteApp& app) override {}
-
-  void consider_best() override
-  {
-
-    int possibilities = 0;
-    // Consider only valid actors
-    // If some actor are already considered as todo, skip
-    for (auto const& [aid, actor] : actors_to_run_) {
-      if (valuation.count(aid) == 0)
-        for (auto& [aid, _] : actors_to_run_)
-          valuation[aid] = rand() % 1000;
-      if (actor.is_todo())
-        return;
-      if (actor.is_enabled() and not actor.is_done())
-        possibilities++;
-    }
-
-    int chosen;
-    if (possibilities == 0)
-      return;
-    if (possibilities == 1)
-      chosen = 0;
-    else
-      chosen = rand() % possibilities;
-
-    for (auto& [aid, actor] : actors_to_run_) {
-      if (not actor.is_enabled() or actor.is_done())
-        continue;
-      if (chosen == 0) {
-        actor.mark_todo();
-        return;
-      }
-      chosen--;
-    }
-    THROW_IMPOSSIBLE; // One actor should be marked as todo before
-  }
+    
 };
 
 } // namespace simgrid::mc
