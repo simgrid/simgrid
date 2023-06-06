@@ -76,7 +76,7 @@ static void on_virtual_machine_creation(const simgrid::s4u::VirtualMachine& vm)
 
 static void on_exec_creation(simgrid::s4u::Exec const& e)
 {
-  auto exec                              = static_cast<simgrid::kernel::activity::ExecImpl*>(e.get_impl());
+  auto* exec                             = static_cast<simgrid::kernel::activity::ExecImpl*>(e.get_impl());
   const simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec->get_host());
   if (vm == nullptr)
     return;

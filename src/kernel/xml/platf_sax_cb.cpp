@@ -269,7 +269,7 @@ static void add_remote_disks()
       continue;
     std::vector<std::string> tokens;
     boost::split(tokens, remote_disk_str, boost::is_any_of(":"));
-    simgrid::s4u::Host* remote_host = simgrid::s4u::Host::by_name_or_null(tokens[2]);
+    const simgrid::s4u::Host* remote_host = simgrid::s4u::Host::by_name_or_null(tokens[2]);
     xbt_assert(remote_host, "You're trying to access a host that does not exist. Please check your platform file");
 
     const simgrid::s4u::Disk* disk = nullptr;
@@ -1009,9 +1009,9 @@ void simgrid_parse(bool fire_on_platform_created_callback_param)
   for (auto const& [trace, name] : trace_connect_list_host_avail) {
     simgrid_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
                          "<trace_connect kind=\"HOST_AVAIL\">: Trace " + trace + " undefined.");
-    auto profile = traces_set_list.at(trace);
+    auto* profile = traces_set_list.at(trace);
 
-    auto host = engine->host_by_name_or_null(name);
+    auto* host = engine->host_by_name_or_null(name);
     simgrid_parse_assert(host, "<trace_connect kind=\"HOST_AVAIL\">: Host " + name + " undefined.");
     host->set_state_profile(profile);
   }
@@ -1020,9 +1020,9 @@ void simgrid_parse(bool fire_on_platform_created_callback_param)
   for (auto const& [trace, name] : trace_connect_list_host_speed) {
     simgrid_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
                          "<trace_connect kind=\"SPEED\">: Trace " + trace + " undefined.");
-    auto profile = traces_set_list.at(trace);
+    auto* profile = traces_set_list.at(trace);
 
-    auto host = engine->host_by_name_or_null(name);
+    auto* host = engine->host_by_name_or_null(name);
     simgrid_parse_assert(host, "<trace_connect kind=\"SPEED\">: Host " + name + " undefined.");
     host->set_speed_profile(profile);
   }
@@ -1031,9 +1031,9 @@ void simgrid_parse(bool fire_on_platform_created_callback_param)
   for (auto const& [trace, name] : trace_connect_list_link_avail) {
     simgrid_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
                          "<trace_connect kind=\"LINK_AVAIL\">: Trace " + trace + " undefined.");
-    auto profile = traces_set_list.at(trace);
+    auto* profile = traces_set_list.at(trace);
 
-    auto link = engine->link_by_name_or_null(name);
+    auto* link = engine->link_by_name_or_null(name);
     simgrid_parse_assert(link, "<trace_connect kind=\"LINK_AVAIL\">: Link " + name + " undefined.");
     link->set_state_profile(profile);
   }
@@ -1042,9 +1042,9 @@ void simgrid_parse(bool fire_on_platform_created_callback_param)
   for (auto const& [trace, name] : trace_connect_list_link_bw) {
     simgrid_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
                          "<trace_connect kind=\"BANDWIDTH\">: Trace " + trace + " undefined.");
-    auto profile = traces_set_list.at(trace);
+    auto* profile = traces_set_list.at(trace);
 
-    auto link = engine->link_by_name_or_null(name);
+    auto* link = engine->link_by_name_or_null(name);
     simgrid_parse_assert(link, "<trace_connect kind=\"BANDWIDTH\">: Link " + name + " undefined.");
     link->set_bandwidth_profile(profile);
   }
@@ -1053,9 +1053,9 @@ void simgrid_parse(bool fire_on_platform_created_callback_param)
   for (auto const& [trace, name] : trace_connect_list_link_lat) {
     simgrid_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
                          "<trace_connect kind=\"LATENCY\">: Trace " + trace + " undefined.");
-    auto profile = traces_set_list.at(trace);
+    auto* profile = traces_set_list.at(trace);
 
-    auto link = engine->link_by_name_or_null(name);
+    auto* link = engine->link_by_name_or_null(name);
     simgrid_parse_assert(link, "<trace_connect kind=\"LATENCY\">: Link " + name + " undefined.");
     link->set_latency_profile(profile);
   }

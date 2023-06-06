@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
   std::set<sg4::Activity*> vetoed;
   e.track_vetoed_activities(&vetoed);
 
-  auto fafard = e.host_by_name("Fafard");
+  auto* fafard = e.host_by_name("Fafard");
 
   // Display the details on vetoed activities
   sg4::Exec::on_veto_cb([](sg4::Exec const& exec) {

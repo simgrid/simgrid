@@ -40,7 +40,7 @@ static void main_actor()
   auto cv    = sg4::ConditionVariable::create();
   auto ready = std::make_shared<bool>(false);
 
-  auto host = sg4::this_actor::get_host();
+  auto* host = sg4::this_actor::get_host();
   for (int i = 0; i < 10; ++i)
     sg4::Actor::create("competitor", host, competitor, i, cv, mtx, ready);
   sg4::Actor::create("go", host, go, cv, mtx, ready);

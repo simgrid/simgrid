@@ -24,8 +24,8 @@ TEST_CASE("simgrid::mc::udpor::Unfolding: Inserting and marking events with an u
       EventSet(), std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 0));
   auto e2 =
       std::make_unique<UnfoldingEvent>(EventSet(), std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1));
-  const auto e1_handle = e1.get();
-  const auto e2_handle = e2.get();
+  auto* e1_handle = e1.get();
+  auto* e2_handle = e2.get();
 
   unfolding.insert(std::move(e1));
   REQUIRE(unfolding.size() == 1);

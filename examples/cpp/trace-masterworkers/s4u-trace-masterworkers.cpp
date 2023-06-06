@@ -24,7 +24,7 @@ static void master(std::vector<std::string> args)
   long communication_cost = std::stol(args[3]);
   size_t workers_count    = args.size() - 4;
   const auto& my_host     = sg4::this_actor::get_host()->get_name();
-  auto mailbox            = sg4::Mailbox::by_name("master_mailbox");
+  auto* mailbox           = sg4::Mailbox::by_name("master_mailbox");
 
   XBT_DEBUG("Got %zu workers and %ld tasks to process", workers_count, tasks_count);
 
@@ -54,7 +54,7 @@ static void worker(std::vector<std::string> args)
   xbt_assert(args.size() == 1, "The worker expects no argument");
 
   const auto& my_host = sg4::this_actor::get_host()->get_name();
-  auto mailbox        = sg4::Mailbox::by_name("master_mailbox");
+  auto* mailbox       = sg4::Mailbox::by_name("master_mailbox");
 
   simgrid::instr::set_host_variable(my_host, "is_worker", 1);
   simgrid::instr::set_host_variable(my_host, "task_computation", 0);

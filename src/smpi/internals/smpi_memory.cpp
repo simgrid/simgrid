@@ -52,7 +52,7 @@ void smpi_prepare_global_memory_segment()
 
 static void smpi_get_executable_global_size()
 {
-  auto* binary_name = simgrid::kernel::EngineImpl::get_instance()->get_cmdline().front().c_str();
+  const auto* binary_name = simgrid::kernel::EngineImpl::get_instance()->get_cmdline().front().c_str();
   char* buffer      = realpath(binary_name, nullptr);
   xbt_assert(buffer != nullptr, "Could not resolve real path of binary file '%s'", binary_name);
   std::string full_name = buffer;
@@ -95,7 +95,7 @@ static void* asan_safe_memcpy(void* dest, void* src, size_t n)
     while (i < n && __asan_address_is_poisoned(psrc + i))
       ++i;
     if (i < n) {
-      char* p  = static_cast<char*>(__asan_region_is_poisoned(psrc + i, n - i));
+      const char* p = static_cast<char*>(__asan_region_is_poisoned(psrc + i, n - i));
       size_t j = p ? (p - psrc) : n;
       memcpy(pdest + i, psrc + i, j - i);
       i = j;

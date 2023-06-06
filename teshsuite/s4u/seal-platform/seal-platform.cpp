@@ -25,7 +25,7 @@ public:
     for (const auto* host : hosts_) {
       auto* payload = new std::string(msg_content);
       /* Create a communication representing the ongoing communication, and store it in pending_comms */
-      auto mbox = sg4::Mailbox::by_name(host->get_name());
+      auto* mbox = sg4::Mailbox::by_name(host->get_name());
       mboxes.push_back(mbox);
       sg4::CommPtr comm = mbox->put_async(payload, msg_size);
       pending_comms.push_back(comm);
@@ -45,7 +45,7 @@ class Receiver {
 public:
   void operator()() const
   {
-    auto mbox     = sg4::Mailbox::by_name(sg4::this_actor::get_host()->get_name());
+    auto* mbox    = sg4::Mailbox::by_name(sg4::this_actor::get_host()->get_name());
     auto received = mbox->get_unique<std::string>();
     XBT_INFO("I got a '%s'.", received->c_str());
 

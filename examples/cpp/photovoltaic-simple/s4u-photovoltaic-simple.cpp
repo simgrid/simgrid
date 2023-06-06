@@ -10,7 +10,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(photovoltaic_simple, "Messages specific for this s4
 
 static void manager()
 {
-  auto pv_panel = simgrid::s4u::Engine::get_instance()->host_by_name("pv_panel");
+  const auto* pv_panel = simgrid::s4u::Engine::get_instance()->host_by_name("pv_panel");
   std::vector<std::pair<double, double>> solar_irradiance = {{1, 10}, {100, 5}, {200, 20}};
   for (auto [t, s] : solar_irradiance) {
     simgrid::s4u::this_actor::sleep_until(t);

@@ -115,7 +115,7 @@ private:
   void insert_node(std::unique_ptr<WakeupTreeNode> node);
   void insert_sequence_after(WakeupTreeNode* node, const PartialExecution& w);
   void remove_node(WakeupTreeNode* node);
-  bool contains(WakeupTreeNode* node) const;
+  bool contains(const WakeupTreeNode* node) const;
 
   /**
    * @brief Removes the node `root` and all of its descendants from

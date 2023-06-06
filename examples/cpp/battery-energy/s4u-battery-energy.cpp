@@ -13,9 +13,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(battery_energy, "Messages specific for this s4u exa
 
 static void manager()
 {
-  auto battery = simgrid::s4u::Engine::get_instance()->host_by_name("battery");
-  auto host1   = simgrid::s4u::Engine::get_instance()->host_by_name("host1");
-  auto host2   = simgrid::s4u::Engine::get_instance()->host_by_name("host2");
+  const auto* battery = simgrid::s4u::Engine::get_instance()->host_by_name("battery");
+  auto* host1         = simgrid::s4u::Engine::get_instance()->host_by_name("host1");
+  auto* host2         = simgrid::s4u::Engine::get_instance()->host_by_name("host2");
 
   XBT_INFO("Initial Battery: SoC: %f SoH: %f Capacity (Total): %fWh Capacity (Usable): %fWh P: %fW",
            sg_battery_get_state_of_charge(battery), sg_battery_get_state_of_health(battery),

@@ -123,7 +123,7 @@ TEST_CASE("Activity lifecycle: direct communication (sendto) activities")
     });
 
     simgrid::s4u::this_actor::yield();
-    auto link = simgrid::s4u::Engine::get_instance()->link_by_name("link1");
+    auto* link = simgrid::s4u::Engine::get_instance()->link_by_name("link1");
     link->turn_off();
     link->turn_on();
 
@@ -139,7 +139,7 @@ TEST_CASE("Activity lifecycle: direct communication (sendto) activities")
     });
 
     simgrid::s4u::this_actor::sleep_for(2);
-    auto link = simgrid::s4u::Engine::get_instance()->link_by_name("link1");
+    auto* link = simgrid::s4u::Engine::get_instance()->link_by_name("link1");
     link->turn_off();
     link->turn_on();
 
@@ -160,7 +160,7 @@ TEST_CASE("Activity lifecycle: direct communication (sendto) activities")
     simgrid::s4u::Actor::create("killer", all_hosts[0], []() {
       simgrid::s4u::this_actor::sleep_for(5);
       XBT_VERB("Killer!");
-      auto link = simgrid::s4u::Engine::get_instance()->link_by_name("link1");
+      auto* link = simgrid::s4u::Engine::get_instance()->link_by_name("link1");
       link->turn_off();
       link->turn_on();
     });

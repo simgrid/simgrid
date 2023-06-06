@@ -15,8 +15,8 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  auto tremblay = e.host_by_name("Tremblay");
-  auto jupiter  = e.host_by_name("Jupiter");
+  auto* tremblay = e.host_by_name("Tremblay");
+  auto* jupiter  = e.host_by_name("Jupiter");
 
   // Display the details on vetoed activities
   sg4::Exec::on_veto_cb([](sg4::Exec const& exec) {

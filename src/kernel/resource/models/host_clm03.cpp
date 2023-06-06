@@ -53,8 +53,8 @@ static inline double has_cost(const double* array, size_t pos)
 Action* HostCLM03Model::io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk,
                                   double size)
 {
-  auto net_model = src_host->get_englobing_zone()->get_network_model();
-  auto system    = net_model->get_maxmin_system();
+  auto* net_model = src_host->get_englobing_zone()->get_network_model();
+  auto* system    = net_model->get_maxmin_system();
   auto* action   = net_model->communicate(src_host, dst_host, size, -1, true);
 
   // We don't want to apply the network model bandwidth factor to the I/O constraints
@@ -112,7 +112,7 @@ Action* HostCLM03Model::execute_parallel(const std::vector<s4u::Host*>& host_lis
 
 Action* HostCLM03Model::execute_thread(const s4u::Host* host, double flops_amount, int thread_count)
 {
-  auto cpu = host->get_cpu();
+  auto* cpu = host->get_cpu();
   /* Create a single action whose cost is thread_count * flops_amount and that requests thread_count cores. */
   return cpu->execution_start(thread_count * flops_amount, thread_count, -1);
 }

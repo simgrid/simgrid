@@ -57,16 +57,16 @@ EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& 
   // NOTE: If `preEvt(a, C)` doesn't exist, we're effectively asking
   // about `config({})`
   if (pre_event_a_C.has_value()) {
-    const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), send_action);
+    const auto* e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), send_action);
     exC.insert(e_prime);
   } else {
-    const auto e_prime = U->discover_event(EventSet(), send_action);
+    const auto* e_prime = U->discover_event(EventSet(), send_action);
     exC.insert(e_prime);
   }
 
   // 2. foreach e ∈ C s.t. λ(e) ∈ {AsyncSend(m, _), TestAny(Com)} where
   // Com contains a matching c' = AsyncReceive(m, _) with a
-  for (const auto e : C) {
+  for (const auto* e : C) {
     const bool transition_type_check = [&]() {
       if (const auto* async_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
           async_send != nullptr) {
@@ -81,7 +81,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& 
 
       // TODO: Check D_K(a, lambda(e))
       if (true) {
-        const auto e_prime = U->discover_event(std::move(K), send_action);
+        const auto* e_prime = U->discover_event(std::move(K), send_action);
         exC.insert(e_prime);
       }
     }
@@ -104,16 +104,16 @@ EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& 
 
   // 1. Create `e' := <a, config(preEvt(a, C))>` and add `e'` to `ex(C)`
   if (pre_event_a_C.has_value()) {
-    const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), recv_action);
+    const auto* e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), recv_action);
     exC.insert(e_prime);
   } else {
-    const auto e_prime = U->discover_event(EventSet(), recv_action);
+    const auto* e_prime = U->discover_event(EventSet(), recv_action);
     exC.insert(e_prime);
   }
 
   // 2. foreach e ∈ C s.t. λ(e) ∈ {AsyncSend(m, _), TestAny(Com)} where
   // Com contains a matching c' = AsyncReceive(m, _) with a
-  for (const auto e : C) {
+  for (const auto* e : C) {
     const bool transition_type_check = [&]() {
       if (const auto* async_recv = dynamic_cast<const CommRecvTransition*>(e->get_transition());
           async_recv != nullptr && async_recv->get_mailbox() == recv_mailbox) {
@@ -128,7 +128,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& 
 
       // TODO: Check D_K(a, lambda(e))
       if (true) {
-        const auto e_prime = U->discover_event(std::move(K), recv_action);
+        const auto* e_prime = U->discover_event(std::move(K), recv_action);
         exC.insert(e_prime);
       }
     }
@@ -181,7 +181,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
   // First, if `pre_event_a_C == std::nullopt`, then there is nothing to
   // do: `CommWait` will never be enabled in the empty configuration (at
   // least two actions must be executed before)
-  if (pre_event_a_C.has_value(); const auto unwrapped_pre_event = pre_event_a_C.value()) {
+  if (pre_event_a_C.has_value(); const auto* unwrapped_pre_event = pre_event_a_C.value()) {
     // A necessary condition is that the issuer be present in
     // config({preEvt(a, C)}); otherwise, the `CommWait` could not
     // be enabled since the communication on which it waits would not
@@ -262,7 +262,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
   }
 
   // 3. foreach event e in C do
-  for (const auto e : C) {
+  for (const auto* e : C) {
     if (const CommSendTransition* e_issuer_send = dynamic_cast<const CommSendTransition*>(e_issuer->get_transition());
         e_issuer_send != nullptr) {
       // If the provider of the communication for `CommWait` is a

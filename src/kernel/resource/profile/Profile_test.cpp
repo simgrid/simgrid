@@ -44,7 +44,7 @@ static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char
 
   MockedResource daResource;
   simgrid::kernel::profile::FutureEvtSet fes;
-  simgrid::kernel::profile::Event* insertedIt = trace->schedule(&fes, &daResource);
+  const simgrid::kernel::profile::Event* insertedIt = trace->schedule(&fes, &daResource);
 
   while (fes.next_date() <= 20.0 && fes.next_date() >= 0) {
     MockedResource::the_date = fes.next_date();

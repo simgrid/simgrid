@@ -183,7 +183,7 @@ public:
         }
 
         /* Create a communication representing the ongoing communication */
-        auto mbox     = sg4::Mailbox::by_name(host->get_name());
+        auto* mbox    = sg4::Mailbox::by_name(host->get_name());
         auto* payload = new std::string(msg);
         mbox->put(payload, static_cast<uint64_t>(size));
       }
@@ -192,7 +192,7 @@ public:
     XBT_INFO("Done dispatching all messages");
     /* sending message to stop receivers */
     for (const auto* host : hosts_) {
-      auto mbox = sg4::Mailbox::by_name(host->get_name());
+      auto* mbox = sg4::Mailbox::by_name(host->get_name());
       mbox->put(new std::string("finalize"), 0);
     }
   }
@@ -203,7 +203,7 @@ class Receiver {
 public:
   void operator()() const
   {
-    auto mbox = sg4::Mailbox::by_name(sg4::this_actor::get_host()->get_name());
+    auto* mbox = sg4::Mailbox::by_name(sg4::this_actor::get_host()->get_name());
     // Receiving the message was all we were supposed to do
     for (bool cont = true; cont;) {
       auto received = mbox->get_unique<std::string>();

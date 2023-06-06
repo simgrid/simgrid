@@ -10,7 +10,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(battery_degradation, "Messages specific for this s4
 
 static void manager()
 {
-  auto battery = simgrid::s4u::this_actor::get_host();
+  const auto* battery = simgrid::s4u::this_actor::get_host();
   double power = 100;
   while (sg_battery_get_state_of_health(battery) > 0) {
     XBT_INFO("%f,%f,SoC", simgrid::s4u::Engine::get_clock(), sg_battery_get_state_of_charge(battery));

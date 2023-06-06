@@ -56,7 +56,7 @@ HostL07Model::HostL07Model(const std::string& name, lmm::System* sys) : HostMode
   set_maxmin_system(sys);
 
   auto net_model = std::make_shared<NetworkL07Model>("Network_Ptask", this, sys);
-  auto engine    = EngineImpl::get_instance();
+  auto* engine   = EngineImpl::get_instance();
   engine->add_model(net_model);
   engine->get_netzone_root()->set_network_model(net_model);
 
@@ -257,7 +257,7 @@ CpuImpl* CpuL07Model::create_cpu(s4u::Host* host, const std::vector<double>& spe
 StandardLinkImpl* NetworkL07Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "Non WIFI link must have only 1 bandwidth.");
-  auto link = new LinkL07(name, bandwidths[0], get_maxmin_system());
+  auto* link = new LinkL07(name, bandwidths[0], get_maxmin_system());
   link->set_model(this);
   return link;
 }

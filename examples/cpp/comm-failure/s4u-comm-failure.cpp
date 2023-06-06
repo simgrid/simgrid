@@ -24,8 +24,8 @@ public:
 
   void operator()() const
   {
-    auto mailbox1 = sg4::Mailbox::by_name(mailbox1_name);
-    auto mailbox2 = sg4::Mailbox::by_name(mailbox2_name);
+    auto* mailbox1 = sg4::Mailbox::by_name(mailbox1_name);
+    auto* mailbox2 = sg4::Mailbox::by_name(mailbox2_name);
 
     XBT_INFO("Initiating asynchronous send to %s", mailbox1->get_cname());
     auto comm1 = mailbox1->put_async((void*)666, 5);

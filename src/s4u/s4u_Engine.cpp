@@ -76,7 +76,7 @@ Engine* Engine::get_instance()
 Engine* Engine::get_instance(int* argc, char** argv)
 {
   if (Engine::instance_ == nullptr) {
-    auto e = new Engine(argc, argv);
+    auto* e = new Engine(argc, argv);
     xbt_assert(Engine::instance_ == e);
   }
   return Engine::instance_;
@@ -525,7 +525,7 @@ kernel::routing::NetPoint* Engine::netpoint_by_name_or_null(const std::string& n
 
 kernel::routing::NetPoint* Engine::netpoint_by_name(const std::string& name) const
 {
-  auto netp = netpoint_by_name_or_null(name);
+  auto* netp = netpoint_by_name_or_null(name);
   if (netp == nullptr) {
     throw std::invalid_argument("Netpoint not found: " + name);
   }

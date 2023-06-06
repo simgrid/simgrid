@@ -490,7 +490,7 @@ double EngineImpl::solve(double max_date) const
   }
 
   XBT_DEBUG("Looking for next event in all models");
-  for (auto model : models_) {
+  for (auto* model : models_) {
     if (not model->next_occurring_event_is_idempotent())
       continue;
 
@@ -508,7 +508,7 @@ double EngineImpl::solve(double max_date) const
     double next_event_date = profile::future_evt_set.next_date();
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
-    for (auto model : models_) {
+    for (auto* model : models_) {
       /* Skip all idempotent models, they were already treated above
        * NS3 is the one to handled here */
       if (model->next_occurring_event_is_idempotent())

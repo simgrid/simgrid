@@ -29,7 +29,7 @@ bool BarrierTransition::depends(const Transition* o) const
   if (o->type_ < type_)
     return o->depends(this);
 
-  if (auto* other = dynamic_cast<const BarrierTransition*>(o)) {
+  if (const auto* other = dynamic_cast<const BarrierTransition*>(o)) {
     if (bar_ != other->bar_)
       return false;
 
@@ -69,7 +69,7 @@ bool MutexTransition::depends(const Transition* o) const
 
   // type_ <= other->type_ in  MUTEX_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT,
 
-  if (auto* other = dynamic_cast<const MutexTransition*>(o)) {
+  if (const auto* other = dynamic_cast<const MutexTransition*>(o)) {
     // Theorem 4.4.7: Any pair of synchronization actions of distinct actors concerning distinct mutexes are independent
     if (mutex_ != other->mutex_)
       return false;
@@ -121,7 +121,7 @@ bool SemaphoreTransition::depends(const Transition* o) const
   if (o->type_ < type_)
     return o->depends(this);
 
-  if (auto* other = dynamic_cast<const SemaphoreTransition*>(o)) {
+  if (const auto* other = dynamic_cast<const SemaphoreTransition*>(o)) {
     if (sem_ != other->sem_)
       return false;
 

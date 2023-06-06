@@ -26,7 +26,7 @@ TEST_CASE("simgrid::xbt::subsets_iterator: Iteration General Properties")
   SECTION("Each element of each subset is distinct")
   {
     for (unsigned k = 0; static_cast<size_t>(k) < example_vec.size(); k++) {
-      for (auto& subset : make_k_subsets_iter(k, example_vec)) {
+      for (const auto& subset : make_k_subsets_iter(k, example_vec)) {
         // Each subset must have size `k`
         REQUIRE(subset.size() == k);
 
@@ -54,7 +54,7 @@ TEST_CASE("simgrid::xbt::powerset_iterator: Iteration General Properties")
 
     std::unordered_map<int, int> element_counts(k);
 
-    for (auto& subset : make_powerset_iter(example_vec)) {
+    for (const auto& subset : make_powerset_iter(example_vec)) {
       // Each subset must be comprised only of distinct elements
       std::unordered_set<int> elements_seen(k);
       for (const auto& element_ptr : subset) {

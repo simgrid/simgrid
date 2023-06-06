@@ -485,8 +485,7 @@ void define_callbacks()
   if (TRACE_actor_is_enabled()) {
     s4u::Actor::on_creation_cb(on_actor_creation);
     s4u::Actor::on_destruction_cb([](s4u::Actor const& actor) {
-      auto container = Container::by_name_or_null(instr_pid(actor));
-      if (container != nullptr)
+      if (auto* container = Container::by_name_or_null(instr_pid(actor)))
         container->remove_from_parent();
     });
     s4u::Actor::on_suspend_cb([](s4u::Actor const& actor) {

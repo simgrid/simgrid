@@ -26,8 +26,8 @@ int main(int argc, char* argv[])
 
   for (const auto& a : dag) {
     if (auto* comm = dynamic_cast<simgrid::s4u::Comm*>(a.get())) {
-      auto pred = dynamic_cast<simgrid::s4u::Exec*>((*comm->get_dependencies().begin()).get());
-      auto succ = dynamic_cast<simgrid::s4u::Exec*>(comm->get_successors().front().get());
+      const auto* pred = dynamic_cast<simgrid::s4u::Exec*>((*comm->get_dependencies().begin()).get());
+      const auto* succ = dynamic_cast<simgrid::s4u::Exec*>(comm->get_successors().front().get());
       comm->set_source(pred->get_host())->set_destination(succ->get_host());
     }
   }

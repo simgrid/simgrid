@@ -10,7 +10,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(battery_simple, "Messages specific for this s4u exa
 
 static void manager()
 {
-  auto battery         = simgrid::s4u::Engine::get_instance()->host_by_name("battery");
+  const auto* battery  = simgrid::s4u::Engine::get_instance()->host_by_name("battery");
   double consumption_w = 200;
 
   XBT_INFO("Initial Battery: SoC: %f SoH: %f Capacity (Total): %fWh Capacity (Usable): %fWh P: %f",

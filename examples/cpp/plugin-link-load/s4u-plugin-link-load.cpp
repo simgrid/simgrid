@@ -11,14 +11,14 @@ namespace sg4 = simgrid::s4u;
 
 static void sender(const std::string& mailbox, uint64_t msg_size)
 {
-  auto mbox          = sg4::Mailbox::by_name(mailbox);
+  auto* mbox         = sg4::Mailbox::by_name(mailbox);
   static int payload = 42;
   mbox->put(&payload, msg_size);
 }
 
 static void receiver(const std::string& mailbox)
 {
-  auto mbox = sg4::Mailbox::by_name(mailbox);
+  auto* mbox = sg4::Mailbox::by_name(mailbox);
   mbox->get<int>();
 }
 
@@ -31,8 +31,8 @@ static void run_transfer(sg4::Host* src_host, sg4::Host* dst_host, const std::st
 
 static void execute_load_test()
 {
-  auto host0 = sg4::Host::by_name("node-0.simgrid.org");
-  auto host1 = sg4::Host::by_name("node-1.simgrid.org");
+  auto* host0 = sg4::Host::by_name("node-0.simgrid.org");
+  auto* host1 = sg4::Host::by_name("node-1.simgrid.org");
 
   sg4::this_actor::sleep_for(1);
   run_transfer(host0, host1, "1", 1000 * 1000 * 1000);
@@ -52,9 +52,9 @@ static void show_link_load(const std::string& link_name, const sg4::Link* link)
 
 static void monitor()
 {
-  auto link_backbone = sg4::Link::by_name("cluster0_backbone");
-  auto link_host0    = sg4::Link::by_name("cluster0_link_0_UP");
-  auto link_host1    = sg4::Link::by_name("cluster0_link_1_DOWN");
+  const auto* link_backbone = sg4::Link::by_name("cluster0_backbone");
+  const auto* link_host0    = sg4::Link::by_name("cluster0_link_0_UP");
+  const auto* link_host1    = sg4::Link::by_name("cluster0_link_1_DOWN");
 
   XBT_INFO("Tracking desired links");
   sg_link_load_track(link_backbone);

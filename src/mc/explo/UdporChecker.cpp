@@ -163,7 +163,7 @@ EventSet UdporChecker::compute_exC(const Configuration& C, const State& stateC, 
 EventSet UdporChecker::compute_enC(const Configuration& C, const EventSet& exC) const
 {
   EventSet enC;
-  for (const auto e : exC) {
+  for (const auto* e : exC) {
     if (C.is_compatible_with(e)) {
       enC.insert(e);
     }

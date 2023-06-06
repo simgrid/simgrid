@@ -118,7 +118,7 @@ void load_platform(const sg4::Engine& e)
   static std::mt19937 gen(42); // remove it from stack, since we need it after this this load_platform function is over
 
   /* setting network factors callbacks */
-  auto zone = e.get_netzone_root();
+  auto* zone = e.get_netzone_root();
 
   SegmentedRegression seg = read_json_file("pingpong_ckmeans.json", gen, false);
   zone->set_latency_factor_cb(std::bind(&latency_factor_cb, lat_base, seg, std::placeholders::_1, std::placeholders::_2,

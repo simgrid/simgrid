@@ -59,7 +59,7 @@ static sg4::NetZone* create_supernode(const sg4::NetZone* root, const std::strin
     const auto& linkname  = "link_" + node_name;
 
     sg4::NetZone* node = create_node(supernode, node_name, nb_cpu);
-    const auto router  = node->create_router("router_" + node_name);
+    auto* router       = node->create_router("router_" + node_name);
     node->seal();
 
     const sg4::Link* l = supernode->create_split_duplex_link(linkname, BW_NODE)->set_latency(LAT_NODE)->seal();
@@ -83,7 +83,7 @@ static sg4::NetZone* create_cluster(const std::string& cluster_name, const int n
     const auto& linkname       = "link_" + supernode_name;
 
     sg4::NetZone* supernode = create_supernode(cluster, supernode_name, nb_nodes, nb_cpu);
-    const auto router       = supernode->create_router("router_" + supernode_name);
+    auto* router            = supernode->create_router("router_" + supernode_name);
     supernode->seal();
 
     const sg4::Link* l = cluster->create_split_duplex_link(linkname, BW_NETWORK)->set_latency(LAT_NETWORK)->seal();

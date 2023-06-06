@@ -268,7 +268,7 @@ using simgrid::plugin::LinkEnergyWifi;
 /* **************************** events  callback *************************** */
 static void on_communication(const simgrid::s4u::Comm& comm)
 {
-  auto* pimpl = static_cast<simgrid::kernel::activity::CommImpl*>(comm.get_impl());
+  const auto* pimpl = static_cast<simgrid::kernel::activity::CommImpl*>(comm.get_impl());
   for (auto const* link : pimpl->get_traversed_links()) {
     if (link != nullptr && link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI) {
       auto* link_energy = link->extension<LinkEnergyWifi>();

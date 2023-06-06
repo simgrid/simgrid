@@ -41,7 +41,7 @@ bool ReversibleRaceCalculator::is_race_reversible(const Execution& E, Execution:
                  {Action::TESTANY, &ReversibleRaceCalculator::is_race_reversible_TestAny},
                  {Action::WAITANY, &ReversibleRaceCalculator::is_race_reversible_WaitAny}};
 
-  const auto e2_action = E.get_transition_for_handle(e2);
+  const auto* e2_action = E.get_transition_for_handle(e2);
   if (const auto handler = handlers.find(e2_action->type_); handler != handlers.end()) {
     return handler->second(E, e1, e2_action);
   } else {

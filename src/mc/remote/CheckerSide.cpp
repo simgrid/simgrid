@@ -128,7 +128,7 @@ void CheckerSide::setup_events(bool socket_only)
   socket_event_ = event_new(
       base, get_channel().get_socket(), EV_READ | EV_PERSIST,
       [](evutil_socket_t, short events, void* arg) {
-        auto checker = static_cast<simgrid::mc::CheckerSide*>(arg);
+        auto* checker = static_cast<simgrid::mc::CheckerSide*>(arg);
         if (events == EV_READ) {
           do {
             std::array<char, MC_MESSAGE_LENGTH> buffer;
@@ -159,7 +159,7 @@ void CheckerSide::setup_events(bool socket_only)
     signal_event_ = event_new(
         base, SIGCHLD, EV_SIGNAL | EV_PERSIST,
         [](evutil_socket_t sig, short events, void* arg) {
-          auto checker = static_cast<simgrid::mc::CheckerSide*>(arg);
+          auto* checker = static_cast<simgrid::mc::CheckerSide*>(arg);
           if (events == EV_SIGNAL) {
             if (sig == SIGCHLD)
               checker->handle_waitpid();

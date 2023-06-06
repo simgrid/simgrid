@@ -18,7 +18,7 @@ TEST_CASE("xbt::config: Configuration support", "config")
   XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_cfg);
   xbt_log_threshold_set(&_XBT_LOGV(xbt_cfg), xbt_log_priority_critical);
 
-  auto temp      = simgrid_config;
+  auto* temp     = simgrid_config;
   simgrid_config = nullptr;
   simgrid::config::declare_flag<int>("speed", "description", 0);
   simgrid::config::alias("speed", {"velocity"});

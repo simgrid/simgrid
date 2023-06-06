@@ -282,7 +282,7 @@ template <typename T> typename Parmap<T>::Synchro* Parmap<T>::new_synchro(e_xbt_
 /** @brief Main function of a worker thread */
 template <typename T> void Parmap<T>::worker_main(ThreadData* data)
 {
-  auto engine                       = simgrid::kernel::EngineImpl::get_instance();
+  const auto* engine                = simgrid::kernel::EngineImpl::get_instance();
   Parmap<T>& parmap                 = data->parmap;
   unsigned round                    = 0;
   kernel::context::Context* context = engine->get_context_factory()->create_context(std::function<void()>(), nullptr);
