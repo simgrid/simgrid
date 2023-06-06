@@ -22,7 +22,7 @@ using PartialExecution = std::list<std::shared_ptr<Transition>>;
 
 class Event;
 class Execution;
-class ReversibleRaceCalculator;
+struct ReversibleRaceCalculator;
 class WakeupTree;
 class WakeupTreeNode;
 struct WakeupTreeIterator;
