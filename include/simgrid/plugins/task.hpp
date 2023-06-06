@@ -42,6 +42,7 @@ protected:
   int queued_execs_ = 0;
   int count_        = 0;
   bool working_     = false;
+  s4u::ActivityPtr previous_activity_;
   s4u::ActivityPtr current_activity_;
   xbt::signal<void(Task*)> on_this_start_;
   xbt::signal<void(Task*)> on_this_end_;

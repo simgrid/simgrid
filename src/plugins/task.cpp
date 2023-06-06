@@ -82,6 +82,8 @@ void Task::complete()
   count_++;
   on_this_end_(this);
   Task::on_end(this);
+  if (current_activity_)
+    previous_activity_ = std::move(current_activity_);
   for (auto const& t : successors_)
     t->receive(this);
   if (ready_to_run())
