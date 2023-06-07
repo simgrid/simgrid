@@ -16,7 +16,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [0.000000] [mc_explo/INFO]   3: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   1: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;1;3;3;1'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 1070 unique states visited; 252 backtracks (4082 transition replays, 2760 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 220 unique states visited; 37 backtracks (603 transition replays, 346 states visited overall)
 
 ! expect return 1
 ! timeout 20
@@ -34,5 +34,5 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [0.000000] [mc_explo/INFO]   3: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   1: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;1;3;3;1'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 995 unique states visited; 253 backtracks (4006 transition replays, 2758 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 128 unique states visited; 19 backtracks (309 transition replays, 162 states visited overall)
 
