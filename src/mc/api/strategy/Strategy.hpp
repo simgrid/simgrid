@@ -21,28 +21,39 @@ protected:
   std::map<aid_t, ActorState> actors_to_run_;
 
 public:
+  /** Strategies can have values shared from parent to children state.
+   *  This method should copy all value the strategy needs from its parent. */
   virtual void copy_from(const Strategy*) = 0;
+    
   Strategy()                              = default;
   virtual ~Strategy()                     = default;
 
+  /** Returns the best transition among according to the strategy for this state.
+   *  The strategy should consider only enabled transition not already done.
+   *  Furthermore, if must_be_todo is set to true, only transitions marked as todo
+   *  should be considered. */
   virtual std::pair<aid_t, int> best_transition(bool must_be_todo) const = 0;
-    
+
+  /** Returns the best transition among those that should be interleaved. */
   std::pair<aid_t, int> next_transition() { return best_transition(true); }
+
+  /** Allows for the strategy to update its fields knowing that the actor aid will
+   *  be executed and a children strategy will then be created. */  
   virtual void execute_next(aid_t aid, RemoteApp& app)  = 0;
 
-  // Mark the first enabled and not yet done transition as todo
-  // If there's already a transition marked as todo, does nothing
+  /** Ensure at least one transition is marked as todo among the enabled ones not done.
+   *  If required, it marks as todo the best transition according to the strategy. */
   void consider_best() {
-	for (auto& [_, actor] :actors_to_run_)
-	    if (actor.is_todo())
-		return;
-	aid_t best_aid = best_transition(false).first;
-	if (best_aid != -1)
-	    actors_to_run_.at(best_aid).mark_todo();
+    for (auto& [_, actor] :actors_to_run_)
+          if (actor.is_todo())
+	      return;
+    aid_t best_aid = best_transition(false).first;
+    if (best_aid != -1)
+	actors_to_run_.at(best_aid).mark_todo();
   }
 
   // Mark aid as todo. If it makes no sense, ie. if it is already done or not enabled,
-  // raise an error
+  // else raise an error
   void consider_one(aid_t aid)
   {
     xbt_assert(actors_to_run_.at(aid).is_enabled() and not actors_to_run_.at(aid).is_done(),
