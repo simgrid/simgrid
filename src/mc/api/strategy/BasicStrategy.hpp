@@ -10,42 +10,38 @@
 
 namespace simgrid::mc {
 
-/** Basic MC guiding class which corresponds to no guide at all (random choice) */
+/** Basic MC guiding class which corresponds to no guide. When asked for different states
+ *  it will follow a depth first search politics to minize the number of opened states. */
 class BasicStrategy : public Strategy {
+    int depth_ = _sg_mc_max_depth; // Arbitrary starting point. next_transition must return a positiv value to work with threshold in DFSExplorer
+
 public:
+  void copy_from(const Strategy* strategy) override
+  {
+    const BasicStrategy* cast_strategy = dynamic_cast<BasicStrategy const*>(strategy);
+    xbt_assert(cast_strategy != nullptr);
+    depth_ = cast_strategy->depth_ - 1;
+    xbt_assert(depth_ > 0, "The exploration reached a depth greater than %d. We will stop here to prevent weird interaction with DFSExplorer. If you want to change that behaviour, you should augment the size of the search by using --cfg=model-check/max-depth:", _sg_mc_max_depth.get());
+  }
   BasicStrategy()                     = default;
   ~BasicStrategy() override           = default;
-  BasicStrategy(const BasicStrategy&) = delete;
-  BasicStrategy& operator=(const BasicStrategy&)
-  { /* nothing to copy over while cloning */
-    return *this;
-  }
 
-  std::pair<aid_t, int> next_transition() const override
-  {
-    for (auto const& [aid, actor] : actors_to_run_) {
-      /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
-      if (not actor.is_todo() || not actor.is_enabled() || actor.is_done()) {
+  std::pair<aid_t, int> best_transition(bool must_be_todo) const override {
+      for (auto const& [aid, actor] : actors_to_run_) {
+	  /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
+	  if ((not actor.is_todo() && must_be_todo) || not actor.is_enabled() || actor.is_done()) {
         continue;
       }
 
-      return std::make_pair(aid, 1);
+      return std::make_pair(aid, depth_);
     }
-    return std::make_pair(-1, 0);
+    return std::make_pair(-1, depth_);
+  
   }
-  void execute_next(aid_t aid, RemoteApp& app) override { return; }
+    
 
-  void consider_best() override
-  {
-    for (auto& [_, actor] : actors_to_run_) {
-      if (actor.is_todo())
-        return;
-      if (actor.is_enabled() and not actor.is_done()) {
-        actor.mark_todo();
-        return;
-      }
-    }
-  }
+  void execute_next(aid_t aid, RemoteApp& app) override { return; }
+    
 };
 
 } // namespace simgrid::mc

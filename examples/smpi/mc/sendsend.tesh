@@ -16,7 +16,7 @@ $ $VALGRIND_NO_LEAK_CHECK ../../../smpi_script/bin/smpirun -quiet -wrapper "${bi
 > Sent 0 to rank 1
 > rank 0 recv the data
 > rank 1 recv the data
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 18 unique states visited; 2 backtracks (21 transition replays, 1 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 18 unique states visited; 2 backtracks (1 transition replays, 21 states visited overall)
 
 p Testing the paranoid model
 ! timeout 60
@@ -34,5 +34,5 @@ $ $VALGRIND_NO_LEAK_CHECK ../../../smpi_script/bin/smpirun -quiet -wrapper "${bi
 > [0.000000] [mc_global/INFO]   1: iSend(mbox=2)
 > [0.000000] [mc_global/INFO]   2: iSend(mbox=0)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;2'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 3 unique states visited; 0 backtracks (3 transition replays, 0 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 3 unique states visited; 0 backtracks (0 transition replays, 3 states visited overall)
 > Execution failed with code 3.

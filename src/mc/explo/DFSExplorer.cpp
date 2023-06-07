@@ -112,8 +112,8 @@ void DFSExplorer::log_state() // override
   on_log_state_signal(get_remote_app());
   XBT_INFO("DFS exploration ended. %ld unique states visited; %lu backtracks (%lu transition replays, %lu states "
            "visited overall)",
-           State::get_expanded_states(), backtrack_count_, visited_states_count_,
-           Transition::get_replayed_transitions());
+           State::get_expanded_states(), backtrack_count_, Transition::get_replayed_transitions(),
+	   visited_states_count_);
   Exploration::log_state();
 }
 
@@ -372,7 +372,7 @@ std::shared_ptr<State> DFSExplorer::best_opened_state()
       continue;
     if (valid != current)
       *valid = std::move(*current);
-    if (best == end(opened_states_) || prio > best_prio) {
+    if (best == end(opened_states_) || prio < best_prio) {
       best_prio = prio;
       best      = valid;
     }

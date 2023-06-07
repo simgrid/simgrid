@@ -15,6 +15,9 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > The thread 0 is terminating.
 > The thread 1 is terminating.
 > User's main is terminating.
+> The thread 0 is terminating.
+> The thread 1 is terminating.
+> User's main is terminating.
 > [0.000000] [mc_global/INFO] **************************
 > [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
 > [0.000000] [mc_global/INFO] **************************
@@ -31,4 +34,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   3: MUTEX_WAIT(mutex: 1, owner: 3)
 > [0.000000] [mc_global/INFO]   3: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;3;2;3;3'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 28 unique states visited; 2 backtracks (37 transition replays, 7 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 38 unique states visited; 3 backtracks (11 transition replays, 52 states visited overall)

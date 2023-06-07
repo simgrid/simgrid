@@ -16,11 +16,11 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [0.000000] [mc_explo/INFO]   3: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   1: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;1;3;3;1'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 220 unique states visited; 37 backtracks (603 transition replays, 346 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 910 unique states visited; 203 backtracks (1961 transition replays, 3074 states visited overall)
 
 ! expect return 1
 ! timeout 20
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/strategy:nb_wait ${bindir:=.}/s4u-mc-bugged2 ${platfdir:=.}/model_checker_platform.xml  --log=root.thresh:critical --log=mc.thresh:info
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/strategy:min_match_comm ${bindir:=.}/s4u-mc-bugged2 ${platfdir:=.}/model_checker_platform.xml  --log=root.thresh:critical --log=mc.thresh:info
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
 > [0.000000] [mc_explo/INFO] **************************
 > [0.000000] [mc_explo/INFO] *** PROPERTY NOT VALID ***
@@ -32,7 +32,25 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [0.000000] [mc_explo/INFO]   1: iRecv(mbox=0)
 > [0.000000] [mc_explo/INFO]   3: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO]   3: iSend(mbox=0)
+> [0.000000] [mc_explo/INFO]   2: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   1: WaitComm(from 3 to 1, mbox=0, no timeout)
-> [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;1;3;3;1'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 128 unique states visited; 19 backtracks (309 transition replays, 162 states visited overall)
+> [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;1;3;3;2;1'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 625 unique states visited; 114 backtracks (1022 transition replays, 1761 states visited overall)
 
+! expect return 1
+! timeout 20
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/strategy:max_match_comm ${bindir:=.}/s4u-mc-bugged2 ${platfdir:=.}/model_checker_platform.xml  --log=root.thresh:critical --log=mc.thresh:info
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [mc_explo/INFO] **************************
+> [0.000000] [mc_explo/INFO] *** PROPERTY NOT VALID ***
+> [0.000000] [mc_explo/INFO] **************************
+> [0.000000] [mc_explo/INFO] Counter-example execution trace:
+> [0.000000] [mc_explo/INFO]   1: iRecv(mbox=0)
+> [0.000000] [mc_explo/INFO]   3: iSend(mbox=0)
+> [0.000000] [mc_explo/INFO]   1: WaitComm(from 3 to 1, mbox=0, no timeout)
+> [0.000000] [mc_explo/INFO]   3: WaitComm(from 3 to 1, mbox=0, no timeout)
+> [0.000000] [mc_explo/INFO]   1: iRecv(mbox=0)
+> [0.000000] [mc_explo/INFO]   3: iSend(mbox=0)
+> [0.000000] [mc_explo/INFO]   1: WaitComm(from 3 to 1, mbox=0, no timeout)
+> [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;3;1;3;1'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 64 unique states visited; 5 backtracks (23 transition replays, 92 states visited overall)
