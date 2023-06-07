@@ -8,14 +8,6 @@ $ $VALGRIND_NO_LEAK_CHECK ../../../smpi_script/bin/smpirun -quiet -wrapper "${bi
 > Sent 1 to rank 0
 > rank 0 recv the data
 > rank 1 recv the data
-> Sent 0 to rank 1
-> Sent 1 to rank 0
-> rank 0 recv the data
-> rank 1 recv the data
-> Sent 0 to rank 1
-> Sent 1 to rank 0
-> rank 1 recv the data
-> rank 0 recv the data
 > Sent 1 to rank 0
 > Sent 0 to rank 1
 > rank 0 recv the data
@@ -24,19 +16,7 @@ $ $VALGRIND_NO_LEAK_CHECK ../../../smpi_script/bin/smpirun -quiet -wrapper "${bi
 > Sent 0 to rank 1
 > rank 0 recv the data
 > rank 1 recv the data
-> Sent 1 to rank 0
-> Sent 0 to rank 1
-> rank 1 recv the data
-> rank 0 recv the data
-> Sent 1 to rank 0
-> Sent 0 to rank 1
-> rank 0 recv the data
-> rank 1 recv the data
-> Sent 1 to rank 0
-> Sent 0 to rank 1
-> rank 1 recv the data
-> rank 0 recv the data
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 30 unique states visited; 7 backtracks (19 transition replays, 56 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 18 unique states visited; 2 backtracks (1 transition replays, 21 states visited overall)
 
 p Testing the paranoid model
 ! timeout 60
