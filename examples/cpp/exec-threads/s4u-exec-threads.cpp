@@ -11,7 +11,7 @@ namespace sg4 = simgrid::s4u;
 
 static void runner()
 {
-  auto* e                   = sg4::Engine::get_instance();
+  const auto* e             = sg4::Engine::get_instance();
   sg4::Host* multicore_host = e->host_by_name("MyHost1");
   // First test with less than, same number as, and more threads than cores
   double start_time = sg4::Engine::get_clock();

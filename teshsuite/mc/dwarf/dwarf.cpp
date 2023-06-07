@@ -120,7 +120,7 @@ int main(int argc, char** argv)
   simgrid::s4u::Engine::get_instance(&argc, argv);
 
   const simgrid::mc::Variable* var;
-  simgrid::mc::Type* type;
+  const simgrid::mc::Type* type;
 
   simgrid::mc::RemoteProcessMemory process(getpid(), nullptr);
 

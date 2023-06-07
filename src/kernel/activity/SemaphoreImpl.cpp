@@ -68,7 +68,7 @@ void SemAcquisitionImpl::finish()
 void SemAcquisitionImpl::cancel()
 {
   /* Remove myself from the list of interested parties */
-  auto* issuer = get_issuer();
+  const auto* issuer = get_issuer();
   auto it     = std::find_if(semaphore_->ongoing_acquisitions_.begin(), semaphore_->ongoing_acquisitions_.end(),
                              [issuer](SemAcquisitionImplPtr acqui) { return acqui->get_issuer() == issuer; });
   xbt_assert(it != semaphore_->ongoing_acquisitions_.end(),

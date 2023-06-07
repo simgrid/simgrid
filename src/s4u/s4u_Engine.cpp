@@ -76,7 +76,7 @@ Engine* Engine::get_instance()
 Engine* Engine::get_instance(int* argc, char** argv)
 {
   if (Engine::instance_ == nullptr) {
-    auto* e = new Engine(argc, argv);
+    const auto* e = new Engine(argc, argv);
     xbt_assert(Engine::instance_ == e);
   }
   return Engine::instance_;
