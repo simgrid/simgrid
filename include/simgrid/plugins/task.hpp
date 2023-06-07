@@ -134,9 +134,9 @@ public:
   IoTaskPtr set_disk(s4u::Disk* disk);
   s4u::Disk* get_disk() const { return disk_; }
   IoTaskPtr set_bytes(double bytes);
-  double get_bytes() { return get_amount(); }
+  double get_bytes() const { return get_amount(); }
   IoTaskPtr set_op_type(s4u::Io::OpType type);
-  s4u::Io::OpType get_op_type() { return type_; }
+  s4u::Io::OpType get_op_type() const { return type_; }
 };
 } // namespace simgrid::plugins
 #endif
