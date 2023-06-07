@@ -10,6 +10,7 @@
 #include "src/mc/api/strategy/UniformStrategy.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
+#include "xbt/random.hpp"
 
 #include <algorithm>
 #include <boost/range/algorithm.hpp>
@@ -24,7 +25,6 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
 {
   XBT_VERB("Creating a guide for the state");
 
-  srand(_sg_mc_random_seed);
   
   if (_sg_mc_strategy == "none")
     strategy_ = std::make_shared<BasicStrategy>();
@@ -32,8 +32,10 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
     strategy_ = std::make_shared<MaxMatchComm>();
   else if (_sg_mc_strategy == "min_match_comm")
     strategy_ = std::make_shared<MinMatchComm>();
-  else if (_sg_mc_strategy == "uniform") 
+  else if (_sg_mc_strategy == "uniform") {
+    xbt::random::set_mersenne_seed(_sg_mc_random_seed);  
     strategy_ = std::make_shared<UniformStrategy>();
+  }
   else
     THROW_IMPOSSIBLE;
 

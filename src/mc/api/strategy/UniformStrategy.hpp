@@ -7,6 +7,7 @@
 #define SIMGRID_MC_UNIFORMSTRATEGY_HPP
 
 #include "src/mc/transition/Transition.hpp"
+#include "xbt/random.hpp"
 
 #define MAX_RAND 100000
 
@@ -20,12 +21,12 @@ public:
   UniformStrategy()
   {
     for (long aid = 0; aid < 10; aid++)
-      valuation[aid] = rand() % 10000;
+      valuation[aid] = xbt::random::uniform_int(0, MAX_RAND);
   }
   void copy_from(const Strategy* strategy) override
   {
     for (auto& [aid, _] : actors_to_run_)
-      valuation[aid] = rand() % 10000;
+      valuation[aid] = xbt::random::uniform_int(0, MAX_RAND);
   }
 
   std::pair<aid_t, int> best_transition(bool must_be_todo) const override
@@ -44,7 +45,7 @@ public:
     if (possibilities == 1)
       chosen = 0;
     else
-      chosen = rand() % possibilities;
+	chosen = xbt::random::uniform_int(0, possibilities-1);
 
     for (auto const& [aid, actor] : actors_to_run_) {
 	if (((not actor.is_todo()) and must_be_todo) or actor.is_done() or (not actor.is_enabled()))
