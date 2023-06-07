@@ -29,7 +29,12 @@ namespace simgrid::mc::odpor {
 class WakeupTreeIterator
     : public boost::iterator_facade<WakeupTreeIterator, WakeupTreeNode*, boost::forward_traversal_tag> {
 public:
-  WakeupTreeIterator() = default;
+  // Use rule-of-three, and implicitely disable the move constructor which cannot be 'noexcept' (as required by C++ Core
+  // Guidelines), due to the std::list and std:stack<std::deque> members.
+  WakeupTreeIterator()                          = default;
+  WakeupTreeIterator(const WakeupTreeIterator&) = default;
+  ~WakeupTreeIterator()                         = default;
+
   explicit WakeupTreeIterator(const WakeupTree& tree);
 
 private:
