@@ -49,14 +49,6 @@ bool CommWaitTransition::depends(const Transition* other) const
   if (const auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
     if (timeout_ || wait->timeout_)
       return true; // Timeouts are not considered by the independence theorem, thus assumed dependent
-
-    if (sbuff_ == wait->sbuff_ && rbuff_ == wait->rbuff_)
-      return false;
-    if (sbuff_ != 0 && rbuff_ != 0 && wait->sbuff_ != 0 && wait->rbuff_ != 0 && rbuff_ != wait->sbuff_ &&
-        rbuff_ != wait->rbuff_ && rbuff_ != sbuff_)
-      return false;
-
-    return true;
   }
 
   return false; // Comm transitions are INDEP with non-comm transitions
