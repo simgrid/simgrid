@@ -147,7 +147,7 @@ void TRACE_smpi_init(aid_t pid, const std::string& calling_func)
   if (not TRACE_smpi_is_enabled())
     return;
 
-  auto* self = simgrid::s4u::Actor::self();
+  const auto* self = simgrid::s4u::Actor::self();
 
   TRACE_smpi_setup_container(pid, sg_host_self());
   simgrid::s4u::this_actor::on_exit([self](bool) { smpi_container(self->get_pid())->remove_from_parent(); });

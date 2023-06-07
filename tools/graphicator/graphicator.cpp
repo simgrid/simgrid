@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     simgrid::instr::platform_graph_export_graphviz(outputfile);
   }
   else {
-    xbt_assert(false, "Unknown output file format, please use '.dot' or .csv' extension\n");
+    xbt_die("Unknown output file format, please use '.dot' or .csv' extension");
   }
   return 0;
 }

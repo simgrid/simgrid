@@ -68,7 +68,7 @@ public:
   /*! \static Add a callback fired when the send of any Comm is posted  */
   static void on_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
   /*! Add a callback fired when the send of this specific Comm is posted  */
-  void on_this_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
+  void on_this_send_cb(const std::function<void(Comm const&)>& cb) { on_this_send.connect(cb); }
   /*! \static Add a callback fired when the recv of any Comm is posted  */
   static void on_recv_cb(const std::function<void(Comm const&)>& cb) { on_recv.connect(cb); }
   /*! Add a callback fired when the recv of this specific Comm is posted  */

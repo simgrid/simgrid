@@ -18,7 +18,7 @@ namespace simgrid::kernel::resource {
  ************/
 static void update_bw_comm_start(const s4u::Comm& comm)
 {
-  auto* pimpl = static_cast<activity::CommImpl*>(comm.get_impl());
+  const auto* pimpl = static_cast<activity::CommImpl*>(comm.get_impl());
 
   auto const* actionWifi = dynamic_cast<const kernel::resource::WifiLinkAction*>(pimpl->model_action_);
   if (actionWifi == nullptr)
