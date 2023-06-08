@@ -5,6 +5,7 @@ foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate ac
         exec-async exec-basic exec-dvfs exec-remote exec-ptask
         task-io task-simple task-switch-host task-variable-load
         platform-comm-serialize platform-profile platform-failures
+        plugin-host-load
         network-nonlinear clusters-multicpu io-degradation exec-cpu-nonlinear
         synchro-barrier synchro-mutex synchro-semaphore)
   set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
