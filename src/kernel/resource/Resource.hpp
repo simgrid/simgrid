@@ -7,6 +7,7 @@
 #define SIMGRID_KERNEL_RESOURCE_RESOURCE_HPP
 
 #include "simgrid/forward.h"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/Simcall.hpp"
 #include "src/kernel/lmm/maxmin.hpp" // Constraint
 #include "src/kernel/resource/profile/Event.hpp"
@@ -71,6 +72,21 @@ public:
 template <class AnyResource> class Resource_T : public Resource {
   Model* model_                = nullptr;
   lmm::Constraint* constraint_ = nullptr;
+
+protected:
+  void cancel_actions()
+  {
+    const kernel::lmm::Element* elem = nullptr;
+    double now                       = EngineImpl::get_clock();
+    while (const auto* var = get_constraint()->get_variable(&elem)) {
+      Action* action = var->get_id();
+      if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED ||
+          action->get_state() == Action::State::IGNORED) {
+        action->set_finish_time(now);
+        action->set_state(Action::State::FAILED);
+      }
+    }
+  }
 
 public:
   using Resource::Resource;

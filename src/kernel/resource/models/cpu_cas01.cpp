@@ -113,20 +113,8 @@ void CpuCas01::apply_event(profile::Event* event, double value)
         get_iface()->turn_on();
       }
     } else {
-      const lmm::Element* elem = nullptr;
-      double date              = EngineImpl::get_clock();
-
       get_iface()->turn_off();
-
-      while (const auto* var = get_constraint()->get_variable(&elem)) {
-        Action* action = var->get_id();
-
-        if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED ||
-            action->get_state() == Action::State::IGNORED) {
-          action->set_finish_time(date);
-          action->set_state(Action::State::FAILED);
-        }
-      }
+      cancel_actions();
     }
     unref_state_event();
 

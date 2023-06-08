@@ -387,13 +387,13 @@ void CpuTi::apply_event(kernel::profile::Event* event, double value)
       }
     } else {
       get_iface()->turn_off();
-      double date = EngineImpl::get_clock();
 
       /* put all action running on cpu to failed */
+      double now = EngineImpl::get_clock();
       for (CpuTiAction& action : action_set_) {
         if (action.get_state() == Action::State::INITED || action.get_state() == Action::State::STARTED ||
             action.get_state() == Action::State::IGNORED) {
-          action.set_finish_time(date);
+          action.set_finish_time(now);
           action.set_state(Action::State::FAILED);
           get_model()->get_action_heap().remove(&action);
         }

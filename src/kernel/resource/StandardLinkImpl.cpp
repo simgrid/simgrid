@@ -5,7 +5,6 @@
 
 #include <simgrid/s4u/Engine.hpp>
 
-#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include <numeric>
 
@@ -93,16 +92,7 @@ void StandardLinkImpl::turn_off()
     Resource::turn_off();
     s4u::Link::on_onoff(piface_);
     piface_.on_this_onoff(piface_);
-
-    const kernel::lmm::Element* elem = nullptr;
-    double now                       = EngineImpl::get_clock();
-    while (const auto* var = get_constraint()->get_variable(&elem)) {
-      Action* action = var->get_id();
-      if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED) {
-        action->set_finish_time(now);
-        action->set_state(Action::State::FAILED);
-      }
-    }
+    cancel_actions();
   }
 }
 
