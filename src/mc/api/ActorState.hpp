@@ -164,7 +164,8 @@ public:
 
   const std::vector<std::shared_ptr<Transition>>& get_enabled_transitions() const
   {
-    return this->pending_transitions_;
+    static const auto no_enabled_transitions = std::vector<std::shared_ptr<Transition>>();
+    return this->is_enabled() ? this->pending_transitions_ : no_enabled_transitions;
   };
 };
 

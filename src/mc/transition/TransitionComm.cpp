@@ -18,6 +18,20 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_comm, mc_transition,
 
 namespace simgrid::mc {
 
+CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, bool timeout_, uintptr_t comm_,
+                                       aid_t sender_, aid_t receiver_, unsigned mbox_, uintptr_t sbuff_,
+                                       uintptr_t rbuff_, size_t size_)
+    : Transition(Type::COMM_WAIT, issuer, times_considered)
+    , timeout_(timeout_)
+    , comm_(comm_)
+    , sender_(sender_)
+    , receiver_(receiver_)
+    , mbox_(mbox_)
+    , sbuff_(sbuff_)
+    , rbuff_(rbuff_)
+    , size_(size_)
+{
+}
 CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_WAIT, issuer, times_considered)
 {
@@ -52,6 +66,19 @@ bool CommWaitTransition::depends(const Transition* other) const
   }
 
   return false; // Comm transitions are INDEP with non-comm transitions
+}
+CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, uintptr_t comm_, aid_t sender_,
+                                       aid_t receiver_, unsigned mbox_, uintptr_t sbuff_, uintptr_t rbuff_,
+                                       size_t size_)
+    : Transition(Type::COMM_TEST, issuer, times_considered)
+    , comm_(comm_)
+    , sender_(sender_)
+    , receiver_(receiver_)
+    , mbox_(mbox_)
+    , sbuff_(sbuff_)
+    , rbuff_(rbuff_)
+    , size_(size_)
+{
 }
 CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_TEST, issuer, times_considered)
@@ -94,6 +121,15 @@ bool CommTestTransition::depends(const Transition* other) const
   return false; // Comm transitions are INDEP with non-comm transitions
 }
 
+CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, uintptr_t comm_, unsigned mbox_,
+                                       uintptr_t rbuff_, int tag_)
+    : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered)
+    , comm_(comm_)
+    , mbox_(mbox_)
+    , rbuff_(rbuff_)
+    , tag_(tag_)
+{
+}
 CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered)
 {
@@ -129,6 +165,11 @@ bool CommRecvTransition::depends(const Transition* other) const
     if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->rbuff_ != rbuff_))
       return false;
 
+    // If the test is checking a paired comm already, we're independent!
+    // If we happen to make up that pair, then we're dependent...
+    if (test->comm_ != comm_)
+      return false;
+
     return true; // DEP with other send transitions
   }
 
@@ -142,12 +183,27 @@ bool CommRecvTransition::depends(const Transition* other) const
     if ((aid_ != wait->sender_) && (aid_ != wait->receiver_) && (wait->rbuff_ != rbuff_))
       return false;
 
+    // If the wait is waiting on a paired comm already, we're independent!
+    // If we happen to make up that pair, then we're dependent...
+    if ((aid_ != wait->aid_) && wait->comm_ != comm_)
+      return false;
+
     return true; // DEP with other wait transitions
   }
 
   return false; // Comm transitions are INDEP with non-comm transitions
 }
 
+CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, uintptr_t comm_, unsigned mbox_,
+                                       uintptr_t sbuff_, size_t size_, int tag_)
+    : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered)
+    , comm_(comm_)
+    , mbox_(mbox_)
+    , sbuff_(sbuff_)
+    , size_(size_)
+    , tag_(tag_)
+{
+}
 CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered)
 {
@@ -185,6 +241,11 @@ bool CommSendTransition::depends(const Transition* other) const
     if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->sbuff_ != sbuff_))
       return false;
 
+    // If the test is checking a paired comm already, we're independent!
+    // If we happen to make up that pair, then we're dependent...
+    if (test->comm_ != comm_)
+      return false;
+
     return true; // DEP with other test transitions
   }
 
@@ -196,6 +257,11 @@ bool CommSendTransition::depends(const Transition* other) const
       return false;
 
     if ((aid_ != wait->sender_) && (aid_ != wait->receiver_) && (wait->sbuff_ != sbuff_))
+      return false;
+
+    // If the wait is waiting on a paired comm already, we're independent!
+    // If we happen to make up that pair, then we're dependent...
+    if ((aid_ != wait->aid_) && wait->comm_ != comm_)
       return false;
 
     return true; // DEP with other wait transitions

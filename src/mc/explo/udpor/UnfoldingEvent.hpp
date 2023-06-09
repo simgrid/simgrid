@@ -49,9 +49,10 @@ public:
   bool is_dependent_with(const Transition*) const;
   bool is_dependent_with(const UnfoldingEvent* other) const;
 
+  unsigned get_id() const { return this->id; }
+  aid_t get_actor() const { return get_transition()->aid_; }
   const EventSet& get_immediate_causes() const { return this->immediate_causes; }
   Transition* get_transition() const { return this->associated_transition.get(); }
-  aid_t get_actor() const { return get_transition()->aid_; }
 
   void set_transition(std::shared_ptr<Transition> t) { this->associated_transition = std::move(t); }
 
@@ -91,6 +92,12 @@ private:
    * so on.
    */
   EventSet immediate_causes;
+
+  /**
+   * @brief An identifier which is used to sort events
+   * deterministically
+   */
+  uint64_t id = 0;
 };
 
 } // namespace simgrid::mc::udpor

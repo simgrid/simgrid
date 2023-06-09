@@ -64,7 +64,12 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
     // possibility is that we've finished running everything, and
     // we wouldn't be in deadlock then)
     if (enC.empty()) {
-      XBT_VERB("Maximal configuration detected. Checking for deadlock...");
+      XBT_VERB("**************************");
+      XBT_VERB("*** TRACE INVESTIGATED ***");
+      XBT_VERB("**************************");
+      XBT_VERB("Execution sequence:");
+      for (auto const& s : get_textual_trace())
+        XBT_VERB("  %s", s.c_str());
       get_remote_app().check_deadlock();
     }
 
@@ -109,8 +114,8 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
     // that we are searching again from `state(C)`. While the
     // stack of states is properly adjusted to represent
     // `state(C)` all together, the RemoteApp is currently sitting
-    // at some *future* state with resepct to `state(C)` since the
-    // recursive calls have moved it there.
+    // at some *future* state with respect to `state(C)` since the
+    // recursive calls had moved it there.
     restore_program_state_with_current_stack();
 
     // Explore(C, D + {e}, J \ C)
@@ -150,11 +155,22 @@ EventSet UdporChecker::compute_exC(const Configuration& C, const State& stateC, 
   EventSet exC                = prev_exC;
   exC.remove(e_cur);
 
+  // IMPORTANT NOTE: In order to have deterministic results, we need to process
+  // the actors in a deterministic manner so that events are discovered by
+  // UDPOR in a deterministic order. The processing done here always processes
+  // actors in a consistent order since `std::map` is by-default ordered using
+  // `std::less<Key>` (see the return type of `State::get_actors_list()`)
   for (const auto& [aid, actor_state] : stateC.get_actors_list()) {
-    for (const auto& transition : actor_state.get_enabled_transitions()) {
-      XBT_DEBUG("\t Considering partial extension for %s", transition->to_string().c_str());
-      EventSet extension = ExtensionSetCalculator::partially_extend(C, &unfolding, transition);
-      exC.form_union(extension);
+    const auto& enabled_transitions = actor_state.get_enabled_transitions();
+    if (enabled_transitions.empty()) {
+      XBT_DEBUG("\t Actor `%ld` is disabled: no partial extensions need to be considered", aid);
+    } else {
+      XBT_DEBUG("\t Actor `%ld` is enabled", aid);
+      for (const auto& transition : enabled_transitions) {
+        XBT_DEBUG("\t Considering partial extension for %s", transition->to_string().c_str());
+        EventSet extension = ExtensionSetCalculator::partially_extend(C, &unfolding, transition);
+        exC.form_union(extension);
+      }
     }
   }
   return exC;
@@ -236,16 +252,23 @@ UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, con
                                 "empty before attempting to select an event from it?");
   }
 
+  // UDPOR's exploration is non-deterministic (as is DPOR's)
+  // in the sense that at any given point there may
+  // be multiple paths that can be followed. The correctness and optimality
+  // of the algorithm remains unaffected by the route taken by UDPOR when
+  // given multiple choices; but to ensure that SimGrid itself has deterministic
+  // behavior on all platforms, we always pick events with lower id's
+  // to ensure we explore the unfolding deterministically.
   if (A.empty()) {
-    return const_cast<UnfoldingEvent*>(*(enC.begin()));
+    const auto min_event = std::min_element(enC.begin(), enC.end(),
+                                            [](const auto e1, const auto e2) { return e1->get_id() < e2->get_id(); });
+    return const_cast<UnfoldingEvent*>(*min_event);
+  } else {
+    const auto intersection = A.make_intersection(enC);
+    const auto min_event    = std::min_element(intersection.begin(), intersection.end(),
+                                               [](const auto e1, const auto e2) { return e1->get_id() < e2->get_id(); });
+    return const_cast<UnfoldingEvent*>(*min_event);
   }
-
-  for (const auto& event : A) {
-    if (enC.contains(event)) {
-      return const_cast<UnfoldingEvent*>(event);
-    }
-  }
-  return nullptr;
 }
 
 void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration& C, const EventSet& D)
