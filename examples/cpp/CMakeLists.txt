@@ -57,8 +57,8 @@ if(SIMGRID_HAVE_STATEFUL_MC)
       ${CMAKE_HOME_DIRECTORY}/examples/cpp/synchro-mutex/s4u-mc-synchro-mutex-stateful.tesh)
 
   # Model-checking liveness
-  if(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64)
-    # liveness model-checking works only on 64bits (for now ...)
+  if(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64 AND "${CMAKE_SYSTEM}" MATCHES "Linux")
+    # liveness model-checking works only on 64bits (for now ...), but not under FreeBSD
     set(_mc-bugged1-liveness_factories "ucontext")
     add_dependencies(tests-mc s4u-mc-bugged1-liveness)
     set(_mc-bugged2-liveness_factories "ucontext")
