@@ -57,8 +57,8 @@ if(SIMGRID_HAVE_STATEFUL_MC)
       ${CMAKE_HOME_DIRECTORY}/examples/cpp/synchro-mutex/s4u-mc-synchro-mutex-stateful.tesh)
 
   # Model-checking liveness
-  if(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64 AND "${CMAKE_SYSTEM}" MATCHES "Linux")
-    # liveness model-checking works only on 64bits (for now ...), but not under FreeBSD
+  if(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64)
+    # liveness model-checking works only on 64bits (for now ...)
     set(_mc-bugged1-liveness_factories "ucontext")
     add_dependencies(tests-mc s4u-mc-bugged1-liveness)
     set(_mc-bugged2-liveness_factories "ucontext")
@@ -66,10 +66,13 @@ if(SIMGRID_HAVE_STATEFUL_MC)
     # This example never ends, disable it for now
     set(_mc-bugged2-liveness_disable 1)
 
-    ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness
-                                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
-                                                       ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh)
+    if ("${CMAKE_SYSTEM}" MATCHES "Linux")
+      # timeout under FreeBSD (test never stops)
+      ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness
+                                                        --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                                        --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
+                                                        ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh)
+    endif()
     IF(HAVE_C_STACK_CLEANER)
       add_dependencies(tests-mc s4u-mc-bugged1-liveness-stack-cleaner)
       # This test checks if the stack cleaner is making a difference:
