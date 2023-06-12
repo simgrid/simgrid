@@ -6,6 +6,7 @@
 #include <xbt/Extendable.hpp>
 
 #include <atomic>
+#include <deque>
 #include <map>
 #include <memory>
 #include <set>
@@ -39,6 +40,8 @@ class Task {
 protected:
   std::string name_;
   double amount_;
+  std::shared_ptr<void> token_ = NULL;
+  std::deque<std::map<TaskPtr, std::shared_ptr<void>>> tokens_received_;
   int queued_execs_ = 0;
   int count_        = 0;
   bool working_     = false;
@@ -61,6 +64,8 @@ public:
   void enqueue_execs(int n);
   void set_amount(double amount);
   double get_amount() const { return amount_; }
+  void set_token(std::shared_ptr<void> token);
+  std::map<TaskPtr, std::shared_ptr<void>> get_tokens() const;
   void add_successor(TaskPtr t);
   void remove_successor(TaskPtr t);
   void remove_all_successors();
