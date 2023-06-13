@@ -240,6 +240,10 @@ while true; do
             usage
             exit 0
             ;;
+        "--help-coll")
+            ${WRAPPER} "@SMPIMAIN@" --help-coll
+            exit 0
+            ;;
         "-version" | "--version" | "-v")
             printf '%b\n' "$SIMGRID_VERSION"
             exit 0
