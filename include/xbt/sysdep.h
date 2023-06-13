@@ -22,7 +22,7 @@
 SG_BEGIN_DECL
 
 #ifdef XBT_LOG_LOCALLY_DEFINE_XBT_CHANNEL
-XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");
+XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (SimGrid toolbox)");
 XBT_LOG_NEW_SUBCATEGORY(xbt_help, xbt, "Help messages");
 #else
 XBT_LOG_EXTERNAL_CATEGORY(xbt);

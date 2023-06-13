@@ -2,7 +2,7 @@
 eval 'exec perl -S $0 ${1+"$@"}'
     if $running_under_some_shell;
 
-# This script updates the simgrid XML file passed as argument (modification in place)
+# This script updates the SimGrid XML file passed as argument (modification in place)
 # It is built to do the conversion incrementally.
 
 # Copyright (c) 2006-2023. The SimGrid Team.
@@ -15,7 +15,7 @@ eval 'exec perl -S $0 ${1+"$@"}'
 
 =head1 NAME
 
-simgrid_update_xml - updates simgrid XML files to latest version
+simgrid_update_xml - updates SimGrid XML files to latest version
 
 =head1 SYNOPSIS
 
@@ -23,7 +23,7 @@ B<simgrid_update_xml> I<xml_file>
 
 =head1 DESCRIPTION
 
-simgrid_update_xml updates the simgrid XML file passed as argument.  The file
+simgrid_update_xml updates the SimGrid XML file passed as argument.  The file
 is modified in place, without any kind of backup. You may want to save a copy
 before running the script.
 

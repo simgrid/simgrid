@@ -3,7 +3,7 @@
 Simulating DAG
 ==============
 
-This tutorial presents the basics to understand how DAG are represented in Simgrid and how to simulate their workflow. 
+This tutorial presents the basics to understand how DAG are represented in SimGrid and how to simulate their workflow.
 
 Definition of a DAG
 -------------------
@@ -77,7 +77,7 @@ The goal of this lab is to describe the following DAG:
 In this DAG we want ``c1`` to compute 1e9 flops, ``c2`` to compute 5e9 flops and ``c3`` to compute 2e9 flops. 
 There is also a data transfer of 5e8 bytes between ``c1`` and ``c3``.
 
-First of all, include the Simgrid library and define the log category.
+First of all, include the SimGrid library and define the log category.
 
 .. literalinclude:: ../../examples/cpp/dag-tuto/s4u-dag-tuto.cpp
    :language: cpp
@@ -152,7 +152,7 @@ The execution of this code should give you the following output:
 Lab 2: Import a DAG from a file
 -------------------------------
 
-In this lab we present how to import a DAG into you Simgrid simulation, either using a DOT file, a JSON file, or a DAX file. 
+In this lab we present how to import a DAG into you SimGrid simulation, either using a DOT file, a JSON file, or a DAX file.
 
 The files presented in this lab describe the following DAG:
 
@@ -169,7 +169,7 @@ The following DOT file describes the workflow presented at the beginning of this
 .. literalinclude:: ../../examples/cpp/dag-from-dot-simple/dag.dot
    :language: dot
 
-It can be imported as a vector of Activities into Simgrid using :cpp:func:`simgrid::s4u::create_DAG_from_DOT`. Then, you have to assign hosts to your Activities.
+It can be imported as a vector of Activities into SimGrid using :cpp:func:`simgrid::s4u::create_DAG_from_DOT`. Then, you have to assign hosts to your Activities.
 
 .. literalinclude:: ../../examples/cpp/dag-from-dot-simple/s4u-dag-from-dot-simple.cpp
    :language: cpp
@@ -190,7 +190,7 @@ The following JSON file describes the workflow presented at the beginning of thi
 .. literalinclude:: ../../examples/cpp/dag-from-json-simple/dag.json
    :language: json
 
-It can be imported as a vector of Activities into Simgrid using :cpp:func:`simgrid::s4u::create_DAG_from_json`. 
+It can be imported as a vector of Activities into SimGrid using :cpp:func:`simgrid::s4u::create_DAG_from_json`.
 
 .. literalinclude:: ../../examples/cpp/dag-from-json-simple/s4u-dag-from-json-simple.cpp
    :language: cpp
@@ -211,7 +211,7 @@ The following DAX file describes the workflow presented at the beginning of this
 .. literalinclude:: ../../examples/cpp/dag-from-dax-simple/dag.xml
    :language: xml
 
-It can be imported as a vector of Activities into Simgrid using :cpp:func:`simgrid::s4u::create_DAG_from_DAX`.
+It can be imported as a vector of Activities into SimGrid using :cpp:func:`simgrid::s4u::create_DAG_from_DAX`.
 
 .. literalinclude:: ../../examples/cpp/dag-from-dax-simple/s4u-dag-from-dax-simple.cpp
    :language: cpp
@@ -279,7 +279,7 @@ Now that we have the key components of the algorithm let's merge them inside the
    {
    ...
 
-First, we initialize the Simgrid Engine.
+First, we initialize the SimGrid Engine.
 
 .. code-block:: cpp
 

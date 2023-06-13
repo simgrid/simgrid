@@ -1,4 +1,4 @@
-/* xbt.h - Public interface to the xbt (simgrid's toolbox)                  */
+/* xbt.h - Public interface to the xbt (SimGrid's toolbox)                  */
 
 /* Copyright (c) 2004-2023. The SimGrid Team. All rights reserved.          */
 

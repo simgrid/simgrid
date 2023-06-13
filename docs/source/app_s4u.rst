@@ -2846,7 +2846,7 @@ Error reporting
 
       The following errors denote a problem in the SimGrid tool itself. Most of the time, you should let these
       exception go, so that the simulation stops. But you may want to catch them, for example when you launch
-      simgrid from a python notebook and want to handle the problem accordingly.
+      SimGrid from a python notebook and want to handle the problem accordingly.
 
       .. doxygenclass:: simgrid::AssertionError
       .. doxygenclass:: simgrid::ParseError
@@ -2865,7 +2865,7 @@ Error reporting
 
       The following errors denote a problem in the SimGrid tool itself. Most of the time, you should let these
       exception go, so that the simulation stops. But you may want to catch them, for example when you launch
-      simgrid from a python notebook and want to handle the problem accordingly.
+      SimGrid from a python notebook and want to handle the problem accordingly.
 
       .. autoclass:: simgrid.AssertionError
 

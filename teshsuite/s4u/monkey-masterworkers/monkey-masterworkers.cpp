@@ -9,7 +9,7 @@
  * It is not written to be pleasant to read, but instead to resist the aggressions of the monkey:
  * - Workers keep going until after a global variable `todo` reaches 0.
  * - The master is a daemon that just sends infinitely tasks
- *   (simgrid simulations stop as soon as all non-daemon actors are done).
+ *   (SimGrid simulations stop as soon as all non-daemon actors are done).
  * - The platform is created programmatically to remove path issues and control the problem size.
  *
  * Command-line configuration items:

@@ -25,7 +25,7 @@
       for (const auto& elem : (action)) {                                                                              \
         ss << elem << " ";                                                                                             \
       }                                                                                                                \
-      ss << "\nPlease contact the Simgrid team if support is needed";                                                  \
+      ss << "\nPlease contact the SimGrid team if support is needed";                                                  \
       throw std::invalid_argument(ss.str());                                                                           \
     }                                                                                                                  \
   }

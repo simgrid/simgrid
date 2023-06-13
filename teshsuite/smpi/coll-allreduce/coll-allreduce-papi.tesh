@@ -1,7 +1,7 @@
 # Smpi Allreduce collectives tests
 ! output sort
 
-p Test allreduce with papi events activated - needs papi installed, simgrid compiled with it, and sudo or sudo sh -c "echo 0 > /proc/sys/kernel/perf_event_paranoid"
+p Test allreduce with papi events activated - needs papi installed, SimGrid compiled with it, and sudo or sudo sh -c "echo 0 > /proc/sys/kernel/perf_event_paranoid"
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ${platfdir:=.}/small_platform.xml -np 16 -trace --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error --cfg=smpi/papi-events:default:PAPI_L1_TCM:PAPI_TOT_CYC
 > [0.000000] [smpi/INFO] [rank 0] -> Tremblay
 > [0.000000] [smpi/INFO] [rank 1] -> Tremblay

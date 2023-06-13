@@ -1,4 +1,4 @@
-.. S4U (Simgrid for you) is the modern interface of SimGrid, which new project should use.
+.. S4U (SimGrid for you) is the modern interface of SimGrid, which new project should use.
 ..
 .. This file follows the ReStructured syntax to be included in the
 .. documentation, but it should remain readable directly.

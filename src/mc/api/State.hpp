@@ -103,7 +103,7 @@ public:
 
   /**
    * @brief Computes the backtrack set for this state
-   * according to its definition in Simgrid.
+   * according to its definition in SimGrid.
    *
    * The backtrack set as it appears in DPOR, SDPOR, and ODPOR
    * in SimGrid consists of those actors marked as `todo`
