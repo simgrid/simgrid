@@ -420,7 +420,7 @@ smpi_trace_call_location_t* smpi_trace_get_call_location()
   return smpi_process()->call_location();
 }
 
-void smpi_trace_set_call_location(const char* file, const int line)
+void smpi_trace_set_call_location(const char* file, const int line, const char* call_name)
 {
   smpi_trace_call_location_t* loc = smpi_process()->call_location();
 
@@ -431,18 +431,19 @@ void smpi_trace_set_call_location(const char* file, const int line)
   else
     loc->filename = file;
   loc->linenumber = line;
+  loc->func_call  = call_name;
 }
 
 /** Required for Fortran bindings */
-void smpi_trace_set_call_location_(const char* file, const int* line)
+void smpi_trace_set_call_location_(const char* file, const int* line, const char* call_name)
 {
-  smpi_trace_set_call_location(file, *line);
+  smpi_trace_set_call_location(file, *line, call_name);
 }
 
 /** Required for Fortran if -fsecond-underscore is activated */
-void smpi_trace_set_call_location__(const char* file, const int* line)
+void smpi_trace_set_call_location__(const char* file, const int* line, const char* call_name)
 {
-  smpi_trace_set_call_location(file, *line);
+  smpi_trace_set_call_location(file, *line, call_name);
 }
 
 void smpi_bench_destroy()

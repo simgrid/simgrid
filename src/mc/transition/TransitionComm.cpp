@@ -21,7 +21,8 @@ namespace simgrid::mc {
 CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_WAIT, issuer, times_considered)
 {
-  xbt_assert(stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> sbuff_ >> rbuff_ >> size_);
+  xbt_assert(stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> sbuff_ >> rbuff_ >> size_ >>
+             user_fun_call_);
   XBT_DEBUG("CommWaitTransition %s comm:%" PRIxPTR ", sender:%ld receiver:%ld mbox:%u sbuff:%" PRIxPTR
             " rbuff:%" PRIxPTR " size:%zu",
             (timeout_ ? "timeout" : "no-timeout"), comm_, sender_, receiver_, mbox_, sbuff_, rbuff_, size_);
@@ -56,7 +57,7 @@ bool CommWaitTransition::depends(const Transition* other) const
 CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_TEST, issuer, times_considered)
 {
-  xbt_assert(stream >> comm_ >> sender_ >> receiver_ >> mbox_ >> sbuff_ >> rbuff_ >> size_);
+  xbt_assert(stream >> comm_ >> sender_ >> receiver_ >> mbox_ >> sbuff_ >> rbuff_ >> size_ >> user_fun_call_);
   XBT_DEBUG("CommTestTransition comm:%" PRIxPTR ", sender:%ld receiver:%ld mbox:%u sbuff:%" PRIxPTR " rbuff:%" PRIxPTR
             " size:%zu",
             comm_, sender_, receiver_, mbox_, sbuff_, rbuff_, size_);
@@ -97,7 +98,7 @@ bool CommTestTransition::depends(const Transition* other) const
 CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered)
 {
-  xbt_assert(stream >> comm_ >> mbox_ >> rbuff_ >> tag_);
+  xbt_assert(stream >> comm_ >> mbox_ >> rbuff_ >> tag_ >> user_fun_call_);
 }
 std::string CommRecvTransition::to_string(bool verbose) const
 {
@@ -151,7 +152,7 @@ bool CommRecvTransition::depends(const Transition* other) const
 CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered)
 {
-  xbt_assert(stream >> comm_ >> mbox_ >> sbuff_ >> size_ >> tag_);
+  xbt_assert(stream >> comm_ >> mbox_ >> sbuff_ >> size_ >> tag_ >> user_fun_call_);
   XBT_DEBUG("SendTransition comm:%" PRIxPTR " mbox:%u sbuff:%" PRIxPTR " size:%zu", comm_, mbox_, sbuff_, size_);
 }
 std::string CommSendTransition::to_string(bool verbose = false) const

@@ -564,7 +564,7 @@ void SleepAction::kernel(simgrid::xbt::ReplayAction&)
 void LocationAction::kernel(simgrid::xbt::ReplayAction&)
 {
   const LocationParser& args = get_args();
-  smpi_trace_set_call_location(args.filename.c_str(), args.line);
+  smpi_trace_set_call_location(args.filename.c_str(), args.line, "");
 }
 
 void TestAction::kernel(simgrid::xbt::ReplayAction&)

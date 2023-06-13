@@ -24,6 +24,7 @@ XBT_PRIVATE void TRACE_smpi_init(aid_t pid, const std::string& calling_func);
 
 class smpi_trace_call_location_t {
 public:
+  std::string func_call;
   std::string filename;
   int linenumber = 0;
 
@@ -35,6 +36,8 @@ public:
     return previous_filename + ':' + std::to_string(previous_linenumber) + ':' + filename + ':' +
            std::to_string(linenumber);
   }
+
+  std::string get_call_location() const { return filename + "::" + func_call + "::" + std::to_string(linenumber); }
 };
 
 #endif
