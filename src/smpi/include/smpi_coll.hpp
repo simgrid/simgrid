@@ -57,6 +57,7 @@ struct s_mpi_coll_description_t {
 namespace colls {
 void set_collectives();
 XBT_PUBLIC std::vector<s_mpi_coll_description_t>* get_smpi_coll_descriptions(const std::string& name);
+std::string get_smpi_coll_help();
 
 void set_gather(const std::string& name);
 void set_allgather(const std::string& name);

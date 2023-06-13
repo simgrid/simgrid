@@ -13,7 +13,10 @@
 #include "smpi_request.hpp"
 #include "xbt/config.hpp"
 
+#include <iomanip>
 #include <map>
+#include <numeric>
+#include <sstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI collectives.");
 
@@ -240,6 +243,28 @@ std::vector<s_mpi_coll_description_t>* colls::get_smpi_coll_descriptions(const s
   auto iter = smpi_coll_descriptions.find(name);
   xbt_assert(iter != smpi_coll_descriptions.end(), "No collective named %s. This is a bug.", name.c_str());
   return &iter->second;
+}
+
+std::string colls::get_smpi_coll_help()
+{
+  size_t max_name_len =
+      std::accumulate(begin(smpi_coll_descriptions), end(smpi_coll_descriptions), 0, [](auto len, auto const& coll) {
+        return std::max(len, std::accumulate(begin(coll.second), end(coll.second), 0, [](auto len, auto const& descr) {
+                          return std::max<size_t>(len, descr.name.length());
+                        }));
+      });
+  std::ostringstream oss;
+  std::string title = "Available collective algorithms (select them with \"smpi/collective_name:algo_name\"):";
+  oss << title << '\n' << std::setfill('=') << std::setw(title.length() + 1);
+  for (auto const& [coll, algos] : smpi_coll_descriptions) {
+    std::string line = "Collective: \"" + coll + "\"";
+    oss << '\n' << line << '\n' << std::setfill('-') << std::setw(line.length() + 1) << '\n';
+    oss << std::setfill(' ') << std::left;
+    for (auto const& [name, descr, _] : algos)
+      oss << "  " << std::setw(max_name_len) << name << " " << descr << "\n";
+    oss << std::right;
+  }
+  return oss.str();
 }
 
 static s_mpi_coll_description_t* find_coll_description(const std::string& collective, const std::string& algo)
