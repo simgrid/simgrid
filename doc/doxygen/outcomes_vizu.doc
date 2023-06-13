@@ -354,7 +354,7 @@ you should use to analyze your simulator.
 @li I want to trace the resource utilization of all hosts
 and links of the platform, and my simulator <b>does not</b> use
 the tracing API. For that, you can run a uncategorized trace
-with the following parameters (it will work with <b>any</b> Simgrid
+with the following parameters (it will work with <b>any</b> SimGrid
 simulator):
 @verbatim
 ./your_simulator @

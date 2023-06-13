@@ -9,7 +9,7 @@
  *  The recorded path is written in the log output and can be replayed with MC disabled
  *  (even with a non-MC build) using `--cfg=model-check/replay:$replayPath`.
  *
- *  The same version of Simgrid should be used and the same arguments should be
+ *  The same version of SimGrid should be used and the same arguments should be
  *  passed to the application (without the MC specific arguments).
  */
 

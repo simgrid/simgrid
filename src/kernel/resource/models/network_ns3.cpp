@@ -404,7 +404,7 @@ double NetworkNS3Model::next_occurring_event(double sg_time)
   }
 
   double ns3_time = ns3::Simulator::GetNextEventTime().GetSeconds();
-  XBT_DEBUG("NS3 tells that the next occuring event is at %f (it's %f in simgrid), so NS3 returns a delta of %f.",
+  XBT_DEBUG("NS3 tells that the next occuring event is at %f (it's %f in SimGrid), so NS3 returns a delta of %f.",
             ns3_time, sg_time, ns3_time - sg_time);
   return ns3_time - sg_time;
 }

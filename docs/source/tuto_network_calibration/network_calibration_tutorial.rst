@@ -10,7 +10,7 @@ Specially, it is based on Tom Cornebize’s Phd thesis (https://tel.archives-ouv
 
 You can execute the notebook `network_calibration_tutorial.ipynb <https://framagit.org/simgrid/simgrid/tree/master/docs/source/tuto_network_calibration/network_calibration_tutorial.ipynb>`_) by yourself using the docker image
 available at: `Dockerfile <https://framagit.org/simgrid/simgrid/tree/master/docs/source/tuto_network_calibration/Dockerfile>`_. For that, run the
-following commands in the tutorial folder inside simgrid's code source (``docs/source/tuto_network_calibration``):
+following commands in the tutorial folder inside SimGrid's code source (``docs/source/tuto_network_calibration``):
 
 .. code-block::
 

@@ -78,7 +78,7 @@ Model checking:
  - Synchronize the MBI tests with upstream.
  - Show the full actor bactraces when replaying a MC trace (with model-check/replay)
    and the status of all actors on deadlocks in MC mode.
- - The safety/stateless aspects of the MC are now enabled by default in all simgrid builds.
+ - The safety/stateless aspects of the MC are now enabled by default in all SimGrid builds.
    Liveness and stateful aspects are still controled by the enabling_model-checking
    configuration option.
  - Stateless model-checking is now usable on any system, including Mac OSX and ARM processors.
@@ -242,7 +242,7 @@ MSG:
 New plugin: the Chaos Monkey (killing actors at any time)
  - Along with the new simgrid-monkey script, it tests whether your simulation
    resists resource failures at any possible timestamp in your simulation.
- - It is mostly intended to test the simgrid core in extreme conditions,
+ - It is mostly intended to test the SimGrid core in extreme conditions,
    but some users may find it interesting too.
 
 Models:
@@ -1006,7 +1006,7 @@ General:
  - Network model 'NS3' was renamed into 'ns-3'.
 
 Python:
- - Simgrid can now hopefully be installed with pip.
+ - SimGrid can now hopefully be installed with pip.
 
 S4U:
  - wait_any can now be used for asynchronous executions too.
@@ -2054,7 +2054,7 @@ SimGrid (3.12) stable; urgency=low
    - InfiniBand network model added: Based on the works of Jerome Vienne
      http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf
    - When smpi/display_timing is set, also display global simulation time and application times
-   - Have smpirun, smpicc and friends display the simgrid git hash version on --git-version
+   - Have smpirun, smpicc and friends display the SimGrid git hash version on --git-version
  * Collective communications
    - SMP-aware algorithms are now dynamically handled. An internal communicator is created for each node, and an external one to handle communications between "leaders" of each node
    - MVAPICH2 (1.9) collective algorithms selector: normal and SMP algorithms are handled, and selection logic is based on the one used on TACC's Stampede cluster (https://www.tacc.utexas.edu/stampede/).
@@ -2795,8 +2795,8 @@ SimGrid (3.6.2) stable; urgency=low
 
  Portability
  * Create an installer for windows with nsis (amd64 and win32)
-   - Add an hello world project to illustrate simgrid project creation.
-   - Embed libpcre into the Simgrid installer to avoid
+   - Add an hello world project to illustrate SimGrid project creation.
+   - Embed libpcre into the SimGrid installer to avoid
      its compilation burden
  * The raw execution contexts should work on Apple now
  * Port to Windows 64 bits
@@ -2829,7 +2829,7 @@ SimGrid (3.6.1) stable; urgency=low
 SimGrid-java (3.6) unstable; urgency=low
 
  * Initial release.
- * Split of every thing from simgrid v3.5 into a separate package.
+ * Split of every thing from SimGrid v3.5 into a separate package.
 
  -- 2011-10-05 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
@@ -3343,7 +3343,7 @@ SimGrid (3.4) stable; urgency=low
   * Greatly improved our cdash/ctest interactions
     Check http://cdash.inria.fr/CDash/index.php?project=Simgrid
   * Added memory checking tests with valgrind; lot of memleak fixing.
-    This may be the first release of simgrid with so few memory issues
+    This may be the first release of SimGrid with so few memory issues
   * Added code coverage tests.
     Our coverage is still improvable, but at least we see it on cdash.
 
@@ -3649,7 +3649,7 @@ SimGrid (3.3.2) stable; urgency=low
 
  Timing report of this version:
   This version seem to be more than 5% faster than 3.3.1 (on linux
-    64bits with contextes). The gain is less than expected, we are
+    64bits with contexts). The gain is less than expected, we are
     investigating this for next release.
 
  -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr> Wed, 19 Aug 2009 17:07:12 +0200
@@ -3742,7 +3742,7 @@ SimGrid (3.3.1) stable; urgency=low
     - Linux(debian)/amd64/context
     - Linux(debian)/amd64/pthreads
     These targets fail about 1/10 of times on gras/pmm, but we believe
-      that this is because of the test, not because of simgrid.
+      that this is because of the test, not because of SimGrid.
     amok/saturate_sg fails even more rarely, and the test may not be
       the problem.
 
@@ -3799,7 +3799,7 @@ SimGrid (3.3) stable; urgency=high
     is really less memory-demanding, which should allow you to use
     larger files in SimGrid [AL].
 
-  * Inform valgrind about our contextes, so that it becomes usable
+  * Inform valgrind about our contexts, so that it becomes usable
     with the default (and more effecient) version of SimGrid
     [contributed by Sékou Diakite, many thanks]
 

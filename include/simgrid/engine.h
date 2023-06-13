@@ -51,9 +51,9 @@ XBT_PUBLIC void simgrid_set_maestro(void (*code)(void*), void* data);
 
 /** @brief Allow other libraries to react to the --help flag, too
  *
- * When finding --help on the command line, simgrid usually stops right after displaying its help message.
- * If you are writing a library using simgrid, you may want to display your own help message before everything stops.
- * If so, just call this function before having simgrid parsing the command line, and you will be given the control
+ * When finding --help on the command line, SimGrid usually stops right after displaying its help message.
+ * If you are writing a library using SimGrid, you may want to display your own help message before everything stops.
+ * If so, just call this function before having SimGrid parsing the command line, and you will be given the control
  * even if the user is asking for help.
  */
 XBT_PUBLIC void sg_config_continue_after_help();

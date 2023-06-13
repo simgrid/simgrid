@@ -51,7 +51,7 @@ jobs:
       - name: Create the success Message
         if: ${{ success() }}
         run: |
-          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Simgrid built successfully on ${{ matrix.config.name }}! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"SimGrid built successfully on ${{ matrix.config.name }}! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - uses: komarnitskyi/action-mattermost-notification@v0.1.2-beta
         if: ${{ always() }}
         env:

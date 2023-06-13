@@ -955,7 +955,7 @@ message("        Documentation ...............: ${enable_documentation}")
 message("        Graphviz mode ...............: ${HAVE_GRAPHVIZ}")
 message("        Mallocators .................: ${enable_mallocators}")
 message("")
-message("        Simgrid dependencies ........: ${SIMGRID_DEP}")
+message("        SimGrid dependencies ........: ${SIMGRID_DEP}")
 message("")
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/Testing/Notes/)
