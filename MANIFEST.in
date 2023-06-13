@@ -2228,6 +2228,7 @@ include src/mc/explo/udpor/Configuration_test.cpp
 include src/mc/explo/udpor/EventSet.cpp
 include src/mc/explo/udpor/EventSet.hpp
 include src/mc/explo/udpor/EventSet_test.cpp
+include src/mc/explo/udpor/ExtensionSet_test.cpp
 include src/mc/explo/udpor/ExtensionSetCalculator.cpp
 include src/mc/explo/udpor/ExtensionSetCalculator.hpp
 include src/mc/explo/udpor/History.cpp

@@ -16,6 +16,8 @@
 #define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v335)
 #include <simgrid/simix.h>
 
+#include <cmath>
+
 void simcall_comm_send(simgrid::kernel::actor::ActorImpl* sender, simgrid::kernel::activity::MailboxImpl* mbox,
                        double task_size, double rate, void* src_buff, size_t src_buff_size,
                        bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
