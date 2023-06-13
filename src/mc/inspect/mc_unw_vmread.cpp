@@ -98,9 +98,8 @@ unw_addr_space_t create_addr_space()
    */
   // TODO, we could get rid of this if we properly stop the model-checked
   // process before reading the memory.
-  unw_accessors_t accessors = {&_UPT_find_proc_info, &_UPT_put_unwind_info, &_UPT_get_dyn_info_list_addr,
-                               &access_mem,          &_UPT_access_reg,      &_UPT_access_fpreg,
-                               &_UPT_resume,         &_UPT_get_proc_name};
+  unw_accessors_t accessors = _UPT_accessors;
+  accessors.access_mem      = &access_mem;
   return unw_create_addr_space(&accessors, BYTE_ORDER);
 }
 
