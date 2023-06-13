@@ -57,6 +57,8 @@ set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
 
 
 if(enable_smpi)
+  ADD_TEST(test-smpi-help-coll ${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -wrapper "${VALGRIND_WRAPPER_NO_LEAK_CHECK}" --help-coll)
+
   ADD_TESH_FACTORIES(tesh-smpi-macro-shared "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-shared --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-shared ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-shared/macro-shared.tesh)
   ADD_TESH_FACTORIES(tesh-smpi-auto-shared "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/auto-shared --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/auto-shared ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/auto-shared/auto-shared.tesh)
   ADD_TESH_FACTORIES(tesh-smpi-macro-partial-shared "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-partial-shared/macro-partial-shared.tesh)
