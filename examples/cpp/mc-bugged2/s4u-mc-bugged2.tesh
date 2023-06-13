@@ -53,4 +53,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [0.000000] [mc_explo/INFO]   3: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   1: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;3;1;3;1'
+<<<<<<< HEAD
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 49 unique states visited; 5 backtracks (23 transition replays, 77 states visited overall)
+=======
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 49 unique states visited; 5 backtracks (23 transition replays, 77 states visited overall)
+>>>>>>> 3bbac43bba2350e10f84605693da4b1244ef9da2

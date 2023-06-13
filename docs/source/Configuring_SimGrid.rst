@@ -1331,7 +1331,8 @@ default SMPI uses naive version of collective operations.)
 
 Each collective operation can be manually selected with a ``smpi/collective_name:algo_name``. For example, if you want to use
 the Bruck algorithm for the Alltoall algorithm, you should use ``--cfg=smpi/alltoall:bruck`` on the command-line of smpirun. The
-reference of all available algorithms are listed in :ref:`SMPI_use_colls`.
+reference of all available algorithms are listed in :ref:`SMPI_use_colls`, and you can get the full list implemented in your
+version using ``smpirun --help-coll``.
 
 .. _cfg=smpi/barrier-collectives:
 
