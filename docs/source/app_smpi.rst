@@ -203,8 +203,10 @@ means that the selected algorithm will be used
 .. Warning:: Some collective may require specific conditions to be
    executed correctly (for instance having a communicator with a power
    of two number of nodes only), which are currently not enforced by
-   Simgrid. Some crashes can be expected while trying these algorithms
+   SimGrid. Some crashes can be expected while trying these algorithms
    with unusual sizes/parameters
+
+To retrive the full list of implemented algorithms in your version of SimGrid, simply use ``smpirun --help-coll``.
 
 MPI_Alltoall
 ^^^^^^^^^^^^
