@@ -255,15 +255,16 @@ std::string colls::get_smpi_coll_help()
       });
   std::ostringstream oss;
   std::string title = "Available collective algorithms (select them with \"smpi/collective_name:algo_name\"):";
-  oss << title << '\n' << std::setfill('=') << std::setw(title.length() + 1);
+  oss << title << '\n' << std::setfill('=') << std::setw(title.length() + 1) << '\n';
   for (auto const& [coll, algos] : smpi_coll_descriptions) {
     std::string line = "Collective: \"" + coll + "\"";
-    oss << '\n' << line << '\n' << std::setfill('-') << std::setw(line.length() + 1) << '\n';
+    oss << line << '\n' << std::setfill('-') << std::setw(line.length() + 1) << '\n';
     oss << std::setfill(' ') << std::left;
     for (auto const& [name, descr, _] : algos)
       oss << "  " << std::setw(max_name_len) << name << " " << descr << "\n";
-    oss << std::right;
+    oss << std::right << '\n';
   }
+  oss << "Please see https://simgrid.org/doc/latest/app_smpi.html#available-algorithms for more information.\n";
   return oss.str();
 }
 
