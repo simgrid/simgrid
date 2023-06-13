@@ -182,15 +182,16 @@ latency-factor is 13.01, bandwidth-factor is 0.97 while weight-S is 20537. Lets 
      <link_ctn id="link1" />
    </route>
 
-If host `A` sends ``100kB`` (a hundred kilobytes) to host `B`, one can expect that this communication would take `0.81`
-seconds to complete according to a simple latency-plus-size-divided-by-bandwidth model (0.01 + 8e5/1e6 = 0.81) since the
-latency is small enough to ensure that the physical bandwidth is used (see the discussion on CM02 above). However, the
-LV08 model is more complex to account for three phenomena that directly impact the simulation time:
+If host `A` sends ``100kB`` (a hundred kilobytes, that is, 8e5 bits) to host `B`, one can expect that this communication would
+take `0.81` seconds to complete according to a simple latency-plus-size-divided-by-bandwidth model (0.01 + 8e5/1e6 = 0.81 -- the
+size was converted from bytes to bits) since the latency is small enough to ensure that the physical bandwidth is used (see the
+discussion on CM02 above). However, the LV08 model is more complex to account for three phenomena that directly impact the
+simulation time:
 
   - The size of a message at the application level (i.e., 100kB in this example) is not the size that is actually
     transferred over the network. To mimic the fact that TCP and IP headers are added to each packet of the original
     payload, the TCP model of SimGrid empirically considers that `only 97% of the nominal bandwidth` are available. In
-    other words, the size of your message is increased by a few percents, whatever this size be.
+    other words, the size of your message is increased by a few percents, whichever this size.
 
   - In the real world, the TCP protocol is not able to fully exploit the bandwidth of a link from the emission of the
     first packet. To reflect this `slow start` phenomenon, the latency declared in the platform file is multiplied by
