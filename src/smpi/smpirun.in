@@ -59,6 +59,8 @@ Options:
 
   -version                   # Displays the SimGrid version (human readable)
   -git-version               # Displays the git hash of SimGrid
+  -help                      # Displays this information
+  -help-coll                 # Displays all available collective algorithms
 
 or (deprecated usage):
   $0 [-keep-temps] [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]
@@ -240,7 +242,7 @@ while true; do
             usage
             exit 0
             ;;
-        "--help-coll")
+        "-help-coll" | "--help-coll")
             ${WRAPPER} "@SMPIMAIN@" --help-coll
             exit 0
             ;;
