@@ -39,7 +39,7 @@ public:
  *
  * @param latency_base The base latency for this calibration (user-defined)
  * @param seg Segmentation (user-defined)
- * @param size Message size (simgrid)
+ * @param size Message size (SimGrid)
  */
 static double latency_factor_cb(double latency_base, const SegmentedRegression& seg, double size,
                                 const sg4::Host* /*src*/, const sg4::Host* /*dst*/,
@@ -57,7 +57,7 @@ static double latency_factor_cb(double latency_base, const SegmentedRegression& 
  *
  * @param bw_base The base bandwidth for this calibration (user-defined)
  * @param seg Segmentation (user-defined)
- * @param size Message size (simgrid)
+ * @param size Message size (SimGrid)
  */
 static double bw_factor_cb(double bw_base, const SegmentedRegression& seg, double size, const sg4::Host* /*src*/,
                            const sg4::Host* /*dst*/, const std::vector<sg4::Link*>& /*links*/,

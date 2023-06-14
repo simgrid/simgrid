@@ -6,7 +6,7 @@ library(pajengr)
 # Load and relabel the data
 df = pajeng_read(args[1])
 df$state %>%
-    # rename some columns to use simgrid terminology
+    # rename some columns to use SimGrid terminology
     rename(Actor = Container,
            State = Value) %>%
     # do the plot

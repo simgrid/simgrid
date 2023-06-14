@@ -15,9 +15,9 @@ namespace sg4 = simgrid::s4u;
  * in collective operations. But it doesn't happen in this example
  *
  * @param op MPI Operation (set by user at cb registering below)
- * @param size Message size (set by simgrid)
- * @param src Source host (set by simgrid)
- * @param dst Source host (set by simgrid)
+ * @param size Message size (set by SimGrid)
+ * @param src Source host (set by SimGrid)
+ * @param dst Source host (set by SimGrid)
  */
 static double smpi_cost_cb(SmpiOperation op, size_t /*size*/, const sg4::Host* src, const sg4::Host* dst)
 {

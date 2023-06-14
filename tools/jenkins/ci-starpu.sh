@@ -22,7 +22,7 @@ for i in master 1.3 ; do
 
   # NOTE: Do *not* introduce parameters to "make it work" here.
   # Things should "just work" with default parameters!
-  # Users should not have to tinker to get starpu working on top of simgrid, that is precisely why we have this CI
+  # Users should not have to tinker to get starpu working on top of SimGrid, that is precisely why we have this CI
 
   if [ $i = master ]; then
     # On master, fail if we use deprecated functions, so that StarPU people know they have to stop using them, fix it, and thus make CI happy again

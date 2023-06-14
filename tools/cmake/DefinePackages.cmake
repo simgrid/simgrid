@@ -777,7 +777,7 @@ else() # NOT ucontext
                                 src/kernel/context/ContextUnix.cpp)
 endif()
 
-### Simgrid Lib sources
+### SimGrid Lib sources
 set(simgrid_sources
   ${S4U_SRC}
   ${SIMGRID_SRC}

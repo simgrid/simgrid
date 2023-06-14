@@ -206,7 +206,7 @@ means that the selected algorithm will be used
    SimGrid. Some crashes can be expected while trying these algorithms
    with unusual sizes/parameters
 
-To retrive the full list of implemented algorithms in your version of SimGrid, simply use ``smpirun --help-coll``.
+To retrieve the full list of implemented algorithms in your version of SimGrid, simply use ``smpirun --help-coll``.
 
 MPI_Alltoall
 ^^^^^^^^^^^^
@@ -455,7 +455,7 @@ Adding an algorithm
 ^^^^^^^^^^^^^^^^^^^
 
 To add a new algorithm, one should check in the src/smpi/colls folder
-how other algorithms are coded. Using plain MPI code inside Simgrid
+how other algorithms are coded. Using plain MPI code inside SimGrid
 can't be done, so algorithms have to be changed to use smpi version of
 the calls instead (MPI_Send will become smpi_mpi_send). Some functions
 may have different signatures than their MPI counterpart, please check
@@ -473,7 +473,7 @@ Example: adding a "pair" version of the Alltoall collective.
 
  - To register the new version of the algorithm, simply add a line to the corresponding macro in src/smpi/colls/cools.h ( add a "COLL_APPLY(action, COLL_ALLTOALL_SIG, pair)" to the COLL_ALLTOALLS macro ). The algorithm should now be compiled and be selected when using --cfg=smpi/alltoall:pair at runtime.
 
- - To add a test for the algorithm inside Simgrid's test suite, juste add the new algorithm name in the ALLTOALL_COLL list found inside teshsuite/smpi/CMakeLists.txt . When running ctest, a test for the new algorithm should be generated and executed. If it does not pass, please check your code or contact us.
+ - To add a test for the algorithm inside SimGrid's test suite, juste add the new algorithm name in the ALLTOALL_COLL list found inside teshsuite/smpi/CMakeLists.txt . When running ctest, a test for the new algorithm should be generated and executed. If it does not pass, please check your code or contact us.
 
  - Please submit your patch for inclusion in SMPI, for example through a pull request on GitHub or directly per email.
 
@@ -581,11 +581,11 @@ the exact same file several times, be it a library or a relocatable
 executable. It makes perfectly sense in the general case, but we need
 to circumvent this rule of thumb in our case. To that extend, the
 binary is copied in a temporary file before being re-linked against.
-``dlmopen()`` cannot be used as it only allows 256 contextes, and as it
-would also duplicate simgrid itself.
+``dlmopen()`` cannot be used as it only allows 256 contexts, and as it
+would also duplicate SimGrid itself.
 
 This approach greatly speeds up the context switching, down to about
-40 CPU cycles with our raw contextes, instead of requesting several
+40 CPU cycles with our raw contexts, instead of requesting several
 syscalls with the ``mmap()`` approach. Another advantage is that it
 permits one to run the SMPI contexts in parallel, which is obviously not
 possible with the ``mmap()`` approach. It was tricky to implement, but
@@ -604,7 +604,7 @@ implementation leads.\n
 Also, currently, only the binary is copied and dlopen-ed for each MPI
 rank. We could probably extend this to external dependencies, but for
 now, any external dependencies must be statically linked into your
-application. As usual, simgrid itself shall never be statically linked
+application. As usual, SimGrid itself shall never be statically linked
 in your app. You don't want to give a copy of SimGrid to each MPI rank:
 that's ways too much for them to deal with.
 

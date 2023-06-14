@@ -42,8 +42,10 @@ int main(int argc, char *argv[])
     MPI_Send(&msg, 1, MPI_INT, dst, tag1, MPI_COMM_WORLD);
 
     /* Inject five seconds of fake computation time */
-    /* We are in a public file, not internal to simgrid, so _benched flavour is preferred, as it protects against accidental skip */
-    /* smpi_execute_benched here is mostly equivalent to sleep, which is intercepted by smpi and turned into smpi_sleep */
+    /* We are in a public file, not internal to SimGrid, so _benched flavour is preferred, as it protects against
+     * accidental skip */
+    /* smpi_execute_benched here is mostly equivalent to sleep, which is intercepted by smpi and turned into smpi_sleep
+     */
     /* Difference with sleep is only for energy consumption */
     smpi_execute_benched(5.0);
 
@@ -56,7 +58,8 @@ int main(int argc, char *argv[])
     msg++;
 
     /* Inject 762.96 Mflops of computation time - Host Jupiter is 76.296Mf per second, so this should amount to 10s */
-    /* We are in a public file, not internal to simgrid, so _benched flavour is preferred, as it protects against accidental skip */
+    /* We are in a public file, not internal to SimGrid, so _benched flavour is preferred, as it protects against
+     * accidental skip */
     smpi_execute_flops_benched(762960000);
 
     printf("[%d] After a nap, increment message's value to  '%d'\n", rank, msg);

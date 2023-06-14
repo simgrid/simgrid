@@ -209,7 +209,7 @@ public:
   /** @brief set a configuration variable
    *
    * @beginrst
-   * Do --help on any simgrid binary to see the list of currently existing configuration variables
+   * Do --help on any SimGrid binary to see the list of currently existing configuration variables
    * (see also :ref:`options`).
    * @endrst
    *

@@ -67,7 +67,7 @@ static inline void lock_release(xbt_mallocator_t m)
  * This function must be called once the framework configuration is done. mallocators will not get used until it's
  * called (check the implementation notes above for more info).
  *
- * sg_config uses this function to inform the mallocators when simgrid is configured, and whether lock protection is
+ * sg_config uses this function to inform the mallocators when SimGrid is configured, and whether lock protection is
  * needed.
  */
 void xbt_mallocator_initialization_is_done(int need_protection)

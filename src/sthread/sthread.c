@@ -19,7 +19,7 @@
 #include <valgrind/valgrind.h>
 #endif
 
-/* We don't want to intercept pthread within simgrid. Instead we should provide the real implem to simgrid */
+/* We don't want to intercept pthread within SimGrid. Instead we should provide the real implem to SimGrid */
 static int (*raw_pthread_create)(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*);
 static int (*raw_pthread_join)(pthread_t, void**);
 static int (*raw_mutex_init)(pthread_mutex_t*, const pthread_mutexattr_t*);

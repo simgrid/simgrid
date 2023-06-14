@@ -22,7 +22,7 @@
 #include <algorithm>
 #include <string>
 
-XBT_LOG_NEW_CATEGORY(s4u, "Log channels of the S4U (Simgrid for you) interface");
+XBT_LOG_NEW_CATEGORY(s4u, "Log channels of the S4U (SimGrid for you) interface");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_engine, s4u, "Logging specific to S4U (engine)");
 
 static simgrid::kernel::actor::ActorCode maestro_code;

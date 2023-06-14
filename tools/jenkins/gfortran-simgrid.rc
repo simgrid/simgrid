@@ -6,7 +6,7 @@ def getcwd():
 prefix=getcwd()+"/install"
 #Add the condition testing to run tests and includes PyYaml
 conditions.add("testing")
-conditions.add("simulation") #to include simgrid compilation
+conditions.add("simulation") #to include SimGrid compilation
 #List the module the this rcfile will build
 modules = ['spred',]
 #example of the potentialities of the python syntax in this file

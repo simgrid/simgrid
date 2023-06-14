@@ -7,7 +7,7 @@
 
 '''
 This script is intended to convert SMPI time independent traces (TIT) from the
-old format (simgrid version <= 3.19) to the new format.
+old format (SimGrid version <= 3.19) to the new format.
 
 On the previous format each MPI_wait calls were associated to the last ISend of
 IRecv call arbitrarily.
@@ -15,7 +15,7 @@ IRecv call arbitrarily.
 This new that includes tags field that links MPI_wait calls to the
 MPI_ISend or MPI_IRecv associated to this wait.
 
-This script reproduce the old behavior of simgrid because information are
+This script reproduce the old behavior of SimGrid because information are
 missing to add the tags properly. It also lower case all the mpi calls.
 
 It takes in input (as argument or in stdin) the trace list file that is only a

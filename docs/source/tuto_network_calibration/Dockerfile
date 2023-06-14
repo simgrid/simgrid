@@ -15,7 +15,7 @@ RUN printf '%s\n' \
     r-cran-dplyr \
     r-cran-irkernel \
     r-cran-quantreg \
-# simgrid dependencies
+# SimGrid dependencies
     g++ \
     gcc \
     git \
@@ -63,7 +63,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     papermill==2.3.3 \
     ipywidgets==7.6.5
 
-# simgrid
+# SimGrid
 RUN mkdir -p /source && cd /source && git clone --depth=1 https://framagit.org/simgrid/simgrid.git simgrid.git && \
     cd simgrid.git && \
     cmake -DCMAKE_INSTALL_PREFIX=/usr/ -Denable_documentation=OFF -Denable_smpi=ON -Denable_compile_optimizations=ON . && \

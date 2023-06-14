@@ -30,7 +30,7 @@ namespace simgrid::mc {
  * in which vector clocks are typically used).
  *
  * Support, however, needs to be added to clock vectors since
- * Simgrid permits the *creation* of new actors during execution.
+ * SimGrid permits the *creation* of new actors during execution.
  * Since we don't know this size before-hand, we have to allow
  * clock vectors to behave as if they were "infinitely" large. To
  * do so, all newly mapped elements, if not assigned a value, are

@@ -305,12 +305,12 @@ typedef s4u_Actor* sg_actor_t;
 typedef const s4u_Actor* const_sg_actor_t;
 
 /** @ingroup m_datatypes_management_details
- * @brief Type for any simgrid size
+ * @brief Type for any SimGrid size
  */
 typedef unsigned long long sg_size_t;
 
 /** @ingroup m_datatypes_management_details
- * @brief Type for any simgrid offset
+ * @brief Type for any SimGrid offset
  */
 typedef long long sg_offset_t;
 
