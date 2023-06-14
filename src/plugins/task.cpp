@@ -151,7 +151,7 @@ void Task::set_token(std::shared_ptr<void> token)
  *  @return Map of tokens received for the next execution.
  *  @note If there is no queued execution for this task the map might not exist or be partially empty.
  */
-std::map<TaskPtr, std::shared_ptr<void>> Task::get_tokens() const
+std::map<TaskPtr, std::shared_ptr<void>> Task::get_next_execution_tokens() const
 {
   return tokens_received_.front();
 }

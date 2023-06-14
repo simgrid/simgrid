@@ -65,7 +65,7 @@ public:
   void set_amount(double amount);
   double get_amount() const { return amount_; }
   void set_token(std::shared_ptr<void> token);
-  std::map<TaskPtr, std::shared_ptr<void>> get_tokens() const;
+  std::map<TaskPtr, std::shared_ptr<void>> get_next_execution_tokens() const;
   void add_successor(TaskPtr t);
   void remove_successor(TaskPtr t);
   void remove_all_successors();
