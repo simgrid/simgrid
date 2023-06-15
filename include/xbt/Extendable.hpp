@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <functional>
 #include <limits>
+#include <memory>
 #include <vector>
 
 namespace simgrid::xbt {
@@ -109,6 +110,8 @@ public:
     extensions_[0]=data;
   }
   template <typename D> D* get_data() const { return static_cast<D*>(extensions_[0]); }
+  template <typename D> std::unique_ptr<D> get_unique_data() { return std::unique_ptr<D>(get_data<D>()); }
+
   XBT_ATTRIB_DEPRECATED_v334("Please use typed template Extendable::get_data<>()") void* get_data() const
   {
     return get_data<void>();
