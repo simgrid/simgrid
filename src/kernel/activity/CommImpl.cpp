@@ -23,6 +23,17 @@ namespace simgrid::kernel::activity {
 
 unsigned CommImpl::next_id_ = 0;
 
+/* In stateful MC, we need to ignore some private memory that is not relevant to the application state */
+void CommImpl::setup_mc()
+{
+  MC_ignore(&CommImpl::next_id_, sizeof(CommImpl::next_id_));
+}
+
+CommImpl::CommImpl()
+{
+  MC_ignore((void*)&id_, sizeof(id_));
+}
+
 std::function<void(CommImpl*, void*, size_t)> CommImpl::copy_data_callback_ = [](kernel::activity::CommImpl* comm,
                                                                                  void* buff, size_t buff_size) {
   xbt_assert((buff_size == sizeof(void*)), "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
@@ -111,6 +122,8 @@ CommImpl::~CommImpl()
   } else if (mbox_) {
     mbox_->remove(this);
   }
+
+  MC_unignore((void*)&id_, sizeof(id_));
 }
 
 /**  @brief Starts the simulation of a communication synchro. */
