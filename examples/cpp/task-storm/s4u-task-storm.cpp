@@ -37,11 +37,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(task_storm, "Messages specific for this s4u example");
 
-struct Token {
-  double data_ = 0;
-  Token(double data) : data_(data) {}
-};
-
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
@@ -95,30 +90,31 @@ int main(int argc, char* argv[])
     }
     std::vector<double> amount = {1e3,1e6,1e9};
     comm->set_amount(amount[count % 3]);
-    auto token = std::make_shared<Token>(amount[count % 3]);
+    auto token = std::make_shared<simgrid::plugins::Token>();
+    token->set_data(new double(amount[count % 3]));
     t->set_token(token);
   });
 
   // The token sent by SA is forwarded by both communication tasks
   SA_to_B1->on_this_start_cb([&](simgrid::plugins::Task* t) {
-    t->set_token(t->get_next_execution_tokens()[SA]);
+    t->set_token(t->get_next_token_from(SA));
   });
   SA_to_B2->on_this_start_cb([&](simgrid::plugins::Task* t) {
-    t->set_token(t->get_next_execution_tokens()[SA]);
+    t->set_token(t->get_next_token_from(SA));
   });
 
   /* B1 and B2 read the value of the token received by their predecessors
      and use it to adapt their amount of work to do.
   */ 
   B1->on_this_start_cb([&](simgrid::plugins::Task* t) {
-    auto tokens_map = t->get_next_execution_tokens();
-    Token* tok = (Token*)(tokens_map[SA_to_B1].get());
-    t->set_amount(tok->data_ * 10);
+    auto data = t->get_next_token_from(SA_to_B1)->get_data<double>();
+    t->set_amount(*data * 10);
+    delete data;
   });
   B2->on_this_start_cb([&](simgrid::plugins::Task* t) {
-    auto tokens_map = t->get_next_execution_tokens();
-    Token* tok = (Token*)(tokens_map[SA_to_B2].get());
-    t->set_amount(tok->data_ * 10);
+    auto data = t->get_next_token_from(SA_to_B2)->get_data<double>();
+    t->set_amount(*data * 10);
+    delete data;
   });
 
   // Enqueue executions for tasks without predecessors

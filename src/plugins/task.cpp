@@ -1,3 +1,4 @@
+#include <memory>
 #include <simgrid/Exception.hpp>
 #include <simgrid/plugins/task.hpp>
 #include <simgrid/s4u/Comm.hpp>
@@ -142,7 +143,7 @@ void Task::set_amount(double amount)
  *  @brief Set the token to send to successors.
  *  @note The token is passed to each successor after the task end, i.e., after the on_end callback.
  */
-void Task::set_token(std::shared_ptr<void> token)
+void Task::set_token(std::shared_ptr<Token> token)
 {
   simgrid::kernel::actor::simcall_answered([this, token] { token_ = token; });
 }
@@ -151,9 +152,9 @@ void Task::set_token(std::shared_ptr<void> token)
  *  @return Map of tokens received for the next execution.
  *  @note If there is no queued execution for this task the map might not exist or be partially empty.
  */
-std::map<TaskPtr, std::shared_ptr<void>> Task::get_next_execution_tokens() const
+std::shared_ptr<Token> Task::get_next_token_from(TaskPtr t)
 {
-  return tokens_received_.front();
+  return tokens_received_.front()[t];
 }
 
 /** @ingroup plugin_task

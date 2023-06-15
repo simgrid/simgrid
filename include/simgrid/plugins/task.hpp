@@ -29,6 +29,8 @@ struct ExtendedAttributeActivity {
   Task* task_;
 };
 
+class XBT_PUBLIC Token : public xbt::Extendable<Token> {};
+
 class Task {
   std::set<Task*> successors_                 = {};
   std::map<Task*, unsigned int> predecessors_ = {};
@@ -40,8 +42,8 @@ class Task {
 protected:
   std::string name_;
   double amount_;
-  std::shared_ptr<void> token_ = NULL;
-  std::deque<std::map<TaskPtr, std::shared_ptr<void>>> tokens_received_;
+  std::shared_ptr<Token> token_ = nullptr;
+  std::deque<std::map<TaskPtr, std::shared_ptr<Token>>> tokens_received_;
   int queued_execs_ = 0;
   int count_        = 0;
   bool working_     = false;
@@ -64,8 +66,8 @@ public:
   void enqueue_execs(int n);
   void set_amount(double amount);
   double get_amount() const { return amount_; }
-  void set_token(std::shared_ptr<void> token);
-  std::map<TaskPtr, std::shared_ptr<void>> get_next_execution_tokens() const;
+  void set_token(std::shared_ptr<Token> token);
+  std::shared_ptr<Token> get_next_token_from(TaskPtr t);
   void add_successor(TaskPtr t);
   void remove_successor(TaskPtr t);
   void remove_all_successors();
