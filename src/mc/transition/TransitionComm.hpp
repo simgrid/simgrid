@@ -21,10 +21,10 @@ class CommTestTransition;
 
 class CommWaitTransition : public Transition {
   bool timeout_;
-  uintptr_t comm_;
+  unsigned comm_;
+  unsigned mbox_;
   aid_t sender_;
   aid_t receiver_;
-  unsigned mbox_;
   uintptr_t sbuff_;
   uintptr_t rbuff_;
   size_t size_;
@@ -33,15 +33,15 @@ class CommWaitTransition : public Transition {
   friend CommTestTransition;
 
 public:
-  CommWaitTransition(aid_t issuer, int times_considered, bool timeout_, uintptr_t comm_, aid_t sender_, aid_t receiver_,
+  CommWaitTransition(aid_t issuer, int times_considered, bool timeout_, unsigned comm_, aid_t sender_, aid_t receiver_,
                      unsigned mbox_, uintptr_t sbuff_, uintptr_t rbuff_, size_t size_);
   CommWaitTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
 
   bool get_timeout() const { return timeout_; }
-  /** Address of the corresponding Communication object in the application */
-  uintptr_t get_comm() const { return comm_; }
+  /** ID of the corresponding Communication object in the application, or 0 if unknown */
+  unsigned get_comm() const { return comm_; }
   /** Sender ID */
   aid_t get_sender() const { return sender_; }
   /** Receiver ID */
@@ -56,10 +56,10 @@ public:
   size_t get_size() const { return size_; }
 };
 class CommTestTransition : public Transition {
-  uintptr_t comm_;
+  unsigned comm_;
+  unsigned mbox_;
   aid_t sender_;
   aid_t receiver_;
-  unsigned mbox_;
   uintptr_t sbuff_;
   uintptr_t rbuff_;
   size_t size_;
@@ -67,14 +67,14 @@ class CommTestTransition : public Transition {
   friend CommRecvTransition;
 
 public:
-  CommTestTransition(aid_t issuer, int times_considered, uintptr_t comm_, aid_t sender_, aid_t receiver_,
-                     unsigned mbox_, uintptr_t sbuff_, uintptr_t rbuff_, size_t size_);
+  CommTestTransition(aid_t issuer, int times_considered, unsigned comm_, aid_t sender_, aid_t receiver_, unsigned mbox_,
+                     uintptr_t sbuff_, uintptr_t rbuff_, size_t size_);
   CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
 
-  /** Address of the corresponding Communication object in the application */
-  uintptr_t get_comm() const { return comm_; }
+  /** ID of the corresponding Communication object in the application, or 0 if unknown */
+  unsigned get_comm() const { return comm_; }
   /** Sender ID */
   aid_t get_sender() const { return sender_; }
   /** Receiver ID */
@@ -90,19 +90,19 @@ public:
 };
 
 class CommRecvTransition : public Transition {
-  uintptr_t comm_; /* Addr of the CommImpl */
+  unsigned comm_; /* ID of the CommImpl or 0 if not known */
   unsigned mbox_;
   uintptr_t rbuff_;
   int tag_;
 
 public:
-  CommRecvTransition(aid_t issuer, int times_considered, uintptr_t comm_, unsigned mbox_, uintptr_t rbuff_, int tag_);
+  CommRecvTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_, uintptr_t rbuff_, int tag_);
   CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
 
-  /** Address of the corresponding Communication object in the application */
-  uintptr_t get_comm() const { return comm_; }
+  /** ID of the corresponding Communication object in the application (or 0 if unknown)*/
+  unsigned get_comm() const { return comm_; }
   /** Mailbox ID */
   unsigned get_mailbox() const { return mbox_; }
   /** Receiver buffer */
@@ -112,21 +112,21 @@ public:
 };
 
 class CommSendTransition : public Transition {
-  uintptr_t comm_; /* Addr of the CommImpl */
+  unsigned comm_;
   unsigned mbox_;
   uintptr_t sbuff_;
   size_t size_;
   int tag_;
 
 public:
-  CommSendTransition(aid_t issuer, int times_considered, uintptr_t comm_, unsigned mbox_, uintptr_t sbuff_,
-                     size_t size_, int tag_);
+  CommSendTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_, uintptr_t sbuff_, size_t size_,
+                     int tag_);
   CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
 
-  /** Address of the corresponding Communication object in the application */
-  uintptr_t get_comm() const { return comm_; }
+  /** ID of the corresponding Communication object in the application, or 0 if unknown */
+  unsigned get_comm() const { return comm_; }
   /** Mailbox ID */
   unsigned get_mailbox() const { return mbox_; }
   /** Sender buffer */

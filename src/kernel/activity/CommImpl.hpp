@@ -32,6 +32,9 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   s4u::Host* to_     = nullptr; /* Otherwise, computed at start() time from the actors */
   CommImplType type_ = CommImplType::SEND; /* Type of the communication (SEND or RECEIVE) */
 
+  static unsigned next_id_;        // Next ID to be given (for MC)
+  const unsigned id_ = ++next_id_; // ID of this comm (for MC) -- 0 as an ID denotes "invalid/unknown comm"
+
 public:
   CommImpl() = default;
 
@@ -52,7 +55,8 @@ public:
 
   double get_rate() const { return rate_; }
   MailboxImpl* get_mailbox() const { return mbox_; }
-  long get_mailbox_id() const { return mbox_id_; }
+  unsigned get_mailbox_id() const { return mbox_id_; }
+  unsigned get_id() const { return id_; }
   bool is_detached() const { return detached_; }
   bool is_assigned() const { return (to_ != nullptr && from_ != nullptr); }
 
