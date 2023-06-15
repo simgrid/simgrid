@@ -107,14 +107,12 @@ int main(int argc, char* argv[])
      and use it to adapt their amount of work to do.
   */ 
   B1->on_this_start_cb([&](simgrid::plugins::Task* t) {
-    auto data = t->get_next_token_from(SA_to_B1)->get_data<double>();
+    auto data = t->get_next_token_from(SA_to_B1)->get_unique_data<double>();
     t->set_amount(*data * 10);
-    delete data;
   });
   B2->on_this_start_cb([&](simgrid::plugins::Task* t) {
-    auto data = t->get_next_token_from(SA_to_B2)->get_data<double>();
+    auto data = t->get_next_token_from(SA_to_B2)->get_unique_data<double>();
     t->set_amount(*data * 10);
-    delete data;
   });
 
   // Enqueue executions for tasks without predecessors
