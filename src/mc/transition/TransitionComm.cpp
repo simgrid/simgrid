@@ -162,7 +162,7 @@ bool CommRecvTransition::depends(const Transition* other) const
     if (mbox_ != test->mbox_)
       return false;
 
-    if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->rbuff_ != rbuff_))
+    if ((aid_ != test->sender_) && (aid_ != test->receiver_))
       return false;
 
     // If the test is checking a paired comm already, we're independent!
@@ -180,7 +180,7 @@ bool CommRecvTransition::depends(const Transition* other) const
     if (mbox_ != wait->mbox_)
       return false;
 
-    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_) && (wait->rbuff_ != rbuff_))
+    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_))
       return false;
 
     // If the wait is waiting on a paired comm already, we're independent!
@@ -238,7 +238,7 @@ bool CommSendTransition::depends(const Transition* other) const
     if (mbox_ != test->mbox_)
       return false;
 
-    if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->sbuff_ != sbuff_))
+    if ((aid_ != test->sender_) && (aid_ != test->receiver_))
       return false;
 
     // If the test is checking a paired comm already, we're independent!
@@ -256,7 +256,7 @@ bool CommSendTransition::depends(const Transition* other) const
     if (mbox_ != wait->mbox_)
       return false;
 
-    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_) && (wait->sbuff_ != sbuff_))
+    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_))
       return false;
 
     // If the wait is waiting on a paired comm already, we're independent!
