@@ -57,6 +57,18 @@ private:
   std::stack<node_handle> post_order_iteration;
 
   /**
+   * @brief The nodes in the current ordering that have already
+   * added their own children
+   *
+   * We need to be able to determine whether to add the children
+   * of a given node. Eventually, we want to search that node itself,
+   * but we have to first search its children. Later, when we
+   * reach each node in this stack again, we'll remember not to add
+   * its children and will search the node in the stack instead.
+   */
+  std::stack<WakeupTreeNode*> has_added_children;
+
+  /**
    * @brief Search the wakeup tree until a leaf node appears at the front
    * of the iteration, pushing all children towards the top of the stack
    * as the search progresses

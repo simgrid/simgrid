@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/odpor/WakeupTreeIterator.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
+#include "xbt/asserts.h"
 
 namespace simgrid::mc::odpor {
 
@@ -20,19 +21,19 @@ void WakeupTreeIterator::push_until_left_most_found()
   // there are no cycles. This means that at least
   // one node in the tree won't have any children,
   // so the loop will eventually terminate
-  auto* cur_top_node = *post_order_iteration.top();
+  WakeupTreeNode* cur_top_node = *post_order_iteration.top();
   while (not cur_top_node->is_leaf()) {
     // INVARIANT: Since we push children in
     // reverse order (right-most to left-most),
     // we ensure that we'll always process left-most
     // children first
     auto& children = cur_top_node->children_;
-
     for (auto iter = children.rbegin(); iter != children.rend(); ++iter) {
-      // iter.base() points one element past where we seek; hence,
-      // we move it over one position
+      // iter.base() points one element past where we seek; that is,
+      // we want the value one position forward
       post_order_iteration.push(std::prev(iter.base()));
     }
+    has_added_children.push(cur_top_node);
     cur_top_node = *post_order_iteration.top();
   }
 }
@@ -46,7 +47,6 @@ void WakeupTreeIterator::increment()
     return;
   }
 
-  auto prev_top_handle = post_order_iteration.top();
   post_order_iteration.pop();
 
   // If there are now no longer any nodes left,
@@ -57,15 +57,28 @@ void WakeupTreeIterator::increment()
     return;
   }
 
-  // Otherwise, look at the next top node. If
-  // `prev_top` is that node's right-most child,
-  // then we don't attempt to re-add `next_top`'s
-  // children again for we would have already seen them.
-  // To actually determine "right-most", we check if
-  // moving over to the right one spot brings us to the
-  // end of the candidate parent's list
-  const auto* next_top_node = *post_order_iteration.top();
-  if ((++prev_top_handle) != next_top_node->get_ordered_children().end()) {
+  xbt_assert(not has_added_children.empty(), "Invariant violated: There are more "
+                                             "nodes in the iteration that we must search "
+                                             "yet nobody has claimed to have added these nodes. "
+                                             "This implies that the algorithm is not iterating over "
+                                             "the wakeup tree is not following the post-fix order "
+                                             "correctly");
+
+  // Otherwise, look at what is the new, current top node.
+  // We're traversing the tree in
+  //
+  // If we've already added our children, we want
+  // to be sure not to add them again; but we ALSO
+  // want to be sure that we now start checking against
+  // the the node that's next in line as "finished"
+  //
+  // INVARIANT: Since we're searching in post-fix order,
+  // it always suffices to compare the current node
+  // with the top of the stack of nodes which have added their
+  // children
+  if (*post_order_iteration.top() == has_added_children.top()) {
+    has_added_children.pop();
+  } else {
     push_until_left_most_found();
   }
 }
