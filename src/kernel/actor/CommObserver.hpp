@@ -20,7 +20,7 @@ class ActivityTestSimcall final : public ResultingSimcall<bool> {
   std::string fun_call_;
 
 public:
-  ActivityTestSimcall(ActorImpl* actor, activity::ActivityImpl* activity, std::string fun_call = "")
+  ActivityTestSimcall(ActorImpl* actor, activity::ActivityImpl* activity, std::string fun_call)
       : ResultingSimcall(actor, true), activity_(activity), fun_call_(fun_call)
   {
   }
@@ -37,7 +37,7 @@ class ActivityTestanySimcall final : public ResultingSimcall<ssize_t> {
 
 public:
   ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities,
-                         std::string fun_call = "none");
+                         std::string fun_call);
   bool is_enabled() override { return true; /* can return -1 if no activity is ready */ }
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
@@ -53,7 +53,7 @@ class ActivityWaitSimcall final : public ResultingSimcall<bool> {
   std::string fun_call_;
 
 public:
-  ActivityWaitSimcall(ActorImpl* actor, activity::ActivityImpl* activity, double timeout, std::string fun_call = "none")
+  ActivityWaitSimcall(ActorImpl* actor, activity::ActivityImpl* activity, double timeout, std::string fun_call)
       : ResultingSimcall(actor, false), activity_(activity), timeout_(timeout), fun_call_(fun_call)
   {
   }
@@ -74,7 +74,7 @@ class ActivityWaitanySimcall final : public ResultingSimcall<ssize_t> {
 
 public:
   ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities, double timeout,
-                         std::string fun_call = "none");
+                         std::string fun_call);
   bool is_enabled() override;
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
@@ -109,7 +109,7 @@ public:
       const std::function<void(void*)>& clean_fun, // used to free the synchro in case of problem after a detached send
       const std::function<void(activity::CommImpl*, void*, size_t)>&
           copy_data_fun, // used to copy data if not default one
-      void* payload, bool detached, std::string fun_call = "none")
+      void* payload, bool detached, std::string fun_call)
       : SimcallObserver(actor)
       , mbox_(mbox)
       , payload_size_(payload_size)
@@ -159,7 +159,7 @@ public:
   CommIrecvSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, unsigned char* dst_buff, size_t* dst_buff_size,
                    const std::function<bool(void*, void*, activity::CommImpl*)>& match_fun,
                    const std::function<void(activity::CommImpl*, void*, size_t)>& copy_data_fun, void* payload,
-                   double rate, std::string fun_call = "none")
+                   double rate, std::string fun_call)
       : SimcallObserver(actor)
       , mbox_(mbox)
       , dst_buff_(dst_buff)

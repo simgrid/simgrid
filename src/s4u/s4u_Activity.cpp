@@ -60,7 +60,7 @@ Activity* Activity::wait_for(double timeout)
   }
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ActivityWaitSimcall observer{issuer, pimpl_.get(), timeout};
+  kernel::actor::ActivityWaitSimcall observer{issuer, pimpl_.get(), timeout, "wait_for"};
   if (kernel::actor::simcall_blocking(
           [&observer] { observer.get_activity()->wait_for(observer.get_issuer(), observer.get_timeout()); }, &observer))
     throw TimeoutException(XBT_THROW_POINT, "Timeouted");
@@ -80,7 +80,7 @@ bool Activity::test()
     this->start();
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ActivityTestSimcall observer{issuer, pimpl_.get()};
+  kernel::actor::ActivityTestSimcall observer{issuer, pimpl_.get(), "test"};
   if (kernel::actor::simcall_answered([&observer] { return observer.get_activity()->test(observer.get_issuer()); },
                                       &observer)) {
     complete(State::FINISHED);
@@ -96,7 +96,7 @@ ssize_t Activity::test_any(const std::vector<ActivityPtr>& activities)
                  [](const ActivityPtr& act) { return act->pimpl_.get(); });
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ActivityTestanySimcall observer{issuer, ractivities};
+  kernel::actor::ActivityTestanySimcall observer{issuer, ractivities, "test_any"};
   ssize_t changed_pos = kernel::actor::simcall_answered(
       [&observer] {
         return kernel::activity::ActivityImpl::test_any(observer.get_issuer(), observer.get_activities());
@@ -114,7 +114,7 @@ ssize_t Activity::wait_any_for(const std::vector<ActivityPtr>& activities, doubl
                  [](const ActivityPtr& activity) { return activity->pimpl_.get(); });
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ActivityWaitanySimcall observer{issuer, ractivities, timeout};
+  kernel::actor::ActivityWaitanySimcall observer{issuer, ractivities, timeout, "wait_any_for"};
   ssize_t changed_pos = kernel::actor::simcall_blocking(
       [&observer] {
         kernel::activity::ActivityImpl::wait_any_for(observer.get_issuer(), observer.get_activities(),

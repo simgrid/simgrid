@@ -78,12 +78,13 @@ void Comm::send(kernel::actor::ActorImpl* sender, const Mailbox* mbox, double ta
     simgrid::kernel::activity::ActivityImplPtr comm = nullptr;
 
     simgrid::kernel::actor::CommIsendSimcall send_observer{
-        sender,  mbox->get_impl(), task_size, rate, static_cast<unsigned char*>(src_buff), src_buff_size, match_fun,
-        nullptr, copy_data_fun,    data,      false};
+        sender,        mbox->get_impl(), task_size, rate,          static_cast<unsigned char*>(src_buff),
+        src_buff_size, match_fun,        nullptr,   copy_data_fun, data,
+        false,         "Isend"};
     comm = simgrid::kernel::actor::simcall_answered(
         [&send_observer] { return simgrid::kernel::activity::CommImpl::isend(&send_observer); }, &send_observer);
 
-    if (simgrid::kernel::actor::ActivityWaitSimcall wait_observer{sender, comm.get(), timeout};
+    if (simgrid::kernel::actor::ActivityWaitSimcall wait_observer{sender, comm.get(), timeout, "Wait"};
         simgrid::kernel::actor::simcall_blocking(
             [&wait_observer] {
               wait_observer.get_activity()->wait_for(wait_observer.get_issuer(), wait_observer.get_timeout());
@@ -95,7 +96,7 @@ void Comm::send(kernel::actor::ActorImpl* sender, const Mailbox* mbox, double ta
   } else {
     simgrid::kernel::actor::CommIsendSimcall observer(sender, mbox->get_impl(), task_size, rate,
                                                       static_cast<unsigned char*>(src_buff), src_buff_size, match_fun,
-                                                      nullptr, copy_data_fun, data, false);
+                                                      nullptr, copy_data_fun, data, false, "Isend");
     simgrid::kernel::actor::simcall_blocking([&observer, timeout] {
       simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::isend(&observer);
       comm->wait_for(observer.get_issuer(), timeout);
@@ -122,11 +123,12 @@ void Comm::recv(kernel::actor::ActorImpl* receiver, const Mailbox* mbox, void* d
                                                       match_fun,
                                                       copy_data_fun,
                                                       data,
-                                                      rate};
+                                                      rate,
+                                                      "Irecv"};
     comm = simgrid::kernel::actor::simcall_answered(
         [&observer] { return simgrid::kernel::activity::CommImpl::irecv(&observer); }, &observer);
 
-    if (simgrid::kernel::actor::ActivityWaitSimcall wait_observer{receiver, comm.get(), timeout};
+    if (simgrid::kernel::actor::ActivityWaitSimcall wait_observer{receiver, comm.get(), timeout, "wait"};
         simgrid::kernel::actor::simcall_blocking(
             [&wait_observer] {
               wait_observer.get_activity()->wait_for(wait_observer.get_issuer(), wait_observer.get_timeout());
@@ -137,7 +139,7 @@ void Comm::recv(kernel::actor::ActorImpl* receiver, const Mailbox* mbox, void* d
     comm = nullptr;
   } else {
     simgrid::kernel::actor::CommIrecvSimcall observer(receiver, mbox->get_impl(), static_cast<unsigned char*>(dst_buff),
-                                                      dst_buff_size, match_fun, copy_data_fun, data, rate);
+                                                      dst_buff_size, match_fun, copy_data_fun, data, rate, "Irecv");
     simgrid::kernel::actor::simcall_blocking([&observer, timeout] {
       simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::irecv(&observer);
       comm->wait_for(observer.get_issuer(), timeout);
@@ -331,7 +333,8 @@ Comm* Comm::do_start()
                                              clean_fun_,
                                              copy_data_function_,
                                              get_data<void>(),
-                                             detached_};
+                                             detached_,
+                                             "Isend"};
     pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::CommImpl::isend(&observer); },
                                              &observer);
   } else if (dst_buff_ != nullptr) { // Receiver side
@@ -345,7 +348,8 @@ Comm* Comm::do_start()
                                              match_fun_,
                                              copy_data_function_,
                                              get_data<void>(),
-                                             rate_};
+                                             rate_,
+                                             "Irecv"};
     pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::CommImpl::irecv(&observer); },
                                              &observer);
   } else {
@@ -422,7 +426,7 @@ Comm* Comm::wait_for(double timeout)
     case State::STARTED:
       try {
         issuer = kernel::actor::ActorImpl::self();
-        kernel::actor::ActivityWaitSimcall observer{issuer, pimpl_.get(), timeout};
+        kernel::actor::ActivityWaitSimcall observer{issuer, pimpl_.get(), timeout, "Wait"};
         if (kernel::actor::simcall_blocking(
                 [&observer] { observer.get_activity()->wait_for(observer.get_issuer(), observer.get_timeout()); },
                 &observer)) {
