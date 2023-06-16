@@ -354,6 +354,20 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
       break;
     }
 
+    case MessageType::UNIGNORE_MEMORY: {
+      consumed = sizeof(s_mc_message_ignore_memory_t);
+#if SIMGRID_HAVE_STATEFUL_MC
+      if (remote_memory_ != nullptr) {
+        s_mc_message_ignore_memory_t message;
+        xbt_assert(size >= static_cast<ssize_t>(sizeof(message)), "Broken message");
+        memcpy(&message, buffer, sizeof(message));
+        get_remote_memory()->unignore_region(message.addr, message.size);
+      } else
+#endif
+        XBT_INFO("Ignoring an UNIGNORE_MEMORY message because we don't need to introspect memory.");
+      break;
+    }
+
     case MessageType::STACK_REGION: {
       consumed = sizeof(s_mc_message_stack_region_t);
 #if SIMGRID_HAVE_STATEFUL_MC

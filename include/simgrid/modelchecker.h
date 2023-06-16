@@ -26,6 +26,7 @@ XBT_PUBLIC int MC_is_active();
 XBT_PUBLIC void MC_automaton_new_propositional_symbol_pointer(const char* id, int* value);
 
 XBT_PUBLIC void MC_ignore(void* addr, size_t size);
+XBT_PUBLIC void MC_unignore(void* addr, size_t size);
 XBT_PUBLIC void MC_ignore_heap(void* address, size_t size);
 XBT_PUBLIC void MC_unignore_heap(void* address, size_t size);
 

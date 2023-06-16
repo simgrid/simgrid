@@ -18,15 +18,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_comm, mc_transition,
 
 namespace simgrid::mc {
 
-CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, bool timeout_, uintptr_t comm_,
-                                       aid_t sender_, aid_t receiver_, unsigned mbox_, uintptr_t sbuff_,
-                                       uintptr_t rbuff_, size_t size_)
+CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, bool timeout_, unsigned comm_, aid_t sender_,
+                                       aid_t receiver_, unsigned mbox_, uintptr_t sbuff_, uintptr_t rbuff_,
+                                       size_t size_)
     : Transition(Type::COMM_WAIT, issuer, times_considered)
     , timeout_(timeout_)
     , comm_(comm_)
+    , mbox_(mbox_)
     , sender_(sender_)
     , receiver_(receiver_)
-    , mbox_(mbox_)
     , sbuff_(sbuff_)
     , rbuff_(rbuff_)
     , size_(size_)
@@ -37,8 +37,8 @@ CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, std::
 {
   xbt_assert(stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> sbuff_ >> rbuff_ >> size_ >>
              user_fun_call_);
-  XBT_DEBUG("CommWaitTransition %s comm:%" PRIxPTR ", sender:%ld receiver:%ld mbox:%u sbuff:%" PRIxPTR
-            " rbuff:%" PRIxPTR " size:%zu",
+  XBT_DEBUG("CommWaitTransition %s comm:%u, sender:%ld receiver:%ld mbox:%u sbuff:%" PRIxPTR " rbuff:%" PRIxPTR
+            " size:%zu",
             (timeout_ ? "timeout" : "no-timeout"), comm_, sender_, receiver_, mbox_, sbuff_, rbuff_, size_);
 }
 std::string CommWaitTransition::to_string(bool verbose) const
@@ -68,14 +68,14 @@ bool CommWaitTransition::depends(const Transition* other) const
 
   return false; // Comm transitions are INDEP with non-comm transitions
 }
-CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, uintptr_t comm_, aid_t sender_,
+CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, unsigned comm_, aid_t sender_,
                                        aid_t receiver_, unsigned mbox_, uintptr_t sbuff_, uintptr_t rbuff_,
                                        size_t size_)
     : Transition(Type::COMM_TEST, issuer, times_considered)
     , comm_(comm_)
+    , mbox_(mbox_)
     , sender_(sender_)
     , receiver_(receiver_)
-    , mbox_(mbox_)
     , sbuff_(sbuff_)
     , rbuff_(rbuff_)
     , size_(size_)
@@ -85,7 +85,7 @@ CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, std::
     : Transition(Type::COMM_TEST, issuer, times_considered)
 {
   xbt_assert(stream >> comm_ >> sender_ >> receiver_ >> mbox_ >> sbuff_ >> rbuff_ >> size_ >> user_fun_call_);
-  XBT_DEBUG("CommTestTransition comm:%" PRIxPTR ", sender:%ld receiver:%ld mbox:%u sbuff:%" PRIxPTR " rbuff:%" PRIxPTR
+  XBT_DEBUG("CommTestTransition comm:%u, sender:%ld receiver:%ld mbox:%u sbuff:%" PRIxPTR " rbuff:%" PRIxPTR
             " size:%zu",
             comm_, sender_, receiver_, mbox_, sbuff_, rbuff_, size_);
 }
@@ -122,7 +122,7 @@ bool CommTestTransition::depends(const Transition* other) const
   return false; // Comm transitions are INDEP with non-comm transitions
 }
 
-CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, uintptr_t comm_, unsigned mbox_,
+CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_,
                                        uintptr_t rbuff_, int tag_)
     : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered)
     , comm_(comm_)
@@ -163,7 +163,7 @@ bool CommRecvTransition::depends(const Transition* other) const
     if (mbox_ != test->mbox_)
       return false;
 
-    if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->rbuff_ != rbuff_))
+    if ((aid_ != test->sender_) && (aid_ != test->receiver_))
       return false;
 
     // If the test is checking a paired comm already, we're independent!
@@ -181,7 +181,7 @@ bool CommRecvTransition::depends(const Transition* other) const
     if (mbox_ != wait->mbox_)
       return false;
 
-    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_) && (wait->rbuff_ != rbuff_))
+    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_))
       return false;
 
     // If the wait is waiting on a paired comm already, we're independent!
@@ -195,7 +195,7 @@ bool CommRecvTransition::depends(const Transition* other) const
   return false; // Comm transitions are INDEP with non-comm transitions
 }
 
-CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, uintptr_t comm_, unsigned mbox_,
+CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_,
                                        uintptr_t sbuff_, size_t size_, int tag_)
     : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered)
     , comm_(comm_)
@@ -209,7 +209,7 @@ CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::
     : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered)
 {
   xbt_assert(stream >> comm_ >> mbox_ >> sbuff_ >> size_ >> tag_ >> user_fun_call_);
-  XBT_DEBUG("SendTransition comm:%" PRIxPTR " mbox:%u sbuff:%" PRIxPTR " size:%zu", comm_, mbox_, sbuff_, size_);
+  XBT_DEBUG("SendTransition comm:%u mbox:%u sbuff:%" PRIxPTR " size:%zu", comm_, mbox_, sbuff_, size_);
 }
 std::string CommSendTransition::to_string(bool verbose = false) const
 {
@@ -239,7 +239,7 @@ bool CommSendTransition::depends(const Transition* other) const
     if (mbox_ != test->mbox_)
       return false;
 
-    if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->sbuff_ != sbuff_))
+    if ((aid_ != test->sender_) && (aid_ != test->receiver_))
       return false;
 
     // If the test is checking a paired comm already, we're independent!
@@ -257,7 +257,7 @@ bool CommSendTransition::depends(const Transition* other) const
     if (mbox_ != wait->mbox_)
       return false;
 
-    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_) && (wait->sbuff_ != sbuff_))
+    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_))
       return false;
 
     // If the wait is waiting on a paired comm already, we're independent!

@@ -166,7 +166,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
   });
   xbt_assert(issuer != C.end(),
              "Invariant violation! A (supposedly) enabled `CommWait` transition "
-             "waiting on communication %lu should not be enabled: the receive/send "
+             "waiting on communication %u should not be enabled: the receive/send "
              "transition which generated the communication is not an action taken "
              "to reach state(C) (the state of the configuration), which should "
              "be an impossibility if `%s` is enabled. Please report this as "
@@ -409,7 +409,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration& 
   });
   xbt_assert(issuer != C.end(),
              "An enabled `CommTest` transition (%s) is testing a communication"
-             "%lu not created by a receive/send "
+             "%u not created by a receive/send "
              "transition. SimGrid cannot currently handle test actions "
              "under which a test is performed on a communication that was "
              "not directly created by a receive/send operation of the same actor.",

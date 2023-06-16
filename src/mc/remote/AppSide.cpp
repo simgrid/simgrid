@@ -362,6 +362,7 @@ void AppSide::main_loop()
   simgrid::mc::processes_time.resize(simgrid::kernel::actor::ActorImpl::get_maxpid());
   MC_ignore_heap(simgrid::mc::processes_time.data(),
                  simgrid::mc::processes_time.size() * sizeof(simgrid::mc::processes_time[0]));
+  kernel::activity::CommImpl::setup_mc();
 
   sthread_disable();
   coverage_checkpoint();
@@ -393,7 +394,24 @@ void AppSide::ignore_memory(void* addr, std::size_t size) const
   message.size = size;
   xbt_assert(channel_.send(message) == 0, "Could not send IGNORE_MEMORY message to model-checker: %s", strerror(errno));
 #else
-  xbt_die("Cannot really call ignore_heap() in non-SIMGRID_MC mode.");
+  xbt_die("Cannot really call ignore_memory() in non-SIMGRID_MC mode.");
+#endif
+}
+
+void AppSide::unignore_memory(void* addr, std::size_t size) const
+{
+  if (not MC_is_active() || not need_memory_info_)
+    return;
+
+#if SIMGRID_HAVE_STATEFUL_MC
+  s_mc_message_ignore_memory_t message = {};
+  message.type                         = MessageType::UNIGNORE_MEMORY;
+  message.addr                         = (std::uintptr_t)addr;
+  message.size                         = size;
+  xbt_assert(channel_.send(message) == 0, "Could not send UNIGNORE_MEMORY message to model-checker: %s",
+             strerror(errno));
+#else
+  xbt_die("Cannot really call unignore_memory() in non-SIMGRID_MC mode.");
 #endif
 }
 
