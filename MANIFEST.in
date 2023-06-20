@@ -398,6 +398,8 @@ include examples/cpp/task-io/s4u-task-io.cpp
 include examples/cpp/task-io/s4u-task-io.tesh
 include examples/cpp/task-simple/s4u-task-simple.cpp
 include examples/cpp/task-simple/s4u-task-simple.tesh
+include examples/cpp/task-storm/s4u-task-storm.cpp
+include examples/cpp/task-storm/s4u-task-storm.thesh
 include examples/cpp/task-switch-host/s4u-task-switch-host.cpp
 include examples/cpp/task-switch-host/s4u-task-switch-host.tesh
 include examples/cpp/task-variable-load/s4u-task-variable-load.cpp
