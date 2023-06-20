@@ -112,6 +112,7 @@ public:
 
   std::vector<IgnoredRegion> const& ignored_regions() const { return ignored_regions_; }
   void ignore_region(std::uint64_t address, std::size_t size);
+  void unignore_region(std::uint64_t address, std::size_t size);
 
   bool in_maestro_stack(RemotePtr<void> p) const
   {

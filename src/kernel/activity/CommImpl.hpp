@@ -32,8 +32,11 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   s4u::Host* to_     = nullptr; /* Otherwise, computed at start() time from the actors */
   CommImplType type_ = CommImplType::SEND; /* Type of the communication (SEND or RECEIVE) */
 
+  static unsigned next_id_;        // Next ID to be given (for MC)
+  const unsigned id_ = ++next_id_; // ID of this comm (for MC) -- 0 as an ID denotes "invalid/unknown comm"
+
 public:
-  CommImpl() = default;
+  CommImpl();
 
   static void set_copy_data_callback(const std::function<void(CommImpl*, void*, size_t)>& callback);
 
@@ -52,7 +55,8 @@ public:
 
   double get_rate() const { return rate_; }
   MailboxImpl* get_mailbox() const { return mbox_; }
-  long get_mailbox_id() const { return mbox_id_; }
+  unsigned get_mailbox_id() const { return mbox_id_; }
+  unsigned get_id() const { return id_; }
   bool is_detached() const { return detached_; }
   bool is_assigned() const { return (to_ != nullptr && from_ != nullptr); }
 
@@ -78,6 +82,9 @@ public:
 looking if a given communication matches my needs. For that, myself must match the
 expectations of the other side, too. See  */
   std::function<void(CommImpl*, void*, size_t)> copy_data_fun;
+
+  /* In stateful MC, we need to ignore some private memory that is not relevant to the application state */
+  static void setup_mc();
 
   /* Model actions */
   timeout_action_type src_timeout_{nullptr, [](resource::Action* a) { a->unref(); }}; /* timeout set by the sender */

@@ -42,7 +42,7 @@ static void serialize_activity_test(const activity::ActivityImpl* act, std::stri
 {
   if (const auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
     stream << "  " << (short)mc::Transition::Type::COMM_TEST;
-    stream << ' ' << (uintptr_t)comm;
+    stream << ' ' << comm->get_id();
     stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
     stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
     stream << ' ' << comm->get_mailbox_id();
@@ -56,7 +56,7 @@ static std::string to_string_activity_test(const activity::ActivityImpl* act)
   if (const auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
     const std::string src_buff_id = ptr_to_id<unsigned char>(comm->src_buff_);
     const std::string dst_buff_id = ptr_to_id<unsigned char>(comm->dst_buff_);
-    return "CommTest(comm_id:" + ptr_to_id<activity::CommImpl const>(comm) +
+    return "CommTest(comm_id:" + std::to_string(comm->get_id()) +
            " src:" + std::to_string(comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1) +
            " dst:" + std::to_string(comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1) +
            " mbox:" + std::to_string(comm->get_mailbox_id()) + " srcbuf:" + src_buff_id + " dstbuf:" + dst_buff_id +
@@ -94,7 +94,7 @@ static void serialize_activity_wait(const activity::ActivityImpl* act, bool time
 {
   if (const auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
     stream << (short)mc::Transition::Type::COMM_WAIT << ' ';
-    stream << timeout << ' ' << (uintptr_t)comm;
+    stream << timeout << ' ' << comm->get_id();
 
     stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
     stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
@@ -109,7 +109,7 @@ static std::string to_string_activity_wait(const activity::ActivityImpl* act)
   if (const auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
     const std::string src_buff_id = ptr_to_id<unsigned char>(comm->src_buff_);
     const std::string dst_buff_id = ptr_to_id<unsigned char>(comm->dst_buff_);
-    return "CommWait(comm_id:" + ptr_to_id<activity::CommImpl const>(comm) +
+    return "CommWait(comm_id:" + std::to_string(comm->get_id()) +
            " src:" + std::to_string(comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1) +
            " dst:" + std::to_string(comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1) +
            " mbox:" + (comm->get_mailbox() == nullptr ? "-" : comm->get_mailbox()->get_name()) +
@@ -199,14 +199,14 @@ void CommIsendSimcall::serialize(std::stringstream& stream) const
 {
   /* Note that the comm_ is 0 until after the execution of the simcall */
   stream << (short)mc::Transition::Type::COMM_ASYNC_SEND << ' ';
-  stream << (uintptr_t)comm_ << ' ' << mbox_->get_id() << ' ' << (uintptr_t)src_buff_ << ' ' << src_buff_size_ << ' '
-         << tag_;
+  stream << (comm_ ? comm_->get_id() : 0) << ' ' << mbox_->get_id() << ' ' << (uintptr_t)src_buff_ << ' '
+         << src_buff_size_ << ' ' << tag_;
   XBT_DEBUG("SendObserver comm:%p mbox:%u buff:%p size:%zu tag:%d", comm_, mbox_->get_id(), src_buff_, src_buff_size_,
             tag_);
 }
 std::string CommIsendSimcall::to_string() const
 {
-  return "CommAsyncSend(comm_id: " + std::to_string((uintptr_t)comm_) + " mbox:" + std::to_string(mbox_->get_id()) +
+  return "CommAsyncSend(comm_id: " + std::to_string(comm_->get_id()) + " mbox:" + std::to_string(mbox_->get_id()) +
          " srcbuf:" + ptr_to_id<unsigned char>(src_buff_) + " bufsize:" + std::to_string(src_buff_size_) +
          " tag: " + std::to_string(tag_) + ")";
 }
@@ -215,14 +215,13 @@ void CommIrecvSimcall::serialize(std::stringstream& stream) const
 {
   /* Note that the comm_ is 0 until after the execution of the simcall */
   stream << (short)mc::Transition::Type::COMM_ASYNC_RECV << ' ';
-  stream << (uintptr_t)comm_ << ' ' << mbox_->get_id() << ' ' << (uintptr_t)dst_buff_ << ' ' << tag_;
+  stream << (comm_ ? comm_->get_id() : 0) << ' ' << mbox_->get_id() << ' ' << (uintptr_t)dst_buff_ << ' ' << tag_;
   XBT_DEBUG("RecvObserver comm:%p mbox:%u buff:%p tag:%d", comm_, mbox_->get_id(), dst_buff_, tag_);
 }
 std::string CommIrecvSimcall::to_string() const
 {
-  return "CommAsyncRecv(comm_id: " + ptr_to_id<activity::CommImpl const>(comm_) +
-         " mbox:" + std::to_string(mbox_->get_id()) + " dstbuf:" + ptr_to_id<unsigned char>(dst_buff_) +
-         " tag: " + std::to_string(tag_) + ")";
+  return "CommAsyncRecv(comm_id: " + std::to_string(comm_->get_id()) + " mbox:" + std::to_string(mbox_->get_id()) +
+         " dstbuf:" + ptr_to_id<unsigned char>(dst_buff_) + " tag: " + std::to_string(tag_) + ")";
 }
 
 } // namespace simgrid::kernel::actor

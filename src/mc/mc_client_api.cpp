@@ -74,6 +74,16 @@ void MC_ignore(void* addr, size_t size)
 #endif
 }
 
+void MC_unignore(void* addr, size_t size)
+{
+#if SIMGRID_HAVE_STATEFUL_MC
+  xbt_assert(get_model_checking_mode() != ModelCheckingMode::CHECKER_SIDE,
+             "This should be called from the client side");
+  if (MC_is_active())
+    AppSide::get()->unignore_memory(addr, size);
+#endif
+}
+
 void MC_ignore_heap(void *address, size_t size)
 {
 #if SIMGRID_HAVE_STATEFUL_MC

@@ -395,6 +395,20 @@ void RemoteProcessMemory::ignore_region(std::uint64_t addr, std::size_t size)
     ignored_regions_.insert(pos, region);
 }
 
+void RemoteProcessMemory::unignore_region(std::uint64_t addr, std::size_t size)
+{
+  IgnoredRegion region;
+  region.addr = addr;
+  region.size = size;
+
+  auto pos = std::lower_bound(ignored_regions_.begin(), ignored_regions_.end(), region,
+                              [](auto const& reg1, auto const& reg2) {
+                                return reg1.addr < reg2.addr || (reg1.addr == reg2.addr && reg1.size < reg2.size);
+                              });
+  if (pos != ignored_regions_.end())
+    ignored_regions_.erase(pos);
+}
+
 void RemoteProcessMemory::ignore_heap(IgnoredHeapRegion const& region)
 {
   // Binary search the position of insertion:
