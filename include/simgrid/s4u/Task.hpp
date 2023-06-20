@@ -1,5 +1,5 @@
-#ifndef SIMGRID_PLUGINS_TASK_H_
-#define SIMGRID_PLUGINS_TASK_H_
+#ifndef SIMGRID_S4U_TASK_H_
+#define SIMGRID_S4U_TASK_H_
 
 #include <simgrid/s4u/Activity.hpp>
 #include <simgrid/s4u/Io.hpp>
@@ -11,7 +11,7 @@
 #include <memory>
 #include <set>
 
-namespace simgrid::plugins {
+namespace simgrid::s4u {
 
 class Task;
 using TaskPtr = boost::intrusive_ptr<Task>;
@@ -24,11 +24,6 @@ using CommTaskPtr = boost::intrusive_ptr<CommTask>;
 class IoTask;
 using IoTaskPtr = boost::intrusive_ptr<IoTask>;
 
-struct ExtendedAttributeActivity {
-  static simgrid::xbt::Extension<simgrid::s4u::Activity, ExtendedAttributeActivity> EXTENSION_ID;
-  Task* task_;
-};
-
 class XBT_PUBLIC Token : public xbt::Extendable<Token> {};
 
 class Task {
@@ -37,7 +32,6 @@ class Task {
 
   bool ready_to_run() const;
   void receive(Task* source);
-  void complete();
 
 protected:
   std::string name_;
@@ -54,13 +48,13 @@ protected:
   explicit Task(const std::string& name);
   virtual ~Task()     = default;
   virtual void fire() = 0;
+  void complete();
 
   static xbt::signal<void(Task*)> on_start;
   static xbt::signal<void(Task*)> on_end;
   std::atomic_int_fast32_t refcount_{0};
 
 public:
-  static void init();
   const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
   void enqueue_execs(int n);
@@ -145,5 +139,5 @@ public:
   IoTaskPtr set_op_type(s4u::Io::OpType type);
   s4u::Io::OpType get_op_type() const { return type_; }
 };
-} // namespace simgrid::plugins
+} // namespace simgrid::s4u
 #endif

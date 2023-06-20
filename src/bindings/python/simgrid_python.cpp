@@ -11,7 +11,6 @@
 #include "simgrid/kernel/ProfileBuilder.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include <simgrid/Exception.hpp>
-#include <simgrid/plugins/task.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Barrier.hpp>
 #include <simgrid/s4u/Comm.hpp>
@@ -25,6 +24,7 @@
 #include <simgrid/s4u/Mutex.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/s4u/Semaphore.hpp>
+#include <simgrid/s4u/Task.hpp>
 #include <simgrid/version.h>
 
 #include <algorithm>
@@ -33,14 +33,14 @@
 #include <vector>
 
 namespace py = pybind11;
-using simgrid::plugins::CommTask;
-using simgrid::plugins::CommTaskPtr;
-using simgrid::plugins::ExecTask;
-using simgrid::plugins::ExecTaskPtr;
-using simgrid::plugins::IoTask;
-using simgrid::plugins::IoTaskPtr;
-using simgrid::plugins::Task;
-using simgrid::plugins::TaskPtr;
+using simgrid::s4u::CommTask;
+using simgrid::s4u::CommTaskPtr;
+using simgrid::s4u::ExecTask;
+using simgrid::s4u::ExecTaskPtr;
+using simgrid::s4u::IoTask;
+using simgrid::s4u::IoTaskPtr;
+using simgrid::s4u::Task;
+using simgrid::s4u::TaskPtr;
 using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 using simgrid::s4u::Barrier;
@@ -921,7 +921,6 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Task */
   py::class_<Task, TaskPtr>(m, "Task", "Task. See the C++ documentation for details.")
-      .def_static("init", &Task::init)
       .def_static(
           "on_start_cb",
           [](py::object cb) {

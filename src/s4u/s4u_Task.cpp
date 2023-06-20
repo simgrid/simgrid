@@ -1,6 +1,6 @@
 #include <memory>
 #include <simgrid/Exception.hpp>
-#include <simgrid/plugins/task.hpp>
+#include <simgrid/s4u/Task.hpp>
 #include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Io.hpp>
@@ -9,16 +9,13 @@
 #include "src/simgrid/module.hpp"
 
 SIMGRID_REGISTER_PLUGIN(task, "Battery management", nullptr)
-/** @defgroup plugin_task plugin_task Plugin Task
-
+/**
   @beginrst
 
-This is the task plugin, enabling management of Tasks.
-To activate this plugin, first call :cpp:func:`Task::init`.
 
 Tasks are designed to represent dataflows, i.e, graphs of Tasks.
 Tasks can only be instancied using either
-:cpp:func:`simgrid::plugins::ExecTask::init` or :cpp:func:`simgrid::plugins::CommTask::init`
+:cpp:func:`simgrid::s4u::ExecTask::init` or :cpp:func:`simgrid::s4u::CommTask::init`
 An ExecTask is an Execution Task. Its underlying Activity is an :ref:`Exec <API_s4u_Exec>`.
 A CommTask is a Communication Task. Its underlying Activity is a :ref:`Comm <API_s4u_Comm>`.
 
@@ -26,9 +23,7 @@ A CommTask is a Communication Task. Its underlying Activity is a :ref:`Comm <API
  */
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(Task, kernel, "Logging specific to the task plugin");
 
-namespace simgrid::plugins {
-
-xbt::Extension<s4u::Activity, ExtendedAttributeActivity> ExtendedAttributeActivity::EXTENSION_ID;
+namespace simgrid::s4u {
 
 xbt::signal<void(Task*)> Task::on_start;
 xbt::signal<void(Task*)> Task::on_end;
@@ -94,28 +89,7 @@ void Task::complete()
     fire();
 }
 
-/** @ingroup plugin_task
- *  @brief Init the Task plugin.
- *  @note Add a completion callback to all Activities to call Task::complete().
- */
-void Task::init()
-{
-  static bool inited = false;
-  if (inited)
-    return;
-
-  inited                                  = true;
-  ExtendedAttributeActivity::EXTENSION_ID = simgrid::s4u::Activity::extension_create<ExtendedAttributeActivity>();
-  simgrid::s4u::Exec::on_completion_cb(
-      [](simgrid::s4u::Exec const& exec) { exec.extension<ExtendedAttributeActivity>()->task_->complete(); });
-  simgrid::s4u::Comm::on_completion_cb(
-      [](simgrid::s4u::Comm const& comm) { comm.extension<ExtendedAttributeActivity>()->task_->complete(); });
-  simgrid::s4u::Io::on_completion_cb(
-      [](simgrid::s4u::Io const& io) { io.extension<ExtendedAttributeActivity>()->task_->complete(); });
-}
-
-/** @ingroup plugin_task
- *  @param n The number of executions to enqueue.
+/** @param n The number of executions to enqueue.
  *  @brief Enqueue executions.
  *  @note Immediatly starts an execution if possible.
  */
@@ -128,8 +102,7 @@ void Task::enqueue_execs(int n)
   });
 }
 
-/** @ingroup plugin_task
- *  @param amount The amount to set.
+/** @param amount The amount to set.
  *  @brief Set the amout of work to do.
  *  @note Amount in flop for ExecTask and in bytes for CommTask.
  */
@@ -138,8 +111,7 @@ void Task::set_amount(double amount)
   simgrid::kernel::actor::simcall_answered([this, amount] { amount_ = amount; });
 }
 
-/** @ingroup plugin_task
- *  @param token The token to set.
+/** @param token The token to set.
  *  @brief Set the token to send to successors.
  *  @note The token is passed to each successor after the task end, i.e., after the on_end callback.
  */
@@ -148,8 +120,7 @@ void Task::set_token(std::shared_ptr<Token> token)
   simgrid::kernel::actor::simcall_answered([this, token] { token_ = token; });
 }
 
-/** @ingroup plugin_task
- *  @return Map of tokens received for the next execution.
+/** @return Map of tokens received for the next execution.
  *  @note If there is no queued execution for this task the map might not exist or be partially empty.
  */
 std::shared_ptr<Token> Task::get_next_token_from(TaskPtr t)
@@ -157,8 +128,7 @@ std::shared_ptr<Token> Task::get_next_token_from(TaskPtr t)
   return tokens_received_.front()[t];
 }
 
-/** @ingroup plugin_task
- *  @param successor The Task to add.
+/** @param successor The Task to add.
  *  @brief Add a successor to this Task.
  *  @note It also adds this as a predecessor of successor.
  */
@@ -170,8 +140,7 @@ void Task::add_successor(TaskPtr successor)
   });
 }
 
-/** @ingroup plugin_task
- *  @param successor The Task to remove.
+/** @param successor The Task to remove.
  *  @brief Remove a successor from this Task.
  *  @note It also remove this from the predecessors of successor.
  */
@@ -261,8 +230,7 @@ void ExecTask::fire()
   exec->set_flops_amount(amount_);
   exec->set_host(host_);
   exec->start();
-  exec->extension_set(new ExtendedAttributeActivity());
-  exec->extension<ExtendedAttributeActivity>()->task_ = this;
+  exec->on_this_completion_cb([this](Exec const& exec) { this->complete(); });
   current_activity_                                   = exec;
 }
 
@@ -323,8 +291,7 @@ void CommTask::fire()
   comm->set_name(name_);
   comm->set_payload_size(amount_);
   comm->start();
-  comm->extension_set(new ExtendedAttributeActivity());
-  comm->extension<ExtendedAttributeActivity>()->task_ = this;
+  comm->on_this_completion_cb([this](Comm const& comm) { this->complete(); });
   current_activity_                                   = comm;
 }
 
@@ -418,9 +385,8 @@ void IoTask::fire()
   io->set_disk(disk_);
   io->set_op_type(type_);
   io->start();
-  io->extension_set(new ExtendedAttributeActivity());
-  io->extension<ExtendedAttributeActivity>()->task_ = this;
-  current_activity_                                 = io;
+  io->on_this_completion_cb([this](Io const& io) { this->complete(); });
+  current_activity_ = io;
 }
 
-} // namespace simgrid::plugins
+} // namespace simgrid::s4u

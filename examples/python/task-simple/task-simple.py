@@ -34,7 +34,6 @@ if __name__ == '__main__':
     args = parse()
     e = Engine(sys.argv)
     e.load_platform(args.platform)
-    Task.init()
 
     # Retrieve hosts
     tremblay = e.host_by_name('Tremblay')
@@ -57,4 +56,3 @@ if __name__ == '__main__':
 
     # runs the simulation
     e.run()
-

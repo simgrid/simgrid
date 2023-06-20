@@ -25,7 +25,7 @@ set(EXTRA_DIST
   src/kernel/resource/models/network_ns3.hpp
   src/kernel/resource/models/ns3/ns3_simulator.hpp
   src/kernel/resource/models/ptask_L07.hpp
-  
+
   src/mc/datatypes.h
   src/mc/mc.h
   src/mc/mc_mmu.hpp
@@ -56,7 +56,7 @@ set(EXTRA_DIST
   src/xbt/log_private.hpp
   src/xbt/mallocator_private.h
   src/xbt/parmap.hpp
-  
+
   src/xbt/mmalloc/mmalloc.h
   src/xbt/mmalloc/mfree.c
   src/xbt/mmalloc/mm_legacy.c
@@ -342,7 +342,7 @@ set(KERNEL_SRC
   src/kernel/actor/SimcallObserver.hpp
   src/kernel/actor/SynchroObserver.cpp
   src/kernel/actor/SynchroObserver.hpp
-  
+
   src/kernel/context/Context.cpp
   src/kernel/context/Context.hpp
   src/kernel/context/ContextRaw.cpp
@@ -454,7 +454,6 @@ set(PLUGINS_SRC
   src/plugins/vm/VmLiveMigration.hpp
   src/plugins/vm/dirty_page_tracking.cpp
   src/plugins/battery.cpp
-  src/plugins/task.cpp
   src/plugins/photovoltaic.cpp
   )
 
@@ -475,6 +474,7 @@ set(S4U_SRC
   src/s4u/s4u_Mutex.cpp
   src/s4u/s4u_Netzone.cpp
   src/s4u/s4u_Semaphore.cpp
+  src/s4u/s4u_Task.cpp
   src/s4u/s4u_VirtualMachine.cpp
 )
 
@@ -521,7 +521,7 @@ set(MC_SRC_BASE
   src/mc/mc_replay.hpp
   src/mc/transition/Transition.cpp
   )
-  
+
 set(MC_SRC_STATELESS
   src/mc/api/ActorState.hpp
   src/mc/api/ClockVector.cpp
@@ -530,7 +530,7 @@ set(MC_SRC_STATELESS
   src/mc/api/State.hpp
   src/mc/api/RemoteApp.cpp
   src/mc/api/RemoteApp.hpp
-  
+
   src/mc/explo/DFSExplorer.cpp
   src/mc/explo/DFSExplorer.hpp
   src/mc/explo/Exploration.cpp
@@ -577,7 +577,7 @@ set(MC_SRC_STATEFUL
   src/mc/explo/LivenessChecker.hpp
   src/mc/explo/UdporChecker.cpp
   src/mc/explo/UdporChecker.hpp
-  
+
   src/mc/explo/udpor/Comb.hpp
   src/mc/explo/udpor/Configuration.hpp
   src/mc/explo/udpor/Configuration.cpp
@@ -595,7 +595,7 @@ set(MC_SRC_STATEFUL
   src/mc/explo/udpor/Unfolding.hpp
   src/mc/explo/udpor/udpor_forward.hpp
   src/mc/explo/udpor/udpor_tests_private.hpp
-  
+
   src/mc/inspect/DwarfExpression.cpp
   src/mc/inspect/DwarfExpression.hpp
   src/mc/inspect/Frame.cpp
@@ -614,7 +614,7 @@ set(MC_SRC_STATEFUL
   src/mc/inspect/mc_unw.cpp
   src/mc/inspect/mc_unw.hpp
   src/mc/inspect/mc_unw_vmread.cpp
-  
+
   src/mc/sosp/ChunkedData.cpp
   src/mc/sosp/ChunkedData.hpp
   src/mc/sosp/PageStore.cpp
@@ -641,7 +641,7 @@ set(MC_SRC_STATEFUL
   src/mc/api/strategy/MinMatchComm.hpp
   src/mc/api/strategy/Strategy.hpp
   src/mc/api/strategy/UniformStrategy.hpp
-  
+
   src/xbt/mmalloc/mm_interface.c
   )
 
@@ -661,7 +661,6 @@ set(headers_to_install
   include/simgrid/plugins/file_system.h
   include/simgrid/plugins/live_migration.h
   include/simgrid/plugins/load.h
-  include/simgrid/plugins/task.hpp
   include/simgrid/plugins/photovoltaic.hpp
   include/simgrid/plugins/ProducerConsumer.hpp
   include/simgrid/instr.h
@@ -695,6 +694,7 @@ set(headers_to_install
   include/simgrid/s4u/Mutex.hpp
   include/simgrid/s4u/NetZone.hpp
   include/simgrid/s4u/Semaphore.hpp
+  include/simgrid/s4u/Task.hpp
   include/simgrid/s4u/VirtualMachine.hpp
   include/simgrid/s4u.hpp
 
