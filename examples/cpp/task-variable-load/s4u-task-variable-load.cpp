@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
   comm->add_successor(exec);
 
   // Add a function to be called when tasks end for log purpose
-  sg4::Task::on_end_cb([](const sg4::Task* t) {
+  sg4::Task::on_completion_cb([](const sg4::Task* t) {
     XBT_INFO("Task %s finished (%d)", t->get_name().c_str(), t->get_count());
   });
 

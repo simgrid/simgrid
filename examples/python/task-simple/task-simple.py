@@ -49,7 +49,7 @@ if __name__ == '__main__':
     comm.add_successor(exec2)
 
     # Add a function to be called when tasks end for log purpose
-    Task.on_end_cb(callback)
+    Task.on_completion_cb(callback)
 
     # Enqueue two executions for task exec1
     exec1.enqueue_execs(2)

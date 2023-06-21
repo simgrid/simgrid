@@ -75,7 +75,7 @@ if __name__ == '__main__':
     exec2.add_successor(comm2)
 
     # Add a function to be called when tasks end for log purpose
-    Task.on_end_cb(callback)
+    Task.on_completion_cb(callback)
 
     # Add a function to be called before each executions of comm0
     # This function modifies the graph of tasks by adding or removing

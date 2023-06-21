@@ -933,11 +933,11 @@ PYBIND11_MODULE(simgrid, m)
           },
           "Add a callback called when each task starts.")
       .def_static(
-          "on_end_cb",
+          "on_completion_cb",
           [](py::object cb) {
             cb.inc_ref(); // keep alive after return
             const py::gil_scoped_release gil_release;
-            Task::on_end_cb([cb_p = cb.ptr()](Task* op) {
+            Task::on_completion_cb([cb_p = cb.ptr()](Task* op) {
               const py::gil_scoped_acquire py_context; // need a new context for callback
               py::reinterpret_borrow<py::function>(cb_p)(op);
             });
@@ -957,7 +957,7 @@ PYBIND11_MODULE(simgrid, m)
            "Remove all successors of this task.")
       .def("on_this_start_cb", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_start_cb),
            py::arg("func"), "Add a callback called when this task starts.")
-      .def("on_this_end_cb", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_end_cb),
+      .def("on_this_completion_cb", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_completion_cb),
            py::arg("func"), "Add a callback called when this task ends.")
       .def(
           "__repr__", [](const TaskPtr op) { return "Task(" + op->get_name() + ")"; },

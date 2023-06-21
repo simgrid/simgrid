@@ -58,7 +58,7 @@ if __name__ == '__main__':
     comm.add_successor(exec)
 
     # Add a function to be called when tasks end for log purpose
-    Task.on_end_cb(callback)
+    Task.on_completion_cb(callback)
 
     # Create the actor that will inject load during the simulation
     Actor.create("input", tremblay, variable_load, comm)
