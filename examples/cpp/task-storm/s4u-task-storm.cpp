@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
      Alternatively we: remove/add the link between SA and SA_to_B2
                        add/remove the link between SA and SA_to_B1
   */
-  SA->on_this_start_cb([&](sg4::Task* t) {
+  SA->on_this_start_cb([SA_to_B1,SA_to_B2](sg4::Task* t) {
     int count = t->get_count();
     sg4::CommTaskPtr comm;
     if (count % 2 == 0) {
@@ -95,21 +95,21 @@ int main(int argc, char* argv[])
   });
 
   // The token sent by SA is forwarded by both communication tasks
-  SA_to_B1->on_this_start_cb([&](sg4::Task* t) {
+  SA_to_B1->on_this_start_cb([SA](sg4::Task* t) {
     t->set_token(t->get_next_token_from(SA));
   });
-  SA_to_B2->on_this_start_cb([&](sg4::Task* t) {
+  SA_to_B2->on_this_start_cb([SA](sg4::Task* t) {
     t->set_token(t->get_next_token_from(SA));
   });
 
   /* B1 and B2 read the value of the token received by their predecessors
      and use it to adapt their amount of work to do.
   */
-  B1->on_this_start_cb([&](sg4::Task* t) {
+  B1->on_this_start_cb([SA_to_B1](sg4::Task* t) {
     auto data = t->get_next_token_from(SA_to_B1)->get_unique_data<double>();
     t->set_amount(*data * 10);
   });
-  B2->on_this_start_cb([&](sg4::Task* t) {
+  B2->on_this_start_cb([SA_to_B2](sg4::Task* t) {
     auto data = t->get_next_token_from(SA_to_B2)->get_unique_data<double>();
     t->set_amount(*data * 10);
   });
