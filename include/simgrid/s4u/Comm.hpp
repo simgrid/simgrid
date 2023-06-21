@@ -39,7 +39,6 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
   Comm() = default;
   Comm* do_start() override;
 
-protected:
   static xbt::signal<void(Comm const&)> on_send;
   xbt::signal<void(Comm const&)> on_this_send;
   static xbt::signal<void(Comm const&)> on_recv;
@@ -47,6 +46,7 @@ protected:
   inline static xbt::signal<void(Comm const&)> on_start;
   xbt::signal<void(Comm const&)> on_this_start;
 
+protected:
   void fire_on_completion() const override {
     /* The completion signal of a Comm has to be thrown only once and not by the sender AND the receiver.
        then Comm::on_completion is thrown in the kernel in CommImpl::finish.
