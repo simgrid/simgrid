@@ -53,8 +53,7 @@ int main(int argc, char* argv[])
   // Add a function to be called before each executions of comm0
   // This function modifies the graph of tasks by adding or removing
   // successors to comm0
-  comm0->on_this_start_cb([exec1, exec2, jupiter, fafard](sg4::Task* t) {
-    auto* comm0      = dynamic_cast<sg4::CommTask*>(t);
+  comm0->on_this_start_cb([comm0, exec1, exec2, jupiter, fafard](sg4::Task*) {
     static int count = 0;
     if (count % 2 == 0) {
       comm0->set_destination(jupiter);
