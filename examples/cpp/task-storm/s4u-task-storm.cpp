@@ -114,9 +114,9 @@ int main(int argc, char* argv[])
     t->set_amount(*data * 10);
   });
 
-  // Enqueue executions for tasks without predecessors
-  SA->enqueue_execs(5);
-  SB->enqueue_execs(5);
+  // Enqueue firings for tasks without predecessors
+  SA->enqueue_firings(5);
+  SB->enqueue_firings(5);
 
   // Add a function to be called when tasks end for log purpose
   sg4::Task::on_completion_cb([]

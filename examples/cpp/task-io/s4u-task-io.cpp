@@ -45,8 +45,8 @@ int main(int argc, char* argv[])
     XBT_INFO("Task %s finished (%d)", t->get_name().c_str(), t->get_count());
   });
 
-  // Enqueue two executions for task exec1
-  exec1->enqueue_execs(2);
+  // Enqueue two firings for task exec1
+  exec1->enqueue_firings(2);
 
   // Start the simulation
   e.run();

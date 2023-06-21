@@ -43,8 +43,8 @@ if __name__ == '__main__':
     # Add a function to be called when tasks end for log purpose
     Task.on_completion_cb(callback)
 
-    # Enqueue two executions for task exec1
-    exec1.enqueue_execs(2)
+    # Enqueue two firings for task exec1
+    exec1.enqueue_firings(2)
 
     # runs the simulation
     e.run()

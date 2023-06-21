@@ -22,13 +22,13 @@ static void variable_load(sg4::TaskPtr t)
 {
   XBT_INFO("--- Small load ---");
   for (int i = 0; i < 3; i++) {
-    t->enqueue_execs(1);
+    t->enqueue_firings(1);
     sg4::this_actor::sleep_for(100);
   }
   sg4::this_actor::sleep_until(1000);
   XBT_INFO("--- Heavy load ---");
   for (int i = 0; i < 3; i++) {
-    t->enqueue_execs(1);
+    t->enqueue_firings(1);
     sg4::this_actor::sleep_for(1);
   }
 }

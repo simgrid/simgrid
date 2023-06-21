@@ -29,7 +29,7 @@ class XBT_PUBLIC Token : public xbt::Extendable<Token> {};
 class Task {
   std::string name_;
   double amount_;
-  int queued_execs_ = 0;
+  int queued_firings_ = 0;
   int count_        = 0;
   bool working_     = false;
 
@@ -74,7 +74,7 @@ public:
   void remove_all_successors();
   const std::set<Task*>& get_successors() const { return successors_; }
 
-  void enqueue_execs(int n);
+  void enqueue_firings(int n);
 
   /** Add a callback fired before this task activity starts */
   void on_this_start_cb(const std::function<void(Task*)>& func){ on_this_start.connect(func); }

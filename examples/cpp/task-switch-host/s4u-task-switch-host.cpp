@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
     XBT_INFO("Task %s finished (%d)", t->get_name().c_str(), t->get_count());
   });
 
-  // Add a function to be called before each executions of comm0
+  // Add a function to be called before each firing of comm0
   // This function modifies the graph of tasks by adding or removing
   // successors to comm0
   comm0->on_this_start_cb([comm0, exec1, exec2, jupiter, fafard](sg4::Task*) {
@@ -67,8 +67,8 @@ int main(int argc, char* argv[])
     count++;
   });
 
-  // Enqueue four executions for task comm0
-  comm0->enqueue_execs(4);
+  // Enqueue four firings for task comm0
+  comm0->enqueue_firings(4);
 
   // Start the simulation
   e.run();

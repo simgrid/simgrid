@@ -33,12 +33,12 @@ def callback(t):
 def variable_load(t):
     print('--- Small load ---')
     for _ in range(3):
-        t.enqueue_execs(1)
+        t.enqueue_firings(1)
         this_actor.sleep_for(100)
     this_actor.sleep_for(1000)
     print('--- Heavy load ---')
     for _ in range(3):
-        t.enqueue_execs(1)
+        t.enqueue_firings(1)
         this_actor.sleep_for(1)
 
 if __name__ == '__main__':

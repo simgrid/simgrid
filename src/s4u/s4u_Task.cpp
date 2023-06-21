@@ -33,7 +33,7 @@ Task::Task(const std::string& name) : name_(name) {}
  */
 bool Task::ready_to_run() const
 {
-  return not working_ && queued_execs_ > 0;
+  return not working_ && queued_firings_ > 0;
 }
 
 /**
@@ -46,9 +46,9 @@ void Task::receive(Task* source)
 {
   XBT_DEBUG("Task %s received a token from %s", name_.c_str(), source->name_.c_str());
   auto source_count = predecessors_[source]++;
-  if (tokens_received_.size() <= queued_execs_ + source_count)
+  if (tokens_received_.size() <= queued_firings_ + source_count)
     tokens_received_.push_back({});
-  tokens_received_[queued_execs_ + source_count][source] = source->token_;
+  tokens_received_[queued_firings_ + source_count][source] = source->token_;
   bool enough_tokens = true;
   for (auto const& [key, val] : predecessors_)
     if (val < 1) {
@@ -58,7 +58,7 @@ void Task::receive(Task* source)
   if (enough_tokens) {
     for (auto& [key, val] : predecessors_)
       val--;
-    enqueue_execs(1);
+    enqueue_firings(1);
   }
 }
 
@@ -86,14 +86,14 @@ void Task::complete()
     fire();
 }
 
-/** @param n The number of executions to enqueue.
- *  @brief Enqueue executions.
- *  @note Immediatly starts an execution if possible.
+/** @param n The number of firings to enqueue.
+ *  @brief Enqueue firing.
+ *  @note Immediatly fire an activity if possible.
  */
-void Task::enqueue_execs(int n)
+void Task::enqueue_firings(int n)
 {
   simgrid::kernel::actor::simcall_answered([this, n] {
-    queued_execs_ += n;
+    queued_firings_ += n;
     if (ready_to_run())
       fire();
   });
@@ -129,7 +129,7 @@ void Task::fire() {
   on_this_start(this);
   on_start(this);
   working_ = true;
-  queued_execs_ = std::max(queued_execs_ - 1, 0);
+  queued_firings_ = std::max(queued_firings_ - 1, 0);
   if (tokens_received_.size() > 0)
     tokens_received_.pop_front();
 }
