@@ -1,9 +1,19 @@
 # We ignore the LD_PRELOAD lines from the expected output because they contain the build path
 ! ignore .*LD_PRELOAD.*
 
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/pthread-producer-consumer -q -c 2 -C 1 -p 2 -P 1
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/sleep-set' to 'true'
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/pthread-producer-consumer -q  -C 1 -P 1
 > [0.000000] [sthread/INFO] Starting the simulation.
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 103 unique states visited; 16 backtracks (163 transition replays, 282 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 786 unique states visited; 97 backtracks (2049 transition replays, 2932 states visited overall)
 
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:sdpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/pthread-producer-consumer -q  -C 1 -P 1
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'sdpor'
+> [0.000000] [sthread/INFO] Starting the simulation.
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: sdpor.
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 1186 unique states visited; 157 backtracks (3403 transition replays, 4746 states visited overall)
+
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/pthread-producer-consumer -q  -C 1 -P 1
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> [0.000000] [sthread/INFO] Starting the simulation.
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 39 unique states visited; 0 backtracks (0 transition replays, 39 states visited overall)
