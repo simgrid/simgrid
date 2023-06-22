@@ -16,16 +16,15 @@
  * With exec1 and exec2 on different hosts.
  */
 
-#include "simgrid/plugins/task.hpp"
 #include "simgrid/s4u.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(task_switch_host, "Messages specific for this task example");
+namespace sg4 = simgrid::s4u;
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
-  simgrid::plugins::Task::init();
 
   // Retrieve hosts
   auto* tremblay = e.host_by_name("Tremblay");
@@ -33,13 +32,13 @@ int main(int argc, char* argv[])
   auto* fafard   = e.host_by_name("Fafard");
 
   // Create tasks
-  auto comm0 = simgrid::plugins::CommTask::init("comm0");
+  auto comm0 = sg4::CommTask::init("comm0");
   comm0->set_bytes(1e7);
   comm0->set_source(tremblay);
-  auto exec1 = simgrid::plugins::ExecTask::init("exec1", 1e9, jupiter);
-  auto exec2 = simgrid::plugins::ExecTask::init("exec2", 1e9, fafard);
-  auto comm1 = simgrid::plugins::CommTask::init("comm1", 1e7, jupiter, tremblay);
-  auto comm2 = simgrid::plugins::CommTask::init("comm2", 1e7, fafard, tremblay);
+  auto exec1 = sg4::ExecTask::init("exec1", 1e9, jupiter);
+  auto exec2 = sg4::ExecTask::init("exec2", 1e9, fafard);
+  auto comm1 = sg4::CommTask::init("comm1", 1e7, jupiter, tremblay);
+  auto comm2 = sg4::CommTask::init("comm2", 1e7, fafard, tremblay);
 
   // Create the initial graph by defining dependencies between tasks
   comm0->add_successor(exec2);
@@ -47,15 +46,14 @@ int main(int argc, char* argv[])
   exec2->add_successor(comm2);
 
   // Add a function to be called when tasks end for log purpose
-  simgrid::plugins::Task::on_end_cb([](const simgrid::plugins::Task* t) {
+  sg4::Task::on_completion_cb([](const sg4::Task* t) {
     XBT_INFO("Task %s finished (%d)", t->get_name().c_str(), t->get_count());
   });
 
-  // Add a function to be called before each executions of comm0
+  // Add a function to be called before each firing of comm0
   // This function modifies the graph of tasks by adding or removing
   // successors to comm0
-  comm0->on_this_start_cb([exec1, exec2, jupiter, fafard](simgrid::plugins::Task* t) {
-    auto* comm0      = dynamic_cast<simgrid::plugins::CommTask*>(t);
+  comm0->on_this_start_cb([comm0, exec1, exec2, jupiter, fafard](sg4::Task*) {
     static int count = 0;
     if (count % 2 == 0) {
       comm0->set_destination(jupiter);
@@ -69,8 +67,8 @@ int main(int argc, char* argv[])
     count++;
   });
 
-  // Enqueue four executions for task comm0
-  comm0->enqueue_execs(4);
+  // Enqueue four firings for task comm0
+  comm0->enqueue_firings(4);
 
   // Start the simulation
   e.run();

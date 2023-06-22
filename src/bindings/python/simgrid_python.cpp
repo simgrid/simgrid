@@ -11,7 +11,6 @@
 #include "simgrid/kernel/ProfileBuilder.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include <simgrid/Exception.hpp>
-#include <simgrid/plugins/task.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Barrier.hpp>
 #include <simgrid/s4u/Comm.hpp>
@@ -25,6 +24,7 @@
 #include <simgrid/s4u/Mutex.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/s4u/Semaphore.hpp>
+#include <simgrid/s4u/Task.hpp>
 #include <simgrid/version.h>
 
 #include <algorithm>
@@ -33,14 +33,14 @@
 #include <vector>
 
 namespace py = pybind11;
-using simgrid::plugins::CommTask;
-using simgrid::plugins::CommTaskPtr;
-using simgrid::plugins::ExecTask;
-using simgrid::plugins::ExecTaskPtr;
-using simgrid::plugins::IoTask;
-using simgrid::plugins::IoTaskPtr;
-using simgrid::plugins::Task;
-using simgrid::plugins::TaskPtr;
+using simgrid::s4u::CommTask;
+using simgrid::s4u::CommTaskPtr;
+using simgrid::s4u::ExecTask;
+using simgrid::s4u::ExecTaskPtr;
+using simgrid::s4u::IoTask;
+using simgrid::s4u::IoTaskPtr;
+using simgrid::s4u::Task;
+using simgrid::s4u::TaskPtr;
 using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 using simgrid::s4u::Barrier;
@@ -921,7 +921,6 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Task */
   py::class_<Task, TaskPtr>(m, "Task", "Task. See the C++ documentation for details.")
-      .def_static("init", &Task::init)
       .def_static(
           "on_start_cb",
           [](py::object cb) {
@@ -934,11 +933,11 @@ PYBIND11_MODULE(simgrid, m)
           },
           "Add a callback called when each task starts.")
       .def_static(
-          "on_end_cb",
+          "on_completion_cb",
           [](py::object cb) {
             cb.inc_ref(); // keep alive after return
             const py::gil_scoped_release gil_release;
-            Task::on_end_cb([cb_p = cb.ptr()](Task* op) {
+            Task::on_completion_cb([cb_p = cb.ptr()](Task* op) {
               const py::gil_scoped_acquire py_context; // need a new context for callback
               py::reinterpret_borrow<py::function>(cb_p)(op);
             });
@@ -948,8 +947,8 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("count", &Task::get_count, "The execution count of this task (read-only).")
       .def_property_readonly("successors", &Task::get_successors, "The successors of this task (read-only).")
       .def_property("amount", &Task::get_amount, &Task::set_amount, "The amount of work to do for this task.")
-      .def("enqueue_execs", py::overload_cast<int>(&Task::enqueue_execs), py::call_guard<py::gil_scoped_release>(),
-           py::arg("n"), "Enqueue executions for this task.")
+      .def("enqueue_firings", py::overload_cast<int>(&Task::enqueue_firings), py::call_guard<py::gil_scoped_release>(),
+           py::arg("n"), "Enqueue firings for this task.")
       .def("add_successor", py::overload_cast<TaskPtr>(&Task::add_successor), py::call_guard<py::gil_scoped_release>(),
            py::arg("op"), "Add a successor to this task.")
       .def("remove_successor", py::overload_cast<TaskPtr>(&Task::remove_successor),
@@ -958,7 +957,7 @@ PYBIND11_MODULE(simgrid, m)
            "Remove all successors of this task.")
       .def("on_this_start_cb", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_start_cb),
            py::arg("func"), "Add a callback called when this task starts.")
-      .def("on_this_end_cb", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_end_cb),
+      .def("on_this_completion_cb", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_completion_cb),
            py::arg("func"), "Add a callback called when this task ends.")
       .def(
           "__repr__", [](const TaskPtr op) { return "Task(" + op->get_name() + ")"; },
