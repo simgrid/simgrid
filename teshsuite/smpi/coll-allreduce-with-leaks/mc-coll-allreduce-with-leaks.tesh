@@ -1,7 +1,7 @@
 # Smpi Allreduce collectives tests
 
 p Test allreduce
-$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../../bin/simgrid-mc" -map -hostfile ../hostfile_coll -platform  ${platfdir:=.}/small_platform.xml --cfg=model-check/sleep-set:true -np 4 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce-with-leaks --log=smpi_config.thres:warning --cfg=smpi/display-allocs:yes --cfg=smpi/simulate-computation:no --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --cfg=smpi/list-leaks:10 --log=no_loc
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../../bin/simgrid-mc" -map -hostfile ../hostfile_coll -platform  ${platfdir:=.}/small_platform.xml -np 4 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce-with-leaks --log=smpi_config.thres:warning --cfg=smpi/display-allocs:yes --cfg=smpi/simulate-computation:no --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --cfg=smpi/list-leaks:10 --log=no_loc
 > [0.000000] [smpi/INFO] [rank 0] -> Tremblay
 > [0.000000] [smpi/INFO] [rank 1] -> Tremblay
 > [0.000000] [smpi/INFO] [rank 2] -> Tremblay
