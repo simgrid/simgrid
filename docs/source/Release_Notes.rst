@@ -614,18 +614,30 @@ simulate some kind of "disk-to-memory" or "memory-to-disk" I/O streams.
 As usual on that front, some functions were deprecated and will be removed in 4 versions, while some old deprecated functions
 were removed in this version.
 
-**On the model checking front**, we are almost done with the ongoing refactoring to ensure that the model-checker don't read
-directly the memory of the application beside checkpoint/restore and state equality. Instead, the network protocol is used to
-retrieve the information, which makes the code much easier to read and understand. We fixed a bug in the DPOR reduction which
-resulted in some failures to be missed by the exploration, but our quick fix hindered the reduction quality. As a result, some
-scenarios which could be explored completely earlier (with bugs) are now too large for our (correct) exploration algorithm. We
-should improve DPOR in the next release, possibly implementing the ODPOR variant (Optimal DPOR). Also, we started implementing
-the UDPOR (Unfoldings DPOR) reduction algorithm, also for the next release.
+**On the model checking front**, this release brings a huge load of good improvements. First, we finished the long refactoring
+so that the model-checker only reads the memory of the application for state equality (used for liveness checking) and for
+:ref:`stateful checking <cfg=model-check/checkpoint>`. Instead, the network protocol is used to retrieve the information and the
+application is simply forked to explore new execution branches. The code is now easier to read and to understand. Even better,
+the verification of safety properties is now enabled by default on every platforms since it does depend on advanced OS
+mechanisms anymore. You can even run the verified application in valgrind in that case. On the other hand, liveness checking
+still needs to be enabled at compile time if you need it. Tbh, this part of the framework is not very well maintained nowadays.
+We should introduce more testing of the liveness verification at some point to fix this situation.
+
+Back on to safety verification, we fixed a bug in the DPOR reduction which resulted in some failures to be missed by the
+exploration, but this somewhat hinders the reduction quality (as we don't miss branches anymore). Some scenarios which could be
+exhaustively explored earlier (with our buggy algorithm) are now too large for our (correct) exploration algorithm. But that's
+not a problem because we implemented several mechanism to improve the performance of the verification. First, we implemented
+source sets in DPOR, to blacklist transitions that are redundent with previously explored ones. Then, we implemented several new
+DPOR variants. SDPOR and ODPOR are very efficient algorithms described in the paper "Source Sets: A Foundation for Optimal
+Dynamic Partial Order Reduction" by Abdulla et al in 2017. We also have an experimental implementation of UPDOR, described in
+the paper "Unfolding-based Partial Order Reduction" by Rodriguez et al in 2015, but it's not completely functional yet. We hope
+to finish it for the next release. And finally, we implemented a guiding mechanism trying to converge faster toward the bugs in
+the reduced state space. We have some naive heuristics, and we hope to provide better ones in the next release.
 
 We also extended the sthread module, which allows to intercept simple code that use pthread mutex and semaphores to simulate and
 verify it. You do not even need to recompile your code, as it uses LD_PRELOAD to intercept on the target functions. This module
-is still rather young, but it could already reveal useful to verify the code written by students in a class on UNIX IPC and
-synchronization. Check `the examples <https://framagit.org/simgrid/simgrid/tree/master/examples/sthread>`_.
+is still rather young, but it could probably be useful already, e.g. to verify the code written by students in a class on UNIX
+IPC and synchronization. Check `the examples <https://framagit.org/simgrid/simgrid/tree/master/examples/sthread>`_.
 
 .. |br| raw:: html
 
