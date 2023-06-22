@@ -117,6 +117,7 @@ Existing Configuration Items
 - **model-check/replay:** :ref:`cfg=model-check/replay`
 - **model-check/send-determinism:** :ref:`cfg=model-check/send-determinism`
 - **model-check/setenv:** :ref:`cfg=model-check/setenv`
+- **model-check/sleep-set:** :ref:`cfg=model-check/sleep-set`
 - **model-check/termination:** :ref:`cfg=model-check/termination`
 - **model-check/timeout:** :ref:`cfg=model-check/timeout`
 - **model-check/visited:** :ref:`cfg=model-check/visited`
@@ -689,11 +690,13 @@ explosion. You can activate some reduction technique with
 ``--cfg=model-check/reduction:<technique>``. For now, this
 configuration variable can take 2 values:
 
- - **none:** Do not apply any kind of reduction (mandatory for
-   liveness properties, as our current DPOR algorithm breaks cycles)
- - **dpor:** Apply Dynamic Partial Ordering Reduction. Only valid if
-   you verify local safety properties (default value for safety
-   checks).
+ - **none:** Do not apply any kind of reduction (mandatory for liveness properties, as our current DPOR algorithm breaks cycles)
+ - **dpor:** Apply Dynamic Partial Ordering Reduction. Only valid if you verify local safety properties (default value for
+   safety checks).
+ - **sdpor:** Source-set DPOR, as described in "Source Sets: A Foundation for Optimal Dynamic Partial Order Reduction"
+    by Abdulla et al.
+ - **odpor:** Optimal DPOR, as described in "Source Sets: A Foundation for Optimal Dynamic Partial Order Reduction"
+    by Abdulla et al.
 
 Another way to mitigate the state space explosion is to search for
 cycles in the exploration with the :ref:`cfg=model-check/visited`
@@ -704,6 +707,14 @@ Our current DPOR implementation could be improved in may ways. We are
 currently improving its efficiency (both in term of reduction ability
 and computational speed), and future work could make it compatible
 with liveness properties.
+
+.. _cfg=model-check/sleep-set:
+
+Sleep sets
+..........
+
+The performance of the DPOR algorithm is greatly improved by using sleep sets, but if you want, you can still disable it with
+this option.
 
 .. _cfg=model-check/visited:
 
