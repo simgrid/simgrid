@@ -606,13 +606,16 @@ some options for clarity (old names are still accepted as aliases). A new functi
 XML representation that is inefficient (all zones are flatified) but easier to read (routes are explicitely defined). You should
 not use the output as a regular input file, but it will prove useful to double-check the your platform.
 
-**On the interface front**, the new ``Io::streamto()`` function has been inspired by the existing ``Comm::sendto()``
-function (which also derives from the ptask model). The user can specify a ``src_disk`` on a ``src_host`` and a
-``dst_disk`` on a ``dst_host`` to stream data of a given ``size``. Note that disks are optional, allowing users to
-simulate some kind of "disk-to-memory" or "memory-to-disk" I/O streams.
+**On the interface front**, some functions were deprecated and will be removed in 4 versions, while some old deprecated functions
+were removed in this version, as usual.
 
-As usual on that front, some functions were deprecated and will be removed in 4 versions, while some old deprecated functions
-were removed in this version.
+The new ``Io::streamto()`` function has been inspired by the existing ``Comm::sendto()`` function (which also derives from the
+ptask model). The user can specify a ``src_disk`` on a ``src_host`` and a ``dst_disk`` on a ``dst_host`` to stream data of a
+given ``size``. Note that disks are optional, allowing users to simulate some kind of "disk-to-memory" or "memory-to-disk" I/O
+streams.
+
+It is now easy to mix S4U actors and SMPI applications, or even to start more than one MPI application in a given simulation
+with the :ref:`SMPI_app_instance_start() <SMPI_mix_s4u>` function.
 
 **On the model checking front**, this release brings a huge load of good improvements. First, we finished the long refactoring
 so that the model-checker only reads the memory of the application for state equality (used for liveness checking) and for

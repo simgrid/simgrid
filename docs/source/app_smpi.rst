@@ -42,11 +42,121 @@ For **further scalability**, you may modify your code to speed up your
 studies or save memory space.  Maximal **simulation accuracy**
 requires some specific care from you.
 
+-------------------------
+What can run within SMPI?
+-------------------------
+
+You can run unmodified MPI applications (both C/C++ and Fortran) within
+SMPI, provided that you only use MPI calls that we implemented. Global
+variables should be handled correctly on Linux systems.
+
+....................
+MPI coverage of SMPI
+....................
+
+SMPI support a large faction of the MPI interface: we pass many of the MPICH coverage tests, and many of the existing
+:ref:`proxy apps <SMPI_proxy_apps>` run almost unmodified on top of SMPI. But our support is still incomplete, with I/O
+primitives the being one of the major missing feature.
+
+The full list of functions that remain to be implemented is documented in the file `include/smpi/smpi.h
+<https://framagit.org/simgrid/simgrid/tree/master/include/smpi/smpi.h>`_ in your version of SimGrid, between two lines
+containing the ``FIXME`` marker. If you miss a feature, please get in touch with us: we can guide you through the SimGrid
+code to help you implementing it, and we'd be glad to integrate your contribution to the main project.
+
+.. _SMPI_what_globals:
+
+.................................
+Privatization of global variables
+.................................
+
+Concerning the globals, the problem comes from the fact that usually,
+MPI processes run as real UNIX processes while they are all folded
+into threads of a unique system process in SMPI. Global variables are
+usually private to each MPI process while they become shared between
+the processes in SMPI.  The problem and some potential solutions are
+discussed in this article: `Automatic Handling of Global Variables for
+Multi-threaded MPI Programs
+<http://charm.cs.illinois.edu/newPapers/11-23/paper.pdf>` (note that
+this article does not deal with SMPI but with a competing solution
+called AMPI that suffers of the same issue).  This point used to be
+problematic in SimGrid, but the problem should now be handled
+automatically on Linux.
+
+Older versions of SimGrid came with a script that automatically
+privatized the globals through static analysis of the source code. But
+our implementation was not robust enough to be used in production, so
+it was removed at some point. Currently, SMPI comes with two
+privatization mechanisms that you can :ref:`select at runtime
+<cfg=smpi/privatization>`.  The dlopen approach is used by
+default as it is much faster and still very robust.  The mmap approach
+is an older approach that proves to be slower.
+
+With the **mmap approach**, SMPI duplicates and dynamically switch the
+``.data`` and ``.bss`` segments of the ELF process when switching the
+MPI ranks. This allows each ranks to have its own copy of the global
+variables.  No copy actually occurs as this mechanism uses ``mmap()``
+for efficiency. This mechanism is considered to be very robust on all
+systems supporting ``mmap()`` (Linux and most BSDs). Its performance
+is questionable since each context switch between MPI ranks induces
+several syscalls to change the ``mmap`` that redirects the ``.data``
+and ``.bss`` segments to the copies of the new rank. The code will
+also be copied several times in memory, inducing a slight increase of
+memory occupation.
+
+Another limitation is that SMPI only accounts for global variables
+defined in the executable. If the processes use external global
+variables from dynamic libraries, they won't be switched
+correctly. The easiest way to solve this is to statically link against
+the library with these globals. This way, each MPI rank will get its
+own copy of these libraries. Of course you should never statically
+link against the SimGrid library itself.
+
+With the **dlopen approach**, SMPI loads several copies of the same
+executable in memory as if it were a library, so that the global
+variables get naturally duplicated. It first requires the executable
+to be compiled as a relocatable binary, which is less common for
+programs than for libraries. But most distributions are now compiled
+this way for security reason as it allows one to randomize the address
+space layout. It should thus be safe to compile most (any?) program
+this way.  The second trick is that the dynamic linker refuses to link
+the exact same file several times, be it a library or a relocatable
+executable. It makes perfectly sense in the general case, but we need
+to circumvent this rule of thumb in our case. To that extend, the
+binary is copied in a temporary file before being re-linked against.
+``dlmopen()`` cannot be used as it only allows 256 contexts, and as it
+would also duplicate SimGrid itself.
+
+This approach greatly speeds up the context switching, down to about
+40 CPU cycles with our raw contexts, instead of requesting several
+syscalls with the ``mmap()`` approach. Another advantage is that it
+permits one to run the SMPI contexts in parallel, which is obviously not
+possible with the ``mmap()`` approach. It was tricky to implement, but
+we are not aware of any flaws, so smpirun activates it by default.
+
+In the future, it may be possible to further reduce the memory and
+disk consumption. It seems that we could `punch holes
+<https://lwn.net/Articles/415889/>`_ in the files before dl-loading
+them to remove the code and constants, and mmap these area onto a
+unique copy. If done correctly, this would reduce the disk- and
+memory- usage to the bare minimum, and would also reduce the pressure
+on the CPU instruction cache. See the `relevant bug
+<https://github.com/simgrid/simgrid/issues/137>`_ on github for
+implementation leads.\n
+
+Also, currently, only the binary is copied and dlopen-ed for each MPI
+rank. We could probably extend this to external dependencies, but for
+now, any external dependencies must be statically linked into your
+application. As usual, SimGrid itself shall never be statically linked
+in your app. You don't want to give a copy of SimGrid to each MPI rank:
+that's ways too much for them to deal with.
+
+.. todo: speak of smpi/privatize-libs here
+
 .. _SMPI_online:
 
------------------
-Using SMPI online
------------------
+---------------------------
+Online SMPI: live execution
+---------------------------
 
 In this mode, your application is actually executed. Every computation
 occurs for real while every communication is simulated. In addition,
@@ -500,119 +610,36 @@ Alltoall on 16 Nodes with the Ring Algorithm.
 
 Alltoall on 16 Nodes with the Pairwise Algorithm.
 
--------------------------
-What can run within SMPI?
--------------------------
+.. _SMPI_mix_s4u:
 
-You can run unmodified MPI applications (both C/C++ and Fortran) within
-SMPI, provided that you only use MPI calls that we implemented. Global
-variables should be handled correctly on Linux systems.
+.............................
+Mixing S4U and MPI simulation
+.............................
 
-....................
-MPI coverage of SMPI
-....................
+Mixing both interfaces is very easy. This can be useful to easily implement a service in S4U that is provided by your
+infrastructure in some way, and test how your MPI application interacts with this service. Or you can use it to start more than
+one MPI application in your simulation, and study their interactions.
 
-SMPI support a large faction of the MPI interface: we pass many of the MPICH coverage tests, and many of the existing
-:ref:`proxy apps <SMPI_proxy_apps>` run almost unmodified on top of SMPI. But our support is still incomplete, with I/O
-primitives the being one of the major missing feature.
+.. doxygenfunction:: SMPI_app_instance_start
 
-The full list of functions that remain to be implemented is documented in the file `include/smpi/smpi.h
-<https://framagit.org/simgrid/simgrid/tree/master/include/smpi/smpi.h>`_ in your version of SimGrid, between two lines
-containing the ``FIXME`` marker. If you miss a feature, please get in touch with us: we can guide you through the SimGrid
-code to help you implementing it, and we'd be glad to integrate your contribution to the main project.
+.. tabs::
 
-.. _SMPI_what_globals:
+   .. group-tab:: Example
 
-.................................
-Privatization of global variables
-.................................
+      Here is a simple example of use, which starts the function ``alltoall_mpi`` as a MPI instance on 4 hosts, along several
+      S4U actors doing a master/workers.
 
-Concerning the globals, the problem comes from the fact that usually,
-MPI processes run as real UNIX processes while they are all folded
-into threads of a unique system process in SMPI. Global variables are
-usually private to each MPI process while they become shared between
-the processes in SMPI.  The problem and some potential solutions are
-discussed in this article: `Automatic Handling of Global Variables for
-Multi-threaded MPI Programs
-<http://charm.cs.illinois.edu/newPapers/11-23/paper.pdf>` (note that
-this article does not deal with SMPI but with a competing solution
-called AMPI that suffers of the same issue).  This point used to be
-problematic in SimGrid, but the problem should now be handled
-automatically on Linux.
+      .. showfile:: examples/smpi/smpi_s4u_masterworker/masterworker_mailbox_smpi.cpp
+         :language: cpp
 
-Older versions of SimGrid came with a script that automatically
-privatized the globals through static analysis of the source code. But
-our implementation was not robust enough to be used in production, so
-it was removed at some point. Currently, SMPI comes with two
-privatization mechanisms that you can :ref:`select at runtime
-<cfg=smpi/privatization>`.  The dlopen approach is used by
-default as it is much faster and still very robust.  The mmap approach
-is an older approach that proves to be slower.
+   .. group-tab:: Deployment file
 
-With the **mmap approach**, SMPI duplicates and dynamically switch the
-``.data`` and ``.bss`` segments of the ELF process when switching the
-MPI ranks. This allows each ranks to have its own copy of the global
-variables.  No copy actually occurs as this mechanism uses ``mmap()``
-for efficiency. This mechanism is considered to be very robust on all
-systems supporting ``mmap()`` (Linux and most BSDs). Its performance
-is questionable since each context switch between MPI ranks induces
-several syscalls to change the ``mmap`` that redirects the ``.data``
-and ``.bss`` segments to the copies of the new rank. The code will
-also be copied several times in memory, inducing a slight increase of
-memory occupation.
+      .. showfile:: examples/smpi/smpi_s4u_masterworker/deployment_masterworker_mailbox_smpi.xml
+         :language: xml
 
-Another limitation is that SMPI only accounts for global variables
-defined in the executable. If the processes use external global
-variables from dynamic libraries, they won't be switched
-correctly. The easiest way to solve this is to statically link against
-the library with these globals. This way, each MPI rank will get its
-own copy of these libraries. Of course you should never statically
-link against the SimGrid library itself.
-
-With the **dlopen approach**, SMPI loads several copies of the same
-executable in memory as if it were a library, so that the global
-variables get naturally duplicated. It first requires the executable
-to be compiled as a relocatable binary, which is less common for
-programs than for libraries. But most distributions are now compiled
-this way for security reason as it allows one to randomize the address
-space layout. It should thus be safe to compile most (any?) program
-this way.  The second trick is that the dynamic linker refuses to link
-the exact same file several times, be it a library or a relocatable
-executable. It makes perfectly sense in the general case, but we need
-to circumvent this rule of thumb in our case. To that extend, the
-binary is copied in a temporary file before being re-linked against.
-``dlmopen()`` cannot be used as it only allows 256 contexts, and as it
-would also duplicate SimGrid itself.
-
-This approach greatly speeds up the context switching, down to about
-40 CPU cycles with our raw contexts, instead of requesting several
-syscalls with the ``mmap()`` approach. Another advantage is that it
-permits one to run the SMPI contexts in parallel, which is obviously not
-possible with the ``mmap()`` approach. It was tricky to implement, but
-we are not aware of any flaws, so smpirun activates it by default.
-
-In the future, it may be possible to further reduce the memory and
-disk consumption. It seems that we could `punch holes
-<https://lwn.net/Articles/415889/>`_ in the files before dl-loading
-them to remove the code and constants, and mmap these area onto a
-unique copy. If done correctly, this would reduce the disk- and
-memory- usage to the bare minimum, and would also reduce the pressure
-on the CPU instruction cache. See the `relevant bug
-<https://github.com/simgrid/simgrid/issues/137>`_ on github for
-implementation leads.\n
-
-Also, currently, only the binary is copied and dlopen-ed for each MPI
-rank. We could probably extend this to external dependencies, but for
-now, any external dependencies must be statically linked into your
-application. As usual, SimGrid itself shall never be statically linked
-in your app. You don't want to give a copy of SimGrid to each MPI rank:
-that's ways too much for them to deal with.
-
-.. todo: speak of smpi/privatize-libs here
-
-----------------------------------------------
+..............................................
 Adapting your MPI code for further scalability
-----------------------------------------------
+..............................................
 
 As detailed in the `reference article
 <http://hal.inria.fr/hal-01415484>`_, you may want to adapt your code
@@ -621,9 +648,8 @@ hinder the result quality (or even prevent the app to run) if used
 wrongly. We assume that if you want to simulate an HPC application,
 you know what you are doing. Don't prove us wrong!
 
-..............................
 Reducing your memory footprint
-..............................
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you get short on memory (the whole app is executed on a single node when
 simulated), you should have a look at the SMPI_SHARED_MALLOC and
@@ -651,9 +677,8 @@ This feature is demoed by the example file
 
 .. _SMPI_use_faster:
 
-.........................
 Toward Faster Simulations
-.........................
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If your application is too slow, try using SMPI_SAMPLE_LOCAL,
 SMPI_SAMPLE_GLOBAL and friends to indicate which computation loops can
@@ -673,9 +698,8 @@ what is necessary to group calls of a given size together.
 This feature is demoed by the example file
 `examples/smpi/NAS/ep.c <https://framagit.org/simgrid/simgrid/tree/master/examples/smpi/NAS/ep.c>`_
 
-.............................
 Ensuring Accurate Simulations
-.............................
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Out of the box, SimGrid may give you fairly accurate results, but
 there is a plenty of factors that could go wrong and make your results
@@ -717,9 +741,9 @@ modeling distributed systems.
 
 .. _SMPI_proxy_apps:
 
-----------------------
+......................
 Examples of SMPI Usage
-----------------------
+......................
 
 A small amount of examples can be found directly in the SimGrid
 archive, under `examples/smpi <https://framagit.org/simgrid/simgrid/-/tree/master/examples/smpi>`_.
@@ -746,6 +770,50 @@ next generation of runtimes and hardware. `This project
 <https://framagit.org/simgrid/SMPI-proxy-apps>`_ gathers proxy apps
 from different sources, along with the patches needed (if any) to run
 them on top of SMPI.
+
+.. _SMPI_offline:
+
+--------------------------
+Offline SMPI: Trace Replay
+--------------------------
+
+Although SMPI is often used for :ref:`online simulation
+<SMPI_online>`, where the application is executed for real, you can
+also go for offline simulation through trace replay.
+
+SimGrid uses time-independent traces, in which each actor is given a
+script of the actions to do sequentially. These trace files can
+actually be captured with the online version of SMPI, as follows:
+
+.. code-block:: console
+
+   $ smpirun -trace-ti --cfg=tracing/filename:LU.A.32 -np 32 -platform ../cluster_backbone.xml bin/lu.A.32
+
+The produced trace is composed of a file ``LU.A.32`` and a folder
+``LU.A.32_files``. The file names don't match with the MPI ranks, but
+that's expected.
+
+To replay this with SMPI, you need to first compile the provided
+``smpi_replay.cpp`` file, that comes from
+`simgrid/examples/smpi/replay
+<https://framagit.org/simgrid/simgrid/tree/master/examples/smpi/replay>`_.
+
+.. code-block:: console
+
+   $ smpicxx ../replay.cpp -O3 -o ../smpi_replay
+
+Afterward, you can replay your trace in SMPI as follows:
+
+.. code-block:: console
+
+   $ smpirun -np 32 -platform ../cluster_torus.xml -ext smpi_replay ../smpi_replay LU.A.32
+
+All the outputs are gone, as the application is not really simulated
+here. Its trace is simply replayed. But if you visualize the live
+simulation and the replay, you will see that the behavior is
+unchanged. The simulation does not run much faster on this very
+example, but this becomes very interesting when your application
+is computationally hungry.
 
 -------------------------
 Troubleshooting with SMPI
@@ -807,52 +875,6 @@ only if you declare ``_GNU_SOURCE`` before including
 ``unistd.h``. If your project includes that header file before
 SMPI, then you need to ensure that you pass the right configuration
 defines as advised above.
-
-
-
-.. _SMPI_offline:
-
------------------------------
-Trace Replay and Offline SMPI
------------------------------
-
-Although SMPI is often used for :ref:`online simulation
-<SMPI_online>`, where the application is executed for real, you can
-also go for offline simulation through trace replay.
-
-SimGrid uses time-independent traces, in which each actor is given a
-script of the actions to do sequentially. These trace files can
-actually be captured with the online version of SMPI, as follows:
-
-.. code-block:: console
-
-   $ smpirun -trace-ti --cfg=tracing/filename:LU.A.32 -np 32 -platform ../cluster_backbone.xml bin/lu.A.32
-
-The produced trace is composed of a file ``LU.A.32`` and a folder
-``LU.A.32_files``. The file names don't match with the MPI ranks, but
-that's expected.
-
-To replay this with SMPI, you need to first compile the provided
-``smpi_replay.cpp`` file, that comes from
-`simgrid/examples/smpi/replay
-<https://framagit.org/simgrid/simgrid/tree/master/examples/smpi/replay>`_.
-
-.. code-block:: console
-
-   $ smpicxx ../replay.cpp -O3 -o ../smpi_replay
-
-Afterward, you can replay your trace in SMPI as follows:
-
-.. code-block:: console
-
-   $ smpirun -np 32 -platform ../cluster_torus.xml -ext smpi_replay ../smpi_replay LU.A.32
-
-All the outputs are gone, as the application is not really simulated
-here. Its trace is simply replayed. But if you visualize the live
-simulation and the replay, you will see that the behavior is
-unchanged. The simulation does not run much faster on this very
-example, but this becomes very interesting when your application
-is computationally hungry.
 
 .. |br| raw:: html
 
