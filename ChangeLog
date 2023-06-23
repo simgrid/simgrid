@@ -88,6 +88,7 @@ XBT:
    Please use simgrid::s4u::Engine::get_cmdline() instead.
 
 Documentation:
+ - New tutorial on simulating DAGs.
  - New section in the user guide on the provided performance models.
  - New section presenting some technical good practices for (potential) contributors.
  - Add a section on errors and exceptions to the API documentation.

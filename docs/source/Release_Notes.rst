@@ -609,10 +609,22 @@ not use the output as a regular input file, but it will prove useful to double-c
 **On the interface front**, some functions were deprecated and will be removed in 4 versions, while some old deprecated functions
 were removed in this version, as usual.
 
-The new ``Io::streamto()`` function has been inspired by the existing ``Comm::sendto()`` function (which also derives from the
+Expressing your application as a DAG or a workflow is even more integrated than before. We added a new tutorial on simulating
+DAGs and a DAG loader for workflows using the `wfcommons formalism <https://wfcommons.org/>`_. Starting an activity is now
+properly delayed until after all its dependencies are fullfiled.
+
+The new :cpp:func:`Io::streamto()` function has been inspired by the existing ``Comm::sendto()`` function (which also derives from the
 ptask model). The user can specify a ``src_disk`` on a ``src_host`` and a ``dst_disk`` on a ``dst_host`` to stream data of a
 given ``size``. Note that disks are optional, allowing users to simulate some kind of "disk-to-memory" or "memory-to-disk" I/O
 streams.
+
+Two new useful plugins were added: The :ref:`battery plugin<plugin_battery>` can be used to create batteries that get discharged
+by the energy consumption of a given host, while the :ref:`photovoltaic plugin <plugin_photovoltaic>` can be used to create
+photovoltaic panels which energy production depends on the solar irradiance. These plugins could probably be better integrated
+in the framework, but our goal is to include in SimGrid the building blocks upon which everybody would agree, while the model
+elements that are more arguable are provided as plugins, in the hope that the users will carefully assess the plugins and adapt
+them to their specific needs before usage. Here for example, there is several models of batteries (the one provided does not
+take the aging into account), and would not be adapted to every studies.
 
 It is now easy to mix S4U actors and SMPI applications, or even to start more than one MPI application in a given simulation
 with the :ref:`SMPI_app_instance_start() <SMPI_mix_s4u>` function.
@@ -640,7 +652,10 @@ the reduced state space. We have some naive heuristics, and we hope to provide b
 We also extended the sthread module, which allows to intercept simple code that use pthread mutex and semaphores to simulate and
 verify it. You do not even need to recompile your code, as it uses LD_PRELOAD to intercept on the target functions. This module
 is still rather young, but it could probably be useful already, e.g. to verify the code written by students in a class on UNIX
-IPC and synchronization. Check `the examples <https://framagit.org/simgrid/simgrid/tree/master/examples/sthread>`_.
+IPC and synchronization. Check `the examples <https://framagit.org/simgrid/simgrid/tree/master/examples/sthread>`_. In addition,
+sthread can now also check concurrent accesses to a given collection, loosely inspired from `this paper
+<https://www.microsoft.com/en-us/research/publication/efficient-and-scalable-thread-safety-violation-detection-finding-thousands-of-concurrency-bugs-during-testing>`_.
+This feature is not very usable yet, as you have to manually annotate your code, but we hope to improve it in the near future.
 
 .. |br| raw:: html
 

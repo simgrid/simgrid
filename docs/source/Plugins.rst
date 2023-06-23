@@ -23,6 +23,8 @@ documents some of the plugins distributed with SimGrid:
   - :ref:`Host Energy <plugin_host_energy>`: models the energy dissipation of the compute units.
   - :ref:`Link Energy <plugin_link_energy>`: models the energy dissipation of the network.
   - :ref:`WiFi Energy <plugin_link_energy_wifi>`: models the energy dissipation of wifi links.
+  - :ref:`Battery <plugin_battery>`: models batteries that get discharged by the energy consumption of a given host.
+  - :ref:`Photovoltaic <plugin_photovoltaic>`: models photovoltaic panels which energy production depends on the solar irradiance.
 
 You can activate these plugins with the :ref:`--cfg=plugin <cfg=plugin>` command
 line option, for example with ``--cfg=plugin:host_energy``. You can get the full
@@ -218,13 +220,6 @@ Battery
 ===========
 
 .. doxygengroup:: plugin_battery
-
-.. _plugin_task:
-
-Task
-===========
-
-.. doxygengroup:: plugin_task
 
 .. _plugin_photovoltaic:
 
