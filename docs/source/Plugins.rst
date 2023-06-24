@@ -69,7 +69,10 @@ kind of objects, please let us now.
 
   Fire that signal, invoking all callbacks.
 
-Partial list of existing signals in s4u:
+.. _s4u_API_signals:
+
+Existing signals
+================
 
 - In actors:
   :cpp:func:`Actor::on_creation <simgrid::s4u::Actor::on_creation_cb>`

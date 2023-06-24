@@ -589,11 +589,14 @@ the other models do. The *fair bottleneck* solver is convenient, but with less s
 development of its replacement (the *bmf solver*) is still ongoing. However, this combination of I/Os and
 communications seemed easier as these activities share the same unit (bytes).
 
-After a few tentatives, we opted for a simple, slightly unperfect, yet convenient way to implement such I/O streams
-at the kernel level. It doesn't require a new model, just that the default HostModels implements a new function which
-creates a classical NetworkAction, but add some I/O-related constraints to it. A couple little hacks here and there,
-and done! A single activity mixing I/Os and communications can be created whose progress is limited by the resource
-(Disk or Link) of least bandwidth value.
+After a few tentatives, we opted for a simple, slightly unperfect, yet convenient way to implement such I/O streams at the
+kernel level. It doesn't require a new model, just that the default HostModels implements a new function which creates a
+classical NetworkAction, but add some I/O-related constraints to it. A couple little hacks here and there, and done! A single
+activity mixing I/Os and communications can be created whose progress is limited by the resource (Disk or Link) of least
+bandwidth value. As a result, a new :cpp:func:`Io::streamto()` function has been added to send data between arbitrary disks or
+hosts. The user can specify a ``src_disk`` on a ``src_host`` and a ``dst_disk`` on a ``dst_host`` to stream data of a
+given ``size``. Note that disks are optional, allowing users to simulate some kind of "disk-to-memory" or "memory-to-disk" I/O
+streams. It's highly inspired by the existing :cpp:func:`Comm::sendto` that can be used to send data between arbitrary hosts.
 
 We also modified the Wi-Fi model so that the total capacity of a link depends on the amout of flows on that link, accordingly to
 the result of some ns-3 experiments. This model can be more accurate for congestioned Wi-Fi links, but its calibration is more
@@ -611,12 +614,12 @@ were removed in this version, as usual.
 
 Expressing your application as a DAG or a workflow is even more integrated than before. We added a new tutorial on simulating
 DAGs and a DAG loader for workflows using the `wfcommons formalism <https://wfcommons.org/>`_. Starting an activity is now
-properly delayed until after all its dependencies are fullfiled.
-
-The new :cpp:func:`Io::streamto()` function has been inspired by the existing ``Comm::sendto()`` function (which also derives from the
-ptask model). The user can specify a ``src_disk`` on a ``src_host`` and a ``dst_disk`` on a ``dst_host`` to stream data of a
-given ``size``. Note that disks are optional, allowing users to simulate some kind of "disk-to-memory" or "memory-to-disk" I/O
-streams.
+properly delayed until after all its dependencies are fullfiled. We also added a notion of :ref:`Task <API_s4u_Tasks>`, a sort
+of activity that can be fired several time. It's very useful to represent complex workflows. We added a ``on_this`` variant of
+:ref:`every signal <s4u_API_signals>`, to react to the signals emited by one object instance only. This is sometimes easier than
+reacting to every signals of a class, and then filtering on the object you want. Activity signals (veto, suspend, resume,
+completion) are now specialized by activity class. That is, callbacks registered in Exec::on_suspend_cb will not be fired for
+Comms nor Ios
 
 Two new useful plugins were added: The :ref:`battery plugin<plugin_battery>` can be used to create batteries that get discharged
 by the energy consumption of a given host, while the :ref:`photovoltaic plugin <plugin_photovoltaic>` can be used to create
