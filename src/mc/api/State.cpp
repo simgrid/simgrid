@@ -73,22 +73,20 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
                                                             *remote_app.get_remote_process_memory());
 #endif
 
-  /* If we want sleep set reduction, copy the sleep set and eventually removes things from it */
-  if (_sg_mc_sleep_set) {
-    /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.
-     * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
-     * it is not explored*/
-    for (const auto& [aid, transition] : parent_state_->get_sleep_set()) {
-      if (not incoming_transition_->depends(transition.get())) {
-        sleep_set_.try_emplace(aid, transition);
-        if (strategy_->actors_to_run_.count(aid) != 0) {
-          XBT_DEBUG("Actor %ld will not be explored, for it is in the sleep set", aid);
-          strategy_->actors_to_run_.at(aid).mark_done();
-        }
-      } else
-        XBT_DEBUG("Transition >>%s<< removed from the sleep set because it was dependent with incoming >>%s<<",
-                  transition->to_string().c_str(), incoming_transition_->to_string().c_str());
-    }
+  /* Copy the sleep set and eventually removes things from it: */
+  /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.
+   * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
+   * it is not explored*/
+  for (const auto& [aid, transition] : parent_state_->get_sleep_set()) {
+    if (not incoming_transition_->depends(transition.get())) {
+      sleep_set_.try_emplace(aid, transition);
+      if (strategy_->actors_to_run_.count(aid) != 0) {
+        XBT_DEBUG("Actor %ld will not be explored, for it is in the sleep set", aid);
+        strategy_->actors_to_run_.at(aid).mark_done();
+      }
+    } else
+      XBT_DEBUG("Transition >>%s<< removed from the sleep set because it was dependent with incoming >>%s<<",
+                transition->to_string().c_str(), incoming_transition_->to_string().c_str());
   }
 }
 

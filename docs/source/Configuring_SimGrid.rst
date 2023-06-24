@@ -117,7 +117,6 @@ Existing Configuration Items
 - **model-check/replay:** :ref:`cfg=model-check/replay`
 - **model-check/send-determinism:** :ref:`cfg=model-check/send-determinism`
 - **model-check/setenv:** :ref:`cfg=model-check/setenv`
-- **model-check/sleep-set:** :ref:`cfg=model-check/sleep-set`
 - **model-check/termination:** :ref:`cfg=model-check/termination`
 - **model-check/timeout:** :ref:`cfg=model-check/timeout`
 - **model-check/visited:** :ref:`cfg=model-check/visited`
@@ -730,15 +729,6 @@ DFS exploration.
    higher.
  - **uniform**: this is a boring random strategy where choices are based on a uniform sampling of possible choices.
    Surprisingly, it gives really really good results.
-
-
-.. _cfg=model-check/sleep-set:
-
-Sleep sets
-..........
-
-The performance of the DPOR algorithm is greatly improved by using sleep sets, but if you want, you can still disable it with
-this option.
 
 .. _cfg=model-check/visited:
 

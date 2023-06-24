@@ -62,10 +62,6 @@ static simgrid::config::Flag<std::string> cfg_mc_reduction{
                 " 'none', 'dpor', 'sdpor', 'odpor', or 'udpor'");
     }};
 
-simgrid::config::Flag<bool> _sg_mc_sleep_set{
-    "model-check/sleep-set", "Whether to enable the use of sleep-set in the reduction algorithm", true,
-    [](bool) { _mc_cfg_cb_check("value to enable/disable the use of sleep-set in the reduction algorithm"); }};
-
 simgrid::config::Flag<std::string> _sg_mc_strategy{
     "model-check/strategy",
     "Specify the the kind of heuristic to use for guided model-checking",
