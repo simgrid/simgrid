@@ -1,3 +1,10 @@
+                    _               _____  _________
+__   _____ _ __ ___(_) ___  _ __   |___ / |___ / ___|
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \___ \
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) |__) |
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/____/
+               (not released yet)
+
                     _               _____  _____ _  _
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ /| || |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \| || |_
@@ -7,13 +14,18 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ /| || |
 
 Save the planet, skip a release: 3.33 was due 6 months ago, so skip directly to 3.34.
 
-  * MSG and Java are gone (EOL was scheduled for 2020), move to C++17 and drop 32bits support.
-  * Introduce a fluid I/O model, mixing I/O and network, to represent streaming from disk
-  * DAG/workflow loader; Introducing Tasks which are activities that can be fired several times.
-  * Several new documentation sections, and a new tutorial.
-  * Safety properties now portable to every OS, activated by default in all builds.
-  * Introduction ODPOR/SDPOR reductions and guiding strategies (better state space traversal).
-  * (+ MANY internal refactoring, bug fixes and MANY documentation improvement)
+ * Maint: MSG and Java are gone (EOL was scheduled for 2020), move to C++17,
+          and drop 32bits support.
+ * Model: Introduce a fluid I/O model, mixing I/O and network, to represent
+          streaming from disk
+ * API: DAG/workflow loader; Introducing Tasks which are activities that can
+        be fired several times.
+ * Doc: Several new documentation sections, and a new tutorial on DAGs.
+ * MC: Safety properties now portable to every OS, activated by default
+       in all builds.
+ * MC: Introduction ODPOR/SDPOR reductions and guiding strategies (better
+       state space traversal).
+ * (+ internal refactoring, bug fixes and documentation improvement)
 
                     _               _____  _________
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ /___ \

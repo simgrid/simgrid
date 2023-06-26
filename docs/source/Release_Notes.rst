@@ -665,6 +665,10 @@ sthread can now also check concurrent accesses to a given collection, loosely in
 <https://www.microsoft.com/en-us/research/publication/efficient-and-scalable-thread-safety-violation-detection-finding-thousands-of-concurrency-bugs-during-testing>`_.
 This feature is not very usable yet, as you have to manually annotate your code, but we hope to improve it in the near future.
 
+Version 3.35 (TBD)
+------------------
+
+
 .. |br| raw:: html
 
    <br />
