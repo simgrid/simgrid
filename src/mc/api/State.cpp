@@ -52,8 +52,7 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
 State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
     : incoming_transition_(parent_state->get_transition_out()), num_(++expended_states_), parent_state_(parent_state)
 {
-    
-   if (_sg_mc_strategy == "none")
+  if (_sg_mc_strategy == "none")
     strategy_ = std::make_shared<BasicStrategy>();
   else if (_sg_mc_strategy == "max_match_comm")
     strategy_ = std::make_shared<MaxMatchComm>();

@@ -13,7 +13,6 @@ namespace simgrid::mc {
 /** Wait MC guiding class that aims at minimizing the number of in-fly communication.
  *  When possible, it will try to match corresponding in-fly communications. */
 class MaxMatchComm : public Strategy {
-
   /** Stores for each mailbox what kind of transition is waiting on it.
    *  Negative number means that much recv are waiting on that mailbox, while
    *  a positiv number means that much send are waiting there. */
@@ -58,7 +57,6 @@ public:
 	      aid_value--; // This means we have waiting recv corresponding to this recv
 	  } else { 
 	      aid_value++; 
-
 	  }
       }
    
@@ -92,7 +90,6 @@ public:
     if (cast_send != nullptr)
       last_mailbox_ = cast_send->get_mailbox();
   }
-
 };
 
 } // namespace simgrid::mc
