@@ -1,4 +1,4 @@
-SimGrid (3.33.1) not released yet (target december 22)
+SimGrid (3.33.1) not released yet (target December 22)
 
   Save the planet, skip a release: 3.33 was due 6 months ago, so skip directly to 3.34.
 
@@ -22,7 +22,7 @@ S4U:
  - New Task abstraction: They are designed to represent dataflows, i.e, graphs of repeatable Activities.
    See the examples under examples/cpp/task-* and the associated documentation.
  - Full simDAG integration: Activity::start() actually starts only when all dependencies
-   are fullfiled. If it cannot be started right away, it will start as soon as it becomes
+   are fulfilled. If it cannot be started right away, it will start as soon as it becomes
    possible.
  - Allow to set a concurrency limit on disks and hosts, as it was already the case for links.
  - Rename Link::get_usage() to Link::get_load() for consistency with Host::
@@ -44,7 +44,7 @@ New S4U plugins:
    See the examples under examples/cpp/photovoltaic-* and the documentation in the Plugins page.
 
 Kernel:
- - optimize an internal datastructure (use a set instead of a list for ongoing activities),
+ - optimize an internal data structure (use a set instead of a list for ongoing activities),
    leading to a potentially big performance gain, in particular with many detached comms.
 
 MPI:
@@ -54,7 +54,7 @@ MPI:
 
 Models:
  - Write the section of the manual about models, at least.
- - WiFi: the total capacity of a link depends on the amout of flows on that link.
+ - WiFi: the total capacity of a link depends on the amount of flows on that link.
    - Use the nonlinear callback feature of LMM to reflect this.
    - Calibration values can be changed to match different MCS configurations
    - See the example teshsuite/models/wifi_usage_decay/wifi_usage_decay.cpp
@@ -79,12 +79,12 @@ sthread:
 Model checking:
  - Stateless model-checking is now usable on any system, including Mac OSX and ARM processors.
  - The stateless aspects of the MC are now enabled by default in all SimGrid builds.
-   Liveness and stateful aspects are still controled by the enabling_model-checking
+   Liveness and stateful aspects are still controlled by the enabling_model-checking
    configuration option.
  - Introducing ODPOR and SDPOR reduction strategies
  - Introducing guiding heuristics, trying to find bugs faster than DFS in reduced state space.
  - Synchronize the MBI tests with upstream.
- - Show the full actor bactraces when replaying a MC trace (with model-check/replay)
+ - Show the full actor backtraces when replaying a MC trace (with model-check/replay)
    and the status of all actors on deadlocks in MC mode.
 
 XBT:
