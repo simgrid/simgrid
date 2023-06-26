@@ -1,4 +1,6 @@
-SimGrid (3.32.1) not released yet (target december 22)
+SimGrid (3.33.1) not released yet (target december 22)
+
+  Save the planet, skip a release: 3.33 was due 6 months ago, so skip directly to 3.34.
 
 General:
  - SimGrid now requires a compiler with C++17 support for public headers too.
@@ -75,13 +77,15 @@ sthread:
    It requires code annotation, as shown in examples/sthread/stdobject/stdobject.cpp
 
 Model checking:
+ - Stateless model-checking is now usable on any system, including Mac OSX and ARM processors.
+ - The stateless aspects of the MC are now enabled by default in all SimGrid builds.
+   Liveness and stateful aspects are still controled by the enabling_model-checking
+   configuration option.
+ - Introducing ODPOR and SDPOR reduction strategies
+ - Introducing guiding heuristics, trying to find bugs faster than DFS in reduced state space.
  - Synchronize the MBI tests with upstream.
  - Show the full actor bactraces when replaying a MC trace (with model-check/replay)
    and the status of all actors on deadlocks in MC mode.
- - The safety/stateless aspects of the MC are now enabled by default in all SimGrid builds.
-   Liveness and stateful aspects are still controled by the enabling_model-checking
-   configuration option.
- - Stateless model-checking is now usable on any system, including Mac OSX and ARM processors.
 
 XBT:
  - simgrid::xbt::cmdline and simgrid::xbt::binary_name are gone.
