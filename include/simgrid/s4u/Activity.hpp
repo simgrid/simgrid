@@ -114,10 +114,6 @@ protected:
   virtual void fire_on_this_veto() const = 0;
 
 public:
-  XBT_ATTRIB_DEPRECATED_v334("All start() are vetoable now. Please use start() ") void vetoable_start()
-  {
-    start();
-  }
   void start()
   {
     state_ = State::STARTING;
@@ -299,20 +295,6 @@ public:
   }
   const std::string& get_tracing_category() const { return tracing_category_; }
 
-  XBT_ATTRIB_DEPRECATED_v334("Please use Activity::set_data()") AnyActivity* set_user_data(void* data)
-  {
-    set_data(data);
-    return static_cast<AnyActivity*>(this);
-  }
-
-  XBT_ATTRIB_DEPRECATED_v334("Please use Activity::get_data<>()") void* get_user_data() const
-  {
-    return get_data<void>();
-  }
-  XBT_ATTRIB_DEPRECATED_v334("All start() are vetoable now. Please use start() ") AnyActivity* vetoable_start()
-  {
-    return start();
-  }
   AnyActivity* start()
   {
     Activity::start();
