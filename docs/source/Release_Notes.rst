@@ -568,8 +568,13 @@ Hopefully in the next release.
 Finally, this release mostly entails maintenance work **on the model front**: a bug was fixed when using ptasks on multicore hosts, and the legacy
 stochastic generator of external load has been reintroduced.
 
-Version 3.33 (not released yet)
--------------------------------
+Version 3.33 (never released)
+-----------------------------
+
+This version was overdue for more than 6 months, so it was skipped to not hinder our process of deprecating old code.
+
+Version 3.34 (June 26. 2023)
+----------------------------
 
 **On the maintenance front,** we removed the ancient MSG interface which end-of-life was scheduled for 2020, the Java bindings
 that was MSG-only, support for native builds on Windows (WSL is now required) and support for 32 bits platforms. Keeping SimGrid
