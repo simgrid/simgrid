@@ -9,12 +9,12 @@
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/random.hpp"
 
-#define MAX_RAND 100000
-
 namespace simgrid::mc {
 
 /** Guiding strategy that valuate states randomly */
 class UniformStrategy : public Strategy {
+  static constexpr int MAX_RAND = 100000;
+
   std::map<aid_t, int> valuation;
 
 public:
@@ -25,7 +25,7 @@ public:
   }
   void copy_from(const Strategy* strategy) override
   {
-    for (auto& [aid, _] : actors_to_run_)
+    for (auto const& [aid, _] : actors_to_run_)
       valuation[aid] = xbt::random::uniform_int(0, MAX_RAND);
   }
 

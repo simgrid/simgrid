@@ -35,7 +35,7 @@ public:
   virtual std::pair<aid_t, int> best_transition(bool must_be_todo) const = 0;
 
   /** Returns the best transition among those that should be interleaved. */
-  std::pair<aid_t, int> next_transition() { return best_transition(true); }
+  std::pair<aid_t, int> next_transition() const { return best_transition(true); }
 
   /** Allows for the strategy to update its fields knowing that the actor aid will
    *  be executed and a children strategy will then be created. */  
