@@ -87,7 +87,7 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
       // 2. disqualified_events.count(e_j) > 0
       // then e_i --->_E target indirectly (either through
       // e_j directly, or transitively through e_j)
-      if (disqualified_events.count(e_j) > 0 and happens_before(e_i, e_j)) {
+      if (disqualified_events.count(e_j) > 0 && happens_before(e_i, e_j)) {
         disqualified_events.insert(e_i);
         break;
       }
@@ -164,7 +164,7 @@ Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordere
     // happen after `e` is a member of `v`. In addition to marking
     // the event in `v`, we also "simulate" running the action `v`
     // from E'
-    if (not happens_before(e, e_prime) or e_prime == next_E_p) {
+    if (not happens_before(e, e_prime) || e_prime == next_E_p) {
       // First, push the transition onto the hypothetical execution
       E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
       const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
@@ -206,7 +206,7 @@ Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordere
       }
     }
   }
-  xbt_assert(!I_E_prime_v.empty(),
+  xbt_assert(not I_E_prime_v.empty(),
              "For any non-empty execution, we know that "
              "at minimum one actor is an initial since "
              "some execution is possible with respect to a "

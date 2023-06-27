@@ -56,7 +56,7 @@ public:
   // else raise an error
   void consider_one(aid_t aid)
   {
-    xbt_assert(actors_to_run_.at(aid).is_enabled() and not actors_to_run_.at(aid).is_done(),
+    xbt_assert(actors_to_run_.at(aid).is_enabled() && not actors_to_run_.at(aid).is_done(),
                "Tried to mark as TODO actor %ld but it is either not enabled or already done", aid);
     actors_to_run_.at(aid).mark_todo();
   }
@@ -66,7 +66,7 @@ public:
   {
     unsigned long count = 0;
     for (auto& [_, actor] : actors_to_run_)
-      if (actor.is_enabled() and not actor.is_done()) {
+      if (actor.is_enabled() && not actor.is_done()) {
         actor.mark_todo();
         count++;
       }

@@ -100,7 +100,7 @@ bool ReversibleRaceCalculator::is_race_reversible_CommWait(const Execution& E, E
   // If the other event is a communication event, then we
   // are not reversible; otherwise we are reversible.
   const auto e1_action = E.get_transition_for_handle(e1)->type_;
-  return e1_action != Transition::Type::COMM_ASYNC_SEND and e1_action != Transition::Type::COMM_ASYNC_RECV;
+  return e1_action != Transition::Type::COMM_ASYNC_SEND && e1_action != Transition::Type::COMM_ASYNC_RECV;
 }
 
 bool ReversibleRaceCalculator::is_race_reversible_CommTest(const Execution&, Execution::EventHandle e1,
@@ -143,7 +143,7 @@ bool ReversibleRaceCalculator::is_race_reversible_MutexWait(const Execution& E, 
 {
   // TODO: Get the semantics correct here
   const auto e1_action = E.get_transition_for_handle(e1)->type_;
-  return e1_action != Transition::Type::MUTEX_ASYNC_LOCK and e1_action != Transition::Type::MUTEX_UNLOCK;
+  return e1_action != Transition::Type::MUTEX_ASYNC_LOCK && e1_action != Transition::Type::MUTEX_UNLOCK;
 }
 
 bool ReversibleRaceCalculator::is_race_reversible_SemAsyncLock(const Execution&, Execution::EventHandle e1,

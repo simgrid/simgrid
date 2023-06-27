@@ -26,7 +26,7 @@ PartialExecution WakeupTreeNode::get_sequence() const
   // and instead track this with the iterator
   PartialExecution seq_;
   const WakeupTreeNode* cur_node = this;
-  while (cur_node != nullptr and !cur_node->is_root()) {
+  while (cur_node != nullptr && not cur_node->is_root()) {
     seq_.push_front(cur_node->action_);
     cur_node = cur_node->parent_;
   }
@@ -181,7 +181,7 @@ WakeupTree::InsertionResult WakeupTree::insert(const Execution& E, const Partial
         shortest_sequence.has_value()) {
       // Insert the sequence as a child of `node`, but only
       // if the node is not already a leaf
-      if (not node->is_leaf() or node == this->root_) {
+      if (not node->is_leaf() || node == this->root_) {
         // NOTE: It's entirely possible that the shortest
         // sequence we are inserting is empty. Consider the
         // following two cases:

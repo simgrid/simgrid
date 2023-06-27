@@ -156,7 +156,7 @@ std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename)
 
   // Start only Activities with dependencies solved
   for (auto const& activity: dag) {
-    if (dynamic_cast<Exec*>(activity.get()) != nullptr and activity->dependencies_solved())
+    if (dynamic_cast<Exec*>(activity.get()) != nullptr && activity->dependencies_solved())
       activity->start();
   }
   return dag;

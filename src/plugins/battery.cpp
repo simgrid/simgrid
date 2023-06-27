@@ -427,7 +427,7 @@ void Battery::update()
   simgrid::kernel::actor::simcall_answered([this] {
     double now             = simgrid::s4u::Engine::get_clock();
     double time_delta_real = now - last_updated_;
-    if (time_delta_real <= 0 or not is_active())
+    if (time_delta_real <= 0 || not is_active())
       return;
     double time_delta_until_event = next_event_ - last_updated_;
     bool event                    = next_event_ != -1 and time_delta_until_event <= time_delta_real;

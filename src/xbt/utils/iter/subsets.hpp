@@ -73,7 +73,7 @@ subsets_iterator<Iterator>::subsets_iterator(unsigned k, Iterator begin, Iterato
 
 template <typename Iterator> bool subsets_iterator<Iterator>::equal(const subsets_iterator<Iterator>& other) const
 {
-  if (this->end == std::nullopt and other.end == std::nullopt) {
+  if (this->end == std::nullopt && other.end == std::nullopt) {
     return true;
   }
   if (this->k != other.k) {
@@ -82,7 +82,7 @@ template <typename Iterator> bool subsets_iterator<Iterator>::equal(const subset
   if (this->k == 0) { // this->k == other.k == 0
     return true;
   }
-  return this->end != std::nullopt and other.end != std::nullopt and this->P[0] == other.P[0];
+  return this->end != std::nullopt && other.end != std::nullopt && this->P[0] == other.P[0];
 }
 
 template <typename Iterator> const std::vector<Iterator>& subsets_iterator<Iterator>::dereference() const

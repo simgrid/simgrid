@@ -35,7 +35,7 @@ public:
 
     // Consider only valid actors
     for (auto const& [aid, actor] : actors_to_run_) {
-	if ((actor.is_todo() or not must_be_todo) and (not actor.is_done()) and actor.is_enabled())
+      if ((actor.is_todo() || not must_be_todo) && (not actor.is_done()) && actor.is_enabled())
         possibilities++;
     }
 
@@ -48,7 +48,7 @@ public:
 	chosen = xbt::random::uniform_int(0, possibilities-1);
 
     for (auto const& [aid, actor] : actors_to_run_) {
-	if (((not actor.is_todo()) and must_be_todo) or actor.is_done() or (not actor.is_enabled()))
+      if (((not actor.is_todo()) && must_be_todo) || actor.is_done() || (not actor.is_enabled()))
         continue;
       if (chosen == 0) {
         return std::make_pair(aid, valuation.at(aid));

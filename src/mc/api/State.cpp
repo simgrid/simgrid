@@ -183,7 +183,7 @@ std::unordered_set<aid_t> State::get_backtrack_set() const
 {
   std::unordered_set<aid_t> actors;
   for (const auto& [aid, state] : get_actors_list()) {
-    if (state.is_todo() or state.is_done()) {
+    if (state.is_todo() || state.is_done()) {
       actors.insert(aid);
     }
   }
@@ -291,7 +291,7 @@ void State::do_odpor_unwind()
     // works with ODPOR in the way we intend it to work. There is not a
     // good way to perform transition equality in SimGrid; instead, we
     // effectively simply check for the presence of an actor in the sleep set.
-    if (!get_actors_list().at(out_transition->aid_).has_more_to_consider())
+    if (not get_actors_list().at(out_transition->aid_).has_more_to_consider())
       add_sleep_set(std::move(out_transition));
   }
 }
