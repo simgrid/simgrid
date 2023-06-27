@@ -1,4 +1,10 @@
-SimGrid (3.32.1) not released yet (target december 22)
+SimGrid (3.34.1) not released (Target: fall 2023)
+
+----------------------------------------------------------------------------
+
+SimGrid (3.34) June 26. 2023
+
+  Save the planet, skip a release: 3.33 was due 6 months ago, so skip directly to 3.34.
 
 General:
  - SimGrid now requires a compiler with C++17 support for public headers too.
@@ -17,13 +23,15 @@ S4U:
    Comm::set_payload_size() to change the size of the simulated data.
  - New function: Engine::flatify_platform(), to get a fully detailed vision of the
    configured platform.
+ - New Task abstraction: They are designed to represent dataflows, i.e, graphs of repeatable Activities.
+   See the examples under examples/cpp/task-* and the associated documentation.
  - Full simDAG integration: Activity::start() actually starts only when all dependencies
-   are fullfiled. If it cannot be started right away, it will start as soon as it becomes
+   are fulfilled. If it cannot be started right away, it will start as soon as it becomes
    possible.
  - Allow to set a concurrency limit on disks and hosts, as it was already the case for links.
  - Rename Link::get_usage() to Link::get_load() for consistency with Host::
  - Every signal now come with a static version that is invoked for every object of that class,
-   and an instance version that is invoked for this specific object only. For example, 
+   and an instance version that is invoked for this specific object only. For example,
    s4u::Actor::on_suspend_cb() adds a callback that is invoked for the suspend of any actor while
    s4u::Actor::on_this_suspend_cb() adds a callback for this specific actor only.
  - Activity::on_suspended_cb() is renamed to Activity::on_suspend_cb(), and fired right before the suspend.
@@ -34,15 +42,13 @@ S4U:
    That is, callbacks registered in Exec::on_suspend_cb will not be fired for Comms nor Ios.
 
 New S4U plugins:
- - Task: They are designed to represent dataflows, i.e, graphs of repeatable Activities.
-   See the examples under examples/cpp/task-* and the documentation in the Plugins page.
  - Battery: Enable the management of batteries on hosts.
    See the examples under examples/cpp/battery-* and the documentation in the Plugins page.
  - Photovoltaic: Enable the management of photovoltaic panels on hosts.
    See the examples under examples/cpp/photovoltaic-* and the documentation in the Plugins page.
 
 Kernel:
- - optimize an internal datastructure (use a set instead of a list for ongoing activities),
+ - optimize an internal data structure (use a set instead of a list for ongoing activities),
    leading to a potentially big performance gain, in particular with many detached comms.
 
 MPI:
@@ -52,7 +58,7 @@ MPI:
 
 Models:
  - Write the section of the manual about models, at least.
- - WiFi: the total capacity of a link depends on the amout of flows on that link.
+ - WiFi: the total capacity of a link depends on the amount of flows on that link.
    - Use the nonlinear callback feature of LMM to reflect this.
    - Calibration values can be changed to match different MCS configurations
    - See the example teshsuite/models/wifi_usage_decay/wifi_usage_decay.cpp
@@ -75,19 +81,22 @@ sthread:
    It requires code annotation, as shown in examples/sthread/stdobject/stdobject.cpp
 
 Model checking:
- - Synchronize the MBI tests with upstream.
- - Show the full actor bactraces when replaying a MC trace (with model-check/replay)
-   and the status of all actors on deadlocks in MC mode.
- - The safety/stateless aspects of the MC are now enabled by default in all SimGrid builds.
-   Liveness and stateful aspects are still controled by the enabling_model-checking
-   configuration option.
  - Stateless model-checking is now usable on any system, including Mac OSX and ARM processors.
+ - The stateless aspects of the MC are now enabled by default in all SimGrid builds.
+   Liveness and stateful aspects are still controlled by the enabling_model-checking
+   configuration option.
+ - Introducing ODPOR and SDPOR reduction strategies
+ - Introducing guiding heuristics, trying to find bugs faster than DFS in reduced state space.
+ - Synchronize the MBI tests with upstream.
+ - Show the full actor backtraces when replaying a MC trace (with model-check/replay)
+   and the status of all actors on deadlocks in MC mode.
 
 XBT:
  - simgrid::xbt::cmdline and simgrid::xbt::binary_name are gone.
    Please use simgrid::s4u::Engine::get_cmdline() instead.
 
 Documentation:
+ - New tutorial on simulating DAGs.
  - New section in the user guide on the provided performance models.
  - New section presenting some technical good practices for (potential) contributors.
  - Add a section on errors and exceptions to the API documentation.

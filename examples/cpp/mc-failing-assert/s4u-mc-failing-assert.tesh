@@ -2,7 +2,7 @@
 
 ! expect return 1
 ! timeout 20
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning
 > [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: dpor.
 > [  0.000000] (2:client1@Bourassa) Sent!
 > [  0.000000] (1:server@Boivin) OK
@@ -23,7 +23,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 
 ! expect return 1
 ! timeout 20
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/strategy:min_match_comm ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/strategy:min_match_comm ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning
 > [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: dpor.
 > [  0.000000] (2:client1@Bourassa) Sent!
 > [  0.000000] (1:server@Boivin) OK
@@ -45,7 +45,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 
 ! expect return 1
 ! timeout 20
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/strategy:max_match_comm ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/strategy:max_match_comm ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning
 > [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: dpor.
 > [  0.000000] (2:client1@Bourassa) Sent!
 > [  0.000000] (1:server@Boivin) OK

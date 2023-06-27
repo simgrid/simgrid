@@ -33,19 +33,18 @@ def callback(t):
 def variable_load(t):
     print('--- Small load ---')
     for _ in range(3):
-        t.enqueue_execs(1)
+        t.enqueue_firings(1)
         this_actor.sleep_for(100)
     this_actor.sleep_for(1000)
     print('--- Heavy load ---')
     for _ in range(3):
-        t.enqueue_execs(1)
+        t.enqueue_firings(1)
         this_actor.sleep_for(1)
 
 if __name__ == '__main__':
     args = parse()
     e = Engine(sys.argv)
     e.load_platform(args.platform)
-    Task.init()
 
     # Retrieve hosts
     tremblay = e.host_by_name('Tremblay')
@@ -59,7 +58,7 @@ if __name__ == '__main__':
     comm.add_successor(exec)
 
     # Add a function to be called when tasks end for log purpose
-    Task.on_end_cb(callback)
+    Task.on_completion_cb(callback)
 
     # Create the actor that will inject load during the simulation
     Actor.create("input", tremblay, variable_load, comm)

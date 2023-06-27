@@ -684,16 +684,20 @@ setting for your specific system.
 Specifying the kind of reduction
 ................................
 
+**Option** model-check/reduction **Default:** "dpor"
+
 The main issue when using the model-checking is the state space
 explosion. You can activate some reduction technique with
 ``--cfg=model-check/reduction:<technique>``. For now, this
 configuration variable can take 2 values:
 
- - **none:** Do not apply any kind of reduction (mandatory for
-   liveness properties, as our current DPOR algorithm breaks cycles)
- - **dpor:** Apply Dynamic Partial Ordering Reduction. Only valid if
-   you verify local safety properties (default value for safety
-   checks).
+ - **none:** Do not apply any kind of reduction (mandatory for liveness properties, as our current DPOR algorithm breaks cycles)
+ - **dpor:** Apply Dynamic Partial Ordering Reduction. Only valid if you verify local safety properties (default value for
+   safety checks).
+ - **sdpor:** Source-set DPOR, as described in "Source Sets: A Foundation for Optimal Dynamic Partial Order Reduction"
+    by Abdulla et al.
+ - **odpor:** Optimal DPOR, as described in "Source Sets: A Foundation for Optimal Dynamic Partial Order Reduction"
+    by Abdulla et al.
 
 Another way to mitigate the state space explosion is to search for
 cycles in the exploration with the :ref:`cfg=model-check/visited`
@@ -704,6 +708,27 @@ Our current DPOR implementation could be improved in may ways. We are
 currently improving its efficiency (both in term of reduction ability
 and computational speed), and future work could make it compatible
 with liveness properties.
+
+.. _cfg=model-check/strategy:
+
+Guiding strategy
+................
+
+**Option** model-check/strategy **Default:** "none"
+
+Even after the DPOR's reduction, the state space that we have to explore remains huge. SimGrid provides several guiding
+strategies aiming at converging faster toward bugs. By default, none of these strategy is enabled, and SimGrid does a regular
+DFS exploration.
+
+ - **max_match_comm**: Try to minimize the number of in-fly communication by appairing matching send and receive. This tend to
+   produce nicer backtraces, in particular when a user-level ``send`` is broken down internally into a ``send_async`` + ``wait``.
+   This strategy will ensure that the ``wait`` occures as soon as possible, easing the understanding of the user who do not
+   expect her ``send`` to be split.
+ - **min_match_comm**: Try to maximize the number of in-fly communication by not appairing matching send and receive. This is
+   the exact opposite strategy, but it is still useful as it tend to explore first the branches where the risk of deadlock is
+   higher.
+ - **uniform**: this is a boring random strategy where choices are based on a uniform sampling of possible choices.
+   Surprisingly, it gives really really good results.
 
 .. _cfg=model-check/visited:
 

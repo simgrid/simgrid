@@ -36,12 +36,9 @@ public:
       return std::make_pair(aid, depth_);
     }
     return std::make_pair(-1, depth_);
-  
   }
-    
 
   void execute_next(aid_t aid, RemoteApp& app) override { return; }
-    
 };
 
 } // namespace simgrid::mc

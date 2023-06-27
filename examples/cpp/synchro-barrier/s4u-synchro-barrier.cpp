@@ -11,10 +11,10 @@ namespace sg4 = simgrid::s4u;
 /// Wait on the barrier then leave
 static void worker(sg4::BarrierPtr barrier)
 {
-    XBT_INFO("Waiting on the barrier");
-    barrier->wait();
+  XBT_INFO("Waiting on the barrier");
+  barrier->wait();
 
-    XBT_INFO("Bye");
+  XBT_INFO("Bye");
 }
 
 /// Spawn actor_count-1 workers and do a barrier with them
@@ -27,10 +27,10 @@ static void master(int actor_count)
     sg4::Actor::create("worker", sg4::Host::by_name("Jupiter"), worker, barrier);
   }
 
-    XBT_INFO("Waiting on the barrier");
-    barrier->wait();
+  XBT_INFO("Waiting on the barrier");
+  barrier->wait();
 
-    XBT_INFO("Bye");
+  XBT_INFO("Bye");
 }
 
 int main(int argc, char **argv)

@@ -23,6 +23,8 @@ documents some of the plugins distributed with SimGrid:
   - :ref:`Host Energy <plugin_host_energy>`: models the energy dissipation of the compute units.
   - :ref:`Link Energy <plugin_link_energy>`: models the energy dissipation of the network.
   - :ref:`WiFi Energy <plugin_link_energy_wifi>`: models the energy dissipation of wifi links.
+  - :ref:`Battery <plugin_battery>`: models batteries that get discharged by the energy consumption of a given host.
+  - :ref:`Photovoltaic <plugin_photovoltaic>`: models photovoltaic panels which energy production depends on the solar irradiance.
 
 You can activate these plugins with the :ref:`--cfg=plugin <cfg=plugin>` command
 line option, for example with ``--cfg=plugin:host_energy``. You can get the full
@@ -67,7 +69,10 @@ kind of objects, please let us now.
 
   Fire that signal, invoking all callbacks.
 
-Partial list of existing signals in s4u:
+.. _s4u_API_signals:
+
+Existing signals
+================
 
 - In actors:
   :cpp:func:`Actor::on_creation <simgrid::s4u::Actor::on_creation_cb>`
@@ -218,13 +223,6 @@ Battery
 ===========
 
 .. doxygengroup:: plugin_battery
-
-.. _plugin_task:
-
-Task
-===========
-
-.. doxygengroup:: plugin_task
 
 .. _plugin_photovoltaic:
 

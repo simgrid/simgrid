@@ -198,7 +198,7 @@ void DFSExplorer::run()
       continue;
     }
 
-    if (_sg_mc_sleep_set && XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose)) {
+    if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose)) {
       XBT_VERB("Sleep set actually containing:");
       for (const auto& [aid, transition] : state->get_sleep_set())
         XBT_VERB("  <%ld,%s>", aid, transition->to_string().c_str());
@@ -561,14 +561,6 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode, boo
   }
   if (stack_.back()->count_todo_multiples() > 1)
     opened_states_.emplace_back(stack_.back());
-
-  if (mode == ReductionMode::odpor && !_sg_mc_sleep_set) {
-    // ODPOR requires the use of sleep sets; SDPOR
-    // "likes" using sleep sets but it is not strictly
-    // required
-    XBT_INFO("Forcing the use of sleep sets for use with ODPOR");
-    _sg_mc_sleep_set = true;
-  }
 }
 
 Exploration* create_dfs_exploration(const std::vector<char*>& args, ReductionMode mode)

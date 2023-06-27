@@ -24,7 +24,6 @@ if __name__ == '__main__':
     args = parse()
     e = Engine(sys.argv)
     e.load_platform(args.platform)
-    Task.init()
 
     # Retrieve hosts
     bob = e.host_by_name('bob')
@@ -42,10 +41,10 @@ if __name__ == '__main__':
     read.add_successor(exec2)
 
     # Add a function to be called when tasks end for log purpose
-    Task.on_end_cb(callback)
+    Task.on_completion_cb(callback)
 
-    # Enqueue two executions for task exec1
-    exec1.enqueue_execs(2)
+    # Enqueue two firings for task exec1
+    exec1.enqueue_firings(2)
 
     # runs the simulation
     e.run()

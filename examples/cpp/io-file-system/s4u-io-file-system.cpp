@@ -58,9 +58,8 @@ public:
 
     // Test attaching some user data to the file
     file->set_data(new std::string("777"));
-    const auto* file_data = file->get_data<std::string>();
+    auto file_data = file->get_unique_data<std::string>();
     XBT_INFO("User data attached to the file: %s", file_data->c_str());
-    delete file_data;
 
     // Close the file
     file->close();

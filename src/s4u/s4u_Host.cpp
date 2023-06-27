@@ -681,22 +681,6 @@ void sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
   simgrid::s4u::Comm::sendto(from, to, byte_amount);
 }
 
-/** @brief Displays debugging information about a host */
-void sg_host_dump(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v335
-{
-  XBT_INFO("Displaying host %s", host->get_cname());
-  XBT_INFO("  - speed: %.0f", host->get_speed());
-  XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
-  const std::unordered_map<std::string, std::string>* props = host->get_properties();
-
-  if (not props->empty()) {
-    XBT_INFO("  - properties:");
-    for (auto const& [key, value] : *props) {
-      XBT_INFO("    %s->%s", key.c_str(), value.c_str());
-    }
-  }
-}
-
 /** @brief Return the list of actors attached to a host.
  *
  * @param host a host

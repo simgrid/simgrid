@@ -57,14 +57,10 @@ int _sg_mc_max_visited_states = 0;
 static simgrid::config::Flag<std::string> cfg_mc_reduction{
     "model-check/reduction", "Specify the kind of exploration reduction (either none or DPOR)", "dpor",
     [](std::string_view value) {
-      if (value != "none" && value != "dpor" && value != "sdpor" && value != "odpor")
+      if (value != "none" && value != "dpor" && value != "sdpor" && value != "odpor" && value != "udpor")
         xbt_die("configuration option 'model-check/reduction' must be one of the following: "
-                " 'none', 'dpor', 'sdpor', or 'odpor'");
+                " 'none', 'dpor', 'sdpor', 'odpor', or 'udpor'");
     }};
-
-simgrid::config::Flag<bool> _sg_mc_sleep_set{
-    "model-check/sleep-set", "Whether to enable the use of sleep-set in the reduction algorithm", false,
-    [](bool) { _mc_cfg_cb_check("value to enable/disable the use of sleep-set in the reduction algorithm"); }};
 
 simgrid::config::Flag<std::string> _sg_mc_strategy{
     "model-check/strategy",

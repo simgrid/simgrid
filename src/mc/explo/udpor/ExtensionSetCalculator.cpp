@@ -472,7 +472,6 @@ EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration& 
   } else if (const CommRecvTransition* e_issuer_recv =
                  dynamic_cast<const CommRecvTransition*>(e_issuer->get_transition());
              e_issuer_recv != nullptr) {
-
     for (const auto e : C) {
       // If the provider of the communication for `CommTest` is a
       // `CommRecv(m)`, then we only care about `e` if `λ(e) == `CommSend(m)`.
@@ -556,7 +555,6 @@ EventSet ExtensionSetCalculator::partially_extend_MutexAsyncLock(const Configura
     // Check for other locks on the same mutex
     if (const MutexTransition* e_mutex = dynamic_cast<const MutexTransition*>(e->get_transition());
         e_mutex != nullptr) {
-
       if (e_mutex->type_ == Transition::Type::MUTEX_ASYNC_LOCK && mutex_lock->get_mutex() == e_mutex->get_mutex()) {
         const EventSet K = EventSet({e, pre_event_a_C.value_or(e)});
         exC.insert(U->discover_event(std::move(K), mutex_lock));
@@ -590,7 +588,6 @@ EventSet ExtensionSetCalculator::partially_extend_MutexUnlock(const Configuratio
     // Check for MutexTest
     if (const MutexTransition* e_mutex = dynamic_cast<const MutexTransition*>(e->get_transition());
         e_mutex != nullptr) {
-
       if (e_mutex->type_ == Transition::Type::MUTEX_TEST || e_mutex->type_ == Transition::Type::MUTEX_WAIT) {
         // TODO: Check if dependent or not
         // This entails getting information about

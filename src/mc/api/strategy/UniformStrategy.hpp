@@ -59,9 +59,7 @@ public:
     return std::make_pair(-1, 0);
   }
 
-    
   void execute_next(aid_t aid, RemoteApp& app) override {}
-    
 };
 
 } // namespace simgrid::mc

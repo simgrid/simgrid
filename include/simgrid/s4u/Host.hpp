@@ -77,7 +77,7 @@ public:
   {
     on_onoff.connect(cb);
   }
-  XBT_ATTRIB_DEPRECATED_v337("Please use on_onoff_cb() instead") static void on_state_change_cb(
+  XBT_ATTRIB_DEPRECATED_v338("Please use on_onoff_cb() instead") static void on_state_change_cb(
       const std::function<void(Host const&)>& cb)
   {
     on_onoff.connect(cb);
