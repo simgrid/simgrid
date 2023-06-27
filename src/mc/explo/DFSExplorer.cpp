@@ -428,8 +428,7 @@ void DFSExplorer::backtrack()
         XBT_DEBUG("ODPOR: Reversible race detected between events `%u` and `%u`", e, e_prime);
         State& prev_state = *stack_[e];
         if (const auto v = execution_seq_.get_odpor_extension_from(e, e_prime, prev_state); v.has_value()) {
-          const auto result = prev_state.insert_into_wakeup_tree(v.value(), execution_seq_.get_prefix_before(e));
-          switch (result) {
+          switch (prev_state.insert_into_wakeup_tree(v.value(), execution_seq_.get_prefix_before(e))) {
             case odpor::WakeupTree::InsertionResult::root: {
               XBT_DEBUG("ODPOR: Reversible race with `%u` unaccounted for in the wakeup tree for "
                         "the execution prior to event `%u`:",

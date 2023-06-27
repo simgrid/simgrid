@@ -412,10 +412,8 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
   auto w_now = w;
 
   for (const auto& next_E_p : v) {
-    const aid_t p = next_E_p->aid_;
-
     // Is `p in `I_[E](w)`?
-    if (E_v.is_initial_after_execution_of(w_now, p)) {
+    if (const aid_t p = next_E_p->aid_; E_v.is_initial_after_execution_of(w_now, p)) {
       // Remove `p` from w and continue
 
       // INVARIANT: If `p` occurs in `w`, it had better refer to the same

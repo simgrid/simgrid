@@ -49,9 +49,8 @@ public:
 
       int aid_value = value_of_state_;
       const Transition* transition = actor.get_transition(actor.get_times_considered()).get();
-     
-      const CommRecvTransition* cast_recv = dynamic_cast<CommRecvTransition const*>(transition);
-      if (cast_recv != nullptr) {
+
+      if (auto const* cast_recv = dynamic_cast<CommRecvTransition const*>(transition)) {
 	  if (mailbox_.count(cast_recv->get_mailbox()) > 0 and
 	      mailbox_.at(cast_recv->get_mailbox()) > 0) { 
 	      aid_value--; // This means we have waiting recv corresponding to this recv
@@ -59,9 +58,8 @@ public:
 	      aid_value++; 
 	  }
       }
-   
-      const CommSendTransition* cast_send = dynamic_cast<CommSendTransition const*>(transition);
-      if (cast_send != nullptr) {
+
+      if (auto const* cast_send = dynamic_cast<CommSendTransition const*>(transition)) {
 	  if (mailbox_.count(cast_send->get_mailbox()) > 0 and
 	      mailbox_.at(cast_send->get_mailbox()) < 0) {
 	      aid_value--; // This means we have waiting recv corresponding to this send
@@ -69,25 +67,22 @@ public:
 	      aid_value++;
 	  }
       }
-   
+
       if (aid_value < min_found.second)
 	  min_found = std::make_pair(aid, aid_value);
     }
     return min_found;
   }
 
-
   void execute_next(aid_t aid, RemoteApp& app) override
   {
     const Transition* transition = actors_to_run_.at(aid).get_transition(actors_to_run_.at(aid).get_times_considered()).get();
     last_transition_             = transition->type_;
 
-    const CommRecvTransition* cast_recv = dynamic_cast<CommRecvTransition const*>(transition);
-    if (cast_recv != nullptr)
+    if (auto const* cast_recv = dynamic_cast<CommRecvTransition const*>(transition))
       last_mailbox_ = cast_recv->get_mailbox();
 
-    const CommSendTransition* cast_send = dynamic_cast<CommSendTransition const*>(transition);
-    if (cast_send != nullptr)
+    if (auto const* cast_send = dynamic_cast<CommSendTransition const*>(transition))
       last_mailbox_ = cast_send->get_mailbox();
   }
 };
