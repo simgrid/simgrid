@@ -253,7 +253,6 @@ typedef struct s_smx_activity* smx_activity_t;
 
 /** Pointer to a SimGrid barrier object */
 typedef s4u_Barrier* sg_bar_t;
-/** Constant pointer to a SimGrid barrier object */
 typedef s4u_Comm* sg_comm_t;
 typedef s4u_Exec* sg_exec_t;
 typedef const s4u_Exec* const_sg_exec_t;

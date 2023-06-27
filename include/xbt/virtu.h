@@ -11,10 +11,8 @@
 #include <simgrid/actor.h>
 #include <xbt/base.h>
 
-// avoid deprecation warning on include (remove entire file with XBT_ATTRIB_DEPRECATED_v338)
-#ifndef XBT_VIRTU_H_NO_DEPRECATED_WARNING
-#warning xbt/virtu.h is deprecated and will be removed in v3.37.
-#endif
+// Deprecation warning on include (remove entire file with XBT_ATTRIB_DEPRECATED_v338)
+#warning xbt/virtu.h is deprecated and will be removed after v3.37.
 
 SG_BEGIN_DECL
 
