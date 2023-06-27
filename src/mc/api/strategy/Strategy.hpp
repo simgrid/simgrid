@@ -44,9 +44,9 @@ public:
   /** Ensure at least one transition is marked as todo among the enabled ones not done.
    *  If required, it marks as todo the best transition according to the strategy. */
   void consider_best() {
-    for (auto& [_, actor] :actors_to_run_)
-          if (actor.is_todo())
-	      return;
+    if (std::any_of(begin(actors_to_run_), end(actors_to_run_),
+                    [](const auto& actor) { return actor.second.is_todo(); }))
+      return;
     aid_t best_aid = best_transition(false).first;
     if (best_aid != -1)
 	actors_to_run_.at(best_aid).mark_todo();
