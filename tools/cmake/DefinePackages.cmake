@@ -305,8 +305,6 @@ set(NS3_SRC
   )
 
 set(KERNEL_SRC
-  src/deprecated.cpp
-
   src/kernel/EngineImpl.cpp
   src/kernel/EngineImpl.hpp
 
@@ -667,7 +665,6 @@ set(headers_to_install
   include/simgrid/mailbox.h
   include/simgrid/modelchecker.h
   include/simgrid/forward.h
-  include/simgrid/simix.h
   include/simgrid/simix.hpp
   include/simgrid/kernel/ProfileBuilder.hpp
   include/simgrid/kernel/Timer.hpp
