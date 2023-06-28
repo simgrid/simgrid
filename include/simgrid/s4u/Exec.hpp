@@ -36,14 +36,15 @@ class XBT_PUBLIC Exec : public Activity_T<Exec> {
 
   bool parallel_ = false;
 
+  inline static xbt::signal<void(Exec const&)> on_start;
+  xbt::signal<void(Exec const&)> on_this_start;
+
 protected:
   explicit Exec(kernel::activity::ExecImplPtr pimpl);
   Exec* do_start() override;
 
   void reset() const;
 
-  inline static xbt::signal<void(Exec const&)> on_start;
-  xbt::signal<void(Exec const&)> on_this_start;
   void fire_on_completion() const override { on_completion(*this); }
   void fire_on_this_completion() const override { on_this_completion(*this); }
   void fire_on_suspend() const override { on_suspend(*this); }

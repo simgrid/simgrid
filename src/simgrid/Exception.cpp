@@ -31,7 +31,7 @@ void ForcefulKillException::do_throw()
   throw ForcefulKillException();
 }
 
-bool ForcefulKillException::try_n_catch(const std::function<void()>& try_block) // XBT_ATTRIB_DEPRECATED_v337
+bool ForcefulKillException::try_n_catch(const std::function<void()>& try_block) // XBT_ATTRIB_DEPRECATED_v338
 {
   bool res;
   try {

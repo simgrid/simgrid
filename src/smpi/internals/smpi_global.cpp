@@ -520,6 +520,10 @@ int smpi_main(const char* executable, int argc, char* argv[])
      * configuration tools */
     return 0;
   }
+  if (argv[0] == std::string("--help-coll")) {
+    std::cerr << simgrid::smpi::colls::get_smpi_coll_help();
+    return 0;
+  }
 
   smpi_init_options_internal(true);
   simgrid::s4u::Engine engine(&argc, argv);

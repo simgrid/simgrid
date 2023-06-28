@@ -46,6 +46,7 @@ public:
   XBT_ATTRIB_NORETURN void main_loop();
   void report_assertion_failure();
   void ignore_memory(void* addr, std::size_t size) const;
+  void unignore_memory(void* addr, std::size_t size) const;
   void ignore_heap(void* addr, std::size_t size) const;
   void unignore_heap(void* addr, std::size_t size) const;
   void declare_symbol(const char* name, int* value) const;

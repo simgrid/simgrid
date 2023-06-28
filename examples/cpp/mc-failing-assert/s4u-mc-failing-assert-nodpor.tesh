@@ -9,32 +9,52 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [0.000000] [mc_explo/INFO] *** PROPERTY NOT VALID ***
 > [0.000000] [mc_explo/INFO] **************************
 > [0.000000] [mc_explo/INFO] Counter-example execution trace:
-> [0.000000] [mc_explo/INFO]   3: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   1: iRecv(mbox=0)
+> [0.000000] [mc_explo/INFO]   3: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   1: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO]   1: iRecv(mbox=0)
 > [0.000000] [mc_explo/INFO]   2: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   1: WaitComm(from 2 to 1, mbox=0, no timeout)
-> [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'3;1;1;1;2;1'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 162 unique states visited; 48 backtracks (438 transition replays, 228 states visited overall)
+> [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;1;2;1'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 24 unique states visited; 8 backtracks (26 transition replays, 58 states visited overall)
 
 ! expect return 1
 ! timeout 300
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/reduction:none --cfg=model-check/strategy:nb_wait -- ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml --log=root.thresh:critical
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/reduction:none --cfg=model-check/strategy:max_match_comm -- ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml --log=root.thresh:critical
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'none'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/strategy' to 'nb_wait'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/strategy' to 'max_match_comm'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: none.
 > [0.000000] [mc_explo/INFO] **************************
 > [0.000000] [mc_explo/INFO] *** PROPERTY NOT VALID ***
 > [0.000000] [mc_explo/INFO] **************************
 > [0.000000] [mc_explo/INFO] Counter-example execution trace:
+> [0.000000] [mc_explo/INFO]   1: iRecv(mbox=0)
+> [0.000000] [mc_explo/INFO]   3: iSend(mbox=0)
+> [0.000000] [mc_explo/INFO]   1: WaitComm(from 3 to 1, mbox=0, no timeout)
+> [0.000000] [mc_explo/INFO]   3: WaitComm(from 3 to 1, mbox=0, no timeout)
+> [0.000000] [mc_explo/INFO]   1: iRecv(mbox=0)
+> [0.000000] [mc_explo/INFO]   2: iSend(mbox=0)
+> [0.000000] [mc_explo/INFO]   1: WaitComm(from 2 to 1, mbox=0, no timeout)
+> [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;3;1;2;1'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 14 unique states visited; 1 backtracks (1 transition replays, 16 states visited overall)
+
+
+! expect return 1
+! timeout 300
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/reduction:none --cfg=model-check/strategy:min_match_comm -- ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml --log=root.thresh:critical
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'none'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/strategy' to 'min_match_comm'
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: none.
+> [0.000000] [mc_explo/INFO] **************************
+> [0.000000] [mc_explo/INFO] *** PROPERTY NOT VALID ***
+> [0.000000] [mc_explo/INFO] **************************
+> [0.000000] [mc_explo/INFO] Counter-example execution trace:
+> [0.000000] [mc_explo/INFO]   1: iRecv(mbox=0)
 > [0.000000] [mc_explo/INFO]   3: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   2: iSend(mbox=0)
-> [0.000000] [mc_explo/INFO]   1: iRecv(mbox=0)
-> [0.000000] [mc_explo/INFO]   3: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO]   1: WaitComm(from 3 to 1, mbox=0, no timeout)
+> [0.000000] [mc_explo/INFO]   3: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO]   1: iRecv(mbox=0)
-> [0.000000] [mc_explo/INFO]   2: WaitComm(from 2 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO]   1: WaitComm(from 2 to 1, mbox=0, no timeout)
-> [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'3;2;1;3;1;1;2;1'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 8 unique states visited; 0 backtracks (8 transition replays, 0 states visited overall)
+> [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;2;1;3;1;1'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 29 unique states visited; 10 backtracks (26 transition replays, 65 states visited overall)

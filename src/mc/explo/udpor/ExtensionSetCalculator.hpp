@@ -30,6 +30,13 @@ private:
   static EventSet partially_extend_CommWait(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
   static EventSet partially_extend_CommTest(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
 
+  static EventSet partially_extend_MutexAsyncLock(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
+  static EventSet partially_extend_MutexWait(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
+  static EventSet partially_extend_MutexTest(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
+  static EventSet partially_extend_MutexUnlock(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
+
+  static EventSet partially_extend_ActorJoin(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
+
 public:
   static EventSet partially_extend(const Configuration&, Unfolding*, const std::shared_ptr<Transition>);
 };

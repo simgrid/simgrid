@@ -71,7 +71,9 @@ void PageStore::resize(std::size_t size)
                       MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
     xbt_assert(new_memory != MAP_FAILED, "Could not mremap snapshot pages.");
     // Check if expanding worked
-    if (new_memory != (char*)this->memory_ + old_bytesize) {
+    if (new_memory == (char*)this->memory_ + old_bytesize) {
+      new_memory = this->memory_;
+    } else {
       // New memory segment could not be put at the end of this->memory_,
       // so cancel this one and try to relocate everything and copy data
       munmap(new_memory, new_bytesize - old_bytesize);

@@ -398,6 +398,8 @@ include examples/cpp/task-io/s4u-task-io.cpp
 include examples/cpp/task-io/s4u-task-io.tesh
 include examples/cpp/task-simple/s4u-task-simple.cpp
 include examples/cpp/task-simple/s4u-task-simple.tesh
+include examples/cpp/task-storm/s4u-task-storm.cpp
+include examples/cpp/task-storm/s4u-task-storm.tesh
 include examples/cpp/task-switch-host/s4u-task-switch-host.cpp
 include examples/cpp/task-switch-host/s4u-task-switch-host.tesh
 include examples/cpp/task-variable-load/s4u-task-variable-load.cpp
@@ -1947,7 +1949,6 @@ include include/simgrid/plugins/live_migration.h
 include include/simgrid/plugins/load.h
 include include/simgrid/plugins/ns3.hpp
 include include/simgrid/plugins/photovoltaic.hpp
-include include/simgrid/plugins/task.hpp
 include include/simgrid/s4u.hpp
 include include/simgrid/s4u/Activity.hpp
 include include/simgrid/s4u/Actor.hpp
@@ -1964,9 +1965,9 @@ include include/simgrid/s4u/Mailbox.hpp
 include include/simgrid/s4u/Mutex.hpp
 include include/simgrid/s4u/NetZone.hpp
 include include/simgrid/s4u/Semaphore.hpp
+include include/simgrid/s4u/Task.hpp
 include include/simgrid/s4u/VirtualMachine.hpp
 include include/simgrid/semaphore.h
-include include/simgrid/simix.h
 include include/simgrid/simix.hpp
 include include/simgrid/version.h.in
 include include/simgrid/vm.h
@@ -2025,7 +2026,6 @@ include src/dag/dax.dtd
 include src/dag/dax_dtd.c
 include src/dag/dax_dtd.h
 include src/dag/loaders.cpp
-include src/deprecated.cpp
 include src/instr/instr_config.cpp
 include src/instr/instr_interface.cpp
 include src/instr/instr_paje_containers.cpp
@@ -2194,8 +2194,10 @@ include src/mc/api/RemoteApp.hpp
 include src/mc/api/State.cpp
 include src/mc/api/State.hpp
 include src/mc/api/strategy/BasicStrategy.hpp
+include src/mc/api/strategy/MaxMatchComm.hpp
+include src/mc/api/strategy/MinMatchComm.hpp
 include src/mc/api/strategy/Strategy.hpp
-include src/mc/api/strategy/WaitStrategy.hpp
+include src/mc/api/strategy/UniformStrategy.hpp
 include src/mc/compare.cpp
 include src/mc/datatypes.h
 include src/mc/explo/CommunicationDeterminismChecker.cpp
@@ -2230,6 +2232,7 @@ include src/mc/explo/udpor/EventSet.hpp
 include src/mc/explo/udpor/EventSet_test.cpp
 include src/mc/explo/udpor/ExtensionSetCalculator.cpp
 include src/mc/explo/udpor/ExtensionSetCalculator.hpp
+include src/mc/explo/udpor/ExtensionSet_test.cpp
 include src/mc/explo/udpor/History.cpp
 include src/mc/explo/udpor/History.hpp
 include src/mc/explo/udpor/History_test.cpp
@@ -2321,7 +2324,6 @@ include src/plugins/link_energy.cpp
 include src/plugins/link_energy_wifi.cpp
 include src/plugins/link_load.cpp
 include src/plugins/photovoltaic.cpp
-include src/plugins/task.cpp
 include src/plugins/vm/VmLiveMigration.cpp
 include src/plugins/vm/VmLiveMigration.hpp
 include src/plugins/vm/dirty_page_tracking.cpp
@@ -2340,6 +2342,7 @@ include src/s4u/s4u_Mailbox.cpp
 include src/s4u/s4u_Mutex.cpp
 include src/s4u/s4u_Netzone.cpp
 include src/s4u/s4u_Semaphore.cpp
+include src/s4u/s4u_Task.cpp
 include src/s4u/s4u_VirtualMachine.cpp
 include src/simgrid/Exception.cpp
 include src/simgrid/math_utils.h

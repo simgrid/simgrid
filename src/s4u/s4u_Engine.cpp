@@ -22,7 +22,7 @@
 #include <algorithm>
 #include <string>
 
-XBT_LOG_NEW_CATEGORY(s4u, "Log channels of the S4U (Simgrid for you) interface");
+XBT_LOG_NEW_CATEGORY(s4u, "Log channels of the S4U (SimGrid for you) interface");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_engine, s4u, "Logging specific to S4U (engine)");
 
 static simgrid::kernel::actor::ActorCode maestro_code;
@@ -76,7 +76,7 @@ Engine* Engine::get_instance()
 Engine* Engine::get_instance(int* argc, char** argv)
 {
   if (Engine::instance_ == nullptr) {
-    auto* e = new Engine(argc, argv);
+    const auto* e = new Engine(argc, argv);
     xbt_assert(Engine::instance_ == e);
   }
   return Engine::instance_;
@@ -84,11 +84,6 @@ Engine* Engine::get_instance(int* argc, char** argv)
 const std::vector<std::string>& Engine::get_cmdline() const
 {
   return pimpl_->get_cmdline();
-}
-
-void Engine::shutdown() // XBT_ATTRIB_DEPRECATED_v335
-{
-  delete Engine::instance_;
 }
 
 double Engine::get_clock()

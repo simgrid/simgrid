@@ -96,6 +96,9 @@ provides many helper functions to simplify the code of actors.
 .. |API_s4u_Activities| replace:: **Activities**
 .. _API_s4u_Activities: #api-s4u-activity
 
+.. |API_s4u_Tasks| replace:: **Tasks**
+.. _API_s4u_Tasks: #api-s4u-task
+
 .. |API_s4u_Hosts| replace:: **Hosts**
 .. _API_s4u_Hosts: #api-s4u-host
 
@@ -187,12 +190,38 @@ with :cpp:func:`s4u::Comm::wait_all() <simgrid::s4u::Comm::wait_all>`.
    :dedent: 2
 
 =====================
-Activities Life cycle
+Activities Life Cycle
 =====================
 
 Sometimes, you want to change the setting of an activity before it even starts.
 
 .. todo:: write this section
+
+=====================
+Repeatable Activities
+=====================
+
+In order to simulate the execution of Dataflow applications, we introduced the
+concept of |API_s4u_Tasks|, that can be seen as repeatable activities. A Dataflow
+is defined as a graph of |API_s4u_Tasks| through which circulate Tokens. Tokens
+can carry any user-defined data, using the same internal mechanisms as for the
+other simulated objects. Each Task has to receive a token from each of its
+predecessor to fire a new instance of a |API_s4u_Comm|, |API_s4u_Exec|, or
+|API_s4u_Io| activity. On completion of this activity, the Task propagates tokens
+to its successors, and waits for the next set of tokens to arrive.
+
+To initiate the execution of a Dataflow, it is possible to some make
+|API_s4u_Tasks| fire one or more activities without waiting for any token with the
+:cpp:func:`s4u::Task::enqueue_firings() <simgrid::s4u::Task::enqueue_firings>`
+function.
+
+The parameters and successors of a Task can be redefined at runtime by attaching
+callbacks to the
+:cpp:func:`s4u::Task::on_this_start <simgrid::s4u::Task::on_this_start>`
+and
+:cpp:func:`s4u::Task::on_this_completion <simgrid::s4u::Task::on_this_completion>`
+signals.
+
 
 .. _s4u_mailbox:
 
@@ -2116,8 +2145,8 @@ Querying info
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::Activity::get_cname
-      .. doxygenfunction:: simgrid::s4u::Activity::get_name
+      .. doxygenfunction:: simgrid::s4u::Activity::get_cname() const
+      .. doxygenfunction:: simgrid::s4u::Activity::get_name() const
       .. doxygenfunction:: simgrid::s4u::Activity::get_remaining() const
       .. doxygenfunction:: simgrid::s4u::Activity::get_state() const
       .. doxygenfunction:: simgrid::s4u::Activity::set_remaining(double remains)
@@ -2310,11 +2339,11 @@ Signals
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Comm::on_start_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_start_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_completion_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_recv_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_send_cb
-
-      .. doxygenfunction:: simgrid::s4u::Comm::on_completion_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_suspended_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_resumed_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_veto_cb
@@ -2453,9 +2482,10 @@ Signals
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Exec::on_start_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_this_start_cb
       .. doxygenfunction:: simgrid::s4u::Exec::on_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_this_completion_cb
 
-      .. doxygenfunction:: simgrid::s4u::Exec::on_completion_cb
       .. doxygenfunction:: simgrid::s4u::Exec::on_suspended_cb
       .. doxygenfunction:: simgrid::s4u::Exec::on_resumed_cb
       .. doxygenfunction:: simgrid::s4u::Exec::on_veto_cb
@@ -2529,12 +2559,210 @@ Signals
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Io::on_start_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_this_start_cb
       .. doxygenfunction:: simgrid::s4u::Io::on_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_this_completion_cb
 
-      .. doxygenfunction:: simgrid::s4u::Io::on_completion_cb
       .. doxygenfunction:: simgrid::s4u::Io::on_suspended_cb
       .. doxygenfunction:: simgrid::s4u::Io::on_resumed_cb
       .. doxygenfunction:: simgrid::s4u::Io::on_veto_cb
+
+
+.. _API_s4u_Tasks:
+
+==========
+Tasks
+==========
+
+==============
+class Task
+==============
+
+.. doxygenclass:: simgrid::s4u::Task
+
+**Known subclasses:**
+:ref:`Communication Tasks <API_s4u_CommTask>`,
+:ref:`Executions Tasks <API_s4u_ExecTask>`,
+:ref:`I/O Tasks <API_s4u_Task>`.
+See also the :ref:`section on activities <s4u_Tasks>` above.
+
+Basic management
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/Task.hpp>
+
+      .. doxygentypedef:: TaskPtr
+
+Querying info
+-------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Task::get_cname() const
+      .. doxygenfunction:: simgrid::s4u::Task::get_name() const
+      .. doxygenfunction:: simgrid::s4u::Task::get_count() const
+      .. doxygenfunction:: simgrid::s4u::Task::get_amount() const
+      .. doxygenfunction:: simgrid::s4u::Task::set_amount(double amount)
+
+Life cycle
+----------
+
+.. tabs::
+
+   .. group-tab:: C++
+      .. doxygenfunction:: simgrid::s4u::Task::enqueue_firings(int n)
+
+Managing Dependencies
+---------------------
+.. tabs::
+
+   .. group-tab:: C++
+      .. doxygenfunction:: simgrid::s4u::Task::add_successor(TaskPtr t)
+      .. doxygenfunction:: simgrid::s4u::Task::remove_successor(TaskPtr t)
+      .. doxygenfunction:: simgrid::s4u::Task::remove_all_successors()
+      .. doxygenfunction:: simgrid::s4u::Task::get_successors() const
+
+Managing Tokens
+---------------
+.. doxygenclass:: simgrid::s4u::Token
+
+.. tabs::
+
+   .. group-tab:: C++
+      .. doxygenfunction:: simgrid::s4u::Task::set_token(std::shared_ptr<Token> token)
+      .. doxygenfunction:: simgrid::s4u::Task::get_next_token_from(TaskPtr t)
+
+Signals
+-------
+
+.. tabs::
+
+   .. group-tab:: C++
+      .. doxygenfunction:: simgrid::s4u::Task::on_start_cb
+      .. doxygenfunction:: simgrid::s4u::Task::on_this_start_cb
+      .. doxygenfunction:: simgrid::s4u::Task::on_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Task::on_this_completion_cb
+
+.. _API_s4u_CommTask:
+
+================
+⁣  class CommTask
+================
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::CommTask
+
+Basic management
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/Task.hpp>
+
+      .. doxygentypedef:: CommTaskPtr
+
+Querying info
+-------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Task::get_source() const
+      .. doxygenfunction:: simgrid::s4u::Task::get_destination() const
+      .. doxygenfunction:: simgrid::s4u::Task::get_bytes() const
+      .. doxygenfunction:: simgrid::s4u::Task::set_source(simgrid::s4u::Host* source);
+      .. doxygenfunction:: simgrid::s4u::Task::set_destination(simgrid::s4u::Host* destination);
+      .. doxygenfunction:: simgrid::s4u::Task::set_bytes(double bytes)
+
+
+.. _API_s4u_ExecTask:
+
+================
+⁣  class ExecTask
+================
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::ExecTask
+
+Basic management
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/Task.hpp>
+
+      .. doxygentypedef:: ExecTaskPtr
+
+Querying info
+-------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Task::get_host() const
+      .. doxygenfunction:: simgrid::s4u::Task::get_flops() const
+      .. doxygenfunction:: simgrid::s4u::Task::set_host(simgrid::s4u::Host* host);
+      .. doxygenfunction:: simgrid::s4u::Task::set_flops(double flops);
+
+.. _API_s4u_IoTask:
+
+================
+⁣  class IoTask
+================
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::IoTask
+
+Basic management
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/Task.hpp>
+
+      .. doxygentypedef:: IoTaskPtr
+
+Querying info
+-------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+     .. doxygenfunction:: simgrid::s4u::Task::get_disk() const
+     .. doxygenfunction:: simgrid::s4u::Task::get_bytes() const
+     .. doxygenfunction:: simgrid::s4u::Task::get_op_type() const
+     .. doxygenfunction:: simgrid::s4u::Task::set_disk(simgrid::s4u::Disk* disk);
+     .. doxygenfunction:: simgrid::s4u::Task::set_bytes(simgrid::double bytes);
+     .. doxygenfunction:: simgrid::s4u::Task::set_op_type(simgrid::s4u::Io::OpType type);
 
 .. _API_s4u_Synchronizations:
 
@@ -2846,7 +3074,7 @@ Error reporting
 
       The following errors denote a problem in the SimGrid tool itself. Most of the time, you should let these
       exception go, so that the simulation stops. But you may want to catch them, for example when you launch
-      simgrid from a python notebook and want to handle the problem accordingly.
+      SimGrid from a python notebook and want to handle the problem accordingly.
 
       .. doxygenclass:: simgrid::AssertionError
       .. doxygenclass:: simgrid::ParseError
@@ -2865,7 +3093,7 @@ Error reporting
 
       The following errors denote a problem in the SimGrid tool itself. Most of the time, you should let these
       exception go, so that the simulation stops. But you may want to catch them, for example when you launch
-      simgrid from a python notebook and want to handle the problem accordingly.
+      SimGrid from a python notebook and want to handle the problem accordingly.
 
       .. autoclass:: simgrid.AssertionError
 

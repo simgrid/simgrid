@@ -5,9 +5,12 @@
 
 #include "src/mc/api/State.hpp"
 #include "src/mc/api/strategy/BasicStrategy.hpp"
-#include "src/mc/api/strategy/WaitStrategy.hpp"
+#include "src/mc/api/strategy/MaxMatchComm.hpp"
+#include "src/mc/api/strategy/MinMatchComm.hpp"
+#include "src/mc/api/strategy/UniformStrategy.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
+#include "xbt/random.hpp"
 
 #include <algorithm>
 #include <boost/range/algorithm.hpp>
@@ -21,10 +24,18 @@ long State::expended_states_ = 0;
 State::State(RemoteApp& remote_app) : num_(++expended_states_)
 {
   XBT_VERB("Creating a guide for the state");
+
+  
   if (_sg_mc_strategy == "none")
     strategy_ = std::make_shared<BasicStrategy>();
-  else if (_sg_mc_strategy == "nb_wait")
-    strategy_ = std::make_shared<WaitStrategy>();
+  else if (_sg_mc_strategy == "max_match_comm")
+    strategy_ = std::make_shared<MaxMatchComm>();
+  else if (_sg_mc_strategy == "min_match_comm")
+    strategy_ = std::make_shared<MinMatchComm>();
+  else if (_sg_mc_strategy == "uniform") {
+    xbt::random::set_mersenne_seed(_sg_mc_random_seed);  
+    strategy_ = std::make_shared<UniformStrategy>();
+  }
   else
     THROW_IMPOSSIBLE;
 
@@ -43,11 +54,15 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
 {
   if (_sg_mc_strategy == "none")
     strategy_ = std::make_shared<BasicStrategy>();
-  else if (_sg_mc_strategy == "nb_wait")
-    strategy_ = std::make_shared<WaitStrategy>();
+  else if (_sg_mc_strategy == "max_match_comm")
+    strategy_ = std::make_shared<MaxMatchComm>();
+  else if (_sg_mc_strategy == "min_match_comm")
+    strategy_ = std::make_shared<MinMatchComm>();
+  else if (_sg_mc_strategy == "uniform") 
+    strategy_ = std::make_shared<UniformStrategy>();
   else
     THROW_IMPOSSIBLE;
-  *strategy_ = *(parent_state->strategy_);
+  strategy_->copy_from(parent_state_->strategy_.get());
 
   remote_app.get_actors_status(strategy_->actors_to_run_);
 
@@ -57,22 +72,20 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
                                                             *remote_app.get_remote_process_memory());
 #endif
 
-  /* If we want sleep set reduction, copy the sleep set and eventually removes things from it */
-  if (_sg_mc_sleep_set) {
-    /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.
-     * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
-     * it is not explored*/
-    for (const auto& [aid, transition] : parent_state_->get_sleep_set()) {
-      if (not incoming_transition_->depends(transition.get())) {
-        sleep_set_.try_emplace(aid, transition);
-        if (strategy_->actors_to_run_.count(aid) != 0) {
-          XBT_DEBUG("Actor %ld will not be explored, for it is in the sleep set", aid);
-          strategy_->actors_to_run_.at(aid).mark_done();
-        }
-      } else
-        XBT_DEBUG("Transition >>%s<< removed from the sleep set because it was dependent with incoming >>%s<<",
-                  transition->to_string().c_str(), incoming_transition_->to_string().c_str());
-    }
+  /* Copy the sleep set and eventually removes things from it: */
+  /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.
+   * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
+   * it is not explored*/
+  for (const auto& [aid, transition] : parent_state_->get_sleep_set()) {
+    if (not incoming_transition_->depends(transition.get())) {
+      sleep_set_.try_emplace(aid, transition);
+      if (strategy_->actors_to_run_.count(aid) != 0) {
+        XBT_DEBUG("Actor %ld will not be explored, for it is in the sleep set", aid);
+        strategy_->actors_to_run_.at(aid).mark_done();
+      }
+    } else
+      XBT_DEBUG("Transition >>%s<< removed from the sleep set because it was dependent with incoming >>%s<<",
+                transition->to_string().c_str(), incoming_transition_->to_string().c_str());
   }
 }
 
@@ -170,7 +183,7 @@ std::unordered_set<aid_t> State::get_backtrack_set() const
 {
   std::unordered_set<aid_t> actors;
   for (const auto& [aid, state] : get_actors_list()) {
-    if (state.is_todo() or state.is_done()) {
+    if (state.is_todo() || state.is_done()) {
       actors.insert(aid);
     }
   }
@@ -278,7 +291,7 @@ void State::do_odpor_unwind()
     // works with ODPOR in the way we intend it to work. There is not a
     // good way to perform transition equality in SimGrid; instead, we
     // effectively simply check for the presence of an actor in the sleep set.
-    if (!get_actors_list().at(out_transition->aid_).has_more_to_consider())
+    if (not get_actors_list().at(out_transition->aid_).has_more_to_consider())
       add_sleep_set(std::move(out_transition));
   }
 }

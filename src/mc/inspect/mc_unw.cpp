@@ -211,8 +211,15 @@ unw_addr_space_t UnwindContext::createUnwindAddressSpace()
    *
    * Use nullptr as access_fpreg and resume, as we don't need them.
    */
-  unw_accessors_t accessors = {&find_proc_info, &put_unwind_info, &get_dyn_info_list_addr, &access_mem, &access_reg,
-                               nullptr,         nullptr,          &get_proc_name};
+  unw_accessors_t accessors        = {};
+  accessors.find_proc_info         = &find_proc_info;
+  accessors.put_unwind_info        = &put_unwind_info;
+  accessors.get_dyn_info_list_addr = &get_dyn_info_list_addr;
+  accessors.access_mem             = &access_mem;
+  accessors.access_reg             = &access_reg;
+  accessors.access_fpreg           = nullptr;
+  accessors.resume                 = nullptr;
+  accessors.get_proc_name          = &get_proc_name;
   return unw_create_addr_space(&accessors, BYTE_ORDER);
 }
 

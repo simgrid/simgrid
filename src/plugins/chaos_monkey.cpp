@@ -23,7 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cmonkey, kernel, "Chaos Monkey plugin");
 
 static void sg_chaos_monkey_plugin_run()
 {
-  auto* engine = sg4::Engine::get_instance();
+  const auto* engine = sg4::Engine::get_instance();
   auto hosts  = engine->get_all_hosts();
   auto links  = engine->get_all_links();
 

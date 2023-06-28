@@ -1,3 +1,7 @@
+/* Copyright (c) 2023. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 #include <simgrid/Exception.hpp>
 #include <simgrid/plugins/photovoltaic.hpp>
 #include <simgrid/s4u/Actor.hpp>
@@ -214,9 +218,9 @@ void Photovoltaic::update()
     if (now <= last_updated_)
       return;
     double power_w = conversion_efficiency_ * area_m2_ * solar_irradiance_w_per_m2_;
-    if (min_power_w_ > 0 and power_w_ < min_power_w_)
+    if (min_power_w_ > 0 && power_w_ < min_power_w_)
       power_w = 0;
-    if (max_power_w_ > 0 and power_w_ > max_power_w_)
+    if (max_power_w_ > 0 && power_w_ > max_power_w_)
       power_w = max_power_w_;
     power_w_ = power_w;
     if (eval_cost_) {

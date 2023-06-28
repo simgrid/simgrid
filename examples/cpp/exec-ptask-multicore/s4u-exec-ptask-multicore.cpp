@@ -10,7 +10,7 @@ namespace sg4 = simgrid::s4u;
 
 static void runner()
 {
-  auto* e = sg4::Engine::get_instance();
+  const auto* e = sg4::Engine::get_instance();
   std::vector<double> comp(2, 1e9);
   std::vector<double> comm(4, 0.0);
   // Different hosts.

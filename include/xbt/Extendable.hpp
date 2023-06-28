@@ -7,10 +7,10 @@
 #ifndef SIMGRID_XBT_LIB_HPP
 #define SIMGRID_XBT_LIB_HPP
 
-#include "xbt/base.h" // XBT_ATTRIB_DEPRECATED_v334
 #include <cstddef>
 #include <functional>
 #include <limits>
+#include <memory>
 #include <vector>
 
 namespace simgrid::xbt {
@@ -109,10 +109,8 @@ public:
     extensions_[0]=data;
   }
   template <typename D> D* get_data() const { return static_cast<D*>(extensions_[0]); }
-  XBT_ATTRIB_DEPRECATED_v334("Please use typed template Extendable::get_data<>()") void* get_data() const
-  {
-    return get_data<void>();
-  }
+  template <typename D> std::unique_ptr<D> get_unique_data() { return std::unique_ptr<D>(get_data<D>()); }
+
   // Convenience extension access when the type has an associated EXTENSION ID:
   template <class U> U* extension() const { return extension<U>(U::EXTENSION_ID); }
   template<class U> void extension_set(U* p) { extension_set<U>(U::EXTENSION_ID, p); }

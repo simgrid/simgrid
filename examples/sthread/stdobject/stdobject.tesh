@@ -4,8 +4,7 @@
 # We ignore the LD_PRELOAD lines from the expected output because they contain the build path
 ! ignore .*LD_PRELOAD.*
 
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/stdobject "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" --log=no_loc
-> [   0.000000] (maestro@) Configuration change: Set 'model-check/sleep-set' to 'true'
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/stdobject "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" --log=no_loc
 > [   0.000000] (maestro@) Starting the simulation.
 > starting two helpers...
 > waiting for helpers to finish...
@@ -25,4 +24,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [   0.000000] (maestro@)   2: BeginObjectAccess(&v)
 > [   0.000000] (maestro@)   3: BeginObjectAccess(&v)
 > [   0.000000] (maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;3'
-> [   0.000000] (maestro@) DFS exploration ended. 7 unique states visited; 1 backtracks (9 transition replays, 1 states visited overall)
+> [   0.000000] (maestro@) DFS exploration ended. 7 unique states visited; 1 backtracks (1 transition replays, 9 states visited overall)

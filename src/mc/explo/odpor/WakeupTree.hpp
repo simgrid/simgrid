@@ -35,8 +35,6 @@ namespace simgrid::mc::odpor {
  */
 class WakeupTreeNode {
 private:
-  explicit WakeupTreeNode(std::shared_ptr<Transition> u) : action_(u) {}
-
   WakeupTreeNode* parent_ = nullptr;
 
   /** An ordered list of children of for this node in the tree */
@@ -53,6 +51,9 @@ private:
   friend WakeupTreeIterator;
 
 public:
+  explicit WakeupTreeNode(std::shared_ptr<Transition> u) : action_(u) {}
+
+  WakeupTreeNode()                                 = default;
   ~WakeupTreeNode()                                = default;
   WakeupTreeNode(const WakeupTreeNode&)            = delete;
   WakeupTreeNode(WakeupTreeNode&&)                 = default;

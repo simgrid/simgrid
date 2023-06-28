@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <exception>
+#include <memory>
 #include <queue>
 
 namespace simgrid::mc::odpor {
@@ -26,7 +27,7 @@ PartialExecution WakeupTreeNode::get_sequence() const
   // and instead track this with the iterator
   PartialExecution seq_;
   const WakeupTreeNode* cur_node = this;
-  while (cur_node != nullptr and !cur_node->is_root()) {
+  while (cur_node != nullptr && not cur_node->is_root()) {
     seq_.push_front(cur_node->action_);
     cur_node = cur_node->parent_;
   }
@@ -46,7 +47,7 @@ void WakeupTreeNode::detatch_from_parent()
   }
 }
 
-WakeupTree::WakeupTree() : WakeupTree(std::unique_ptr<WakeupTreeNode>(new WakeupTreeNode({}))) {}
+WakeupTree::WakeupTree() : WakeupTree(std::make_unique<WakeupTreeNode>()) {}
 WakeupTree::WakeupTree(std::unique_ptr<WakeupTreeNode> root) : root_(root.get())
 {
   this->insert_node(std::move(root));
@@ -153,7 +154,7 @@ bool WakeupTree::contains(const WakeupTreeNode* node) const
 
 WakeupTreeNode* WakeupTree::make_node(std::shared_ptr<Transition> u)
 {
-  auto node                 = std::unique_ptr<WakeupTreeNode>(new WakeupTreeNode(std::move(u)));
+  auto node                 = std::make_unique<WakeupTreeNode>(std::move(u));
   auto* node_handle         = node.get();
   this->nodes_[node_handle] = std::move(node);
   return node_handle;
@@ -181,7 +182,7 @@ WakeupTree::InsertionResult WakeupTree::insert(const Execution& E, const Partial
         shortest_sequence.has_value()) {
       // Insert the sequence as a child of `node`, but only
       // if the node is not already a leaf
-      if (not node->is_leaf() or node == this->root_) {
+      if (not node->is_leaf() || node == this->root_) {
         // NOTE: It's entirely possible that the shortest
         // sequence we are inserting is empty. Consider the
         // following two cases:

@@ -531,10 +531,10 @@ void define_callbacks()
         Container::by_name(c.get_destination()->get_name())->get_state("HOST_STATE")->push_event("start");
       }
     });
-    s4u::Comm::on_send_cb([](s4u::Comm const& c) {
+    s4u::Comm::on_send_cb([](s4u::Comm const&) {
       Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("send");
     });
-    s4u::Comm::on_recv_cb([](s4u::Comm const& c) {
+    s4u::Comm::on_recv_cb([](s4u::Comm const&) {
       Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("receive");
     });
     s4u::Actor::on_host_change_cb(on_actor_host_change);

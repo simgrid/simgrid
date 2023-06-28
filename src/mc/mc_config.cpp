@@ -57,21 +57,24 @@ int _sg_mc_max_visited_states = 0;
 static simgrid::config::Flag<std::string> cfg_mc_reduction{
     "model-check/reduction", "Specify the kind of exploration reduction (either none or DPOR)", "dpor",
     [](std::string_view value) {
-      if (value != "none" && value != "dpor" && value != "sdpor" && value != "odpor")
+      if (value != "none" && value != "dpor" && value != "sdpor" && value != "odpor" && value != "udpor")
         xbt_die("configuration option 'model-check/reduction' must be one of the following: "
-                " 'none', 'dpor', 'sdpor', or 'odpor'");
+                " 'none', 'dpor', 'sdpor', 'odpor', or 'udpor'");
     }};
-
-simgrid::config::Flag<bool> _sg_mc_sleep_set{
-    "model-check/sleep-set", "Whether to enable the use of sleep-set in the reduction algorithm", false,
-    [](bool) { _mc_cfg_cb_check("value to enable/disable the use of sleep-set in the reduction algorithm"); }};
 
 simgrid::config::Flag<std::string> _sg_mc_strategy{
     "model-check/strategy",
     "Specify the the kind of heuristic to use for guided model-checking",
     "none",
-    {{"none", "No specific strategy: simply pick the first available transistion."},
-     {"nb_wait", "Take any enabled wait transition, to reduce the distance between an async and its wait."}}};
+    {{"none", "No specific strategy: simply pick the first available transistion and act as a DFS."},
+     {"max_match_comm", "Try to minimize the number of in-fly communication by appairing matching send and receive."},
+     {"min_match_comm", "Try to maximize the number of in-fly communication by not appairing matching send and receive."},
+     {"uniform", "No specific strategy: choices are made randomly based on a uniform sampling."}
+    }};
+
+simgrid::config::Flag<int> _sg_mc_random_seed{"model-check/rand-seed",
+                                              "give a specific random seed to initialize the uniform distribution", 0,
+                                              [](int) { _mc_cfg_cb_check("Random seed"); }};
 
 #if SIMGRID_HAVE_STATEFUL_MC
 simgrid::config::Flag<int> _sg_mc_checkpoint{

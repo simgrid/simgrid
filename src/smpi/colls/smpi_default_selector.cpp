@@ -1,4 +1,4 @@
-/* selector with default/naive Simgrid algorithms. These should not be trusted for performance evaluations */
+/* selector with default/naive SimGrid algorithms. These should not be trusted for performance evaluations */
 
 /* Copyright (c) 2009-2023. The SimGrid Team. All rights reserved.          */
 

@@ -424,3 +424,17 @@ simgrid without downloading the source with pip:
 .. code-block:: console
 
   $ pip install simgrid
+
+If you installed SimGrid to a non-standard directory (such as ``/opt/simgrid`` as advised earlier), you should tell python where
+to find the libraries as follows (notice the elements suffixed to the configured prefix).
+
+.. code-block:: console
+
+  $ PYTHONPATH="/opt/simgrid/lib/python3/dist-packages" LD_LIBRARY_PATH="/opt/simgrid/lib" python your_script.py
+
+You can add those variables to your bash profile to not specify it each time by adding these lines to your ``~/.profile``:
+
+.. code-block:: console
+
+  export PYTHONPATH="$PYTHONPATH:/opt/simgrid/lib/python3/dist-packages"
+  export LD_LIBRARY_PATH="$PYTHONPATH:/opt/simgrid/lib"

@@ -568,15 +568,20 @@ Hopefully in the next release.
 Finally, this release mostly entails maintenance work **on the model front**: a bug was fixed when using ptasks on multicore hosts, and the legacy
 stochastic generator of external load has been reintroduced.
 
-Version 3.33 (not released yet)
--------------------------------
+Version 3.33 (never released)
+-----------------------------
 
-**On the maintainance front,** we removed the ancient MSG interface which end-of-life was scheduled for 2020, the Java bindings
+This version was overdue for more than 6 months, so it was skipped to not hinder our process of deprecating old code.
+
+Version 3.34 (June 26. 2023)
+----------------------------
+
+**On the maintenance front,** we removed the ancient MSG interface which end-of-life was scheduled for 2020, the Java bindings
 that was MSG-only, support for native builds on Windows (WSL is now required) and support for 32 bits platforms. Keeping SimGrid
 alive while adding new features require to remove old, unused stuff. The very rare users impacted by these removals are urged to
 move to the new API and systems.
 
-We also conducted many internal refactorings to remove any occurence of "surf" and "simix". SimGrid v3.12 used a layered design
+We also conducted many internal refactorings to remove any occurrence of "surf" and "simix". SimGrid v3.12 used a layered design
 where simix was providing synchronizations to actors, on top of surf which was computing the models. These features are now
 provided in modules, not layers. Surf became the kernel::{lmm, resource, routing, timer, xml} modules while simix became
 the kernel::{activity, actor, context} modules.
@@ -589,13 +594,16 @@ the other models do. The *fair bottleneck* solver is convenient, but with less s
 development of its replacement (the *bmf solver*) is still ongoing. However, this combination of I/Os and
 communications seemed easier as these activities share the same unit (bytes).
 
-After a few tentatives, we opted for a simple, slightly unperfect, yet convenient way to implement such I/O streams
-at the kernel level. It doesn't require a new model, just that the default HostModels implements a new function which
-creates a classical NetworkAction, but add some I/O-related constraints to it. A couple little hacks here and there,
-and done! A single activity mixing I/Os and communications can be created whose progress is limited by the resource
-(Disk or Link) of least bandwidth value.
+After a few tentatives, we opted for a simple, slightly imperfect, yet convenient way to implement such I/O streams at the
+kernel level. It doesn't require a new model, just that the default HostModels implements a new function which creates a
+classical NetworkAction, but add some I/O-related constraints to it. A couple little hacks here and there, and done! A single
+activity mixing I/Os and communications can be created whose progress is limited by the resource (Disk or Link) of least
+bandwidth value. As a result, a new :cpp:func:`Io::streamto()` function has been added to send data between arbitrary disks or
+hosts. The user can specify a ``src_disk`` on a ``src_host`` and a ``dst_disk`` on a ``dst_host`` to stream data of a
+given ``size``. Note that disks are optional, allowing users to simulate some kind of "disk-to-memory" or "memory-to-disk" I/O
+streams. It's highly inspired by the existing :cpp:func:`Comm::sendto` that can be used to send data between arbitrary hosts.
 
-We also modified the Wi-Fi model so that the total capacity of a link depends on the amout of flows on that link, accordingly to
+We also modified the Wi-Fi model so that the total capacity of a link depends on the amount of flows on that link, accordingly to
 the result of some ns-3 experiments. This model can be more accurate for congestioned Wi-Fi links, but its calibration is more
 demanding, as shown in the `example
 <https://framagit.org/simgrid/simgrid/tree/master/teshsuite/models/wifi_usage_decay/wifi_usage_decay.cpp>`_ and in the `research
@@ -603,29 +611,63 @@ paper <https://hal.archives-ouvertes.fr/hal-03777726>`_.
 
 We also worked on the usability of our models, by actually writing the long overdue documentation of our TCP models and by renaming
 some options for clarity (old names are still accepted as aliases). A new function ``s4u::Engine::flatify_platform()`` dumps an
-XML representation that is inefficient (all zones are flatified) but easier to read (routes are explicitely defined). You should
+XML representation that is inefficient (all zones are flatified) but easier to read (routes are explicitly defined). You should
 not use the output as a regular input file, but it will prove useful to double-check the your platform.
 
-**On the interface front**, the new ``Io::streamto()`` function has been inspired by the existing ``Comm::sendto()``
-function (which also derives from the ptask model). The user can specify a ``src_disk`` on a ``src_host`` and a
-``dst_disk`` on a ``dst_host`` to stream data of a given ``size``. Note that disks are optional, allowing users to
-simulate some kind of "disk-to-memory" or "memory-to-disk" I/O streams.
+**On the interface front**, some functions were deprecated and will be removed in 4 versions, while some old deprecated functions
+were removed in this version, as usual.
 
-As usual on that front, some functions were deprecated and will be removed in 4 versions, while some old deprecated functions
-were removed in this version.
+Expressing your application as a DAG or a workflow is even more integrated than before. We added a new tutorial on simulating
+DAGs and a DAG loader for workflows using the `wfcommons formalism <https://wfcommons.org/>`_. Starting an activity is now
+properly delayed until after all its dependencies are fulfilled. We also added a notion of :ref:`Task <API_s4u_Tasks>`, a sort
+of activity that can be fired several time. It's very useful to represent complex workflows. We added a ``on_this`` variant of
+:ref:`every signal <s4u_API_signals>`, to react to the signals emitted by one object instance only. This is sometimes easier than
+reacting to every signals of a class, and then filtering on the object you want. Activity signals (veto, suspend, resume,
+completion) are now specialized by activity class. That is, callbacks registered in Exec::on_suspend_cb will not be fired for
+Comms nor Ios
 
-**On the model checking front**, we are almost done with the ongoing refactoring to ensure that the model-checker don't read
-directly the memory of the application beside checkpoint/restore and state equality. Instead, the network protocol is used to
-retrieve the information, which makes the code much easier to read and understand. We fixed a bug in the DPOR reduction which
-resulted in some failures to be missed by the exploration, but our quick fix hindered the reduction quality. As a result, some
-scenarios which could be explored completely earlier (with bugs) are now too large for our (correct) exploration algorithm. We
-should improve DPOR in the next release, possibly implementing the ODPOR variant (Optimal DPOR). Also, we started implementing
-the UDPOR (Unfoldings DPOR) reduction algorithm, also for the next release.
+Two new useful plugins were added: The :ref:`battery plugin<plugin_battery>` can be used to create batteries that get discharged
+by the energy consumption of a given host, while the :ref:`photovoltaic plugin <plugin_photovoltaic>` can be used to create
+photovoltaic panels which energy production depends on the solar irradiance. These plugins could probably be better integrated
+in the framework, but our goal is to include in SimGrid the building blocks upon which everybody would agree, while the model
+elements that are more arguable are provided as plugins, in the hope that the users will carefully assess the plugins and adapt
+them to their specific needs before usage. Here for example, there is several models of batteries (the one provided does not
+take the aging into account), and would not be adapted to every studies.
+
+It is now easy to mix S4U actors and SMPI applications, or even to start more than one MPI application in a given simulation
+with the :ref:`SMPI_app_instance_start() <SMPI_mix_s4u>` function.
+
+**On the model checking front**, this release brings a huge load of good improvements. First, we finished the long refactoring
+so that the model-checker only reads the memory of the application for state equality (used for liveness checking) and for
+:ref:`stateful checking <cfg=model-check/checkpoint>`. Instead, the network protocol is used to retrieve the information and the
+application is simply forked to explore new execution branches. The code is now easier to read and to understand. Even better,
+the verification of safety properties is now enabled by default on every platforms since it does not depend on advanced OS
+mechanisms anymore. You can even run the verified application in valgrind in that case. On the other hand, liveness checking
+still needs to be enabled at compile time if you need it. Tbh, this part of the framework is not very well maintained nowadays.
+We should introduce more testing of the liveness verification at some point to fix this situation.
+
+Back on to safety verification, we fixed a bug in the DPOR reduction which resulted in some failures to be missed by the
+exploration, but this somewhat hinders the reduction quality (as we don't miss branches anymore). Some scenarios which could be
+exhaustively explored earlier (with our buggy algorithm) are now too large for our (correct) exploration algorithm. But that's
+not a problem because we implemented several mechanism to improve the performance of the verification. First, we implemented
+source sets in DPOR, to blacklist transitions that are redundant with previously explored ones. Then, we implemented several new
+DPOR variants. SDPOR and ODPOR are very efficient algorithms described in the paper "Source Sets: A Foundation for Optimal
+Dynamic Partial Order Reduction" by Abdulla et al in 2017. We also have an experimental implementation of UPDOR, described in
+the paper "Unfolding-based Partial Order Reduction" by Rodriguez et al in 2015, but it's not completely functional yet. We hope
+to finish it for the next release. And finally, we implemented a guiding mechanism trying to converge faster toward the bugs in
+the reduced state space. We have some naive heuristics, and we hope to provide better ones in the next release.
 
 We also extended the sthread module, which allows to intercept simple code that use pthread mutex and semaphores to simulate and
 verify it. You do not even need to recompile your code, as it uses LD_PRELOAD to intercept on the target functions. This module
-is still rather young, but it could already reveal useful to verify the code written by students in a class on UNIX IPC and
-synchronization. Check `the examples <https://framagit.org/simgrid/simgrid/tree/master/examples/sthread>`_.
+is still rather young, but it could probably be useful already, e.g. to verify the code written by students in a class on UNIX
+IPC and synchronization. Check `the examples <https://framagit.org/simgrid/simgrid/tree/master/examples/sthread>`_. In addition,
+sthread can now also check concurrent accesses to a given collection, loosely inspired from `this paper
+<https://www.microsoft.com/en-us/research/publication/efficient-and-scalable-thread-safety-violation-detection-finding-thousands-of-concurrency-bugs-during-testing>`_.
+This feature is not very usable yet, as you have to manually annotate your code, but we hope to improve it in the near future.
+
+Version 3.35 (TBD)
+------------------
+
 
 .. |br| raw:: html
 

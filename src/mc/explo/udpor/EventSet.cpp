@@ -90,6 +90,19 @@ EventSet EventSet::make_union(const Configuration& config) const
   return make_union(config.get_events());
 }
 
+EventSet EventSet::make_intersection(const EventSet& other) const
+{
+  std::unordered_set<const UnfoldingEvent*> result;
+
+  for (const UnfoldingEvent* e : other.events_) {
+    if (contains(e)) {
+      result.insert(e);
+    }
+  }
+
+  return EventSet(std::move(result));
+}
+
 EventSet EventSet::get_local_config() const
 {
   return History(*this).get_all_events();
@@ -108,6 +121,11 @@ bool EventSet::empty() const
 bool EventSet::contains(const UnfoldingEvent* e) const
 {
   return this->events_.find(e) != this->events_.end();
+}
+
+bool EventSet::contains_equivalent_to(const UnfoldingEvent* e) const
+{
+  return std::find_if(begin(), end(), [=](const UnfoldingEvent* e_in_set) { return *e == *e_in_set; }) != end();
 }
 
 bool EventSet::is_subset_of(const EventSet& other) const
@@ -202,7 +220,7 @@ std::vector<const UnfoldingEvent*> EventSet::get_topological_ordering() const
         temporarily_marked_events.insert(evt);
 
         EventSet immediate_causes = evt->get_immediate_causes();
-        if (!immediate_causes.empty() && immediate_causes.is_subset_of(temporarily_marked_events)) {
+        if (not immediate_causes.empty() && immediate_causes.is_subset_of(temporarily_marked_events)) {
           throw std::invalid_argument("Attempted to perform a topological sort on a configuration "
                                       "whose contents contain a cycle. The configuration (and the graph "
                                       "connecting all of the events) is an invalid event structure");

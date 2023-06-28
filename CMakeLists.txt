@@ -1,7 +1,7 @@
 # Build the version number
 
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "32")
+set(SIMGRID_VERSION_MINOR "34")
 set(SIMGRID_VERSION_PATCH "1") # odd => git branch; even => stable release or released snapshot
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
@@ -955,7 +955,7 @@ message("        Documentation ...............: ${enable_documentation}")
 message("        Graphviz mode ...............: ${HAVE_GRAPHVIZ}")
 message("        Mallocators .................: ${enable_mallocators}")
 message("")
-message("        Simgrid dependencies ........: ${SIMGRID_DEP}")
+message("        SimGrid dependencies ........: ${SIMGRID_DEP}")
 message("")
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/Testing/Notes/)

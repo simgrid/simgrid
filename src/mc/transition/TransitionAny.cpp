@@ -27,9 +27,11 @@ TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, std::st
 }
 std::string TestAnyTransition::to_string(bool verbose) const
 {
-  auto res = xbt::string_printf("TestAny{ ");
-  for (auto const* t : transitions_)
+  auto res = xbt::string_printf("TestAny(%s){ ", this->result() ? "TRUE" : "FALSE");
+  for (auto const* t : transitions_) {
     res += t->to_string(verbose);
+    res += "; ";
+  }
   res += " }";
   return res;
 }

@@ -23,6 +23,7 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/kernel/resource/HostImpl.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/kernel/xml/platf.hpp"
 #include "src/kernel/xml/platf_private.hpp"

@@ -8,6 +8,7 @@
 
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/transition/Transition.hpp"
+#include "src/mc/transition/TransitionComm.hpp"
 
 #include <sstream>
 #include <string>
@@ -23,6 +24,13 @@ public:
   bool depends(const Transition* other) const override;
 
   Transition* get_current_transition() const { return transitions_.at(times_considered_); }
+  bool result() const
+  {
+    return std::any_of(begin(transitions_), end(transitions_), [](const Transition* transition) {
+      const auto* tested_transition = static_cast<const CommTestTransition*>(transition);
+      return (tested_transition->get_sender() != -1 && tested_transition->get_receiver() != -1);
+    });
+  }
 };
 
 class WaitAnyTransition : public Transition {

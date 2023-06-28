@@ -1,4 +1,4 @@
-.. S4U (Simgrid for you) is the modern interface of SimGrid, which new project should use.
+.. S4U (SimGrid for you) is the modern interface of SimGrid, which new project should use.
 ..
 .. This file follows the ReStructured syntax to be included in the
 .. documentation, but it should remain readable directly.
@@ -366,7 +366,7 @@ Checking for incoming communications
 ------------------------------------
 
 This example uses ``Mailbox.ready()`` to check for completed communications. When this function returns true, then at least a message
-is arrived, so you know that ``Mailbox.get()`` will complete imediately. This is thus another way toward asynchronous communications.
+is arrived, so you know that ``Mailbox.get()`` will complete immediately. This is thus another way toward asynchronous communications.
 
 .. tabs::
 
@@ -620,7 +620,7 @@ on which they run is turned off: they are just terminated in this case, and thei
 failing hosts however, any blocking operation such as ``exec`` or ``wait`` will raise an exception that you can catch and react to. See also
 :ref:`howto_churn`,
 :ref:`this example <s4u_ex_platform_state_profile>` on how to attach a state profile to hosts, and
-:ref:`that example <s4u_ex_comm_failure>` on how to react to networ failures.
+:ref:`that example <s4u_ex_comm_failure>` on how to react to network failures.
 
 .. tabs::
 
@@ -727,7 +727,7 @@ schedules activities itself.
 Simple dependencies
 -------------------
 
-When you declare dependencies between two activities, the depedent will not actually start until all its dependencies complete,
+When you declare dependencies between two activities, the dependent will not actually start until all its dependencies complete,
 as shown in the following examples. The first one declare dependencies between executions while the second one declare
 dependencies between communications. You could declare such dependencies between arbitrary activities.
 
@@ -754,7 +754,7 @@ Simple DAG of activities
 ------------------------
 
 This example shows how to create activities from the maestro directly without relying on an actor, organize the dependencies of
-activities as a DAG (direct acyclic graph), and start them. Each activity will start as soon as its dependencies are fullfiled.
+activities as a DAG (direct acyclic graph), and start them. Each activity will start as soon as its dependencies are fulfilled.
 
 .. tabs::
 
@@ -791,7 +791,7 @@ to determine which host is the better fit for a given activity, and this example
 Loading DAGs from file
 ----------------------
 
-There is currently two file formats that you can load directly in SimGrid, but writting another loader for your beloved format should not be difficult.
+There is currently two file formats that you can load directly in SimGrid, but writing another loader for your beloved format should not be difficult.
 
 .. tabs::
 

@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/resource/CpuImpl.hpp"
-#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/models/cpu_ti.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/simgrid/math_utils.h"
@@ -157,16 +156,7 @@ void CpuImpl::turn_off()
 {
   if (is_on()) {
     Resource::turn_off();
-
-    const kernel::lmm::Element* elem = nullptr;
-    double now                       = EngineImpl::get_clock();
-    while (const auto* var = get_constraint()->get_variable(&elem)) {
-      Action* action = var->get_id();
-      if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED) {
-        action->set_finish_time(now);
-        action->set_state(Action::State::FAILED);
-      }
-    }
+    cancel_actions();
   }
 }
 

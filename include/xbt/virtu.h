@@ -11,19 +11,17 @@
 #include <simgrid/actor.h>
 #include <xbt/base.h>
 
-// avoid deprecation warning on include (remove entire file with XBT_ATTRIB_DEPRECATED_v337)
-#ifndef XBT_VIRTU_H_NO_DEPRECATED_WARNING
-#warning xbt/virtu.h is deprecated and will be removed in v3.37.
-#endif
+// Deprecation warning on include (remove entire file with XBT_ATTRIB_DEPRECATED_v338)
+#warning xbt/virtu.h is deprecated and will be removed after v3.37.
 
 SG_BEGIN_DECL
 
-XBT_ATTRIB_DEPRECATED_v337("Please use sg_actor_self_get_name()") static const char* xbt_procname(void)
+XBT_ATTRIB_DEPRECATED_v338("Please use sg_actor_self_get_name()") static const char* xbt_procname(void)
 {
   return sg_actor_self_get_name();
 }
 
-XBT_ATTRIB_DEPRECATED_v337("Please use sg_actor_self_get_pid()") static int xbt_getpid(void)
+XBT_ATTRIB_DEPRECATED_v338("Please use sg_actor_self_get_pid()") static int xbt_getpid(void)
 {
   return sg_actor_self_get_pid();
 };

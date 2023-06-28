@@ -11,8 +11,6 @@
 #include "simgrid/kernel/ProfileBuilder.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include <simgrid/Exception.hpp>
-#include <simgrid/plugins/load.h>
-#include <simgrid/plugins/task.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Barrier.hpp>
 #include <simgrid/s4u/Comm.hpp>
@@ -26,6 +24,7 @@
 #include <simgrid/s4u/Mutex.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/s4u/Semaphore.hpp>
+#include <simgrid/s4u/Task.hpp>
 #include <simgrid/version.h>
 
 #include <algorithm>
@@ -34,14 +33,14 @@
 #include <vector>
 
 namespace py = pybind11;
-using simgrid::plugins::CommTask;
-using simgrid::plugins::CommTaskPtr;
-using simgrid::plugins::ExecTask;
-using simgrid::plugins::ExecTaskPtr;
-using simgrid::plugins::IoTask;
-using simgrid::plugins::IoTaskPtr;
-using simgrid::plugins::Task;
-using simgrid::plugins::TaskPtr;
+using simgrid::s4u::CommTask;
+using simgrid::s4u::CommTaskPtr;
+using simgrid::s4u::ExecTask;
+using simgrid::s4u::ExecTaskPtr;
+using simgrid::s4u::IoTask;
+using simgrid::s4u::IoTaskPtr;
+using simgrid::s4u::Task;
+using simgrid::s4u::TaskPtr;
 using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 using simgrid::s4u::Barrier;
@@ -172,54 +171,16 @@ PYBIND11_MODULE(simgrid, m)
              return new simgrid::s4u::Engine(&argc, argv.data());
            }),
            "The constructor should take the parameters from the command line, as is ")
-      .def_static("get_clock",
-                  []() // XBT_ATTRIB_DEPRECATED_v334
-                  {
-                    PyErr_WarnEx(
-                        PyExc_DeprecationWarning,
-                        "get_clock() is deprecated and  will be dropped after v3.33, use `Engine.clock` instead.", 1);
-                    return Engine::get_clock();
-                  })
       .def_property_readonly_static(
           "clock", [](py::object /* self */) { return Engine::get_clock(); },
           "The simulation time, ie the amount of simulated seconds since the simulation start.")
       .def_property_readonly_static(
           "instance", [](py::object /* self */) { return Engine::get_instance(); }, "Retrieve the simulation engine")
-      .def("get_all_hosts",
-           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
-           {
-             PyErr_WarnEx(PyExc_DeprecationWarning,
-                          "get_all_hosts() is deprecated and  will be dropped after v3.33, use all_hosts instead.", 1);
-             return self.attr("all_hosts");
-           })
       .def("host_by_name", &Engine::host_by_name_or_null,
            "Retrieve a host by its name, or None if it does not exist in the platform.")
       .def_property_readonly("all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
-      .def("get_all_links",
-           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
-           {
-             PyErr_WarnEx(PyExc_DeprecationWarning,
-                          "get_all_links() is deprecated and  will be dropped after v3.33, use all_links instead.", 1);
-             return self.attr("all_links");
-           })
       .def_property_readonly("all_links", &Engine::get_all_links, "Returns the list of all links found in the platform")
-      .def("get_all_netpoints",
-           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
-           {
-             PyErr_WarnEx(
-                 PyExc_DeprecationWarning,
-                 "get_all_netpoints() is deprecated and  will be dropped after v3.33, use all_netpoints instead.", 1);
-             return self.attr("all_netpoints");
-           })
       .def_property_readonly("all_netpoints", &Engine::get_all_netpoints)
-      .def("get_netzone_root",
-           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
-           {
-             PyErr_WarnEx(
-                 PyExc_DeprecationWarning,
-                 "get_netzone_root() is deprecated and  will be dropped after v3.33, use netzone_root instead.", 1);
-             return self.attr("netzone_root");
-           })
       .def_property_readonly("netzone_root", &Engine::get_netzone_root,
                              "Retrieve the root netzone, containing all others.")
       .def("netpoint_by_name", &Engine::netpoint_by_name_or_null)
@@ -312,13 +273,6 @@ PYBIND11_MODULE(simgrid, m)
       .def("create_router", &simgrid::s4u::NetZone::create_router, "Create a router")
       .def("set_parent", &simgrid::s4u::NetZone::set_parent, "Set the parent of this zone")
       .def("set_property", &simgrid::s4u::NetZone::set_property, "Add a property to this zone")
-      .def("get_netpoint",
-           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
-           {
-             PyErr_WarnEx(PyExc_DeprecationWarning,
-                          "get_netpoint() is deprecated and  will be dropped after v3.33, use netpoint instead.", 1);
-             return self.attr("netpoint");
-           })
       .def_property_readonly("netpoint", &simgrid::s4u::NetZone::get_netpoint,
                              "Retrieve the netpoint associated to this zone")
       .def("seal", &simgrid::s4u::NetZone::seal, "Seal this NetZone")
@@ -393,42 +347,11 @@ PYBIND11_MODULE(simgrid, m)
           "   \"\"\"\n\n"
           "The second function parameter is the periodicity: the time to wait after the last event to start again over "
           "the list. Set it to -1 to not loop over.")
-      .def("get_pstate_count",
-           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
-           {
-             PyErr_WarnEx(
-                 PyExc_DeprecationWarning,
-                 "get_pstate_count() is deprecated and  will be dropped after v3.33, use pstate_count instead.", 1);
-             return self.attr("pstate_count");
-           })
       .def_property_readonly("pstate_count", &Host::get_pstate_count, "Retrieve the count of defined pstate levels")
-      .def("get_pstate_speed",
-           [](py::object self, int state) // XBT_ATTRIB_DEPRECATED_v334
-           {
-             PyErr_WarnEx(
-                 PyExc_DeprecationWarning,
-                 "get_pstate_speed() is deprecated and  will be dropped after v3.33, use pstate_speed instead.", 1);
-             return self.attr("pstate_speed")(state);
-           })
       .def("pstate_speed", &Host::get_pstate_speed, "Retrieve the maximal speed at the given pstate")
-      .def("get_netpoint",
-           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
-           {
-             PyErr_WarnEx(PyExc_DeprecationWarning,
-                          "get_netpoint() is deprecated and  will be dropped after v3.33, use netpoint instead.", 1);
-             return self.attr("netpoint");
-           })
       .def_property_readonly("netpoint", &Host::get_netpoint, "Retrieve the netpoint associated to this zone")
       .def_property_readonly("disks", &Host::get_disks, "The list of disks on this host (read-only).")
       .def("get_disks", &Host::get_disks, "Retrieve the list of disks in this host")
-      .def("set_core_count",
-           [](py::object self, double count) // XBT_ATTRIB_DEPRECATED_v334
-           {
-             PyErr_WarnEx(PyExc_DeprecationWarning,
-                          "set_core_count() is deprecated and  will be dropped after v3.33, use core_count instead.",
-                          1);
-             self.attr("core_count")(count);
-           })
       .def_property("core_count", &Host::get_core_count,
                     py::cpp_function(&Host::set_core_count, py::call_guard<py::gil_scoped_release>()),
                     "Manage the number of cores in the CPU")
@@ -642,21 +565,7 @@ PYBIND11_MODULE(simgrid, m)
   /* Class Split-Duplex Link */
   py::class_<simgrid::s4u::SplitDuplexLink, Link, std::unique_ptr<simgrid::s4u::SplitDuplexLink, py::nodelete>>(
       m, "SplitDuplexLink", "Network split-duplex link")
-      .def("get_link_up",
-           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
-           {
-             PyErr_WarnEx(PyExc_DeprecationWarning,
-                          "get_link_up() is deprecated and  will be dropped after v3.33, use link_up instead.", 1);
-             return self.attr("link_up");
-           })
       .def_property_readonly("link_up", &simgrid::s4u::SplitDuplexLink::get_link_up, "Get link direction up")
-      .def("get_link_down",
-           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
-           {
-             PyErr_WarnEx(PyExc_DeprecationWarning,
-                          "get_link_down() is deprecated and  will be dropped after v3.33, use link_down instead.", 1);
-             return self.attr("link_down");
-           })
       .def_property_readonly("link_down", &simgrid::s4u::SplitDuplexLink::get_link_down, "Get link direction down");
 
   /* Class Mailbox */
@@ -941,7 +850,6 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Task */
   py::class_<Task, TaskPtr>(m, "Task", "Task. See the C++ documentation for details.")
-      .def_static("init", &Task::init)
       .def_static(
           "on_start_cb",
           [](py::object cb) {
@@ -954,11 +862,11 @@ PYBIND11_MODULE(simgrid, m)
           },
           "Add a callback called when each task starts.")
       .def_static(
-          "on_end_cb",
+          "on_completion_cb",
           [](py::object cb) {
             cb.inc_ref(); // keep alive after return
             const py::gil_scoped_release gil_release;
-            Task::on_end_cb([cb_p = cb.ptr()](Task* op) {
+            Task::on_completion_cb([cb_p = cb.ptr()](Task* op) {
               const py::gil_scoped_acquire py_context; // need a new context for callback
               py::reinterpret_borrow<py::function>(cb_p)(op);
             });
@@ -968,8 +876,8 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("count", &Task::get_count, "The execution count of this task (read-only).")
       .def_property_readonly("successors", &Task::get_successors, "The successors of this task (read-only).")
       .def_property("amount", &Task::get_amount, &Task::set_amount, "The amount of work to do for this task.")
-      .def("enqueue_execs", py::overload_cast<int>(&Task::enqueue_execs), py::call_guard<py::gil_scoped_release>(),
-           py::arg("n"), "Enqueue executions for this task.")
+      .def("enqueue_firings", py::overload_cast<int>(&Task::enqueue_firings), py::call_guard<py::gil_scoped_release>(),
+           py::arg("n"), "Enqueue firings for this task.")
       .def("add_successor", py::overload_cast<TaskPtr>(&Task::add_successor), py::call_guard<py::gil_scoped_release>(),
            py::arg("op"), "Add a successor to this task.")
       .def("remove_successor", py::overload_cast<TaskPtr>(&Task::remove_successor),
@@ -978,7 +886,7 @@ PYBIND11_MODULE(simgrid, m)
            "Remove all successors of this task.")
       .def("on_this_start_cb", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_start_cb),
            py::arg("func"), "Add a callback called when this task starts.")
-      .def("on_this_end_cb", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_end_cb),
+      .def("on_this_completion_cb", py::overload_cast<const std::function<void(Task*)>&>(&Task::on_this_completion_cb),
            py::arg("func"), "Add a callback called when this task ends.")
       .def(
           "__repr__", [](const TaskPtr op) { return "Task(" + op->get_name() + ")"; },

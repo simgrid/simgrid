@@ -38,7 +38,7 @@ class CMakeBuild(build_ext):
 
         if not os.path.exists("MANIFEST.in"):
             raise RuntimeError(
-                "Please generate a MANIFEST.in file (configure simgrid, and copy it here if you build out of tree)")
+                "Please generate a MANIFEST.in file (configure SimGrid, and copy it here if you build out of tree)")
 
         for ext in self.extensions:
             self.build_extension(ext)
@@ -74,7 +74,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='simgrid',
-    version='3.32.1',
+    version='3.34.1',
     author='Da SimGrid Team',
     author_email='simgrid-community@inria.fr',
     description='Toolkit for scalable simulation of distributed applications',

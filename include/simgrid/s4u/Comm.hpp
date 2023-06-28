@@ -39,7 +39,6 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
   Comm() = default;
   Comm* do_start() override;
 
-protected:
   static xbt::signal<void(Comm const&)> on_send;
   xbt::signal<void(Comm const&)> on_this_send;
   static xbt::signal<void(Comm const&)> on_recv;
@@ -47,6 +46,7 @@ protected:
   inline static xbt::signal<void(Comm const&)> on_start;
   xbt::signal<void(Comm const&)> on_this_start;
 
+protected:
   void fire_on_completion() const override {
     /* The completion signal of a Comm has to be thrown only once and not by the sender AND the receiver.
        then Comm::on_completion is thrown in the kernel in CommImpl::finish.
@@ -68,7 +68,7 @@ public:
   /*! \static Add a callback fired when the send of any Comm is posted  */
   static void on_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
   /*! Add a callback fired when the send of this specific Comm is posted  */
-  void on_this_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
+  void on_this_send_cb(const std::function<void(Comm const&)>& cb) { on_this_send.connect(cb); }
   /*! \static Add a callback fired when the recv of any Comm is posted  */
   static void on_recv_cb(const std::function<void(Comm const&)>& cb) { on_recv.connect(cb); }
   /*! Add a callback fired when the recv of this specific Comm is posted  */
@@ -79,9 +79,9 @@ public:
   void on_this_start_cb(const std::function<void(Comm const&)>& cb) { on_this_start.connect(cb); }
 
   CommPtr set_copy_data_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback);
-  XBT_ATTRIB_DEPRECATED_v337("Please manifest if you actually need this function") static void copy_buffer_callback(
+  XBT_ATTRIB_DEPRECATED_v338("Please manifest if you actually need this function") static void copy_buffer_callback(
       kernel::activity::CommImpl*, void*, size_t);
-  XBT_ATTRIB_DEPRECATED_v337("Please manifest if you actually need this function") static void copy_pointer_callback(
+  XBT_ATTRIB_DEPRECATED_v338("Please manifest if you actually need this function") static void copy_pointer_callback(
       kernel::activity::CommImpl*, void*, size_t);
 
   ~Comm() override;

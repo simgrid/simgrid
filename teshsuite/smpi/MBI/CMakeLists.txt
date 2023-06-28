@@ -38,7 +38,7 @@ if (enable_smpi_MBI_testsuite)
   add_dependencies(tests tests-mbi)
   add_dependencies(tests-mbi simgrid-mc smpimain)
 
-  # Remove Concurrency tests that are out of reach because simgrid does not intercept local modifications yet
+  # Remove Concurrency tests that are out of reach because SimGrid does not intercept local modifications yet
   # An idea could be to use ASan on the verified application, along with https://github.com/google/sanitizers/wiki/AddressSanitizerManualPoisoning
   # But currently, ASan is not usable at all, since the Checker dislikes this trick when it tries to read the memory of the app.
   # We should change the checker to not read the app when verifying safty properties

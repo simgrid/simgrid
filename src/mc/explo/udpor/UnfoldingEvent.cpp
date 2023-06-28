@@ -20,6 +20,8 @@ UnfoldingEvent::UnfoldingEvent(std::initializer_list<const UnfoldingEvent*> init
 UnfoldingEvent::UnfoldingEvent(EventSet immediate_causes, std::shared_ptr<Transition> transition)
     : associated_transition(std::move(transition)), immediate_causes(std::move(immediate_causes))
 {
+  static uint64_t event_id = 0;
+  this->id                 = ++event_id;
 }
 
 bool UnfoldingEvent::operator==(const UnfoldingEvent& other) const
@@ -50,11 +52,13 @@ std::string UnfoldingEvent::to_string() const
 
   dependencies_string += "[";
   for (const auto* e : immediate_causes) {
+    dependencies_string += " ";
     dependencies_string += e->to_string();
+    dependencies_string += " and ";
   }
   dependencies_string += "]";
 
-  return xbt::string_printf("(%p) Actor %ld: %s (%zu dependencies: %s)", this, associated_transition->aid_,
+  return xbt::string_printf("Event %lu, Actor %ld: %s (%zu dependencies: %s)", this->id, associated_transition->aid_,
                             associated_transition->to_string().c_str(), immediate_causes.size(),
                             dependencies_string.c_str());
 }
@@ -73,7 +77,7 @@ EventSet UnfoldingEvent::get_local_config() const
 
 bool UnfoldingEvent::related_to(const UnfoldingEvent* other) const
 {
-  return this->in_history_of(other) or other->in_history_of(this);
+  return this->in_history_of(other) || other->in_history_of(this);
 }
 
 bool UnfoldingEvent::in_history_of(const UnfoldingEvent* other) const
@@ -99,7 +103,7 @@ bool UnfoldingEvent::conflicts_with(const UnfoldingEvent* other) const
                                                 [&](const UnfoldingEvent* e) { return e->is_dependent_with(other); });
   const bool conflicts_with_other = std::any_of(unique_to_other.begin(), unique_to_other.end(),
                                                 [&](const UnfoldingEvent* e) { return e->is_dependent_with(this); });
-  return conflicts_with_me or conflicts_with_other;
+  return conflicts_with_me || conflicts_with_other;
 }
 
 bool UnfoldingEvent::conflicts_with_any(const EventSet& events) const

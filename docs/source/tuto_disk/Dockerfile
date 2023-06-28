@@ -20,7 +20,7 @@ RUN printf '%s\n' \
     r-cran-plyr \
     r-cran-jsonlite \
     r-cran-gridextra \
-# simgrid dependencies
+# SimGrid dependencies
     g++ \
     gcc \
     git \
@@ -41,7 +41,7 @@ RUN printf '%s\n' \
 RUN mkdir /source && cd /source && \
     git clone https://github.com/msnoigrs/ox-rst.git ox-rst.git
 
-# compile install simgrid
+# compile install SimGrid
 RUN cd /source && git clone --depth=1 https://framagit.org/simgrid/simgrid.git simgrid.git && \
     cd simgrid.git && \
     cmake -DCMAKE_INSTALL_PREFIX=/usr/ -Denable_documentation=OFF -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
