@@ -10,7 +10,7 @@ maximal_subsets_iterator::maximal_subsets_iterator(const EventSet& events, std::
                                                    std::optional<size_t> maximum_subset_size)
     : maximum_subset_size(maximum_subset_size), current_maximal_set({EventSet()})
 {
-  const auto candidate_ordering = events.get_topological_ordering_of_reverse_graph();
+  auto candidate_ordering = events.get_topological_ordering_of_reverse_graph();
   if (filter.has_value()) {
     // Only store the events in the ordering that "matter" to us
     std::copy_if(std::move_iterator(candidate_ordering.begin()), std::move_iterator(candidate_ordering.end()),

@@ -18,7 +18,7 @@ using namespace simgrid::mc;
 namespace simgrid::mc::udpor {
 
 EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, Unfolding* U,
-                                                  const std::shared_ptr<Transition> action)
+                                                  std::shared_ptr<Transition> action)
 {
   using Action     = Transition::Type;
   using Handler    = std::function<EventSet(const Configuration&, Unfolding*, const std::shared_ptr<Transition>)>;
@@ -49,7 +49,7 @@ EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, Unfold
 }
 
 EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& C, Unfolding* U,
-                                                           const std::shared_ptr<Transition> action)
+                                                           std::shared_ptr<Transition> action)
 {
   EventSet exC;
 
@@ -78,7 +78,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& 
     }();
 
     if (transition_type_check) {
-      const EventSet K = EventSet({e, pre_event_a_C.value_or(e)}).get_largest_maximal_subset();
+      EventSet K = EventSet({e, pre_event_a_C.value_or(e)}).get_largest_maximal_subset();
 
       // TODO: Check D_K(a, lambda(e)) (only matters in the case of CommTest)
       const auto e_prime = U->discover_event(std::move(K), send_action);
@@ -91,7 +91,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& 
 }
 
 EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& C, Unfolding* U,
-                                                           const std::shared_ptr<Transition> action)
+                                                           std::shared_ptr<Transition> action)
 {
   EventSet exC;
 
@@ -118,7 +118,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& 
     }();
 
     if (transition_type_check) {
-      const EventSet K = EventSet({e, pre_event_a_C.value_or(e)}).get_largest_maximal_subset();
+      EventSet K = EventSet({e, pre_event_a_C.value_or(e)}).get_largest_maximal_subset();
 
       // TODO: Check D_K(a, lambda(e)) (ony matters in the case of TestAny)
       if (true) {
@@ -137,7 +137,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
 {
   EventSet exC;
 
-  const auto wait_action   = std::static_pointer_cast<CommWaitTransition>(std::move(action));
+  const auto wait_action   = std::static_pointer_cast<CommWaitTransition>(action);
   const auto wait_comm     = wait_action->get_comm();
   const auto pre_event_a_C = C.pre_event(wait_action->aid_);
 
@@ -258,7 +258,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
       // `WaitAny()` is always disabled in `config(K)`; hence, it
       // is independent of any transition in `config(K)` (according
       // to formal definition of independence)
-      const auto K        = EventSet({e, pre_event_a_C.value_or(e)});
+      auto K              = EventSet({e, pre_event_a_C.value_or(e)});
       const auto config_K = History(K);
       if (not config_K.contains(e_issuer)) {
         continue;
@@ -340,7 +340,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration& 
 {
   EventSet exC;
 
-  const auto test_action   = std::static_pointer_cast<CommTestTransition>(std::move(action));
+  const auto test_action   = std::static_pointer_cast<CommTestTransition>(action);
   const auto test_comm     = test_action->get_comm();
   const auto test_aid      = test_action->aid_;
   const auto pre_event_a_C = C.pre_event(test_action->aid_);
@@ -399,7 +399,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration& 
       // `CommTest()` is always disabled in `config(K)`; hence, it
       // is independent of any transition in `config(K)` (according
       // to formal definition of independence)
-      const auto K        = EventSet({e, pre_event_a_C.value_or(e)});
+      auto K              = EventSet({e, pre_event_a_C.value_or(e)});
       const auto config_K = History(K);
       if (not config_K.contains(e_issuer)) {
         continue;
@@ -442,7 +442,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration& 
       // `WaitAny()` is always disabled in `config(K)`; hence, it
       // is independent of any transition in `config(K)` (according
       // to formal definition of independence)
-      const auto K        = EventSet({e, pre_event_a_C.value_or(e)});
+      auto K              = EventSet({e, pre_event_a_C.value_or(e)});
       const auto config_K = History(K);
       if (not config_K.contains(e_issuer)) {
         continue;
@@ -479,7 +479,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexAsyncLock(const Configura
                                                                  std::shared_ptr<Transition> action)
 {
   EventSet exC;
-  const auto mutex_lock    = std::static_pointer_cast<MutexTransition>(std::move(action));
+  const auto mutex_lock    = std::static_pointer_cast<MutexTransition>(action);
   const auto pre_event_a_C = C.pre_event(mutex_lock->aid_);
 
   // for each event e in C
@@ -499,7 +499,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexAsyncLock(const Configura
     // Check for other locks on the same mutex
     if (const auto* e_mutex = dynamic_cast<const MutexTransition*>(e->get_transition());
         e_mutex->type_ == Transition::Type::MUTEX_ASYNC_LOCK && mutex_lock->get_mutex() == e_mutex->get_mutex()) {
-      const auto K = EventSet({e, pre_event_a_C.value_or(e)});
+      auto K = EventSet({e, pre_event_a_C.value_or(e)});
       exC.insert(U->discover_event(std::move(K), mutex_lock));
     }
   }
@@ -510,7 +510,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexUnlock(const Configuratio
                                                               std::shared_ptr<Transition> action)
 {
   EventSet exC;
-  const auto mutex_unlock  = std::static_pointer_cast<MutexTransition>(std::move(action));
+  const auto mutex_unlock  = std::static_pointer_cast<MutexTransition>(action);
   const auto pre_event_a_C = C.pre_event(mutex_unlock->aid_);
 
   // for each event e in C
@@ -534,7 +534,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexUnlock(const Configuratio
       // This entails getting information about
       // the relative position of the mutex in the queue, which
       // again means we need more context...
-      const auto K = EventSet({e, pre_event_a_C.value_or(e)});
+      auto K = EventSet({e, pre_event_a_C.value_or(e)});
       exC.insert(U->discover_event(std::move(K), mutex_unlock));
     }
   }
@@ -545,7 +545,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexWait(const Configuration&
                                                             std::shared_ptr<Transition> action)
 {
   EventSet exC;
-  const auto mutex_wait    = std::static_pointer_cast<MutexTransition>(std::move(action));
+  const auto mutex_wait    = std::static_pointer_cast<MutexTransition>(action);
   const auto pre_event_a_C = C.pre_event(mutex_wait->aid_);
 
   // for each event e in C
@@ -568,7 +568,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexWait(const Configuration&
       // This entails getting information about
       // the relative position of the mutex in the queue, which
       // again means we need more context...
-      const auto K = EventSet({e, pre_event_a_C.value_or(e)});
+      auto K = EventSet({e, pre_event_a_C.value_or(e)});
       exC.insert(U->discover_event(std::move(K), mutex_wait));
     }
   }
@@ -579,7 +579,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexTest(const Configuration&
                                                             std::shared_ptr<Transition> action)
 {
   EventSet exC;
-  const auto mutex_test    = std::static_pointer_cast<MutexTransition>(std::move(action));
+  const auto mutex_test    = std::static_pointer_cast<MutexTransition>(action);
   const auto pre_event_a_C = C.pre_event(mutex_test->aid_);
 
   // for each event e in C
@@ -603,7 +603,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexTest(const Configuration&
       // This entails getting information about
       // the relative position of the mutex in the queue, which
       // again means we need more context...
-      const auto K = EventSet({e, pre_event_a_C.value_or(e)});
+      auto K = EventSet({e, pre_event_a_C.value_or(e)});
       exC.insert(U->discover_event(std::move(K), mutex_test));
     }
   }
@@ -615,7 +615,7 @@ EventSet ExtensionSetCalculator::partially_extend_ActorJoin(const Configuration&
 {
   EventSet exC;
 
-  const auto join_action   = std::static_pointer_cast<ActorJoinTransition>(std::move(action));
+  const auto join_action = std::static_pointer_cast<ActorJoinTransition>(action);
 
   // Handling ActorJoin is very simple: it is independent with all
   // other transitions. Thus the only event it could possibly depend

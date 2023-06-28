@@ -18,8 +18,8 @@ std::vector<std::string> get_textual_trace(const PartialExecution& w)
 {
   std::vector<std::string> trace;
   for (const auto& t : w) {
-    const auto a = xbt::string_printf("Actor %ld: %s", t->aid_, t->to_string(true).c_str());
-    trace.push_back(std::move(a));
+    auto a = xbt::string_printf("Actor %ld: %s", t->aid_, t->to_string(true).c_str());
+    trace.emplace_back(std::move(a));
   }
   return trace;
 }
@@ -55,9 +55,8 @@ std::vector<std::string> Execution::get_textual_trace() const
 {
   std::vector<std::string> trace;
   for (const auto& t : this->contents_) {
-    const auto a =
-        xbt::string_printf("Actor %ld: %s", t.get_transition()->aid_, t.get_transition()->to_string(true).c_str());
-    trace.push_back(std::move(a));
+    auto a = xbt::string_printf("Actor %ld: %s", t.get_transition()->aid_, t.get_transition()->to_string(true).c_str());
+    trace.emplace_back(std::move(a));
   }
   return trace;
 }

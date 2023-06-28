@@ -38,7 +38,7 @@ private:
   static EventSet partially_extend_ActorJoin(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
 
 public:
-  static EventSet partially_extend(const Configuration&, Unfolding*, const std::shared_ptr<Transition>);
+  static EventSet partially_extend(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
 };
 
 } // namespace simgrid::mc::udpor

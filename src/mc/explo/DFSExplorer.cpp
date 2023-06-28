@@ -205,7 +205,7 @@ void DFSExplorer::run()
     }
 
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
-    const auto executed_transition = state->execute_next(next, get_remote_app());
+    auto executed_transition = state->execute_next(next, get_remote_app());
     on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
 
     // If there are processes to interleave and the maximum depth has not been

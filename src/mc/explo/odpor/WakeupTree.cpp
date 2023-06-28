@@ -57,9 +57,9 @@ std::vector<std::string> WakeupTree::get_single_process_texts() const
 {
   std::vector<std::string> trace;
   for (const auto* child : root_->children_) {
-    const auto t       = child->get_action();
-    const auto message = xbt::string_printf("Actor %ld: %s", t->aid_, t->to_string(true).c_str());
-    trace.push_back(std::move(message));
+    const auto t = child->get_action();
+    auto message = xbt::string_printf("Actor %ld: %s", t->aid_, t->to_string(true).c_str());
+    trace.emplace_back(std::move(message));
   }
   return trace;
 }
