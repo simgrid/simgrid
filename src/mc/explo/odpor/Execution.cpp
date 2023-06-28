@@ -315,42 +315,39 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   //
   // Note the form of `v` in the pseudocode:
   //  `v := notdep(e, E).e'^
-  {
-    E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
-    v.push_back(get_event_with_handle(e_prime).get_transition());
+  E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
+  v.push_back(get_event_with_handle(e_prime).get_transition());
 
-    const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
-    v_handles.push_back(e_prime_in_E_prime_v);
+  const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
+  v_handles.push_back(e_prime_in_E_prime_v);
 
-    const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& e_star) {
-      return E_prime_v.happens_before(e_star, e_prime_in_E_prime_v);
-    });
-    if (is_initial) {
-      if (const aid_t q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v); sleep_E_prime.count(q) > 0) {
-        return std::nullopt;
-      } else {
-        WI_E_prime_v.insert(q);
-      }
+  const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& e_star) {
+    return E_prime_v.happens_before(e_star, e_prime_in_E_prime_v);
+  });
+  if (is_initial) {
+    if (const aid_t q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v); sleep_E_prime.count(q) > 0) {
+      return std::nullopt;
+    } else {
+      WI_E_prime_v.insert(q);
     }
   }
-  {
-    const Execution pre_E_e    = get_prefix_before(e);
-    const auto sleeping_actors = state_at_e.get_sleeping_actors();
 
-    // Check if any enabled actor that is independent with
-    // this execution after `v` is contained in the sleep set
-    for (const auto& [aid, astate] : state_at_e.get_actors_list()) {
-      const bool is_in_WI_E =
-          astate.is_enabled() and pre_E_e.is_independent_with_execution_of(v, astate.get_transition());
-      const bool is_in_sleep_set = sleeping_actors.count(aid) > 0;
+  const Execution pre_E_e    = get_prefix_before(e);
+  const auto sleeping_actors = state_at_e.get_sleeping_actors();
 
-      // `action(aid)` is in `WI_[E](v)` but also is contained in the sleep set.
-      // This implies that the intersection between the two is non-empty
-      if (is_in_WI_E && is_in_sleep_set) {
-        return std::nullopt;
-      }
-    }
+  // Check if any enabled actor that is independent with
+  // this execution after `v` is contained in the sleep set
+  for (const auto& [aid, astate] : state_at_e.get_actors_list()) {
+    const bool is_in_WI_E =
+        astate.is_enabled() and pre_E_e.is_independent_with_execution_of(v, astate.get_transition());
+    const bool is_in_sleep_set = sleeping_actors.count(aid) > 0;
+
+    // `action(aid)` is in `WI_[E](v)` but also is contained in the sleep set.
+    // This implies that the intersection between the two is non-empty
+    if (is_in_WI_E && is_in_sleep_set)
+      return std::nullopt;
   }
+
   return v;
 }
 

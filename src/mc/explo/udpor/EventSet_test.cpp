@@ -1111,44 +1111,34 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Topological Ordering Property Observed 
       return subset_local;
     }();
 
-    {
-      // To test this, we verify that at each point none of the events
-      // that follow after any particular event `e` are contained in
-      // `e`'s history
-      EventSet invalid_events   = subset;
-      const auto ordered_events = subset.get_topological_ordering();
-
-      std::for_each(ordered_events.begin(), ordered_events.end(), [&](const UnfoldingEvent* e) {
-        History history(e);
-        for (const auto* e_hist : history) {
-          if (e_hist == e)
-            continue;
-          REQUIRE_FALSE(invalid_events.contains(e_hist));
-        }
-        invalid_events.remove(e);
-      });
+    // To test this, we verify that at each point none of the events
+    // that follow after any particular event `e` are contained in
+    // `e`'s history
+    EventSet invalid_events = subset;
+    for (const auto* e : subset.get_topological_ordering()) {
+      for (const auto* e_hist : History(e)) {
+        if (e_hist == e)
+          continue;
+        REQUIRE_FALSE(invalid_events.contains(e_hist));
+      }
+      invalid_events.remove(e);
     }
-    {
-      // To test this, we verify that at each point none of the events
-      // that we've processed in the ordering are ever seen again
-      // in anybody else's history
-      EventSet events_seen;
-      const auto ordered_events = subset.get_topological_ordering_of_reverse_graph();
 
-      std::for_each(ordered_events.begin(), ordered_events.end(), [&events_seen](const UnfoldingEvent* e) {
-        History history(e);
+    // To test this, we verify that at each point none of the events
+    // that we've processed in the ordering are ever seen again
+    // in anybody else's history
+    EventSet events_seen;
+    for (const auto* e : subset.get_topological_ordering_of_reverse_graph()) {
+      for (const auto* e_hist : History(e)) {
+        // Unlike the test above, we DO want to ensure
+        // that `e` itself ALSO isn't yet seen
 
-        for (const auto* e_hist : history) {
-          // Unlike the test above, we DO want to ensure
-          // that `e` itself ALSO isn't yet seen
-
-          // If this event has been "seen" before,
-          // this implies that event `e` appears later
-          // in the list than one of its ancestors
-          REQUIRE_FALSE(events_seen.contains(e_hist));
-        }
-        events_seen.insert(e);
-      });
+        // If this event has been "seen" before,
+        // this implies that event `e` appears later
+        // in the list than one of its ancestors
+        REQUIRE_FALSE(events_seen.contains(e_hist));
+      }
+      events_seen.insert(e);
     }
   }
 }
