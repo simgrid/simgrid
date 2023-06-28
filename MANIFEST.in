@@ -484,6 +484,8 @@ include examples/python/platform-failures/platform-failures.py
 include examples/python/platform-failures/platform-failures.tesh
 include examples/python/platform-profile/platform-profile.py
 include examples/python/platform-profile/platform-profile.tesh
+include examples/python/plugin-host-load/plugin-host-load.py
+include examples/python/plugin-host-load/plugin-host-load.tesh
 include examples/python/synchro-barrier/synchro-barrier.py
 include examples/python/synchro-barrier/synchro-barrier.tesh
 include examples/python/synchro-mutex/synchro-mutex.py
@@ -1966,7 +1968,6 @@ include include/simgrid/s4u/Semaphore.hpp
 include include/simgrid/s4u/Task.hpp
 include include/simgrid/s4u/VirtualMachine.hpp
 include include/simgrid/semaphore.h
-include include/simgrid/simix.h
 include include/simgrid/simix.hpp
 include include/simgrid/version.h.in
 include include/simgrid/vm.h
@@ -2025,7 +2026,6 @@ include src/dag/dax.dtd
 include src/dag/dax_dtd.c
 include src/dag/dax_dtd.h
 include src/dag/loaders.cpp
-include src/deprecated.cpp
 include src/instr/instr_config.cpp
 include src/instr/instr_interface.cpp
 include src/instr/instr_paje_containers.cpp

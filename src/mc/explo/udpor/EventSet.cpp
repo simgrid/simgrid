@@ -220,7 +220,7 @@ std::vector<const UnfoldingEvent*> EventSet::get_topological_ordering() const
         temporarily_marked_events.insert(evt);
 
         EventSet immediate_causes = evt->get_immediate_causes();
-        if (!immediate_causes.empty() && immediate_causes.is_subset_of(temporarily_marked_events)) {
+        if (not immediate_causes.empty() && immediate_causes.is_subset_of(temporarily_marked_events)) {
           throw std::invalid_argument("Attempted to perform a topological sort on a configuration "
                                       "whose contents contain a cycle. The configuration (and the graph "
                                       "connecting all of the events) is an invalid event structure");

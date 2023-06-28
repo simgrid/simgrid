@@ -1,0 +1,21 @@
+#!/usr/bin/env tesh
+
+p This tests the Host Load plugin (that allows the user to get the current load of a host and the computed flops)
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/plugin-host-load.py --platform ${platfdir}/energy_platform.xml
+> [MyHost1:load_test:(1) 0.000000] [python/INFO] Initial peak speed: 1E+08 flop/s; number of flops computed so far: 0E+00 (should be 0) and current average load: 0.0 (should be 0)
+> [MyHost1:load_test:(1) 0.000000] [python/INFO] Sleep for 10 seconds
+> [MyHost1:load_test:(1) 10.000000] [python/INFO] Done sleeping 10.0s; peak speed: 1E+08 flop/s; number of flops computed so far: 0E+00 (nothing should have changed)
+> [MyHost1:load_test:(1) 10.000000] [python/INFO] Run an activity of 2E+08 flops at current speed of 1E+08 flop/s
+> [MyHost1:change_speed:(2) 10.500000] [python/INFO] I slept until now, but now I'll change the speed of this host while the other actor is still computing! This should slow the computation down.
+> [MyHost1:load_test:(1) 18.000000] [python/INFO] Done working on my activity; this took 8.0s; current peak speed: 2E+07 flop/s (when I started the computation, the speed was set to 1E+08 flop/s); number of flops computed so far: 2E+08, average load as reported by the HostLoad plugin: 0.04167 (should be 0.04167)
+> [MyHost1:load_test:(1) 18.000000] [python/INFO] ========= Requesting pstate 1 (speed should be of 5E+07 flop/s and is of 5E+07 flop/s, average load is 0.04167)
+> [MyHost1:load_test:(1) 18.000000] [python/INFO] Run an activity of 1E+08 flops
+> [MyHost1:load_test:(1) 20.000000] [python/INFO] Done working on my activity; this took 2.0s; current peak speed: 5E+07 flop/s; number of flops computed so far: 3E+08
+> [MyHost1:load_test:(1) 20.000000] [python/INFO] ========= Requesting a reset of the computation and load counters
+> [MyHost1:load_test:(1) 20.000000] [python/INFO] After reset: 0E+00 flops computed; load is 0.0
+> [MyHost1:load_test:(1) 20.000000] [python/INFO] Sleep for 4 seconds
+> [MyHost1:load_test:(1) 24.000000] [python/INFO] Done sleeping 4.0s; peak speed: 5E+07 flop/s; number of flops computed so far: 0E+00
+> [MyHost1:load_test:(1) 24.000000] [python/INFO] Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 computed 0E+00 flops so far and has an average load of 0.0
+> [MyHost1:load_test:(1) 34.000000] [python/INFO] Done sleeping 10.0s; peak speed: 5E+07 flop/s; number of flops computed so far: 0E+00
+> [34.000000] [python/INFO] Total simulation time: 34.0

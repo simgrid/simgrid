@@ -45,9 +45,10 @@ bool Task::ready_to_run() const
 void Task::receive(Task* source)
 {
   XBT_DEBUG("Task %s received a token from %s", name_.c_str(), source->name_.c_str());
-  auto source_count = predecessors_[source]++;
+  auto source_count = predecessors_[source];
+  predecessors_[source]++;
   if (tokens_received_.size() <= queued_firings_ + source_count)
-    tokens_received_.push_back({});
+    tokens_received_.emplace_back();
   tokens_received_[queued_firings_ + source_count][source] = source->token_;
   bool enough_tokens = true;
   for (auto const& [key, val] : predecessors_)
@@ -130,7 +131,7 @@ void Task::fire() {
   on_start(this);
   working_ = true;
   queued_firings_ = std::max(queued_firings_ - 1, 0);
-  if (tokens_received_.size() > 0)
+  if (not tokens_received_.empty())
     tokens_received_.pop_front();
 }
 

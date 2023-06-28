@@ -35,7 +35,7 @@ public:
   virtual std::pair<aid_t, int> best_transition(bool must_be_todo) const = 0;
 
   /** Returns the best transition among those that should be interleaved. */
-  std::pair<aid_t, int> next_transition() { return best_transition(true); }
+  std::pair<aid_t, int> next_transition() const { return best_transition(true); }
 
   /** Allows for the strategy to update its fields knowing that the actor aid will
    *  be executed and a children strategy will then be created. */  
@@ -44,9 +44,9 @@ public:
   /** Ensure at least one transition is marked as todo among the enabled ones not done.
    *  If required, it marks as todo the best transition according to the strategy. */
   void consider_best() {
-    for (auto& [_, actor] :actors_to_run_)
-          if (actor.is_todo())
-	      return;
+    if (std::any_of(begin(actors_to_run_), end(actors_to_run_),
+                    [](const auto& actor) { return actor.second.is_todo(); }))
+      return;
     aid_t best_aid = best_transition(false).first;
     if (best_aid != -1)
 	actors_to_run_.at(best_aid).mark_todo();
@@ -56,7 +56,7 @@ public:
   // else raise an error
   void consider_one(aid_t aid)
   {
-    xbt_assert(actors_to_run_.at(aid).is_enabled() and not actors_to_run_.at(aid).is_done(),
+    xbt_assert(actors_to_run_.at(aid).is_enabled() && not actors_to_run_.at(aid).is_done(),
                "Tried to mark as TODO actor %ld but it is either not enabled or already done", aid);
     actors_to_run_.at(aid).mark_todo();
   }
@@ -66,7 +66,7 @@ public:
   {
     unsigned long count = 0;
     for (auto& [_, actor] : actors_to_run_)
-      if (actor.is_enabled() and not actor.is_done()) {
+      if (actor.is_enabled() && not actor.is_done()) {
         actor.mark_todo();
         count++;
       }

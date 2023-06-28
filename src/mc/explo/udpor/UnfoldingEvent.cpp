@@ -77,7 +77,7 @@ EventSet UnfoldingEvent::get_local_config() const
 
 bool UnfoldingEvent::related_to(const UnfoldingEvent* other) const
 {
-  return this->in_history_of(other) or other->in_history_of(this);
+  return this->in_history_of(other) || other->in_history_of(this);
 }
 
 bool UnfoldingEvent::in_history_of(const UnfoldingEvent* other) const
@@ -103,7 +103,7 @@ bool UnfoldingEvent::conflicts_with(const UnfoldingEvent* other) const
                                                 [&](const UnfoldingEvent* e) { return e->is_dependent_with(other); });
   const bool conflicts_with_other = std::any_of(unique_to_other.begin(), unique_to_other.end(),
                                                 [&](const UnfoldingEvent* e) { return e->is_dependent_with(this); });
-  return conflicts_with_me or conflicts_with_other;
+  return conflicts_with_me || conflicts_with_other;
 }
 
 bool UnfoldingEvent::conflicts_with_any(const EventSet& events) const

@@ -86,11 +86,6 @@ const std::vector<std::string>& Engine::get_cmdline() const
   return pimpl_->get_cmdline();
 }
 
-void Engine::shutdown() // XBT_ATTRIB_DEPRECATED_v335
-{
-  delete Engine::instance_;
-}
-
 double Engine::get_clock()
 {
   if (MC_is_active() || MC_record_replay_is_active()) {

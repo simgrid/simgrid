@@ -34,7 +34,7 @@ void maximal_subsets_iterator::increment()
   }
 
   const auto next_event_ref = [&]() {
-    if (!has_started_searching) {
+    if (not has_started_searching) {
       has_started_searching = true;
       return bookkeeper.find_next_candidate_event(topological_ordering.begin(), topological_ordering.end());
     } else {

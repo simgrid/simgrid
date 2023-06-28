@@ -300,7 +300,7 @@ void DFSExplorer::run()
       for (const auto e_race : execution_seq_.get_reversible_races_of(next_E_p)) {
         State* prev_state  = stack_[e_race].get();
         const auto choices = execution_seq_.get_missing_source_set_actors_from(e_race, prev_state->get_backtrack_set());
-        if (!choices.empty()) {
+        if (not choices.empty()) {
           // NOTE: To incorporate the idea of attempting to select the "best"
           // backtrack point into SDPOR, instead of selecting the `first` initial,
           // we should instead compute all choices and decide which is best
@@ -401,7 +401,7 @@ std::shared_ptr<State> DFSExplorer::next_odpor_state()
     XBT_DEBUG("\tPerformed ODPOR 'clean-up'. Sleep set has:");
     for (const auto& [aid, transition] : state->get_sleep_set())
       XBT_DEBUG("\t  <%ld,%s>", aid, transition->to_string().c_str());
-    if (!state->has_empty_tree()) {
+    if (not state->has_empty_tree()) {
       return state;
     }
   }
@@ -428,8 +428,7 @@ void DFSExplorer::backtrack()
         XBT_DEBUG("ODPOR: Reversible race detected between events `%u` and `%u`", e, e_prime);
         State& prev_state = *stack_[e];
         if (const auto v = execution_seq_.get_odpor_extension_from(e, e_prime, prev_state); v.has_value()) {
-          const auto result = prev_state.insert_into_wakeup_tree(v.value(), execution_seq_.get_prefix_before(e));
-          switch (result) {
+          switch (prev_state.insert_into_wakeup_tree(v.value(), execution_seq_.get_prefix_before(e))) {
             case odpor::WakeupTree::InsertionResult::root: {
               XBT_DEBUG("ODPOR: Reversible race with `%u` unaccounted for in the wakeup tree for "
                         "the execution prior to event `%u`:",
