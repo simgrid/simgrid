@@ -95,12 +95,8 @@ int main(int argc, char* argv[])
   });
 
   // The token sent by SA is forwarded by both communication tasks
-  SA_to_B1->on_this_start_cb([SA](sg4::Task* t) {
-    t->set_token(t->get_next_token_from(SA));
-  });
-  SA_to_B2->on_this_start_cb([SA](sg4::Task* t) {
-    t->set_token(t->get_next_token_from(SA));
-  });
+  SA_to_B1->on_this_start_cb([&SA](sg4::Task* t) { t->set_token(t->get_next_token_from(SA)); });
+  SA_to_B2->on_this_start_cb([&SA](sg4::Task* t) { t->set_token(t->get_next_token_from(SA)); });
 
   /* B1 and B2 read the value of the token received by their predecessors
      and use it to adapt their amount of work to do.
