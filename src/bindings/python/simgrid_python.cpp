@@ -10,6 +10,7 @@
 
 #include "simgrid/kernel/ProfileBuilder.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/plugins/load.h"
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Barrier.hpp>
@@ -402,24 +403,28 @@ PYBIND11_MODULE(simgrid, m)
           "")
       .def(
           "__repr__", [](const Host* h) { return "Host(" + h->get_name() + ")"; },
-          "Textual representation of the Host.")
-      .def_static(
-          "sg_host_load_plugin_init", []() { sg_host_load_plugin_init(); }, py::call_guard<py::gil_scoped_release>(),
-          "Initialize host load plugin.")
-      .def(
-          "reset_load", [](const Host* h) { sg_host_load_reset(h); }, py::call_guard<py::gil_scoped_release>(),
-          "Reset counters of the host load plugin for this host.")
-      .def_property_readonly(
-          "current_load", [](const Host* h) { return sg_host_get_current_load(h); }, "Current load of the host.")
-      .def_property_readonly(
-          "avg_load", [](const Host* h) { return sg_host_get_avg_load(h); }, "Average load of the host.")
-      .def_property_readonly(
-          "idle_time", [](const Host* h) { return sg_host_get_idle_time(h); }, "Idle time of the host")
-      .def_property_readonly(
-          "total_idle_time", [](const Host* h) { return sg_host_get_total_idle_time(h); },
-          "Total idle time of the host.")
-      .def_property_readonly(
-          "computed_flops", [](const Host* h) { return sg_host_get_computed_flops(h); }, "Computed flops of the host.");
+          "Textual representation of the Host.");
+
+  m.def("sg_host_load_plugin_init", [host]() {
+    sg_host_load_plugin_init();
+
+    static_cast<pybind11::class_<simgrid::s4u::Host, std::unique_ptr<simgrid::s4u::Host, pybind11::nodelete>>>(host)
+        .def(
+            "reset_load", [](const Host* h) { sg_host_load_reset(h); }, py::call_guard<py::gil_scoped_release>(),
+            "Reset counters of the host load plugin for this host.")
+        .def_property_readonly(
+            "current_load", [](const Host* h) { return sg_host_get_current_load(h); }, "Current load of the host.")
+        .def_property_readonly(
+            "avg_load", [](const Host* h) { return sg_host_get_avg_load(h); }, "Average load of the host.")
+        .def_property_readonly(
+            "idle_time", [](const Host* h) { return sg_host_get_idle_time(h); }, "Idle time of the host")
+        .def_property_readonly(
+            "total_idle_time", [](const Host* h) { return sg_host_get_total_idle_time(h); },
+            "Total idle time of the host.")
+        .def_property_readonly(
+            "computed_flops", [](const Host* h) { return sg_host_get_computed_flops(h); },
+            "Computed flops of the host.");
+  });
 
   py::enum_<simgrid::s4u::Host::SharingPolicy>(host, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Host::SharingPolicy::NONLINEAR)

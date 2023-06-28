@@ -1,5 +1,8 @@
 SimGrid (3.34.1) not released (Target: fall 2023)
 
+Python:
+ - Make the host_load plugin available from Python. See examples/python/plugin-host-load
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.34) June 26. 2023

@@ -6,7 +6,7 @@
 
 from argparse import ArgumentParser
 import sys
-from simgrid import Engine, Host, this_actor, Actor
+from simgrid import Engine, Host, this_actor, Actor, sg_host_load_plugin_init
 
 def parse():
     parser = ArgumentParser()
@@ -73,7 +73,8 @@ def change_speed():
 
 if __name__ == '__main__':
   args = parse()
-  Host.sg_host_load_plugin_init()
+  
+  sg_host_load_plugin_init()
   e = Engine(sys.argv)
   e.load_platform(args.platform)
 
