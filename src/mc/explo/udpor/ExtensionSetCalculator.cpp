@@ -72,11 +72,9 @@ EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& 
   // Com contains a matching c' = AsyncReceive(m, _) with `action`
   for (const auto e : C) {
     const bool transition_type_check = [&]() {
-      if (const auto* async_send = dynamic_cast<const CommSendTransition*>(e->get_transition())) {
-        return async_send->get_mailbox() == sender_mailbox;
-      }
+      const auto* async_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
+      return async_send && async_send->get_mailbox() == sender_mailbox;
       // TODO: Add `TestAny` dependency
-      return false;
     }();
 
     if (transition_type_check) {
@@ -114,12 +112,9 @@ EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& 
   // Com contains a matching c' = AsyncReceive(m, _) with a
   for (const auto e : C) {
     const bool transition_type_check = [&]() {
-      if (const auto* async_recv = dynamic_cast<const CommRecvTransition*>(e->get_transition());
-          async_recv != nullptr && async_recv->get_mailbox() == recv_mailbox) {
-        return true;
-      }
+      const auto* async_recv = dynamic_cast<const CommRecvTransition*>(e->get_transition());
+      return async_recv && async_recv->get_mailbox() == recv_mailbox;
       // TODO: Add `TestAny` dependency
-      return false;
     }();
 
     if (transition_type_check) {
@@ -195,19 +190,15 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
         // Check from the config -> how many sends have there been
         const unsigned send_position =
             std::count_if(config_pre_event.begin(), config_pre_event.end(), [=](const auto e) {
-              if (const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition())) {
-                return e_send->get_mailbox() == issuer_mailbox;
-              }
-              return false;
+              const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
+              return e_send && e_send->get_mailbox() == issuer_mailbox;
             });
 
         // Check from e_issuer -> what place is the issuer in?
         const unsigned receive_position =
             std::count_if(e_issuer_history.begin(), e_issuer_history.end(), [=](const auto e) {
-              if (const auto* e_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition())) {
-                return e_receive->get_mailbox() == issuer_mailbox;
-              }
-              return false;
+              const auto* e_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition());
+              return e_receive && e_receive->get_mailbox() == issuer_mailbox;
             });
 
         if (send_position >= receive_position) {
@@ -220,19 +211,15 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
         // Check from e_issuer -> what place is the issuer in?
         const unsigned send_position =
             std::count_if(e_issuer_history.begin(), e_issuer_history.end(), [=](const auto e) {
-              if (const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition())) {
-                return e_send->get_mailbox() == issuer_mailbox;
-              }
-              return false;
+              const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
+              return e_send && e_send->get_mailbox() == issuer_mailbox;
             });
 
         // Check from the config -> how many sends have there been
         const unsigned receive_position =
             std::count_if(config_pre_event.begin(), config_pre_event.end(), [=](const auto e) {
-              if (const auto* e_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition())) {
-                return e_receive->get_mailbox() == issuer_mailbox;
-              }
-              return false;
+              const auto* e_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition());
+              return e_receive && e_receive->get_mailbox() == issuer_mailbox;
             });
 
         if (send_position <= receive_position) {
@@ -279,18 +266,14 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
 
       // What send # is the issuer
       const unsigned send_position = std::count_if(e_issuer_history.begin(), e_issuer_history.end(), [=](const auto e) {
-        if (const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition())) {
-          return e_send->get_mailbox() == issuer_mailbox;
-        }
-        return false;
+        const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
+        return e_send && e_send->get_mailbox() == issuer_mailbox;
       });
 
       // What receive # is the event `e`?
       const unsigned receive_position = std::count_if(config_K.begin(), config_K.end(), [=](const auto e) {
-        if (const auto* e_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition())) {
-          return e_receive->get_mailbox() == issuer_mailbox;
-        }
-        return false;
+        const auto* e_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition());
+        return e_receive && e_receive->get_mailbox() == issuer_mailbox;
       });
 
       if (send_position == receive_position) {
@@ -326,19 +309,15 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
 
       // What receive # is the event `e`?
       const unsigned send_position = std::count_if(config_K.begin(), config_K.end(), [=](const auto e) {
-        if (const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition())) {
-          return e_send->get_mailbox() == issuer_mailbox;
-        }
-        return false;
+        const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
+        return e_send && e_send->get_mailbox() == issuer_mailbox;
       });
 
       // What send # is the issuer
       const unsigned receive_position =
           std::count_if(e_issuer_history.begin(), e_issuer_history.end(), [=](const auto e) {
-            if (const auto* e_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition())) {
-              return e_receive->get_mailbox() == issuer_mailbox;
-            }
-            return false;
+            const auto* e_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition());
+            return e_receive && e_receive->get_mailbox() == issuer_mailbox;
           });
 
       if (send_position == receive_position) {
@@ -428,18 +407,14 @@ EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration& 
 
       // What send # is the issuer
       const unsigned send_position = std::count_if(e_issuer_history.begin(), e_issuer_history.end(), [=](const auto e) {
-        if (const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition())) {
-          return e_send->get_mailbox() == issuer_mailbox;
-        }
-        return false;
+        const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
+        return e_send && e_send->get_mailbox() == issuer_mailbox;
       });
 
       // What receive # is the event `e`?
       const unsigned receive_position = std::count_if(config_K.begin(), config_K.end(), [=](const auto e) {
-        if (const auto* e_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition())) {
-          return e_receive->get_mailbox() == issuer_mailbox;
-        }
-        return false;
+        const auto* e_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition());
+        return e_receive && e_receive->get_mailbox() == issuer_mailbox;
       });
 
       if (send_position == receive_position) {
@@ -475,19 +450,15 @@ EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration& 
 
       // What receive # is the event `e`?
       const unsigned send_position = std::count_if(config_K.begin(), config_K.end(), [=](const auto e) {
-        if (const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition())) {
-          return e_send->get_mailbox() == issuer_mailbox;
-        }
-        return false;
+        const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
+        return e_send && e_send->get_mailbox() == issuer_mailbox;
       });
 
       // What send # is the issuer
       const unsigned receive_position =
           std::count_if(e_issuer_history.begin(), e_issuer_history.end(), [=](const auto e) {
-            if (const auto* e_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition())) {
-              return e_receive->get_mailbox() == issuer_mailbox;
-            }
-            return false;
+            const auto* e_receive = dynamic_cast<const CommRecvTransition*>(e->get_transition());
+            return e_receive && e_receive->get_mailbox() == issuer_mailbox;
           });
 
       if (send_position == receive_position) {
@@ -645,12 +616,11 @@ EventSet ExtensionSetCalculator::partially_extend_ActorJoin(const Configuration&
   EventSet exC;
 
   const auto join_action   = std::static_pointer_cast<ActorJoinTransition>(std::move(action));
-  const auto pre_event_a_C = C.pre_event(join_action->aid_);
 
   // Handling ActorJoin is very simple: it is independent with all
   // other transitions. Thus the only event it could possibly depend
   // on is pre(a, C) or the root
-  if (pre_event_a_C.has_value()) {
+  if (const auto pre_event_a_C = C.pre_event(join_action->aid_); pre_event_a_C.has_value()) {
     const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), join_action);
     exC.insert(e_prime);
   } else {
