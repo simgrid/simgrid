@@ -104,14 +104,16 @@ protected:
    * It is forbidden to change the amount of work once the Activity is started */
   Activity* set_remaining(double remains);
 
-  virtual void fire_on_completion() const = 0;
+  virtual void fire_on_start() const           = 0;
+  virtual void fire_on_this_start() const      = 0;
+  virtual void fire_on_completion() const      = 0;
   virtual void fire_on_this_completion() const = 0;
-  virtual void fire_on_suspend() const = 0;
-  virtual void fire_on_this_suspend() const = 0;
-  virtual void fire_on_resume() const = 0;
-  virtual void fire_on_this_resume() const = 0;
-  virtual void fire_on_veto() const = 0;
-  virtual void fire_on_this_veto() const = 0;
+  virtual void fire_on_suspend() const         = 0;
+  virtual void fire_on_this_suspend() const    = 0;
+  virtual void fire_on_resume() const          = 0;
+  virtual void fire_on_this_resume() const     = 0;
+  virtual void fire_on_veto()                  = 0;
+  virtual void fire_on_this_veto()             = 0;
 
 public:
   void start()
@@ -233,7 +235,8 @@ template <class AnyActivity> class Activity_T : public Activity {
   std::string name_             = "unnamed";
   std::string tracing_category_ = "";
 
-protected:
+  inline static xbt::signal<void(AnyActivity const&)> on_start;
+  xbt::signal<void(AnyActivity const&)> on_this_start;
   inline static xbt::signal<void(AnyActivity const&)> on_completion;
   xbt::signal<void(AnyActivity const&)> on_this_completion;
   inline static xbt::signal<void(AnyActivity const&)> on_suspend;
@@ -243,7 +246,23 @@ protected:
   inline static xbt::signal<void(AnyActivity&)> on_veto;
   xbt::signal<void(AnyActivity&)> on_this_veto;
 
+protected:
+  void fire_on_start() const override { on_start(static_cast<const AnyActivity&>(*this)); }
+  void fire_on_this_start() const override { on_this_start(static_cast<const AnyActivity&>(*this)); }
+  void fire_on_completion() const override { on_completion(static_cast<const AnyActivity&>(*this)); }
+  void fire_on_this_completion() const override { on_this_completion(static_cast<const AnyActivity&>(*this)); }
+  void fire_on_suspend() const override { on_suspend(static_cast<const AnyActivity&>(*this)); }
+  void fire_on_this_suspend() const override { on_this_suspend(static_cast<const AnyActivity&>(*this)); }
+  void fire_on_resume() const override { on_resume(static_cast<const AnyActivity&>(*this)); }
+  void fire_on_this_resume() const override { on_this_resume(static_cast<const AnyActivity&>(*this)); }
+  void fire_on_veto() override { on_veto(static_cast<AnyActivity&>(*this)); }
+  void fire_on_this_veto() override { on_this_veto(static_cast<AnyActivity&>(*this)); }
+
 public:
+  /*! \static Add a callback fired when any activity starts (no veto) */
+  static void on_start_cb(const std::function<void(AnyActivity const&)>& cb) { on_start.connect(cb); }
+  /*!  Add a callback fired when this specific activity starts (no veto) */
+  void on_this_start_cb(const std::function<void(AnyActivity const&)>& cb) { on_this_start.connect(cb); }
   /*! \static Add a callback fired when any activity completes (either normally, cancelled or failed) */
   static void on_completion_cb(const std::function<void(AnyActivity const&)>& cb) { on_completion.connect(cb); }
   /*! Add a callback fired when this specific activity completes (either normally, cancelled or failed) */

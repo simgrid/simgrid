@@ -24,28 +24,12 @@ class XBT_PUBLIC Io : public Activity_T<Io> {
   friend kernel::EngineImpl;
 #endif
 
-  inline static xbt::signal<void(Io const&)> on_start;
-  xbt::signal<void(Io const&)> on_this_start;
-
 protected:
   explicit Io(kernel::activity::IoImplPtr pimpl);
   Io* do_start() override;
-  void fire_on_completion() const override { on_completion(*this); }
-  void fire_on_this_completion() const override { on_this_completion(*this); }
-  void fire_on_suspend() const override { on_suspend(*this); }
-  void fire_on_this_suspend() const override { on_this_suspend(*this); }
-  void fire_on_resume() const override { on_resume(*this); }
-  void fire_on_this_resume() const override { on_this_resume(*this); }
-  void fire_on_veto() const override { on_veto(const_cast<Io&>(*this)); }
-  void fire_on_this_veto() const override { on_this_veto(const_cast<Io&>(*this)); }
 
 public:
   enum class OpType { READ, WRITE };
-
-   /*! \static Signal fired each time that any I/O actually starts (no veto) */
-  static void on_start_cb(const std::function<void(Io const&)>& cb) { on_start.connect(cb); }
-   /*! Signal fired each time this specific I/O actually starts (no veto) */
-  void on_this_start_cb(const std::function<void(Io const&)>& cb) { on_this_start.connect(cb); }
 
    /*! \static Initiate the creation of an I/O. Setters have to be called afterwards */
   static IoPtr init();

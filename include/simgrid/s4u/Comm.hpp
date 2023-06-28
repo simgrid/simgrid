@@ -43,8 +43,6 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
   xbt::signal<void(Comm const&)> on_this_send;
   static xbt::signal<void(Comm const&)> on_recv;
   xbt::signal<void(Comm const&)> on_this_recv;
-  inline static xbt::signal<void(Comm const&)> on_start;
-  xbt::signal<void(Comm const&)> on_this_start;
 
 protected:
   void fire_on_completion() const override {
@@ -54,15 +52,12 @@ protected:
   }
   void fire_on_this_completion() const override {
     /* The completion signal of a Comm has to be thrown only once and not by the sender AND the receiver.
-       then Comm::on_completion is thrown in the kernel in CommImpl::finish.
+       then Comm::on_this_completion is thrown in the kernel in CommImpl::finish.
      */
   }
-  void fire_on_suspend() const override { on_suspend(*this); }
-  void fire_on_this_suspend() const override { on_this_suspend(*this); }
-  void fire_on_resume() const override { on_resume(*this); }
-  void fire_on_this_resume() const override { on_this_resume(*this); }
-  void fire_on_veto() const override { on_veto(const_cast<Comm&>(*this)); }
-  void fire_on_this_veto() const override { on_this_veto(const_cast<Comm&>(*this)); }
+  /* These ensure that the on_completion signals are really thrown */
+  void fire_on_completion_for_real() const { Activity_T<Comm>::fire_on_completion(); }
+  void fire_on_this_completion_for_real() const { Activity_T<Comm>::fire_on_this_completion(); }
 
 public:
   /*! \static Add a callback fired when the send of any Comm is posted  */
@@ -73,10 +68,6 @@ public:
   static void on_recv_cb(const std::function<void(Comm const&)>& cb) { on_recv.connect(cb); }
   /*! Add a callback fired when the recv of this specific Comm is posted  */
   void on_this_recv_cb(const std::function<void(Comm const&)>& cb) { on_this_recv.connect(cb); }
-  /*! \static Add a callback fired when any Comm starts  */
-  static void on_start_cb(const std::function<void(Comm const&)>& cb) { on_start.connect(cb); }
-  /*!  Add a callback fired when this specific Comm starts  */
-  void on_this_start_cb(const std::function<void(Comm const&)>& cb) { on_this_start.connect(cb); }
 
   CommPtr set_copy_data_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback);
   XBT_ATTRIB_DEPRECATED_v338("Please manifest if you actually need this function") static void copy_buffer_callback(
