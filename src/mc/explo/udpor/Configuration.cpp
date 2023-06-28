@@ -138,7 +138,7 @@ EventSet Configuration::get_minimally_reproducible_events() const
   // we know that the prior set `S` covered the entire history of C and
   // was maximal. Subsequent sets will miss events earlier in the
   // topological ordering that appear in `S`
-  EventSet minimally_reproducible_events = EventSet();
+  EventSet minimally_reproducible_events;
 
   for (const auto& maximal_set : maximal_subsets_iterator_wrapper<Configuration>(*this)) {
     if (maximal_set.size() > minimally_reproducible_events.size()) {

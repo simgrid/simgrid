@@ -28,18 +28,18 @@ class MinMatchComm : public Strategy {
 public:
   void copy_from(const Strategy* strategy) override
   {
-      const MinMatchComm* cast_strategy = dynamic_cast<MinMatchComm const*>(strategy);
-      xbt_assert(cast_strategy != nullptr);
-      for (auto& [id, val] : cast_strategy->mailbox_)
-	  mailbox_[id] = val;
-      if (cast_strategy->last_transition_ == Transition::Type::COMM_ASYNC_RECV)
-	  mailbox_[cast_strategy->last_mailbox_]--;
-      if (cast_strategy->last_transition_ == Transition::Type::COMM_ASYNC_SEND)
-	  mailbox_[cast_strategy->last_mailbox_]++;
+    const auto* cast_strategy = dynamic_cast<MinMatchComm const*>(strategy);
+    xbt_assert(cast_strategy != nullptr);
+    for (auto& [id, val] : cast_strategy->mailbox_)
+      mailbox_[id] = val;
+    if (cast_strategy->last_transition_ == Transition::Type::COMM_ASYNC_RECV)
+      mailbox_[cast_strategy->last_mailbox_]--;
+    if (cast_strategy->last_transition_ == Transition::Type::COMM_ASYNC_SEND)
+      mailbox_[cast_strategy->last_mailbox_]++;
 
-      for (auto const& [_, val] : mailbox_) 
-	  value_of_state_ -= std::abs(val);
-      xbt_assert(value_of_state_ > 0, "MinMatchComm value shouldn't reach 0");
+    for (auto const& [_, val] : mailbox_)
+      value_of_state_ -= std::abs(val);
+    xbt_assert(value_of_state_ > 0, "MinMatchComm value shouldn't reach 0");
   }
     MinMatchComm()                     = default;
   ~MinMatchComm() override           = default;

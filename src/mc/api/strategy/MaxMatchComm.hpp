@@ -25,7 +25,7 @@ class MaxMatchComm : public Strategy {
 public:
   void copy_from(const Strategy* strategy) override
   {
-    const MaxMatchComm* cast_strategy = dynamic_cast<MaxMatchComm const*>(strategy);
+    const auto* cast_strategy = dynamic_cast<MaxMatchComm const*>(strategy);
     xbt_assert(cast_strategy != nullptr);
     for (auto& [id, val] : cast_strategy->mailbox_)
       mailbox_[id] = val;

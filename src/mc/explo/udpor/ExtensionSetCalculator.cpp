@@ -24,16 +24,16 @@ EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, Unfold
   using Handler    = std::function<EventSet(const Configuration&, Unfolding*, const std::shared_ptr<Transition>)>;
   using HandlerMap = std::unordered_map<Action, Handler>;
 
-  const static HandlerMap handlers =
-      HandlerMap{{Action::COMM_ASYNC_RECV, &ExtensionSetCalculator::partially_extend_CommRecv},
-                 {Action::COMM_ASYNC_SEND, &ExtensionSetCalculator::partially_extend_CommSend},
-                 {Action::COMM_WAIT, &ExtensionSetCalculator::partially_extend_CommWait},
-                 {Action::COMM_TEST, &ExtensionSetCalculator::partially_extend_CommTest},
-                 {Action::MUTEX_ASYNC_LOCK, &ExtensionSetCalculator::partially_extend_MutexAsyncLock},
-                 {Action::MUTEX_UNLOCK, &ExtensionSetCalculator::partially_extend_MutexUnlock},
-                 {Action::MUTEX_WAIT, &ExtensionSetCalculator::partially_extend_MutexWait},
-                 {Action::MUTEX_TEST, &ExtensionSetCalculator::partially_extend_MutexTest},
-                 {Action::ACTOR_JOIN, &ExtensionSetCalculator::partially_extend_ActorJoin}};
+  const static HandlerMap handlers = {
+      {Action::COMM_ASYNC_RECV, &ExtensionSetCalculator::partially_extend_CommRecv},
+      {Action::COMM_ASYNC_SEND, &ExtensionSetCalculator::partially_extend_CommSend},
+      {Action::COMM_WAIT, &ExtensionSetCalculator::partially_extend_CommWait},
+      {Action::COMM_TEST, &ExtensionSetCalculator::partially_extend_CommTest},
+      {Action::MUTEX_ASYNC_LOCK, &ExtensionSetCalculator::partially_extend_MutexAsyncLock},
+      {Action::MUTEX_UNLOCK, &ExtensionSetCalculator::partially_extend_MutexUnlock},
+      {Action::MUTEX_WAIT, &ExtensionSetCalculator::partially_extend_MutexWait},
+      {Action::MUTEX_TEST, &ExtensionSetCalculator::partially_extend_MutexTest},
+      {Action::ACTOR_JOIN, &ExtensionSetCalculator::partially_extend_ActorJoin}};
 
   if (const auto handler = handlers.find(action->type_); handler != handlers.end()) {
     return handler->second(C, U, std::move(action));
@@ -258,7 +258,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
       // `WaitAny()` is always disabled in `config(K)`; hence, it
       // is independent of any transition in `config(K)` (according
       // to formal definition of independence)
-      const EventSet K    = EventSet({e, pre_event_a_C.value_or(e)});
+      const auto K        = EventSet({e, pre_event_a_C.value_or(e)});
       const auto config_K = History(K);
       if (not config_K.contains(e_issuer)) {
         continue;
@@ -301,7 +301,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
       // `WaitAny()` is always disabled in `config(K)`; hence, it
       // is independent of any transition in `config(K)` (according
       // to formal definition of independence)
-      const EventSet K    = EventSet({e, pre_event_a_C.value_or(e)});
+      const auto K        = EventSet({e, pre_event_a_C.value_or(e)});
       const auto config_K = History(K);
       if (not config_K.contains(e_issuer)) {
         continue;
@@ -399,7 +399,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration& 
       // `CommTest()` is always disabled in `config(K)`; hence, it
       // is independent of any transition in `config(K)` (according
       // to formal definition of independence)
-      const EventSet K    = EventSet({e, pre_event_a_C.value_or(e)});
+      const auto K        = EventSet({e, pre_event_a_C.value_or(e)});
       const auto config_K = History(K);
       if (not config_K.contains(e_issuer)) {
         continue;
@@ -442,7 +442,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration& 
       // `WaitAny()` is always disabled in `config(K)`; hence, it
       // is independent of any transition in `config(K)` (according
       // to formal definition of independence)
-      const EventSet K    = EventSet({e, pre_event_a_C.value_or(e)});
+      const auto K        = EventSet({e, pre_event_a_C.value_or(e)});
       const auto config_K = History(K);
       if (not config_K.contains(e_issuer)) {
         continue;
@@ -499,7 +499,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexAsyncLock(const Configura
     // Check for other locks on the same mutex
     if (const auto* e_mutex = dynamic_cast<const MutexTransition*>(e->get_transition());
         e_mutex->type_ == Transition::Type::MUTEX_ASYNC_LOCK && mutex_lock->get_mutex() == e_mutex->get_mutex()) {
-      const EventSet K = EventSet({e, pre_event_a_C.value_or(e)});
+      const auto K = EventSet({e, pre_event_a_C.value_or(e)});
       exC.insert(U->discover_event(std::move(K), mutex_lock));
     }
   }
@@ -534,7 +534,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexUnlock(const Configuratio
       // This entails getting information about
       // the relative position of the mutex in the queue, which
       // again means we need more context...
-      const EventSet K = EventSet({e, pre_event_a_C.value_or(e)});
+      const auto K = EventSet({e, pre_event_a_C.value_or(e)});
       exC.insert(U->discover_event(std::move(K), mutex_unlock));
     }
   }
@@ -568,7 +568,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexWait(const Configuration&
       // This entails getting information about
       // the relative position of the mutex in the queue, which
       // again means we need more context...
-      const EventSet K = EventSet({e, pre_event_a_C.value_or(e)});
+      const auto K = EventSet({e, pre_event_a_C.value_or(e)});
       exC.insert(U->discover_event(std::move(K), mutex_wait));
     }
   }
@@ -603,7 +603,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexTest(const Configuration&
       // This entails getting information about
       // the relative position of the mutex in the queue, which
       // again means we need more context...
-      const EventSet K = EventSet({e, pre_event_a_C.value_or(e)});
+      const auto K = EventSet({e, pre_event_a_C.value_or(e)});
       exC.insert(U->discover_event(std::move(K), mutex_test));
     }
   }

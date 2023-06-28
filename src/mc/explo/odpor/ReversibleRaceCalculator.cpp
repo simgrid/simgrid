@@ -20,26 +20,26 @@ bool ReversibleRaceCalculator::is_race_reversible(const Execution& E, Execution:
   using Handler    = std::function<bool(const Execution&, Execution::EventHandle, const Transition*)>;
   using HandlerMap = std::unordered_map<Action, Handler>;
 
-  const static HandlerMap handlers =
-      HandlerMap{{Action::ACTOR_JOIN, &ReversibleRaceCalculator::is_race_reversible_ActorJoin},
-                 {Action::BARRIER_ASYNC_LOCK, &ReversibleRaceCalculator::is_race_reversible_BarrierAsyncLock},
-                 {Action::BARRIER_WAIT, &ReversibleRaceCalculator::is_race_reversible_BarrierWait},
-                 {Action::COMM_ASYNC_SEND, &ReversibleRaceCalculator::is_race_reversible_CommSend},
-                 {Action::COMM_ASYNC_RECV, &ReversibleRaceCalculator::is_race_reversible_CommRecv},
-                 {Action::COMM_TEST, &ReversibleRaceCalculator::is_race_reversible_CommTest},
-                 {Action::COMM_WAIT, &ReversibleRaceCalculator::is_race_reversible_CommWait},
-                 {Action::MUTEX_ASYNC_LOCK, &ReversibleRaceCalculator::is_race_reversible_MutexAsyncLock},
-                 {Action::MUTEX_TEST, &ReversibleRaceCalculator::is_race_reversible_MutexTest},
-                 {Action::MUTEX_TRYLOCK, &ReversibleRaceCalculator::is_race_reversible_MutexTrylock},
-                 {Action::MUTEX_UNLOCK, &ReversibleRaceCalculator::is_race_reversible_MutexUnlock},
-                 {Action::MUTEX_WAIT, &ReversibleRaceCalculator::is_race_reversible_MutexWait},
-                 {Action::OBJECT_ACCESS, &ReversibleRaceCalculator::is_race_reversible_ObjectAccess},
-                 {Action::RANDOM, &ReversibleRaceCalculator::is_race_reversible_Random},
-                 {Action::SEM_ASYNC_LOCK, &ReversibleRaceCalculator::is_race_reversible_SemAsyncLock},
-                 {Action::SEM_UNLOCK, &ReversibleRaceCalculator::is_race_reversible_SemUnlock},
-                 {Action::SEM_WAIT, &ReversibleRaceCalculator::is_race_reversible_SemWait},
-                 {Action::TESTANY, &ReversibleRaceCalculator::is_race_reversible_TestAny},
-                 {Action::WAITANY, &ReversibleRaceCalculator::is_race_reversible_WaitAny}};
+  const static HandlerMap handlers = {
+      {Action::ACTOR_JOIN, &ReversibleRaceCalculator::is_race_reversible_ActorJoin},
+      {Action::BARRIER_ASYNC_LOCK, &ReversibleRaceCalculator::is_race_reversible_BarrierAsyncLock},
+      {Action::BARRIER_WAIT, &ReversibleRaceCalculator::is_race_reversible_BarrierWait},
+      {Action::COMM_ASYNC_SEND, &ReversibleRaceCalculator::is_race_reversible_CommSend},
+      {Action::COMM_ASYNC_RECV, &ReversibleRaceCalculator::is_race_reversible_CommRecv},
+      {Action::COMM_TEST, &ReversibleRaceCalculator::is_race_reversible_CommTest},
+      {Action::COMM_WAIT, &ReversibleRaceCalculator::is_race_reversible_CommWait},
+      {Action::MUTEX_ASYNC_LOCK, &ReversibleRaceCalculator::is_race_reversible_MutexAsyncLock},
+      {Action::MUTEX_TEST, &ReversibleRaceCalculator::is_race_reversible_MutexTest},
+      {Action::MUTEX_TRYLOCK, &ReversibleRaceCalculator::is_race_reversible_MutexTrylock},
+      {Action::MUTEX_UNLOCK, &ReversibleRaceCalculator::is_race_reversible_MutexUnlock},
+      {Action::MUTEX_WAIT, &ReversibleRaceCalculator::is_race_reversible_MutexWait},
+      {Action::OBJECT_ACCESS, &ReversibleRaceCalculator::is_race_reversible_ObjectAccess},
+      {Action::RANDOM, &ReversibleRaceCalculator::is_race_reversible_Random},
+      {Action::SEM_ASYNC_LOCK, &ReversibleRaceCalculator::is_race_reversible_SemAsyncLock},
+      {Action::SEM_UNLOCK, &ReversibleRaceCalculator::is_race_reversible_SemUnlock},
+      {Action::SEM_WAIT, &ReversibleRaceCalculator::is_race_reversible_SemWait},
+      {Action::TESTANY, &ReversibleRaceCalculator::is_race_reversible_TestAny},
+      {Action::WAITANY, &ReversibleRaceCalculator::is_race_reversible_WaitAny}};
 
   const auto* e2_action = E.get_transition_for_handle(e2);
   if (const auto handler = handlers.find(e2_action->type_); handler != handlers.end()) {

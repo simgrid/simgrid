@@ -49,7 +49,7 @@ TEST_CASE("simgrid::xbt::powerset_iterator: Iteration General Properties")
   SECTION("Each element of each subset is distinct and appears half of the time in all subsets iteration")
   {
     // Each element is expected to be found in half of the sets
-    const unsigned k         = static_cast<unsigned>(example_vec.size());
+    const auto k             = static_cast<unsigned>(example_vec.size());
     const int expected_count = integer_power(2, k - 1);
 
     std::unordered_map<int, int> element_counts(k);

@@ -138,7 +138,7 @@ private:
   bool equal(const maximal_subsets_iterator& other) const { return current_maximal_set == other.current_maximal_set; }
   const EventSet& dereference() const
   {
-    static const EventSet empty_set = EventSet();
+    static const EventSet empty_set;
     if (current_maximal_set.has_value()) {
       return current_maximal_set.value();
     }
