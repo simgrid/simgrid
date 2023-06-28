@@ -14,7 +14,7 @@
 
 namespace simgrid::mc::udpor {
 
-EventSet::EventSet(Configuration&& config) : EventSet(config.get_events()) {}
+EventSet::EventSet(const Configuration& config) : EventSet(config.get_events()) {}
 
 void EventSet::remove(const UnfoldingEvent* e)
 {

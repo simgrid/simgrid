@@ -27,9 +27,12 @@ public:
   EventSet& operator=(const EventSet&) = default;
   EventSet& operator=(EventSet&&)      = default;
   EventSet(EventSet&&)                 = default;
-  explicit EventSet(Configuration&& config);
-  explicit EventSet(std::vector<const UnfoldingEvent*>&& raw_events) : events_(raw_events.begin(), raw_events.end()) {}
-  explicit EventSet(std::unordered_set<const UnfoldingEvent*>&& raw_events) : events_(raw_events) {}
+  explicit EventSet(const Configuration& config);
+  explicit EventSet(const std::vector<const UnfoldingEvent*>& raw_events)
+      : events_(raw_events.begin(), raw_events.end())
+  {
+  }
+  explicit EventSet(std::unordered_set<const UnfoldingEvent*>&& raw_events) : events_(std::move(raw_events)) {}
   explicit EventSet(std::initializer_list<const UnfoldingEvent*> event_list) : events_(std::move(event_list)) {}
 
   auto begin() const { return this->events_.begin(); }
