@@ -180,14 +180,14 @@ double Battery::next_occurring_event()
 Battery::Battery(const std::string& name, double state_of_charge, double charge_efficiency, double discharge_efficiency,
                  double initial_capacity_wh, int cycles, double depth_of_discharge)
     : name_(name)
-    , energy_stored_j_(state_of_charge * 3600 * initial_capacity_wh)
     , charge_efficiency_(charge_efficiency)
     , discharge_efficiency_(discharge_efficiency)
     , initial_capacity_wh_(initial_capacity_wh)
-    , capacity_wh_(initial_capacity_wh)
     , cycles_(cycles)
     , depth_of_discharge_(depth_of_discharge)
     , energy_budget_j_(initial_capacity_wh * depth_of_discharge * 3600 * cycles * 2)
+    , capacity_wh_(initial_capacity_wh)
+    , energy_stored_j_(state_of_charge * 3600 * initial_capacity_wh)
 {
   xbt_assert(state_of_charge >= 0 and state_of_charge <= 1, " : state of charge should be in [0, 1] (provided: %f)",
              state_of_charge);

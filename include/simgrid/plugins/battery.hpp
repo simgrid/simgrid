@@ -59,13 +59,12 @@ private:
   double depth_of_discharge_;
   double energy_budget_j_;
 
-  // std::map<const s4u::Host*, double> host_loads_ = {};
   std::map<const s4u::Host*, bool> host_loads_     = {};
   std::map<const std::string, double> named_loads_ = {};
   std::vector<std::shared_ptr<Event>> events_;
 
-  double capacity_wh_       = 0;
-  double energy_stored_j_   = 0;
+  double capacity_wh_;
+  double energy_stored_j_;
   double energy_provided_j_ = 0;
   double energy_consumed_j_ = 0;
   double last_updated_      = 0;
