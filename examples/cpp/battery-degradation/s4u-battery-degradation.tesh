@@ -2,4 +2,4 @@
 
 ! output ignore 
 
-$ ${bindir:=.}/s4u-battery-degradation ${platfdir}/battery_platform.xml
+$ ${bindir:=.}/s4u-battery-degradation ${platfdir}/energy_platform.xml

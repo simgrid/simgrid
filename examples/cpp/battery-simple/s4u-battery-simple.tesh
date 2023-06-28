@@ -1,7 +1,9 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-battery-simple ${platfdir}/battery_platform.xml
-> [host1:manager:(1) 0.000000] [battery_simple/INFO] Initial Battery: SoC: 0.800000 SoH: 1.000000 Capacity (Total): 10.000000Wh Capacity (Usable): 6.000000Wh P: 0.000000
-> [host1:manager:(1) 0.000000] [battery_simple/INFO] Battery power set to: 200.000000W
-> [host1:manager:(1) 0.000000] [battery_simple/INFO] The battery will be depleted at: 108.000000
-> [host1:manager:(1) 108.000000] [battery_simple/INFO] Energy consumed : 21600.000000J (6.000000Wh)
+$ ${bindir:=.}/s4u-battery-simple ${platfdir}/energy_platform.xml
+> [0.000000] [battery_simple/INFO] Initial state: SoC: 0.800000 SoH: 1.000000 Energy stored: 28800.000000J Energy provided: 0.000000J Energy consumed 0.000000J
+> [0.000000] [battery_simple/INFO] Set load to 100.000000W
+> [194.419442] [battery_simple/INFO] Discharged state: SoC: 0.200000 SoH: 0.999700 Energy stored: 7197.839784J Energy provided: 19441.944194J Energy consumed 0.000000J
+> [194.419442] [battery_simple/INFO] Set load to -100.000000W
+> [434.229010] [battery_simple/INFO] Charged state: SoC: 0.800000 SoH: 0.999330 Energy stored: 28780.700933J Energy provided: 19441.944194J Energy consumed 23980.956832J
+> [434.229010] [battery_simple/INFO] Set load to 0.000000W
