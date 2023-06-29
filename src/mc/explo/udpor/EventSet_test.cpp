@@ -770,15 +770,15 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Moving into a collection")
   EventSet C_copy = C;
   EventSet D_copy = D;
 
-  std::vector<const UnfoldingEvent*> actual_A = std::move(A).move_into_vector();
-  std::vector<const UnfoldingEvent*> actual_B = std::move(B).move_into_vector();
-  std::vector<const UnfoldingEvent*> actual_C = std::move(C).move_into_vector();
-  std::vector<const UnfoldingEvent*> actual_D = std::move(D).move_into_vector();
+  const std::vector<const UnfoldingEvent*> actual_A = std::move(A).move_into_vector();
+  const std::vector<const UnfoldingEvent*> actual_B = std::move(B).move_into_vector();
+  const std::vector<const UnfoldingEvent*> actual_C = std::move(C).move_into_vector();
+  const std::vector<const UnfoldingEvent*> actual_D = std::move(D).move_into_vector();
 
-  EventSet A_copy_remade(std::move(actual_A));
-  EventSet B_copy_remade(std::move(actual_B));
-  EventSet C_copy_remade(std::move(actual_C));
-  EventSet D_copy_remade(std::move(actual_D));
+  EventSet A_copy_remade(actual_A);
+  EventSet B_copy_remade(actual_B);
+  EventSet C_copy_remade(actual_C);
+  EventSet D_copy_remade(actual_D);
 
   REQUIRE(A_copy == A_copy_remade);
   REQUIRE(B_copy == B_copy_remade);

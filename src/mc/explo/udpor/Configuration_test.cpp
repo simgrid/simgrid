@@ -377,15 +377,13 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
 
     SECTION("Forward direction")
     {
-      auto ordered_events          = C.get_topologically_sorted_events();
-      const auto ordered_event_set = EventSet(std::move(ordered_events));
+      const auto ordered_event_set = EventSet(C.get_topologically_sorted_events());
       REQUIRE(events_seen == ordered_event_set);
     }
 
     SECTION("Reverse direction")
     {
-      auto ordered_events          = C.get_topologically_sorted_events_of_reverse_graph();
-      const auto ordered_event_set = EventSet(std::move(ordered_events));
+      const auto ordered_event_set = EventSet(C.get_topologically_sorted_events_of_reverse_graph());
       REQUIRE(events_seen == ordered_event_set);
     }
   }

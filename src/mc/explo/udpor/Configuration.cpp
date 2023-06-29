@@ -213,7 +213,7 @@ std::optional<Configuration> Configuration::compute_k_partial_alternative_to(con
     for (const auto& event_in_spike : spikes) {
       events.push_back(*event_in_spike);
     }
-    return EventSet(std::move(events));
+    return EventSet(events);
   };
   const auto alternative =
       std::find_if(comb.combinations_begin(), comb.combinations_end(),

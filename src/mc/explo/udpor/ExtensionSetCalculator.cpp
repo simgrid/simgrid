@@ -53,7 +53,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& 
 {
   EventSet exC;
 
-  const auto send_action        = std::static_pointer_cast<CommSendTransition>(std::move(action));
+  const auto send_action        = std::static_pointer_cast<CommSendTransition>(action);
   const auto pre_event_a_C      = C.pre_event(send_action->aid_);
   const unsigned sender_mailbox = send_action->get_mailbox();
 
@@ -95,7 +95,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& 
 {
   EventSet exC;
 
-  const auto recv_action      = std::static_pointer_cast<CommRecvTransition>(std::move(action));
+  const auto recv_action      = std::static_pointer_cast<CommRecvTransition>(action);
   const unsigned recv_mailbox = recv_action->get_mailbox();
   const auto pre_event_a_C    = C.pre_event(recv_action->aid_);
 
@@ -301,7 +301,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
       // `WaitAny()` is always disabled in `config(K)`; hence, it
       // is independent of any transition in `config(K)` (according
       // to formal definition of independence)
-      const auto K        = EventSet({e, pre_event_a_C.value_or(e)});
+      auto K              = EventSet({e, pre_event_a_C.value_or(e)});
       const auto config_K = History(K);
       if (not config_K.contains(e_issuer)) {
         continue;
