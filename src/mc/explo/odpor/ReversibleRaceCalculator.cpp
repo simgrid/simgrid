@@ -55,8 +55,8 @@ bool ReversibleRaceCalculator::is_race_reversible(const Execution& E, Execution:
   }
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_ActorJoin(const Execution&, Execution::EventHandle e1,
-                                                            const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_ActorJoin(const Execution&, Execution::EventHandle /*e1*/,
+                                                            const Transition* /*e2*/)
 {
   // ActorJoin races with another event iff its target `T` is the same as
   // the actor executing the other transition. Clearly, then, we could not join
@@ -64,15 +64,15 @@ bool ReversibleRaceCalculator::is_race_reversible_ActorJoin(const Execution&, Ex
   return false;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_BarrierAsyncLock(const Execution&, Execution::EventHandle e1,
-                                                                   const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_BarrierAsyncLock(const Execution&, Execution::EventHandle /*e1*/,
+                                                                   const Transition* /*e2*/)
 {
   // BarrierAsyncLock is always enabled
   return true;
 }
 
 bool ReversibleRaceCalculator::is_race_reversible_BarrierWait(const Execution& E, Execution::EventHandle e1,
-                                                              const Transition* e2)
+                                                              const Transition* /*e2*/)
 {
   // If the other event is a barrier lock event, then we
   // are not reversible; otherwise we are reversible.
@@ -80,22 +80,22 @@ bool ReversibleRaceCalculator::is_race_reversible_BarrierWait(const Execution& E
   return e1_action != Transition::Type::BARRIER_ASYNC_LOCK;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_CommRecv(const Execution&, Execution::EventHandle e1,
-                                                           const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_CommRecv(const Execution&, Execution::EventHandle /*e1*/,
+                                                           const Transition* /*e2*/)
 {
   // CommRecv is always enabled
   return true;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_CommSend(const Execution&, Execution::EventHandle e1,
-                                                           const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_CommSend(const Execution&, Execution::EventHandle /*e1*/,
+                                                           const Transition* /*e2*/)
 {
   // CommSend is always enabled
   return true;
 }
 
 bool ReversibleRaceCalculator::is_race_reversible_CommWait(const Execution& E, Execution::EventHandle e1,
-                                                           const Transition* e2)
+                                                           const Transition* /*e2*/)
 {
   // If the other event is a communication event, then we
   // are not reversible; otherwise we are reversible.
@@ -103,93 +103,93 @@ bool ReversibleRaceCalculator::is_race_reversible_CommWait(const Execution& E, E
   return e1_action != Transition::Type::COMM_ASYNC_SEND && e1_action != Transition::Type::COMM_ASYNC_RECV;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_CommTest(const Execution&, Execution::EventHandle e1,
-                                                           const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_CommTest(const Execution&, Execution::EventHandle /*e1*/,
+                                                           const Transition* /*e2*/)
 {
   // CommTest is always enabled
   return true;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_MutexAsyncLock(const Execution&, Execution::EventHandle e1,
-                                                                 const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_MutexAsyncLock(const Execution&, Execution::EventHandle /*e1*/,
+                                                                 const Transition* /*e2*/)
 {
   // MutexAsyncLock is always enabled
   return true;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_MutexTest(const Execution&, Execution::EventHandle e1,
-                                                            const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_MutexTest(const Execution&, Execution::EventHandle /*e1*/,
+                                                            const Transition* /*e2*/)
 {
   // MutexTest is always enabled
   return true;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_MutexTrylock(const Execution&, Execution::EventHandle e1,
-                                                               const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_MutexTrylock(const Execution&, Execution::EventHandle /*e1*/,
+                                                               const Transition* /*e2*/)
 {
   // MutexTrylock is always enabled
   return true;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_MutexUnlock(const Execution&, Execution::EventHandle e1,
-                                                              const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_MutexUnlock(const Execution&, Execution::EventHandle /*e1*/,
+                                                              const Transition* /*e2*/)
 {
   // MutexUnlock is always enabled
   return true;
 }
 
 bool ReversibleRaceCalculator::is_race_reversible_MutexWait(const Execution& E, Execution::EventHandle e1,
-                                                            const Transition* e2)
+                                                            const Transition* /*e2*/)
 {
   // TODO: Get the semantics correct here
   const auto e1_action = E.get_transition_for_handle(e1)->type_;
   return e1_action != Transition::Type::MUTEX_ASYNC_LOCK && e1_action != Transition::Type::MUTEX_UNLOCK;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_SemAsyncLock(const Execution&, Execution::EventHandle e1,
-                                                               const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_SemAsyncLock(const Execution&, Execution::EventHandle /*e1*/,
+                                                               const Transition* /*e2*/)
 {
   // SemAsyncLock is always enabled
   return true;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_SemUnlock(const Execution&, Execution::EventHandle e1,
-                                                            const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_SemUnlock(const Execution&, Execution::EventHandle /*e1*/,
+                                                            const Transition* /*e2*/)
 {
   // SemUnlock is always enabled
   return true;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_SemWait(const Execution&, Execution::EventHandle e1,
-                                                          const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_SemWait(const Execution&, Execution::EventHandle /*e1*/,
+                                                          const Transition* /*e2*/)
 {
   // TODO: Get the semantics correct here
   return false;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_ObjectAccess(const Execution&, Execution::EventHandle e1,
-                                                               const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_ObjectAccess(const Execution&, Execution::EventHandle /*e1*/,
+                                                               const Transition* /*e2*/)
 {
   // Object access is always enabled
   return true;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_Random(const Execution&, Execution::EventHandle e1,
-                                                         const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_Random(const Execution&, Execution::EventHandle /*e1*/,
+                                                         const Transition* /*e2*/)
 {
   // Random is always enabled
   return true;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_TestAny(const Execution&, Execution::EventHandle e1,
-                                                          const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_TestAny(const Execution&, Execution::EventHandle /*e1*/,
+                                                          const Transition* /*e2*/)
 {
   // TestAny is always enabled
   return true;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_WaitAny(const Execution&, Execution::EventHandle e1,
-                                                          const Transition* e2)
+bool ReversibleRaceCalculator::is_race_reversible_WaitAny(const Execution&, Execution::EventHandle /*e1*/,
+                                                          const Transition* /*e2*/)
 {
   // TODO: We need to check if any of the transitions
   // waited on occurred before `e1`
