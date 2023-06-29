@@ -12,12 +12,12 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/
 > [  0.000000] (0:maestro@) *** PROPERTY NOT VALID ***
 > [  0.000000] (0:maestro@) **************************
 > [  0.000000] (0:maestro@) Counter-example execution trace:
-> [  0.000000] (0:maestro@)   1: iRecv(mbox=0)
-> [  0.000000] (0:maestro@)   3: iSend(mbox=0)
-> [  0.000000] (0:maestro@)   1: WaitComm(from 3 to 1, mbox=0, no timeout)
-> [  0.000000] (0:maestro@)   1: iRecv(mbox=0)
-> [  0.000000] (0:maestro@)   2: iSend(mbox=0)
-> [  0.000000] (0:maestro@)   1: WaitComm(from 2 to 1, mbox=0, no timeout)
+> [  0.000000] (0:maestro@)   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 3 in Isend ==> simcall: iSend(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 1 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout)
+> [  0.000000] (0:maestro@)   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 2 in Isend ==> simcall: iSend(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 1 in Wait ==> simcall: WaitComm(from 2 to 1, mbox=0, no timeout)
 > [  0.000000] (0:maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;1;2;1'
 > [  0.000000] (0:maestro@) DFS exploration ended. 15 unique states visited; 2 backtracks (4 transition replays, 21 states visited overall)
 
@@ -33,13 +33,13 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [  0.000000] (0:maestro@) *** PROPERTY NOT VALID ***
 > [  0.000000] (0:maestro@) **************************
 > [  0.000000] (0:maestro@) Counter-example execution trace:
-> [  0.000000] (0:maestro@)   1: iRecv(mbox=0)
-> [  0.000000] (0:maestro@)   3: iSend(mbox=0)
-> [  0.000000] (0:maestro@)   2: iSend(mbox=0)
-> [  0.000000] (0:maestro@)   1: WaitComm(from 3 to 1, mbox=0, no timeout)
-> [  0.000000] (0:maestro@)   3: WaitComm(from 3 to 1, mbox=0, no timeout)
-> [  0.000000] (0:maestro@)   1: iRecv(mbox=0)
-> [  0.000000] (0:maestro@)   1: WaitComm(from 2 to 1, mbox=0, no timeout)
+> [  0.000000] (0:maestro@)   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 3 in Isend ==> simcall: iSend(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 2 in Isend ==> simcall: iSend(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 1 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout)
+> [  0.000000] (0:maestro@)   Actor 3 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout)
+> [  0.000000] (0:maestro@)   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 1 in Wait ==> simcall: WaitComm(from 2 to 1, mbox=0, no timeout)
 > [  0.000000] (0:maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;2;1;3;1;1'
 > [  0.000000] (0:maestro@) DFS exploration ended. 18 unique states visited; 3 backtracks (1 transition replays, 22 states visited overall)
 
@@ -55,12 +55,12 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [  0.000000] (0:maestro@) *** PROPERTY NOT VALID ***
 > [  0.000000] (0:maestro@) **************************
 > [  0.000000] (0:maestro@) Counter-example execution trace:
-> [  0.000000] (0:maestro@)   1: iRecv(mbox=0)
-> [  0.000000] (0:maestro@)   3: iSend(mbox=0)
-> [  0.000000] (0:maestro@)   1: WaitComm(from 3 to 1, mbox=0, no timeout)
-> [  0.000000] (0:maestro@)   3: WaitComm(from 3 to 1, mbox=0, no timeout)
-> [  0.000000] (0:maestro@)   1: iRecv(mbox=0)
-> [  0.000000] (0:maestro@)   2: iSend(mbox=0)
-> [  0.000000] (0:maestro@)   1: WaitComm(from 2 to 1, mbox=0, no timeout)
+> [  0.000000] (0:maestro@)   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 3 in Isend ==> simcall: iSend(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 1 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout)
+> [  0.000000] (0:maestro@)   Actor 3 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout)
+> [  0.000000] (0:maestro@)   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 2 in Isend ==> simcall: iSend(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 1 in Wait ==> simcall: WaitComm(from 2 to 1, mbox=0, no timeout)
 > [  0.000000] (0:maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;3;1;2;1'
 > [  0.000000] (0:maestro@) DFS exploration ended. 14 unique states visited; 1 backtracks (1 transition replays, 16 states visited overall)

@@ -21,7 +21,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [   0.000000] (maestro@) *** PROPERTY NOT VALID ***
 > [   0.000000] (maestro@) **************************
 > [   0.000000] (maestro@) Counter-example execution trace:
-> [   0.000000] (maestro@)   2: BeginObjectAccess(&v)
-> [   0.000000] (maestro@)   3: BeginObjectAccess(&v)
+> [   0.000000] (maestro@)   Actor 2 in simcall BeginObjectAccess(&v)
+> [   0.000000] (maestro@)   Actor 3 in simcall BeginObjectAccess(&v)
 > [   0.000000] (maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;3'
 > [   0.000000] (maestro@) DFS exploration ended. 7 unique states visited; 1 backtracks (1 transition replays, 9 states visited overall)

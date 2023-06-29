@@ -37,7 +37,7 @@ public:
            std::to_string(linenumber);
   }
 
-  std::string get_call_location() const { return filename + "::" + func_call + "::" + std::to_string(linenumber); }
+  std::string get_call_location() const { return filename + ":" + std::to_string(linenumber) + ":" + func_call + "()"; }
 };
 
 #endif

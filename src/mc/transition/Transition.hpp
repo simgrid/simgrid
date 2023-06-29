@@ -42,9 +42,8 @@ public:
 
   aid_t aid_ = 0;
 
-  /** The user function call that caused this transition to exist.
-   *  Format is filename::function::line */
-  std::string user_fun_call_ = "";
+  /** The user function call that caused this transition to exist. Format: >>filename:line:function()<< */
+  std::string call_location_ = "";
 
   /* Which transition was executed for this simcall
    *
@@ -67,6 +66,8 @@ public:
   virtual std::string to_string(bool verbose = false) const;
   /** Returns something like >>label = "desc", color = c<< to describe the transition in dot format */
   virtual std::string dot_string() const;
+
+  std::string get_call_location() { return call_location_; }
 
   /* Moves the application toward a path that was already explored, but don't change the current transition */
   void replay(RemoteApp& app) const;
