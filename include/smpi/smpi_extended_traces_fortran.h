@@ -7,777 +7,2325 @@
 ! in tools/smpi/generate_smpi_defines.pl
 ! DO NOT EDIT MANUALLY. ALL CHANGES WILL BE OVERWRITTEN!
 
-#define mpi_init smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Init
-#define MPI_INIT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Init
-#define mpi_finalize smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Finalize
-#define MPI_FINALIZE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Finalize
-#define mpi_finalized smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Finalized
-#define MPI_FINALIZED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Finalized
-#define mpi_init_thread smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Init_thread
-#define MPI_INIT_THREAD smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Init_thread
-#define mpi_initialized smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Initialized
-#define MPI_INITIALIZED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Initialized
-#define mpi_query_thread smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Query_thread
-#define MPI_QUERY_THREAD smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Query_thread
-#define mpi_is_thread_main smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Is_thread_main
-#define MPI_IS_THREAD_MAIN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Is_thread_main
-#define mpi_get_version smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_version
-#define MPI_GET_VERSION smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_version
-#define mpi_get_library_version smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_library_version
-#define MPI_GET_LIBRARY_VERSION smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_library_version
-#define mpi_get_processor_name smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_processor_name
-#define MPI_GET_PROCESSOR_NAME smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_processor_name
-#define mpi_abort smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Abort
-#define MPI_ABORT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Abort
-#define mpi_alloc_mem smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Alloc_mem
-#define MPI_ALLOC_MEM smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Alloc_mem
-#define mpi_free_mem smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Free_mem
-#define MPI_FREE_MEM smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Free_mem
-#define mpi_wtime smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Wtime
-#define MPI_WTIME smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Wtime
-#define mpi_wtick smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Wtick
-#define MPI_WTICK smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Wtick
-#define mpi_buffer_attach smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Buffer_attach
-#define MPI_BUFFER_ATTACH smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Buffer_attach
-#define mpi_buffer_detach smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Buffer_detach
-#define MPI_BUFFER_DETACH smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Buffer_detach
-#define mpi_address smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Address
-#define MPI_ADDRESS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Address
-#define mpi_get_address smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_address
-#define MPI_GET_ADDRESS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_address
-#define mpi_aint_diff smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Aint_diff
-#define MPI_AINT_DIFF smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Aint_diff
-#define mpi_aint_add smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Aint_add
-#define MPI_AINT_ADD smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Aint_add
-#define mpi_error_class smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Error_class
-#define MPI_ERROR_CLASS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Error_class
-#define mpi_error_string smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Error_string
-#define MPI_ERROR_STRING smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Error_string
-#define mpi_attr_delete smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Attr_delete
-#define MPI_ATTR_DELETE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Attr_delete
-#define mpi_attr_get smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Attr_get
-#define MPI_ATTR_GET smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Attr_get
-#define mpi_attr_put smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Attr_put
-#define MPI_ATTR_PUT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Attr_put
-#define mpi_keyval_create smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Keyval_create
-#define MPI_KEYVAL_CREATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Keyval_create
-#define mpi_keyval_free smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Keyval_free
-#define MPI_KEYVAL_FREE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Keyval_free
-#define mpi_type_free smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_free
-#define MPI_TYPE_FREE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_free
-#define mpi_type_size smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_size
-#define MPI_TYPE_SIZE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_size
-#define mpi_type_size_x smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_size_x
-#define MPI_TYPE_SIZE_X smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_size_x
-#define mpi_type_get_extent smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_extent
-#define MPI_TYPE_GET_EXTENT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_extent
-#define mpi_type_get_extent_x smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_extent_x
-#define MPI_TYPE_GET_EXTENT_X smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_extent_x
-#define mpi_type_get_true_extent smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_true_extent
-#define MPI_TYPE_GET_TRUE_EXTENT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_true_extent
-#define mpi_type_get_true_extent_x smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_true_extent_x
-#define MPI_TYPE_GET_TRUE_EXTENT_X smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_true_extent_x
-#define mpi_type_extent smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_extent
-#define MPI_TYPE_EXTENT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_extent
-#define mpi_type_lb smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_lb
-#define MPI_TYPE_LB smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_lb
-#define mpi_type_ub smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_ub
-#define MPI_TYPE_UB smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_ub
-#define mpi_type_commit smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_commit
-#define MPI_TYPE_COMMIT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_commit
-#define mpi_type_hindexed smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_hindexed
-#define MPI_TYPE_HINDEXED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_hindexed
-#define mpi_type_create_hindexed smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_hindexed
-#define MPI_TYPE_CREATE_HINDEXED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_hindexed
-#define mpi_type_create_hindexed_block smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_hindexed_block
-#define MPI_TYPE_CREATE_HINDEXED_BLOCK smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_hindexed_block
-#define mpi_type_hvector smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_hvector
-#define MPI_TYPE_HVECTOR smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_hvector
-#define mpi_type_create_hvector smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_hvector
-#define MPI_TYPE_CREATE_HVECTOR smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_hvector
-#define mpi_type_indexed smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_indexed
-#define MPI_TYPE_INDEXED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_indexed
-#define mpi_type_create_indexed smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_indexed
-#define MPI_TYPE_CREATE_INDEXED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_indexed
-#define mpi_type_create_indexed_block smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_indexed_block
-#define MPI_TYPE_CREATE_INDEXED_BLOCK smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_indexed_block
-#define mpi_type_struct smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_struct
-#define MPI_TYPE_STRUCT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_struct
-#define mpi_type_create_struct smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_struct
-#define MPI_TYPE_CREATE_STRUCT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_struct
-#define mpi_type_vector smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_vector
-#define MPI_TYPE_VECTOR smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_vector
-#define mpi_type_contiguous smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_contiguous
-#define MPI_TYPE_CONTIGUOUS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_contiguous
-#define mpi_type_create_resized smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_resized
-#define MPI_TYPE_CREATE_RESIZED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_resized
-#define mpi_type_f2c smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_f2c
-#define MPI_TYPE_F2C smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_f2c
-#define mpi_type_c2f smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_c2f
-#define MPI_TYPE_C2F smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_c2f
-#define mpi_get_count smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_count
-#define MPI_GET_COUNT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_count
-#define mpi_type_get_attr smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_attr
-#define MPI_TYPE_GET_ATTR smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_attr
-#define mpi_type_set_attr smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_set_attr
-#define MPI_TYPE_SET_ATTR smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_set_attr
-#define mpi_type_delete_attr smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_delete_attr
-#define MPI_TYPE_DELETE_ATTR smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_delete_attr
-#define mpi_type_create_keyval smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_keyval
-#define MPI_TYPE_CREATE_KEYVAL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_keyval
-#define mpi_type_free_keyval smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_free_keyval
-#define MPI_TYPE_FREE_KEYVAL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_free_keyval
-#define mpi_type_dup smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_dup
-#define MPI_TYPE_DUP smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_dup
-#define mpi_type_set_name smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_set_name
-#define MPI_TYPE_SET_NAME smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_set_name
-#define mpi_type_get_name smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_name
-#define MPI_TYPE_GET_NAME smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_name
-#define mpi_pack smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Pack
-#define MPI_PACK smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Pack
-#define mpi_pack_size smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Pack_size
-#define MPI_PACK_SIZE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Pack_size
-#define mpi_unpack smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Unpack
-#define MPI_UNPACK smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Unpack
-#define mpi_op_create smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Op_create
-#define MPI_OP_CREATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Op_create
-#define mpi_op_free smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Op_free
-#define MPI_OP_FREE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Op_free
-#define mpi_op_commutative smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Op_commutative
-#define MPI_OP_COMMUTATIVE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Op_commutative
-#define mpi_op_f2c smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Op_f2c
-#define MPI_OP_F2C smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Op_f2c
-#define mpi_op_c2f smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Op_c2f
-#define MPI_OP_C2F smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Op_c2f
-#define mpi_group_free smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_free
-#define MPI_GROUP_FREE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_free
-#define mpi_group_size smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_size
-#define MPI_GROUP_SIZE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_size
-#define mpi_group_rank smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_rank
-#define MPI_GROUP_RANK smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_rank
-#define mpi_group_translate_ranks smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_translate_ranks
-#define MPI_GROUP_TRANSLATE_RANKS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_translate_ranks
-#define mpi_group_compare smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_compare
-#define MPI_GROUP_COMPARE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_compare
-#define mpi_group_union smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_union
-#define MPI_GROUP_UNION smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_union
-#define mpi_group_intersection smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_intersection
-#define MPI_GROUP_INTERSECTION smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_intersection
-#define mpi_group_difference smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_difference
-#define MPI_GROUP_DIFFERENCE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_difference
-#define mpi_group_incl smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_incl
-#define MPI_GROUP_INCL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_incl
-#define mpi_group_excl smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_excl
-#define MPI_GROUP_EXCL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_excl
-#define mpi_group_range_incl smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_range_incl
-#define MPI_GROUP_RANGE_INCL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_range_incl
-#define mpi_group_range_excl smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_range_excl
-#define MPI_GROUP_RANGE_EXCL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_range_excl
-#define mpi_group_f2c smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_f2c
-#define MPI_GROUP_F2C smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_f2c
-#define mpi_group_c2f smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_c2f
-#define MPI_GROUP_C2F smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Group_c2f
-#define mpi_comm_rank smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_rank
-#define MPI_COMM_RANK smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_rank
-#define mpi_comm_size smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_size
-#define MPI_COMM_SIZE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_size
-#define mpi_comm_get_name smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_get_name
-#define MPI_COMM_GET_NAME smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_get_name
-#define mpi_comm_set_name smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_set_name
-#define MPI_COMM_SET_NAME smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_set_name
-#define mpi_comm_dup smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_dup
-#define MPI_COMM_DUP smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_dup
-#define mpi_comm_dup_with_info smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_dup_with_info
-#define MPI_COMM_DUP_WITH_INFO smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_dup_with_info
-#define mpi_comm_get_attr smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_get_attr
-#define MPI_COMM_GET_ATTR smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_get_attr
-#define mpi_comm_set_attr smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_set_attr
-#define MPI_COMM_SET_ATTR smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_set_attr
-#define mpi_comm_delete_attr smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_delete_attr
-#define MPI_COMM_DELETE_ATTR smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_delete_attr
-#define mpi_comm_create_keyval smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_create_keyval
-#define MPI_COMM_CREATE_KEYVAL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_create_keyval
-#define mpi_comm_free_keyval smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_free_keyval
-#define MPI_COMM_FREE_KEYVAL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_free_keyval
-#define mpi_comm_group smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_group
-#define MPI_COMM_GROUP smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_group
-#define mpi_comm_compare smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_compare
-#define MPI_COMM_COMPARE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_compare
-#define mpi_comm_create smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_create
-#define MPI_COMM_CREATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_create
-#define mpi_comm_create_group smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_create_group
-#define MPI_COMM_CREATE_GROUP smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_create_group
-#define mpi_comm_free smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_free
-#define MPI_COMM_FREE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_free
-#define mpi_comm_disconnect smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_disconnect
-#define MPI_COMM_DISCONNECT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_disconnect
-#define mpi_comm_split smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_split
-#define MPI_COMM_SPLIT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_split
-#define mpi_comm_set_info smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_set_info
-#define MPI_COMM_SET_INFO smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_set_info
-#define mpi_comm_get_info smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_get_info
-#define MPI_COMM_GET_INFO smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_get_info
-#define mpi_comm_split_type smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_split_type
-#define MPI_COMM_SPLIT_TYPE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_split_type
-#define mpi_comm_f2c smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_f2c
-#define MPI_COMM_F2C smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_f2c
-#define mpi_comm_c2f smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_c2f
-#define MPI_COMM_C2F smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_c2f
-#define mpi_start smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Start
-#define MPI_START smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Start
-#define mpi_startall smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Startall
-#define MPI_STARTALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Startall
-#define mpi_request_free smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Request_free
-#define MPI_REQUEST_FREE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Request_free
-#define mpi_recv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Recv
-#define MPI_RECV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Recv
-#define mpi_recv_init smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Recv_init
-#define MPI_RECV_INIT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Recv_init
-#define mpi_irecv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Irecv
-#define MPI_IRECV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Irecv
-#define mpi_send smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Send
-#define MPI_SEND smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Send
-#define mpi_send_init smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Send_init
-#define MPI_SEND_INIT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Send_init
-#define mpi_isend smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Isend
-#define MPI_ISEND smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Isend
-#define mpi_ssend smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ssend
-#define MPI_SSEND smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ssend
-#define mpi_ssend_init smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ssend_init
-#define MPI_SSEND_INIT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ssend_init
-#define mpi_issend smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Issend
-#define MPI_ISSEND smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Issend
-#define mpi_bsend smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Bsend
-#define MPI_BSEND smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Bsend
-#define mpi_bsend_init smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Bsend_init
-#define MPI_BSEND_INIT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Bsend_init
-#define mpi_ibsend smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ibsend
-#define MPI_IBSEND smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ibsend
-#define mpi_rsend smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Rsend
-#define MPI_RSEND smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Rsend
-#define mpi_rsend_init smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Rsend_init
-#define MPI_RSEND_INIT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Rsend_init
-#define mpi_irsend smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Irsend
-#define MPI_IRSEND smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Irsend
-#define mpi_sendrecv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Sendrecv
-#define MPI_SENDRECV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Sendrecv
-#define mpi_sendrecv_replace smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Sendrecv_replace
-#define MPI_SENDRECV_REPLACE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Sendrecv_replace
-#define mpi_test smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Test
-#define MPI_TEST smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Test
-#define mpi_testany smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Testany
-#define MPI_TESTANY smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Testany
-#define mpi_testall smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Testall
-#define MPI_TESTALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Testall
-#define mpi_testsome smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Testsome
-#define MPI_TESTSOME smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Testsome
-#define mpi_test_cancelled smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Test_cancelled
-#define MPI_TEST_CANCELLED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Test_cancelled
-#define mpi_wait smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Wait
-#define MPI_WAIT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Wait
-#define mpi_waitany smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Waitany
-#define MPI_WAITANY smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Waitany
-#define mpi_waitall smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Waitall
-#define MPI_WAITALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Waitall
-#define mpi_waitsome smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Waitsome
-#define MPI_WAITSOME smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Waitsome
-#define mpi_iprobe smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iprobe
-#define MPI_IPROBE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iprobe
-#define mpi_probe smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Probe
-#define MPI_PROBE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Probe
-#define mpi_request_f2c smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Request_f2c
-#define MPI_REQUEST_F2C smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Request_f2c
-#define mpi_request_c2f smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Request_c2f
-#define MPI_REQUEST_C2F smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Request_c2f
-#define mpi_cancel smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cancel
-#define MPI_CANCEL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cancel
-#define mpi_bcast smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Bcast
-#define MPI_BCAST smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Bcast
-#define mpi_barrier smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Barrier
-#define MPI_BARRIER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Barrier
-#define mpi_ibarrier smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ibarrier
-#define MPI_IBARRIER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ibarrier
-#define mpi_ibcast smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ibcast
-#define MPI_IBCAST smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ibcast
-#define mpi_igather smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Igather
-#define MPI_IGATHER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Igather
-#define mpi_igatherv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Igatherv
-#define MPI_IGATHERV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Igatherv
-#define mpi_iallgather smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iallgather
-#define MPI_IALLGATHER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iallgather
-#define mpi_iallgatherv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iallgatherv
-#define MPI_IALLGATHERV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iallgatherv
-#define mpi_iscatter smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iscatter
-#define MPI_ISCATTER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iscatter
-#define mpi_iscatterv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iscatterv
-#define MPI_ISCATTERV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iscatterv
-#define mpi_ireduce smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ireduce
-#define MPI_IREDUCE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ireduce
-#define mpi_iallreduce smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iallreduce
-#define MPI_IALLREDUCE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iallreduce
-#define mpi_iscan smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iscan
-#define MPI_ISCAN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iscan
-#define mpi_iexscan smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iexscan
-#define MPI_IEXSCAN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Iexscan
-#define mpi_ireduce_scatter smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ireduce_scatter
-#define MPI_IREDUCE_SCATTER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ireduce_scatter
-#define mpi_ireduce_scatter_block smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ireduce_scatter_block
-#define MPI_IREDUCE_SCATTER_BLOCK smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ireduce_scatter_block
-#define mpi_ialltoall smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ialltoall
-#define MPI_IALLTOALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ialltoall
-#define mpi_ialltoallv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ialltoallv
-#define MPI_IALLTOALLV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ialltoallv
-#define mpi_ialltoallw smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ialltoallw
-#define MPI_IALLTOALLW smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ialltoallw
-#define mpi_gather smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Gather
-#define MPI_GATHER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Gather
-#define mpi_gatherv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Gatherv
-#define MPI_GATHERV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Gatherv
-#define mpi_allgather smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Allgather
-#define MPI_ALLGATHER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Allgather
-#define mpi_allgatherv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Allgatherv
-#define MPI_ALLGATHERV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Allgatherv
-#define mpi_scatter smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Scatter
-#define MPI_SCATTER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Scatter
-#define mpi_scatterv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Scatterv
-#define MPI_SCATTERV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Scatterv
-#define mpi_reduce smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Reduce
-#define MPI_REDUCE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Reduce
-#define mpi_allreduce smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Allreduce
-#define MPI_ALLREDUCE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Allreduce
-#define mpi_scan smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Scan
-#define MPI_SCAN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Scan
-#define mpi_exscan smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Exscan
-#define MPI_EXSCAN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Exscan
-#define mpi_reduce_scatter smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Reduce_scatter
-#define MPI_REDUCE_SCATTER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Reduce_scatter
-#define mpi_reduce_scatter_block smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Reduce_scatter_block
-#define MPI_REDUCE_SCATTER_BLOCK smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Reduce_scatter_block
-#define mpi_alltoall smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Alltoall
-#define MPI_ALLTOALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Alltoall
-#define mpi_alltoallv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Alltoallv
-#define MPI_ALLTOALLV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Alltoallv
-#define mpi_alltoallw smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Alltoallw
-#define MPI_ALLTOALLW smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Alltoallw
-#define mpi_reduce_local smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Reduce_local
-#define MPI_REDUCE_LOCAL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Reduce_local
-#define mpi_info_create smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_create
-#define MPI_INFO_CREATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_create
-#define mpi_info_set smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_set
-#define MPI_INFO_SET smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_set
-#define mpi_info_get smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_get
-#define MPI_INFO_GET smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_get
-#define mpi_info_free smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_free
-#define MPI_INFO_FREE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_free
-#define mpi_info_delete smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_delete
-#define MPI_INFO_DELETE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_delete
-#define mpi_info_dup smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_dup
-#define MPI_INFO_DUP smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_dup
-#define mpi_info_get_nkeys smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_get_nkeys
-#define MPI_INFO_GET_NKEYS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_get_nkeys
-#define mpi_info_get_nthkey smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_get_nthkey
-#define MPI_INFO_GET_NTHKEY smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_get_nthkey
-#define mpi_info_get_valuelen smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_get_valuelen
-#define MPI_INFO_GET_VALUELEN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_get_valuelen
-#define mpi_info_f2c smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_f2c
-#define MPI_INFO_F2C smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_f2c
-#define mpi_info_c2f smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_c2f
-#define MPI_INFO_C2F smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Info_c2f
-#define mpi_win_free smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_free
-#define MPI_WIN_FREE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_free
-#define mpi_win_create smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_create
-#define MPI_WIN_CREATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_create
-#define mpi_win_allocate smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_allocate
-#define MPI_WIN_ALLOCATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_allocate
-#define mpi_win_allocate_shared smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_allocate_shared
-#define MPI_WIN_ALLOCATE_SHARED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_allocate_shared
-#define mpi_win_create_dynamic smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_create_dynamic
-#define MPI_WIN_CREATE_DYNAMIC smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_create_dynamic
-#define mpi_win_attach smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_attach
-#define MPI_WIN_ATTACH smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_attach
-#define mpi_win_detach smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_detach
-#define MPI_WIN_DETACH smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_detach
-#define mpi_win_set_name smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_set_name
-#define MPI_WIN_SET_NAME smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_set_name
-#define mpi_win_get_name smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_get_name
-#define MPI_WIN_GET_NAME smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_get_name
-#define mpi_win_set_info smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_set_info
-#define MPI_WIN_SET_INFO smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_set_info
-#define mpi_win_get_info smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_get_info
-#define MPI_WIN_GET_INFO smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_get_info
-#define mpi_win_get_group smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_get_group
-#define MPI_WIN_GET_GROUP smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_get_group
-#define mpi_win_fence smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_fence
-#define MPI_WIN_FENCE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_fence
-#define mpi_win_get_attr smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_get_attr
-#define MPI_WIN_GET_ATTR smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_get_attr
-#define mpi_win_set_attr smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_set_attr
-#define MPI_WIN_SET_ATTR smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_set_attr
-#define mpi_win_delete_attr smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_delete_attr
-#define MPI_WIN_DELETE_ATTR smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_delete_attr
-#define mpi_win_create_keyval smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_create_keyval
-#define MPI_WIN_CREATE_KEYVAL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_create_keyval
-#define mpi_win_free_keyval smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_free_keyval
-#define MPI_WIN_FREE_KEYVAL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_free_keyval
-#define mpi_win_complete smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_complete
-#define MPI_WIN_COMPLETE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_complete
-#define mpi_win_post smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_post
-#define MPI_WIN_POST smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_post
-#define mpi_win_start smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_start
-#define MPI_WIN_START smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_start
-#define mpi_win_wait smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_wait
-#define MPI_WIN_WAIT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_wait
-#define mpi_win_lock smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_lock
-#define MPI_WIN_LOCK smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_lock
-#define mpi_win_lock_all smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_lock_all
-#define MPI_WIN_LOCK_ALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_lock_all
-#define mpi_win_unlock smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_unlock
-#define MPI_WIN_UNLOCK smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_unlock
-#define mpi_win_unlock_all smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_unlock_all
-#define MPI_WIN_UNLOCK_ALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_unlock_all
-#define mpi_win_flush smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_flush
-#define MPI_WIN_FLUSH smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_flush
-#define mpi_win_flush_local smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_flush_local
-#define MPI_WIN_FLUSH_LOCAL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_flush_local
-#define mpi_win_flush_all smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_flush_all
-#define MPI_WIN_FLUSH_ALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_flush_all
-#define mpi_win_flush_local_all smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_flush_local_all
-#define MPI_WIN_FLUSH_LOCAL_ALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_flush_local_all
-#define mpi_win_shared_query smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_shared_query
-#define MPI_WIN_SHARED_QUERY smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_shared_query
-#define mpi_win_sync smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_sync
-#define MPI_WIN_SYNC smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_sync
-#define mpi_win_f2c smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_f2c
-#define MPI_WIN_F2C smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_f2c
-#define mpi_win_c2f smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_c2f
-#define MPI_WIN_C2F smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_c2f
-#define mpi_get smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get
-#define MPI_GET smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get
-#define mpi_put smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Put
-#define MPI_PUT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Put
-#define mpi_accumulate smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Accumulate
-#define MPI_ACCUMULATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Accumulate
-#define mpi_get_accumulate smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_accumulate
-#define MPI_GET_ACCUMULATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_accumulate
-#define mpi_rget smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Rget
-#define MPI_RGET smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Rget
-#define mpi_rput smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Rput
-#define MPI_RPUT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Rput
-#define mpi_raccumulate smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Raccumulate
-#define MPI_RACCUMULATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Raccumulate
-#define mpi_rget_accumulate smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Rget_accumulate
-#define MPI_RGET_ACCUMULATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Rget_accumulate
-#define mpi_fetch_and_op smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Fetch_and_op
-#define MPI_FETCH_AND_OP smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Fetch_and_op
-#define mpi_compare_and_swap smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Compare_and_swap
-#define MPI_COMPARE_AND_SWAP smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Compare_and_swap
-#define mpi_cart_coords smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cart_coords
-#define MPI_CART_COORDS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cart_coords
-#define mpi_cart_create smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cart_create
-#define MPI_CART_CREATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cart_create
-#define mpi_cart_get smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cart_get
-#define MPI_CART_GET smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cart_get
-#define mpi_cart_rank smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cart_rank
-#define MPI_CART_RANK smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cart_rank
-#define mpi_cart_shift smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cart_shift
-#define MPI_CART_SHIFT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cart_shift
-#define mpi_cart_sub smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cart_sub
-#define MPI_CART_SUB smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cart_sub
-#define mpi_cartdim_get smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cartdim_get
-#define MPI_CARTDIM_GET smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cartdim_get
-#define mpi_dims_create smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Dims_create
-#define MPI_DIMS_CREATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Dims_create
-#define mpi_request_get_status smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Request_get_status
-#define MPI_REQUEST_GET_STATUS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Request_get_status
-#define mpi_grequest_start smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Grequest_start
-#define MPI_GREQUEST_START smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Grequest_start
-#define mpi_grequest_complete smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Grequest_complete
-#define MPI_GREQUEST_COMPLETE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Grequest_complete
-#define mpi_status_set_cancelled smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Status_set_cancelled
-#define MPI_STATUS_SET_CANCELLED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Status_set_cancelled
-#define mpi_status_set_elements smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Status_set_elements
-#define MPI_STATUS_SET_ELEMENTS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Status_set_elements
-#define mpi_status_set_elements_x smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Status_set_elements_x
-#define MPI_STATUS_SET_ELEMENTS_X smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Status_set_elements_x
-#define mpi_type_create_subarray smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_subarray
-#define MPI_TYPE_CREATE_SUBARRAY smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_subarray
-#define mpi_file_open smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_open
-#define MPI_FILE_OPEN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_open
-#define mpi_file_close smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_close
-#define MPI_FILE_CLOSE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_close
-#define mpi_file_delete smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_delete
-#define MPI_FILE_DELETE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_delete
-#define mpi_file_get_size smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_size
-#define MPI_FILE_GET_SIZE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_size
-#define mpi_file_get_group smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_group
-#define MPI_FILE_GET_GROUP smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_group
-#define mpi_file_get_amode smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_amode
-#define MPI_FILE_GET_AMODE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_amode
-#define mpi_file_set_info smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_set_info
-#define MPI_FILE_SET_INFO smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_set_info
-#define mpi_file_get_info smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_info
-#define MPI_FILE_GET_INFO smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_info
-#define mpi_file_read_at smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_at
-#define MPI_FILE_READ_AT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_at
-#define mpi_file_read_at_all smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_at_all
-#define MPI_FILE_READ_AT_ALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_at_all
-#define mpi_file_write_at smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_at
-#define MPI_FILE_WRITE_AT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_at
-#define mpi_file_write_at_all smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_at_all
-#define MPI_FILE_WRITE_AT_ALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_at_all
-#define mpi_file_read smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read
-#define MPI_FILE_READ smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read
-#define mpi_file_read_all smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_all
-#define MPI_FILE_READ_ALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_all
-#define mpi_file_write smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write
-#define MPI_FILE_WRITE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write
-#define mpi_file_write_all smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_all
-#define MPI_FILE_WRITE_ALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_all
-#define mpi_file_seek smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_seek
-#define MPI_FILE_SEEK smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_seek
-#define mpi_file_get_position smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_position
-#define MPI_FILE_GET_POSITION smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_position
-#define mpi_file_read_shared smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_shared
-#define MPI_FILE_READ_SHARED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_shared
-#define mpi_file_write_shared smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_shared
-#define MPI_FILE_WRITE_SHARED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_shared
-#define mpi_file_read_ordered smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_ordered
-#define MPI_FILE_READ_ORDERED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_ordered
-#define mpi_file_write_ordered smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_ordered
-#define MPI_FILE_WRITE_ORDERED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_ordered
-#define mpi_file_seek_shared smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_seek_shared
-#define MPI_FILE_SEEK_SHARED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_seek_shared
-#define mpi_file_get_position_shared smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_position_shared
-#define MPI_FILE_GET_POSITION_SHARED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_position_shared
-#define mpi_file_sync smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_sync
-#define MPI_FILE_SYNC smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_sync
-#define mpi_file_set_view smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_set_view
-#define MPI_FILE_SET_VIEW smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_set_view
-#define mpi_file_get_view smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_view
-#define MPI_FILE_GET_VIEW smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_view
-#define mpi_errhandler_set smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Errhandler_set
-#define MPI_ERRHANDLER_SET smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Errhandler_set
-#define mpi_errhandler_create smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Errhandler_create
-#define MPI_ERRHANDLER_CREATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Errhandler_create
-#define mpi_errhandler_free smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Errhandler_free
-#define MPI_ERRHANDLER_FREE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Errhandler_free
-#define mpi_errhandler_get smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Errhandler_get
-#define MPI_ERRHANDLER_GET smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Errhandler_get
-#define mpi_comm_set_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_set_errhandler
-#define MPI_COMM_SET_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_set_errhandler
-#define mpi_comm_get_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_get_errhandler
-#define MPI_COMM_GET_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_get_errhandler
-#define mpi_comm_create_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_create_errhandler
-#define MPI_COMM_CREATE_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_create_errhandler
-#define mpi_comm_call_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_call_errhandler
-#define MPI_COMM_CALL_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_call_errhandler
-#define mpi_win_set_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_set_errhandler
-#define MPI_WIN_SET_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_set_errhandler
-#define mpi_win_get_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_get_errhandler
-#define MPI_WIN_GET_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_get_errhandler
-#define mpi_win_create_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_create_errhandler
-#define MPI_WIN_CREATE_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_create_errhandler
-#define mpi_win_call_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_call_errhandler
-#define MPI_WIN_CALL_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_call_errhandler
-#define mpi_errhandler_f2c smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Errhandler_f2c
-#define MPI_ERRHANDLER_F2C smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Errhandler_f2c
-#define mpi_errhandler_c2f smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Errhandler_c2f
-#define MPI_ERRHANDLER_C2F smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Errhandler_c2f
-#define mpi_type_create_f90_integer smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_f90_integer
-#define MPI_TYPE_CREATE_F90_INTEGER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_f90_integer
-#define mpi_type_create_f90_real smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_f90_real
-#define MPI_TYPE_CREATE_F90_REAL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_f90_real
-#define mpi_type_create_f90_complex smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_f90_complex
-#define MPI_TYPE_CREATE_F90_COMPLEX smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_f90_complex
-#define mpi_type_get_contents smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_contents
-#define MPI_TYPE_GET_CONTENTS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_contents
-#define mpi_type_get_envelope smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_envelope
-#define MPI_TYPE_GET_ENVELOPE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_envelope
-#define mpi_file_call_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_call_errhandler
-#define MPI_FILE_CALL_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_call_errhandler
-#define mpi_file_create_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_create_errhandler
-#define MPI_FILE_CREATE_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_create_errhandler
-#define mpi_file_set_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_set_errhandler
-#define MPI_FILE_SET_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_set_errhandler
-#define mpi_file_get_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_errhandler
-#define MPI_FILE_GET_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_errhandler
-#define mpi_cart_map smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cart_map
-#define MPI_CART_MAP smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Cart_map
-#define mpi_graph_create smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Graph_create
-#define MPI_GRAPH_CREATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Graph_create
-#define mpi_graph_get smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Graph_get
-#define MPI_GRAPH_GET smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Graph_get
-#define mpi_graph_map smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Graph_map
-#define MPI_GRAPH_MAP smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Graph_map
-#define mpi_graph_neighbors smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Graph_neighbors
-#define MPI_GRAPH_NEIGHBORS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Graph_neighbors
-#define mpi_graph_neighbors_count smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Graph_neighbors_count
-#define MPI_GRAPH_NEIGHBORS_COUNT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Graph_neighbors_count
-#define mpi_graphdims_get smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Graphdims_get
-#define MPI_GRAPHDIMS_GET smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Graphdims_get
-#define mpi_topo_test smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Topo_test
-#define MPI_TOPO_TEST smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Topo_test
-#define mpi_add_error_class smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Add_error_class
-#define MPI_ADD_ERROR_CLASS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Add_error_class
-#define mpi_add_error_code smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Add_error_code
-#define MPI_ADD_ERROR_CODE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Add_error_code
-#define mpi_add_error_string smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Add_error_string
-#define MPI_ADD_ERROR_STRING smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Add_error_string
-#define mpi_comm_test_inter smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_test_inter
-#define MPI_COMM_TEST_INTER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_test_inter
-#define mpi_intercomm_create smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Intercomm_create
-#define MPI_INTERCOMM_CREATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Intercomm_create
-#define mpi_intercomm_merge smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Intercomm_merge
-#define MPI_INTERCOMM_MERGE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Intercomm_merge
-#define mpi_comm_remote_group smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_remote_group
-#define MPI_COMM_REMOTE_GROUP smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_remote_group
-#define mpi_comm_remote_size smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_remote_size
-#define MPI_COMM_REMOTE_SIZE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_remote_size
-#define mpi_get_elements smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_elements
-#define MPI_GET_ELEMENTS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_elements
-#define mpi_get_elements_x smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_elements_x
-#define MPI_GET_ELEMENTS_X smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_elements_x
-#define mpi_pcontrol smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Pcontrol
-#define MPI_PCONTROL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Pcontrol
-#define mpi_type_create_darray smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_darray
-#define MPI_TYPE_CREATE_DARRAY smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_darray
-#define mpi_pack_external_size smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Pack_external_size
-#define MPI_PACK_EXTERNAL_SIZE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Pack_external_size
-#define mpi_pack_external smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Pack_external
-#define MPI_PACK_EXTERNAL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Pack_external
-#define mpi_unpack_external smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Unpack_external
-#define MPI_UNPACK_EXTERNAL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Unpack_external
-#define mpi_type_match_size smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_match_size
-#define MPI_TYPE_MATCH_SIZE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_match_size
-#define mpi_comm_connect smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_connect
-#define MPI_COMM_CONNECT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_connect
-#define mpi_unpublish_name smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Unpublish_name
-#define MPI_UNPUBLISH_NAME smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Unpublish_name
-#define mpi_publish_name smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Publish_name
-#define MPI_PUBLISH_NAME smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Publish_name
-#define mpi_lookup_name smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Lookup_name
-#define MPI_LOOKUP_NAME smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Lookup_name
-#define mpi_comm_idup smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_idup
-#define MPI_COMM_IDUP smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_idup
-#define mpi_comm_join smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_join
-#define MPI_COMM_JOIN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_join
-#define mpi_open_port smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Open_port
-#define MPI_OPEN_PORT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Open_port
-#define mpi_close_port smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Close_port
-#define MPI_CLOSE_PORT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Close_port
-#define mpi_comm_accept smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_accept
-#define MPI_COMM_ACCEPT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_accept
-#define mpi_comm_spawn smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_spawn
-#define MPI_COMM_SPAWN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_spawn
-#define mpi_comm_spawn_multiple smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_spawn_multiple
-#define MPI_COMM_SPAWN_MULTIPLE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_spawn_multiple
-#define mpi_comm_get_parent smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_get_parent
-#define MPI_COMM_GET_PARENT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Comm_get_parent
-#define mpi_dist_graph_create smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Dist_graph_create
-#define MPI_DIST_GRAPH_CREATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Dist_graph_create
-#define mpi_dist_graph_create_adjacent smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Dist_graph_create_adjacent
-#define MPI_DIST_GRAPH_CREATE_ADJACENT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Dist_graph_create_adjacent
-#define mpi_dist_graph_neighbors smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Dist_graph_neighbors
-#define MPI_DIST_GRAPH_NEIGHBORS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Dist_graph_neighbors
-#define mpi_dist_graph_neighbors_count smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Dist_graph_neighbors_count
-#define MPI_DIST_GRAPH_NEIGHBORS_COUNT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Dist_graph_neighbors_count
-#define mpi_win_test smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_test
-#define MPI_WIN_TEST smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_test
-#define mpi_file_c2f smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_c2f
-#define MPI_FILE_C2F smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_c2f
-#define mpi_file_f2c smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_f2c
-#define MPI_FILE_F2C smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_f2c
-#define mpi_register_datarep smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Register_datarep
-#define MPI_REGISTER_DATAREP smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Register_datarep
-#define mpi_file_set_size smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_set_size
-#define MPI_FILE_SET_SIZE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_set_size
-#define mpi_file_preallocate smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_preallocate
-#define MPI_FILE_PREALLOCATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_preallocate
-#define mpi_file_iread_at smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iread_at
-#define MPI_FILE_IREAD_AT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iread_at
-#define mpi_file_iwrite_at smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iwrite_at
-#define MPI_FILE_IWRITE_AT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iwrite_at
-#define mpi_file_iread_at_all smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iread_at_all
-#define MPI_FILE_IREAD_AT_ALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iread_at_all
-#define mpi_file_iwrite_at_all smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iwrite_at_all
-#define MPI_FILE_IWRITE_AT_ALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iwrite_at_all
-#define mpi_file_iread smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iread
-#define MPI_FILE_IREAD smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iread
-#define mpi_file_iwrite smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iwrite
-#define MPI_FILE_IWRITE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iwrite
-#define mpi_file_iread_all smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iread_all
-#define MPI_FILE_IREAD_ALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iread_all
-#define mpi_file_iwrite_all smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iwrite_all
-#define MPI_FILE_IWRITE_ALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iwrite_all
-#define mpi_file_get_byte_offset smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_byte_offset
-#define MPI_FILE_GET_BYTE_OFFSET smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_byte_offset
-#define mpi_file_iread_shared smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iread_shared
-#define MPI_FILE_IREAD_SHARED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iread_shared
-#define mpi_file_iwrite_shared smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iwrite_shared
-#define MPI_FILE_IWRITE_SHARED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_iwrite_shared
-#define mpi_file_read_at_all_begin smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_at_all_begin
-#define MPI_FILE_READ_AT_ALL_BEGIN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_at_all_begin
-#define mpi_file_read_at_all_end smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_at_all_end
-#define MPI_FILE_READ_AT_ALL_END smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_at_all_end
-#define mpi_file_write_at_all_begin smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_at_all_begin
-#define MPI_FILE_WRITE_AT_ALL_BEGIN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_at_all_begin
-#define mpi_file_write_at_all_end smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_at_all_end
-#define MPI_FILE_WRITE_AT_ALL_END smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_at_all_end
-#define mpi_file_read_all_begin smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_all_begin
-#define MPI_FILE_READ_ALL_BEGIN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_all_begin
-#define mpi_file_read_all_end smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_all_end
-#define MPI_FILE_READ_ALL_END smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_all_end
-#define mpi_file_write_all_begin smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_all_begin
-#define MPI_FILE_WRITE_ALL_BEGIN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_all_begin
-#define mpi_file_write_all_end smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_all_end
-#define MPI_FILE_WRITE_ALL_END smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_all_end
-#define mpi_file_read_ordered_begin smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_ordered_begin
-#define MPI_FILE_READ_ORDERED_BEGIN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_ordered_begin
-#define mpi_file_read_ordered_end smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_ordered_end
-#define MPI_FILE_READ_ORDERED_END smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_read_ordered_end
-#define mpi_file_write_ordered_begin smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_ordered_begin
-#define MPI_FILE_WRITE_ORDERED_BEGIN smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_ordered_begin
-#define mpi_file_write_ordered_end smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_ordered_end
-#define MPI_FILE_WRITE_ORDERED_END smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_write_ordered_end
-#define mpi_file_get_type_extent smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_type_extent
-#define MPI_FILE_GET_TYPE_EXTENT smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_type_extent
-#define mpi_file_set_atomicity smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_set_atomicity
-#define MPI_FILE_SET_ATOMICITY smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_set_atomicity
-#define mpi_file_get_atomicity smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_atomicity
-#define MPI_FILE_GET_ATOMICITY smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_get_atomicity
-#define mpi_message_f2c smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Message_f2c
-#define MPI_MESSAGE_F2C smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Message_f2c
-#define mpi_message_c2f smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Message_c2f
-#define MPI_MESSAGE_C2F smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Message_c2f
-#define mpi_mrecv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Mrecv
-#define MPI_MRECV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Mrecv
-#define mpi_mprobe smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Mprobe
-#define MPI_MPROBE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Mprobe
-#define mpi_imrecv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Imrecv
-#define MPI_IMRECV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Imrecv
-#define mpi_improbe smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Improbe
-#define MPI_IMPROBE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Improbe
-#define mpi_neighbor_allgather smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Neighbor_allgather
-#define MPI_NEIGHBOR_ALLGATHER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Neighbor_allgather
-#define mpi_neighbor_allgatherv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Neighbor_allgatherv
-#define MPI_NEIGHBOR_ALLGATHERV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Neighbor_allgatherv
-#define mpi_neighbor_alltoall smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Neighbor_alltoall
-#define MPI_NEIGHBOR_ALLTOALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Neighbor_alltoall
-#define mpi_neighbor_alltoallv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Neighbor_alltoallv
-#define MPI_NEIGHBOR_ALLTOALLV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Neighbor_alltoallv
-#define mpi_neighbor_alltoallw smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Neighbor_alltoallw
-#define MPI_NEIGHBOR_ALLTOALLW smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Neighbor_alltoallw
-#define mpi_ineighbor_allgather smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ineighbor_allgather
-#define MPI_INEIGHBOR_ALLGATHER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ineighbor_allgather
-#define mpi_ineighbor_allgatherv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ineighbor_allgatherv
-#define MPI_INEIGHBOR_ALLGATHERV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ineighbor_allgatherv
-#define mpi_ineighbor_alltoall smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ineighbor_alltoall
-#define MPI_INEIGHBOR_ALLTOALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ineighbor_alltoall
-#define mpi_ineighbor_alltoallv smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ineighbor_alltoallv
-#define MPI_INEIGHBOR_ALLTOALLV smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ineighbor_alltoallv
-#define mpi_ineighbor_alltoallw smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ineighbor_alltoallw
-#define MPI_INEIGHBOR_ALLTOALLW smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Ineighbor_alltoallw
-#define mpi_status_f2c smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Status_f2c
-#define MPI_STATUS_F2C smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Status_f2c
-#define mpi_status_c2f smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Status_c2f
-#define MPI_STATUS_C2F smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Status_c2f
+#define mpi_init                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_init");                                                        \
+  call MPI_Init
+#define MPI_INIT                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INIT");                                                        \
+  call MPI_Init
+#define mpi_finalize                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_finalize");                                                    \
+  call MPI_Finalize
+#define MPI_FINALIZE                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FINALIZE");                                                    \
+  call MPI_Finalize
+#define mpi_finalized                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_finalized");                                                   \
+  call MPI_Finalized
+#define MPI_FINALIZED                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FINALIZED");                                                   \
+  call MPI_Finalized
+#define mpi_init_thread                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_init_thread");                                                 \
+  call MPI_Init_thread
+#define MPI_INIT_THREAD                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INIT_THREAD");                                                 \
+  call MPI_Init_thread
+#define mpi_initialized                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_initialized");                                                 \
+  call MPI_Initialized
+#define MPI_INITIALIZED                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INITIALIZED");                                                 \
+  call MPI_Initialized
+#define mpi_query_thread                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_query_thread");                                                \
+  call MPI_Query_thread
+#define MPI_QUERY_THREAD                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_QUERY_THREAD");                                                \
+  call MPI_Query_thread
+#define mpi_is_thread_main                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_is_thread_main");                                              \
+  call MPI_Is_thread_main
+#define MPI_IS_THREAD_MAIN                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IS_THREAD_MAIN");                                              \
+  call MPI_Is_thread_main
+#define mpi_get_version                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_get_version");                                                 \
+  call MPI_Get_version
+#define MPI_GET_VERSION                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GET_VERSION");                                                 \
+  call MPI_Get_version
+#define mpi_get_library_version                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_get_library_version");                                         \
+  call MPI_Get_library_version
+#define MPI_GET_LIBRARY_VERSION                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GET_LIBRARY_VERSION");                                         \
+  call MPI_Get_library_version
+#define mpi_get_processor_name                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_get_processor_name");                                          \
+  call MPI_Get_processor_name
+#define MPI_GET_PROCESSOR_NAME                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GET_PROCESSOR_NAME");                                          \
+  call MPI_Get_processor_name
+#define mpi_abort                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_abort");                                                       \
+  call MPI_Abort
+#define MPI_ABORT                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ABORT");                                                       \
+  call MPI_Abort
+#define mpi_alloc_mem                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_alloc_mem");                                                   \
+  call MPI_Alloc_mem
+#define MPI_ALLOC_MEM                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ALLOC_MEM");                                                   \
+  call MPI_Alloc_mem
+#define mpi_free_mem                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_free_mem");                                                    \
+  call MPI_Free_mem
+#define MPI_FREE_MEM                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FREE_MEM");                                                    \
+  call MPI_Free_mem
+#define mpi_wtime                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_wtime");                                                       \
+  call MPI_Wtime
+#define MPI_WTIME                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WTIME");                                                       \
+  call MPI_Wtime
+#define mpi_wtick                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_wtick");                                                       \
+  call MPI_Wtick
+#define MPI_WTICK                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WTICK");                                                       \
+  call MPI_Wtick
+#define mpi_buffer_attach                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_buffer_attach");                                               \
+  call MPI_Buffer_attach
+#define MPI_BUFFER_ATTACH                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_BUFFER_ATTACH");                                               \
+  call MPI_Buffer_attach
+#define mpi_buffer_detach                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_buffer_detach");                                               \
+  call MPI_Buffer_detach
+#define MPI_BUFFER_DETACH                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_BUFFER_DETACH");                                               \
+  call MPI_Buffer_detach
+#define mpi_address                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_address");                                                     \
+  call MPI_Address
+#define MPI_ADDRESS                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ADDRESS");                                                     \
+  call MPI_Address
+#define mpi_get_address                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_get_address");                                                 \
+  call MPI_Get_address
+#define MPI_GET_ADDRESS                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GET_ADDRESS");                                                 \
+  call MPI_Get_address
+#define mpi_aint_diff                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_aint_diff");                                                   \
+  call MPI_Aint_diff
+#define MPI_AINT_DIFF                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_AINT_DIFF");                                                   \
+  call MPI_Aint_diff
+#define mpi_aint_add                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_aint_add");                                                    \
+  call MPI_Aint_add
+#define MPI_AINT_ADD                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_AINT_ADD");                                                    \
+  call MPI_Aint_add
+#define mpi_error_class                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_error_class");                                                 \
+  call MPI_Error_class
+#define MPI_ERROR_CLASS                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ERROR_CLASS");                                                 \
+  call MPI_Error_class
+#define mpi_error_string                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_error_string");                                                \
+  call MPI_Error_string
+#define MPI_ERROR_STRING                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ERROR_STRING");                                                \
+  call MPI_Error_string
+#define mpi_attr_delete                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_attr_delete");                                                 \
+  call MPI_Attr_delete
+#define MPI_ATTR_DELETE                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ATTR_DELETE");                                                 \
+  call MPI_Attr_delete
+#define mpi_attr_get                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_attr_get");                                                    \
+  call MPI_Attr_get
+#define MPI_ATTR_GET                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ATTR_GET");                                                    \
+  call MPI_Attr_get
+#define mpi_attr_put                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_attr_put");                                                    \
+  call MPI_Attr_put
+#define MPI_ATTR_PUT                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ATTR_PUT");                                                    \
+  call MPI_Attr_put
+#define mpi_keyval_create                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_keyval_create");                                               \
+  call MPI_Keyval_create
+#define MPI_KEYVAL_CREATE                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_KEYVAL_CREATE");                                               \
+  call MPI_Keyval_create
+#define mpi_keyval_free                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_keyval_free");                                                 \
+  call MPI_Keyval_free
+#define MPI_KEYVAL_FREE                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_KEYVAL_FREE");                                                 \
+  call MPI_Keyval_free
+#define mpi_type_free                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_free");                                                   \
+  call MPI_Type_free
+#define MPI_TYPE_FREE                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_FREE");                                                   \
+  call MPI_Type_free
+#define mpi_type_size                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_size");                                                   \
+  call MPI_Type_size
+#define MPI_TYPE_SIZE                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_SIZE");                                                   \
+  call MPI_Type_size
+#define mpi_type_size_x                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_size_x");                                                 \
+  call MPI_Type_size_x
+#define MPI_TYPE_SIZE_X                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_SIZE_X");                                                 \
+  call MPI_Type_size_x
+#define mpi_type_get_extent                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_get_extent");                                             \
+  call MPI_Type_get_extent
+#define MPI_TYPE_GET_EXTENT                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_GET_EXTENT");                                             \
+  call MPI_Type_get_extent
+#define mpi_type_get_extent_x                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_get_extent_x");                                           \
+  call MPI_Type_get_extent_x
+#define MPI_TYPE_GET_EXTENT_X                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_GET_EXTENT_X");                                           \
+  call MPI_Type_get_extent_x
+#define mpi_type_get_true_extent                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_get_true_extent");                                        \
+  call MPI_Type_get_true_extent
+#define MPI_TYPE_GET_TRUE_EXTENT                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_GET_TRUE_EXTENT");                                        \
+  call MPI_Type_get_true_extent
+#define mpi_type_get_true_extent_x                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_get_true_extent_x");                                      \
+  call MPI_Type_get_true_extent_x
+#define MPI_TYPE_GET_TRUE_EXTENT_X                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_GET_TRUE_EXTENT_X");                                      \
+  call MPI_Type_get_true_extent_x
+#define mpi_type_extent                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_extent");                                                 \
+  call MPI_Type_extent
+#define MPI_TYPE_EXTENT                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_EXTENT");                                                 \
+  call MPI_Type_extent
+#define mpi_type_lb                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_lb");                                                     \
+  call MPI_Type_lb
+#define MPI_TYPE_LB                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_LB");                                                     \
+  call MPI_Type_lb
+#define mpi_type_ub                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_ub");                                                     \
+  call MPI_Type_ub
+#define MPI_TYPE_UB                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_UB");                                                     \
+  call MPI_Type_ub
+#define mpi_type_commit                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_commit");                                                 \
+  call MPI_Type_commit
+#define MPI_TYPE_COMMIT                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_COMMIT");                                                 \
+  call MPI_Type_commit
+#define mpi_type_hindexed                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_hindexed");                                               \
+  call MPI_Type_hindexed
+#define MPI_TYPE_HINDEXED                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_HINDEXED");                                               \
+  call MPI_Type_hindexed
+#define mpi_type_create_hindexed                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_create_hindexed");                                        \
+  call MPI_Type_create_hindexed
+#define MPI_TYPE_CREATE_HINDEXED                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_CREATE_HINDEXED");                                        \
+  call MPI_Type_create_hindexed
+#define mpi_type_create_hindexed_block                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_create_hindexed_block");                                  \
+  call MPI_Type_create_hindexed_block
+#define MPI_TYPE_CREATE_HINDEXED_BLOCK                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_CREATE_HINDEXED_BLOCK");                                  \
+  call MPI_Type_create_hindexed_block
+#define mpi_type_hvector                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_hvector");                                                \
+  call MPI_Type_hvector
+#define MPI_TYPE_HVECTOR                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_HVECTOR");                                                \
+  call MPI_Type_hvector
+#define mpi_type_create_hvector                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_create_hvector");                                         \
+  call MPI_Type_create_hvector
+#define MPI_TYPE_CREATE_HVECTOR                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_CREATE_HVECTOR");                                         \
+  call MPI_Type_create_hvector
+#define mpi_type_indexed                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_indexed");                                                \
+  call MPI_Type_indexed
+#define MPI_TYPE_INDEXED                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_INDEXED");                                                \
+  call MPI_Type_indexed
+#define mpi_type_create_indexed                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_create_indexed");                                         \
+  call MPI_Type_create_indexed
+#define MPI_TYPE_CREATE_INDEXED                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_CREATE_INDEXED");                                         \
+  call MPI_Type_create_indexed
+#define mpi_type_create_indexed_block                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_create_indexed_block");                                   \
+  call MPI_Type_create_indexed_block
+#define MPI_TYPE_CREATE_INDEXED_BLOCK                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_CREATE_INDEXED_BLOCK");                                   \
+  call MPI_Type_create_indexed_block
+#define mpi_type_struct                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_struct");                                                 \
+  call MPI_Type_struct
+#define MPI_TYPE_STRUCT                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_STRUCT");                                                 \
+  call MPI_Type_struct
+#define mpi_type_create_struct                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_create_struct");                                          \
+  call MPI_Type_create_struct
+#define MPI_TYPE_CREATE_STRUCT                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_CREATE_STRUCT");                                          \
+  call MPI_Type_create_struct
+#define mpi_type_vector                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_vector");                                                 \
+  call MPI_Type_vector
+#define MPI_TYPE_VECTOR                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_VECTOR");                                                 \
+  call MPI_Type_vector
+#define mpi_type_contiguous                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_contiguous");                                             \
+  call MPI_Type_contiguous
+#define MPI_TYPE_CONTIGUOUS                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_CONTIGUOUS");                                             \
+  call MPI_Type_contiguous
+#define mpi_type_create_resized                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_create_resized");                                         \
+  call MPI_Type_create_resized
+#define MPI_TYPE_CREATE_RESIZED                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_CREATE_RESIZED");                                         \
+  call MPI_Type_create_resized
+#define mpi_type_f2c                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_f2c");                                                    \
+  call MPI_Type_f2c
+#define MPI_TYPE_F2C                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_F2C");                                                    \
+  call MPI_Type_f2c
+#define mpi_type_c2f                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_c2f");                                                    \
+  call MPI_Type_c2f
+#define MPI_TYPE_C2F                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_C2F");                                                    \
+  call MPI_Type_c2f
+#define mpi_get_count                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_get_count");                                                   \
+  call MPI_Get_count
+#define MPI_GET_COUNT                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GET_COUNT");                                                   \
+  call MPI_Get_count
+#define mpi_type_get_attr                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_get_attr");                                               \
+  call MPI_Type_get_attr
+#define MPI_TYPE_GET_ATTR                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_GET_ATTR");                                               \
+  call MPI_Type_get_attr
+#define mpi_type_set_attr                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_set_attr");                                               \
+  call MPI_Type_set_attr
+#define MPI_TYPE_SET_ATTR                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_SET_ATTR");                                               \
+  call MPI_Type_set_attr
+#define mpi_type_delete_attr                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_delete_attr");                                            \
+  call MPI_Type_delete_attr
+#define MPI_TYPE_DELETE_ATTR                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_DELETE_ATTR");                                            \
+  call MPI_Type_delete_attr
+#define mpi_type_create_keyval                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_create_keyval");                                          \
+  call MPI_Type_create_keyval
+#define MPI_TYPE_CREATE_KEYVAL                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_CREATE_KEYVAL");                                          \
+  call MPI_Type_create_keyval
+#define mpi_type_free_keyval                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_free_keyval");                                            \
+  call MPI_Type_free_keyval
+#define MPI_TYPE_FREE_KEYVAL                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_FREE_KEYVAL");                                            \
+  call MPI_Type_free_keyval
+#define mpi_type_dup                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_dup");                                                    \
+  call MPI_Type_dup
+#define MPI_TYPE_DUP                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_DUP");                                                    \
+  call MPI_Type_dup
+#define mpi_type_set_name                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_set_name");                                               \
+  call MPI_Type_set_name
+#define MPI_TYPE_SET_NAME                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_SET_NAME");                                               \
+  call MPI_Type_set_name
+#define mpi_type_get_name                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_get_name");                                               \
+  call MPI_Type_get_name
+#define MPI_TYPE_GET_NAME                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_GET_NAME");                                               \
+  call MPI_Type_get_name
+#define mpi_pack                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_pack");                                                        \
+  call MPI_Pack
+#define MPI_PACK                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_PACK");                                                        \
+  call MPI_Pack
+#define mpi_pack_size                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_pack_size");                                                   \
+  call MPI_Pack_size
+#define MPI_PACK_SIZE                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_PACK_SIZE");                                                   \
+  call MPI_Pack_size
+#define mpi_unpack                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_unpack");                                                      \
+  call MPI_Unpack
+#define MPI_UNPACK                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_UNPACK");                                                      \
+  call MPI_Unpack
+#define mpi_op_create                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_op_create");                                                   \
+  call MPI_Op_create
+#define MPI_OP_CREATE                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_OP_CREATE");                                                   \
+  call MPI_Op_create
+#define mpi_op_free                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_op_free");                                                     \
+  call MPI_Op_free
+#define MPI_OP_FREE                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_OP_FREE");                                                     \
+  call MPI_Op_free
+#define mpi_op_commutative                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_op_commutative");                                              \
+  call MPI_Op_commutative
+#define MPI_OP_COMMUTATIVE                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_OP_COMMUTATIVE");                                              \
+  call MPI_Op_commutative
+#define mpi_op_f2c                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_op_f2c");                                                      \
+  call MPI_Op_f2c
+#define MPI_OP_F2C                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_OP_F2C");                                                      \
+  call MPI_Op_f2c
+#define mpi_op_c2f                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_op_c2f");                                                      \
+  call MPI_Op_c2f
+#define MPI_OP_C2F                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_OP_C2F");                                                      \
+  call MPI_Op_c2f
+#define mpi_group_free                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_group_free");                                                  \
+  call MPI_Group_free
+#define MPI_GROUP_FREE                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GROUP_FREE");                                                  \
+  call MPI_Group_free
+#define mpi_group_size                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_group_size");                                                  \
+  call MPI_Group_size
+#define MPI_GROUP_SIZE                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GROUP_SIZE");                                                  \
+  call MPI_Group_size
+#define mpi_group_rank                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_group_rank");                                                  \
+  call MPI_Group_rank
+#define MPI_GROUP_RANK                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GROUP_RANK");                                                  \
+  call MPI_Group_rank
+#define mpi_group_translate_ranks                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_group_translate_ranks");                                       \
+  call MPI_Group_translate_ranks
+#define MPI_GROUP_TRANSLATE_RANKS                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GROUP_TRANSLATE_RANKS");                                       \
+  call MPI_Group_translate_ranks
+#define mpi_group_compare                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_group_compare");                                               \
+  call MPI_Group_compare
+#define MPI_GROUP_COMPARE                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GROUP_COMPARE");                                               \
+  call MPI_Group_compare
+#define mpi_group_union                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_group_union");                                                 \
+  call MPI_Group_union
+#define MPI_GROUP_UNION                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GROUP_UNION");                                                 \
+  call MPI_Group_union
+#define mpi_group_intersection                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_group_intersection");                                          \
+  call MPI_Group_intersection
+#define MPI_GROUP_INTERSECTION                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GROUP_INTERSECTION");                                          \
+  call MPI_Group_intersection
+#define mpi_group_difference                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_group_difference");                                            \
+  call MPI_Group_difference
+#define MPI_GROUP_DIFFERENCE                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GROUP_DIFFERENCE");                                            \
+  call MPI_Group_difference
+#define mpi_group_incl                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_group_incl");                                                  \
+  call MPI_Group_incl
+#define MPI_GROUP_INCL                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GROUP_INCL");                                                  \
+  call MPI_Group_incl
+#define mpi_group_excl                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_group_excl");                                                  \
+  call MPI_Group_excl
+#define MPI_GROUP_EXCL                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GROUP_EXCL");                                                  \
+  call MPI_Group_excl
+#define mpi_group_range_incl                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_group_range_incl");                                            \
+  call MPI_Group_range_incl
+#define MPI_GROUP_RANGE_INCL                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GROUP_RANGE_INCL");                                            \
+  call MPI_Group_range_incl
+#define mpi_group_range_excl                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_group_range_excl");                                            \
+  call MPI_Group_range_excl
+#define MPI_GROUP_RANGE_EXCL                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GROUP_RANGE_EXCL");                                            \
+  call MPI_Group_range_excl
+#define mpi_group_f2c                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_group_f2c");                                                   \
+  call MPI_Group_f2c
+#define MPI_GROUP_F2C                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GROUP_F2C");                                                   \
+  call MPI_Group_f2c
+#define mpi_group_c2f                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_group_c2f");                                                   \
+  call MPI_Group_c2f
+#define MPI_GROUP_C2F                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GROUP_C2F");                                                   \
+  call MPI_Group_c2f
+#define mpi_comm_rank                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_rank");                                                   \
+  call MPI_Comm_rank
+#define MPI_COMM_RANK                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_RANK");                                                   \
+  call MPI_Comm_rank
+#define mpi_comm_size                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_size");                                                   \
+  call MPI_Comm_size
+#define MPI_COMM_SIZE                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_SIZE");                                                   \
+  call MPI_Comm_size
+#define mpi_comm_get_name                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_get_name");                                               \
+  call MPI_Comm_get_name
+#define MPI_COMM_GET_NAME                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_GET_NAME");                                               \
+  call MPI_Comm_get_name
+#define mpi_comm_set_name                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_set_name");                                               \
+  call MPI_Comm_set_name
+#define MPI_COMM_SET_NAME                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_SET_NAME");                                               \
+  call MPI_Comm_set_name
+#define mpi_comm_dup                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_dup");                                                    \
+  call MPI_Comm_dup
+#define MPI_COMM_DUP                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_DUP");                                                    \
+  call MPI_Comm_dup
+#define mpi_comm_dup_with_info                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_dup_with_info");                                          \
+  call MPI_Comm_dup_with_info
+#define MPI_COMM_DUP_WITH_INFO                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_DUP_WITH_INFO");                                          \
+  call MPI_Comm_dup_with_info
+#define mpi_comm_get_attr                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_get_attr");                                               \
+  call MPI_Comm_get_attr
+#define MPI_COMM_GET_ATTR                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_GET_ATTR");                                               \
+  call MPI_Comm_get_attr
+#define mpi_comm_set_attr                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_set_attr");                                               \
+  call MPI_Comm_set_attr
+#define MPI_COMM_SET_ATTR                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_SET_ATTR");                                               \
+  call MPI_Comm_set_attr
+#define mpi_comm_delete_attr                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_delete_attr");                                            \
+  call MPI_Comm_delete_attr
+#define MPI_COMM_DELETE_ATTR                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_DELETE_ATTR");                                            \
+  call MPI_Comm_delete_attr
+#define mpi_comm_create_keyval                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_create_keyval");                                          \
+  call MPI_Comm_create_keyval
+#define MPI_COMM_CREATE_KEYVAL                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_CREATE_KEYVAL");                                          \
+  call MPI_Comm_create_keyval
+#define mpi_comm_free_keyval                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_free_keyval");                                            \
+  call MPI_Comm_free_keyval
+#define MPI_COMM_FREE_KEYVAL                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_FREE_KEYVAL");                                            \
+  call MPI_Comm_free_keyval
+#define mpi_comm_group                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_group");                                                  \
+  call MPI_Comm_group
+#define MPI_COMM_GROUP                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_GROUP");                                                  \
+  call MPI_Comm_group
+#define mpi_comm_compare                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_compare");                                                \
+  call MPI_Comm_compare
+#define MPI_COMM_COMPARE                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_COMPARE");                                                \
+  call MPI_Comm_compare
+#define mpi_comm_create                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_create");                                                 \
+  call MPI_Comm_create
+#define MPI_COMM_CREATE                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_CREATE");                                                 \
+  call MPI_Comm_create
+#define mpi_comm_create_group                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_create_group");                                           \
+  call MPI_Comm_create_group
+#define MPI_COMM_CREATE_GROUP                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_CREATE_GROUP");                                           \
+  call MPI_Comm_create_group
+#define mpi_comm_free                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_free");                                                   \
+  call MPI_Comm_free
+#define MPI_COMM_FREE                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_FREE");                                                   \
+  call MPI_Comm_free
+#define mpi_comm_disconnect                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_disconnect");                                             \
+  call MPI_Comm_disconnect
+#define MPI_COMM_DISCONNECT                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_DISCONNECT");                                             \
+  call MPI_Comm_disconnect
+#define mpi_comm_split                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_split");                                                  \
+  call MPI_Comm_split
+#define MPI_COMM_SPLIT                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_SPLIT");                                                  \
+  call MPI_Comm_split
+#define mpi_comm_set_info                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_set_info");                                               \
+  call MPI_Comm_set_info
+#define MPI_COMM_SET_INFO                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_SET_INFO");                                               \
+  call MPI_Comm_set_info
+#define mpi_comm_get_info                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_get_info");                                               \
+  call MPI_Comm_get_info
+#define MPI_COMM_GET_INFO                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_GET_INFO");                                               \
+  call MPI_Comm_get_info
+#define mpi_comm_split_type                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_split_type");                                             \
+  call MPI_Comm_split_type
+#define MPI_COMM_SPLIT_TYPE                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_SPLIT_TYPE");                                             \
+  call MPI_Comm_split_type
+#define mpi_comm_f2c                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_f2c");                                                    \
+  call MPI_Comm_f2c
+#define MPI_COMM_F2C                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_F2C");                                                    \
+  call MPI_Comm_f2c
+#define mpi_comm_c2f                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_c2f");                                                    \
+  call MPI_Comm_c2f
+#define MPI_COMM_C2F                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_C2F");                                                    \
+  call MPI_Comm_c2f
+#define mpi_start                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_start");                                                       \
+  call MPI_Start
+#define MPI_START                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_START");                                                       \
+  call MPI_Start
+#define mpi_startall                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_startall");                                                    \
+  call MPI_Startall
+#define MPI_STARTALL                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_STARTALL");                                                    \
+  call MPI_Startall
+#define mpi_request_free                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_request_free");                                                \
+  call MPI_Request_free
+#define MPI_REQUEST_FREE                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_REQUEST_FREE");                                                \
+  call MPI_Request_free
+#define mpi_recv                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_recv");                                                        \
+  call MPI_Recv
+#define MPI_RECV                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_RECV");                                                        \
+  call MPI_Recv
+#define mpi_recv_init                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_recv_init");                                                   \
+  call MPI_Recv_init
+#define MPI_RECV_INIT                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_RECV_INIT");                                                   \
+  call MPI_Recv_init
+#define mpi_irecv                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_irecv");                                                       \
+  call MPI_Irecv
+#define MPI_IRECV                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IRECV");                                                       \
+  call MPI_Irecv
+#define mpi_send                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_send");                                                        \
+  call MPI_Send
+#define MPI_SEND                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_SEND");                                                        \
+  call MPI_Send
+#define mpi_send_init                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_send_init");                                                   \
+  call MPI_Send_init
+#define MPI_SEND_INIT                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_SEND_INIT");                                                   \
+  call MPI_Send_init
+#define mpi_isend                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_isend");                                                       \
+  call MPI_Isend
+#define MPI_ISEND                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ISEND");                                                       \
+  call MPI_Isend
+#define mpi_ssend                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ssend");                                                       \
+  call MPI_Ssend
+#define MPI_SSEND                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_SSEND");                                                       \
+  call MPI_Ssend
+#define mpi_ssend_init                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ssend_init");                                                  \
+  call MPI_Ssend_init
+#define MPI_SSEND_INIT                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_SSEND_INIT");                                                  \
+  call MPI_Ssend_init
+#define mpi_issend                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_issend");                                                      \
+  call MPI_Issend
+#define MPI_ISSEND                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ISSEND");                                                      \
+  call MPI_Issend
+#define mpi_bsend                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_bsend");                                                       \
+  call MPI_Bsend
+#define MPI_BSEND                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_BSEND");                                                       \
+  call MPI_Bsend
+#define mpi_bsend_init                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_bsend_init");                                                  \
+  call MPI_Bsend_init
+#define MPI_BSEND_INIT                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_BSEND_INIT");                                                  \
+  call MPI_Bsend_init
+#define mpi_ibsend                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ibsend");                                                      \
+  call MPI_Ibsend
+#define MPI_IBSEND                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IBSEND");                                                      \
+  call MPI_Ibsend
+#define mpi_rsend                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_rsend");                                                       \
+  call MPI_Rsend
+#define MPI_RSEND                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_RSEND");                                                       \
+  call MPI_Rsend
+#define mpi_rsend_init                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_rsend_init");                                                  \
+  call MPI_Rsend_init
+#define MPI_RSEND_INIT                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_RSEND_INIT");                                                  \
+  call MPI_Rsend_init
+#define mpi_irsend                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_irsend");                                                      \
+  call MPI_Irsend
+#define MPI_IRSEND                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IRSEND");                                                      \
+  call MPI_Irsend
+#define mpi_sendrecv                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_sendrecv");                                                    \
+  call MPI_Sendrecv
+#define MPI_SENDRECV                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_SENDRECV");                                                    \
+  call MPI_Sendrecv
+#define mpi_sendrecv_replace                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_sendrecv_replace");                                            \
+  call MPI_Sendrecv_replace
+#define MPI_SENDRECV_REPLACE                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_SENDRECV_REPLACE");                                            \
+  call MPI_Sendrecv_replace
+#define mpi_test                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_test");                                                        \
+  call MPI_Test
+#define MPI_TEST                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TEST");                                                        \
+  call MPI_Test
+#define mpi_testany                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_testany");                                                     \
+  call MPI_Testany
+#define MPI_TESTANY                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TESTANY");                                                     \
+  call MPI_Testany
+#define mpi_testall                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_testall");                                                     \
+  call MPI_Testall
+#define MPI_TESTALL                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TESTALL");                                                     \
+  call MPI_Testall
+#define mpi_testsome                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_testsome");                                                    \
+  call MPI_Testsome
+#define MPI_TESTSOME                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TESTSOME");                                                    \
+  call MPI_Testsome
+#define mpi_test_cancelled                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_test_cancelled");                                              \
+  call MPI_Test_cancelled
+#define MPI_TEST_CANCELLED                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TEST_CANCELLED");                                              \
+  call MPI_Test_cancelled
+#define mpi_wait                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_wait");                                                        \
+  call MPI_Wait
+#define MPI_WAIT                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WAIT");                                                        \
+  call MPI_Wait
+#define mpi_waitany                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_waitany");                                                     \
+  call MPI_Waitany
+#define MPI_WAITANY                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WAITANY");                                                     \
+  call MPI_Waitany
+#define mpi_waitall                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_waitall");                                                     \
+  call MPI_Waitall
+#define MPI_WAITALL                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WAITALL");                                                     \
+  call MPI_Waitall
+#define mpi_waitsome                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_waitsome");                                                    \
+  call MPI_Waitsome
+#define MPI_WAITSOME                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WAITSOME");                                                    \
+  call MPI_Waitsome
+#define mpi_iprobe                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_iprobe");                                                      \
+  call MPI_Iprobe
+#define MPI_IPROBE                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IPROBE");                                                      \
+  call MPI_Iprobe
+#define mpi_probe                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_probe");                                                       \
+  call MPI_Probe
+#define MPI_PROBE                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_PROBE");                                                       \
+  call MPI_Probe
+#define mpi_request_f2c                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_request_f2c");                                                 \
+  call MPI_Request_f2c
+#define MPI_REQUEST_F2C                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_REQUEST_F2C");                                                 \
+  call MPI_Request_f2c
+#define mpi_request_c2f                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_request_c2f");                                                 \
+  call MPI_Request_c2f
+#define MPI_REQUEST_C2F                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_REQUEST_C2F");                                                 \
+  call MPI_Request_c2f
+#define mpi_cancel                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_cancel");                                                      \
+  call MPI_Cancel
+#define MPI_CANCEL                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_CANCEL");                                                      \
+  call MPI_Cancel
+#define mpi_bcast                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_bcast");                                                       \
+  call MPI_Bcast
+#define MPI_BCAST                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_BCAST");                                                       \
+  call MPI_Bcast
+#define mpi_barrier                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_barrier");                                                     \
+  call MPI_Barrier
+#define MPI_BARRIER                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_BARRIER");                                                     \
+  call MPI_Barrier
+#define mpi_ibarrier                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ibarrier");                                                    \
+  call MPI_Ibarrier
+#define MPI_IBARRIER                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IBARRIER");                                                    \
+  call MPI_Ibarrier
+#define mpi_ibcast                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ibcast");                                                      \
+  call MPI_Ibcast
+#define MPI_IBCAST                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IBCAST");                                                      \
+  call MPI_Ibcast
+#define mpi_igather                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_igather");                                                     \
+  call MPI_Igather
+#define MPI_IGATHER                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IGATHER");                                                     \
+  call MPI_Igather
+#define mpi_igatherv                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_igatherv");                                                    \
+  call MPI_Igatherv
+#define MPI_IGATHERV                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IGATHERV");                                                    \
+  call MPI_Igatherv
+#define mpi_iallgather                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_iallgather");                                                  \
+  call MPI_Iallgather
+#define MPI_IALLGATHER                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IALLGATHER");                                                  \
+  call MPI_Iallgather
+#define mpi_iallgatherv                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_iallgatherv");                                                 \
+  call MPI_Iallgatherv
+#define MPI_IALLGATHERV                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IALLGATHERV");                                                 \
+  call MPI_Iallgatherv
+#define mpi_iscatter                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_iscatter");                                                    \
+  call MPI_Iscatter
+#define MPI_ISCATTER                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ISCATTER");                                                    \
+  call MPI_Iscatter
+#define mpi_iscatterv                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_iscatterv");                                                   \
+  call MPI_Iscatterv
+#define MPI_ISCATTERV                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ISCATTERV");                                                   \
+  call MPI_Iscatterv
+#define mpi_ireduce                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ireduce");                                                     \
+  call MPI_Ireduce
+#define MPI_IREDUCE                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IREDUCE");                                                     \
+  call MPI_Ireduce
+#define mpi_iallreduce                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_iallreduce");                                                  \
+  call MPI_Iallreduce
+#define MPI_IALLREDUCE                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IALLREDUCE");                                                  \
+  call MPI_Iallreduce
+#define mpi_iscan                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_iscan");                                                       \
+  call MPI_Iscan
+#define MPI_ISCAN                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ISCAN");                                                       \
+  call MPI_Iscan
+#define mpi_iexscan                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_iexscan");                                                     \
+  call MPI_Iexscan
+#define MPI_IEXSCAN                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IEXSCAN");                                                     \
+  call MPI_Iexscan
+#define mpi_ireduce_scatter                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ireduce_scatter");                                             \
+  call MPI_Ireduce_scatter
+#define MPI_IREDUCE_SCATTER                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IREDUCE_SCATTER");                                             \
+  call MPI_Ireduce_scatter
+#define mpi_ireduce_scatter_block                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ireduce_scatter_block");                                       \
+  call MPI_Ireduce_scatter_block
+#define MPI_IREDUCE_SCATTER_BLOCK                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IREDUCE_SCATTER_BLOCK");                                       \
+  call MPI_Ireduce_scatter_block
+#define mpi_ialltoall                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ialltoall");                                                   \
+  call MPI_Ialltoall
+#define MPI_IALLTOALL                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IALLTOALL");                                                   \
+  call MPI_Ialltoall
+#define mpi_ialltoallv                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ialltoallv");                                                  \
+  call MPI_Ialltoallv
+#define MPI_IALLTOALLV                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IALLTOALLV");                                                  \
+  call MPI_Ialltoallv
+#define mpi_ialltoallw                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ialltoallw");                                                  \
+  call MPI_Ialltoallw
+#define MPI_IALLTOALLW                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IALLTOALLW");                                                  \
+  call MPI_Ialltoallw
+#define mpi_gather                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_gather");                                                      \
+  call MPI_Gather
+#define MPI_GATHER                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GATHER");                                                      \
+  call MPI_Gather
+#define mpi_gatherv                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_gatherv");                                                     \
+  call MPI_Gatherv
+#define MPI_GATHERV                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GATHERV");                                                     \
+  call MPI_Gatherv
+#define mpi_allgather                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_allgather");                                                   \
+  call MPI_Allgather
+#define MPI_ALLGATHER                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ALLGATHER");                                                   \
+  call MPI_Allgather
+#define mpi_allgatherv                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_allgatherv");                                                  \
+  call MPI_Allgatherv
+#define MPI_ALLGATHERV                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ALLGATHERV");                                                  \
+  call MPI_Allgatherv
+#define mpi_scatter                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_scatter");                                                     \
+  call MPI_Scatter
+#define MPI_SCATTER                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_SCATTER");                                                     \
+  call MPI_Scatter
+#define mpi_scatterv                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_scatterv");                                                    \
+  call MPI_Scatterv
+#define MPI_SCATTERV                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_SCATTERV");                                                    \
+  call MPI_Scatterv
+#define mpi_reduce                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_reduce");                                                      \
+  call MPI_Reduce
+#define MPI_REDUCE                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_REDUCE");                                                      \
+  call MPI_Reduce
+#define mpi_allreduce                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_allreduce");                                                   \
+  call MPI_Allreduce
+#define MPI_ALLREDUCE                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ALLREDUCE");                                                   \
+  call MPI_Allreduce
+#define mpi_scan                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_scan");                                                        \
+  call MPI_Scan
+#define MPI_SCAN                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_SCAN");                                                        \
+  call MPI_Scan
+#define mpi_exscan                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_exscan");                                                      \
+  call MPI_Exscan
+#define MPI_EXSCAN                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_EXSCAN");                                                      \
+  call MPI_Exscan
+#define mpi_reduce_scatter                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_reduce_scatter");                                              \
+  call MPI_Reduce_scatter
+#define MPI_REDUCE_SCATTER                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_REDUCE_SCATTER");                                              \
+  call MPI_Reduce_scatter
+#define mpi_reduce_scatter_block                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_reduce_scatter_block");                                        \
+  call MPI_Reduce_scatter_block
+#define MPI_REDUCE_SCATTER_BLOCK                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_REDUCE_SCATTER_BLOCK");                                        \
+  call MPI_Reduce_scatter_block
+#define mpi_alltoall                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_alltoall");                                                    \
+  call MPI_Alltoall
+#define MPI_ALLTOALL                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ALLTOALL");                                                    \
+  call MPI_Alltoall
+#define mpi_alltoallv                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_alltoallv");                                                   \
+  call MPI_Alltoallv
+#define MPI_ALLTOALLV                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ALLTOALLV");                                                   \
+  call MPI_Alltoallv
+#define mpi_alltoallw                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_alltoallw");                                                   \
+  call MPI_Alltoallw
+#define MPI_ALLTOALLW                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ALLTOALLW");                                                   \
+  call MPI_Alltoallw
+#define mpi_reduce_local                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_reduce_local");                                                \
+  call MPI_Reduce_local
+#define MPI_REDUCE_LOCAL                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_REDUCE_LOCAL");                                                \
+  call MPI_Reduce_local
+#define mpi_info_create                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_info_create");                                                 \
+  call MPI_Info_create
+#define MPI_INFO_CREATE                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INFO_CREATE");                                                 \
+  call MPI_Info_create
+#define mpi_info_set                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_info_set");                                                    \
+  call MPI_Info_set
+#define MPI_INFO_SET                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INFO_SET");                                                    \
+  call MPI_Info_set
+#define mpi_info_get                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_info_get");                                                    \
+  call MPI_Info_get
+#define MPI_INFO_GET                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INFO_GET");                                                    \
+  call MPI_Info_get
+#define mpi_info_free                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_info_free");                                                   \
+  call MPI_Info_free
+#define MPI_INFO_FREE                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INFO_FREE");                                                   \
+  call MPI_Info_free
+#define mpi_info_delete                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_info_delete");                                                 \
+  call MPI_Info_delete
+#define MPI_INFO_DELETE                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INFO_DELETE");                                                 \
+  call MPI_Info_delete
+#define mpi_info_dup                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_info_dup");                                                    \
+  call MPI_Info_dup
+#define MPI_INFO_DUP                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INFO_DUP");                                                    \
+  call MPI_Info_dup
+#define mpi_info_get_nkeys                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_info_get_nkeys");                                              \
+  call MPI_Info_get_nkeys
+#define MPI_INFO_GET_NKEYS                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INFO_GET_NKEYS");                                              \
+  call MPI_Info_get_nkeys
+#define mpi_info_get_nthkey                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_info_get_nthkey");                                             \
+  call MPI_Info_get_nthkey
+#define MPI_INFO_GET_NTHKEY                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INFO_GET_NTHKEY");                                             \
+  call MPI_Info_get_nthkey
+#define mpi_info_get_valuelen                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_info_get_valuelen");                                           \
+  call MPI_Info_get_valuelen
+#define MPI_INFO_GET_VALUELEN                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INFO_GET_VALUELEN");                                           \
+  call MPI_Info_get_valuelen
+#define mpi_info_f2c                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_info_f2c");                                                    \
+  call MPI_Info_f2c
+#define MPI_INFO_F2C                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INFO_F2C");                                                    \
+  call MPI_Info_f2c
+#define mpi_info_c2f                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_info_c2f");                                                    \
+  call MPI_Info_c2f
+#define MPI_INFO_C2F                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INFO_C2F");                                                    \
+  call MPI_Info_c2f
+#define mpi_win_free                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_free");                                                    \
+  call MPI_Win_free
+#define MPI_WIN_FREE                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_FREE");                                                    \
+  call MPI_Win_free
+#define mpi_win_create                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_create");                                                  \
+  call MPI_Win_create
+#define MPI_WIN_CREATE                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_CREATE");                                                  \
+  call MPI_Win_create
+#define mpi_win_allocate                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_allocate");                                                \
+  call MPI_Win_allocate
+#define MPI_WIN_ALLOCATE                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_ALLOCATE");                                                \
+  call MPI_Win_allocate
+#define mpi_win_allocate_shared                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_allocate_shared");                                         \
+  call MPI_Win_allocate_shared
+#define MPI_WIN_ALLOCATE_SHARED                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_ALLOCATE_SHARED");                                         \
+  call MPI_Win_allocate_shared
+#define mpi_win_create_dynamic                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_create_dynamic");                                          \
+  call MPI_Win_create_dynamic
+#define MPI_WIN_CREATE_DYNAMIC                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_CREATE_DYNAMIC");                                          \
+  call MPI_Win_create_dynamic
+#define mpi_win_attach                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_attach");                                                  \
+  call MPI_Win_attach
+#define MPI_WIN_ATTACH                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_ATTACH");                                                  \
+  call MPI_Win_attach
+#define mpi_win_detach                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_detach");                                                  \
+  call MPI_Win_detach
+#define MPI_WIN_DETACH                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_DETACH");                                                  \
+  call MPI_Win_detach
+#define mpi_win_set_name                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_set_name");                                                \
+  call MPI_Win_set_name
+#define MPI_WIN_SET_NAME                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_SET_NAME");                                                \
+  call MPI_Win_set_name
+#define mpi_win_get_name                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_get_name");                                                \
+  call MPI_Win_get_name
+#define MPI_WIN_GET_NAME                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_GET_NAME");                                                \
+  call MPI_Win_get_name
+#define mpi_win_set_info                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_set_info");                                                \
+  call MPI_Win_set_info
+#define MPI_WIN_SET_INFO                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_SET_INFO");                                                \
+  call MPI_Win_set_info
+#define mpi_win_get_info                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_get_info");                                                \
+  call MPI_Win_get_info
+#define MPI_WIN_GET_INFO                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_GET_INFO");                                                \
+  call MPI_Win_get_info
+#define mpi_win_get_group                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_get_group");                                               \
+  call MPI_Win_get_group
+#define MPI_WIN_GET_GROUP                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_GET_GROUP");                                               \
+  call MPI_Win_get_group
+#define mpi_win_fence                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_fence");                                                   \
+  call MPI_Win_fence
+#define MPI_WIN_FENCE                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_FENCE");                                                   \
+  call MPI_Win_fence
+#define mpi_win_get_attr                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_get_attr");                                                \
+  call MPI_Win_get_attr
+#define MPI_WIN_GET_ATTR                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_GET_ATTR");                                                \
+  call MPI_Win_get_attr
+#define mpi_win_set_attr                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_set_attr");                                                \
+  call MPI_Win_set_attr
+#define MPI_WIN_SET_ATTR                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_SET_ATTR");                                                \
+  call MPI_Win_set_attr
+#define mpi_win_delete_attr                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_delete_attr");                                             \
+  call MPI_Win_delete_attr
+#define MPI_WIN_DELETE_ATTR                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_DELETE_ATTR");                                             \
+  call MPI_Win_delete_attr
+#define mpi_win_create_keyval                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_create_keyval");                                           \
+  call MPI_Win_create_keyval
+#define MPI_WIN_CREATE_KEYVAL                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_CREATE_KEYVAL");                                           \
+  call MPI_Win_create_keyval
+#define mpi_win_free_keyval                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_free_keyval");                                             \
+  call MPI_Win_free_keyval
+#define MPI_WIN_FREE_KEYVAL                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_FREE_KEYVAL");                                             \
+  call MPI_Win_free_keyval
+#define mpi_win_complete                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_complete");                                                \
+  call MPI_Win_complete
+#define MPI_WIN_COMPLETE                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_COMPLETE");                                                \
+  call MPI_Win_complete
+#define mpi_win_post                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_post");                                                    \
+  call MPI_Win_post
+#define MPI_WIN_POST                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_POST");                                                    \
+  call MPI_Win_post
+#define mpi_win_start                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_start");                                                   \
+  call MPI_Win_start
+#define MPI_WIN_START                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_START");                                                   \
+  call MPI_Win_start
+#define mpi_win_wait                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_wait");                                                    \
+  call MPI_Win_wait
+#define MPI_WIN_WAIT                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_WAIT");                                                    \
+  call MPI_Win_wait
+#define mpi_win_lock                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_lock");                                                    \
+  call MPI_Win_lock
+#define MPI_WIN_LOCK                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_LOCK");                                                    \
+  call MPI_Win_lock
+#define mpi_win_lock_all                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_lock_all");                                                \
+  call MPI_Win_lock_all
+#define MPI_WIN_LOCK_ALL                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_LOCK_ALL");                                                \
+  call MPI_Win_lock_all
+#define mpi_win_unlock                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_unlock");                                                  \
+  call MPI_Win_unlock
+#define MPI_WIN_UNLOCK                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_UNLOCK");                                                  \
+  call MPI_Win_unlock
+#define mpi_win_unlock_all                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_unlock_all");                                              \
+  call MPI_Win_unlock_all
+#define MPI_WIN_UNLOCK_ALL                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_UNLOCK_ALL");                                              \
+  call MPI_Win_unlock_all
+#define mpi_win_flush                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_flush");                                                   \
+  call MPI_Win_flush
+#define MPI_WIN_FLUSH                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_FLUSH");                                                   \
+  call MPI_Win_flush
+#define mpi_win_flush_local                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_flush_local");                                             \
+  call MPI_Win_flush_local
+#define MPI_WIN_FLUSH_LOCAL                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_FLUSH_LOCAL");                                             \
+  call MPI_Win_flush_local
+#define mpi_win_flush_all                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_flush_all");                                               \
+  call MPI_Win_flush_all
+#define MPI_WIN_FLUSH_ALL                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_FLUSH_ALL");                                               \
+  call MPI_Win_flush_all
+#define mpi_win_flush_local_all                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_flush_local_all");                                         \
+  call MPI_Win_flush_local_all
+#define MPI_WIN_FLUSH_LOCAL_ALL                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_FLUSH_LOCAL_ALL");                                         \
+  call MPI_Win_flush_local_all
+#define mpi_win_shared_query                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_shared_query");                                            \
+  call MPI_Win_shared_query
+#define MPI_WIN_SHARED_QUERY                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_SHARED_QUERY");                                            \
+  call MPI_Win_shared_query
+#define mpi_win_sync                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_sync");                                                    \
+  call MPI_Win_sync
+#define MPI_WIN_SYNC                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_SYNC");                                                    \
+  call MPI_Win_sync
+#define mpi_win_f2c                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_f2c");                                                     \
+  call MPI_Win_f2c
+#define MPI_WIN_F2C                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_F2C");                                                     \
+  call MPI_Win_f2c
+#define mpi_win_c2f                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_c2f");                                                     \
+  call MPI_Win_c2f
+#define MPI_WIN_C2F                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_C2F");                                                     \
+  call MPI_Win_c2f
+#define mpi_get                                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_get");                                                         \
+  call MPI_Get
+#define MPI_GET                                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GET");                                                         \
+  call MPI_Get
+#define mpi_put                                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_put");                                                         \
+  call MPI_Put
+#define MPI_PUT                                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_PUT");                                                         \
+  call MPI_Put
+#define mpi_accumulate                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_accumulate");                                                  \
+  call MPI_Accumulate
+#define MPI_ACCUMULATE                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ACCUMULATE");                                                  \
+  call MPI_Accumulate
+#define mpi_get_accumulate                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_get_accumulate");                                              \
+  call MPI_Get_accumulate
+#define MPI_GET_ACCUMULATE                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GET_ACCUMULATE");                                              \
+  call MPI_Get_accumulate
+#define mpi_rget                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_rget");                                                        \
+  call MPI_Rget
+#define MPI_RGET                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_RGET");                                                        \
+  call MPI_Rget
+#define mpi_rput                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_rput");                                                        \
+  call MPI_Rput
+#define MPI_RPUT                                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_RPUT");                                                        \
+  call MPI_Rput
+#define mpi_raccumulate                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_raccumulate");                                                 \
+  call MPI_Raccumulate
+#define MPI_RACCUMULATE                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_RACCUMULATE");                                                 \
+  call MPI_Raccumulate
+#define mpi_rget_accumulate                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_rget_accumulate");                                             \
+  call MPI_Rget_accumulate
+#define MPI_RGET_ACCUMULATE                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_RGET_ACCUMULATE");                                             \
+  call MPI_Rget_accumulate
+#define mpi_fetch_and_op                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_fetch_and_op");                                                \
+  call MPI_Fetch_and_op
+#define MPI_FETCH_AND_OP                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FETCH_AND_OP");                                                \
+  call MPI_Fetch_and_op
+#define mpi_compare_and_swap                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_compare_and_swap");                                            \
+  call MPI_Compare_and_swap
+#define MPI_COMPARE_AND_SWAP                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMPARE_AND_SWAP");                                            \
+  call MPI_Compare_and_swap
+#define mpi_cart_coords                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_cart_coords");                                                 \
+  call MPI_Cart_coords
+#define MPI_CART_COORDS                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_CART_COORDS");                                                 \
+  call MPI_Cart_coords
+#define mpi_cart_create                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_cart_create");                                                 \
+  call MPI_Cart_create
+#define MPI_CART_CREATE                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_CART_CREATE");                                                 \
+  call MPI_Cart_create
+#define mpi_cart_get                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_cart_get");                                                    \
+  call MPI_Cart_get
+#define MPI_CART_GET                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_CART_GET");                                                    \
+  call MPI_Cart_get
+#define mpi_cart_rank                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_cart_rank");                                                   \
+  call MPI_Cart_rank
+#define MPI_CART_RANK                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_CART_RANK");                                                   \
+  call MPI_Cart_rank
+#define mpi_cart_shift                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_cart_shift");                                                  \
+  call MPI_Cart_shift
+#define MPI_CART_SHIFT                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_CART_SHIFT");                                                  \
+  call MPI_Cart_shift
+#define mpi_cart_sub                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_cart_sub");                                                    \
+  call MPI_Cart_sub
+#define MPI_CART_SUB                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_CART_SUB");                                                    \
+  call MPI_Cart_sub
+#define mpi_cartdim_get                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_cartdim_get");                                                 \
+  call MPI_Cartdim_get
+#define MPI_CARTDIM_GET                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_CARTDIM_GET");                                                 \
+  call MPI_Cartdim_get
+#define mpi_dims_create                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_dims_create");                                                 \
+  call MPI_Dims_create
+#define MPI_DIMS_CREATE                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_DIMS_CREATE");                                                 \
+  call MPI_Dims_create
+#define mpi_request_get_status                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_request_get_status");                                          \
+  call MPI_Request_get_status
+#define MPI_REQUEST_GET_STATUS                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_REQUEST_GET_STATUS");                                          \
+  call MPI_Request_get_status
+#define mpi_grequest_start                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_grequest_start");                                              \
+  call MPI_Grequest_start
+#define MPI_GREQUEST_START                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GREQUEST_START");                                              \
+  call MPI_Grequest_start
+#define mpi_grequest_complete                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_grequest_complete");                                           \
+  call MPI_Grequest_complete
+#define MPI_GREQUEST_COMPLETE                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GREQUEST_COMPLETE");                                           \
+  call MPI_Grequest_complete
+#define mpi_status_set_cancelled                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_status_set_cancelled");                                        \
+  call MPI_Status_set_cancelled
+#define MPI_STATUS_SET_CANCELLED                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_STATUS_SET_CANCELLED");                                        \
+  call MPI_Status_set_cancelled
+#define mpi_status_set_elements                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_status_set_elements");                                         \
+  call MPI_Status_set_elements
+#define MPI_STATUS_SET_ELEMENTS                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_STATUS_SET_ELEMENTS");                                         \
+  call MPI_Status_set_elements
+#define mpi_status_set_elements_x                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_status_set_elements_x");                                       \
+  call MPI_Status_set_elements_x
+#define MPI_STATUS_SET_ELEMENTS_X                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_STATUS_SET_ELEMENTS_X");                                       \
+  call MPI_Status_set_elements_x
+#define mpi_type_create_subarray                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_create_subarray");                                        \
+  call MPI_Type_create_subarray
+#define MPI_TYPE_CREATE_SUBARRAY                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_CREATE_SUBARRAY");                                        \
+  call MPI_Type_create_subarray
+#define mpi_file_open                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_open");                                                   \
+  call MPI_File_open
+#define MPI_FILE_OPEN                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_OPEN");                                                   \
+  call MPI_File_open
+#define mpi_file_close                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_close");                                                  \
+  call MPI_File_close
+#define MPI_FILE_CLOSE                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_CLOSE");                                                  \
+  call MPI_File_close
+#define mpi_file_delete                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_delete");                                                 \
+  call MPI_File_delete
+#define MPI_FILE_DELETE                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_DELETE");                                                 \
+  call MPI_File_delete
+#define mpi_file_get_size                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_get_size");                                               \
+  call MPI_File_get_size
+#define MPI_FILE_GET_SIZE                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_GET_SIZE");                                               \
+  call MPI_File_get_size
+#define mpi_file_get_group                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_get_group");                                              \
+  call MPI_File_get_group
+#define MPI_FILE_GET_GROUP                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_GET_GROUP");                                              \
+  call MPI_File_get_group
+#define mpi_file_get_amode                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_get_amode");                                              \
+  call MPI_File_get_amode
+#define MPI_FILE_GET_AMODE                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_GET_AMODE");                                              \
+  call MPI_File_get_amode
+#define mpi_file_set_info                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_set_info");                                               \
+  call MPI_File_set_info
+#define MPI_FILE_SET_INFO                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_SET_INFO");                                               \
+  call MPI_File_set_info
+#define mpi_file_get_info                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_get_info");                                               \
+  call MPI_File_get_info
+#define MPI_FILE_GET_INFO                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_GET_INFO");                                               \
+  call MPI_File_get_info
+#define mpi_file_read_at                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_read_at");                                                \
+  call MPI_File_read_at
+#define MPI_FILE_READ_AT                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_READ_AT");                                                \
+  call MPI_File_read_at
+#define mpi_file_read_at_all                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_read_at_all");                                            \
+  call MPI_File_read_at_all
+#define MPI_FILE_READ_AT_ALL                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_READ_AT_ALL");                                            \
+  call MPI_File_read_at_all
+#define mpi_file_write_at                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_write_at");                                               \
+  call MPI_File_write_at
+#define MPI_FILE_WRITE_AT                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_WRITE_AT");                                               \
+  call MPI_File_write_at
+#define mpi_file_write_at_all                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_write_at_all");                                           \
+  call MPI_File_write_at_all
+#define MPI_FILE_WRITE_AT_ALL                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_WRITE_AT_ALL");                                           \
+  call MPI_File_write_at_all
+#define mpi_file_read                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_read");                                                   \
+  call MPI_File_read
+#define MPI_FILE_READ                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_READ");                                                   \
+  call MPI_File_read
+#define mpi_file_read_all                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_read_all");                                               \
+  call MPI_File_read_all
+#define MPI_FILE_READ_ALL                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_READ_ALL");                                               \
+  call MPI_File_read_all
+#define mpi_file_write                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_write");                                                  \
+  call MPI_File_write
+#define MPI_FILE_WRITE                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_WRITE");                                                  \
+  call MPI_File_write
+#define mpi_file_write_all                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_write_all");                                              \
+  call MPI_File_write_all
+#define MPI_FILE_WRITE_ALL                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_WRITE_ALL");                                              \
+  call MPI_File_write_all
+#define mpi_file_seek                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_seek");                                                   \
+  call MPI_File_seek
+#define MPI_FILE_SEEK                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_SEEK");                                                   \
+  call MPI_File_seek
+#define mpi_file_get_position                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_get_position");                                           \
+  call MPI_File_get_position
+#define MPI_FILE_GET_POSITION                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_GET_POSITION");                                           \
+  call MPI_File_get_position
+#define mpi_file_read_shared                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_read_shared");                                            \
+  call MPI_File_read_shared
+#define MPI_FILE_READ_SHARED                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_READ_SHARED");                                            \
+  call MPI_File_read_shared
+#define mpi_file_write_shared                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_write_shared");                                           \
+  call MPI_File_write_shared
+#define MPI_FILE_WRITE_SHARED                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_WRITE_SHARED");                                           \
+  call MPI_File_write_shared
+#define mpi_file_read_ordered                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_read_ordered");                                           \
+  call MPI_File_read_ordered
+#define MPI_FILE_READ_ORDERED                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_READ_ORDERED");                                           \
+  call MPI_File_read_ordered
+#define mpi_file_write_ordered                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_write_ordered");                                          \
+  call MPI_File_write_ordered
+#define MPI_FILE_WRITE_ORDERED                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_WRITE_ORDERED");                                          \
+  call MPI_File_write_ordered
+#define mpi_file_seek_shared                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_seek_shared");                                            \
+  call MPI_File_seek_shared
+#define MPI_FILE_SEEK_SHARED                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_SEEK_SHARED");                                            \
+  call MPI_File_seek_shared
+#define mpi_file_get_position_shared                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_get_position_shared");                                    \
+  call MPI_File_get_position_shared
+#define MPI_FILE_GET_POSITION_SHARED                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_GET_POSITION_SHARED");                                    \
+  call MPI_File_get_position_shared
+#define mpi_file_sync                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_sync");                                                   \
+  call MPI_File_sync
+#define MPI_FILE_SYNC                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_SYNC");                                                   \
+  call MPI_File_sync
+#define mpi_file_set_view                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_set_view");                                               \
+  call MPI_File_set_view
+#define MPI_FILE_SET_VIEW                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_SET_VIEW");                                               \
+  call MPI_File_set_view
+#define mpi_file_get_view                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_get_view");                                               \
+  call MPI_File_get_view
+#define MPI_FILE_GET_VIEW                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_GET_VIEW");                                               \
+  call MPI_File_get_view
+#define mpi_errhandler_set                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_errhandler_set");                                              \
+  call MPI_Errhandler_set
+#define MPI_ERRHANDLER_SET                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ERRHANDLER_SET");                                              \
+  call MPI_Errhandler_set
+#define mpi_errhandler_create                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_errhandler_create");                                           \
+  call MPI_Errhandler_create
+#define MPI_ERRHANDLER_CREATE                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ERRHANDLER_CREATE");                                           \
+  call MPI_Errhandler_create
+#define mpi_errhandler_free                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_errhandler_free");                                             \
+  call MPI_Errhandler_free
+#define MPI_ERRHANDLER_FREE                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ERRHANDLER_FREE");                                             \
+  call MPI_Errhandler_free
+#define mpi_errhandler_get                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_errhandler_get");                                              \
+  call MPI_Errhandler_get
+#define MPI_ERRHANDLER_GET                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ERRHANDLER_GET");                                              \
+  call MPI_Errhandler_get
+#define mpi_comm_set_errhandler                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_set_errhandler");                                         \
+  call MPI_Comm_set_errhandler
+#define MPI_COMM_SET_ERRHANDLER                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_SET_ERRHANDLER");                                         \
+  call MPI_Comm_set_errhandler
+#define mpi_comm_get_errhandler                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_get_errhandler");                                         \
+  call MPI_Comm_get_errhandler
+#define MPI_COMM_GET_ERRHANDLER                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_GET_ERRHANDLER");                                         \
+  call MPI_Comm_get_errhandler
+#define mpi_comm_create_errhandler                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_create_errhandler");                                      \
+  call MPI_Comm_create_errhandler
+#define MPI_COMM_CREATE_ERRHANDLER                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_CREATE_ERRHANDLER");                                      \
+  call MPI_Comm_create_errhandler
+#define mpi_comm_call_errhandler                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_call_errhandler");                                        \
+  call MPI_Comm_call_errhandler
+#define MPI_COMM_CALL_ERRHANDLER                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_CALL_ERRHANDLER");                                        \
+  call MPI_Comm_call_errhandler
+#define mpi_win_set_errhandler                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_set_errhandler");                                          \
+  call MPI_Win_set_errhandler
+#define MPI_WIN_SET_ERRHANDLER                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_SET_ERRHANDLER");                                          \
+  call MPI_Win_set_errhandler
+#define mpi_win_get_errhandler                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_get_errhandler");                                          \
+  call MPI_Win_get_errhandler
+#define MPI_WIN_GET_ERRHANDLER                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_GET_ERRHANDLER");                                          \
+  call MPI_Win_get_errhandler
+#define mpi_win_create_errhandler                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_create_errhandler");                                       \
+  call MPI_Win_create_errhandler
+#define MPI_WIN_CREATE_ERRHANDLER                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_CREATE_ERRHANDLER");                                       \
+  call MPI_Win_create_errhandler
+#define mpi_win_call_errhandler                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_call_errhandler");                                         \
+  call MPI_Win_call_errhandler
+#define MPI_WIN_CALL_ERRHANDLER                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_CALL_ERRHANDLER");                                         \
+  call MPI_Win_call_errhandler
+#define mpi_errhandler_f2c                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_errhandler_f2c");                                              \
+  call MPI_Errhandler_f2c
+#define MPI_ERRHANDLER_F2C                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ERRHANDLER_F2C");                                              \
+  call MPI_Errhandler_f2c
+#define mpi_errhandler_c2f                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_errhandler_c2f");                                              \
+  call MPI_Errhandler_c2f
+#define MPI_ERRHANDLER_C2F                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ERRHANDLER_C2F");                                              \
+  call MPI_Errhandler_c2f
+#define mpi_type_create_f90_integer                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_create_f90_integer");                                     \
+  call MPI_Type_create_f90_integer
+#define MPI_TYPE_CREATE_F90_INTEGER                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_CREATE_F90_INTEGER");                                     \
+  call MPI_Type_create_f90_integer
+#define mpi_type_create_f90_real                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_create_f90_real");                                        \
+  call MPI_Type_create_f90_real
+#define MPI_TYPE_CREATE_F90_REAL                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_CREATE_F90_REAL");                                        \
+  call MPI_Type_create_f90_real
+#define mpi_type_create_f90_complex                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_create_f90_complex");                                     \
+  call MPI_Type_create_f90_complex
+#define MPI_TYPE_CREATE_F90_COMPLEX                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_CREATE_F90_COMPLEX");                                     \
+  call MPI_Type_create_f90_complex
+#define mpi_type_get_contents                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_get_contents");                                           \
+  call MPI_Type_get_contents
+#define MPI_TYPE_GET_CONTENTS                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_GET_CONTENTS");                                           \
+  call MPI_Type_get_contents
+#define mpi_type_get_envelope                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_get_envelope");                                           \
+  call MPI_Type_get_envelope
+#define MPI_TYPE_GET_ENVELOPE                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_GET_ENVELOPE");                                           \
+  call MPI_Type_get_envelope
+#define mpi_file_call_errhandler                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_call_errhandler");                                        \
+  call MPI_File_call_errhandler
+#define MPI_FILE_CALL_ERRHANDLER                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_CALL_ERRHANDLER");                                        \
+  call MPI_File_call_errhandler
+#define mpi_file_create_errhandler                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_create_errhandler");                                      \
+  call MPI_File_create_errhandler
+#define MPI_FILE_CREATE_ERRHANDLER                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_CREATE_ERRHANDLER");                                      \
+  call MPI_File_create_errhandler
+#define mpi_file_set_errhandler                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_set_errhandler");                                         \
+  call MPI_File_set_errhandler
+#define MPI_FILE_SET_ERRHANDLER                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_SET_ERRHANDLER");                                         \
+  call MPI_File_set_errhandler
+#define mpi_file_get_errhandler                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_get_errhandler");                                         \
+  call MPI_File_get_errhandler
+#define MPI_FILE_GET_ERRHANDLER                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_GET_ERRHANDLER");                                         \
+  call MPI_File_get_errhandler
+#define mpi_cart_map                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_cart_map");                                                    \
+  call MPI_Cart_map
+#define MPI_CART_MAP                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_CART_MAP");                                                    \
+  call MPI_Cart_map
+#define mpi_graph_create                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_graph_create");                                                \
+  call MPI_Graph_create
+#define MPI_GRAPH_CREATE                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GRAPH_CREATE");                                                \
+  call MPI_Graph_create
+#define mpi_graph_get                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_graph_get");                                                   \
+  call MPI_Graph_get
+#define MPI_GRAPH_GET                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GRAPH_GET");                                                   \
+  call MPI_Graph_get
+#define mpi_graph_map                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_graph_map");                                                   \
+  call MPI_Graph_map
+#define MPI_GRAPH_MAP                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GRAPH_MAP");                                                   \
+  call MPI_Graph_map
+#define mpi_graph_neighbors                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_graph_neighbors");                                             \
+  call MPI_Graph_neighbors
+#define MPI_GRAPH_NEIGHBORS                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GRAPH_NEIGHBORS");                                             \
+  call MPI_Graph_neighbors
+#define mpi_graph_neighbors_count                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_graph_neighbors_count");                                       \
+  call MPI_Graph_neighbors_count
+#define MPI_GRAPH_NEIGHBORS_COUNT                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GRAPH_NEIGHBORS_COUNT");                                       \
+  call MPI_Graph_neighbors_count
+#define mpi_graphdims_get                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_graphdims_get");                                               \
+  call MPI_Graphdims_get
+#define MPI_GRAPHDIMS_GET                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GRAPHDIMS_GET");                                               \
+  call MPI_Graphdims_get
+#define mpi_topo_test                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_topo_test");                                                   \
+  call MPI_Topo_test
+#define MPI_TOPO_TEST                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TOPO_TEST");                                                   \
+  call MPI_Topo_test
+#define mpi_add_error_class                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_add_error_class");                                             \
+  call MPI_Add_error_class
+#define MPI_ADD_ERROR_CLASS                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ADD_ERROR_CLASS");                                             \
+  call MPI_Add_error_class
+#define mpi_add_error_code                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_add_error_code");                                              \
+  call MPI_Add_error_code
+#define MPI_ADD_ERROR_CODE                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ADD_ERROR_CODE");                                              \
+  call MPI_Add_error_code
+#define mpi_add_error_string                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_add_error_string");                                            \
+  call MPI_Add_error_string
+#define MPI_ADD_ERROR_STRING                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ADD_ERROR_STRING");                                            \
+  call MPI_Add_error_string
+#define mpi_comm_test_inter                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_test_inter");                                             \
+  call MPI_Comm_test_inter
+#define MPI_COMM_TEST_INTER                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_TEST_INTER");                                             \
+  call MPI_Comm_test_inter
+#define mpi_intercomm_create                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_intercomm_create");                                            \
+  call MPI_Intercomm_create
+#define MPI_INTERCOMM_CREATE                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INTERCOMM_CREATE");                                            \
+  call MPI_Intercomm_create
+#define mpi_intercomm_merge                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_intercomm_merge");                                             \
+  call MPI_Intercomm_merge
+#define MPI_INTERCOMM_MERGE                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INTERCOMM_MERGE");                                             \
+  call MPI_Intercomm_merge
+#define mpi_comm_remote_group                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_remote_group");                                           \
+  call MPI_Comm_remote_group
+#define MPI_COMM_REMOTE_GROUP                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_REMOTE_GROUP");                                           \
+  call MPI_Comm_remote_group
+#define mpi_comm_remote_size                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_remote_size");                                            \
+  call MPI_Comm_remote_size
+#define MPI_COMM_REMOTE_SIZE                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_REMOTE_SIZE");                                            \
+  call MPI_Comm_remote_size
+#define mpi_get_elements                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_get_elements");                                                \
+  call MPI_Get_elements
+#define MPI_GET_ELEMENTS                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GET_ELEMENTS");                                                \
+  call MPI_Get_elements
+#define mpi_get_elements_x                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_get_elements_x");                                              \
+  call MPI_Get_elements_x
+#define MPI_GET_ELEMENTS_X                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_GET_ELEMENTS_X");                                              \
+  call MPI_Get_elements_x
+#define mpi_pcontrol                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_pcontrol");                                                    \
+  call MPI_Pcontrol
+#define MPI_PCONTROL                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_PCONTROL");                                                    \
+  call MPI_Pcontrol
+#define mpi_type_create_darray                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_create_darray");                                          \
+  call MPI_Type_create_darray
+#define MPI_TYPE_CREATE_DARRAY                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_CREATE_DARRAY");                                          \
+  call MPI_Type_create_darray
+#define mpi_pack_external_size                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_pack_external_size");                                          \
+  call MPI_Pack_external_size
+#define MPI_PACK_EXTERNAL_SIZE                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_PACK_EXTERNAL_SIZE");                                          \
+  call MPI_Pack_external_size
+#define mpi_pack_external                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_pack_external");                                               \
+  call MPI_Pack_external
+#define MPI_PACK_EXTERNAL                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_PACK_EXTERNAL");                                               \
+  call MPI_Pack_external
+#define mpi_unpack_external                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_unpack_external");                                             \
+  call MPI_Unpack_external
+#define MPI_UNPACK_EXTERNAL                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_UNPACK_EXTERNAL");                                             \
+  call MPI_Unpack_external
+#define mpi_type_match_size                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_type_match_size");                                             \
+  call MPI_Type_match_size
+#define MPI_TYPE_MATCH_SIZE                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_TYPE_MATCH_SIZE");                                             \
+  call MPI_Type_match_size
+#define mpi_comm_connect                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_connect");                                                \
+  call MPI_Comm_connect
+#define MPI_COMM_CONNECT                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_CONNECT");                                                \
+  call MPI_Comm_connect
+#define mpi_unpublish_name                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_unpublish_name");                                              \
+  call MPI_Unpublish_name
+#define MPI_UNPUBLISH_NAME                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_UNPUBLISH_NAME");                                              \
+  call MPI_Unpublish_name
+#define mpi_publish_name                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_publish_name");                                                \
+  call MPI_Publish_name
+#define MPI_PUBLISH_NAME                                                                                               \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_PUBLISH_NAME");                                                \
+  call MPI_Publish_name
+#define mpi_lookup_name                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_lookup_name");                                                 \
+  call MPI_Lookup_name
+#define MPI_LOOKUP_NAME                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_LOOKUP_NAME");                                                 \
+  call MPI_Lookup_name
+#define mpi_comm_idup                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_idup");                                                   \
+  call MPI_Comm_idup
+#define MPI_COMM_IDUP                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_IDUP");                                                   \
+  call MPI_Comm_idup
+#define mpi_comm_join                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_join");                                                   \
+  call MPI_Comm_join
+#define MPI_COMM_JOIN                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_JOIN");                                                   \
+  call MPI_Comm_join
+#define mpi_open_port                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_open_port");                                                   \
+  call MPI_Open_port
+#define MPI_OPEN_PORT                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_OPEN_PORT");                                                   \
+  call MPI_Open_port
+#define mpi_close_port                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_close_port");                                                  \
+  call MPI_Close_port
+#define MPI_CLOSE_PORT                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_CLOSE_PORT");                                                  \
+  call MPI_Close_port
+#define mpi_comm_accept                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_accept");                                                 \
+  call MPI_Comm_accept
+#define MPI_COMM_ACCEPT                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_ACCEPT");                                                 \
+  call MPI_Comm_accept
+#define mpi_comm_spawn                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_spawn");                                                  \
+  call MPI_Comm_spawn
+#define MPI_COMM_SPAWN                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_SPAWN");                                                  \
+  call MPI_Comm_spawn
+#define mpi_comm_spawn_multiple                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_spawn_multiple");                                         \
+  call MPI_Comm_spawn_multiple
+#define MPI_COMM_SPAWN_MULTIPLE                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_SPAWN_MULTIPLE");                                         \
+  call MPI_Comm_spawn_multiple
+#define mpi_comm_get_parent                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_comm_get_parent");                                             \
+  call MPI_Comm_get_parent
+#define MPI_COMM_GET_PARENT                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_COMM_GET_PARENT");                                             \
+  call MPI_Comm_get_parent
+#define mpi_dist_graph_create                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_dist_graph_create");                                           \
+  call MPI_Dist_graph_create
+#define MPI_DIST_GRAPH_CREATE                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_DIST_GRAPH_CREATE");                                           \
+  call MPI_Dist_graph_create
+#define mpi_dist_graph_create_adjacent                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_dist_graph_create_adjacent");                                  \
+  call MPI_Dist_graph_create_adjacent
+#define MPI_DIST_GRAPH_CREATE_ADJACENT                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_DIST_GRAPH_CREATE_ADJACENT");                                  \
+  call MPI_Dist_graph_create_adjacent
+#define mpi_dist_graph_neighbors                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_dist_graph_neighbors");                                        \
+  call MPI_Dist_graph_neighbors
+#define MPI_DIST_GRAPH_NEIGHBORS                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_DIST_GRAPH_NEIGHBORS");                                        \
+  call MPI_Dist_graph_neighbors
+#define mpi_dist_graph_neighbors_count                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_dist_graph_neighbors_count");                                  \
+  call MPI_Dist_graph_neighbors_count
+#define MPI_DIST_GRAPH_NEIGHBORS_COUNT                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_DIST_GRAPH_NEIGHBORS_COUNT");                                  \
+  call MPI_Dist_graph_neighbors_count
+#define mpi_win_test                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_win_test");                                                    \
+  call MPI_Win_test
+#define MPI_WIN_TEST                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_WIN_TEST");                                                    \
+  call MPI_Win_test
+#define mpi_file_c2f                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_c2f");                                                    \
+  call MPI_File_c2f
+#define MPI_FILE_C2F                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_C2F");                                                    \
+  call MPI_File_c2f
+#define mpi_file_f2c                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_f2c");                                                    \
+  call MPI_File_f2c
+#define MPI_FILE_F2C                                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_F2C");                                                    \
+  call MPI_File_f2c
+#define mpi_register_datarep                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_register_datarep");                                            \
+  call MPI_Register_datarep
+#define MPI_REGISTER_DATAREP                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_REGISTER_DATAREP");                                            \
+  call MPI_Register_datarep
+#define mpi_file_set_size                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_set_size");                                               \
+  call MPI_File_set_size
+#define MPI_FILE_SET_SIZE                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_SET_SIZE");                                               \
+  call MPI_File_set_size
+#define mpi_file_preallocate                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_preallocate");                                            \
+  call MPI_File_preallocate
+#define MPI_FILE_PREALLOCATE                                                                                           \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_PREALLOCATE");                                            \
+  call MPI_File_preallocate
+#define mpi_file_iread_at                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_iread_at");                                               \
+  call MPI_File_iread_at
+#define MPI_FILE_IREAD_AT                                                                                              \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_IREAD_AT");                                               \
+  call MPI_File_iread_at
+#define mpi_file_iwrite_at                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_iwrite_at");                                              \
+  call MPI_File_iwrite_at
+#define MPI_FILE_IWRITE_AT                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_IWRITE_AT");                                              \
+  call MPI_File_iwrite_at
+#define mpi_file_iread_at_all                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_iread_at_all");                                           \
+  call MPI_File_iread_at_all
+#define MPI_FILE_IREAD_AT_ALL                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_IREAD_AT_ALL");                                           \
+  call MPI_File_iread_at_all
+#define mpi_file_iwrite_at_all                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_iwrite_at_all");                                          \
+  call MPI_File_iwrite_at_all
+#define MPI_FILE_IWRITE_AT_ALL                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_IWRITE_AT_ALL");                                          \
+  call MPI_File_iwrite_at_all
+#define mpi_file_iread                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_iread");                                                  \
+  call MPI_File_iread
+#define MPI_FILE_IREAD                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_IREAD");                                                  \
+  call MPI_File_iread
+#define mpi_file_iwrite                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_iwrite");                                                 \
+  call MPI_File_iwrite
+#define MPI_FILE_IWRITE                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_IWRITE");                                                 \
+  call MPI_File_iwrite
+#define mpi_file_iread_all                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_iread_all");                                              \
+  call MPI_File_iread_all
+#define MPI_FILE_IREAD_ALL                                                                                             \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_IREAD_ALL");                                              \
+  call MPI_File_iread_all
+#define mpi_file_iwrite_all                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_iwrite_all");                                             \
+  call MPI_File_iwrite_all
+#define MPI_FILE_IWRITE_ALL                                                                                            \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_IWRITE_ALL");                                             \
+  call MPI_File_iwrite_all
+#define mpi_file_get_byte_offset                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_get_byte_offset");                                        \
+  call MPI_File_get_byte_offset
+#define MPI_FILE_GET_BYTE_OFFSET                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_GET_BYTE_OFFSET");                                        \
+  call MPI_File_get_byte_offset
+#define mpi_file_iread_shared                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_iread_shared");                                           \
+  call MPI_File_iread_shared
+#define MPI_FILE_IREAD_SHARED                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_IREAD_SHARED");                                           \
+  call MPI_File_iread_shared
+#define mpi_file_iwrite_shared                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_iwrite_shared");                                          \
+  call MPI_File_iwrite_shared
+#define MPI_FILE_IWRITE_SHARED                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_IWRITE_SHARED");                                          \
+  call MPI_File_iwrite_shared
+#define mpi_file_read_at_all_begin                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_read_at_all_begin");                                      \
+  call MPI_File_read_at_all_begin
+#define MPI_FILE_READ_AT_ALL_BEGIN                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_READ_AT_ALL_BEGIN");                                      \
+  call MPI_File_read_at_all_begin
+#define mpi_file_read_at_all_end                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_read_at_all_end");                                        \
+  call MPI_File_read_at_all_end
+#define MPI_FILE_READ_AT_ALL_END                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_READ_AT_ALL_END");                                        \
+  call MPI_File_read_at_all_end
+#define mpi_file_write_at_all_begin                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_write_at_all_begin");                                     \
+  call MPI_File_write_at_all_begin
+#define MPI_FILE_WRITE_AT_ALL_BEGIN                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_WRITE_AT_ALL_BEGIN");                                     \
+  call MPI_File_write_at_all_begin
+#define mpi_file_write_at_all_end                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_write_at_all_end");                                       \
+  call MPI_File_write_at_all_end
+#define MPI_FILE_WRITE_AT_ALL_END                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_WRITE_AT_ALL_END");                                       \
+  call MPI_File_write_at_all_end
+#define mpi_file_read_all_begin                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_read_all_begin");                                         \
+  call MPI_File_read_all_begin
+#define MPI_FILE_READ_ALL_BEGIN                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_READ_ALL_BEGIN");                                         \
+  call MPI_File_read_all_begin
+#define mpi_file_read_all_end                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_read_all_end");                                           \
+  call MPI_File_read_all_end
+#define MPI_FILE_READ_ALL_END                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_READ_ALL_END");                                           \
+  call MPI_File_read_all_end
+#define mpi_file_write_all_begin                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_write_all_begin");                                        \
+  call MPI_File_write_all_begin
+#define MPI_FILE_WRITE_ALL_BEGIN                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_WRITE_ALL_BEGIN");                                        \
+  call MPI_File_write_all_begin
+#define mpi_file_write_all_end                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_write_all_end");                                          \
+  call MPI_File_write_all_end
+#define MPI_FILE_WRITE_ALL_END                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_WRITE_ALL_END");                                          \
+  call MPI_File_write_all_end
+#define mpi_file_read_ordered_begin                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_read_ordered_begin");                                     \
+  call MPI_File_read_ordered_begin
+#define MPI_FILE_READ_ORDERED_BEGIN                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_READ_ORDERED_BEGIN");                                     \
+  call MPI_File_read_ordered_begin
+#define mpi_file_read_ordered_end                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_read_ordered_end");                                       \
+  call MPI_File_read_ordered_end
+#define MPI_FILE_READ_ORDERED_END                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_READ_ORDERED_END");                                       \
+  call MPI_File_read_ordered_end
+#define mpi_file_write_ordered_begin                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_write_ordered_begin");                                    \
+  call MPI_File_write_ordered_begin
+#define MPI_FILE_WRITE_ORDERED_BEGIN                                                                                   \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_WRITE_ORDERED_BEGIN");                                    \
+  call MPI_File_write_ordered_begin
+#define mpi_file_write_ordered_end                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_write_ordered_end");                                      \
+  call MPI_File_write_ordered_end
+#define MPI_FILE_WRITE_ORDERED_END                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_WRITE_ORDERED_END");                                      \
+  call MPI_File_write_ordered_end
+#define mpi_file_get_type_extent                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_get_type_extent");                                        \
+  call MPI_File_get_type_extent
+#define MPI_FILE_GET_TYPE_EXTENT                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_GET_TYPE_EXTENT");                                        \
+  call MPI_File_get_type_extent
+#define mpi_file_set_atomicity                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_set_atomicity");                                          \
+  call MPI_File_set_atomicity
+#define MPI_FILE_SET_ATOMICITY                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_SET_ATOMICITY");                                          \
+  call MPI_File_set_atomicity
+#define mpi_file_get_atomicity                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_file_get_atomicity");                                          \
+  call MPI_File_get_atomicity
+#define MPI_FILE_GET_ATOMICITY                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_FILE_GET_ATOMICITY");                                          \
+  call MPI_File_get_atomicity
+#define mpi_message_f2c                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_message_f2c");                                                 \
+  call MPI_Message_f2c
+#define MPI_MESSAGE_F2C                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_MESSAGE_F2C");                                                 \
+  call MPI_Message_f2c
+#define mpi_message_c2f                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_message_c2f");                                                 \
+  call MPI_Message_c2f
+#define MPI_MESSAGE_C2F                                                                                                \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_MESSAGE_C2F");                                                 \
+  call MPI_Message_c2f
+#define mpi_mrecv                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_mrecv");                                                       \
+  call MPI_Mrecv
+#define MPI_MRECV                                                                                                      \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_MRECV");                                                       \
+  call MPI_Mrecv
+#define mpi_mprobe                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_mprobe");                                                      \
+  call MPI_Mprobe
+#define MPI_MPROBE                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_MPROBE");                                                      \
+  call MPI_Mprobe
+#define mpi_imrecv                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_imrecv");                                                      \
+  call MPI_Imrecv
+#define MPI_IMRECV                                                                                                     \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IMRECV");                                                      \
+  call MPI_Imrecv
+#define mpi_improbe                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_improbe");                                                     \
+  call MPI_Improbe
+#define MPI_IMPROBE                                                                                                    \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_IMPROBE");                                                     \
+  call MPI_Improbe
+#define mpi_neighbor_allgather                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_neighbor_allgather");                                          \
+  call MPI_Neighbor_allgather
+#define MPI_NEIGHBOR_ALLGATHER                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_NEIGHBOR_ALLGATHER");                                          \
+  call MPI_Neighbor_allgather
+#define mpi_neighbor_allgatherv                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_neighbor_allgatherv");                                         \
+  call MPI_Neighbor_allgatherv
+#define MPI_NEIGHBOR_ALLGATHERV                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_NEIGHBOR_ALLGATHERV");                                         \
+  call MPI_Neighbor_allgatherv
+#define mpi_neighbor_alltoall                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_neighbor_alltoall");                                           \
+  call MPI_Neighbor_alltoall
+#define MPI_NEIGHBOR_ALLTOALL                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_NEIGHBOR_ALLTOALL");                                           \
+  call MPI_Neighbor_alltoall
+#define mpi_neighbor_alltoallv                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_neighbor_alltoallv");                                          \
+  call MPI_Neighbor_alltoallv
+#define MPI_NEIGHBOR_ALLTOALLV                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_NEIGHBOR_ALLTOALLV");                                          \
+  call MPI_Neighbor_alltoallv
+#define mpi_neighbor_alltoallw                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_neighbor_alltoallw");                                          \
+  call MPI_Neighbor_alltoallw
+#define MPI_NEIGHBOR_ALLTOALLW                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_NEIGHBOR_ALLTOALLW");                                          \
+  call MPI_Neighbor_alltoallw
+#define mpi_ineighbor_allgather                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ineighbor_allgather");                                         \
+  call MPI_Ineighbor_allgather
+#define MPI_INEIGHBOR_ALLGATHER                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INEIGHBOR_ALLGATHER");                                         \
+  call MPI_Ineighbor_allgather
+#define mpi_ineighbor_allgatherv                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ineighbor_allgatherv");                                        \
+  call MPI_Ineighbor_allgatherv
+#define MPI_INEIGHBOR_ALLGATHERV                                                                                       \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INEIGHBOR_ALLGATHERV");                                        \
+  call MPI_Ineighbor_allgatherv
+#define mpi_ineighbor_alltoall                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ineighbor_alltoall");                                          \
+  call MPI_Ineighbor_alltoall
+#define MPI_INEIGHBOR_ALLTOALL                                                                                         \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INEIGHBOR_ALLTOALL");                                          \
+  call MPI_Ineighbor_alltoall
+#define mpi_ineighbor_alltoallv                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ineighbor_alltoallv");                                         \
+  call MPI_Ineighbor_alltoallv
+#define MPI_INEIGHBOR_ALLTOALLV                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INEIGHBOR_ALLTOALLV");                                         \
+  call MPI_Ineighbor_alltoallv
+#define mpi_ineighbor_alltoallw                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_ineighbor_alltoallw");                                         \
+  call MPI_Ineighbor_alltoallw
+#define MPI_INEIGHBOR_ALLTOALLW                                                                                        \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_INEIGHBOR_ALLTOALLW");                                         \
+  call MPI_Ineighbor_alltoallw
+#define mpi_status_f2c                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_status_f2c");                                                  \
+  call MPI_Status_f2c
+#define MPI_STATUS_F2C                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_STATUS_F2C");                                                  \
+  call MPI_Status_f2c
+#define mpi_status_c2f                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_status_c2f");                                                  \
+  call MPI_Status_c2f
+#define MPI_STATUS_C2F                                                                                                 \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_STATUS_C2F");                                                  \
+  call MPI_Status_c2f

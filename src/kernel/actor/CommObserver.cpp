@@ -16,8 +16,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(obs_comm, mc_observer, "Logging specific to the 
 
 namespace simgrid::kernel::actor {
 
-ActivityTestanySimcall::ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities)
-    : ResultingSimcall(actor, -1), activities_(activities)
+ActivityTestanySimcall::ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities,
+                                               std::string fun_call)
+    : ResultingSimcall(actor, -1), activities_(activities), fun_call_(fun_call)
 {
   indexes_.clear();
   // list all the activities that are ready
@@ -72,6 +73,7 @@ void ActivityTestanySimcall::serialize(std::stringstream& stream) const
     serialize_activity_test(act, stream);
     stream << ' ';
   }
+  stream << fun_call_;
 }
 std::string ActivityTestanySimcall::to_string() const
 {
@@ -85,6 +87,7 @@ std::string ActivityTestanySimcall::to_string() const
 void ActivityTestSimcall::serialize(std::stringstream& stream) const
 {
   serialize_activity_test(activity_, stream);
+  stream << ' ' << fun_call_;
 }
 std::string ActivityTestSimcall::to_string() const
 {
@@ -123,6 +126,7 @@ static std::string to_string_activity_wait(const activity::ActivityImpl* act)
 void ActivityWaitSimcall::serialize(std::stringstream& stream) const
 {
   serialize_activity_wait(activity_, timeout_ > 0, stream);
+  stream << ' ' << fun_call_;
 }
 void ActivityWaitanySimcall::serialize(std::stringstream& stream) const
 {
@@ -131,6 +135,7 @@ void ActivityWaitanySimcall::serialize(std::stringstream& stream) const
     serialize_activity_wait(act, timeout_ > 0, stream);
     stream << ' ';
   }
+  stream << fun_call_;
 }
 std::string ActivityWaitSimcall::to_string() const
 {
@@ -145,8 +150,8 @@ std::string ActivityWaitanySimcall::to_string() const
   return buffer.str();
 }
 ActivityWaitanySimcall::ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities,
-                                               double timeout)
-    : ResultingSimcall(actor, -1), activities_(activities), timeout_(timeout)
+                                               double timeout, std::string fun_call)
+    : ResultingSimcall(actor, -1), activities_(activities), timeout_(timeout), fun_call_(fun_call)
 {
   // list all the activities that are ready
   indexes_.clear();
@@ -203,6 +208,7 @@ void CommIsendSimcall::serialize(std::stringstream& stream) const
          << src_buff_size_ << ' ' << tag_;
   XBT_DEBUG("SendObserver comm:%p mbox:%u buff:%p size:%zu tag:%d", comm_, mbox_->get_id(), src_buff_, src_buff_size_,
             tag_);
+  stream << ' ' << fun_call_;
 }
 std::string CommIsendSimcall::to_string() const
 {
@@ -217,6 +223,7 @@ void CommIrecvSimcall::serialize(std::stringstream& stream) const
   stream << (short)mc::Transition::Type::COMM_ASYNC_RECV << ' ';
   stream << (comm_ ? comm_->get_id() : 0) << ' ' << mbox_->get_id() << ' ' << (uintptr_t)dst_buff_ << ' ' << tag_;
   XBT_DEBUG("RecvObserver comm:%p mbox:%u buff:%p tag:%d", comm_, mbox_->get_id(), dst_buff_, tag_);
+  stream << ' ' << fun_call_;
 }
 std::string CommIrecvSimcall::to_string() const
 {

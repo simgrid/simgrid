@@ -66,10 +66,10 @@ public:
   {
     unsigned long count = 0;
     for (auto& [_, actor] : actors_to_run_)
-      if (actor.is_enabled() && not actor.is_done()) {
-        actor.mark_todo();
-        count++;
-      }
+        if (actor.is_enabled() && not actor.is_done()) {
+          actor.mark_todo();
+          count++;
+        }
     return count;
   }
 

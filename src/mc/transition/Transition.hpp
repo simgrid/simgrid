@@ -28,7 +28,6 @@ class Transition {
   static unsigned long replayed_transitions_;
 
   friend State; // FIXME remove this once we have a proper class to handle the statistics
-
 public:
   /* Ordering is important here. depends() implementations only consider subsequent types in this ordering */
   XBT_DECLARE_ENUM_CLASS(Type, RANDOM, ACTOR_JOIN, /* First because indep with anybody including themselves */
@@ -42,6 +41,10 @@ public:
   Type type_ = Type::UNKNOWN;
 
   aid_t aid_ = 0;
+
+  /** The user function call that caused this transition to exist.
+   *  Format is filename::function::line */
+  std::string user_fun_call_ = "";
 
   /* Which transition was executed for this simcall
    *

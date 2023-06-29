@@ -510,7 +510,8 @@ void Request::start()
                                              process->replaying() ? &smpi_comm_null_copy_buffer_callback
                                                                   : smpi_comm_copy_data_callback,
                                              this,
-                                             -1.0};
+                                             -1.0,
+                                             process->call_location()->get_call_location()};
     observer.set_tag(tag_);
 
     action_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::CommImpl::irecv(&observer); },
@@ -518,7 +519,7 @@ void Request::start()
 
     XBT_DEBUG("recv simcall posted");
   } else { /* the RECV flag was not set, so this is a send */
-    const simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
+    simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
     xbt_assert(process, "Actor pid=%ld is gone??", dst_);
     if (TRACE_smpi_view_internals())
       TRACE_smpi_send(src_, src_, dst_, tag_, size_);
@@ -609,7 +610,7 @@ void Request::start()
         &xbt_free_f, // how to free the userdata if a detached send fails
         process->replaying() ? &smpi_comm_null_copy_buffer_callback : smpi_comm_copy_data_callback, this,
         // detach if msg size < eager/rdv switch limit
-        detached_};
+        detached_, process->call_location()->get_call_location()};
     observer.set_tag(tag_);
     action_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::CommImpl::isend(&observer); },
                                               &observer);
@@ -666,7 +667,9 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
     if ((*request)->action_ != nullptr && ((*request)->flags_ & MPI_REQ_CANCELLED) == 0){
       try{
         kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-        kernel::actor::ActivityTestSimcall observer{issuer, (*request)->action_.get()};
+        simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(issuer->get_pid()));
+        kernel::actor::ActivityTestSimcall observer{issuer, (*request)->action_.get(),
+                                                    process->call_location()->get_call_location()};
         *flag = kernel::actor::simcall_answered(
             [&observer] { return observer.get_activity()->test(observer.get_issuer()); }, &observer);
       } catch (const Exception&) {
@@ -755,7 +758,8 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
     ssize_t i;
     try{
       kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-      kernel::actor::ActivityTestanySimcall observer{issuer, comms};
+      simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(issuer->get_pid()));
+      kernel::actor::ActivityTestanySimcall observer{issuer, comms, process->call_location()->get_call_location()};
       i = kernel::actor::simcall_answered(
           [&observer] {
             return kernel::activity::ActivityImpl::test_any(observer.get_issuer(), observer.get_activities());
@@ -1071,7 +1075,9 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
       try{
         // this is not a detached send
         kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-        kernel::actor::ActivityWaitSimcall observer{issuer, (*request)->action_.get(), -1};
+        simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(issuer->get_pid()));
+        kernel::actor::ActivityWaitSimcall observer{issuer, (*request)->action_.get(), -1,
+                                                    process->call_location()->get_call_location()};
         kernel::actor::simcall_blocking([issuer, &observer] { observer.get_activity()->wait_for(issuer, -1); },
                                         &observer);
       } catch (const CancelException&) {
@@ -1141,7 +1147,9 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
       ssize_t i;
       try{
         kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-        kernel::actor::ActivityWaitanySimcall observer{issuer, comms, -1};
+        simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(issuer->get_pid()));
+        kernel::actor::ActivityWaitanySimcall observer{issuer, comms, -1,
+                                                       process->call_location()->get_call_location()};
         i = kernel::actor::simcall_blocking(
             [&observer] {
               kernel::activity::ActivityImpl::wait_any_for(observer.get_issuer(), observer.get_activities(),

@@ -50,11 +50,11 @@ sub output_macro {
   # This is a GCC extension. The last statement is the value of the expression
   # in parentheses.
   if (defined $options{f}) {
-    print "#define ". lc($id) ." smpi_trace_set_call_location(__FILE__,__LINE__); call ". ucfirst $id ."\n";
-    print "#define ". uc($id) ." smpi_trace_set_call_location(__FILE__,__LINE__); call ". ucfirst $id ."\n";
+    print "#define ". lc($id) ." smpi_trace_set_call_location(__FILE__,__LINE__,\"". lc($id) ."\"); call ". ucfirst $id ."\n";
+    print "#define ". uc($id) ." smpi_trace_set_call_location(__FILE__,__LINE__,\"". uc($id) ."\"); call ". ucfirst $id ."\n";
   }
   else {
-    print "#define $id(...) (smpi_trace_set_call_location(__FILE__, __LINE__), $id(__VA_ARGS__))\n";
+    print "#define $id(...) (smpi_trace_set_call_location(__FILE__, __LINE__, \"$id\"), $id(__VA_ARGS__))\n";
   }
 }
 

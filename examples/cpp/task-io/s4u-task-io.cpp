@@ -13,8 +13,8 @@
  * comm is a communication task.
  */
 
-#include "simgrid/s4u/Task.hpp"
 #include "simgrid/s4u.hpp"
+#include "simgrid/s4u/Task.hpp"
 #include <simgrid/plugins/file_system.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(task_simple, "Messages specific for this task example");
@@ -41,9 +41,8 @@ int main(int argc, char* argv[])
   read->add_successor(exec2);
 
   // Add a function to be called when tasks end for log purpose
-  sg4::Task::on_completion_cb([](const sg4::Task* t) {
-    XBT_INFO("Task %s finished (%d)", t->get_name().c_str(), t->get_count());
-  });
+  sg4::Task::on_completion_cb(
+      [](const sg4::Task* t) { XBT_INFO("Task %s finished (%d)", t->get_name().c_str(), t->get_count()); });
 
   // Enqueue two firings for task exec1
   exec1->enqueue_firings(2);

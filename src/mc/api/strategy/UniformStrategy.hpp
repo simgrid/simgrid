@@ -48,7 +48,7 @@ public:
 	chosen = xbt::random::uniform_int(0, possibilities-1);
 
     for (auto const& [aid, actor] : actors_to_run_) {
-      if (((not actor.is_todo()) && must_be_todo) || actor.is_done() || (not actor.is_enabled()))
+        if (((not actor.is_todo()) && must_be_todo) || actor.is_done() || (not actor.is_enabled()))
         continue;
       if (chosen == 0) {
         return std::make_pair(aid, valuation.at(aid));

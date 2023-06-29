@@ -133,10 +133,7 @@ public:
   double get_load() const;
 
 #ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v338("Please use get_load() instead") double get_usage() const
-  {
-    return get_load();
-  }
+  XBT_ATTRIB_DEPRECATED_v338("Please use get_load() instead") double get_usage() const { return get_load(); }
 #endif
 
   /** @brief Check if the Link is used (at least one flow uses the link) */

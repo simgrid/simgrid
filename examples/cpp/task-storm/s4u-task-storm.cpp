@@ -3,15 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This example takes the main concepts of Apache Storm presented here https://storm.apache.org/releases/2.4.0/Concepts.html
-   and use them to build a simulation of a stream processing application
+/* This example takes the main concepts of Apache Storm presented here
+   https://storm.apache.org/releases/2.4.0/Concepts.html and use them to build a simulation of a stream processing
+   application
 
    Spout SA produces data every 100ms. The volume produced is alternatively 1e3, 1e6 and 1e9 bytes.
    Spout SB produces 1e6 bytes every 200ms.
 
-   Bolt B1 and B2 processes data from Spout SA alternatively. The quantity of work to process this data is 10 flops per bytes
-   Bolt B3 processes data from Spout SB.
-   Bolt B4 processes data from Bolt B3.
+   Bolt B1 and B2 processes data from Spout SA alternatively. The quantity of work to process this data is 10 flops per
+   bytes Bolt B3 processes data from Spout SB. Bolt B4 processes data from Bolt B3.
 
                         Fafard
                         ┌────┐
@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
   // Retrieve hosts
   auto tremblay = e.host_by_name("Tremblay");
   auto jupiter  = e.host_by_name("Jupiter");
-  auto fafard  = e.host_by_name("Fafard");
+  auto fafard   = e.host_by_name("Fafard");
   auto ginette  = e.host_by_name("Ginette");
   auto bourassa = e.host_by_name("Bourassa");
 
@@ -74,20 +74,19 @@ int main(int argc, char* argv[])
      Alternatively we: remove/add the link between SA and SA_to_B2
                        add/remove the link between SA and SA_to_B1
   */
-  SA->on_this_start_cb([SA_to_B1,SA_to_B2](sg4::Task* t) {
+  SA->on_this_start_cb([SA_to_B1, SA_to_B2](sg4::Task* t) {
     int count = t->get_count();
     sg4::CommTaskPtr comm;
     if (count % 2 == 0) {
       t->remove_successor(SA_to_B2);
       t->add_successor(SA_to_B1);
       comm = SA_to_B1;
-    }
-    else {
+    } else {
       t->remove_successor(SA_to_B1);
       t->add_successor(SA_to_B2);
       comm = SA_to_B2;
     }
-    std::vector<double> amount = {1e3,1e6,1e9};
+    std::vector<double> amount = {1e3, 1e6, 1e9};
     comm->set_amount(amount[count % 3]);
     auto token = std::make_shared<sg4::Token>();
     token->set_data(new double(amount[count % 3]));
@@ -115,10 +114,8 @@ int main(int argc, char* argv[])
   SB->enqueue_firings(5);
 
   // Add a function to be called when tasks end for log purpose
-  sg4::Task::on_completion_cb([]
-  (const sg4::Task* t) {
-    XBT_INFO("Task %s finished (%d)", t->get_name().c_str(), t->get_count());
-  });
+  sg4::Task::on_completion_cb(
+      [](const sg4::Task* t) { XBT_INFO("Task %s finished (%d)", t->get_name().c_str(), t->get_count()); });
 
   // Start the simulation
   e.run();

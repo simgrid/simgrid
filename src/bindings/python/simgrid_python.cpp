@@ -34,30 +34,30 @@
 #include <vector>
 
 namespace py = pybind11;
-using simgrid::s4u::CommTask;
-using simgrid::s4u::CommTaskPtr;
-using simgrid::s4u::ExecTask;
-using simgrid::s4u::ExecTaskPtr;
-using simgrid::s4u::IoTask;
-using simgrid::s4u::IoTaskPtr;
-using simgrid::s4u::Task;
-using simgrid::s4u::TaskPtr;
 using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 using simgrid::s4u::Barrier;
 using simgrid::s4u::BarrierPtr;
 using simgrid::s4u::Comm;
 using simgrid::s4u::CommPtr;
+using simgrid::s4u::CommTask;
+using simgrid::s4u::CommTaskPtr;
 using simgrid::s4u::Disk;
 using simgrid::s4u::Engine;
+using simgrid::s4u::ExecTask;
+using simgrid::s4u::ExecTaskPtr;
 using simgrid::s4u::Host;
 using simgrid::s4u::Io;
+using simgrid::s4u::IoTask;
+using simgrid::s4u::IoTaskPtr;
 using simgrid::s4u::Link;
 using simgrid::s4u::Mailbox;
 using simgrid::s4u::Mutex;
 using simgrid::s4u::MutexPtr;
 using simgrid::s4u::Semaphore;
 using simgrid::s4u::SemaphorePtr;
+using simgrid::s4u::Task;
+using simgrid::s4u::TaskPtr;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(python, "python");
 

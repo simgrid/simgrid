@@ -1,9 +1,9 @@
 #include <memory>
 #include <simgrid/Exception.hpp>
-#include <simgrid/s4u/Task.hpp>
 #include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Io.hpp>
+#include <simgrid/s4u/Task.hpp>
 #include <simgrid/simix.hpp>
 
 #include "src/simgrid/module.hpp"
@@ -50,7 +50,7 @@ void Task::receive(Task* source)
   if (tokens_received_.size() <= queued_firings_ + source_count)
     tokens_received_.emplace_back();
   tokens_received_[queued_firings_ + source_count][source] = source->token_;
-  bool enough_tokens = true;
+  bool enough_tokens                                       = true;
   for (auto const& [key, val] : predecessors_)
     if (val < 1) {
       enough_tokens = false;
@@ -126,10 +126,11 @@ std::shared_ptr<Token> Task::get_next_token_from(TaskPtr t)
   return tokens_received_.front()[t];
 }
 
-void Task::fire() {
+void Task::fire()
+{
   on_this_start(this);
   on_start(this);
-  working_ = true;
+  working_        = true;
   queued_firings_ = std::max(queued_firings_ - 1, 0);
   if (not tokens_received_.empty())
     tokens_received_.pop_front();

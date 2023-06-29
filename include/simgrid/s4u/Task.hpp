@@ -30,8 +30,8 @@ class Task {
   std::string name_;
   double amount_;
   int queued_firings_ = 0;
-  int count_        = 0;
-  bool working_     = false;
+  int count_          = 0;
+  bool working_       = false;
 
   std::set<Task*> successors_                 = {};
   std::map<Task*, unsigned int> predecessors_ = {};
@@ -52,12 +52,12 @@ class Task {
 
 protected:
   explicit Task(const std::string& name);
-  virtual ~Task()     = default;
+  virtual ~Task() = default;
 
   virtual void fire();
   void complete();
 
-  void set_current_activity (ActivityPtr a) { current_activity_ = a; }
+  void set_current_activity(ActivityPtr a) { current_activity_ = a; }
 
 public:
   const std::string& get_name() const { return name_; }
@@ -77,7 +77,7 @@ public:
   void enqueue_firings(int n);
 
   /** Add a callback fired before this task activity starts */
-  void on_this_start_cb(const std::function<void(Task*)>& func){ on_this_start.connect(func); }
+  void on_this_start_cb(const std::function<void(Task*)>& func) { on_this_start.connect(func); }
   /** Add a callback fired before a task activity starts.
    * Triggered after the on_this_start function**/
   static void on_start_cb(const std::function<void(Task*)>& cb) { on_start.connect(cb); }

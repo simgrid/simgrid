@@ -283,9 +283,15 @@ public:
   void on_this_veto_cb(const std::function<void(AnyActivity&)>& cb) { on_this_veto.connect(cb); }
 
   XBT_ATTRIB_DEPRECATED_v338("Please use on_suspend_cb() instead") static void on_suspended_cb(
-      const std::function<void(Activity const&)>& cb) { on_suspend.connect(cb); }
+      const std::function<void(Activity const&)>& cb)
+  {
+    on_suspend.connect(cb);
+  }
   XBT_ATTRIB_DEPRECATED_v338("Please use on_resume_cb() instead") static void on_resumed_cb(
-      const std::function<void(Activity const&)>& cb) { on_resume.connect(cb);  }
+      const std::function<void(Activity const&)>& cb)
+  {
+    on_resume.connect(cb);
+  }
 
   AnyActivity* add_successor(ActivityPtr a)
   {
