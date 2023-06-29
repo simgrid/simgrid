@@ -103,14 +103,13 @@ template <typename Iterator> void subsets_iterator<Iterator>::increment()
   ++current_subset[k - 1];
   ++P[k - 1];
 
-  const auto end                  = this->end.value();
-  const bool shift_other_elements = current_subset[k - 1] == end;
+  const bool shift_other_elements = current_subset[k - 1] == end.value();
 
   if (shift_other_elements) {
     if (k == 1) {
       // We're done in the case that k = 1; here, we've iterated
       // through the list once, which is all that is needed
-      this->end = std::nullopt;
+      end = std::nullopt;
       return;
     }
 
@@ -150,7 +149,7 @@ template <typename Iterator> void subsets_iterator<Iterator>::increment()
     // element can be located. Thus, if `P[0] > (n - k)`, this means
     // we've sucessfully iterated through all subsets so we're done
     if (P[0] > (n - k)) {
-      this->end = std::nullopt;
+      end = std::nullopt;
       return;
     }
 

@@ -287,8 +287,8 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
       if (disqualified_actors.count(q) > 0) { // Did we already note that `q` is not an initial?
         continue;
       }
-      const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& e_star) {
-        return E_prime_v.happens_before(e_star, e_star_in_E_prime_v);
+      const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& handle) {
+        return E_prime_v.happens_before(handle, e_star_in_E_prime_v);
       });
       if (is_initial) {
         // If the sleep set already contains `q`, we're done:
@@ -320,8 +320,8 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
   v_handles.push_back(e_prime_in_E_prime_v);
 
-  const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& e_star) {
-    return E_prime_v.happens_before(e_star, e_prime_in_E_prime_v);
+  const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& handle) {
+    return E_prime_v.happens_before(handle, e_prime_in_E_prime_v);
   });
   if (is_initial) {
     if (const aid_t q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v); sleep_E_prime.count(q) > 0) {
