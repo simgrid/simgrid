@@ -45,6 +45,11 @@ class Task {
   ActivityPtr previous_activity_;
   ActivityPtr current_activity_;
 
+  inline static xbt::signal<void(Task*)> on_start;
+  xbt::signal<void(Task*)> on_this_start;
+  inline static xbt::signal<void(Task*)> on_completion;
+  xbt::signal<void(Task*)> on_this_completion;
+
 protected:
   explicit Task(const std::string& name);
   virtual ~Task()     = default;
@@ -53,11 +58,6 @@ protected:
   void complete();
 
   void set_current_activity (ActivityPtr a) { current_activity_ = a; }
-
-  inline static xbt::signal<void(Task*)> on_start;
-  xbt::signal<void(Task*)> on_this_start;
-  inline static xbt::signal<void(Task*)> on_completion;
-  xbt::signal<void(Task*)> on_this_completion;
 
 public:
   const std::string& get_name() const { return name_; }
