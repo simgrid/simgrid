@@ -40,13 +40,14 @@ public:
 
   maximal_subsets_iterator()                                    = default;
   explicit maximal_subsets_iterator(const Configuration& config,
-                                    std::optional<node_filter_function> filter = std::nullopt,
-                                    std::optional<size_t> maximum_subset_size  = std::nullopt)
+                                    const std::optional<node_filter_function>& filter = std::nullopt,
+                                    std::optional<size_t> maximum_subset_size         = std::nullopt)
       : maximal_subsets_iterator(config.get_events(), filter, maximum_subset_size)
   {
   }
-  explicit maximal_subsets_iterator(const EventSet& events, std::optional<node_filter_function> filter = std::nullopt,
-                                    std::optional<size_t> maximum_subset_size = std::nullopt);
+  explicit maximal_subsets_iterator(const EventSet& events,
+                                    const std::optional<node_filter_function>& filter = std::nullopt,
+                                    std::optional<size_t> maximum_subset_size         = std::nullopt);
 
 private:
   std::vector<const UnfoldingEvent*> topological_ordering;

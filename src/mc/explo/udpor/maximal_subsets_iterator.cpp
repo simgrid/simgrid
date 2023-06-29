@@ -6,7 +6,8 @@
 
 namespace simgrid::mc::udpor {
 
-maximal_subsets_iterator::maximal_subsets_iterator(const EventSet& events, std::optional<node_filter_function> filter,
+maximal_subsets_iterator::maximal_subsets_iterator(const EventSet& events,
+                                                   const std::optional<node_filter_function>& filter,
                                                    std::optional<size_t> maximum_subset_size)
     : maximum_subset_size(maximum_subset_size), current_maximal_set({EventSet()})
 {

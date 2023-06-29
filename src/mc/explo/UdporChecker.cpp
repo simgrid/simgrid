@@ -300,7 +300,7 @@ void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration
 
   // "U (complicated expression)" portion
   const EventSet conflict_union = std::accumulate(
-      C_union_D.begin(), C_union_D.end(), EventSet(), [&](const EventSet acc, const UnfoldingEvent* e_prime) {
+      C_union_D.begin(), C_union_D.end(), EventSet(), [&](const EventSet& acc, const UnfoldingEvent* e_prime) {
         return acc.make_union(unfolding.get_immediate_conflicts_of(e_prime));
       });
 
