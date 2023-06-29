@@ -18,7 +18,7 @@ class BasicStrategy : public Strategy {
 public:
   void copy_from(const Strategy* strategy) override
   {
-    const BasicStrategy* cast_strategy = dynamic_cast<BasicStrategy const*>(strategy);
+    const auto* cast_strategy = dynamic_cast<BasicStrategy const*>(strategy);
     xbt_assert(cast_strategy != nullptr);
     depth_ = cast_strategy->depth_ - 1;
     xbt_assert(depth_ > 0, "The exploration reached a depth greater than %d. We will stop here to prevent weird interaction with DFSExplorer. If you want to change that behaviour, you should augment the size of the search by using --cfg=model-check/max-depth:", _sg_mc_max_depth.get());

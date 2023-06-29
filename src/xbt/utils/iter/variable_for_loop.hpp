@@ -51,7 +51,7 @@ public:
     const auto has_effect =
         std::none_of(collections.begin(), collections.end(), [](const auto& c) { return c.get().empty(); });
 
-    if (has_effect and (not collections.empty())) {
+    if (has_effect && (not collections.empty())) {
       std::transform(collections.begin(), collections.end(), std::back_inserter(current_subset),
                      [](const auto& c) { return c.get().cbegin(); });
       underlying_collections = std::move(collections);
@@ -76,7 +76,7 @@ template <typename IterableType> void variable_for_loop<IterableType>::increment
 {
   // Termination occurs when `current_subset := the empty set`
   // or if we have nothing to iterate over
-  if (current_subset.empty() or underlying_collections.empty()) {
+  if (current_subset.empty() || underlying_collections.empty()) {
     return;
   }
 

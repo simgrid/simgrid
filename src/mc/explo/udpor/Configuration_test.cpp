@@ -377,15 +377,13 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
 
     SECTION("Forward direction")
     {
-      auto ordered_events              = C.get_topologically_sorted_events();
-      const EventSet ordered_event_set = EventSet(std::move(ordered_events));
+      const auto ordered_event_set = EventSet(C.get_topologically_sorted_events());
       REQUIRE(events_seen == ordered_event_set);
     }
 
     SECTION("Reverse direction")
     {
-      auto ordered_events              = C.get_topologically_sorted_events_of_reverse_graph();
-      const EventSet ordered_event_set = EventSet(std::move(ordered_events));
+      const auto ordered_event_set = EventSet(C.get_topologically_sorted_events_of_reverse_graph());
       REQUIRE(events_seen == ordered_event_set);
     }
   }
@@ -969,7 +967,7 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Computing Full Alternatives in Rea
     // The first alternative that is found is the one that is chosen. Since
     // traversal over the elements of an unordered_set<> are not guaranteed,
     // both {e0, e4} and {e0, e7} are valid alternatives
-    REQUIRE((alternative.value().get_events() == EventSet({e0_handle, e4_handle}) or
+    REQUIRE((alternative.value().get_events() == EventSet({e0_handle, e4_handle}) ||
              alternative.value().get_events() == EventSet({e0_handle, e7_handle})));
   }
 
@@ -1059,8 +1057,8 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Computing Full Alternatives in Rea
 
     const auto alternative = C.compute_alternative_to(D_plus_e, U);
     REQUIRE(alternative.has_value());
-    REQUIRE((alternative.value().get_events() == EventSet({e0_handle, e7_handle}) or
-             alternative.value().get_events() == EventSet({e0_handle, e4_handle, e7_handle}) or
+    REQUIRE((alternative.value().get_events() == EventSet({e0_handle, e7_handle}) ||
+             alternative.value().get_events() == EventSet({e0_handle, e4_handle, e7_handle}) ||
              alternative.value().get_events() == EventSet({e0_handle, e4_handle, e7_handle, e8_handle})));
   }
 

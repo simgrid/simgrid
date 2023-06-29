@@ -18,8 +18,8 @@ std::vector<std::string> get_textual_trace(const PartialExecution& w)
 {
   std::vector<std::string> trace;
   for (const auto& t : w) {
-    const auto a = xbt::string_printf("Actor %ld: %s", t->aid_, t->to_string(true).c_str());
-    trace.push_back(std::move(a));
+    auto a = xbt::string_printf("Actor %ld: %s", t->aid_, t->to_string(true).c_str());
+    trace.emplace_back(std::move(a));
   }
   return trace;
 }
@@ -55,9 +55,8 @@ std::vector<std::string> Execution::get_textual_trace() const
 {
   std::vector<std::string> trace;
   for (const auto& t : this->contents_) {
-    const auto a =
-        xbt::string_printf("Actor %ld: %s", t.get_transition()->aid_, t.get_transition()->to_string(true).c_str());
-    trace.push_back(std::move(a));
+    auto a = xbt::string_printf("Actor %ld: %s", t.get_transition()->aid_, t.get_transition()->to_string(true).c_str());
+    trace.emplace_back(std::move(a));
   }
   return trace;
 }
@@ -87,7 +86,7 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
       // 2. disqualified_events.count(e_j) > 0
       // then e_i --->_E target indirectly (either through
       // e_j directly, or transitively through e_j)
-      if (disqualified_events.count(e_j) > 0 and happens_before(e_i, e_j)) {
+      if (disqualified_events.count(e_j) > 0 && happens_before(e_i, e_j)) {
         disqualified_events.insert(e_i);
         break;
       }
@@ -164,7 +163,7 @@ Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordere
     // happen after `e` is a member of `v`. In addition to marking
     // the event in `v`, we also "simulate" running the action `v`
     // from E'
-    if (not happens_before(e, e_prime) or e_prime == next_E_p) {
+    if (not happens_before(e, e_prime) || e_prime == next_E_p) {
       // First, push the transition onto the hypothetical execution
       E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
       const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
@@ -206,7 +205,7 @@ Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordere
       }
     }
   }
-  xbt_assert(!I_E_prime_v.empty(),
+  xbt_assert(not I_E_prime_v.empty(),
              "For any non-empty execution, we know that "
              "at minimum one actor is an initial since "
              "some execution is possible with respect to a "
@@ -288,8 +287,8 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
       if (disqualified_actors.count(q) > 0) { // Did we already note that `q` is not an initial?
         continue;
       }
-      const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& e_star) {
-        return E_prime_v.happens_before(e_star, e_star_in_E_prime_v);
+      const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& handle) {
+        return E_prime_v.happens_before(handle, e_star_in_E_prime_v);
       });
       if (is_initial) {
         // If the sleep set already contains `q`, we're done:
@@ -315,42 +314,39 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   //
   // Note the form of `v` in the pseudocode:
   //  `v := notdep(e, E).e'^
-  {
-    E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
-    v.push_back(get_event_with_handle(e_prime).get_transition());
+  E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
+  v.push_back(get_event_with_handle(e_prime).get_transition());
 
-    const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
-    v_handles.push_back(e_prime_in_E_prime_v);
+  const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
+  v_handles.push_back(e_prime_in_E_prime_v);
 
-    const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& e_star) {
-      return E_prime_v.happens_before(e_star, e_prime_in_E_prime_v);
-    });
-    if (is_initial) {
-      if (const aid_t q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v); sleep_E_prime.count(q) > 0) {
-        return std::nullopt;
-      } else {
-        WI_E_prime_v.insert(q);
-      }
+  const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& handle) {
+    return E_prime_v.happens_before(handle, e_prime_in_E_prime_v);
+  });
+  if (is_initial) {
+    if (const aid_t q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v); sleep_E_prime.count(q) > 0) {
+      return std::nullopt;
+    } else {
+      WI_E_prime_v.insert(q);
     }
   }
-  {
-    const Execution pre_E_e    = get_prefix_before(e);
-    const auto sleeping_actors = state_at_e.get_sleeping_actors();
 
-    // Check if any enabled actor that is independent with
-    // this execution after `v` is contained in the sleep set
-    for (const auto& [aid, astate] : state_at_e.get_actors_list()) {
-      const bool is_in_WI_E =
-          astate.is_enabled() and pre_E_e.is_independent_with_execution_of(v, astate.get_transition());
-      const bool is_in_sleep_set = sleeping_actors.count(aid) > 0;
+  const Execution pre_E_e    = get_prefix_before(e);
+  const auto sleeping_actors = state_at_e.get_sleeping_actors();
 
-      // `action(aid)` is in `WI_[E](v)` but also is contained in the sleep set.
-      // This implies that the intersection between the two is non-empty
-      if (is_in_WI_E && is_in_sleep_set) {
-        return std::nullopt;
-      }
-    }
+  // Check if any enabled actor that is independent with
+  // this execution after `v` is contained in the sleep set
+  for (const auto& [aid, astate] : state_at_e.get_actors_list()) {
+    const bool is_in_WI_E =
+        astate.is_enabled() and pre_E_e.is_independent_with_execution_of(v, astate.get_transition());
+    const bool is_in_sleep_set = sleeping_actors.count(aid) > 0;
+
+    // `action(aid)` is in `WI_[E](v)` but also is contained in the sleep set.
+    // This implies that the intersection between the two is non-empty
+    if (is_in_WI_E && is_in_sleep_set)
+      return std::nullopt;
   }
+
   return v;
 }
 
@@ -412,10 +408,8 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
   auto w_now = w;
 
   for (const auto& next_E_p : v) {
-    const aid_t p = next_E_p->aid_;
-
     // Is `p in `I_[E](w)`?
-    if (E_v.is_initial_after_execution_of(w_now, p)) {
+    if (const aid_t p = next_E_p->aid_; E_v.is_initial_after_execution_of(w_now, p)) {
       // Remove `p` from w and continue
 
       // INVARIANT: If `p` occurs in `w`, it had better refer to the same

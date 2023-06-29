@@ -36,34 +36,17 @@ class XBT_PUBLIC Exec : public Activity_T<Exec> {
 
   bool parallel_ = false;
 
-  inline static xbt::signal<void(Exec const&)> on_start;
-  xbt::signal<void(Exec const&)> on_this_start;
-
 protected:
   explicit Exec(kernel::activity::ExecImplPtr pimpl);
   Exec* do_start() override;
 
   void reset() const;
 
-  void fire_on_completion() const override { on_completion(*this); }
-  void fire_on_this_completion() const override { on_this_completion(*this); }
-  void fire_on_suspend() const override { on_suspend(*this); }
-  void fire_on_this_suspend() const override { on_this_suspend(*this); }
-  void fire_on_resume() const override { on_resume(*this); }
-  void fire_on_this_resume() const override { on_this_resume(*this); }
-  void fire_on_veto() const override { on_veto(const_cast<Exec&>(*this)); }
-  void fire_on_this_veto() const override { on_this_veto(const_cast<Exec&>(*this)); }
-
 public:
 #ifndef DOXYGEN
   Exec(Exec const&) = delete;
   Exec& operator=(Exec const&) = delete;
 #endif
-  /*! \static Signal fired each time that any execution actually starts (no veto) */
-  static void on_start_cb(const std::function<void(Exec const&)>& cb) { on_start.connect(cb); }
-  /*! Signal fired each time that this specific execution actually starts (no veto) */
-  void on_this_start_cb(const std::function<void(Exec const&)>& cb) { on_this_start.connect(cb); }
-
   /*! \static Initiate the creation of an Exec. Setters have to be called afterwards */
   static ExecPtr init();
 

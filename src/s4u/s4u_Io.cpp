@@ -89,8 +89,8 @@ Io* Io::do_start()
     pimpl_->suspend();
 
   state_ = State::STARTED;
-  on_start(*this);
-  on_this_start(*this);
+  fire_on_start();
+  fire_on_this_start();
   return this;
 }
 

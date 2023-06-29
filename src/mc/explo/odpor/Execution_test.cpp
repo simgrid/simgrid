@@ -160,7 +160,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
             const bool e_j_before_e_k = execution.happens_before(e_j, e_k);
             const bool e_i_before_e_k = execution.happens_before(e_i, e_k);
             // Logical equivalent of `e_i_before_e_j ^ e_j_before_e_k --> e_i_before_e_k`
-            REQUIRE((!(e_i_before_e_j and e_j_before_e_k) or e_i_before_e_k));
+            REQUIRE((not(e_i_before_e_j && e_j_before_e_k) || e_i_before_e_k));
           }
         }
       }

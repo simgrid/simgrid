@@ -214,20 +214,18 @@ TEST_CASE("simgrid::mc::udpor: Testing Waits, Receives, and Sends")
 
   // --- ex({⊥}) ---
   const auto incremental_exC_send = ExtensionSetCalculator::partially_extend(Configuration(), &U, comm_send);
-  { // Assert that event `a` has been added
-    UnfoldingEvent e_send(EventSet(), comm_send);
-    REQUIRE(incremental_exC_send.size() == 1);
-    REQUIRE(incremental_exC_send.contains_equivalent_to(&e_send));
-    REQUIRE(U.size() == 1);
-  }
+  // Assert that event `a` has been added
+  UnfoldingEvent e_send(EventSet(), comm_send);
+  REQUIRE(incremental_exC_send.size() == 1);
+  REQUIRE(incremental_exC_send.contains_equivalent_to(&e_send));
+  REQUIRE(U.size() == 1);
 
   const auto incremental_exC_recv = ExtensionSetCalculator::partially_extend(Configuration(), &U, comm_recv);
-  { // Assert that event `b` has been added
-    UnfoldingEvent e_recv(EventSet(), comm_recv);
-    REQUIRE(incremental_exC_recv.size() == 1);
-    REQUIRE(incremental_exC_recv.contains_equivalent_to(&e_recv));
-    REQUIRE(U.size() == 2);
-  }
+  // Assert that event `b` has been added
+  UnfoldingEvent e_recv(EventSet(), comm_recv);
+  REQUIRE(incremental_exC_recv.size() == 1);
+  REQUIRE(incremental_exC_recv.contains_equivalent_to(&e_recv));
+  REQUIRE(U.size() == 2);
   // --- ex({⊥}) ---
 
   // 2. UDPOR will then attempt to expand ex({⊥, a}) or ex({⊥, b}). Both have
@@ -241,27 +239,24 @@ TEST_CASE("simgrid::mc::udpor: Testing Waits, Receives, and Sends")
 
   // --- ex({⊥, a}) ---
   const auto incremental_exC_recv2 = ExtensionSetCalculator::partially_extend(Configuration({e_a}), &U, comm_recv);
-  { // Assert that no event has been added and that
-    // e_b is contained in the extension set
-    UnfoldingEvent e_send(EventSet(), comm_send);
-    REQUIRE(incremental_exC_recv2.size() == 1);
-    REQUIRE(incremental_exC_recv2.contains(e_b));
+  // Assert that no event has been added and that
+  // e_b is contained in the extension set
+  REQUIRE(incremental_exC_recv2.size() == 1);
+  REQUIRE(incremental_exC_recv2.contains(e_b));
 
-    // Here, `e_a` shouldn't be added again
-    REQUIRE(U.size() == 2);
-  }
+  // Here, `e_a` shouldn't be added again
+  REQUIRE(U.size() == 2);
   // --- ex({⊥, a}) ---
 
   // --- ex({⊥, b}) ---
   const auto incremental_exC_send2 = ExtensionSetCalculator::partially_extend(Configuration({e_b}), &U, comm_send);
-  { // Assert that no event has been added and that
-    // e_a is contained in the extension set
-    REQUIRE(incremental_exC_send2.size() == 1);
-    REQUIRE(incremental_exC_send2.contains(e_a));
+  // Assert that no event has been added and that
+  // e_a is contained in the extension set
+  REQUIRE(incremental_exC_send2.size() == 1);
+  REQUIRE(incremental_exC_send2.contains(e_a));
 
-    // Here, `e_b` shouldn't be added again
-    REQUIRE(U.size() == 2);
-  }
+  // Here, `e_b` shouldn't be added again
+  REQUIRE(U.size() == 2);
   // --- ex({⊥, b}) ---
 
   // 3. Expanding from ex({⊥, a, b}) brings in both `CommWait` events since they
@@ -270,21 +265,19 @@ TEST_CASE("simgrid::mc::udpor: Testing Waits, Receives, and Sends")
   // --- ex({⊥, a, b}) ---
   const auto incremental_exC_wait_actor_1 =
       ExtensionSetCalculator::partially_extend(Configuration({e_a, e_b}), &U, comm_wait_1);
-  { // Assert that events `c` has been added
-    UnfoldingEvent e_wait_1(EventSet({e_a, e_b}), comm_wait_1);
-    REQUIRE(incremental_exC_wait_actor_1.size() == 1);
-    REQUIRE(incremental_exC_wait_actor_1.contains_equivalent_to(&e_wait_1));
-    REQUIRE(U.size() == 3);
-  }
+  // Assert that events `c` has been added
+  UnfoldingEvent e_wait_1(EventSet({e_a, e_b}), comm_wait_1);
+  REQUIRE(incremental_exC_wait_actor_1.size() == 1);
+  REQUIRE(incremental_exC_wait_actor_1.contains_equivalent_to(&e_wait_1));
+  REQUIRE(U.size() == 3);
 
   const auto incremental_exC_wait_actor_2 =
       ExtensionSetCalculator::partially_extend(Configuration({e_a, e_b}), &U, comm_wait_2);
-  { // Assert that events `d` has been added
-    UnfoldingEvent e_wait_2(EventSet({e_a, e_b}), comm_wait_2);
-    REQUIRE(incremental_exC_wait_actor_2.size() == 1);
-    REQUIRE(incremental_exC_wait_actor_2.contains_equivalent_to(&e_wait_2));
-    REQUIRE(U.size() == 4);
-  }
+  // Assert that events `d` has been added
+  UnfoldingEvent e_wait_2(EventSet({e_a, e_b}), comm_wait_2);
+  REQUIRE(incremental_exC_wait_actor_2.size() == 1);
+  REQUIRE(incremental_exC_wait_actor_2.contains_equivalent_to(&e_wait_2));
+  REQUIRE(U.size() == 4);
   // --- ex({⊥, a, b}) ---
 
   // 4. Expanding from either wait action should simply yield the other event
@@ -298,22 +291,20 @@ TEST_CASE("simgrid::mc::udpor: Testing Waits, Receives, and Sends")
   // --- ex({⊥, a, b, d}) ---
   const auto incremental_exC_wait_actor_1_2 =
       ExtensionSetCalculator::partially_extend(Configuration({e_a, e_b, e_d}), &U, comm_wait_1);
-  { // Assert that no event has been added and that
-    // `e_c` is contained in the extension set
-    REQUIRE(incremental_exC_wait_actor_1_2.size() == 1);
-    REQUIRE(incremental_exC_wait_actor_1_2.contains(e_c));
-    REQUIRE(U.size() == 4);
-  }
+  // Assert that no event has been added and that
+  // `e_c` is contained in the extension set
+  REQUIRE(incremental_exC_wait_actor_1_2.size() == 1);
+  REQUIRE(incremental_exC_wait_actor_1_2.contains(e_c));
+  REQUIRE(U.size() == 4);
   // --- ex({⊥, a, b, d}) ---
 
   // --- ex({⊥, a, b, c}) ---
   const auto incremental_exC_wait_actor_2_2 =
       ExtensionSetCalculator::partially_extend(Configuration({e_a, e_b, e_c}), &U, comm_wait_2);
-  { // Assert that no event has been added and that
-    // `e_d` is contained in the extension set
-    REQUIRE(incremental_exC_wait_actor_2_2.size() == 1);
-    REQUIRE(incremental_exC_wait_actor_2_2.contains(e_d));
-    REQUIRE(U.size() == 4);
-  }
+  // Assert that no event has been added and that
+  // `e_d` is contained in the extension set
+  REQUIRE(incremental_exC_wait_actor_2_2.size() == 1);
+  REQUIRE(incremental_exC_wait_actor_2_2.contains(e_d));
+  REQUIRE(U.size() == 4);
   // --- ex({⊥, a, b, c}) ---
 }

@@ -32,7 +32,7 @@ Configuration::Configuration(const History& history) : Configuration(history.get
 
 Configuration::Configuration(const EventSet& events) : events_(events)
 {
-  if (!events_.is_valid_configuration()) {
+  if (not events_.is_valid_configuration()) {
     throw std::invalid_argument("The events do not form a valid configuration");
   }
 
@@ -67,7 +67,7 @@ void Configuration::add_event(const UnfoldingEvent* e)
   this->latest_event_mapping[e->get_actor()] = e;
 
   // Preserves the property that the configuration is causally closed
-  if (auto history = History(e); !this->events_.contains(history)) {
+  if (auto history = History(e); not this->events_.contains(history)) {
     throw std::invalid_argument("The newly added event has dependencies "
                                 "which are missing from this configuration");
   }
@@ -82,7 +82,7 @@ bool Configuration::is_compatible_with(const UnfoldingEvent* e) const
   // 2. `e` itself must not conflict with any events of
   // the configuration; otherwise adding the event would
   // violate the invariant that a configuration is conflict-free
-  return contains(e->get_history()) and (not e->conflicts_with_any(this->events_));
+  return contains(e->get_history()) && (not e->conflicts_with_any(this->events_));
 }
 
 bool Configuration::is_compatible_with(const History& history) const
@@ -138,7 +138,7 @@ EventSet Configuration::get_minimally_reproducible_events() const
   // we know that the prior set `S` covered the entire history of C and
   // was maximal. Subsequent sets will miss events earlier in the
   // topological ordering that appear in `S`
-  EventSet minimally_reproducible_events = EventSet();
+  EventSet minimally_reproducible_events;
 
   for (const auto& maximal_set : maximal_subsets_iterator_wrapper<Configuration>(*this)) {
     if (maximal_set.size() > minimally_reproducible_events.size()) {
@@ -213,7 +213,7 @@ std::optional<Configuration> Configuration::compute_k_partial_alternative_to(con
     for (const auto& event_in_spike : spikes) {
       events.push_back(*event_in_spike);
     }
-    return EventSet(std::move(events));
+    return EventSet(events);
   };
   const auto alternative =
       std::find_if(comb.combinations_begin(), comb.combinations_end(),

@@ -770,15 +770,15 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Moving into a collection")
   EventSet C_copy = C;
   EventSet D_copy = D;
 
-  std::vector<const UnfoldingEvent*> actual_A = std::move(A).move_into_vector();
-  std::vector<const UnfoldingEvent*> actual_B = std::move(B).move_into_vector();
-  std::vector<const UnfoldingEvent*> actual_C = std::move(C).move_into_vector();
-  std::vector<const UnfoldingEvent*> actual_D = std::move(D).move_into_vector();
+  const std::vector<const UnfoldingEvent*> actual_A = std::move(A).move_into_vector();
+  const std::vector<const UnfoldingEvent*> actual_B = std::move(B).move_into_vector();
+  const std::vector<const UnfoldingEvent*> actual_C = std::move(C).move_into_vector();
+  const std::vector<const UnfoldingEvent*> actual_D = std::move(D).move_into_vector();
 
-  EventSet A_copy_remade(std::move(actual_A));
-  EventSet B_copy_remade(std::move(actual_B));
-  EventSet C_copy_remade(std::move(actual_C));
-  EventSet D_copy_remade(std::move(actual_D));
+  EventSet A_copy_remade(actual_A);
+  EventSet B_copy_remade(actual_B);
+  EventSet C_copy_remade(actual_C);
+  EventSet D_copy_remade(actual_D);
 
   REQUIRE(A_copy == A_copy_remade);
   REQUIRE(B_copy == B_copy_remade);
@@ -1111,44 +1111,34 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Topological Ordering Property Observed 
       return subset_local;
     }();
 
-    {
-      // To test this, we verify that at each point none of the events
-      // that follow after any particular event `e` are contained in
-      // `e`'s history
-      EventSet invalid_events   = subset;
-      const auto ordered_events = subset.get_topological_ordering();
-
-      std::for_each(ordered_events.begin(), ordered_events.end(), [&](const UnfoldingEvent* e) {
-        History history(e);
-        for (const auto* e_hist : history) {
-          if (e_hist == e)
-            continue;
-          REQUIRE_FALSE(invalid_events.contains(e_hist));
-        }
-        invalid_events.remove(e);
-      });
+    // To test this, we verify that at each point none of the events
+    // that follow after any particular event `e` are contained in
+    // `e`'s history
+    EventSet invalid_events = subset;
+    for (const auto* e : subset.get_topological_ordering()) {
+      for (const auto* e_hist : History(e)) {
+        if (e_hist == e)
+          continue;
+        REQUIRE_FALSE(invalid_events.contains(e_hist));
+      }
+      invalid_events.remove(e);
     }
-    {
-      // To test this, we verify that at each point none of the events
-      // that we've processed in the ordering are ever seen again
-      // in anybody else's history
-      EventSet events_seen;
-      const auto ordered_events = subset.get_topological_ordering_of_reverse_graph();
 
-      std::for_each(ordered_events.begin(), ordered_events.end(), [&events_seen](const UnfoldingEvent* e) {
-        History history(e);
+    // To test this, we verify that at each point none of the events
+    // that we've processed in the ordering are ever seen again
+    // in anybody else's history
+    EventSet events_seen;
+    for (const auto* e : subset.get_topological_ordering_of_reverse_graph()) {
+      for (const auto* e_hist : History(e)) {
+        // Unlike the test above, we DO want to ensure
+        // that `e` itself ALSO isn't yet seen
 
-        for (const auto* e_hist : history) {
-          // Unlike the test above, we DO want to ensure
-          // that `e` itself ALSO isn't yet seen
-
-          // If this event has been "seen" before,
-          // this implies that event `e` appears later
-          // in the list than one of its ancestors
-          REQUIRE_FALSE(events_seen.contains(e_hist));
-        }
-        events_seen.insert(e);
-      });
+        // If this event has been "seen" before,
+        // this implies that event `e` appears later
+        // in the list than one of its ancestors
+        REQUIRE_FALSE(events_seen.contains(e_hist));
+      }
+      events_seen.insert(e);
     }
   }
 }

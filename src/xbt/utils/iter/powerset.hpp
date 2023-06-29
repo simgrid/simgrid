@@ -74,8 +74,8 @@ template <typename Iterator> const std::vector<Iterator>& powerset_iterator<Iter
 
 template <typename Iterator> void powerset_iterator<Iterator>::increment()
 {
-  if (!current_subset_iter.has_value() || !current_subset_iter_end.has_value() || !current_subset_iter.has_value() ||
-      !iterator_end.has_value()) {
+  if (not current_subset_iter.has_value() || not current_subset_iter_end.has_value() ||
+      not current_subset_iter.has_value() || not iterator_end.has_value()) {
     return; // We've traversed all subsets at this point, or we're the "last" iterator
   }
 

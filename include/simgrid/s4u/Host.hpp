@@ -51,17 +51,17 @@ class XBT_PUBLIC Host : public xbt::Extendable<Host> {
   friend kernel::resource::CpuAction; // signal exec_state_changed
 #endif
 
+  static xbt::signal<void(Host&)> on_creation;
+  static xbt::signal<void(Host const&)> on_destruction;
+  xbt::signal<void(Host const&)> on_this_destruction;
+  static xbt::signal<void(kernel::resource::CpuAction&, kernel::resource::Action::State)> on_exec_state_change;
+
 public:
   explicit Host(kernel::resource::HostImpl* pimpl) : pimpl_(pimpl) {}
 
 protected:
   virtual ~Host(); // Call destroy() instead of manually deleting it.
   Host* set_netpoint(kernel::routing::NetPoint* netpoint);
-
-  static xbt::signal<void(Host&)> on_creation;
-  static xbt::signal<void(Host const&)> on_destruction;
-  xbt::signal<void(Host const&)> on_this_destruction;
-  static xbt::signal<void(kernel::resource::CpuAction&, kernel::resource::Action::State)> on_exec_state_change;
 
 public:
   static xbt::signal<void(Host const&)> on_speed_change;
