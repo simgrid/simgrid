@@ -50,6 +50,7 @@ static void serialize_activity_test(const activity::ActivityImpl* act, std::stri
     stream << ' ' << (uintptr_t)comm->src_buff_ << ' ' << (uintptr_t)comm->dst_buff_ << ' ' << comm->src_buff_size_;
   } else {
     stream << (short)mc::Transition::Type::UNKNOWN;
+    XBT_CRITICAL("Unknown transition in a test any. Bad things may happen");
   }
 }
 static std::string to_string_activity_test(const activity::ActivityImpl* act)

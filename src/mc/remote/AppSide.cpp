@@ -267,6 +267,7 @@ void AppSide::handle_actors_status() const
       strncpy(probe.buffer.data(), str.c_str(), probe.buffer.size() - 1);
       probe.buffer.back() = '\0';
 
+      XBT_DEBUG("send ACTOR_TRANSITION_PROBE(%s) ~> '%s'", actor->get_cname(), str.c_str());
       xbt_assert(channel_.send(probe) == 0, "Could not send ACTOR_TRANSITION_PROBE payload: %s", strerror(errno));
     }
     // NOTE: We do NOT need to reset `times_considered` for each actor's

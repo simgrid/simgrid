@@ -248,12 +248,12 @@ void State::sprout_tree_from_parent_state()
                                            "deciding when to make subtrees in ODPOR is incorrect");
   xbt_assert((get_transition_in()->aid_ == min_process_node.value()->get_actor()) &&
                  (get_transition_in()->type_ == min_process_node.value()->get_action()->type_),
-             "We tried to make a subtree from a parent state who claimed to have executed `%s` "
-             "but whose wakeup tree indicates it should have executed `%s`. This indicates "
+             "We tried to make a subtree from a parent state who claimed to have executed `%s` on actor %ld"
+             "but whose wakeup tree indicates it should have executed `%s` on actor %ld. This indicates "
              "that exploration is not following ODPOR. Are you sure you're choosing actors "
              "to schedule from the wakeup tree?",
-             get_transition_in()->to_string(false).c_str(),
-             min_process_node.value()->get_action()->to_string(false).c_str());
+             get_transition_in()->to_string(false).c_str(), get_transition_in()->aid_,
+             min_process_node.value()->get_action()->to_string(false).c_str(), min_process_node.value()->get_actor());
   this->wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(min_process_node.value());
 }
 
