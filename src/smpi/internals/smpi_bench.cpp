@@ -430,6 +430,7 @@ void smpi_trace_set_call_location(const char* file, const int line, const char* 
     loc->filename = simgrid::xbt::Path(file).get_base_name();
   else
     loc->filename = file;
+  std::replace(loc->filename.begin(), loc->filename.end(), ' ', '_');
   loc->linenumber = line;
   loc->func_call  = call_name;
 }
