@@ -19,38 +19,26 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_comm, mc_transition,
 namespace simgrid::mc {
 
 CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, bool timeout_, unsigned comm_, aid_t sender_,
-                                       aid_t receiver_, unsigned mbox_, uintptr_t sbuff_, uintptr_t rbuff_,
-                                       size_t size_)
+                                       aid_t receiver_, unsigned mbox_)
     : Transition(Type::COMM_WAIT, issuer, times_considered)
     , timeout_(timeout_)
     , comm_(comm_)
     , mbox_(mbox_)
     , sender_(sender_)
     , receiver_(receiver_)
-    , sbuff_(sbuff_)
-    , rbuff_(rbuff_)
-    , size_(size_)
 {
 }
 CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_WAIT, issuer, times_considered)
 {
-  xbt_assert(stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> sbuff_ >> rbuff_ >> size_ >>
-             call_location_);
-  XBT_DEBUG("CommWaitTransition %s comm:%u, sender:%ld receiver:%ld mbox:%u sbuff:%" PRIxPTR " rbuff:%" PRIxPTR
-            " size:%zu",
-            (timeout_ ? "timeout" : "no-timeout"), comm_, sender_, receiver_, mbox_, sbuff_, rbuff_, size_);
+  xbt_assert(stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> call_location_);
+  XBT_DEBUG("CommWaitTransition %s comm:%u, sender:%ld receiver:%ld mbox:%u", (timeout_ ? "timeout" : "no-timeout"),
+            comm_, sender_, receiver_, mbox_);
 }
 std::string CommWaitTransition::to_string(bool verbose) const
 {
-  auto res = xbt::string_printf("WaitComm(from %ld to %ld, mbox=%u, %s", sender_, receiver_, mbox_,
-                                (timeout_ ? "timeout" : "no timeout"));
-  if (verbose) {
-    res += ", sbuff=" + xbt::string_printf("%" PRIxPTR, sbuff_) + ", size=" + std::to_string(size_);
-    res += ", rbuff=" + xbt::string_printf("%" PRIxPTR, rbuff_);
-  }
-  res += ")";
-  return res;
+  return xbt::string_printf("WaitComm(from %ld to %ld, mbox=%u, %s)", sender_, receiver_, mbox_,
+                            (timeout_ ? "timeout" : "no timeout"));
 }
 bool CommWaitTransition::depends(const Transition* other) const
 {
@@ -69,35 +57,23 @@ bool CommWaitTransition::depends(const Transition* other) const
   return false; // Comm transitions are INDEP with non-comm transitions
 }
 CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, unsigned comm_, aid_t sender_,
-                                       aid_t receiver_, unsigned mbox_, uintptr_t sbuff_, uintptr_t rbuff_,
-                                       size_t size_)
+                                       aid_t receiver_, unsigned mbox_)
     : Transition(Type::COMM_TEST, issuer, times_considered)
     , comm_(comm_)
     , mbox_(mbox_)
     , sender_(sender_)
     , receiver_(receiver_)
-    , sbuff_(sbuff_)
-    , rbuff_(rbuff_)
-    , size_(size_)
 {
 }
 CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_TEST, issuer, times_considered)
 {
-  xbt_assert(stream >> comm_ >> sender_ >> receiver_ >> mbox_ >> sbuff_ >> rbuff_ >> size_ >> call_location_);
-  XBT_DEBUG("CommTestTransition comm:%u, sender:%ld receiver:%ld mbox:%u sbuff:%" PRIxPTR " rbuff:%" PRIxPTR
-            " size:%zu",
-            comm_, sender_, receiver_, mbox_, sbuff_, rbuff_, size_);
+  xbt_assert(stream >> comm_ >> sender_ >> receiver_ >> mbox_ >> call_location_);
+  XBT_DEBUG("CommTestTransition comm:%u, sender:%ld receiver:%ld mbox:%u", comm_, sender_, receiver_, mbox_);
 }
 std::string CommTestTransition::to_string(bool verbose) const
 {
-  auto res = xbt::string_printf("TestComm(from %ld to %ld, mbox=%u", sender_, receiver_, mbox_);
-  if (verbose) {
-    res += ", sbuff=" + xbt::string_printf("%" PRIxPTR, sbuff_) + ", size=" + std::to_string(size_);
-    res += ", rbuff=" + xbt::string_printf("%" PRIxPTR, rbuff_);
-  }
-  res += ")";
-  return res;
+  return xbt::string_printf("TestComm(from %ld to %ld, mbox=%u)", sender_, receiver_, mbox_);
 }
 bool CommTestTransition::depends(const Transition* other) const
 {
@@ -122,27 +98,18 @@ bool CommTestTransition::depends(const Transition* other) const
   return false; // Comm transitions are INDEP with non-comm transitions
 }
 
-CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_,
-                                       uintptr_t rbuff_, int tag_)
-    : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered)
-    , comm_(comm_)
-    , mbox_(mbox_)
-    , rbuff_(rbuff_)
-    , tag_(tag_)
+CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_)
+    : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered), comm_(comm_), mbox_(mbox_), tag_(tag_)
 {
 }
 CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered)
 {
-  xbt_assert(stream >> comm_ >> mbox_ >> rbuff_ >> tag_ >> call_location_);
+  xbt_assert(stream >> comm_ >> mbox_ >> tag_ >> call_location_);
 }
 std::string CommRecvTransition::to_string(bool verbose) const
 {
-  auto res = xbt::string_printf("iRecv(mbox=%u", mbox_);
-  if (verbose)
-    res += ", rbuff=" + xbt::string_printf("%" PRIxPTR, rbuff_);
-  res += ")";
-  return res;
+  return xbt::string_printf("iRecv(mbox=%u)", mbox_);
 }
 bool CommRecvTransition::depends(const Transition* other) const
 {
@@ -195,29 +162,19 @@ bool CommRecvTransition::depends(const Transition* other) const
   return false; // Comm transitions are INDEP with non-comm transitions
 }
 
-CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_,
-                                       uintptr_t sbuff_, size_t size_, int tag_)
-    : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered)
-    , comm_(comm_)
-    , mbox_(mbox_)
-    , sbuff_(sbuff_)
-    , size_(size_)
-    , tag_(tag_)
+CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_)
+    : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered), comm_(comm_), mbox_(mbox_), tag_(tag_)
 {
 }
 CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered)
 {
-  xbt_assert(stream >> comm_ >> mbox_ >> sbuff_ >> size_ >> tag_ >> call_location_);
-  XBT_DEBUG("SendTransition comm:%u mbox:%u sbuff:%" PRIxPTR " size:%zu", comm_, mbox_, sbuff_, size_);
+  xbt_assert(stream >> comm_ >> mbox_ >> tag_ >> call_location_);
+  XBT_DEBUG("SendTransition comm:%u mbox:%u", comm_, mbox_);
 }
 std::string CommSendTransition::to_string(bool verbose = false) const
 {
-  auto res = xbt::string_printf("iSend(mbox=%u", mbox_);
-  if (verbose)
-    res += ", sbuff=" + xbt::string_printf("%" PRIxPTR, sbuff_) + ", size=" + std::to_string(size_);
-  res += ")";
-  return res;
+  return xbt::string_printf("iSend(mbox=%u)", mbox_);
 }
 
 bool CommSendTransition::depends(const Transition* other) const

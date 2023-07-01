@@ -39,12 +39,9 @@ TEST_CASE("simgrid::mc::udpor: Testing Computation with AsyncSend/AsyncReceive O
   {
     // Consider the extension with `1: AsyncSend(m)`
     Configuration C;
-    aid_t issuer          = 1;
-    const uintptr_t sbuff = 0;
-    const size_t size     = 100;
+    aid_t issuer = 1;
 
-    const auto async_send =
-        std::make_shared<CommSendTransition>(issuer, times_considered, comm, mbox, sbuff, size, tag);
+    const auto async_send      = std::make_shared<CommSendTransition>(issuer, times_considered, comm, mbox, tag);
     const auto incremental_exC = ExtensionSetCalculator::partially_extend(C, &U, async_send);
 
     // Check that the events have been added to `U`
@@ -59,10 +56,9 @@ TEST_CASE("simgrid::mc::udpor: Testing Computation with AsyncSend/AsyncReceive O
   {
     // Consider the extension with `2: AsyncRecv(m)`
     Configuration C;
-    aid_t issuer          = 2;
-    const uintptr_t rbuff = 0;
+    aid_t issuer = 2;
 
-    const auto async_recv      = std::make_shared<CommRecvTransition>(issuer, times_considered, comm, mbox, rbuff, tag);
+    const auto async_recv      = std::make_shared<CommRecvTransition>(issuer, times_considered, comm, mbox, tag);
     const auto incremental_exC = ExtensionSetCalculator::partially_extend(C, &U, async_recv);
 
     // Check that the events have been added to `U`
@@ -77,11 +73,8 @@ TEST_CASE("simgrid::mc::udpor: Testing Computation with AsyncSend/AsyncReceive O
   {
     // Consider the extension with `1: AsyncSend(m)`
     Configuration C;
-    const uintptr_t rbuff = 0;
-    const uintptr_t sbuff = 0;
-    const size_t size     = 100;
 
-    const auto async_send = std::make_shared<CommSendTransition>(1, times_considered, comm, mbox, sbuff, size, tag);
+    const auto async_send           = std::make_shared<CommSendTransition>(1, times_considered, comm, mbox, tag);
     const auto incremental_exC_send = ExtensionSetCalculator::partially_extend(C, &U, async_send);
 
     // Check that the events have been added to `U`
@@ -92,7 +85,7 @@ TEST_CASE("simgrid::mc::udpor: Testing Computation with AsyncSend/AsyncReceive O
     REQUIRE(incremental_exC_send.contains_equivalent_to(&e_send));
 
     // Consider the extension with `2: AsyncRecv(m)`
-    const auto async_recv           = std::make_shared<CommRecvTransition>(2, times_considered, comm, mbox, rbuff, tag);
+    const auto async_recv           = std::make_shared<CommRecvTransition>(2, times_considered, comm, mbox, tag);
     const auto incremental_exC_recv = ExtensionSetCalculator::partially_extend(C, &U, async_recv);
 
     // Check that the events have been added to `U`
@@ -106,12 +99,9 @@ TEST_CASE("simgrid::mc::udpor: Testing Computation with AsyncSend/AsyncReceive O
   SECTION("Computing the full sequence of extensions")
   {
     Configuration C;
-    const uintptr_t rbuff = 0;
-    const uintptr_t sbuff = 0;
-    const size_t size     = 100;
 
     // Consider the extension with `1: AsyncSend(m)`
-    const auto async_send = std::make_shared<CommSendTransition>(1, times_considered, comm, mbox, sbuff, size, tag);
+    const auto async_send           = std::make_shared<CommSendTransition>(1, times_considered, comm, mbox, tag);
     const auto incremental_exC_send = ExtensionSetCalculator::partially_extend(C, &U, async_send);
 
     // Check that event `a` has been added to `U`
@@ -120,7 +110,7 @@ TEST_CASE("simgrid::mc::udpor: Testing Computation with AsyncSend/AsyncReceive O
     REQUIRE(incremental_exC_send.contains_equivalent_to(&e_send));
 
     // Consider the extension with `2: AsyncRecv(m)`
-    const auto async_recv           = std::make_shared<CommRecvTransition>(2, times_considered, comm, mbox, rbuff, tag);
+    const auto async_recv           = std::make_shared<CommRecvTransition>(2, times_considered, comm, mbox, tag);
     const auto incremental_exC_recv = ExtensionSetCalculator::partially_extend(C, &U, async_recv);
 
     // Check that event `b` has been added to `U`
@@ -197,18 +187,13 @@ TEST_CASE("simgrid::mc::udpor: Testing Waits, Receives, and Sends")
   const int tag              = 0;
   const unsigned mbox        = 0;
   const uintptr_t comm       = 0x800;
-  const uintptr_t rbuff      = 0x200;
-  const uintptr_t sbuff      = 0x400;
-  const size_t size          = 100;
   const bool timeout         = false;
 
   Unfolding U;
-  const auto comm_send = std::make_shared<CommSendTransition>(1, times_considered, comm, mbox, sbuff, size, tag);
-  const auto comm_recv = std::make_shared<CommRecvTransition>(2, times_considered, comm, mbox, rbuff, tag);
-  const auto comm_wait_1 =
-      std::make_shared<CommWaitTransition>(1, times_considered, timeout, comm, 1, 2, mbox, sbuff, rbuff, size);
-  const auto comm_wait_2 =
-      std::make_shared<CommWaitTransition>(2, times_considered, timeout, comm, 1, 2, mbox, sbuff, rbuff, size);
+  const auto comm_send   = std::make_shared<CommSendTransition>(1, times_considered, comm, mbox, tag);
+  const auto comm_recv   = std::make_shared<CommRecvTransition>(2, times_considered, comm, mbox, tag);
+  const auto comm_wait_1 = std::make_shared<CommWaitTransition>(1, times_considered, timeout, comm, 1, 2, mbox);
+  const auto comm_wait_2 = std::make_shared<CommWaitTransition>(2, times_considered, timeout, comm, 1, 2, mbox);
 
   // 1. UDPOR will attempt to expand first ex({⊥})
 
