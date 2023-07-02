@@ -39,7 +39,8 @@ void ActivityTestanySimcall::prepare(int times_considered)
   else
     next_value_ = -1;
 }
-static void serialize_activity_test(const activity::ActivityImpl* act, std::stringstream& stream)
+static void serialize_activity_test(const activity::ActivityImpl* act, std::string const& call_location,
+                                    std::stringstream& stream)
 {
   if (const auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
     stream << "  " << (short)mc::Transition::Type::COMM_TEST;
@@ -47,6 +48,7 @@ static void serialize_activity_test(const activity::ActivityImpl* act, std::stri
     stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
     stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
     stream << ' ' << comm->get_mailbox_id();
+    stream << ' ' << call_location;
   } else {
     stream << (short)mc::Transition::Type::UNKNOWN;
     XBT_CRITICAL("Unknown transition in a test any. Bad things may happen");
@@ -58,16 +60,18 @@ static std::string to_string_activity_test(const activity::ActivityImpl* act)
     return "CommTest(comm_id:" + std::to_string(comm->get_id()) +
            " src:" + std::to_string(comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1) +
            " dst:" + std::to_string(comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1) +
-           " mbox:" + std::to_string(comm->get_mailbox_id());
+           " mbox:" + std::to_string(comm->get_mailbox_id()) + ")";
   } else {
     return "TestUnknownType()";
   }
 }
 void ActivityTestanySimcall::serialize(std::stringstream& stream) const
 {
+  XBT_DEBUG("Serialize %s", to_string().c_str());
   stream << (short)mc::Transition::Type::TESTANY << ' ' << activities_.size() << ' ';
   for (auto const* act : activities_) {
-    serialize_activity_test(act, stream);
+    // fun_call of each activity embedded in the TestAny is not known, so let's use the location of the TestAny itself
+    serialize_activity_test(act, fun_call_, stream);
     stream << ' ';
   }
   stream << fun_call_;
@@ -75,22 +79,28 @@ void ActivityTestanySimcall::serialize(std::stringstream& stream) const
 std::string ActivityTestanySimcall::to_string() const
 {
   std::stringstream buffer("TestAny(");
+  bool first = true;
   for (auto const* act : activities_) {
+    if (first)
+      first = false;
+    else
+      buffer << " | ";
     buffer << to_string_activity_test(act);
   }
+  buffer << ")";
   return buffer.str();
 }
 
 void ActivityTestSimcall::serialize(std::stringstream& stream) const
 {
-  serialize_activity_test(activity_, stream);
-  stream << ' ' << fun_call_;
+  serialize_activity_test(activity_, fun_call_, stream);
 }
 std::string ActivityTestSimcall::to_string() const
 {
   return to_string_activity_test(activity_);
 }
-static void serialize_activity_wait(const activity::ActivityImpl* act, bool timeout, std::stringstream& stream)
+static void serialize_activity_wait(const activity::ActivityImpl* act, bool timeout, std::string const& call_location,
+                                    std::stringstream& stream)
 {
   if (const auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
     stream << (short)mc::Transition::Type::COMM_WAIT << ' ';
@@ -99,6 +109,7 @@ static void serialize_activity_wait(const activity::ActivityImpl* act, bool time
     stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
     stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
     stream << ' ' << comm->get_mailbox_id();
+    stream << ' ' << call_location;
   } else {
     stream << (short)mc::Transition::Type::UNKNOWN;
   }
@@ -118,14 +129,15 @@ static std::string to_string_activity_wait(const activity::ActivityImpl* act)
 
 void ActivityWaitSimcall::serialize(std::stringstream& stream) const
 {
-  serialize_activity_wait(activity_, timeout_ > 0, stream);
-  stream << ' ' << fun_call_;
+  serialize_activity_wait(activity_, timeout_ > 0, fun_call_, stream);
 }
 void ActivityWaitanySimcall::serialize(std::stringstream& stream) const
 {
+  XBT_DEBUG("Serialize %s", to_string().c_str());
   stream << (short)mc::Transition::Type::WAITANY << ' ' << activities_.size() << ' ';
   for (auto const* act : activities_) {
-    serialize_activity_wait(act, timeout_ > 0, stream);
+    // fun_call of each activity embedded in the WaitAny is not known, so let's use the location of the WaitAny itself
+    serialize_activity_wait(act, timeout_ > 0, fun_call_, stream);
     stream << ' ';
   }
   stream << fun_call_;
@@ -137,9 +149,15 @@ std::string ActivityWaitSimcall::to_string() const
 std::string ActivityWaitanySimcall::to_string() const
 {
   std::stringstream buffer("WaitAny(");
+  bool first = true;
   for (auto const* act : activities_) {
-    buffer << to_string_activity_wait(act);
+    if (first)
+      first = false;
+    else
+      buffer << " | ";
+    buffer << to_string_activity_test(act);
   }
+  buffer << ")";
   return buffer.str();
 }
 ActivityWaitanySimcall::ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities,

@@ -32,8 +32,8 @@ CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, std::
     : Transition(Type::COMM_WAIT, issuer, times_considered)
 {
   xbt_assert(stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> call_location_);
-  XBT_DEBUG("CommWaitTransition %s comm:%u, sender:%ld receiver:%ld mbox:%u", (timeout_ ? "timeout" : "no-timeout"),
-            comm_, sender_, receiver_, mbox_);
+  XBT_DEBUG("CommWaitTransition %s comm:%u, sender:%ld receiver:%ld mbox:%u call_loc:%s",
+            (timeout_ ? "timeout" : "no-timeout"), comm_, sender_, receiver_, mbox_, call_location_.c_str());
 }
 std::string CommWaitTransition::to_string(bool verbose) const
 {
@@ -69,7 +69,8 @@ CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, std::
     : Transition(Type::COMM_TEST, issuer, times_considered)
 {
   xbt_assert(stream >> comm_ >> sender_ >> receiver_ >> mbox_ >> call_location_);
-  XBT_DEBUG("CommTestTransition comm:%u, sender:%ld receiver:%ld mbox:%u", comm_, sender_, receiver_, mbox_);
+  XBT_DEBUG("CommTestTransition comm:%u, sender:%ld receiver:%ld mbox:%u call_loc:%s", comm_, sender_, receiver_, mbox_,
+            call_location_.c_str());
 }
 std::string CommTestTransition::to_string(bool verbose) const
 {
@@ -106,6 +107,7 @@ CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::
     : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered)
 {
   xbt_assert(stream >> comm_ >> mbox_ >> tag_ >> call_location_);
+  XBT_DEBUG("CommRecvTransition comm:%u, mbox:%u tag:%d call_loc:%s", comm_, mbox_, tag_, call_location_.c_str());
 }
 std::string CommRecvTransition::to_string(bool verbose) const
 {
@@ -170,7 +172,7 @@ CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::
     : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered)
 {
   xbt_assert(stream >> comm_ >> mbox_ >> tag_ >> call_location_);
-  XBT_DEBUG("SendTransition comm:%u mbox:%u", comm_, mbox_);
+  XBT_DEBUG("SendTransition comm:%u mbox:%u tag:%d call_loc:%s", comm_, mbox_, tag_, call_location_.c_str());
 }
 std::string CommSendTransition::to_string(bool verbose = false) const
 {
