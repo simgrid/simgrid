@@ -170,7 +170,7 @@ foreach (example activity-testany activity-waitany
                  maestro-set
                  mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-bugged2-liveness mc-centralized-mutex mc-electric-fence mc-failing-assert
                  network-ns3 network-ns3-wifi network-wifi
-                 io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-dependent
+                 io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-jbod-raw io-dependent
                  task-io task-simple task-variable-load task-storm task-switch-host
                  photovoltaic-simple
                  platform-comm-serialize platform-failures platform-profile platform-properties
