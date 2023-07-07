@@ -9,244 +9,145 @@
 
 #define MPI_Init(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Init"), MPI_Init(__VA_ARGS__))
 #define MPI_Finalize(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Finalize"), MPI_Finalize(__VA_ARGS__))
-#define MPI_Finalized(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Finalized"), MPI_Finalized(__VA_ARGS__))
-#define MPI_Init_thread(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Init_thread"), MPI_Init_thread(__VA_ARGS__))
-#define MPI_Initialized(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Initialized"), MPI_Initialized(__VA_ARGS__))
-#define MPI_Query_thread(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Query_thread"), MPI_Query_thread(__VA_ARGS__))
-#define MPI_Is_thread_main(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Is_thread_main"), MPI_Is_thread_main(__VA_ARGS__))
-#define MPI_Get_version(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_version"), MPI_Get_version(__VA_ARGS__))
-#define MPI_Get_library_version(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_library_version"), MPI_Get_library_version(__VA_ARGS__))
-#define MPI_Get_processor_name(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_processor_name"), MPI_Get_processor_name(__VA_ARGS__))
+#define MPI_Finalized(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Finalized"), MPI_Finalized(__VA_ARGS__))
+#define MPI_Init_thread(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Init_thread"), MPI_Init_thread(__VA_ARGS__))
+#define MPI_Initialized(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Initialized"), MPI_Initialized(__VA_ARGS__))
+#define MPI_Query_thread(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Query_thread"), MPI_Query_thread(__VA_ARGS__))
+#define MPI_Is_thread_main(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Is_thread_main"), MPI_Is_thread_main(__VA_ARGS__))
+#define MPI_Get_version(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_version"), MPI_Get_version(__VA_ARGS__))
+#define MPI_Get_library_version(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_library_version"), MPI_Get_library_version(__VA_ARGS__))
+#define MPI_Get_processor_name(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_processor_name"), MPI_Get_processor_name(__VA_ARGS__))
 #define MPI_Abort(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Abort"), MPI_Abort(__VA_ARGS__))
-#define MPI_Alloc_mem(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Alloc_mem"), MPI_Alloc_mem(__VA_ARGS__))
+#define MPI_Alloc_mem(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Alloc_mem"), MPI_Alloc_mem(__VA_ARGS__))
 #define MPI_Free_mem(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Free_mem"), MPI_Free_mem(__VA_ARGS__))
 #define MPI_Wtime(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Wtime"), MPI_Wtime(__VA_ARGS__))
 #define MPI_Wtick(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Wtick"), MPI_Wtick(__VA_ARGS__))
-#define MPI_Buffer_attach(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Buffer_attach"), MPI_Buffer_attach(__VA_ARGS__))
-#define MPI_Buffer_detach(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Buffer_detach"), MPI_Buffer_detach(__VA_ARGS__))
+#define MPI_Buffer_attach(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Buffer_attach"), MPI_Buffer_attach(__VA_ARGS__))
+#define MPI_Buffer_detach(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Buffer_detach"), MPI_Buffer_detach(__VA_ARGS__))
 #define MPI_Address(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Address"), MPI_Address(__VA_ARGS__))
-#define MPI_Get_address(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_address"), MPI_Get_address(__VA_ARGS__))
-#define MPI_Aint_diff(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Aint_diff"), MPI_Aint_diff(__VA_ARGS__))
+#define MPI_Get_address(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_address"), MPI_Get_address(__VA_ARGS__))
+#define MPI_Aint_diff(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Aint_diff"), MPI_Aint_diff(__VA_ARGS__))
 #define MPI_Aint_add(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Aint_add"), MPI_Aint_add(__VA_ARGS__))
-#define MPI_Error_class(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Error_class"), MPI_Error_class(__VA_ARGS__))
-#define MPI_Error_string(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Error_string"), MPI_Error_string(__VA_ARGS__))
-#define MPI_Attr_delete(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Attr_delete"), MPI_Attr_delete(__VA_ARGS__))
+#define MPI_Error_class(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Error_class"), MPI_Error_class(__VA_ARGS__))
+#define MPI_Error_string(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Error_string"), MPI_Error_string(__VA_ARGS__))
+#define MPI_Attr_delete(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Attr_delete"), MPI_Attr_delete(__VA_ARGS__))
 #define MPI_Attr_get(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Attr_get"), MPI_Attr_get(__VA_ARGS__))
 #define MPI_Attr_put(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Attr_put"), MPI_Attr_put(__VA_ARGS__))
-#define MPI_Keyval_create(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Keyval_create"), MPI_Keyval_create(__VA_ARGS__))
-#define MPI_Keyval_free(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Keyval_free"), MPI_Keyval_free(__VA_ARGS__))
-#define MPI_Type_free(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_free"), MPI_Type_free(__VA_ARGS__))
-#define MPI_Type_size(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_size"), MPI_Type_size(__VA_ARGS__))
-#define MPI_Type_size_x(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_size_x"), MPI_Type_size_x(__VA_ARGS__))
-#define MPI_Type_get_extent(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_extent"), MPI_Type_get_extent(__VA_ARGS__))
-#define MPI_Type_get_extent_x(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_extent_x"), MPI_Type_get_extent_x(__VA_ARGS__))
-#define MPI_Type_get_true_extent(...)                                                                                  \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_true_extent"), MPI_Type_get_true_extent(__VA_ARGS__))
-#define MPI_Type_get_true_extent_x(...)                                                                                \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_true_extent_x"),                                     \
-   MPI_Type_get_true_extent_x(__VA_ARGS__))
-#define MPI_Type_extent(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_extent"), MPI_Type_extent(__VA_ARGS__))
+#define MPI_Keyval_create(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Keyval_create"), MPI_Keyval_create(__VA_ARGS__))
+#define MPI_Keyval_free(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Keyval_free"), MPI_Keyval_free(__VA_ARGS__))
+#define MPI_Type_free(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_free"), MPI_Type_free(__VA_ARGS__))
+#define MPI_Type_size(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_size"), MPI_Type_size(__VA_ARGS__))
+#define MPI_Type_size_x(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_size_x"), MPI_Type_size_x(__VA_ARGS__))
+#define MPI_Type_get_extent(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_extent"), MPI_Type_get_extent(__VA_ARGS__))
+#define MPI_Type_get_extent_x(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_extent_x"), MPI_Type_get_extent_x(__VA_ARGS__))
+#define MPI_Type_get_true_extent(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_true_extent"), MPI_Type_get_true_extent(__VA_ARGS__))
+#define MPI_Type_get_true_extent_x(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_true_extent_x"), MPI_Type_get_true_extent_x(__VA_ARGS__))
+#define MPI_Type_extent(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_extent"), MPI_Type_extent(__VA_ARGS__))
 #define MPI_Type_lb(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_lb"), MPI_Type_lb(__VA_ARGS__))
 #define MPI_Type_ub(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_ub"), MPI_Type_ub(__VA_ARGS__))
-#define MPI_Type_commit(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_commit"), MPI_Type_commit(__VA_ARGS__))
-#define MPI_Type_hindexed(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_hindexed"), MPI_Type_hindexed(__VA_ARGS__))
-#define MPI_Type_create_hindexed(...)                                                                                  \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_hindexed"), MPI_Type_create_hindexed(__VA_ARGS__))
-#define MPI_Type_create_hindexed_block(...)                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_hindexed_block"),                                 \
-   MPI_Type_create_hindexed_block(__VA_ARGS__))
-#define MPI_Type_hvector(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_hvector"), MPI_Type_hvector(__VA_ARGS__))
-#define MPI_Type_create_hvector(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_hvector"), MPI_Type_create_hvector(__VA_ARGS__))
-#define MPI_Type_indexed(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_indexed"), MPI_Type_indexed(__VA_ARGS__))
-#define MPI_Type_create_indexed(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_indexed"), MPI_Type_create_indexed(__VA_ARGS__))
-#define MPI_Type_create_indexed_block(...)                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_indexed_block"),                                  \
-   MPI_Type_create_indexed_block(__VA_ARGS__))
-#define MPI_Type_struct(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_struct"), MPI_Type_struct(__VA_ARGS__))
-#define MPI_Type_create_struct(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_struct"), MPI_Type_create_struct(__VA_ARGS__))
-#define MPI_Type_vector(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_vector"), MPI_Type_vector(__VA_ARGS__))
-#define MPI_Type_contiguous(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_contiguous"), MPI_Type_contiguous(__VA_ARGS__))
-#define MPI_Type_create_resized(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_resized"), MPI_Type_create_resized(__VA_ARGS__))
+#define MPI_Type_commit(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_commit"), MPI_Type_commit(__VA_ARGS__))
+#define MPI_Type_hindexed(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_hindexed"), MPI_Type_hindexed(__VA_ARGS__))
+#define MPI_Type_create_hindexed(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_hindexed"), MPI_Type_create_hindexed(__VA_ARGS__))
+#define MPI_Type_create_hindexed_block(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_hindexed_block"), MPI_Type_create_hindexed_block(__VA_ARGS__))
+#define MPI_Type_hvector(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_hvector"), MPI_Type_hvector(__VA_ARGS__))
+#define MPI_Type_create_hvector(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_hvector"), MPI_Type_create_hvector(__VA_ARGS__))
+#define MPI_Type_indexed(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_indexed"), MPI_Type_indexed(__VA_ARGS__))
+#define MPI_Type_create_indexed(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_indexed"), MPI_Type_create_indexed(__VA_ARGS__))
+#define MPI_Type_create_indexed_block(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_indexed_block"), MPI_Type_create_indexed_block(__VA_ARGS__))
+#define MPI_Type_struct(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_struct"), MPI_Type_struct(__VA_ARGS__))
+#define MPI_Type_create_struct(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_struct"), MPI_Type_create_struct(__VA_ARGS__))
+#define MPI_Type_vector(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_vector"), MPI_Type_vector(__VA_ARGS__))
+#define MPI_Type_contiguous(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_contiguous"), MPI_Type_contiguous(__VA_ARGS__))
+#define MPI_Type_create_resized(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_resized"), MPI_Type_create_resized(__VA_ARGS__))
 #define MPI_Type_f2c(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_f2c"), MPI_Type_f2c(__VA_ARGS__))
 #define MPI_Type_c2f(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_c2f"), MPI_Type_c2f(__VA_ARGS__))
-#define MPI_Get_count(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_count"), MPI_Get_count(__VA_ARGS__))
-#define MPI_Type_get_attr(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_attr"), MPI_Type_get_attr(__VA_ARGS__))
-#define MPI_Type_set_attr(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_set_attr"), MPI_Type_set_attr(__VA_ARGS__))
-#define MPI_Type_delete_attr(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_delete_attr"), MPI_Type_delete_attr(__VA_ARGS__))
-#define MPI_Type_create_keyval(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_keyval"), MPI_Type_create_keyval(__VA_ARGS__))
-#define MPI_Type_free_keyval(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_free_keyval"), MPI_Type_free_keyval(__VA_ARGS__))
+#define MPI_Get_count(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_count"), MPI_Get_count(__VA_ARGS__))
+#define MPI_Type_get_attr(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_attr"), MPI_Type_get_attr(__VA_ARGS__))
+#define MPI_Type_set_attr(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_set_attr"), MPI_Type_set_attr(__VA_ARGS__))
+#define MPI_Type_delete_attr(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_delete_attr"), MPI_Type_delete_attr(__VA_ARGS__))
+#define MPI_Type_create_keyval(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_keyval"), MPI_Type_create_keyval(__VA_ARGS__))
+#define MPI_Type_free_keyval(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_free_keyval"), MPI_Type_free_keyval(__VA_ARGS__))
 #define MPI_Type_dup(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_dup"), MPI_Type_dup(__VA_ARGS__))
-#define MPI_Type_set_name(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_set_name"), MPI_Type_set_name(__VA_ARGS__))
-#define MPI_Type_get_name(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_name"), MPI_Type_get_name(__VA_ARGS__))
+#define MPI_Type_set_name(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_set_name"), MPI_Type_set_name(__VA_ARGS__))
+#define MPI_Type_get_name(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_name"), MPI_Type_get_name(__VA_ARGS__))
 #define MPI_Pack(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pack"), MPI_Pack(__VA_ARGS__))
-#define MPI_Pack_size(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pack_size"), MPI_Pack_size(__VA_ARGS__))
+#define MPI_Pack_size(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pack_size"), MPI_Pack_size(__VA_ARGS__))
 #define MPI_Unpack(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Unpack"), MPI_Unpack(__VA_ARGS__))
-#define MPI_Op_create(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Op_create"), MPI_Op_create(__VA_ARGS__))
+#define MPI_Op_create(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Op_create"), MPI_Op_create(__VA_ARGS__))
 #define MPI_Op_free(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Op_free"), MPI_Op_free(__VA_ARGS__))
-#define MPI_Op_commutative(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Op_commutative"), MPI_Op_commutative(__VA_ARGS__))
+#define MPI_Op_commutative(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Op_commutative"), MPI_Op_commutative(__VA_ARGS__))
 #define MPI_Op_f2c(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Op_f2c"), MPI_Op_f2c(__VA_ARGS__))
 #define MPI_Op_c2f(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Op_c2f"), MPI_Op_c2f(__VA_ARGS__))
-#define MPI_Group_free(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_free"), MPI_Group_free(__VA_ARGS__))
-#define MPI_Group_size(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_size"), MPI_Group_size(__VA_ARGS__))
-#define MPI_Group_rank(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_rank"), MPI_Group_rank(__VA_ARGS__))
-#define MPI_Group_translate_ranks(...)                                                                                 \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_translate_ranks"),                                      \
-   MPI_Group_translate_ranks(__VA_ARGS__))
-#define MPI_Group_compare(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_compare"), MPI_Group_compare(__VA_ARGS__))
-#define MPI_Group_union(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_union"), MPI_Group_union(__VA_ARGS__))
-#define MPI_Group_intersection(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_intersection"), MPI_Group_intersection(__VA_ARGS__))
-#define MPI_Group_difference(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_difference"), MPI_Group_difference(__VA_ARGS__))
-#define MPI_Group_incl(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_incl"), MPI_Group_incl(__VA_ARGS__))
-#define MPI_Group_excl(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_excl"), MPI_Group_excl(__VA_ARGS__))
-#define MPI_Group_range_incl(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_range_incl"), MPI_Group_range_incl(__VA_ARGS__))
-#define MPI_Group_range_excl(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_range_excl"), MPI_Group_range_excl(__VA_ARGS__))
-#define MPI_Group_f2c(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_f2c"), MPI_Group_f2c(__VA_ARGS__))
-#define MPI_Group_c2f(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_c2f"), MPI_Group_c2f(__VA_ARGS__))
-#define MPI_Comm_rank(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_rank"), MPI_Comm_rank(__VA_ARGS__))
-#define MPI_Comm_size(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_size"), MPI_Comm_size(__VA_ARGS__))
-#define MPI_Comm_get_name(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_get_name"), MPI_Comm_get_name(__VA_ARGS__))
-#define MPI_Comm_set_name(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_set_name"), MPI_Comm_set_name(__VA_ARGS__))
+#define MPI_Group_free(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_free"), MPI_Group_free(__VA_ARGS__))
+#define MPI_Group_size(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_size"), MPI_Group_size(__VA_ARGS__))
+#define MPI_Group_rank(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_rank"), MPI_Group_rank(__VA_ARGS__))
+#define MPI_Group_translate_ranks(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_translate_ranks"), MPI_Group_translate_ranks(__VA_ARGS__))
+#define MPI_Group_compare(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_compare"), MPI_Group_compare(__VA_ARGS__))
+#define MPI_Group_union(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_union"), MPI_Group_union(__VA_ARGS__))
+#define MPI_Group_intersection(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_intersection"), MPI_Group_intersection(__VA_ARGS__))
+#define MPI_Group_difference(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_difference"), MPI_Group_difference(__VA_ARGS__))
+#define MPI_Group_incl(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_incl"), MPI_Group_incl(__VA_ARGS__))
+#define MPI_Group_excl(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_excl"), MPI_Group_excl(__VA_ARGS__))
+#define MPI_Group_range_incl(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_range_incl"), MPI_Group_range_incl(__VA_ARGS__))
+#define MPI_Group_range_excl(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_range_excl"), MPI_Group_range_excl(__VA_ARGS__))
+#define MPI_Group_f2c(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_f2c"), MPI_Group_f2c(__VA_ARGS__))
+#define MPI_Group_c2f(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Group_c2f"), MPI_Group_c2f(__VA_ARGS__))
+#define MPI_Comm_rank(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_rank"), MPI_Comm_rank(__VA_ARGS__))
+#define MPI_Comm_size(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_size"), MPI_Comm_size(__VA_ARGS__))
+#define MPI_Comm_get_name(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_get_name"), MPI_Comm_get_name(__VA_ARGS__))
+#define MPI_Comm_set_name(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_set_name"), MPI_Comm_set_name(__VA_ARGS__))
 #define MPI_Comm_dup(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_dup"), MPI_Comm_dup(__VA_ARGS__))
-#define MPI_Comm_dup_with_info(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_dup_with_info"), MPI_Comm_dup_with_info(__VA_ARGS__))
-#define MPI_Comm_get_attr(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_get_attr"), MPI_Comm_get_attr(__VA_ARGS__))
-#define MPI_Comm_set_attr(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_set_attr"), MPI_Comm_set_attr(__VA_ARGS__))
-#define MPI_Comm_delete_attr(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_delete_attr"), MPI_Comm_delete_attr(__VA_ARGS__))
-#define MPI_Comm_create_keyval(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_create_keyval"), MPI_Comm_create_keyval(__VA_ARGS__))
-#define MPI_Comm_free_keyval(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_free_keyval"), MPI_Comm_free_keyval(__VA_ARGS__))
-#define MPI_Comm_group(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_group"), MPI_Comm_group(__VA_ARGS__))
-#define MPI_Comm_compare(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_compare"), MPI_Comm_compare(__VA_ARGS__))
-#define MPI_Comm_create(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_create"), MPI_Comm_create(__VA_ARGS__))
-#define MPI_Comm_create_group(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_create_group"), MPI_Comm_create_group(__VA_ARGS__))
-#define MPI_Comm_free(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_free"), MPI_Comm_free(__VA_ARGS__))
-#define MPI_Comm_disconnect(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_disconnect"), MPI_Comm_disconnect(__VA_ARGS__))
-#define MPI_Comm_split(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_split"), MPI_Comm_split(__VA_ARGS__))
-#define MPI_Comm_set_info(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_set_info"), MPI_Comm_set_info(__VA_ARGS__))
-#define MPI_Comm_get_info(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_get_info"), MPI_Comm_get_info(__VA_ARGS__))
-#define MPI_Comm_split_type(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_split_type"), MPI_Comm_split_type(__VA_ARGS__))
+#define MPI_Comm_dup_with_info(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_dup_with_info"), MPI_Comm_dup_with_info(__VA_ARGS__))
+#define MPI_Comm_get_attr(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_get_attr"), MPI_Comm_get_attr(__VA_ARGS__))
+#define MPI_Comm_set_attr(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_set_attr"), MPI_Comm_set_attr(__VA_ARGS__))
+#define MPI_Comm_delete_attr(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_delete_attr"), MPI_Comm_delete_attr(__VA_ARGS__))
+#define MPI_Comm_create_keyval(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_create_keyval"), MPI_Comm_create_keyval(__VA_ARGS__))
+#define MPI_Comm_free_keyval(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_free_keyval"), MPI_Comm_free_keyval(__VA_ARGS__))
+#define MPI_Comm_group(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_group"), MPI_Comm_group(__VA_ARGS__))
+#define MPI_Comm_compare(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_compare"), MPI_Comm_compare(__VA_ARGS__))
+#define MPI_Comm_create(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_create"), MPI_Comm_create(__VA_ARGS__))
+#define MPI_Comm_create_group(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_create_group"), MPI_Comm_create_group(__VA_ARGS__))
+#define MPI_Comm_free(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_free"), MPI_Comm_free(__VA_ARGS__))
+#define MPI_Comm_disconnect(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_disconnect"), MPI_Comm_disconnect(__VA_ARGS__))
+#define MPI_Comm_split(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_split"), MPI_Comm_split(__VA_ARGS__))
+#define MPI_Comm_set_info(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_set_info"), MPI_Comm_set_info(__VA_ARGS__))
+#define MPI_Comm_get_info(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_get_info"), MPI_Comm_get_info(__VA_ARGS__))
+#define MPI_Comm_split_type(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_split_type"), MPI_Comm_split_type(__VA_ARGS__))
 #define MPI_Comm_f2c(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_f2c"), MPI_Comm_f2c(__VA_ARGS__))
 #define MPI_Comm_c2f(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_c2f"), MPI_Comm_c2f(__VA_ARGS__))
 #define MPI_Start(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Start"), MPI_Start(__VA_ARGS__))
 #define MPI_Startall(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Startall"), MPI_Startall(__VA_ARGS__))
-#define MPI_Request_free(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Request_free"), MPI_Request_free(__VA_ARGS__))
+#define MPI_Request_free(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Request_free"), MPI_Request_free(__VA_ARGS__))
 #define MPI_Recv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Recv"), MPI_Recv(__VA_ARGS__))
-#define MPI_Recv_init(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Recv_init"), MPI_Recv_init(__VA_ARGS__))
+#define MPI_Recv_init(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Recv_init"), MPI_Recv_init(__VA_ARGS__))
 #define MPI_Irecv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Irecv"), MPI_Irecv(__VA_ARGS__))
 #define MPI_Send(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Send"), MPI_Send(__VA_ARGS__))
-#define MPI_Send_init(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Send_init"), MPI_Send_init(__VA_ARGS__))
+#define MPI_Send_init(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Send_init"), MPI_Send_init(__VA_ARGS__))
 #define MPI_Isend(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Isend"), MPI_Isend(__VA_ARGS__))
 #define MPI_Ssend(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ssend"), MPI_Ssend(__VA_ARGS__))
-#define MPI_Ssend_init(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ssend_init"), MPI_Ssend_init(__VA_ARGS__))
+#define MPI_Ssend_init(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ssend_init"), MPI_Ssend_init(__VA_ARGS__))
 #define MPI_Issend(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Issend"), MPI_Issend(__VA_ARGS__))
 #define MPI_Bsend(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Bsend"), MPI_Bsend(__VA_ARGS__))
-#define MPI_Bsend_init(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Bsend_init"), MPI_Bsend_init(__VA_ARGS__))
+#define MPI_Bsend_init(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Bsend_init"), MPI_Bsend_init(__VA_ARGS__))
 #define MPI_Ibsend(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ibsend"), MPI_Ibsend(__VA_ARGS__))
 #define MPI_Rsend(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Rsend"), MPI_Rsend(__VA_ARGS__))
-#define MPI_Rsend_init(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Rsend_init"), MPI_Rsend_init(__VA_ARGS__))
+#define MPI_Rsend_init(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Rsend_init"), MPI_Rsend_init(__VA_ARGS__))
 #define MPI_Irsend(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Irsend"), MPI_Irsend(__VA_ARGS__))
 #define MPI_Sendrecv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Sendrecv"), MPI_Sendrecv(__VA_ARGS__))
-#define MPI_Sendrecv_replace(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Sendrecv_replace"), MPI_Sendrecv_replace(__VA_ARGS__))
+#define MPI_Sendrecv_replace(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Sendrecv_replace"), MPI_Sendrecv_replace(__VA_ARGS__))
 #define MPI_Test(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Test"), MPI_Test(__VA_ARGS__))
 #define MPI_Testany(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Testany"), MPI_Testany(__VA_ARGS__))
 #define MPI_Testall(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Testall"), MPI_Testall(__VA_ARGS__))
 #define MPI_Testsome(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Testsome"), MPI_Testsome(__VA_ARGS__))
-#define MPI_Test_cancelled(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Test_cancelled"), MPI_Test_cancelled(__VA_ARGS__))
+#define MPI_Test_cancelled(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Test_cancelled"), MPI_Test_cancelled(__VA_ARGS__))
 #define MPI_Wait(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Wait"), MPI_Wait(__VA_ARGS__))
 #define MPI_Waitany(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Waitany"), MPI_Waitany(__VA_ARGS__))
 #define MPI_Waitall(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Waitall"), MPI_Waitall(__VA_ARGS__))
 #define MPI_Waitsome(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Waitsome"), MPI_Waitsome(__VA_ARGS__))
 #define MPI_Iprobe(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Iprobe"), MPI_Iprobe(__VA_ARGS__))
 #define MPI_Probe(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Probe"), MPI_Probe(__VA_ARGS__))
-#define MPI_Request_f2c(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Request_f2c"), MPI_Request_f2c(__VA_ARGS__))
-#define MPI_Request_c2f(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Request_c2f"), MPI_Request_c2f(__VA_ARGS__))
+#define MPI_Request_f2c(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Request_f2c"), MPI_Request_f2c(__VA_ARGS__))
+#define MPI_Request_c2f(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Request_c2f"), MPI_Request_c2f(__VA_ARGS__))
 #define MPI_Cancel(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Cancel"), MPI_Cancel(__VA_ARGS__))
 #define MPI_Bcast(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Bcast"), MPI_Bcast(__VA_ARGS__))
 #define MPI_Barrier(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Barrier"), MPI_Barrier(__VA_ARGS__))
@@ -254,460 +155,242 @@
 #define MPI_Ibcast(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ibcast"), MPI_Ibcast(__VA_ARGS__))
 #define MPI_Igather(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Igather"), MPI_Igather(__VA_ARGS__))
 #define MPI_Igatherv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Igatherv"), MPI_Igatherv(__VA_ARGS__))
-#define MPI_Iallgather(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Iallgather"), MPI_Iallgather(__VA_ARGS__))
-#define MPI_Iallgatherv(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Iallgatherv"), MPI_Iallgatherv(__VA_ARGS__))
+#define MPI_Iallgather(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Iallgather"), MPI_Iallgather(__VA_ARGS__))
+#define MPI_Iallgatherv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Iallgatherv"), MPI_Iallgatherv(__VA_ARGS__))
 #define MPI_Iscatter(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Iscatter"), MPI_Iscatter(__VA_ARGS__))
-#define MPI_Iscatterv(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Iscatterv"), MPI_Iscatterv(__VA_ARGS__))
+#define MPI_Iscatterv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Iscatterv"), MPI_Iscatterv(__VA_ARGS__))
 #define MPI_Ireduce(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ireduce"), MPI_Ireduce(__VA_ARGS__))
-#define MPI_Iallreduce(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Iallreduce"), MPI_Iallreduce(__VA_ARGS__))
+#define MPI_Iallreduce(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Iallreduce"), MPI_Iallreduce(__VA_ARGS__))
 #define MPI_Iscan(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Iscan"), MPI_Iscan(__VA_ARGS__))
 #define MPI_Iexscan(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Iexscan"), MPI_Iexscan(__VA_ARGS__))
-#define MPI_Ireduce_scatter(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ireduce_scatter"), MPI_Ireduce_scatter(__VA_ARGS__))
-#define MPI_Ireduce_scatter_block(...)                                                                                 \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ireduce_scatter_block"),                                      \
-   MPI_Ireduce_scatter_block(__VA_ARGS__))
-#define MPI_Ialltoall(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ialltoall"), MPI_Ialltoall(__VA_ARGS__))
-#define MPI_Ialltoallv(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ialltoallv"), MPI_Ialltoallv(__VA_ARGS__))
-#define MPI_Ialltoallw(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ialltoallw"), MPI_Ialltoallw(__VA_ARGS__))
+#define MPI_Ireduce_scatter(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ireduce_scatter"), MPI_Ireduce_scatter(__VA_ARGS__))
+#define MPI_Ireduce_scatter_block(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ireduce_scatter_block"), MPI_Ireduce_scatter_block(__VA_ARGS__))
+#define MPI_Ialltoall(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ialltoall"), MPI_Ialltoall(__VA_ARGS__))
+#define MPI_Ialltoallv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ialltoallv"), MPI_Ialltoallv(__VA_ARGS__))
+#define MPI_Ialltoallw(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ialltoallw"), MPI_Ialltoallw(__VA_ARGS__))
 #define MPI_Gather(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Gather"), MPI_Gather(__VA_ARGS__))
 #define MPI_Gatherv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Gatherv"), MPI_Gatherv(__VA_ARGS__))
-#define MPI_Allgather(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Allgather"), MPI_Allgather(__VA_ARGS__))
-#define MPI_Allgatherv(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Allgatherv"), MPI_Allgatherv(__VA_ARGS__))
+#define MPI_Allgather(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Allgather"), MPI_Allgather(__VA_ARGS__))
+#define MPI_Allgatherv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Allgatherv"), MPI_Allgatherv(__VA_ARGS__))
 #define MPI_Scatter(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Scatter"), MPI_Scatter(__VA_ARGS__))
 #define MPI_Scatterv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Scatterv"), MPI_Scatterv(__VA_ARGS__))
 #define MPI_Reduce(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Reduce"), MPI_Reduce(__VA_ARGS__))
-#define MPI_Allreduce(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Allreduce"), MPI_Allreduce(__VA_ARGS__))
+#define MPI_Allreduce(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Allreduce"), MPI_Allreduce(__VA_ARGS__))
 #define MPI_Scan(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Scan"), MPI_Scan(__VA_ARGS__))
 #define MPI_Exscan(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Exscan"), MPI_Exscan(__VA_ARGS__))
-#define MPI_Reduce_scatter(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Reduce_scatter"), MPI_Reduce_scatter(__VA_ARGS__))
-#define MPI_Reduce_scatter_block(...)                                                                                  \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Reduce_scatter_block"), MPI_Reduce_scatter_block(__VA_ARGS__))
+#define MPI_Reduce_scatter(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Reduce_scatter"), MPI_Reduce_scatter(__VA_ARGS__))
+#define MPI_Reduce_scatter_block(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Reduce_scatter_block"), MPI_Reduce_scatter_block(__VA_ARGS__))
 #define MPI_Alltoall(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Alltoall"), MPI_Alltoall(__VA_ARGS__))
-#define MPI_Alltoallv(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Alltoallv"), MPI_Alltoallv(__VA_ARGS__))
-#define MPI_Alltoallw(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Alltoallw"), MPI_Alltoallw(__VA_ARGS__))
-#define MPI_Reduce_local(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Reduce_local"), MPI_Reduce_local(__VA_ARGS__))
-#define MPI_Info_create(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_create"), MPI_Info_create(__VA_ARGS__))
+#define MPI_Alltoallv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Alltoallv"), MPI_Alltoallv(__VA_ARGS__))
+#define MPI_Alltoallw(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Alltoallw"), MPI_Alltoallw(__VA_ARGS__))
+#define MPI_Reduce_local(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Reduce_local"), MPI_Reduce_local(__VA_ARGS__))
+#define MPI_Info_create(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_create"), MPI_Info_create(__VA_ARGS__))
 #define MPI_Info_set(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_set"), MPI_Info_set(__VA_ARGS__))
 #define MPI_Info_get(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_get"), MPI_Info_get(__VA_ARGS__))
-#define MPI_Info_free(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_free"), MPI_Info_free(__VA_ARGS__))
-#define MPI_Info_delete(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_delete"), MPI_Info_delete(__VA_ARGS__))
+#define MPI_Info_free(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_free"), MPI_Info_free(__VA_ARGS__))
+#define MPI_Info_delete(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_delete"), MPI_Info_delete(__VA_ARGS__))
 #define MPI_Info_dup(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_dup"), MPI_Info_dup(__VA_ARGS__))
-#define MPI_Info_get_nkeys(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_get_nkeys"), MPI_Info_get_nkeys(__VA_ARGS__))
-#define MPI_Info_get_nthkey(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_get_nthkey"), MPI_Info_get_nthkey(__VA_ARGS__))
-#define MPI_Info_get_valuelen(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_get_valuelen"), MPI_Info_get_valuelen(__VA_ARGS__))
+#define MPI_Info_get_nkeys(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_get_nkeys"), MPI_Info_get_nkeys(__VA_ARGS__))
+#define MPI_Info_get_nthkey(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_get_nthkey"), MPI_Info_get_nthkey(__VA_ARGS__))
+#define MPI_Info_get_valuelen(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_get_valuelen"), MPI_Info_get_valuelen(__VA_ARGS__))
 #define MPI_Info_f2c(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_f2c"), MPI_Info_f2c(__VA_ARGS__))
 #define MPI_Info_c2f(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Info_c2f"), MPI_Info_c2f(__VA_ARGS__))
 #define MPI_Win_free(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_free"), MPI_Win_free(__VA_ARGS__))
-#define MPI_Win_create(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_create"), MPI_Win_create(__VA_ARGS__))
-#define MPI_Win_allocate(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_allocate"), MPI_Win_allocate(__VA_ARGS__))
-#define MPI_Win_allocate_shared(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_allocate_shared"), MPI_Win_allocate_shared(__VA_ARGS__))
-#define MPI_Win_create_dynamic(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_create_dynamic"), MPI_Win_create_dynamic(__VA_ARGS__))
-#define MPI_Win_attach(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_attach"), MPI_Win_attach(__VA_ARGS__))
-#define MPI_Win_detach(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_detach"), MPI_Win_detach(__VA_ARGS__))
-#define MPI_Win_set_name(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_set_name"), MPI_Win_set_name(__VA_ARGS__))
-#define MPI_Win_get_name(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_get_name"), MPI_Win_get_name(__VA_ARGS__))
-#define MPI_Win_set_info(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_set_info"), MPI_Win_set_info(__VA_ARGS__))
-#define MPI_Win_get_info(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_get_info"), MPI_Win_get_info(__VA_ARGS__))
-#define MPI_Win_get_group(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_get_group"), MPI_Win_get_group(__VA_ARGS__))
-#define MPI_Win_fence(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_fence"), MPI_Win_fence(__VA_ARGS__))
-#define MPI_Win_get_attr(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_get_attr"), MPI_Win_get_attr(__VA_ARGS__))
-#define MPI_Win_set_attr(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_set_attr"), MPI_Win_set_attr(__VA_ARGS__))
-#define MPI_Win_delete_attr(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_delete_attr"), MPI_Win_delete_attr(__VA_ARGS__))
-#define MPI_Win_create_keyval(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_create_keyval"), MPI_Win_create_keyval(__VA_ARGS__))
-#define MPI_Win_free_keyval(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_free_keyval"), MPI_Win_free_keyval(__VA_ARGS__))
-#define MPI_Win_complete(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_complete"), MPI_Win_complete(__VA_ARGS__))
+#define MPI_Win_create(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_create"), MPI_Win_create(__VA_ARGS__))
+#define MPI_Win_allocate(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_allocate"), MPI_Win_allocate(__VA_ARGS__))
+#define MPI_Win_allocate_shared(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_allocate_shared"), MPI_Win_allocate_shared(__VA_ARGS__))
+#define MPI_Win_create_dynamic(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_create_dynamic"), MPI_Win_create_dynamic(__VA_ARGS__))
+#define MPI_Win_attach(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_attach"), MPI_Win_attach(__VA_ARGS__))
+#define MPI_Win_detach(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_detach"), MPI_Win_detach(__VA_ARGS__))
+#define MPI_Win_set_name(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_set_name"), MPI_Win_set_name(__VA_ARGS__))
+#define MPI_Win_get_name(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_get_name"), MPI_Win_get_name(__VA_ARGS__))
+#define MPI_Win_set_info(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_set_info"), MPI_Win_set_info(__VA_ARGS__))
+#define MPI_Win_get_info(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_get_info"), MPI_Win_get_info(__VA_ARGS__))
+#define MPI_Win_get_group(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_get_group"), MPI_Win_get_group(__VA_ARGS__))
+#define MPI_Win_fence(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_fence"), MPI_Win_fence(__VA_ARGS__))
+#define MPI_Win_get_attr(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_get_attr"), MPI_Win_get_attr(__VA_ARGS__))
+#define MPI_Win_set_attr(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_set_attr"), MPI_Win_set_attr(__VA_ARGS__))
+#define MPI_Win_delete_attr(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_delete_attr"), MPI_Win_delete_attr(__VA_ARGS__))
+#define MPI_Win_create_keyval(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_create_keyval"), MPI_Win_create_keyval(__VA_ARGS__))
+#define MPI_Win_free_keyval(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_free_keyval"), MPI_Win_free_keyval(__VA_ARGS__))
+#define MPI_Win_complete(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_complete"), MPI_Win_complete(__VA_ARGS__))
 #define MPI_Win_post(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_post"), MPI_Win_post(__VA_ARGS__))
-#define MPI_Win_start(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_start"), MPI_Win_start(__VA_ARGS__))
+#define MPI_Win_start(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_start"), MPI_Win_start(__VA_ARGS__))
 #define MPI_Win_wait(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_wait"), MPI_Win_wait(__VA_ARGS__))
 #define MPI_Win_lock(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_lock"), MPI_Win_lock(__VA_ARGS__))
-#define MPI_Win_lock_all(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_lock_all"), MPI_Win_lock_all(__VA_ARGS__))
-#define MPI_Win_unlock(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_unlock"), MPI_Win_unlock(__VA_ARGS__))
-#define MPI_Win_unlock_all(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_unlock_all"), MPI_Win_unlock_all(__VA_ARGS__))
-#define MPI_Win_flush(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_flush"), MPI_Win_flush(__VA_ARGS__))
-#define MPI_Win_flush_local(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_flush_local"), MPI_Win_flush_local(__VA_ARGS__))
-#define MPI_Win_flush_all(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_flush_all"), MPI_Win_flush_all(__VA_ARGS__))
-#define MPI_Win_flush_local_all(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_flush_local_all"), MPI_Win_flush_local_all(__VA_ARGS__))
-#define MPI_Win_shared_query(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_shared_query"), MPI_Win_shared_query(__VA_ARGS__))
+#define MPI_Win_lock_all(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_lock_all"), MPI_Win_lock_all(__VA_ARGS__))
+#define MPI_Win_unlock(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_unlock"), MPI_Win_unlock(__VA_ARGS__))
+#define MPI_Win_unlock_all(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_unlock_all"), MPI_Win_unlock_all(__VA_ARGS__))
+#define MPI_Win_flush(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_flush"), MPI_Win_flush(__VA_ARGS__))
+#define MPI_Win_flush_local(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_flush_local"), MPI_Win_flush_local(__VA_ARGS__))
+#define MPI_Win_flush_all(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_flush_all"), MPI_Win_flush_all(__VA_ARGS__))
+#define MPI_Win_flush_local_all(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_flush_local_all"), MPI_Win_flush_local_all(__VA_ARGS__))
+#define MPI_Win_shared_query(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_shared_query"), MPI_Win_shared_query(__VA_ARGS__))
 #define MPI_Win_sync(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_sync"), MPI_Win_sync(__VA_ARGS__))
 #define MPI_Win_f2c(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_f2c"), MPI_Win_f2c(__VA_ARGS__))
 #define MPI_Win_c2f(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_c2f"), MPI_Win_c2f(__VA_ARGS__))
 #define MPI_Get(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get"), MPI_Get(__VA_ARGS__))
 #define MPI_Put(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Put"), MPI_Put(__VA_ARGS__))
-#define MPI_Accumulate(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Accumulate"), MPI_Accumulate(__VA_ARGS__))
-#define MPI_Get_accumulate(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_accumulate"), MPI_Get_accumulate(__VA_ARGS__))
+#define MPI_Accumulate(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Accumulate"), MPI_Accumulate(__VA_ARGS__))
+#define MPI_Get_accumulate(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_accumulate"), MPI_Get_accumulate(__VA_ARGS__))
 #define MPI_Rget(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Rget"), MPI_Rget(__VA_ARGS__))
 #define MPI_Rput(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Rput"), MPI_Rput(__VA_ARGS__))
-#define MPI_Raccumulate(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Raccumulate"), MPI_Raccumulate(__VA_ARGS__))
-#define MPI_Rget_accumulate(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Rget_accumulate"), MPI_Rget_accumulate(__VA_ARGS__))
-#define MPI_Fetch_and_op(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Fetch_and_op"), MPI_Fetch_and_op(__VA_ARGS__))
-#define MPI_Compare_and_swap(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Compare_and_swap"), MPI_Compare_and_swap(__VA_ARGS__))
-#define MPI_Cart_coords(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Cart_coords"), MPI_Cart_coords(__VA_ARGS__))
-#define MPI_Cart_create(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Cart_create"), MPI_Cart_create(__VA_ARGS__))
+#define MPI_Raccumulate(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Raccumulate"), MPI_Raccumulate(__VA_ARGS__))
+#define MPI_Rget_accumulate(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Rget_accumulate"), MPI_Rget_accumulate(__VA_ARGS__))
+#define MPI_Fetch_and_op(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Fetch_and_op"), MPI_Fetch_and_op(__VA_ARGS__))
+#define MPI_Compare_and_swap(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Compare_and_swap"), MPI_Compare_and_swap(__VA_ARGS__))
+#define MPI_Cart_coords(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Cart_coords"), MPI_Cart_coords(__VA_ARGS__))
+#define MPI_Cart_create(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Cart_create"), MPI_Cart_create(__VA_ARGS__))
 #define MPI_Cart_get(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Cart_get"), MPI_Cart_get(__VA_ARGS__))
-#define MPI_Cart_rank(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Cart_rank"), MPI_Cart_rank(__VA_ARGS__))
-#define MPI_Cart_shift(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Cart_shift"), MPI_Cart_shift(__VA_ARGS__))
+#define MPI_Cart_rank(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Cart_rank"), MPI_Cart_rank(__VA_ARGS__))
+#define MPI_Cart_shift(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Cart_shift"), MPI_Cart_shift(__VA_ARGS__))
 #define MPI_Cart_sub(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Cart_sub"), MPI_Cart_sub(__VA_ARGS__))
-#define MPI_Cartdim_get(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Cartdim_get"), MPI_Cartdim_get(__VA_ARGS__))
-#define MPI_Dims_create(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Dims_create"), MPI_Dims_create(__VA_ARGS__))
-#define MPI_Request_get_status(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Request_get_status"), MPI_Request_get_status(__VA_ARGS__))
-#define MPI_Grequest_start(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Grequest_start"), MPI_Grequest_start(__VA_ARGS__))
-#define MPI_Grequest_complete(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Grequest_complete"), MPI_Grequest_complete(__VA_ARGS__))
-#define MPI_Status_set_cancelled(...)                                                                                  \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Status_set_cancelled"), MPI_Status_set_cancelled(__VA_ARGS__))
-#define MPI_Status_set_elements(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Status_set_elements"), MPI_Status_set_elements(__VA_ARGS__))
-#define MPI_Status_set_elements_x(...)                                                                                 \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Status_set_elements_x"),                                      \
-   MPI_Status_set_elements_x(__VA_ARGS__))
-#define MPI_Type_create_subarray(...)                                                                                  \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_subarray"), MPI_Type_create_subarray(__VA_ARGS__))
-#define MPI_File_open(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_open"), MPI_File_open(__VA_ARGS__))
-#define MPI_File_close(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_close"), MPI_File_close(__VA_ARGS__))
-#define MPI_File_delete(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_delete"), MPI_File_delete(__VA_ARGS__))
-#define MPI_File_get_size(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_size"), MPI_File_get_size(__VA_ARGS__))
-#define MPI_File_get_group(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_group"), MPI_File_get_group(__VA_ARGS__))
-#define MPI_File_get_amode(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_amode"), MPI_File_get_amode(__VA_ARGS__))
-#define MPI_File_set_info(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_set_info"), MPI_File_set_info(__VA_ARGS__))
-#define MPI_File_get_info(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_info"), MPI_File_get_info(__VA_ARGS__))
-#define MPI_File_read_at(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_at"), MPI_File_read_at(__VA_ARGS__))
-#define MPI_File_read_at_all(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_at_all"), MPI_File_read_at_all(__VA_ARGS__))
-#define MPI_File_write_at(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_at"), MPI_File_write_at(__VA_ARGS__))
-#define MPI_File_write_at_all(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_at_all"), MPI_File_write_at_all(__VA_ARGS__))
-#define MPI_File_read(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read"), MPI_File_read(__VA_ARGS__))
-#define MPI_File_read_all(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_all"), MPI_File_read_all(__VA_ARGS__))
-#define MPI_File_write(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write"), MPI_File_write(__VA_ARGS__))
-#define MPI_File_write_all(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_all"), MPI_File_write_all(__VA_ARGS__))
-#define MPI_File_seek(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_seek"), MPI_File_seek(__VA_ARGS__))
-#define MPI_File_get_position(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_position"), MPI_File_get_position(__VA_ARGS__))
-#define MPI_File_read_shared(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_shared"), MPI_File_read_shared(__VA_ARGS__))
-#define MPI_File_write_shared(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_shared"), MPI_File_write_shared(__VA_ARGS__))
-#define MPI_File_read_ordered(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_ordered"), MPI_File_read_ordered(__VA_ARGS__))
-#define MPI_File_write_ordered(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_ordered"), MPI_File_write_ordered(__VA_ARGS__))
-#define MPI_File_seek_shared(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_seek_shared"), MPI_File_seek_shared(__VA_ARGS__))
-#define MPI_File_get_position_shared(...)                                                                              \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_position_shared"),                                   \
-   MPI_File_get_position_shared(__VA_ARGS__))
-#define MPI_File_sync(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_sync"), MPI_File_sync(__VA_ARGS__))
-#define MPI_File_set_view(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_set_view"), MPI_File_set_view(__VA_ARGS__))
-#define MPI_File_get_view(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_view"), MPI_File_get_view(__VA_ARGS__))
-#define MPI_Errhandler_set(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Errhandler_set"), MPI_Errhandler_set(__VA_ARGS__))
-#define MPI_Errhandler_create(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Errhandler_create"), MPI_Errhandler_create(__VA_ARGS__))
-#define MPI_Errhandler_free(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Errhandler_free"), MPI_Errhandler_free(__VA_ARGS__))
-#define MPI_Errhandler_get(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Errhandler_get"), MPI_Errhandler_get(__VA_ARGS__))
-#define MPI_Comm_set_errhandler(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_set_errhandler"), MPI_Comm_set_errhandler(__VA_ARGS__))
-#define MPI_Comm_get_errhandler(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_get_errhandler"), MPI_Comm_get_errhandler(__VA_ARGS__))
-#define MPI_Comm_create_errhandler(...)                                                                                \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_create_errhandler"),                                     \
-   MPI_Comm_create_errhandler(__VA_ARGS__))
-#define MPI_Comm_call_errhandler(...)                                                                                  \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_call_errhandler"), MPI_Comm_call_errhandler(__VA_ARGS__))
-#define MPI_Win_set_errhandler(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_set_errhandler"), MPI_Win_set_errhandler(__VA_ARGS__))
-#define MPI_Win_get_errhandler(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_get_errhandler"), MPI_Win_get_errhandler(__VA_ARGS__))
-#define MPI_Win_create_errhandler(...)                                                                                 \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_create_errhandler"),                                      \
-   MPI_Win_create_errhandler(__VA_ARGS__))
-#define MPI_Win_call_errhandler(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_call_errhandler"), MPI_Win_call_errhandler(__VA_ARGS__))
-#define MPI_Errhandler_f2c(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Errhandler_f2c"), MPI_Errhandler_f2c(__VA_ARGS__))
-#define MPI_Errhandler_c2f(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Errhandler_c2f"), MPI_Errhandler_c2f(__VA_ARGS__))
-#define MPI_Type_create_f90_integer(...)                                                                               \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_f90_integer"),                                    \
-   MPI_Type_create_f90_integer(__VA_ARGS__))
-#define MPI_Type_create_f90_real(...)                                                                                  \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_f90_real"), MPI_Type_create_f90_real(__VA_ARGS__))
-#define MPI_Type_create_f90_complex(...)                                                                               \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_f90_complex"),                                    \
-   MPI_Type_create_f90_complex(__VA_ARGS__))
-#define MPI_Type_get_contents(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_contents"), MPI_Type_get_contents(__VA_ARGS__))
-#define MPI_Type_get_envelope(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_envelope"), MPI_Type_get_envelope(__VA_ARGS__))
-#define MPI_File_call_errhandler(...)                                                                                  \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_call_errhandler"), MPI_File_call_errhandler(__VA_ARGS__))
-#define MPI_File_create_errhandler(...)                                                                                \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_create_errhandler"),                                     \
-   MPI_File_create_errhandler(__VA_ARGS__))
-#define MPI_File_set_errhandler(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_set_errhandler"), MPI_File_set_errhandler(__VA_ARGS__))
-#define MPI_File_get_errhandler(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_errhandler"), MPI_File_get_errhandler(__VA_ARGS__))
+#define MPI_Cartdim_get(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Cartdim_get"), MPI_Cartdim_get(__VA_ARGS__))
+#define MPI_Dims_create(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Dims_create"), MPI_Dims_create(__VA_ARGS__))
+#define MPI_Request_get_status(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Request_get_status"), MPI_Request_get_status(__VA_ARGS__))
+#define MPI_Grequest_start(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Grequest_start"), MPI_Grequest_start(__VA_ARGS__))
+#define MPI_Grequest_complete(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Grequest_complete"), MPI_Grequest_complete(__VA_ARGS__))
+#define MPI_Status_set_cancelled(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Status_set_cancelled"), MPI_Status_set_cancelled(__VA_ARGS__))
+#define MPI_Status_set_elements(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Status_set_elements"), MPI_Status_set_elements(__VA_ARGS__))
+#define MPI_Status_set_elements_x(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Status_set_elements_x"), MPI_Status_set_elements_x(__VA_ARGS__))
+#define MPI_Type_create_subarray(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_subarray"), MPI_Type_create_subarray(__VA_ARGS__))
+#define MPI_File_open(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_open"), MPI_File_open(__VA_ARGS__))
+#define MPI_File_close(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_close"), MPI_File_close(__VA_ARGS__))
+#define MPI_File_delete(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_delete"), MPI_File_delete(__VA_ARGS__))
+#define MPI_File_get_size(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_size"), MPI_File_get_size(__VA_ARGS__))
+#define MPI_File_get_group(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_group"), MPI_File_get_group(__VA_ARGS__))
+#define MPI_File_get_amode(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_amode"), MPI_File_get_amode(__VA_ARGS__))
+#define MPI_File_set_info(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_set_info"), MPI_File_set_info(__VA_ARGS__))
+#define MPI_File_get_info(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_info"), MPI_File_get_info(__VA_ARGS__))
+#define MPI_File_read_at(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_at"), MPI_File_read_at(__VA_ARGS__))
+#define MPI_File_read_at_all(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_at_all"), MPI_File_read_at_all(__VA_ARGS__))
+#define MPI_File_write_at(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_at"), MPI_File_write_at(__VA_ARGS__))
+#define MPI_File_write_at_all(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_at_all"), MPI_File_write_at_all(__VA_ARGS__))
+#define MPI_File_read(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read"), MPI_File_read(__VA_ARGS__))
+#define MPI_File_read_all(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_all"), MPI_File_read_all(__VA_ARGS__))
+#define MPI_File_write(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write"), MPI_File_write(__VA_ARGS__))
+#define MPI_File_write_all(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_all"), MPI_File_write_all(__VA_ARGS__))
+#define MPI_File_seek(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_seek"), MPI_File_seek(__VA_ARGS__))
+#define MPI_File_get_position(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_position"), MPI_File_get_position(__VA_ARGS__))
+#define MPI_File_read_shared(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_shared"), MPI_File_read_shared(__VA_ARGS__))
+#define MPI_File_write_shared(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_shared"), MPI_File_write_shared(__VA_ARGS__))
+#define MPI_File_read_ordered(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_ordered"), MPI_File_read_ordered(__VA_ARGS__))
+#define MPI_File_write_ordered(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_ordered"), MPI_File_write_ordered(__VA_ARGS__))
+#define MPI_File_seek_shared(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_seek_shared"), MPI_File_seek_shared(__VA_ARGS__))
+#define MPI_File_get_position_shared(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_position_shared"), MPI_File_get_position_shared(__VA_ARGS__))
+#define MPI_File_sync(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_sync"), MPI_File_sync(__VA_ARGS__))
+#define MPI_File_set_view(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_set_view"), MPI_File_set_view(__VA_ARGS__))
+#define MPI_File_get_view(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_view"), MPI_File_get_view(__VA_ARGS__))
+#define MPI_Errhandler_set(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Errhandler_set"), MPI_Errhandler_set(__VA_ARGS__))
+#define MPI_Errhandler_create(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Errhandler_create"), MPI_Errhandler_create(__VA_ARGS__))
+#define MPI_Errhandler_free(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Errhandler_free"), MPI_Errhandler_free(__VA_ARGS__))
+#define MPI_Errhandler_get(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Errhandler_get"), MPI_Errhandler_get(__VA_ARGS__))
+#define MPI_Comm_set_errhandler(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_set_errhandler"), MPI_Comm_set_errhandler(__VA_ARGS__))
+#define MPI_Comm_get_errhandler(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_get_errhandler"), MPI_Comm_get_errhandler(__VA_ARGS__))
+#define MPI_Comm_create_errhandler(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_create_errhandler"), MPI_Comm_create_errhandler(__VA_ARGS__))
+#define MPI_Comm_call_errhandler(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_call_errhandler"), MPI_Comm_call_errhandler(__VA_ARGS__))
+#define MPI_Win_set_errhandler(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_set_errhandler"), MPI_Win_set_errhandler(__VA_ARGS__))
+#define MPI_Win_get_errhandler(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_get_errhandler"), MPI_Win_get_errhandler(__VA_ARGS__))
+#define MPI_Win_create_errhandler(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_create_errhandler"), MPI_Win_create_errhandler(__VA_ARGS__))
+#define MPI_Win_call_errhandler(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_call_errhandler"), MPI_Win_call_errhandler(__VA_ARGS__))
+#define MPI_Errhandler_f2c(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Errhandler_f2c"), MPI_Errhandler_f2c(__VA_ARGS__))
+#define MPI_Errhandler_c2f(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Errhandler_c2f"), MPI_Errhandler_c2f(__VA_ARGS__))
+#define MPI_Type_create_f90_integer(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_f90_integer"), MPI_Type_create_f90_integer(__VA_ARGS__))
+#define MPI_Type_create_f90_real(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_f90_real"), MPI_Type_create_f90_real(__VA_ARGS__))
+#define MPI_Type_create_f90_complex(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_f90_complex"), MPI_Type_create_f90_complex(__VA_ARGS__))
+#define MPI_Type_get_contents(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_contents"), MPI_Type_get_contents(__VA_ARGS__))
+#define MPI_Type_get_envelope(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_get_envelope"), MPI_Type_get_envelope(__VA_ARGS__))
+#define MPI_File_call_errhandler(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_call_errhandler"), MPI_File_call_errhandler(__VA_ARGS__))
+#define MPI_File_create_errhandler(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_create_errhandler"), MPI_File_create_errhandler(__VA_ARGS__))
+#define MPI_File_set_errhandler(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_set_errhandler"), MPI_File_set_errhandler(__VA_ARGS__))
+#define MPI_File_get_errhandler(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_errhandler"), MPI_File_get_errhandler(__VA_ARGS__))
 #define MPI_Cart_map(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Cart_map"), MPI_Cart_map(__VA_ARGS__))
-#define MPI_Graph_create(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Graph_create"), MPI_Graph_create(__VA_ARGS__))
-#define MPI_Graph_get(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Graph_get"), MPI_Graph_get(__VA_ARGS__))
-#define MPI_Graph_map(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Graph_map"), MPI_Graph_map(__VA_ARGS__))
-#define MPI_Graph_neighbors(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Graph_neighbors"), MPI_Graph_neighbors(__VA_ARGS__))
-#define MPI_Graph_neighbors_count(...)                                                                                 \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Graph_neighbors_count"),                                      \
-   MPI_Graph_neighbors_count(__VA_ARGS__))
-#define MPI_Graphdims_get(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Graphdims_get"), MPI_Graphdims_get(__VA_ARGS__))
-#define MPI_Topo_test(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Topo_test"), MPI_Topo_test(__VA_ARGS__))
-#define MPI_Add_error_class(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Add_error_class"), MPI_Add_error_class(__VA_ARGS__))
-#define MPI_Add_error_code(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Add_error_code"), MPI_Add_error_code(__VA_ARGS__))
-#define MPI_Add_error_string(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Add_error_string"), MPI_Add_error_string(__VA_ARGS__))
-#define MPI_Comm_test_inter(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_test_inter"), MPI_Comm_test_inter(__VA_ARGS__))
-#define MPI_Intercomm_create(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Intercomm_create"), MPI_Intercomm_create(__VA_ARGS__))
-#define MPI_Intercomm_merge(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Intercomm_merge"), MPI_Intercomm_merge(__VA_ARGS__))
-#define MPI_Comm_remote_group(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_remote_group"), MPI_Comm_remote_group(__VA_ARGS__))
-#define MPI_Comm_remote_size(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_remote_size"), MPI_Comm_remote_size(__VA_ARGS__))
-#define MPI_Get_elements(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_elements"), MPI_Get_elements(__VA_ARGS__))
-#define MPI_Get_elements_x(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_elements_x"), MPI_Get_elements_x(__VA_ARGS__))
+#define MPI_Graph_create(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Graph_create"), MPI_Graph_create(__VA_ARGS__))
+#define MPI_Graph_get(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Graph_get"), MPI_Graph_get(__VA_ARGS__))
+#define MPI_Graph_map(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Graph_map"), MPI_Graph_map(__VA_ARGS__))
+#define MPI_Graph_neighbors(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Graph_neighbors"), MPI_Graph_neighbors(__VA_ARGS__))
+#define MPI_Graph_neighbors_count(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Graph_neighbors_count"), MPI_Graph_neighbors_count(__VA_ARGS__))
+#define MPI_Graphdims_get(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Graphdims_get"), MPI_Graphdims_get(__VA_ARGS__))
+#define MPI_Topo_test(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Topo_test"), MPI_Topo_test(__VA_ARGS__))
+#define MPI_Add_error_class(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Add_error_class"), MPI_Add_error_class(__VA_ARGS__))
+#define MPI_Add_error_code(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Add_error_code"), MPI_Add_error_code(__VA_ARGS__))
+#define MPI_Add_error_string(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Add_error_string"), MPI_Add_error_string(__VA_ARGS__))
+#define MPI_Comm_test_inter(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_test_inter"), MPI_Comm_test_inter(__VA_ARGS__))
+#define MPI_Intercomm_create(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Intercomm_create"), MPI_Intercomm_create(__VA_ARGS__))
+#define MPI_Intercomm_merge(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Intercomm_merge"), MPI_Intercomm_merge(__VA_ARGS__))
+#define MPI_Comm_remote_group(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_remote_group"), MPI_Comm_remote_group(__VA_ARGS__))
+#define MPI_Comm_remote_size(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_remote_size"), MPI_Comm_remote_size(__VA_ARGS__))
+#define MPI_Get_elements(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_elements"), MPI_Get_elements(__VA_ARGS__))
+#define MPI_Get_elements_x(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Get_elements_x"), MPI_Get_elements_x(__VA_ARGS__))
 #define MPI_Pcontrol(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pcontrol"), MPI_Pcontrol(__VA_ARGS__))
-#define MPI_Type_create_darray(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_darray"), MPI_Type_create_darray(__VA_ARGS__))
-#define MPI_Pack_external_size(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pack_external_size"), MPI_Pack_external_size(__VA_ARGS__))
-#define MPI_Pack_external(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pack_external"), MPI_Pack_external(__VA_ARGS__))
-#define MPI_Unpack_external(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Unpack_external"), MPI_Unpack_external(__VA_ARGS__))
-#define MPI_Type_match_size(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_match_size"), MPI_Type_match_size(__VA_ARGS__))
-#define MPI_Comm_connect(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_connect"), MPI_Comm_connect(__VA_ARGS__))
-#define MPI_Unpublish_name(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Unpublish_name"), MPI_Unpublish_name(__VA_ARGS__))
-#define MPI_Publish_name(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Publish_name"), MPI_Publish_name(__VA_ARGS__))
-#define MPI_Lookup_name(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Lookup_name"), MPI_Lookup_name(__VA_ARGS__))
-#define MPI_Comm_idup(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_idup"), MPI_Comm_idup(__VA_ARGS__))
-#define MPI_Comm_join(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_join"), MPI_Comm_join(__VA_ARGS__))
-#define MPI_Open_port(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Open_port"), MPI_Open_port(__VA_ARGS__))
-#define MPI_Close_port(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Close_port"), MPI_Close_port(__VA_ARGS__))
-#define MPI_Comm_accept(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_accept"), MPI_Comm_accept(__VA_ARGS__))
-#define MPI_Comm_spawn(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_spawn"), MPI_Comm_spawn(__VA_ARGS__))
-#define MPI_Comm_spawn_multiple(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_spawn_multiple"), MPI_Comm_spawn_multiple(__VA_ARGS__))
-#define MPI_Comm_get_parent(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_get_parent"), MPI_Comm_get_parent(__VA_ARGS__))
-#define MPI_Dist_graph_create(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Dist_graph_create"), MPI_Dist_graph_create(__VA_ARGS__))
-#define MPI_Dist_graph_create_adjacent(...)                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Dist_graph_create_adjacent"),                                 \
-   MPI_Dist_graph_create_adjacent(__VA_ARGS__))
-#define MPI_Dist_graph_neighbors(...)                                                                                  \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Dist_graph_neighbors"), MPI_Dist_graph_neighbors(__VA_ARGS__))
-#define MPI_Dist_graph_neighbors_count(...)                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Dist_graph_neighbors_count"),                                 \
-   MPI_Dist_graph_neighbors_count(__VA_ARGS__))
+#define MPI_Type_create_darray(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_create_darray"), MPI_Type_create_darray(__VA_ARGS__))
+#define MPI_Pack_external_size(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pack_external_size"), MPI_Pack_external_size(__VA_ARGS__))
+#define MPI_Pack_external(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pack_external"), MPI_Pack_external(__VA_ARGS__))
+#define MPI_Unpack_external(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Unpack_external"), MPI_Unpack_external(__VA_ARGS__))
+#define MPI_Type_match_size(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Type_match_size"), MPI_Type_match_size(__VA_ARGS__))
+#define MPI_Comm_connect(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_connect"), MPI_Comm_connect(__VA_ARGS__))
+#define MPI_Unpublish_name(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Unpublish_name"), MPI_Unpublish_name(__VA_ARGS__))
+#define MPI_Publish_name(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Publish_name"), MPI_Publish_name(__VA_ARGS__))
+#define MPI_Lookup_name(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Lookup_name"), MPI_Lookup_name(__VA_ARGS__))
+#define MPI_Comm_idup(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_idup"), MPI_Comm_idup(__VA_ARGS__))
+#define MPI_Comm_join(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_join"), MPI_Comm_join(__VA_ARGS__))
+#define MPI_Open_port(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Open_port"), MPI_Open_port(__VA_ARGS__))
+#define MPI_Close_port(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Close_port"), MPI_Close_port(__VA_ARGS__))
+#define MPI_Comm_accept(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_accept"), MPI_Comm_accept(__VA_ARGS__))
+#define MPI_Comm_spawn(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_spawn"), MPI_Comm_spawn(__VA_ARGS__))
+#define MPI_Comm_spawn_multiple(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_spawn_multiple"), MPI_Comm_spawn_multiple(__VA_ARGS__))
+#define MPI_Comm_get_parent(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Comm_get_parent"), MPI_Comm_get_parent(__VA_ARGS__))
+#define MPI_Dist_graph_create(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Dist_graph_create"), MPI_Dist_graph_create(__VA_ARGS__))
+#define MPI_Dist_graph_create_adjacent(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Dist_graph_create_adjacent"), MPI_Dist_graph_create_adjacent(__VA_ARGS__))
+#define MPI_Dist_graph_neighbors(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Dist_graph_neighbors"), MPI_Dist_graph_neighbors(__VA_ARGS__))
+#define MPI_Dist_graph_neighbors_count(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Dist_graph_neighbors_count"), MPI_Dist_graph_neighbors_count(__VA_ARGS__))
 #define MPI_Win_test(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Win_test"), MPI_Win_test(__VA_ARGS__))
 #define MPI_File_c2f(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_c2f"), MPI_File_c2f(__VA_ARGS__))
 #define MPI_File_f2c(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_f2c"), MPI_File_f2c(__VA_ARGS__))
-#define MPI_Register_datarep(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Register_datarep"), MPI_Register_datarep(__VA_ARGS__))
-#define MPI_File_set_size(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_set_size"), MPI_File_set_size(__VA_ARGS__))
-#define MPI_File_preallocate(...)                                                                                      \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_preallocate"), MPI_File_preallocate(__VA_ARGS__))
-#define MPI_File_iread_at(...)                                                                                         \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iread_at"), MPI_File_iread_at(__VA_ARGS__))
-#define MPI_File_iwrite_at(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iwrite_at"), MPI_File_iwrite_at(__VA_ARGS__))
-#define MPI_File_iread_at_all(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iread_at_all"), MPI_File_iread_at_all(__VA_ARGS__))
-#define MPI_File_iwrite_at_all(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iwrite_at_all"), MPI_File_iwrite_at_all(__VA_ARGS__))
-#define MPI_File_iread(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iread"), MPI_File_iread(__VA_ARGS__))
-#define MPI_File_iwrite(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iwrite"), MPI_File_iwrite(__VA_ARGS__))
-#define MPI_File_iread_all(...)                                                                                        \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iread_all"), MPI_File_iread_all(__VA_ARGS__))
-#define MPI_File_iwrite_all(...)                                                                                       \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iwrite_all"), MPI_File_iwrite_all(__VA_ARGS__))
-#define MPI_File_get_byte_offset(...)                                                                                  \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_byte_offset"), MPI_File_get_byte_offset(__VA_ARGS__))
-#define MPI_File_iread_shared(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iread_shared"), MPI_File_iread_shared(__VA_ARGS__))
-#define MPI_File_iwrite_shared(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iwrite_shared"), MPI_File_iwrite_shared(__VA_ARGS__))
-#define MPI_File_read_at_all_begin(...)                                                                                \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_at_all_begin"),                                     \
-   MPI_File_read_at_all_begin(__VA_ARGS__))
-#define MPI_File_read_at_all_end(...)                                                                                  \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_at_all_end"), MPI_File_read_at_all_end(__VA_ARGS__))
-#define MPI_File_write_at_all_begin(...)                                                                               \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_at_all_begin"),                                    \
-   MPI_File_write_at_all_begin(__VA_ARGS__))
-#define MPI_File_write_at_all_end(...)                                                                                 \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_at_all_end"),                                      \
-   MPI_File_write_at_all_end(__VA_ARGS__))
-#define MPI_File_read_all_begin(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_all_begin"), MPI_File_read_all_begin(__VA_ARGS__))
-#define MPI_File_read_all_end(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_all_end"), MPI_File_read_all_end(__VA_ARGS__))
-#define MPI_File_write_all_begin(...)                                                                                  \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_all_begin"), MPI_File_write_all_begin(__VA_ARGS__))
-#define MPI_File_write_all_end(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_all_end"), MPI_File_write_all_end(__VA_ARGS__))
-#define MPI_File_read_ordered_begin(...)                                                                               \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_ordered_begin"),                                    \
-   MPI_File_read_ordered_begin(__VA_ARGS__))
-#define MPI_File_read_ordered_end(...)                                                                                 \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_ordered_end"),                                      \
-   MPI_File_read_ordered_end(__VA_ARGS__))
-#define MPI_File_write_ordered_begin(...)                                                                              \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_ordered_begin"),                                   \
-   MPI_File_write_ordered_begin(__VA_ARGS__))
-#define MPI_File_write_ordered_end(...)                                                                                \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_ordered_end"),                                     \
-   MPI_File_write_ordered_end(__VA_ARGS__))
-#define MPI_File_get_type_extent(...)                                                                                  \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_type_extent"), MPI_File_get_type_extent(__VA_ARGS__))
-#define MPI_File_set_atomicity(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_set_atomicity"), MPI_File_set_atomicity(__VA_ARGS__))
-#define MPI_File_get_atomicity(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_atomicity"), MPI_File_get_atomicity(__VA_ARGS__))
-#define MPI_Message_f2c(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Message_f2c"), MPI_Message_f2c(__VA_ARGS__))
-#define MPI_Message_c2f(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Message_c2f"), MPI_Message_c2f(__VA_ARGS__))
+#define MPI_Register_datarep(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Register_datarep"), MPI_Register_datarep(__VA_ARGS__))
+#define MPI_File_set_size(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_set_size"), MPI_File_set_size(__VA_ARGS__))
+#define MPI_File_preallocate(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_preallocate"), MPI_File_preallocate(__VA_ARGS__))
+#define MPI_File_iread_at(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iread_at"), MPI_File_iread_at(__VA_ARGS__))
+#define MPI_File_iwrite_at(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iwrite_at"), MPI_File_iwrite_at(__VA_ARGS__))
+#define MPI_File_iread_at_all(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iread_at_all"), MPI_File_iread_at_all(__VA_ARGS__))
+#define MPI_File_iwrite_at_all(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iwrite_at_all"), MPI_File_iwrite_at_all(__VA_ARGS__))
+#define MPI_File_iread(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iread"), MPI_File_iread(__VA_ARGS__))
+#define MPI_File_iwrite(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iwrite"), MPI_File_iwrite(__VA_ARGS__))
+#define MPI_File_iread_all(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iread_all"), MPI_File_iread_all(__VA_ARGS__))
+#define MPI_File_iwrite_all(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iwrite_all"), MPI_File_iwrite_all(__VA_ARGS__))
+#define MPI_File_get_byte_offset(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_byte_offset"), MPI_File_get_byte_offset(__VA_ARGS__))
+#define MPI_File_iread_shared(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iread_shared"), MPI_File_iread_shared(__VA_ARGS__))
+#define MPI_File_iwrite_shared(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_iwrite_shared"), MPI_File_iwrite_shared(__VA_ARGS__))
+#define MPI_File_read_at_all_begin(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_at_all_begin"), MPI_File_read_at_all_begin(__VA_ARGS__))
+#define MPI_File_read_at_all_end(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_at_all_end"), MPI_File_read_at_all_end(__VA_ARGS__))
+#define MPI_File_write_at_all_begin(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_at_all_begin"), MPI_File_write_at_all_begin(__VA_ARGS__))
+#define MPI_File_write_at_all_end(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_at_all_end"), MPI_File_write_at_all_end(__VA_ARGS__))
+#define MPI_File_read_all_begin(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_all_begin"), MPI_File_read_all_begin(__VA_ARGS__))
+#define MPI_File_read_all_end(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_all_end"), MPI_File_read_all_end(__VA_ARGS__))
+#define MPI_File_write_all_begin(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_all_begin"), MPI_File_write_all_begin(__VA_ARGS__))
+#define MPI_File_write_all_end(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_all_end"), MPI_File_write_all_end(__VA_ARGS__))
+#define MPI_File_read_ordered_begin(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_ordered_begin"), MPI_File_read_ordered_begin(__VA_ARGS__))
+#define MPI_File_read_ordered_end(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_read_ordered_end"), MPI_File_read_ordered_end(__VA_ARGS__))
+#define MPI_File_write_ordered_begin(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_ordered_begin"), MPI_File_write_ordered_begin(__VA_ARGS__))
+#define MPI_File_write_ordered_end(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_write_ordered_end"), MPI_File_write_ordered_end(__VA_ARGS__))
+#define MPI_File_get_type_extent(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_type_extent"), MPI_File_get_type_extent(__VA_ARGS__))
+#define MPI_File_set_atomicity(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_set_atomicity"), MPI_File_set_atomicity(__VA_ARGS__))
+#define MPI_File_get_atomicity(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_File_get_atomicity"), MPI_File_get_atomicity(__VA_ARGS__))
+#define MPI_Message_f2c(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Message_f2c"), MPI_Message_f2c(__VA_ARGS__))
+#define MPI_Message_c2f(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Message_c2f"), MPI_Message_c2f(__VA_ARGS__))
 #define MPI_Mrecv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Mrecv"), MPI_Mrecv(__VA_ARGS__))
 #define MPI_Mprobe(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Mprobe"), MPI_Mprobe(__VA_ARGS__))
 #define MPI_Imrecv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Imrecv"), MPI_Imrecv(__VA_ARGS__))
 #define MPI_Improbe(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Improbe"), MPI_Improbe(__VA_ARGS__))
-#define MPI_Neighbor_allgather(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Neighbor_allgather"), MPI_Neighbor_allgather(__VA_ARGS__))
-#define MPI_Neighbor_allgatherv(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Neighbor_allgatherv"), MPI_Neighbor_allgatherv(__VA_ARGS__))
-#define MPI_Neighbor_alltoall(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Neighbor_alltoall"), MPI_Neighbor_alltoall(__VA_ARGS__))
-#define MPI_Neighbor_alltoallv(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Neighbor_alltoallv"), MPI_Neighbor_alltoallv(__VA_ARGS__))
-#define MPI_Neighbor_alltoallw(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Neighbor_alltoallw"), MPI_Neighbor_alltoallw(__VA_ARGS__))
-#define MPI_Ineighbor_allgather(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ineighbor_allgather"), MPI_Ineighbor_allgather(__VA_ARGS__))
-#define MPI_Ineighbor_allgatherv(...)                                                                                  \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ineighbor_allgatherv"), MPI_Ineighbor_allgatherv(__VA_ARGS__))
-#define MPI_Ineighbor_alltoall(...)                                                                                    \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ineighbor_alltoall"), MPI_Ineighbor_alltoall(__VA_ARGS__))
-#define MPI_Ineighbor_alltoallv(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ineighbor_alltoallv"), MPI_Ineighbor_alltoallv(__VA_ARGS__))
-#define MPI_Ineighbor_alltoallw(...)                                                                                   \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ineighbor_alltoallw"), MPI_Ineighbor_alltoallw(__VA_ARGS__))
-#define MPI_Status_f2c(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Status_f2c"), MPI_Status_f2c(__VA_ARGS__))
-#define MPI_Status_c2f(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Status_c2f"), MPI_Status_c2f(__VA_ARGS__))
+#define MPI_Neighbor_allgather(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Neighbor_allgather"), MPI_Neighbor_allgather(__VA_ARGS__))
+#define MPI_Neighbor_allgatherv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Neighbor_allgatherv"), MPI_Neighbor_allgatherv(__VA_ARGS__))
+#define MPI_Neighbor_alltoall(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Neighbor_alltoall"), MPI_Neighbor_alltoall(__VA_ARGS__))
+#define MPI_Neighbor_alltoallv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Neighbor_alltoallv"), MPI_Neighbor_alltoallv(__VA_ARGS__))
+#define MPI_Neighbor_alltoallw(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Neighbor_alltoallw"), MPI_Neighbor_alltoallw(__VA_ARGS__))
+#define MPI_Ineighbor_allgather(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ineighbor_allgather"), MPI_Ineighbor_allgather(__VA_ARGS__))
+#define MPI_Ineighbor_allgatherv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ineighbor_allgatherv"), MPI_Ineighbor_allgatherv(__VA_ARGS__))
+#define MPI_Ineighbor_alltoall(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ineighbor_alltoall"), MPI_Ineighbor_alltoall(__VA_ARGS__))
+#define MPI_Ineighbor_alltoallv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ineighbor_alltoallv"), MPI_Ineighbor_alltoallv(__VA_ARGS__))
+#define MPI_Ineighbor_alltoallw(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ineighbor_alltoallw"), MPI_Ineighbor_alltoallw(__VA_ARGS__))
+#define MPI_Status_f2c(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Status_f2c"), MPI_Status_f2c(__VA_ARGS__))
+#define MPI_Status_c2f(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Status_c2f"), MPI_Status_c2f(__VA_ARGS__))
