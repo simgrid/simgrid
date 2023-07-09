@@ -25,6 +25,7 @@ class XBT_PUBLIC ActivitySet : public xbt::Extendable<ActivitySet> {
 
 public:
   ActivitySet()  = default;
+  ActivitySet(const std::vector<ActivityPtr> init) : activities_(init) {}
   ~ActivitySet() = default;
 
   /** Add an activity to the set */

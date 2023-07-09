@@ -9,7 +9,7 @@
 #include <string>
 namespace sg4 = simgrid::s4u;
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_activity_testany, "Messages specific for this s4u example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_activity_waittany, "Messages specific for this s4u example");
 
 static void bob()
 {
@@ -22,28 +22,20 @@ static void bob()
   auto comm = mbox->get_async(&payload);
   auto io   = disk->read_async(3e8);
 
-  std::vector<sg4::ActivityPtr> pending_activities = {boost::dynamic_pointer_cast<sg4::Activity>(exec),
-                                                      boost::dynamic_pointer_cast<sg4::Activity>(comm),
-                                                      boost::dynamic_pointer_cast<sg4::Activity>(io)};
+  sg4::ActivitySet pending_activities({boost::dynamic_pointer_cast<sg4::Activity>(exec),
+                                       boost::dynamic_pointer_cast<sg4::Activity>(comm),
+                                       boost::dynamic_pointer_cast<sg4::Activity>(io)});
 
-  XBT_INFO("Sleep_for a while");
-  sg4::this_actor::sleep_for(1);
-
-  XBT_INFO("Test for completed activities");
+  XBT_INFO("Wait for asynchrounous activities to complete");
   while (not pending_activities.empty()) {
-    ssize_t changed_pos = sg4::Activity::test_any(pending_activities);
-    if (changed_pos != -1) {
-      auto* completed_one = pending_activities[changed_pos].get();
-      if (dynamic_cast<sg4::Comm*>(completed_one))
+    auto completed_one = pending_activities.wait_any();
+    if (completed_one != nullptr) {
+      if (boost::dynamic_pointer_cast<sg4::Comm>(completed_one))
         XBT_INFO("Completed a Comm");
-      if (dynamic_cast<sg4::Exec*>(completed_one))
+      if (boost::dynamic_pointer_cast<sg4::Exec>(completed_one))
         XBT_INFO("Completed an Exec");
-      if (dynamic_cast<sg4::Io*>(completed_one))
+      if (boost::dynamic_pointer_cast<sg4::Io>(completed_one))
         XBT_INFO("Completed an I/O");
-      pending_activities.erase(pending_activities.begin() + changed_pos);
-    } else { // nothing matches, wait for a little bit
-      XBT_INFO("Nothing matches, test again in 0.5s");
-      sg4::this_actor::sleep_for(.5);
     }
   }
   XBT_INFO("Last activity is complete");

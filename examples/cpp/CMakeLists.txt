@@ -153,7 +153,7 @@ endif()
 
 # Deal with each example
 
-foreach (example activity-testany activity-waitany
+foreach (example activityset-testany activityset-waitany
                  actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-token-ring
