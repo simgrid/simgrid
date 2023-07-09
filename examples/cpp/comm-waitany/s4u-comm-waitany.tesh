@@ -21,7 +21,6 @@ $ ${bindir:=.}/s4u-comm-waitany ${platfdir}/small_platform.xml "--log=root.fmt:[
 > [  0.338309] (3:receiver@Jupiter) I got a 'Message 3'.
 > [  0.475190] (2:receiver@Fafard) I got a 'Message 4'.
 > [  0.500898] (2:receiver@Fafard) I got a 'finalize'.
-> [  0.500898] (1:sender@Tremblay) Remove the 1th pending comm: it terminated earlier than another comm that was initiated first.
 > [  0.507464] (3:receiver@Jupiter) I got a 'Message 5'.
 > [  0.526478] (3:receiver@Jupiter) I got a 'finalize'.
 > [  0.526478] (1:sender@Tremblay) Goodbye now!

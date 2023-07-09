@@ -31,8 +31,8 @@ static void sender(unsigned int messages_count, unsigned int receivers_count, lo
     XBT_WARN("Sender has nothing to do. Bail out!");
     return;
   }
-  /* Vector in which we store all ongoing communications */
-  std::vector<sg4::CommPtr> pending_comms;
+  /* Set in which we store all ongoing communications */
+  sg4::ActivitySet pending_comms;
 
   /* Make a vector of the mailboxes to use */
   std::vector<sg4::Mailbox*> mboxes;
@@ -50,30 +50,24 @@ static void sender(unsigned int messages_count, unsigned int receivers_count, lo
 
     /* Create a communication representing the ongoing communication, and store it in pending_comms */
     sg4::CommPtr comm = mboxes[i % receivers_count]->put_async(payload, msg_size);
-    pending_comms.push_back(comm);
+    pending_comms.push(comm);
   }
 
   /* Start sending messages to let the workers know that they should stop */
   for (unsigned int i = 0; i < receivers_count; i++) {
     XBT_INFO("Send 'finalize' to 'receiver-%u'", i);
     sg4::CommPtr comm = mboxes[i]->put_async(new std::string("finalize"), 0);
-    pending_comms.push_back(comm);
+    pending_comms.push(comm);
   }
   XBT_INFO("Done dispatching all messages");
 
-  /* Now that all message exchanges were initiated, wait for their completion, in order of termination.
+  /* Now that all message exchanges were initiated, wait for their completion one by one.
    *
-   * This loop waits for first terminating message with wait_any() and remove it with erase(), until all comms are
-   * terminated
-   * Even in this simple example, the pending comms do not terminate in the exact same order of creation.
+   * Activities are removed in order of termination. It differs from the order of creation, even if it's a bit difficult
+   * to see it here.
    */
-  while (not pending_comms.empty()) {
-    ssize_t changed_pos = sg4::Comm::wait_any(pending_comms);
-    pending_comms.erase(pending_comms.begin() + changed_pos);
-    if (changed_pos != 0)
-      XBT_INFO("Remove the %zdth pending comm: it terminated earlier than another comm that was initiated first.",
-               changed_pos);
-  }
+  while (not pending_comms.empty())
+    pending_comms.wait_any();
 
   XBT_INFO("Goodbye now!");
 }

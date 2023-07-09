@@ -1,5 +1,8 @@
 SimGrid (3.34.1) not released (Target: fall 2023)
 
+S4U:
+ - New class ActivitySet to ease wait_any()/test_any()/wait_all()
+
 Python:
  - Make the host_load plugin available from Python. See examples/python/plugin-host-load
 

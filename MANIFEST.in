@@ -1951,6 +1951,7 @@ include include/simgrid/plugins/ns3.hpp
 include include/simgrid/plugins/photovoltaic.hpp
 include include/simgrid/s4u.hpp
 include include/simgrid/s4u/Activity.hpp
+include include/simgrid/s4u/ActivitySet.hpp
 include include/simgrid/s4u/Actor.hpp
 include include/simgrid/s4u/Barrier.hpp
 include include/simgrid/s4u/Comm.hpp
@@ -2328,6 +2329,7 @@ include src/plugins/vm/VmLiveMigration.cpp
 include src/plugins/vm/VmLiveMigration.hpp
 include src/plugins/vm/dirty_page_tracking.cpp
 include src/s4u/s4u_Activity.cpp
+include src/s4u/s4u_ActivitySet.cpp
 include src/s4u/s4u_Actor.cpp
 include src/s4u/s4u_Barrier.cpp
 include src/s4u/s4u_Comm.cpp
