@@ -190,16 +190,12 @@ include examples/cpp/comm-ready/s4u-comm-ready.cpp
 include examples/cpp/comm-ready/s4u-comm-ready.tesh
 include examples/cpp/comm-suspend/s4u-comm-suspend.cpp
 include examples/cpp/comm-suspend/s4u-comm-suspend.tesh
-include examples/cpp/comm-testany/s4u-comm-testany.cpp
-include examples/cpp/comm-testany/s4u-comm-testany.tesh
 include examples/cpp/comm-throttling/s4u-comm-throttling.cpp
 include examples/cpp/comm-throttling/s4u-comm-throttling.tesh
 include examples/cpp/comm-wait/s4u-comm-wait.cpp
 include examples/cpp/comm-wait/s4u-comm-wait.tesh
 include examples/cpp/comm-waitall/s4u-comm-waitall.cpp
 include examples/cpp/comm-waitall/s4u-comm-waitall.tesh
-include examples/cpp/comm-waitany/s4u-comm-waitany.cpp
-include examples/cpp/comm-waitany/s4u-comm-waitany.tesh
 include examples/cpp/comm-waituntil/s4u-comm-waituntil.cpp
 include examples/cpp/comm-waituntil/s4u-comm-waituntil.tesh
 include examples/cpp/dag-comm/s4u-dag-comm.cpp
@@ -291,8 +287,6 @@ include examples/cpp/exec-threads/s4u-exec-threads.cpp
 include examples/cpp/exec-threads/s4u-exec-threads.tesh
 include examples/cpp/exec-unassigned/s4u-exec-unassigned.cpp
 include examples/cpp/exec-unassigned/s4u-exec-unassigned.tesh
-include examples/cpp/exec-waitany/s4u-exec-waitany.cpp
-include examples/cpp/exec-waitany/s4u-exec-waitany.tesh
 include examples/cpp/exec-waitfor/s4u-exec-waitfor.cpp
 include examples/cpp/exec-waitfor/s4u-exec-waitfor.tesh
 include examples/cpp/io-async/s4u-io-async.cpp
