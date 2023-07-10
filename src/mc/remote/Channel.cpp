@@ -6,6 +6,7 @@
 #include "src/mc/remote/Channel.hpp"
 #include <xbt/log.h>
 
+#include <algorithm>
 #include <cerrno>
 #include <cstring>
 #include <sys/socket.h>

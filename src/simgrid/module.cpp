@@ -9,6 +9,7 @@
 #include "src/simgrid/module.hpp"
 #include "src/simgrid/sg_config.hpp"
 
+#include <algorithm>
 #include <sstream>
 
 XBT_LOG_NEW_CATEGORY(plugin, "Common category for the logging of all plugins");
