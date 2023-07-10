@@ -12,6 +12,7 @@
 #include "xbt/asserts.h"
 
 #include <string>
+#include <string_view>
 
 namespace simgrid::kernel::actor {
 
@@ -20,7 +21,7 @@ class ActivityTestSimcall final : public ResultingSimcall<bool> {
   std::string fun_call_;
 
 public:
-  ActivityTestSimcall(ActorImpl* actor, activity::ActivityImpl* activity, std::string fun_call)
+  ActivityTestSimcall(ActorImpl* actor, activity::ActivityImpl* activity, std::string_view fun_call)
       : ResultingSimcall(actor, true), activity_(activity), fun_call_(fun_call)
   {
   }
@@ -37,7 +38,7 @@ class ActivityTestanySimcall final : public ResultingSimcall<ssize_t> {
 
 public:
   ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities,
-                         std::string fun_call);
+                         std::string_view fun_call);
   bool is_enabled() override { return true; /* can return -1 if no activity is ready */ }
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
@@ -53,7 +54,7 @@ class ActivityWaitSimcall final : public ResultingSimcall<bool> {
   std::string fun_call_;
 
 public:
-  ActivityWaitSimcall(ActorImpl* actor, activity::ActivityImpl* activity, double timeout, std::string fun_call)
+  ActivityWaitSimcall(ActorImpl* actor, activity::ActivityImpl* activity, double timeout, std::string_view fun_call)
       : ResultingSimcall(actor, false), activity_(activity), timeout_(timeout), fun_call_(fun_call)
   {
   }
@@ -74,7 +75,7 @@ class ActivityWaitanySimcall final : public ResultingSimcall<ssize_t> {
 
 public:
   ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities, double timeout,
-                         std::string fun_call);
+                         std::string_view fun_call);
   bool is_enabled() override;
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;

@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(obs_comm, mc_observer, "Logging specific to the 
 namespace simgrid::kernel::actor {
 
 ActivityTestanySimcall::ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities,
-                                               std::string fun_call)
+                                               std::string_view fun_call)
     : ResultingSimcall(actor, -1), activities_(activities), fun_call_(fun_call)
 {
   indexes_.clear();
@@ -161,7 +161,7 @@ std::string ActivityWaitanySimcall::to_string() const
   return buffer.str();
 }
 ActivityWaitanySimcall::ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities,
-                                               double timeout, std::string fun_call)
+                                               double timeout, std::string_view fun_call)
     : ResultingSimcall(actor, -1), activities_(activities), timeout_(timeout), fun_call_(fun_call)
 {
   // list all the activities that are ready
