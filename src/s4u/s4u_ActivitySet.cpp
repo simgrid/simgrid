@@ -32,6 +32,7 @@ void ActivitySet::wait_all_for(double timeout)
     for (const auto& act : activities_)
       act->wait_until(deadline);
   }
+  activities_.clear();
 }
 
 ActivityPtr ActivitySet::test_any()

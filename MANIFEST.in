@@ -122,6 +122,8 @@ include examples/c/synchro-semaphore/synchro-semaphore.c
 include examples/c/synchro-semaphore/synchro-semaphore.tesh
 include examples/cpp/activityset-testany/s4u-activityset-testany.cpp
 include examples/cpp/activityset-testany/s4u-activityset-testany.tesh
+include examples/cpp/activityset-waitall/s4u-activityset-waitall.cpp
+include examples/cpp/activityset-waitall/s4u-activityset-waitall.tesh
 include examples/cpp/activityset-waitany/s4u-activityset-waitany.cpp
 include examples/cpp/activityset-waitany/s4u-activityset-waitany.tesh
 include examples/cpp/actor-create/s4u-actor-create.cpp
@@ -194,8 +196,6 @@ include examples/cpp/comm-throttling/s4u-comm-throttling.cpp
 include examples/cpp/comm-throttling/s4u-comm-throttling.tesh
 include examples/cpp/comm-wait/s4u-comm-wait.cpp
 include examples/cpp/comm-wait/s4u-comm-wait.tesh
-include examples/cpp/comm-waitall/s4u-comm-waitall.cpp
-include examples/cpp/comm-waitall/s4u-comm-waitall.tesh
 include examples/cpp/comm-waituntil/s4u-comm-waituntil.cpp
 include examples/cpp/comm-waituntil/s4u-comm-waituntil.tesh
 include examples/cpp/dag-comm/s4u-dag-comm.cpp

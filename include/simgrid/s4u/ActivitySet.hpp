@@ -42,9 +42,11 @@ public:
    *
    * On timeout, an exception is raised, and the completed activities remain in the set. Use test_any() to retrieve
    * them.
+   *
+   * When no timeout occures, the set is emptied.
    */
   void wait_all_for(double timeout);
-  /** Wait for the completion of all activities in the set */
+  /** Wait for the completion of all activities in the set. The set is emptied afterward. */
   void wait_all() { wait_all_for(-1); }
   /** Returns the first terminated activity if any, or ActivityPtr(nullptr) if no activity is terminated */
   ActivityPtr test_any();

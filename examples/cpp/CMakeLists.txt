@@ -153,12 +153,12 @@ endif()
 
 # Deal with each example
 
-foreach (example activityset-testany activityset-waitany
+foreach (example activityset-testany activityset-waitany activityset-waitall
                  actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-token-ring
                  battery-degradation battery-simple battery-energy
-                 comm-pingpong comm-ready comm-suspend comm-wait comm-waitall comm-waituntil
+                 comm-pingpong comm-ready comm-suspend comm-wait comm-waituntil
                  comm-dependent comm-host2host comm-failure comm-throttling
                  cloud-capping cloud-migration cloud-simple
                  dag-comm dag-from-json-simple dag-from-dax-simple dag-from-dax dag-from-dot-simple dag-from-dot dag-failure dag-io dag-scheduling dag-simple dag-tuto
