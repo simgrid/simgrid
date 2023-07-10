@@ -67,7 +67,7 @@ public:
   /** Returns something like >>label = "desc", color = c<< to describe the transition in dot format */
   virtual std::string dot_string() const;
 
-  std::string get_call_location() { return call_location_; }
+  std::string const& get_call_location() const { return call_location_; }
 
   /* Moves the application toward a path that was already explored, but don't change the current transition */
   void replay(RemoteApp& app) const;

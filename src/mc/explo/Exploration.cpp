@@ -87,7 +87,7 @@ std::vector<std::string> Exploration::get_textual_trace()
 {
   std::vector<std::string> trace;
   for (auto const& transition : get_record_trace()) {
-    auto call_location = transition->get_call_location();
+    auto const& call_location = transition->get_call_location();
     if (not call_location.empty())
       trace.push_back(xbt::string_printf("Actor %ld in %s ==> simcall: %s", transition->aid_, call_location.c_str(),
                                          transition->to_string().c_str()));
