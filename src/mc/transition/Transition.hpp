@@ -28,6 +28,7 @@ class Transition {
   static unsigned long replayed_transitions_;
 
   friend State; // FIXME remove this once we have a proper class to handle the statistics
+
 public:
   /* Ordering is important here. depends() implementations only consider subsequent types in this ordering */
   XBT_DECLARE_ENUM_CLASS(Type, RANDOM, ACTOR_JOIN, /* First because indep with anybody including themselves */
