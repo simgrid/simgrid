@@ -9,6 +9,8 @@
 #include <simgrid/s4u/ActivitySet.hpp>
 #include <simgrid/s4u/Engine.hpp>
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_activityset, s4u_activity, "S4U set of activities");
+
 namespace simgrid::s4u {
 
 void ActivitySet::erase(ActivityPtr a)
@@ -32,7 +34,6 @@ void ActivitySet::wait_all_for(double timeout)
     for (const auto& act : activities_)
       act->wait_until(deadline);
   }
-  activities_.clear();
 }
 
 ActivityPtr ActivitySet::test_any()

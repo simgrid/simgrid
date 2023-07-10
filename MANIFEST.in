@@ -124,6 +124,8 @@ include examples/cpp/activityset-testany/s4u-activityset-testany.cpp
 include examples/cpp/activityset-testany/s4u-activityset-testany.tesh
 include examples/cpp/activityset-waitall/s4u-activityset-waitall.cpp
 include examples/cpp/activityset-waitall/s4u-activityset-waitall.tesh
+include examples/cpp/activityset-waitallfor/s4u-activityset-waitallfor.cpp
+include examples/cpp/activityset-waitallfor/s4u-activityset-waitallfor.tesh
 include examples/cpp/activityset-waitany/s4u-activityset-waitany.cpp
 include examples/cpp/activityset-waitany/s4u-activityset-waitany.tesh
 include examples/cpp/actor-create/s4u-actor-create.cpp
