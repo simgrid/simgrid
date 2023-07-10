@@ -22,25 +22,14 @@ static void bob()
   auto comm = mbox->get_async(&payload);
   auto io   = disk->read_async(3e8);
 
-  std::vector<sg4::ActivityPtr> pending_activities = {boost::dynamic_pointer_cast<sg4::Activity>(exec),
-                                                      boost::dynamic_pointer_cast<sg4::Activity>(comm),
-                                                      boost::dynamic_pointer_cast<sg4::Activity>(io)};
+  sg4::ActivitySet pending_activities({boost::dynamic_pointer_cast<sg4::Activity>(exec),
+                                       boost::dynamic_pointer_cast<sg4::Activity>(comm),
+                                       boost::dynamic_pointer_cast<sg4::Activity>(io)});
 
-  XBT_INFO("Wait for asynchrounous activities to complete");
-  while (not pending_activities.empty()) {
-    ssize_t changed_pos = sg4::Activity::wait_any(pending_activities);
-    if (changed_pos != -1) {
-      auto* completed_one = pending_activities[changed_pos].get();
-      if (dynamic_cast<sg4::Comm*>(completed_one))
-        XBT_INFO("Completed a Comm");
-      if (dynamic_cast<sg4::Exec*>(completed_one))
-        XBT_INFO("Completed an Exec");
-      if (dynamic_cast<sg4::Io*>(completed_one))
-        XBT_INFO("Completed an I/O");
-      pending_activities.erase(pending_activities.begin() + changed_pos);
-    }
-  }
-  XBT_INFO("Last activity is complete");
+  XBT_INFO("Wait for asynchrounous activities to complete, all in one shot.");
+  pending_activities.wait_all();
+
+  XBT_INFO("All activities are completed.");
   delete payload;
 }
 

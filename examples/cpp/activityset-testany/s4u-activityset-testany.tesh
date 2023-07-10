@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-activity-testany ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%4.2r]%e[%5a]%e%m%n"
+$ ${bindir:=.}/s4u-activityset-testany ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%4.2r]%e[%5a]%e%m%n"
 > [0.00] [alice] Send 'Message'
 > [0.00] [  bob] Create my asynchronous activities
 > [0.00] [  bob] Sleep_for a while

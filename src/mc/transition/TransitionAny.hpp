@@ -10,6 +10,7 @@
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
 
+#include <algorithm>
 #include <sstream>
 #include <string>
 

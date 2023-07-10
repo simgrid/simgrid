@@ -34,6 +34,7 @@ namespace s4u {
  */
 class XBT_PUBLIC Activity : public xbt::Extendable<Activity> {
 #ifndef DOXYGEN
+  friend ActivitySet;
   friend Comm;
   friend Exec;
   friend Io;

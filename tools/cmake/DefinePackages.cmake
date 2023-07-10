@@ -459,6 +459,7 @@ set(PLUGINS_SRC
 
 set(S4U_SRC
   src/s4u/s4u_Activity.cpp
+  src/s4u/s4u_ActivitySet.cpp
   src/s4u/s4u_Actor.cpp
   src/s4u/s4u_Barrier.cpp
   src/s4u/s4u_Comm.cpp
@@ -679,6 +680,7 @@ set(headers_to_install
   include/simgrid/vm.h
   include/simgrid/zone.h
   include/simgrid/s4u/Activity.hpp
+  include/simgrid/s4u/ActivitySet.hpp
   include/simgrid/s4u/Actor.hpp
   include/simgrid/s4u/Barrier.hpp
   include/simgrid/s4u/Comm.hpp

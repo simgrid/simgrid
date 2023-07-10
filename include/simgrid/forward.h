@@ -19,8 +19,14 @@ namespace s4u {
 class Activity;
 /** Smart pointer to a simgrid::s4u::Activity */
 using ActivityPtr = boost::intrusive_ptr<Activity>;
-XBT_PUBLIC void intrusive_ptr_release(const Activity* actor);
-XBT_PUBLIC void intrusive_ptr_add_ref(const Activity* actor);
+XBT_PUBLIC void intrusive_ptr_release(const Activity* act);
+XBT_PUBLIC void intrusive_ptr_add_ref(const Activity* act);
+
+class ActivitySet;
+/** Smart pointer to a simgrid::s4u::Activity */
+using ActivitySetPtr = boost::intrusive_ptr<ActivitySet>;
+XBT_PUBLIC void intrusive_ptr_release(const ActivitySet* as);
+XBT_PUBLIC void intrusive_ptr_add_ref(const ActivitySet* as);
 
 class Actor;
 /** Smart pointer to a simgrid::s4u::Actor */
@@ -31,8 +37,8 @@ XBT_PUBLIC void intrusive_ptr_add_ref(const Actor* actor);
 class Barrier;
 /** Smart pointer to a simgrid::s4u::Barrier */
 using BarrierPtr = boost::intrusive_ptr<Barrier>;
-XBT_PUBLIC void intrusive_ptr_release(Barrier* m);
-XBT_PUBLIC void intrusive_ptr_add_ref(Barrier* m);
+XBT_PUBLIC void intrusive_ptr_release(Barrier* b);
+XBT_PUBLIC void intrusive_ptr_add_ref(Barrier* b);
 
 class Comm;
 /** Smart pointer to a simgrid::s4u::Comm */

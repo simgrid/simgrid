@@ -153,19 +153,19 @@ endif()
 
 # Deal with each example
 
-foreach (example activity-testany activity-waitany
+foreach (example activityset-testany activityset-waitany activityset-waitall activityset-waitallfor
                  actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-token-ring
                  battery-degradation battery-simple battery-energy
-                 comm-pingpong comm-ready comm-suspend comm-testany comm-wait comm-waitany comm-waitall comm-waituntil
+                 comm-pingpong comm-ready comm-suspend comm-wait comm-waituntil
                  comm-dependent comm-host2host comm-failure comm-throttling
                  cloud-capping cloud-migration cloud-simple
                  dag-comm dag-from-json-simple dag-from-dax-simple dag-from-dax dag-from-dot-simple dag-from-dot dag-failure dag-io dag-scheduling dag-simple dag-tuto
                  dht-chord dht-kademlia
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
                  engine-filtering engine-run-partial
-                 exec-async exec-basic exec-dvfs exec-remote exec-waitany exec-waitfor exec-dependent exec-unassigned
+                 exec-async exec-basic exec-dvfs exec-remote exec-waitfor exec-dependent exec-unassigned
                  exec-ptask-multicore exec-ptask-multicore-latency exec-cpu-nonlinear exec-cpu-factors exec-failure exec-threads
                  maestro-set
                  mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-bugged2-liveness mc-centralized-mutex mc-electric-fence mc-failing-assert

@@ -28,6 +28,7 @@ class Transition {
   static unsigned long replayed_transitions_;
 
   friend State; // FIXME remove this once we have a proper class to handle the statistics
+
 public:
   /* Ordering is important here. depends() implementations only consider subsequent types in this ordering */
   XBT_DECLARE_ENUM_CLASS(Type, RANDOM, ACTOR_JOIN, /* First because indep with anybody including themselves */
@@ -67,7 +68,7 @@ public:
   /** Returns something like >>label = "desc", color = c<< to describe the transition in dot format */
   virtual std::string dot_string() const;
 
-  std::string get_call_location() { return call_location_; }
+  std::string const& get_call_location() const { return call_location_; }
 
   /* Moves the application toward a path that was already explored, but don't change the current transition */
   void replay(RemoteApp& app) const;
