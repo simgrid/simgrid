@@ -11,7 +11,11 @@
 
 #include <vector>
 
-namespace simgrid::s4u {
+namespace simgrid {
+
+extern template class XBT_PUBLIC xbt::Extendable<s4u::ActivitySet>;
+
+namespace s4u {
 /** @brief ActivitiesSet
  *
  * This class is a container of activities, allowing to wait for the completion of any or all activities in the set.
@@ -76,6 +80,7 @@ public:
   bool has_failed_activities() { return not failed_activities_.empty(); }
 };
 
-}; // namespace simgrid::s4u
+} // namespace s4u
+} // namespace simgrid
 
 #endif

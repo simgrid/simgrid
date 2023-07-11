@@ -11,7 +11,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_activityset, s4u_activity, "S4U set of activities");
 
-namespace simgrid::s4u {
+namespace simgrid {
+
+template class xbt::Extendable<s4u::ActivitySet>;
+
+namespace s4u {
 
 void ActivitySet::erase(ActivityPtr a)
 {
@@ -90,4 +94,5 @@ ActivityPtr ActivitySet::get_failed_activity()
   return ret;
 }
 
-}; // namespace simgrid::s4u
+} // namespace s4u
+} // namespace simgrid
