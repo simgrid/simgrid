@@ -37,15 +37,46 @@ public:
   enum Flow { CHARGE, DISCHARGE };
 
   class Event {
-  public:
+    friend Battery;
+
+  private:
     double state_of_charge_;
     Flow flow_;
     double time_delta_ = -1;
     std::function<void()> callback_;
     bool repeat_;
 
+  public:
     Event(double state_of_charge, Flow flow, std::function<void()> callback, bool repeat);
     static std::shared_ptr<Event> init(double state_of_charge, Flow flow, std::function<void()> callback, bool repeat);
+
+    /** @ingroup plugin_battery
+     *  @return The state of charge at which the Event will happen.
+     *  @note For Battery::Event objects
+     */
+    double get_state_of_charge() { return state_of_charge_; }
+    /** @ingroup plugin_battery
+     *  @return The flow in which the Event will happen, either when the Battery is charging or discharging.
+     *  @note For Battery::Event objects
+     */
+    Flow get_flow() { return flow_; }
+    /** @ingroup plugin_battery
+     *  @return The time delta until the Event happen.
+     -1 means that is will never happen with the current state the Battery,
+     for instance when there is no load connected to the Battery.
+     *  @note For Battery::Event objects
+    */
+    double get_time_delta() { return time_delta_; }
+    /** @ingroup plugin_battery
+     *  @return The callback to trigger when the Event happen.
+     *  @note For Battery::Event objects
+     */
+    std::function<void()> get_callback() { return callback_; }
+    /** @ingroup plugin_battery
+     *  @return true if its a recurrent Event.
+     *  @note For Battery::Event objects
+     */
+    bool get_repeat() { return repeat_; }
   };
 
 private:
@@ -55,7 +86,8 @@ private:
   double charge_efficiency_;
   double discharge_efficiency_;
   double initial_capacity_wh_;
-  int cycles_; // total complete cycles (charge + discharge) the battery can do before complete depletion.
+  int cycles_; // total complete cycles (charge + discharge) the battery can do before complete depletion of its
+               // capacity
   double depth_of_discharge_;
   double energy_budget_j_;
 

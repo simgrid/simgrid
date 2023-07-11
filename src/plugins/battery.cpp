@@ -19,7 +19,35 @@ SIMGRID_REGISTER_PLUGIN(battery, "Battery management", nullptr)
 
   @beginrst
 
-This is the battery plugin
+This is the battery plugin, enabling management of batteries.
+
+With this plugin you can:
+
+- create Batteries
+- associate positive or negative load to Batteries
+- connect Hosts to Batteries
+- create Events triggered whenever a Battery reach a specific state of charge
+
+The natural depletion of batteries over time is not taken into account.
+
+A battery starts with an energy budget :math:`E` such as:
+
+.. math::
+
+  E = C \times D \times N \times 2
+
+Where :math:`C` is the initial capacity, :math:`D` is the depth of discharge
+and :math:`N` is the number of cycles of the battery.
+
+The SoH represents the consumption of this energy budget during the lifetime of the battery.
+Use the battery reduces its SoH and its capacity in consequence.
+When the SoH reaches 0, the battery becomes unusable.
+
+Plotting the output of the example "battery-degradation" highlights the linear decrease of the SoH due to a continuous
+use of the battery and the decreasing cycle duration as its capacity reduces:
+
+.. image:: /img/battery_degradation.svg
+   :align: center
 
   @endrst
  */
@@ -201,6 +229,16 @@ Battery::Battery(const std::string& name, double state_of_charge, double charge_
              " : depth of discharge should be in ]0, 1] (provided: %f)", depth_of_discharge);
 }
 
+/** @ingroup plugin_battery
+ *  @param name The name of the Battery.
+ *  @param state_of_charge The initial state of charge of the Battery [0,1].
+ *  @param charge_efficiency The charge efficiency of the Battery [0,1].
+ *  @param discharge_efficiency The discharge efficiency of the Battery [0,1].
+ *  @param initial_capacity_wh The initial capacity of the Battery in Wh (>0).
+ *  @param cycles The number of charge-discharge cycles until complete depletion of the Battery capacity.
+ *  @param depth_of_discharge The depth of discharge of the Battery.
+ *  @return A BatteryPtr pointing to the new Battery.
+ */
 BatteryPtr Battery::init(const std::string& name, double state_of_charge, double charge_efficiency,
                          double discharge_efficiency, double initial_capacity_wh, int cycles, double depth_of_discharge)
 {
@@ -215,41 +253,76 @@ BatteryPtr Battery::init(const std::string& name, double state_of_charge, double
   return battery;
 }
 
+/** @ingroup plugin_battery
+ *  @param name The name of the load
+ *  @param power_w Power of the load in W. A positive value discharges the Battery while a negative value charges it.
+ */
 void Battery::set_load(const std::string& name, double power_w)
 {
   named_loads_[name] = power_w;
 }
 
-void Battery::connect_host(s4u::Host* h, bool active)
+/** @ingroup plugin_battery
+ *  @param h The Host to connect.
+ *  @param active Status of the connected Host (default true).
+ *  @brief Connect a Host to the Battery with the status active. As long as the status is true the Host takes its energy
+ from the Battery. To modify this status connect again the same Host with a different status.
+    @warning Do NOT connect the same Host to multiple Batteries with the status true at the same time.
+    In this case all Batteries would have the full consumption from this Host.
+ */
+void Battery::connect_host(s4u::Host* host, bool active)
 {
-  host_loads_[h] = active;
+  host_loads_[host] = active;
 }
 
+/** @ingroup plugin_battery
+ *  @return The state of charge of the battery.
+ */
 double Battery::get_state_of_charge()
 {
   return energy_stored_j_ / (3600 * capacity_wh_);
 }
 
+/** @ingroup plugin_battery
+ *  @return The state of health of the Battery.
+ */
 double Battery::get_state_of_health()
 {
   return 1 - ((energy_provided_j_ + energy_consumed_j_) / energy_budget_j_);
 }
 
+/** @ingroup plugin_battery
+ *  @return The current capacity of the Battery.
+ */
 double Battery::get_capacity()
 {
   return capacity_wh_;
 }
 
+/** @ingroup plugin_battery
+ *  @return The energy provided by the Battery.
+ *  @note It is the energy provided from an external point of view, after application of the discharge efficiency.
+          It means that the Battery lost more energy than it has provided.
+ */
 double Battery::get_energy_provided()
 {
   return energy_provided_j_;
 }
 
+/** @ingroup plugin_battery
+ *  @return The energy consumed by the Battery.
+ *  @note It is the energy consumed from an external point of view, before application of the charge efficiency.
+          It means that the Battery consumed more energy than is has absorbed.
+ */
 double Battery::get_energy_consumed()
 {
   return energy_consumed_j_;
 }
 
+/** @ingroup plugin_battery
+ *  @param Unit Valid units are J (default) and Wh.
+ *  @return Energy stored in the Battery.
+ */
 double Battery::get_energy_stored(std::string unit)
 {
   if (unit == "J")
@@ -260,6 +333,14 @@ double Battery::get_energy_stored(std::string unit)
     xbt_die("Invalid unit. Valid units are J (default) or Wh.");
 }
 
+/** @ingroup plugin_battery
+ *  @brief Create a new Event.
+ *  @param state_of_charge The state of charge at which the Event will happen.
+ *  @param flow The flow in which the Event will happen, either when the Battery is charging or discharging.
+ *  @param callback The callable to trigger when the Event happen.
+ *  @param repeat If the Event is a recurrent Event or a single Event.
+ *  @return A shared pointer of the new Event.
+ */
 std::shared_ptr<Battery::Event> Battery::create_event(double state_of_charge, Flow flow, std::function<void()> callback,
                                                       bool repeat)
 {
@@ -268,11 +349,17 @@ std::shared_ptr<Battery::Event> Battery::create_event(double state_of_charge, Fl
   return event;
 }
 
+/** @ingroup plugin_battery
+ *  @return A vector containing the Events associated to the Battery.
+ */
 std::vector<std::shared_ptr<Battery::Event>> Battery::get_events()
 {
   return events_;
 }
 
+/** @ingroup plugin_battery
+ *  @brief Remove an Event from the Battery.
+ */
 void Battery::delete_event(std::shared_ptr<Event> event)
 {
   events_.erase(
