@@ -2,6 +2,13 @@
 
 # This script is used by various build projects on Jenkins
 
+case "$JENKINS_HOME" in
+*-qualif)
+  echo "Build skipped on $JENKINS_HOME."
+  exit 0
+  ;;
+esac
+
 # See https://ci.inria.fr/simgrid/job/SimGrid/configure
 # See https://ci.inria.fr/simgrid/job/Simgrid-Windows/configure
 
