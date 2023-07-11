@@ -1102,7 +1102,6 @@ set(CMAKE_SOURCE_FILES
   )
 
 set(PLATFORMS_EXAMPLES
-  examples/platforms/battery_platform.xml
   examples/platforms/bypassRoute.xml
   examples/platforms/bypassZoneRoute.xml
   examples/platforms/cloud.xml
