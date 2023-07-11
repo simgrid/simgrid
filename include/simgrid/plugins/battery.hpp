@@ -86,9 +86,6 @@ private:
   double charge_efficiency_;
   double discharge_efficiency_;
   double initial_capacity_wh_;
-  int cycles_; // total complete cycles (charge + discharge) the battery can do before complete depletion of its
-               // capacity
-  double depth_of_discharge_;
   double energy_budget_j_;
 
   std::map<const s4u::Host*, bool> host_loads_     = {};

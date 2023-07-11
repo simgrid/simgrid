@@ -211,8 +211,6 @@ Battery::Battery(const std::string& name, double state_of_charge, double charge_
     , charge_efficiency_(charge_efficiency)
     , discharge_efficiency_(discharge_efficiency)
     , initial_capacity_wh_(initial_capacity_wh)
-    , cycles_(cycles)
-    , depth_of_discharge_(depth_of_discharge)
     , energy_budget_j_(initial_capacity_wh * depth_of_discharge * 3600 * cycles * 2)
     , capacity_wh_(initial_capacity_wh)
     , energy_stored_j_(state_of_charge * 3600 * initial_capacity_wh)
