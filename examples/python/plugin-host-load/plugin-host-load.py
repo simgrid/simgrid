@@ -48,7 +48,7 @@ far: {host.computed_flops:.0E}, average load as reported by the HostLoad plugin:
   this_actor.info(f'Run an activity of {100E6:.0E} flops')
   this_actor.execute(100E6)
   this_actor.info(f'Done working on my activity; this took {Engine.clock - start}s; current peak speed: {host.speed:.0E} flop/s; number of flops computed so far: {host.computed_flops:.0E}')
-  Engine
+
   start = Engine.clock
   this_actor.info("========= Requesting a reset of the computation and load counters")
   host.reset_load()
