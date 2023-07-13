@@ -21,32 +21,60 @@ SIMGRID_REGISTER_PLUGIN(battery, "Battery management", nullptr)
 
 This is the battery plugin, enabling management of batteries.
 
-With this plugin you can:
+Batteries
+.........
 
-- create Batteries
-- associate positive or negative load to Batteries
-- connect Hosts to Batteries
-- create Events triggered whenever a Battery reach a specific state of charge
+A battery has an initial State of Charge :math:`SoC`, a charge efficiency :math:`\eta_{charge}`, a discharge efficiency
+:math:`\eta_{discharge}`, an initial capacity :math:`C_{initial}` and a number of cycle :math:`N`.
 
-The natural depletion of batteries over time is not taken into account.
-
-A battery starts with an energy budget :math:`E` such as:
+We distinguish the energy provided :math:`E_{provided}` / consumed :math:`E_{consumed}` from the energy lost
+:math:`E_{lost}` / gained :math:`E_{gained}`. The energy provided / consumed shows the external point of view, and the
+energy lost / gained shows the internal point of view:
 
 .. math::
 
-  E = C \times N \times 2
+  E_{lost} = {E_{provided} \over \eta_{discharge}}
 
-Where :math:`C` is the initial capacity and :math:`N` is the number of cycles of the battery.
+  E_{gained} = E_{consumed} \times \eta_{charge}
 
-The SoH represents the consumption of this energy budget during the lifetime of the battery.
-Use the battery reduces its SoH and its capacity in consequence.
-When the SoH reaches 0, the battery becomes unusable.
+For instance, if you apply a load of 100W to a battery for 10s with a discharge efficiency of 0.8, the energy provided
+will be equal to 10kJ, and the energy lost will be equal to 12.5kJ.
 
-Plotting the output of the example "battery-degradation" highlights the linear decrease of the SoH due to a continuous
-use of the battery and the decreasing cycle duration as its capacity reduces:
+Use the battery reduces its State of Health :math:`SoH` and its capacity :math:`C` linearly in consequence:
+
+.. math::
+
+  SoH = 1 - {E_{lost} + E_{gained} \over E_{budget}}
+
+  C = C_{initial} \times SoH
+
+With:
+
+.. math::
+
+  E_{budget} = C_{initial} \times N \times 2
+
+Plotting the output of the example "battery-degradation" highlights the linear decrease of the :math:`SoH` due to a
+continuous use of the battery alternating between charge and discharge:
 
 .. image:: /img/battery_degradation.svg
    :align: center
+
+The natural depletion of batteries over time is not taken into account.
+
+Loads & Hosts
+..............
+
+You can add named loads to a battery. Those loads may be positive and consume energy from the battery, or negative and
+add energy to the battery. You can also connect hosts to a battery. Theses hosts will consume their energy from the
+battery until the battery is empty or until the connection between the hosts and the battery is set inactive.
+
+Events
+......
+
+You can create events that will happen at specific SoC of the battery and trigger a callback.
+Theses events may be recurrent, for instance you may want to always set all loads to zero and deactivate all hosts
+connections when the battery reaches 20% SoC.
 
   @endrst
  */
@@ -143,7 +171,9 @@ void Battery::update()
     // Updating battery
     energy_provided_j_ += energy_lost_delta_j * discharge_efficiency_;
     energy_consumed_j_ += energy_gained_delta_j / charge_efficiency_;
-    capacity_wh_ = initial_capacity_wh_ * (1 - (energy_provided_j_ + energy_consumed_j_) / energy_budget_j_);
+    capacity_wh_ =
+        initial_capacity_wh_ *
+        (1 - (energy_provided_j_ / discharge_efficiency_ + energy_consumed_j_ * charge_efficiency_) / energy_budget_j_);
     energy_stored_j_ += energy_gained_delta_j - energy_lost_delta_j;
     energy_stored_j_ = std::min(energy_stored_j_, 3600 * capacity_wh_);
     last_updated_    = now;
@@ -191,12 +221,13 @@ double Battery::next_occurring_event()
       /* The time to reach a state of charge depends on the capacity, but charging and discharging deteriorate the
        * capacity, so we need to evaluate the time considering a capacity that also depends on time
        */
-      event->time_delta_ = (3600 * event->state_of_charge_ * initial_capacity_wh_ *
-                                (1 - (energy_provided_j_ + energy_consumed_j_) / energy_budget_j_) -
-                            energy_stored_j_) /
-                           (gained_power_w - lost_power_w +
-                            3600 * event->state_of_charge_ * initial_capacity_wh_ *
-                                (consumed_power_w + provided_power_w) / energy_budget_j_);
+      event->time_delta_ =
+          (3600 * event->state_of_charge_ * initial_capacity_wh_ *
+               (1 - (energy_provided_j_ / discharge_efficiency_ + energy_consumed_j_ * charge_efficiency_) /
+                        energy_budget_j_) -
+           energy_stored_j_) /
+          (gained_power_w - lost_power_w +
+           3600 * event->state_of_charge_ * initial_capacity_wh_ * (gained_power_w + lost_power_w) / energy_budget_j_);
       if ((time_delta == -1 or event->time_delta_ < time_delta) and abs(event->time_delta_) > 0.000000001)
         time_delta = event->time_delta_;
     }
@@ -241,8 +272,8 @@ BatteryPtr Battery::init(const std::string& name, double state_of_charge, double
     init_plugin();
     plugin_inited = true;
   }
-  auto battery = BatteryPtr(new Battery(name, state_of_charge, charge_efficiency, discharge_efficiency,
-                                        initial_capacity_wh, cycles));
+  auto battery = BatteryPtr(
+      new Battery(name, state_of_charge, charge_efficiency, discharge_efficiency, initial_capacity_wh, cycles));
   battery_model_->add_battery(battery);
   return battery;
 }
@@ -257,7 +288,7 @@ void Battery::set_load(const std::string& name, double power_w)
 }
 
 /** @ingroup plugin_battery
- *  @param h The Host to connect.
+ *  @param host The Host to connect.
  *  @param active Status of the connected Host (default true).
  *  @brief Connect a Host to the Battery with the status active. As long as the status is true the Host takes its energy
  from the Battery. To modify this status connect again the same Host with a different status.
@@ -282,7 +313,8 @@ double Battery::get_state_of_charge()
  */
 double Battery::get_state_of_health()
 {
-  return 1 - ((energy_provided_j_ + energy_consumed_j_) / energy_budget_j_);
+  return 1 -
+         ((energy_provided_j_ / discharge_efficiency_ + energy_consumed_j_ * charge_efficiency_) / energy_budget_j_);
 }
 
 /** @ingroup plugin_battery
@@ -314,7 +346,7 @@ double Battery::get_energy_consumed()
 }
 
 /** @ingroup plugin_battery
- *  @param Unit Valid units are J (default) and Wh.
+ *  @param unit Valid units are J (default) and Wh.
  *  @return Energy stored in the Battery.
  */
 double Battery::get_energy_stored(std::string unit)
