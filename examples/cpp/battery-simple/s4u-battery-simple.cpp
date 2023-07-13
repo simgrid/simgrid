@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  auto battery = simgrid::plugins::Battery::init("Battery", 0.8, 0.9, 0.9, 10, 1000, 0.9);
+  auto battery = simgrid::plugins::Battery::init("Battery", 0.8, 0.9, 0.9, 10, 1000);
 
   XBT_INFO("Initial state: SoC: %f SoH: %f Energy stored: %fJ Energy provided: %fJ Energy consumed %fJ",
            battery->get_state_of_charge(), battery->get_state_of_health(), battery->get_energy_stored(),

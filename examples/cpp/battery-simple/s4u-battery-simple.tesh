@@ -3,7 +3,7 @@
 $ ${bindir:=.}/s4u-battery-simple ${platfdir}/energy_platform.xml
 > [0.000000] [battery_simple/INFO] Initial state: SoC: 0.800000 SoH: 1.000000 Energy stored: 28800.000000J Energy provided: 0.000000J Energy consumed 0.000000J
 > [0.000000] [battery_simple/INFO] Set load to 100.000000W
-> [194.419442] [battery_simple/INFO] Discharged state: SoC: 0.200000 SoH: 0.999700 Energy stored: 7197.839784J Energy provided: 19441.944194J Energy consumed 0.000000J
-> [194.419442] [battery_simple/INFO] Set load to -100.000000W
-> [434.229010] [battery_simple/INFO] Charged state: SoC: 0.800000 SoH: 0.999330 Energy stored: 28780.700933J Energy provided: 19441.944194J Energy consumed 23980.956832J
-> [434.229010] [battery_simple/INFO] Set load to 0.000000W
+> [194.417498] [battery_simple/INFO] Discharged state: SoC: 0.200000 SoH: 0.999730 Energy stored: 7198.055825J Energy provided: 19441.749757J Energy consumed 0.000000J
+> [194.417498] [battery_simple/INFO] Set load to -100.000000W
+> [434.246101] [battery_simple/INFO] Charged state: SoC: 0.800000 SoH: 0.999397 Energy stored: 28782.630156J Energy provided: 19441.749757J Energy consumed 23982.860368J
+> [434.246101] [battery_simple/INFO] Set load to 0.000000W

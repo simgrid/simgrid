@@ -34,10 +34,9 @@ A battery starts with an energy budget :math:`E` such as:
 
 .. math::
 
-  E = C \times D \times N \times 2
+  E = C \times N \times 2
 
-Where :math:`C` is the initial capacity, :math:`D` is the depth of discharge
-and :math:`N` is the number of cycles of the battery.
+Where :math:`C` is the initial capacity and :math:`N` is the number of cycles of the battery.
 
 The SoH represents the consumption of this energy budget during the lifetime of the battery.
 Use the battery reduces its SoH and its capacity in consequence.
@@ -206,12 +205,12 @@ double Battery::next_occurring_event()
 }
 
 Battery::Battery(const std::string& name, double state_of_charge, double charge_efficiency, double discharge_efficiency,
-                 double initial_capacity_wh, int cycles, double depth_of_discharge)
+                 double initial_capacity_wh, int cycles)
     : name_(name)
     , charge_efficiency_(charge_efficiency)
     , discharge_efficiency_(discharge_efficiency)
     , initial_capacity_wh_(initial_capacity_wh)
-    , energy_budget_j_(initial_capacity_wh * depth_of_discharge * 3600 * cycles * 2)
+    , energy_budget_j_(initial_capacity_wh * 3600 * cycles * 2)
     , capacity_wh_(initial_capacity_wh)
     , energy_stored_j_(state_of_charge * 3600 * initial_capacity_wh)
 {
@@ -223,8 +222,6 @@ Battery::Battery(const std::string& name, double state_of_charge, double charge_
              " : discharge efficiency should be in [0,1] (provided: %f)", discharge_efficiency);
   xbt_assert(initial_capacity_wh > 0, " : initial capacity should be > 0 (provided: %f)", initial_capacity_wh);
   xbt_assert(cycles > 0, " : cycles should be > 0 (provided: %d)", cycles);
-  xbt_assert(depth_of_discharge > 0 and depth_of_discharge <= 1,
-             " : depth of discharge should be in ]0, 1] (provided: %f)", depth_of_discharge);
 }
 
 /** @ingroup plugin_battery
@@ -234,11 +231,10 @@ Battery::Battery(const std::string& name, double state_of_charge, double charge_
  *  @param discharge_efficiency The discharge efficiency of the Battery [0,1].
  *  @param initial_capacity_wh The initial capacity of the Battery in Wh (>0).
  *  @param cycles The number of charge-discharge cycles until complete depletion of the Battery capacity.
- *  @param depth_of_discharge The depth of discharge of the Battery.
  *  @return A BatteryPtr pointing to the new Battery.
  */
 BatteryPtr Battery::init(const std::string& name, double state_of_charge, double charge_efficiency,
-                         double discharge_efficiency, double initial_capacity_wh, int cycles, double depth_of_discharge)
+                         double discharge_efficiency, double initial_capacity_wh, int cycles)
 {
   static bool plugin_inited = false;
   if (not plugin_inited) {
@@ -246,7 +242,7 @@ BatteryPtr Battery::init(const std::string& name, double state_of_charge, double
     plugin_inited = true;
   }
   auto battery = BatteryPtr(new Battery(name, state_of_charge, charge_efficiency, discharge_efficiency,
-                                        initial_capacity_wh, cycles, depth_of_discharge));
+                                        initial_capacity_wh, cycles));
   battery_model_->add_battery(battery);
   return battery;
 }

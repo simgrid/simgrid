@@ -99,7 +99,7 @@ private:
   double last_updated_      = 0;
 
   explicit Battery(const std::string& name, double state_of_charge, double charge_efficiency,
-                   double discharge_efficiency, double initial_capacity_wh, int cycles, double depth_of_discharge);
+                   double discharge_efficiency, double initial_capacity_wh, int cycles);
   static void init_plugin();
   void update();
   double next_occurring_event();
@@ -118,8 +118,7 @@ private:
 
 public:
   static BatteryPtr init(const std::string& name, double state_of_charge, double charge_efficiency,
-                         double discharge_efficiency, double initial_capacity_wh, int cycles,
-                         double depth_of_discharge);
+                         double discharge_efficiency, double initial_capacity_wh, int cycles);
   void set_load(const std::string& name, double power_w);
   void connect_host(s4u::Host* host, bool active = true);
   double get_state_of_charge();
