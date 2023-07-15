@@ -314,12 +314,12 @@ Comm* Comm::do_start()
     xbt_assert(src_buff_ == nullptr && dst_buff_ == nullptr,
                "Direct host-to-host communications cannot carry any data.");
     XBT_DEBUG("host-to-host Comm. Pimpl already created and set, just start it.");
-    fire_on_start();
-    fire_on_this_start();
     kernel::actor::simcall_answered([this] {
       pimpl_->set_state(kernel::activity::State::READY);
       boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->start();
     });
+    fire_on_start();
+    fire_on_this_start();
   } else if (src_buff_ != nullptr) { // Sender side
     on_send(*this);
     on_this_send(*this);
