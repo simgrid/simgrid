@@ -93,7 +93,7 @@ int main(int argc, char** argv)
   sg4::Actor::create("Sender", host1, Sender("mailbox2", "mailbox3"));
   sg4::Actor::create("Receiver", host2, Receiver("mailbox2"));
   sg4::Actor::create("Receiver", host3, Receiver("mailbox3"));
-  
+
   sg4::Actor::create("LinkKiller", host1, [](){
     sg4::this_actor::sleep_for(10.0);
     XBT_INFO("Turning off link 'linkto2'");

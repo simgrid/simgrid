@@ -7,7 +7,7 @@
  *
  * This example is very similar to the other asynchronous communication examples, but messages get serialized by the platform.
  * Without this call to Link::set_concurrency_limit(2) in main, all messages would be received at the exact same timestamp since
- * they are initiated at the same instant and are of the same size. But with this extra configuration to the link, at most 2 
+ * they are initiated at the same instant and are of the same size. But with this extra configuration to the link, at most 2
  * messages can travel through the link at the same time.
  */
 
@@ -26,10 +26,10 @@ public:
   void operator()() const
   {
     // sphinx-doc: init-begin (this line helps the doc to build; ignore it)
-    /* Vector in which we store all ongoing communications */
-    std::vector<sg4::CommPtr> pending_comms;
+    /* ActivitySet in which we store all ongoing communications */
+    sg4::ActivitySet pending_comms;
 
-    /* Make a vector of the mailboxes to use */
+    /* Mailbox to use */
     sg4::Mailbox* mbox = sg4::Mailbox::by_name("receiver");
     // sphinx-doc: init-end
 
@@ -44,13 +44,13 @@ public:
 
       /* Create a communication representing the ongoing communication, and store it in pending_comms */
       sg4::CommPtr comm = mbox->put_async(payload, msg_size);
-      pending_comms.push_back(comm);
+      pending_comms.push(comm);
     }
 
     XBT_INFO("Done dispatching all messages");
 
     /* Now that all message exchanges were initiated, wait for their completion in one single call */
-    sg4::Comm::wait_all(pending_comms);
+    pending_comms.wait_all();
     // sphinx-doc: put-end
 
     XBT_INFO("Goodbye now!");
