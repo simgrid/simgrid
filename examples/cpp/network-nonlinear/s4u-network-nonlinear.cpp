@@ -8,6 +8,7 @@
  */
 
 #include <simgrid/s4u.hpp>
+#include <string>
 
 namespace sg4 = simgrid::s4u;
 
@@ -64,22 +65,22 @@ public:
   void operator()()
   {
     /* Where we store all incoming msgs */
-    std::unordered_map<sg4::CommPtr, std::string**> pending_msgs;
+    std::unordered_map<sg4::CommPtr, std::shared_ptr<std::string*>> pending_msgs;
     sg4::ActivitySet pending_comms;
 
     XBT_INFO("Wait for %d messages asynchronously", messages_count);
     for (int i = 0; i < messages_count; i++) {
-      std::string* msg;
-      auto comm = mbox->get_async<std::string>(&msg);
+      std::shared_ptr<std::string*> msg =std::make_shared<std::string*>();
+      auto comm = mbox->get_async<std::string>(msg.get());
       pending_comms.push(comm);
-      pending_msgs.insert({comm, &msg});
+      pending_msgs.insert({comm, msg});
     }
 
     while (not pending_comms.empty()) {
       auto completed_one = pending_comms.wait_any();
       if (completed_one != nullptr){
         auto comm = boost::dynamic_pointer_cast<sg4::Comm>(completed_one);
-        std::string *msg = std::move(*pending_msgs[comm]);
+        auto msg = *pending_msgs[comm];
         XBT_INFO("I got '%s'.", msg->c_str());
         /* cleanup memory and remove from map */
         delete msg;
