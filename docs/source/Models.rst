@@ -125,7 +125,7 @@ small delay that corresponds to the end-to-end latency. During that time, the co
 communications are not slowed down, because there is no contention yet).
 
 As an alternative to the above LMM-based models, it is possible to use the :ref:`ns-3 simulator as a network model <models_ns3>`. ns-3 performs
-a mushc more detailed, packet-level simulation 
+a much more detailed, packet-level simulation 
 than the above models. As a result is is much slower but will produce more accurate results. 
 Both simulators have time complexity that is linear in the size of their input, but ns-3 has a much larger input in case of large communications
 because it considers individual network packets. 
