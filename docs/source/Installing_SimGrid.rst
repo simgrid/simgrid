@@ -325,7 +325,7 @@ existing targets are not really for public consumption so don't worry
 if some do not work for you.
 
 - **make**: Build the core of SimGrid that gets installed, but not any example.
-- **make tests**: Build the tests and examples.
+- **make examples**: Build the examples, which are needed by the tests.
 - **make simgrid**: Build only the SimGrid library. Not any example nor the helper tools.
 - **make s4u-comm-pingpong**: Build only this example (works for any example)
 - **make python-bindings**: Build the Python bindings

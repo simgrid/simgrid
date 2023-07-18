@@ -757,6 +757,8 @@ add_custom_target(tests-mc COMMENT "Recompiling the MC tests and tools.")
 add_dependencies(tests tests-mc)
 add_custom_target(tests-ns3 COMMENT "Recompiling the ns3 tests and tools.")
 add_dependencies(tests tests-ns3)
+add_custom_target(examples COMMENT "Recompiling all examples")
+add_dependencies(examples tests)
 
 ### Build some Maintainer files
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MaintainerMode.cmake)
