@@ -15,7 +15,7 @@ if [ ! -e Makefile ] && [ ! -e build.ninja ]; then
   fi
 fi
 
-target=tests
+target=examples
 ncores=$(grep -c processor /proc/cpuinfo)
 
 install_path=$(sed -n 's/^CMAKE_INSTALL_PREFIX:PATH=//p' CMakeCache.txt)
