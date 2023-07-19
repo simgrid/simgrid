@@ -112,11 +112,8 @@ int main(int argc, char** argv)
     links[name] = zone->create_link(name, 1e9)->set_latency(1e-9)->seal();
   }
   links["L0"] = zone->create_link("L0", 1e3)->seal();
-  zone->add_route(hosts["S1"]->get_netpoint(), hosts["C1"]->get_netpoint(), nullptr, nullptr,
-                  {sg4::LinkInRoute(links["L1"]), sg4::LinkInRoute(links["L0"]), sg4::LinkInRoute(links["L2"])});
-  zone->add_route(hosts["S2"]->get_netpoint(), hosts["C2"]->get_netpoint(), nullptr, nullptr,
-                  {sg4::LinkInRoute(links["L3"]), sg4::LinkInRoute(links["L0"]), sg4::LinkInRoute(links["L4"])});
-
+  zone->add_route(hosts["S1"], hosts["C1"], {links["L1"], links["L0"], links["L2"]});
+  zone->add_route(hosts["S2"], hosts["C2"], {links["L3"], links["L0"], links["L4"]});
   zone->seal();
 
   sg4::Actor::create("", hosts["S1"], sender, "C1", nullptr);

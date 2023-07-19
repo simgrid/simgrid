@@ -78,8 +78,8 @@ static void load_platform()
     /* add link UP/DOWN for communications from the host */
     root->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {{l, sg4::LinkInRoute::Direction::UP}}, true);
 
-    const sg4::Link* loopback = root->create_link(hostname + "_loopback", BW_LOCAL)->set_latency(LATENCY)->seal();
-    root->add_route(host, host, {sg4::LinkInRoute(loopback)});
+    sg4::Link* loopback = root->create_link(hostname + "_loopback", BW_LOCAL)->set_latency(LATENCY)->seal();
+    root->add_route(host, host, {loopback});
   }
 
   root->seal();

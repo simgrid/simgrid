@@ -14,4 +14,4 @@ $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-failure.py "-
 > [ 10.000000] (1:Sender@Host1)   Comm to mailbox3 has state: STARTED
 > [ 10.000000] (1:Sender@Host1) Waiting on a FAILED comm raises an exception: 'Cannot wait for a failed communication'
 > [ 10.000000] (1:Sender@Host1) Wait for remaining comm, just to be nice
-> [ 16.494845] (3:Receiver-2@Host3) Receiver has received successfully (mailbox3)!
+> [ 17.319588] (3:Receiver-2@Host3) Receiver has received successfully (mailbox3)!

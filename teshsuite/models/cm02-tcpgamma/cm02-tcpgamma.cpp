@@ -86,7 +86,7 @@ int main(int argc, char** argv)
   auto const* host1 = zone->create_host("host1", 1e6)->seal();
   auto const* host2 = zone->create_host("host2", 1e6)->seal();
   auto* testlink    = zone->create_link("L1", 1e10)->seal();
-  zone->add_route(host1->get_netpoint(), host2->get_netpoint(), nullptr, nullptr, {sg4::LinkInRoute(testlink)});
+  zone->add_route(host1, host2, {testlink});
 
   simgrid::s4u::Actor::create("dispatcher", engine.host_by_name("host1"), main_dispatcher, testlink);
   engine.run();

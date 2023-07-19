@@ -47,8 +47,8 @@ int main(int argc, char* argv[])
   auto* rootzone = sg4::create_full_zone("root");
   auto* hostA    = rootzone->create_host("hostA", 1e9);
   auto* hostB    = rootzone->create_host("hostB", 1e9);
-  sg4::LinkInRoute link(rootzone->create_link("backbone", "1")->set_latency("1s")->seal());
-  rootzone->add_route(hostA->get_netpoint(), hostB->get_netpoint(), nullptr, nullptr, {link}, true);
+  auto* backb    = rootzone->create_link("backbone", "1")->set_latency("1s")->seal();
+  rootzone->add_route(hostA, hostB, {backb});
   rootzone->seal();
 
   sg4::Actor::create("ptask", hostA, ptask, hostA, hostB);

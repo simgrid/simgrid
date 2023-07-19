@@ -75,8 +75,7 @@ int main(int argc, char* argv[])
                                 ->set_bandwidth_profile(linkSaBandwidthProfile)
                                 ->seal();
 
-  world->add_route(hostGl01->get_netpoint(), hostSa01->get_netpoint(), nullptr, nullptr,
-                   {{linkSa, sg4::LinkInRoute::Direction::NONE}}, true);
+  world->add_route(hostGl01, hostSa01, {{linkSa, sg4::LinkInRoute::Direction::NONE}}, true);
   world->seal();
 
   sg4::Mailbox* mb1 = e.mailbox_by_name_or_create("Mailbox 1");

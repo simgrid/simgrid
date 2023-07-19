@@ -70,7 +70,8 @@ int main(int argc, char* argv[])
   }
 
   auto* router = cluster->create_router("cluster_router");
-  cluster->add_route(router, nullptr, nullptr, nullptr, {});
+  std::vector<sg4::LinkInRoute> links; // empty
+  cluster->add_route(router, nullptr, nullptr, nullptr, links);
 
   simgrid::plugin::ProducerConsumerPtr<int> pc = simgrid::plugin::ProducerConsumer<int>::create(2);
 

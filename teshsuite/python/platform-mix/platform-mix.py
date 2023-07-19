@@ -63,8 +63,8 @@ def load_platform():
     hosts.append(host2)
     link1 = dijkstra.create_link("link1_up", [1e9]).set_latency(1e-3).set_concurrency_limit(10).seal()
     link2 = dijkstra.create_link("link1_down", ["1GBps"]).set_latency("1ms").seal()
-    dijkstra.add_route(host1.netpoint, host2.netpoint, None, None, [LinkInRoute(link1)], False)
-    dijkstra.add_route(host2.netpoint, host1.netpoint, None, None, [LinkInRoute(link2)], False)
+    dijkstra.add_route(host1, host2, [LinkInRoute(link1)], False)
+    dijkstra.add_route(host2, host1, [LinkInRoute(link2)], False)
     dijkstra.seal()
 
     # vivaldi

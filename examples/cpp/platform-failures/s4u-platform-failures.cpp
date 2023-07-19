@@ -118,8 +118,8 @@ int main(int argc, char* argv[])
   // Add a new host programatically, and attach a state profile to it
   auto* root     = e.get_netzone_root();
   auto* lilibeth = root->create_host("Lilibeth", 1e15);
-  auto link      = sg4::LinkInRoute(e.link_by_name("10"));
-  root->add_route(e.host_by_name("Tremblay"), lilibeth, {link}, true);
+  auto link      = e.link_by_name("10");
+  root->add_route(e.host_by_name("Tremblay"), lilibeth, {link});
   lilibeth->set_state_profile(simgrid::kernel::profile::ProfileBuilder::from_string("lilibeth_profile", R"(
 4 0
 5 1

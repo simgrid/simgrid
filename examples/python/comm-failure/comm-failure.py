@@ -66,11 +66,11 @@ def main():
     host2 = zone.create_host("Host2", "1f")
     host3 = zone.create_host("Host3", "1f")
 
-    link_to_2 = LinkInRoute(zone.create_link("link_to_2", "1bps").seal())
-    link_to_3 = LinkInRoute(zone.create_link("link_to_3", "1bps").seal())
+    link_to_2 = zone.create_link("link_to_2", "1bps").seal()
+    link_to_3 = zone.create_link("link_to_3", "1bps").seal()
 
-    zone.add_route(host1, host2, [link_to_2], False)
-    zone.add_route(host1, host3, [link_to_3], False)
+    zone.add_route(host1, host2, [link_to_2])
+    zone.add_route(host1, host3, [link_to_3])
     zone.seal()
 
     Actor.create("Sender", host1, sender, "mailbox2", "mailbox3")

@@ -131,7 +131,7 @@ static void load_platform()
   link->set_latency(10e-6)->seal();
 
   /* create routes between nodes */
-  zone->add_route(sender, receiver, {{link, sg4::LinkInRoute::Direction::UP}}, true);
+  zone->add_route(sender, receiver, {link});
   zone->seal();
 
   /* create actors Sender/Receiver */

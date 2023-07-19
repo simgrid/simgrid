@@ -47,8 +47,7 @@ void load_platform(const sg4::Engine& /*e*/)
 
   const sg4::Link* link9 = root->create_split_duplex_link("9", "7.20975MBps")->set_latency("1.461517ms")->seal();
 
-  root->add_route(tremblay->get_netpoint(), jupiter->get_netpoint(), nullptr, nullptr,
-                  {{link9, sg4::LinkInRoute::Direction::UP}}, true);
+  root->add_route(tremblay, jupiter, {link9});
   root->seal();
 
   /* set cost callback for MPI_Send and MPI_Recv */
