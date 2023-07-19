@@ -86,8 +86,8 @@ int main(int argc, char** argv)
   sg4::LinkInRoute linkto2{zone->create_link("linkto2", "1bps")->seal()};
   sg4::LinkInRoute linkto3{zone->create_link("linkto3", "1bps")->seal()};
 
-  zone->add_route(host1->get_netpoint(), host2->get_netpoint(), nullptr, nullptr, {linkto2}, false);
-  zone->add_route(host1->get_netpoint(), host3->get_netpoint(), nullptr, nullptr, {linkto3}, false);
+  zone->add_route(host1, host2, {linkto2}, false);
+  zone->add_route(host1, host3, {linkto3}, false);
   zone->seal();
 
   sg4::Actor::create("Sender", host1, Sender("mailbox2", "mailbox3"));

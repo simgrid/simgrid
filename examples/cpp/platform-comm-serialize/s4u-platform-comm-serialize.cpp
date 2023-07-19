@@ -109,8 +109,7 @@ int main(int argc, char* argv[])
       zone->create_split_duplex_link("link1", 10e9)->set_latency(10e-6)->set_concurrency_limit(2)->seal();
 
   /* create routes between nodes */
-  zone->add_route(sender->get_netpoint(), receiver->get_netpoint(), nullptr, nullptr,
-                  {{link, sg4::LinkInRoute::Direction::UP}}, true);
+  zone->add_route(sender, receiver, {{link, sg4::LinkInRoute::Direction::UP}}, true);
   zone->seal();
 
   /* create actors Sender/Receiver */
