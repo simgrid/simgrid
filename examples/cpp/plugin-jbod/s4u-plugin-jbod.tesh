@@ -1,0 +1,55 @@
+#!/usr/bin/env tesh
+
+$ ${bindir}/s4u-plugin-jbod --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e%m%n"
+> [  0.000000] Configuration change: Set 'network/crosstraffic' to '0'
+> [  0.000000] XXXXXXXXXXXXXXX RAID 0 XXXXXXXXXXXXXXXX
+> [  0.000000] asynchronous write posted, wait for it
+> [  1.500000] asynchronous write done
+> [  2.750000] synchonous read done
+> [  4.250000] synchonous write done
+> [  4.250000] asynchronous read posted, wait for it
+> [  5.500000] asynchonous read done
+> [  7.000000] synchonous write done
+> [  8.250000] synchonous read done
+> [  9.500000] synchonous read done
+> [  9.500000] XXXXXXXXXXXXXXX RAID 1 XXXXXXXXXXXXXXXX
+> [  9.500000] asynchronous write posted, wait for it
+> [ 12.500000] asynchronous write done
+> [ 14.500000] synchonous read done
+> [ 17.500000] synchonous write done
+> [ 17.500000] asynchronous read posted, wait for it
+> [ 19.500000] asynchonous read done
+> [ 22.500000] synchonous write done
+> [ 24.500000] synchonous read done
+> [ 26.500000] synchonous read done
+> [ 26.500000] XXXXXXXXXXXXXXX RAID 4 XXXXXXXXXXXXXXXX
+> [ 26.500000] asynchronous write posted, wait for it
+> [ 28.170000] asynchronous write done
+> [ 29.503333] synchonous read done
+> [ 31.173333] synchonous write done
+> [ 31.173333] asynchronous read posted, wait for it
+> [ 32.506666] asynchonous read done
+> [ 34.176666] synchonous write done
+> [ 35.510000] synchonous read done
+> [ 36.843333] synchonous read done
+> [ 36.843333] XXXXXXXXXXXXXXX RAID 5 XXXXXXXXXXXXXXXX
+> [ 36.843333] asynchronous write posted, wait for it
+> [ 38.513333] asynchronous write done
+> [ 39.846666] synchonous read done
+> [ 41.516666] synchonous write done
+> [ 41.516666] asynchronous read posted, wait for it
+> [ 42.849999] asynchonous read done
+> [ 44.519999] synchonous write done
+> [ 45.853333] synchonous read done
+> [ 47.186666] synchonous read done
+> [ 47.186666] XXXXXXXXXXXXXXX RAID 6 XXXXXXXXXXXXXXXX
+> [ 47.186666] asynchronous write posted, wait for it
+> [ 50.186666] asynchronous write done
+> [ 51.686666] synchonous read done
+> [ 54.686666] synchonous write done
+> [ 54.686666] asynchronous read posted, wait for it
+> [ 56.186666] asynchonous read done
+> [ 59.186666] synchonous write done
+> [ 60.686666] synchonous read done
+> [ 62.186666] synchonous read done
+> [ 62.186666] Simulated time: 62.1867

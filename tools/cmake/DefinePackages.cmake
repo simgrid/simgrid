@@ -445,6 +445,7 @@ set(PLUGINS_SRC
   src/plugins/host_dvfs.cpp
   src/plugins/host_energy.cpp
   src/plugins/host_load.cpp
+  src/plugins/jbod.cpp
   src/plugins/link_energy.cpp
   src/plugins/link_energy_wifi.cpp
   src/plugins/link_load.cpp
@@ -658,6 +659,7 @@ set(headers_to_install
   include/simgrid/plugins/dvfs.h
   include/simgrid/plugins/energy.h
   include/simgrid/plugins/file_system.h
+  include/simgrid/plugins/jbod.hpp
   include/simgrid/plugins/live_migration.h
   include/simgrid/plugins/load.h
   include/simgrid/plugins/photovoltaic.hpp

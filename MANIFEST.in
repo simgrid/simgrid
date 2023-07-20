@@ -304,6 +304,8 @@ include examples/cpp/io-file-remote/s4u-io-file-remote.tesh
 include examples/cpp/io-file-remote/s4u-io-file-remote_d.xml
 include examples/cpp/io-file-system/s4u-io-file-system.cpp
 include examples/cpp/io-file-system/s4u-io-file-system.tesh
+include examples/cpp/io-jbod-raw/s4u-io-jbod-raw.cpp
+include examples/cpp/io-jbod-raw/s4u-io-jbod-raw.tesh
 include examples/cpp/io-priority/s4u-io-priority.cpp
 include examples/cpp/io-priority/s4u-io-priority.tesh
 include examples/cpp/maestro-set/s4u-maestro-set.cpp
@@ -1941,6 +1943,7 @@ include include/simgrid/plugins/battery.hpp
 include include/simgrid/plugins/dvfs.h
 include include/simgrid/plugins/energy.h
 include include/simgrid/plugins/file_system.h
+include include/simgrid/plugins/jbod.hpp
 include include/simgrid/plugins/live_migration.h
 include include/simgrid/plugins/load.h
 include include/simgrid/plugins/ns3.hpp
@@ -2317,6 +2320,7 @@ include src/plugins/file_system/s4u_FileSystem.cpp
 include src/plugins/host_dvfs.cpp
 include src/plugins/host_energy.cpp
 include src/plugins/host_load.cpp
+include src/plugins/jbod.cpp
 include src/plugins/link_energy.cpp
 include src/plugins/link_energy_wifi.cpp
 include src/plugins/link_load.cpp
