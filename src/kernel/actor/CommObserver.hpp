@@ -110,7 +110,7 @@ public:
       const std::function<void(void*)>& clean_fun, // used to free the synchro in case of problem after a detached send
       const std::function<void(activity::CommImpl*, void*, size_t)>&
           copy_data_fun, // used to copy data if not default one
-      void* payload, bool detached, std::string fun_call)
+      void* payload, bool detached, std::string_view fun_call)
       : SimcallObserver(actor)
       , mbox_(mbox)
       , payload_size_(payload_size)
@@ -160,7 +160,7 @@ public:
   CommIrecvSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, unsigned char* dst_buff, size_t* dst_buff_size,
                    const std::function<bool(void*, void*, activity::CommImpl*)>& match_fun,
                    const std::function<void(activity::CommImpl*, void*, size_t)>& copy_data_fun, void* payload,
-                   double rate, std::string fun_call)
+                   double rate, std::string_view fun_call)
       : SimcallObserver(actor)
       , mbox_(mbox)
       , dst_buff_(dst_buff)

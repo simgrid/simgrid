@@ -409,8 +409,7 @@ int main(int argc, char* argv[])
   pr::Profile* profile_link = pr::ProfileBuilder::from_string("link_profile", ctx.link_profile.str(), 0);
   sg4::Link const* link =
       zone->create_link("link", LinkBandwidth)->set_latency(LinkLatency)->set_state_profile(profile_link)->seal();
-  zone->add_route(sender_host->get_netpoint(), receiver_host->get_netpoint(), nullptr, nullptr,
-                  {sg4::LinkInRoute{link}}, false);
+  zone->add_route(sender_host, receiver_host, {link});
   zone->seal();
 
   sg4::Host::on_onoff_cb([mbox](sg4::Host const& host) {

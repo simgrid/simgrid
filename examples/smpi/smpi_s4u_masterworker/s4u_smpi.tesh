@@ -51,3 +51,4 @@ $ ./masterworker_mailbox_smpi ${srcdir:=.}/../../platforms/small_platform_with_r
 > [Bourassa:alltoall_mpi#1:(12) 10.046578] [smpi_masterworkers/INFO] after alltoall 1
 > [Fafard:alltoall_mpi#3:(14) 10.046865] [smpi_masterworkers/INFO] after alltoall 3
 > [Jupiter:alltoall_mpi#2:(13) 10.046865] [smpi_masterworkers/INFO] after alltoall 2
+> [Ginette:launcher:(10) 10.046865] [smpi_masterworkers/INFO] This other alltoall_mpi instance terminated.

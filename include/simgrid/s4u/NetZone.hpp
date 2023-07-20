@@ -81,6 +81,39 @@ public:
    */
   void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
                  kernel::routing::NetPoint* gw_dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
+  /**
+   * @brief Add a route between 2 netpoints, and same in other direction
+   *
+   * Create a route:
+   * - route between 2 hosts/routers in same netzone, no gateway is needed
+   * - route between 2 netzones, connecting 2 gateways.
+   *
+   * @param src Source netzone's netpoint
+   * @param dst Destination netzone' netpoint
+   * @param gw_src Netpoint of the gateway in the source netzone
+   * @param gw_dst Netpoint of the gateway in the destination netzone
+   * @param link_list List of links
+   */
+  void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
+                 kernel::routing::NetPoint* gw_dst, const std::vector<const Link*>& links);
+
+  /**
+   * @brief Add a route between 2 hosts
+   *
+   * @param src Source host
+   * @param dst Destination host
+   * @param link_list List of links and their direction used in this communication
+   * @param symmetrical Bi-directional communication
+   */
+  void add_route(const Host* src, const Host* dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
+  /**
+   * @brief Add a route between 2 hosts
+   *
+   * @param src Source host
+   * @param dst Destination host
+   * @param link_list List of links. The UP direction will be used on src->dst and DOWN direction on dst->src
+   */
+  void add_route(const Host* src, const Host* dst, const std::vector<const Link*>& links);
 
   void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,

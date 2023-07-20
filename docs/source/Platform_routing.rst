@@ -110,11 +110,12 @@ Vivaldi
 =======
 
 This routing model is particularly well adapted to Peer-to-Peer and Clouds platforms: each component is connected to the
-cloud through a private link of which the upload and download rate may be asymmetric.
+cloud through a private link whose upload and download rates may be asymmetric.
 
-The network core (between the private links) is assumed to be over-sized so only the latency is taken into account.
-Instead of a matrix of latencies that would become too large when the amount of peers grows, Vivaldi netzones give a
-coordinate to each peer and compute the latency between host A=(xA,yA,zA) and host B=(xB,yB,zB) as follows:
+The network core (between the private links) is assumed to be  over-provisioned so that only the latency has to be
+taken into account. Instead of a matrix of latencies that would become too large when the amount of peers grows,
+Vivaldi netzones give a coordinate to each peer and compute the latency between host A=(xA,yA,zA) and host B=(xB,yB,zB)
+as follows:
 
   latency = sqrt( (xA-xB)² + (yA-yB)² ) + zA + zB
 

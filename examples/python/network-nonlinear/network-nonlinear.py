@@ -104,8 +104,7 @@ def load_platform():
     link.set_latency(10e-6).seal()
 
     # create routes between nodes
-    zone.add_route(sender.netpoint, receiver.netpoint, None, None,
-                   [LinkInRoute(link, LinkInRoute.Direction.UP)], True)
+    zone.add_route(sender, receiver, [link])
     zone.seal()
 
     # create actors Sender/Receiver

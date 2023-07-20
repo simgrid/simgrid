@@ -92,7 +92,7 @@ if __name__ == '__main__':
   for i in range(1, host_count):
     link = rootzone.create_split_duplex_link(f"link {i}", "1MBps").set_latency("24us")
     host = rootzone.create_host(f"lilibeth {i}", 1e9)
-    rootzone.add_route(main.netpoint, host.netpoint, None, None, [LinkInRoute(link, LinkInRoute.Direction.UP)], True)
+    rootzone.add_route(main, host, [link])
     Actor.create("worker", host, worker, i).set_auto_restart(True)
 
   e.netzone_root.seal()

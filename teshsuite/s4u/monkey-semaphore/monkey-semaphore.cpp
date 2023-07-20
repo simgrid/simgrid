@@ -116,8 +116,8 @@ int main(int argc, char** argv)
   auto* rootzone = sg4::create_full_zone("root");
   auto* paul     = rootzone->create_host("Paul", 1e9);
   auto* carol    = rootzone->create_host("Carol", 1e9);
-  sg4::LinkInRoute link(rootzone->create_link("link", "1MBps")->set_latency("24us")->seal());
-  rootzone->add_route(paul->get_netpoint(), carol->get_netpoint(), nullptr, nullptr, {link}, true);
+  auto* link     = rootzone->create_link("link", "1MBps")->set_latency("24us")->seal();
+  rootzone->add_route(paul, carol, {link});
 
   SharedBuffer buffer;
   sg4::Actor::create("producer", paul, producer, std::ref(buffer))->set_auto_restart();

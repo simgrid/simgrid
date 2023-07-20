@@ -14,16 +14,14 @@ static void worker()
   // Define an amount of work that should take 1 second to execute.
   double computation_amount = sg4::this_actor::get_host()->get_speed();
 
-  std::vector<sg4::ExecPtr> pending_execs;
   // Create a small DAG
   // + Two parents and a child
   // + First parent ends after 1 second and the Second parent after 2 seconds.
   sg4::ExecPtr first_parent = sg4::this_actor::exec_init(computation_amount);
-  pending_execs.push_back(first_parent);
   sg4::ExecPtr second_parent = sg4::this_actor::exec_init(2 * computation_amount);
-  pending_execs.push_back(second_parent);
   sg4::ExecPtr child = sg4::Exec::init()->set_flops_amount(computation_amount);
-  pending_execs.push_back(child);
+
+  sg4::ActivitySet pending_execs ({first_parent, second_parent, child});
 
   // Name the activities (for logging purposes only)
   first_parent->set_name("parent 1");
@@ -41,9 +39,9 @@ static void worker()
 
   // wait for the completion of all activities
   while (not pending_execs.empty()) {
-    ssize_t changed_pos = sg4::Exec::wait_any_for(pending_execs, -1);
-    XBT_INFO("Exec '%s' is complete", pending_execs[changed_pos]->get_cname());
-    pending_execs.erase(pending_execs.begin() + changed_pos);
+    auto completed_one = pending_execs.wait_any();
+    if (completed_one != nullptr)
+      XBT_INFO("Exec '%s' is complete", completed_one->get_cname());
   }
 }
 

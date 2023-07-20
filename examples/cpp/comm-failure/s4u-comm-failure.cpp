@@ -82,18 +82,17 @@ int main(int argc, char** argv)
   auto* host1 = zone->create_host("Host1", "1f");
   auto* host2 = zone->create_host("Host2", "1f");
   auto* host3 = zone->create_host("Host3", "1f");
+  auto* link2 = zone->create_link("linkto2", "1bps")->seal();
+  auto* link3 = zone->create_link("linkto3", "1bps")->seal();
 
-  sg4::LinkInRoute linkto2{zone->create_link("linkto2", "1bps")->seal()};
-  sg4::LinkInRoute linkto3{zone->create_link("linkto3", "1bps")->seal()};
-
-  zone->add_route(host1->get_netpoint(), host2->get_netpoint(), nullptr, nullptr, {linkto2}, false);
-  zone->add_route(host1->get_netpoint(), host3->get_netpoint(), nullptr, nullptr, {linkto3}, false);
+  zone->add_route(host1, host2, {link2});
+  zone->add_route(host1, host3, {link3});
   zone->seal();
 
   sg4::Actor::create("Sender", host1, Sender("mailbox2", "mailbox3"));
   sg4::Actor::create("Receiver", host2, Receiver("mailbox2"));
   sg4::Actor::create("Receiver", host3, Receiver("mailbox3"));
-  
+
   sg4::Actor::create("LinkKiller", host1, [](){
     sg4::this_actor::sleep_for(10.0);
     XBT_INFO("Turning off link 'linkto2'");

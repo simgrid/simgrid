@@ -70,14 +70,7 @@ def main():
     link = zone.create_split_duplex_link("link1", 10e9).set_latency(10e-6).set_concurrency_limit(2).seal()
 
     # create routes between nodes
-    zone.add_route(
-        sender_host.netpoint,
-        receiver_host.netpoint,
-        None,
-        None,
-        [LinkInRoute(link, LinkInRoute.UP)],
-        True
-    )
+    zone.add_route(sender_host, receiver_host, [link])
     zone.seal()
 
     # create actors Sender/Receiver

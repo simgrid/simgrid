@@ -224,9 +224,6 @@ int ActorExt::sampling() const
 
 void ActorExt::init()
 {
-  xbt_assert(smpi_get_universe_size() != 0, "SimGrid was not initialized properly before entering MPI_Init. "
-                                            "Aborting, please check compilation process and use smpirun.");
-
   ActorExt* ext = smpi_process();
   // if we are in MPI_Init and argc handling has already been done.
   if (ext->initialized())

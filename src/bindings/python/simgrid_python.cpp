@@ -243,6 +243,14 @@ PYBIND11_MODULE(simgrid, m)
                              simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*,
                              const std::vector<simgrid::s4u::LinkInRoute>&, bool>(&simgrid::s4u::NetZone::add_route),
            "Add a route between 2 netpoints")
+      .def("add_route",
+           py::overload_cast<const simgrid::s4u::Host*, const simgrid::s4u::Host*,
+                             const std::vector<simgrid::s4u::LinkInRoute>&, bool>(&simgrid::s4u::NetZone::add_route),
+           "Add a route between 2 netpoints")
+      .def("add_route",
+           py::overload_cast<const simgrid::s4u::Host*, const simgrid::s4u::Host*,
+                             const std::vector<const simgrid::s4u::Link*>&>(&simgrid::s4u::NetZone::add_route),
+           "Add a route between 2 netpoints")
       .def("create_host", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_host),
            "Creates a host")
       .def("create_host",

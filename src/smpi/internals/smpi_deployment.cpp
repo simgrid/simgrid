@@ -15,15 +15,12 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi);
 
 namespace simgrid::smpi::app {
 
-static int universe_size = 0;
-
 class Instance {
 public:
   explicit Instance(int max_no_processes) : size_(max_no_processes)
   {
     auto* group = new simgrid::smpi::Group(size_);
     comm_world_ = new simgrid::smpi::Comm(group, nullptr, false, -1);
-    universe_size += max_no_processes;
     bar_ = s4u::Barrier::create(size_);
   }
   s4u::BarrierPtr bar_;
@@ -75,6 +72,17 @@ void SMPI_app_instance_start(const char* name, const std::function<void()>& code
     rank++;
   }
 }
+void SMPI_app_instance_join(const std::string& instance_id)
+{
+  std::vector<simgrid::s4u::ActorPtr> actors =
+      simgrid::s4u::Engine::get_instance()->get_filtered_actors([instance_id](simgrid::s4u::ActorPtr act) {
+        auto* actor_instance = act->get_property("instance_id");
+        return actor_instance != nullptr && strcmp(actor_instance, instance_id.c_str()) == 0;
+      });
+
+  for (auto& act : actors)
+    act->join();
+}
 
 void smpi_deployment_register_process(const std::string& instance_id, int rank, const simgrid::s4u::Actor* actor)
 {
@@ -111,11 +119,6 @@ void smpi_deployment_cleanup_instances(){
     simgrid::smpi::Comm::destroy(instance.comm_world_);
   }
   smpi_instances.clear();
-}
-
-int smpi_get_universe_size()
-{
-  return simgrid::smpi::app::universe_size;
 }
 
 /** @brief Auxiliary method to get list of hosts to deploy app */

@@ -127,7 +127,10 @@ int main(int argc, char* argv[])
     SMPI_app_instance_start("alltoall_mpi", alltoall_mpi,
                             {e.host_by_name_or_null("Ginette"), e.host_by_name_or_null("Bourassa"),
                              e.host_by_name_or_null("Jupiter"), e.host_by_name_or_null("Fafard")});
+    SMPI_app_instance_join("alltoall_mpi");
+    XBT_INFO("This other alltoall_mpi instance terminated.");
   });
+
   e.run();
 
   XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());

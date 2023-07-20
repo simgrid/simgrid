@@ -8,6 +8,7 @@
  */
 
 #include <simgrid/s4u.hpp>
+#include <string>
 
 namespace sg4 = simgrid::s4u;
 
@@ -23,10 +24,10 @@ public:
   void operator()() const
   {
     // sphinx-doc: init-begin (this line helps the doc to build; ignore it)
-    /* Vector in which we store all ongoing communications */
-    std::vector<sg4::CommPtr> pending_comms;
+    /* ActivitySet in which we store all ongoing communications */
+    sg4::ActivitySet pending_comms;
 
-    /* Make a vector of the mailboxes to use */
+    /* Mailbox to use */
     sg4::Mailbox* mbox = sg4::Mailbox::by_name("receiver");
     // sphinx-doc: init-end
 
@@ -41,13 +42,13 @@ public:
 
       /* Create a communication representing the ongoing communication, and store it in pending_comms */
       sg4::CommPtr comm = mbox->put_async(payload, size);
-      pending_comms.push_back(comm);
+      pending_comms.push(comm);
     }
 
     XBT_INFO("Done dispatching all messages");
 
     /* Now that all message exchanges were initiated, wait for their completion in one single call */
-    sg4::Comm::wait_all(pending_comms);
+    pending_comms.wait_all();
     // sphinx-doc: put-end
 
     XBT_INFO("Goodbye now!");
@@ -63,23 +64,28 @@ public:
   explicit Receiver(int count) : messages_count(count) { mbox = sg4::Mailbox::by_name("receiver"); }
   void operator()()
   {
-    /* Vector in which we store all incoming msgs */
-    std::vector<std::unique_ptr<std::string*>> pending_msgs;
-    std::vector<sg4::CommPtr> pending_comms;
+    /* Where we store all incoming msgs */
+    std::unordered_map<sg4::CommPtr, std::shared_ptr<std::string*>> pending_msgs;
+    sg4::ActivitySet pending_comms;
 
     XBT_INFO("Wait for %d messages asynchronously", messages_count);
     for (int i = 0; i < messages_count; i++) {
-      pending_msgs.push_back(std::make_unique<std::string*>());
-      pending_comms.emplace_back(mbox->get_async<std::string>(pending_msgs[i].get()));
+      std::shared_ptr<std::string*> msg =std::make_shared<std::string*>();
+      auto comm = mbox->get_async<std::string>(msg.get());
+      pending_comms.push(comm);
+      pending_msgs.insert({comm, msg});
     }
+
     while (not pending_comms.empty()) {
-      ssize_t index    = sg4::Comm::wait_any(pending_comms);
-      std::string* msg = *pending_msgs[index];
-      XBT_INFO("I got '%s'.", msg->c_str());
-      /* cleanup memory and remove from vectors */
-      delete msg;
-      pending_comms.erase(pending_comms.begin() + index);
-      pending_msgs.erase(pending_msgs.begin() + index);
+      auto completed_one = pending_comms.wait_any();
+      if (completed_one != nullptr){
+        auto comm = boost::dynamic_pointer_cast<sg4::Comm>(completed_one);
+        auto msg = *pending_msgs[comm];
+        XBT_INFO("I got '%s'.", msg->c_str());
+        /* cleanup memory and remove from map */
+        delete msg;
+        pending_msgs.erase(comm);
+      }
     }
   }
 };
@@ -125,8 +131,7 @@ static void load_platform()
   link->set_latency(10e-6)->seal();
 
   /* create routes between nodes */
-  zone->add_route(sender->get_netpoint(), receiver->get_netpoint(), nullptr, nullptr,
-                  {{link, sg4::LinkInRoute::Direction::UP}}, true);
+  zone->add_route(sender, receiver, {link});
   zone->seal();
 
   /* create actors Sender/Receiver */

@@ -12,16 +12,15 @@ namespace sg4 = simgrid::s4u;
 
 static void test()
 {
-  std::vector<sg4::ActivityPtr> pending_activities;
-
   sg4::ExecPtr bob_compute = sg4::this_actor::exec_init(1e9);
-  pending_activities.push_back(boost::dynamic_pointer_cast<sg4::Activity>(bob_compute));
   sg4::IoPtr bob_write = sg4::Host::current()->get_disks().front()->io_init(4000000, sg4::Io::OpType::WRITE);
-  pending_activities.push_back(boost::dynamic_pointer_cast<sg4::Activity>(bob_write));
   sg4::IoPtr carl_read = sg4::Host::by_name("carl")->get_disks().front()->io_init(4000000, sg4::Io::OpType::READ);
-  pending_activities.push_back(boost::dynamic_pointer_cast<sg4::Activity>(carl_read));
   sg4::ExecPtr carl_compute = sg4::Host::by_name("carl")->exec_init(1e9);
-  pending_activities.push_back(boost::dynamic_pointer_cast<sg4::Activity>(carl_compute));
+
+  sg4::ActivitySet pending_activities ({boost::dynamic_pointer_cast<sg4::Activity>(bob_compute),
+                                        boost::dynamic_pointer_cast<sg4::Activity>(bob_write),
+                                        boost::dynamic_pointer_cast<sg4::Activity>(carl_read),
+                                        boost::dynamic_pointer_cast<sg4::Activity>(carl_compute)});
 
   // Name the activities (for logging purposes only)
   bob_compute->set_name("bob compute");
@@ -45,9 +44,9 @@ static void test()
 
   // wait for the completion of all activities
   while (not pending_activities.empty()) {
-    ssize_t changed_pos = sg4::Activity::wait_any(pending_activities);
-    XBT_INFO("Activity '%s' is complete", pending_activities[changed_pos]->get_cname());
-    pending_activities.erase(pending_activities.begin() + changed_pos);
+    auto completed_one = pending_activities.wait_any();
+    if (completed_one != nullptr)
+      XBT_INFO("Activity '%s' is complete", completed_one->get_cname());
   }
 }
 

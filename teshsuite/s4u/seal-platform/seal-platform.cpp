@@ -68,7 +68,7 @@ static sg4::NetZone* create_zone(const sg4::NetZone* root, const std::string& id
     auto* host           = zone->create_host(hostname, 1e9);
     host->create_disk("disk-" + hostname, 1e9, 1e6);
     const auto* link = zone->create_link("link-" + hostname, 1e9);
-    zone->add_route(host->get_netpoint(), router, nullptr, nullptr, {sg4::LinkInRoute(link)});
+    zone->add_route(host->get_netpoint(), router, nullptr, nullptr, {link});
   }
   return zone;
 }

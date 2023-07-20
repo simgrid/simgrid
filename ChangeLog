@@ -2,6 +2,13 @@ SimGrid (3.34.1) not released (Target: fall 2023)
 
 S4U:
  - New class ActivitySet to ease wait_any()/test_any()/wait_all()
+ - New function NetZone::add_route(host1, host2, links) when you don't need gateways
+   Also add a variant with s4u::Link, when you don't want to specify the directions
+   on symmetric routes.
+
+SMPI:
+ - New SMPI_app_instance_join(): wait for the completion of a started MPI instance
+ - MPI_UNIVERSE_SIZE now initialized to the total amount of hosts in the platform
 
 Python:
  - Make the host_load plugin available from Python. See examples/python/plugin-host-load

@@ -6,9 +6,10 @@
 #include <climits>
 
 #include "private.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "smpi_comm.hpp"
-#include "smpi_info.hpp"
 #include "smpi_errhandler.hpp"
+#include "smpi_info.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
@@ -248,7 +249,7 @@ int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
     return MPI_SUCCESS;
   case MPI_UNIVERSE_SIZE:
     *flag = 1;
-    universe_size                   = smpi_get_universe_size();
+    universe_size                   = simgrid::s4u::Engine::get_instance()->get_host_count();
     *static_cast<int**>(attr_value) = &universe_size;
     return MPI_SUCCESS;
   case MPI_LASTUSEDCODE:
