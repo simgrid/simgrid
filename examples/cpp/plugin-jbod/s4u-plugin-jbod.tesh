@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir}/s4u-io-jbod-raw --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e%m%n"
+$ ${bindir}/s4u-plugin-jbod --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e%m%n"
 > [  0.000000] Configuration change: Set 'network/crosstraffic' to '0'
 > [  0.000000] XXXXXXXXXXXXXXX RAID 0 XXXXXXXXXXXXXXXX
 > [  0.000000] asynchronous write posted, wait for it

@@ -170,11 +170,11 @@ foreach (example activityset-testany activityset-waitany activityset-waitall act
                  maestro-set
                  mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-bugged2-liveness mc-centralized-mutex mc-electric-fence mc-failing-assert
                  network-ns3 network-ns3-wifi network-wifi
-                 io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-jbod-raw io-dependent
+                 io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-dependent
                  task-io task-simple task-variable-load task-storm task-switch-host
                  photovoltaic-simple
                  platform-comm-serialize platform-failures platform-profile platform-properties
-                 plugin-host-load plugin-link-load plugin-prodcons
+                 plugin-host-load plugin-jbod plugin-link-load plugin-prodcons
                  replay-comm replay-io
                  routing-get-clusters
                  synchro-barrier synchro-condition-variable synchro-condition-variable-waituntil synchro-mutex synchro-semaphore
