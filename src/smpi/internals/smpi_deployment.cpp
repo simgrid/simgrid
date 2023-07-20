@@ -15,15 +15,12 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi);
 
 namespace simgrid::smpi::app {
 
-static int universe_size = 0;
-
 class Instance {
 public:
   explicit Instance(int max_no_processes) : size_(max_no_processes)
   {
     auto* group = new simgrid::smpi::Group(size_);
     comm_world_ = new simgrid::smpi::Comm(group, nullptr, false, -1);
-    universe_size += max_no_processes;
     bar_ = s4u::Barrier::create(size_);
   }
   s4u::BarrierPtr bar_;
@@ -122,11 +119,6 @@ void smpi_deployment_cleanup_instances(){
     simgrid::smpi::Comm::destroy(instance.comm_world_);
   }
   smpi_instances.clear();
-}
-
-int smpi_get_universe_size()
-{
-  return simgrid::smpi::app::universe_size;
 }
 
 /** @brief Auxiliary method to get list of hosts to deploy app */

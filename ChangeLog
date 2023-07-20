@@ -8,6 +8,7 @@ S4U:
 
 SMPI:
  - New SMPI_app_instance_join(): wait for the completion of a started MPI instance
+ - MPI_UNIVERSE_SIZE now initialized to the total amount of hosts in the platform
 
 Python:
  - Make the host_load plugin available from Python. See examples/python/plugin-host-load

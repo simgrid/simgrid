@@ -74,7 +74,6 @@ using MPIR_Dist_Graph_Topology = SMPI_Dist_Graph_topology*;
 
 XBT_PRIVATE simgrid::smpi::ActorExt* smpi_process();
 XBT_PRIVATE simgrid::smpi::ActorExt* smpi_process_remote(simgrid::s4u::ActorPtr actor);
-XBT_PRIVATE int smpi_get_universe_size();
 
 XBT_PRIVATE void smpi_deployment_register_process(const std::string& instance_id, int rank,
                                                   const simgrid::s4u::Actor* actor);
