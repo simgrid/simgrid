@@ -75,6 +75,17 @@ void SMPI_app_instance_start(const char* name, const std::function<void()>& code
     rank++;
   }
 }
+void SMPI_app_instance_join(const std::string& instance_id)
+{
+  std::vector<simgrid::s4u::ActorPtr> actors =
+      simgrid::s4u::Engine::get_instance()->get_filtered_actors([instance_id](simgrid::s4u::ActorPtr act) {
+        auto* actor_instance = act->get_property("instance_id");
+        return actor_instance != nullptr && strcmp(actor_instance, instance_id.c_str()) == 0;
+      });
+
+  for (auto& act : actors)
+    act->join();
+}
 
 void smpi_deployment_register_process(const std::string& instance_id, int rank, const simgrid::s4u::Actor* actor)
 {

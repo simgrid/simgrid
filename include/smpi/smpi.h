@@ -1235,6 +1235,7 @@ SG_END_DECL
 #ifdef __cplusplus
 XBT_PUBLIC void SMPI_app_instance_start(const char* name, std::function<void()> const& code,
                                         std::vector<simgrid::s4u::Host*> const& hosts);
+XBT_PUBLIC void SMPI_app_instance_join(const std::string& instance_id);
 
 /* This version without parameter is nice to use with SMPI_app_instance_start() */
 XBT_PUBLIC void MPI_Init();

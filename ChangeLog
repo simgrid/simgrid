@@ -6,6 +6,9 @@ S4U:
    Also add a variant with s4u::Link, when you don't want to specify the directions
    on symmetric routes.
 
+SMPI:
+ - New SMPI_app_instance_join(): wait for the completion of a started MPI instance
+
 Python:
  - Make the host_load plugin available from Python. See examples/python/plugin-host-load
 
