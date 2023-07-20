@@ -6,6 +6,7 @@
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/CommObserver.hpp"
+#include <simgrid/Exception.hpp>
 #include <simgrid/s4u/ActivitySet.hpp>
 #include <simgrid/s4u/Engine.hpp>
 
@@ -76,8 +77,8 @@ ActivityPtr ActivitySet::wait_any_for(double timeout)
                                                      observer.get_timeout());
       },
       &observer);
-  xbt_assert(changed_pos != -1,
-             "ActivityImpl::wait_any_for is not supposed to return -1 but instead to raise exceptions");
+  if (changed_pos == -1)
+    throw TimeoutException(XBT_THROW_POINT, "Timeouted");
 
   auto ret = activities_.at(changed_pos);
   erase(ret);

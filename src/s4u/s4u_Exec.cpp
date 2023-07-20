@@ -6,6 +6,7 @@
 #include "simgrid/simix.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/exec.h>
+#include <simgrid/s4u/ActivitySet.hpp>
 #include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Host.hpp>
 
@@ -51,12 +52,23 @@ Exec* Exec::do_start()
   return this;
 }
 
-ssize_t Exec::wait_any_for(const std::vector<ExecPtr>& execs, double timeout)
+ssize_t Exec::deprecated_wait_any_for(const std::vector<ExecPtr>& execs, double timeout) // XBT_ATTRIB_DEPRECATED_v339
 {
-  std::vector<ActivityPtr> activities;
+  if (execs.empty())
+    return -1;
+  ActivitySet set;
   for (const auto& exec : execs)
-    activities.push_back(boost::dynamic_pointer_cast<Activity>(exec));
-  return Activity::wait_any_for(activities, timeout);
+    set.push(exec);
+  try {
+    auto* ret = set.wait_any_for(timeout).get();
+    for (size_t i = 0; i < execs.size(); i++)
+      if (execs[i].get() == ret)
+        return i;
+
+  } catch (TimeoutException& e) {
+    return -1;
+  }
+  return -1;
 }
 
 /** @brief change the execution bound
@@ -319,18 +331,27 @@ sg_error_t sg_exec_wait_for(sg_exec_t exec, double timeout)
   return status;
 }
 
-ssize_t sg_exec_wait_any(sg_exec_t* execs, size_t count)
-{
-  return sg_exec_wait_any_for(execs, count, -1.0);
-}
-
-ssize_t sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout)
+ssize_t sg_exec_wait_any(sg_exec_t* execs, size_t count) // XBT_ATTRIB_DEPRECATED_v339
 {
   std::vector<simgrid::s4u::ExecPtr> s4u_execs;
   for (size_t i = 0; i < count; i++)
     s4u_execs.emplace_back(execs[i], false);
 
-  ssize_t pos = simgrid::s4u::Exec::wait_any_for(s4u_execs, timeout);
+  ssize_t pos = simgrid::s4u::Exec::deprecated_wait_any_for(s4u_execs, -1.0);
+  for (size_t i = 0; i < count; i++) {
+    if (pos != -1 && static_cast<size_t>(pos) != i)
+      s4u_execs[i]->add_ref();
+  }
+  return pos;
+}
+
+ssize_t sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout) // XBT_ATTRIB_DEPRECATED_v339
+{
+  std::vector<simgrid::s4u::ExecPtr> s4u_execs;
+  for (size_t i = 0; i < count; i++)
+    s4u_execs.emplace_back(execs[i], false);
+
+  ssize_t pos = simgrid::s4u::Exec::deprecated_wait_any_for(s4u_execs, timeout);
   for (size_t i = 0; i < count; i++) {
     if (pos != -1 && static_cast<size_t>(pos) != i)
       s4u_execs[i]->add_ref();

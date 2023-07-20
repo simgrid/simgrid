@@ -48,7 +48,7 @@ static void worker(int argc, char* argv[])
       pos = sg_exec_wait_any(pending_execs, pending_execs_count);
 
     if (pos < 0) {
-      XBT_INFO("Do not wait any longer for an activity");
+      XBT_INFO("Do not wait any longer for an activity (timeout received)");
       pending_execs_count = 0;
     } else {
       XBT_INFO("Activity at position %zd is complete", pos);

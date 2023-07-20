@@ -50,12 +50,6 @@ public:
   /*! \static Initiate the creation of an Exec. Setters have to be called afterwards */
   static ExecPtr init();
 
-  /*! \static take a vector of s4u::ExecPtr and return when one of them is finished.
-   * The return value is the rank of the first finished ExecPtr. */
-  static ssize_t wait_any(const std::vector<ExecPtr>& execs) { return wait_any_for(execs, -1); }
-  /*! \static Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
-  static ssize_t wait_any_for(const std::vector<ExecPtr>& execs, double timeout);
-
   /** @brief On sequential executions, returns the amount of flops that remain to be done; This cannot be used on
    * parallel executions. */
   double get_remaining() const override;
@@ -81,6 +75,24 @@ public:
   double get_cost() const;
   bool is_parallel() const { return parallel_; }
   bool is_assigned() const override;
+
+#ifndef DOXYGEN
+  static ssize_t deprecated_wait_any_for(const std::vector<ExecPtr>& execs,
+                                         double timeout); // XBT_ATTRIB_DEPRECATED_v339
+  /*! \static take a vector of s4u::ExecPtr and return when one of them is finished.
+   * The return value is the rank of the first finished ExecPtr. */
+  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t
+      wait_any(const std::vector<ExecPtr>& execs)
+  {
+    return deprecated_wait_any_for(execs, -1);
+  }
+  /*! \static Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
+  // XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") TODO: update activity-lifecycle/testing_test-wait.cpp
+  static ssize_t wait_any_for(const std::vector<ExecPtr>& execs, double timeout)
+  {
+    return deprecated_wait_any_for(execs, timeout);
+  }
+#endif
 };
 
 } // namespace simgrid::s4u
