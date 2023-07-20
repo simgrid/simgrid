@@ -87,8 +87,8 @@ public:
     return deprecated_wait_any_for(execs, -1);
   }
   /*! \static Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
-  // XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") TODO: update activity-lifecycle/testing_test-wait.cpp
-  static ssize_t wait_any_for(const std::vector<ExecPtr>& execs, double timeout)
+  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t
+      wait_any_for(const std::vector<ExecPtr>& execs, double timeout)
   {
     return deprecated_wait_any_for(execs, timeout);
   }

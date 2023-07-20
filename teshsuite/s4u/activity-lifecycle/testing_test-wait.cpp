@@ -60,19 +60,21 @@ template <int Duration, typename Activity> bool tester_wait_any(const Activity& 
   const double timeout      = simgrid::s4u::Engine::get_clock() + duration;
   bool ret;
   try {
-    std::vector<Activity> activities = {activity};
+    simgrid::s4u::ActivitySet set;
+    set.push(activity);
+
     XBT_DEBUG("calling wait_any_for(%f)", duration);
-    ssize_t index = Activity::element_type::wait_any_for(activities, duration);
-    if (index == -1) {
-      XBT_DEBUG("wait_any_for() timed out");
-      INFO("wait_any_for() timeout should expire at expected date: " << timeout);
-      REQUIRE(simgrid::s4u::Engine::get_clock() == Approx(timeout));
-      ret = false;
-    } else {
-      XBT_DEBUG("wait_any_for() returned index %zd", index);
-      REQUIRE(index == 0);
-      ret = true;
-    }
+    auto waited_activity = set.wait_any_for(duration);
+
+    XBT_DEBUG("wait_any_for() returned activity %p", waited_activity.get());
+    REQUIRE(waited_activity.get() == activity);
+    ret = true;
+
+  } catch (const simgrid::TimeoutException& e) {
+    XBT_DEBUG("wait_any_for() timed out");
+    INFO("wait_any_for() timeout should expire at expected date: " << timeout);
+    REQUIRE(simgrid::s4u::Engine::get_clock() == Approx(timeout));
+    ret = false;
   } catch (const simgrid::Exception& e) {
     XBT_DEBUG("wait_any_for() threw an exception: %s", e.what());
     ret = true;
