@@ -259,6 +259,11 @@ bool Exec::is_assigned() const
 } // namespace simgrid::s4u
 
 /* **************************** Public C interface *************************** */
+int sg_exec_isinstance(sg_activity_t acti)
+{
+  return dynamic_cast<simgrid::s4u::Exec*>(acti) != nullptr;
+}
+
 void sg_exec_set_bound(sg_exec_t exec, double bound)
 {
   exec->set_bound(bound);

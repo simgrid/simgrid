@@ -649,6 +649,7 @@ set(MC_SIMGRID_MC_SRC  src/mc/explo/simgrid_mc.cpp)
 
 set(headers_to_install
   include/simgrid/actor.h
+  include/simgrid/activityset.h
   include/simgrid/barrier.h
   include/simgrid/comm.h
   include/simgrid/engine.h

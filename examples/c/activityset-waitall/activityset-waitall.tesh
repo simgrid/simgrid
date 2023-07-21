@@ -1,0 +1,7 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/c-activityset-waitall ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%7.6r]%e[%5a]%e%m%n"
+> [0.000000] [alice] Send 'Message'
+> [0.000000] [  bob] Create my asynchronous activities
+> [0.000000] [  bob] Wait for asynchronous activities to complete, all in one shot.
+> [5.197828] [  bob] All activities are completed.

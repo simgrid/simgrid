@@ -4,6 +4,7 @@
 foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-lifetime actor-migrate actor-stacksize
         actor-suspend actor-yield
+        activityset-testany activityset-waitall activityset-waitallfor activityset-waitany
         app-masterworker app-token-ring
         comm-pingpong comm-wait comm-waitall comm-waitany
         cloud-capping cloud-masterworker cloud-migration cloud-simple
@@ -96,6 +97,7 @@ set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-cr
 foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-lifetime actor-migrate actor-stacksize
         actor-suspend actor-yield
+        activityset-testany activityset-waitall activityset-waitallfor activityset-waitany
         app-bittorrent app-chainsend app-masterworker app-token-ring
         comm-pingpong comm-wait comm-waitall comm-waitany
         cloud-capping  cloud-masterworker cloud-migration cloud-simple

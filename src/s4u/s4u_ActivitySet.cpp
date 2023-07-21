@@ -7,6 +7,7 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/CommObserver.hpp"
 #include <simgrid/Exception.hpp>
+#include <simgrid/activity_set.h>
 #include <simgrid/s4u/ActivitySet.hpp>
 #include <simgrid/s4u/Engine.hpp>
 
@@ -97,3 +98,63 @@ ActivityPtr ActivitySet::get_failed_activity()
 
 } // namespace s4u
 } // namespace simgrid
+
+SG_BEGIN_DECL
+
+sg_activity_set_t sg_activity_set_init()
+{
+  return new simgrid::s4u::ActivitySet();
+}
+void sg_activity_set_push(sg_activity_set_t as, sg_activity_t acti)
+{
+  as->push(acti);
+}
+void sg_activity_set_erase(sg_activity_set_t as, sg_activity_t acti)
+{
+  as->erase(acti);
+}
+size_t sg_activity_set_size(sg_activity_set_t as)
+{
+  return as->size();
+}
+int sg_activity_set_empty(sg_activity_set_t as)
+{
+  return as->empty();
+}
+
+sg_activity_t sg_activity_set_test_any(sg_activity_set_t as)
+{
+  return as->test_any().get();
+}
+void sg_activity_set_wait_all(sg_activity_set_t as)
+{
+  as->wait_all();
+}
+int sg_activity_set_wait_all_for(sg_activity_set_t as, double timeout)
+{
+  try {
+    as->wait_all_for(timeout);
+    return 1;
+  } catch (const simgrid::TimeoutException& e) {
+    return 0;
+  }
+}
+sg_activity_t sg_activity_set_wait_any(sg_activity_set_t as)
+{
+  return as->wait_any().get();
+}
+sg_activity_t sg_activity_set_wait_any_for(sg_activity_set_t as, double timeout)
+{
+  try {
+    return as->wait_any_for(timeout).get();
+  } catch (const simgrid::TimeoutException& e) {
+    return nullptr;
+  }
+}
+
+void sg_activity_set_delete(sg_activity_set_t as)
+{
+  delete as;
+}
+
+SG_END_DECL

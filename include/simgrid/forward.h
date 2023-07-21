@@ -221,6 +221,8 @@ class RemoteApp;
 } // namespace simgrid
 
 using s4u_Actor             = simgrid::s4u::Actor;
+using s4u_Activity          = simgrid::s4u::Activity;
+using s4u_ActivitySet       = simgrid::s4u::ActivitySet;
 using s4u_Barrier           = simgrid::s4u::Barrier;
 using s4u_Comm              = simgrid::s4u::Comm;
 using s4u_Exec              = simgrid::s4u::Exec;
@@ -239,6 +241,8 @@ using smx_activity_t = simgrid::kernel::activity::ActivityImpl*;
 #else
 
 typedef struct s4u_Actor s4u_Actor;
+typedef struct s4u_Activity s4u_Activity;
+typedef struct s4u_ActivitySet s4u_ActivitySet;
 typedef struct s4u_Barrier s4u_Barrier;
 typedef struct s4u_Comm s4u_Comm;
 typedef struct s4u_Exec s4u_Exec;
@@ -288,6 +292,16 @@ typedef const s4u_VM* const_sg_vm_t;
 typedef s4u_Actor* sg_actor_t;
 /** Pointer to a constant actor object */
 typedef const s4u_Actor* const_sg_actor_t;
+
+/** Pointer to an activity object */
+typedef s4u_Activity* sg_activity_t;
+/** Pointer to a constant activity object */
+typedef const s4u_Activity* const_sg_activity_t;
+
+/** Pointer to an activity set object */
+typedef s4u_ActivitySet* sg_activity_set_t;
+/** Pointer to a constant activity set object */
+typedef const s4u_ActivitySet* const_sg_activity_set_t;
 
 /** @ingroup m_datatypes_management_details
  * @brief Type for any SimGrid size

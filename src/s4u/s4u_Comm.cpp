@@ -498,6 +498,11 @@ size_t Comm::wait_all_for(const std::vector<CommPtr>& comms, double timeout)
 }
 } // namespace simgrid::s4u
 /* **************************** Public C interface *************************** */
+int sg_comm_isinstance(sg_activity_t acti)
+{
+  return dynamic_cast<simgrid::s4u::Comm*>(acti) != nullptr;
+}
+
 void sg_comm_detach(sg_comm_t comm, void (*clean_function)(void*))
 {
   comm->detach(clean_function);
