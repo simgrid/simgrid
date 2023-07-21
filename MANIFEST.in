@@ -304,8 +304,6 @@ include examples/cpp/io-file-remote/s4u-io-file-remote.tesh
 include examples/cpp/io-file-remote/s4u-io-file-remote_d.xml
 include examples/cpp/io-file-system/s4u-io-file-system.cpp
 include examples/cpp/io-file-system/s4u-io-file-system.tesh
-include examples/cpp/io-jbod-raw/s4u-io-jbod-raw.cpp
-include examples/cpp/io-jbod-raw/s4u-io-jbod-raw.tesh
 include examples/cpp/io-priority/s4u-io-priority.cpp
 include examples/cpp/io-priority/s4u-io-priority.tesh
 include examples/cpp/maestro-set/s4u-maestro-set.cpp
@@ -361,6 +359,8 @@ include examples/cpp/platform-properties/s4u-platform-properties.cpp
 include examples/cpp/platform-properties/s4u-platform-properties.tesh
 include examples/cpp/plugin-host-load/s4u-plugin-host-load.cpp
 include examples/cpp/plugin-host-load/s4u-plugin-host-load.tesh
+include examples/cpp/plugin-jbod/s4u-plugin-jbod.cpp
+include examples/cpp/plugin-jbod/s4u-plugin-jbod.tesh
 include examples/cpp/plugin-link-load/s4u-plugin-link-load.cpp
 include examples/cpp/plugin-link-load/s4u-plugin-link-load.tesh
 include examples/cpp/plugin-prodcons/s4u-plugin-prodcons.cpp
@@ -416,6 +416,14 @@ include examples/cpp/trace-process-migration/s4u-trace-process-migration.cpp
 include examples/cpp/trace-process-migration/s4u-trace-process-migration.tesh
 include examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.cpp
 include examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.tesh
+include examples/python/activityset-testany/activityset-testany.py
+include examples/python/activityset-testany/activityset-testany.tesh
+include examples/python/activityset-waitall/activityset-waitall.py
+include examples/python/activityset-waitall/activityset-waitall.tesh
+include examples/python/activityset-waitallfor/activityset-waitallfor.py
+include examples/python/activityset-waitallfor/activityset-waitallfor.tesh
+include examples/python/activityset-waitany/activityset-waitany.py
+include examples/python/activityset-waitany/activityset-waitany.tesh
 include examples/python/actor-create/actor-create.py
 include examples/python/actor-create/actor-create.tesh
 include examples/python/actor-daemon/actor-daemon.py
