@@ -9,7 +9,7 @@ foreach(x
         comm-pingpong comm-wait comm-waitall comm-waitany
         cloud-capping cloud-masterworker cloud-migration cloud-simple
         dht-pastry
-        exec-async exec-basic exec-dvfs exec-remote exec-waitany
+        exec-async exec-basic exec-dvfs exec-remote
         energy-exec energy-exec-ptask energy-vm
         io-disk-raw io-file-remote io-file-system
         platform-failures platform-properties
@@ -102,7 +102,7 @@ foreach(x
         comm-pingpong comm-wait comm-waitall comm-waitany
         cloud-capping  cloud-masterworker cloud-migration cloud-simple
         dht-kademlia dht-pastry
-        exec-async exec-basic exec-dvfs exec-remote exec-waitany
+        exec-async exec-basic exec-dvfs exec-remote
         energy-exec energy-exec-ptask energy-vm
         io-disk-raw io-file-remote io-file-system
         platform-failures platform-properties
