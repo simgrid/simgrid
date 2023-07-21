@@ -26,7 +26,7 @@ static void bob()
                                        boost::dynamic_pointer_cast<sg4::Activity>(comm),
                                        boost::dynamic_pointer_cast<sg4::Activity>(io)});
 
-  XBT_INFO("Wait for asynchrounous activities to complete, all in one shot.");
+  XBT_INFO("Wait for asynchronous activities to complete, all in one shot.");
   pending_activities.wait_all();
 
   XBT_INFO("All activities are completed.");

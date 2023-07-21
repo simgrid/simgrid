@@ -24,7 +24,7 @@ static void bob()
 
   sg4::ActivitySet pending_activities({exec, comm, io});
 
-  XBT_INFO("Wait for asynchrounous activities to complete");
+  XBT_INFO("Wait for asynchronous activities to complete");
   while (not pending_activities.empty()) {
     try {
       pending_activities.wait_all_for(1);

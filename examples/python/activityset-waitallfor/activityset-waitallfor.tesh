@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-activityset-waitallfor ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%7.6r]%e[%5a]%e%m%n"
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/activityset-waitallfor.py ${platfdir}/hosts_with_disks.xml
 > [0.000000] [alice] Send 'Message'
 > [0.000000] [  bob] Create my asynchronous activities
 > [0.000000] [  bob] Wait for asynchronous activities to complete
