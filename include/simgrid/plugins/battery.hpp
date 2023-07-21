@@ -83,6 +83,8 @@ private:
   static std::shared_ptr<BatteryModel> battery_model_;
 
   std::string name_;
+  double nominal_charge_power_w_;
+  double nominal_discharge_power_w_;
   double charge_efficiency_;
   double discharge_efficiency_;
   double initial_capacity_wh_;
@@ -98,8 +100,9 @@ private:
   double energy_consumed_j_ = 0;
   double last_updated_      = 0;
 
-  explicit Battery(const std::string& name, double state_of_charge, double charge_efficiency,
-                   double discharge_efficiency, double initial_capacity_wh, int cycles);
+  explicit Battery(const std::string& name, double state_of_charge, double nominal_charge_power_w,
+                   double nominal_discharge_power_w, double charge_efficiency, double discharge_efficiency,
+                   double initial_capacity_wh, int cycles);
   static void init_plugin();
   void update();
   double next_occurring_event();
@@ -117,8 +120,9 @@ private:
 #endif
 
 public:
-  static BatteryPtr init(const std::string& name, double state_of_charge, double charge_efficiency,
-                         double discharge_efficiency, double initial_capacity_wh, int cycles);
+  static BatteryPtr init(const std::string& name, double state_of_charge, double nominal_charge_power_w,
+                         double nominal_discharge_power_w, double charge_efficiency, double discharge_efficiency,
+                         double initial_capacity_wh, int cycles);
   void set_load(const std::string& name, double power_w);
   void connect_host(s4u::Host* host, bool active = true);
   double get_state_of_charge();

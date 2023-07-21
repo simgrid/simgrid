@@ -14,13 +14,16 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  auto battery = simgrid::plugins::Battery::init("Battery", 0.8, 0.9, 0.9, 10, 1000);
+  auto battery = simgrid::plugins::Battery::init("Battery", 0.8, -100, 100, 0.9, 0.9, 10, 1000);
 
   XBT_INFO("Initial state: SoC: %f SoH: %f Energy stored: %fJ Energy provided: %fJ Energy consumed %fJ",
            battery->get_state_of_charge(), battery->get_state_of_health(), battery->get_energy_stored(),
            battery->get_energy_provided(), battery->get_energy_consumed());
 
-  double load_w = 100;
+  /* This power is beyond the nominal values of the battery
+   * see documentation for more info
+   */
+  double load_w = 150;
   battery->set_load("load", load_w);
   XBT_INFO("Set load to %fW", load_w);
 

@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(battery_degradation, "Messages specific for this s4
 
 static void manager()
 {
-  auto battery = simgrid::plugins::Battery::init("Battery", 0.8, 0.9, 0.9, 10, 100);
+  auto battery = simgrid::plugins::Battery::init("Battery", 0.8, -200, 200, 0.9, 0.9, 10, 100);
 
   battery->set_load("load", 100);
 

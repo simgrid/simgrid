@@ -24,8 +24,13 @@ This is the battery plugin, enabling management of batteries.
 Batteries
 .........
 
-A battery has an initial State of Charge :math:`SoC`, a charge efficiency :math:`\eta_{charge}`, a discharge efficiency
-:math:`\eta_{discharge}`, an initial capacity :math:`C_{initial}` and a number of cycle :math:`N`.
+A battery has an initial State of Charge :math:`SoC`, a nominal charge power, a nominal discharge power, a charge
+efficiency :math:`\eta_{charge}`, a discharge efficiency :math:`\eta_{discharge}`, an initial capacity
+:math:`C_{initial}` and a number of cycle :math:`N`.
+
+The nominal charge(discharge) power is the maximum power the Battery can consume(provide), before application of the
+charge(discharge) efficiency factor. For instance, if a load provides(consumes) 100W to(from) the Battery with a nominal
+charge(discharge) power of 50W and a charge(discharge) efficiency of 0.9, the Battery will only gain(provide) 45W.
 
 We distinguish the energy provided :math:`E_{provided}` / consumed :math:`E_{consumed}` from the energy lost
 :math:`E_{lost}` / gained :math:`E_{gained}`. The energy provided / consumed shows the external point of view, and the
@@ -39,6 +44,9 @@ energy lost / gained shows the internal point of view:
 
 For instance, if you apply a load of 100W to a battery for 10s with a discharge efficiency of 0.8, the energy provided
 will be equal to 10kJ, and the energy lost will be equal to 12.5kJ.
+
+All the energies are positive, but loads connected to a Battery may be positive or negative, as explained in the next
+section.
 
 Use the battery reduces its State of Health :math:`SoH` and its capacity :math:`C` linearly in consequence:
 
@@ -66,7 +74,7 @@ Loads & Hosts
 ..............
 
 You can add named loads to a battery. Those loads may be positive and consume energy from the battery, or negative and
-add energy to the battery. You can also connect hosts to a battery. Theses hosts will consume their energy from the
+provide energy to the battery. You can also connect hosts to a battery. Theses hosts will consume their energy from the
 battery until the battery is empty or until the connection between the hosts and the battery is set inactive.
 
 Events
@@ -152,6 +160,9 @@ void Battery::update()
       else
         consumed_power_w += -load;
     }
+    provided_power_w = std::min(provided_power_w, nominal_discharge_power_w_ * discharge_efficiency_);
+    consumed_power_w = std::min(consumed_power_w, -nominal_charge_power_w_);
+
     double energy_lost_delta_j   = provided_power_w / discharge_efficiency_ * time_delta_s;
     double energy_gained_delta_j = consumed_power_w * charge_efficiency_ * time_delta_s;
 
@@ -206,6 +217,9 @@ double Battery::next_occurring_event()
       consumed_power_w += -load;
   }
 
+  provided_power_w = std::min(provided_power_w, nominal_discharge_power_w_ * discharge_efficiency_);
+  consumed_power_w = std::min(consumed_power_w, -nominal_charge_power_w_);
+
   double time_delta = -1;
   for (auto& event : events_) {
     double lost_power_w   = provided_power_w / discharge_efficiency_;
@@ -235,9 +249,12 @@ double Battery::next_occurring_event()
   return time_delta;
 }
 
-Battery::Battery(const std::string& name, double state_of_charge, double charge_efficiency, double discharge_efficiency,
+Battery::Battery(const std::string& name, double state_of_charge, double nominal_charge_power_w,
+                 double nominal_discharge_power_w, double charge_efficiency, double discharge_efficiency,
                  double initial_capacity_wh, int cycles)
     : name_(name)
+    , nominal_charge_power_w_(nominal_charge_power_w)
+    , nominal_discharge_power_w_(nominal_discharge_power_w)
     , charge_efficiency_(charge_efficiency)
     , discharge_efficiency_(discharge_efficiency)
     , initial_capacity_wh_(initial_capacity_wh)
@@ -245,6 +262,10 @@ Battery::Battery(const std::string& name, double state_of_charge, double charge_
     , capacity_wh_(initial_capacity_wh)
     , energy_stored_j_(state_of_charge * 3600 * initial_capacity_wh)
 {
+  xbt_assert(nominal_charge_power_w <= 0, " : nominal charge power must be non-negative (provided: %f)",
+             nominal_charge_power_w);
+  xbt_assert(nominal_discharge_power_w >= 0, " : nominal discharge power must be non-negative (provided: %f)",
+             nominal_discharge_power_w);
   xbt_assert(state_of_charge >= 0 and state_of_charge <= 1, " : state of charge should be in [0, 1] (provided: %f)",
              state_of_charge);
   xbt_assert(charge_efficiency > 0 and charge_efficiency <= 1, " : charge efficiency should be in [0,1] (provided: %f)",
@@ -258,22 +279,25 @@ Battery::Battery(const std::string& name, double state_of_charge, double charge_
 /** @ingroup plugin_battery
  *  @param name The name of the Battery.
  *  @param state_of_charge The initial state of charge of the Battery [0,1].
+ *  @param nominal_charge_power_w The maximum power delivered by the Battery in W (<= 0).
+ *  @param nominal_discharge_power_w The maximum power absorbed by the Battery in W (>= 0).
  *  @param charge_efficiency The charge efficiency of the Battery [0,1].
  *  @param discharge_efficiency The discharge efficiency of the Battery [0,1].
  *  @param initial_capacity_wh The initial capacity of the Battery in Wh (>0).
  *  @param cycles The number of charge-discharge cycles until complete depletion of the Battery capacity.
  *  @return A BatteryPtr pointing to the new Battery.
  */
-BatteryPtr Battery::init(const std::string& name, double state_of_charge, double charge_efficiency,
-                         double discharge_efficiency, double initial_capacity_wh, int cycles)
+BatteryPtr Battery::init(const std::string& name, double state_of_charge, double nominal_charge_power_w,
+                         double nominal_discharge_power_w, double charge_efficiency, double discharge_efficiency,
+                         double initial_capacity_wh, int cycles)
 {
   static bool plugin_inited = false;
   if (not plugin_inited) {
     init_plugin();
     plugin_inited = true;
   }
-  auto battery = BatteryPtr(
-      new Battery(name, state_of_charge, charge_efficiency, discharge_efficiency, initial_capacity_wh, cycles));
+  auto battery = BatteryPtr(new Battery(name, state_of_charge, nominal_charge_power_w, nominal_discharge_power_w,
+                                        charge_efficiency, discharge_efficiency, initial_capacity_wh, cycles));
   battery_model_->add_battery(battery);
   return battery;
 }

@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(battery_energy, "Messages specific for this s4u exa
 
 static void manager()
 {
-  auto battery = simgrid::plugins::Battery::init("Battery", 0.8, 0.9, 0.9, 10, 1000);
+  auto battery = simgrid::plugins::Battery::init("Battery", 0.8, -300, 300, 0.9, 0.9, 10, 1000);
 
   auto* host1 = simgrid::s4u::Engine::get_instance()->host_by_name("MyHost1");
   auto* host2 = simgrid::s4u::Engine::get_instance()->host_by_name("MyHost2");
@@ -40,7 +40,7 @@ static void manager()
 
   double flops = 1e9;
   XBT_INFO("Host %s will now execute %f flops", host1->get_cname(), flops);
-  host1->execute(flops);
+  host2->execute(flops);
 
   simgrid::s4u::this_actor::sleep_until(200);
   XBT_INFO("Battery state: SoC: %f SoH: %f Energy stored: %fJ Energy provided: %fJ Energy consumed %fJ",
