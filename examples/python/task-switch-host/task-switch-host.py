@@ -4,12 +4,12 @@
 # under the terms of the license (GNU LGPL) which comes with this package.
 
 """
-/* This example demonstrates how to dynamically modify a graph of tasks.
- *
- * Assuming we have two instances of a service placed on different hosts,
- * we want to send data alternatively to thoses instances.
- *
- * We consider the following graph:
+This example demonstrates how to dynamically modify a graph of tasks.
+
+Assuming we have two instances of a service placed on different hosts,
+we want to send data alternatively to thoses instances.
+
+We consider the following graph:
 
            comm1
      ┌────────────────────────┐
@@ -26,8 +26,8 @@
      │                        │
      └────────────────────────┘
            comm2
- */
- """
+
+"""
 
 from argparse import ArgumentParser
 import sys
