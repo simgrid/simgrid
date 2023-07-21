@@ -59,6 +59,8 @@ int main(int argc, char** argv)
     simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid6", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID6, 1e7, 5e6);
   zone->add_route(host->get_netpoint(), jbod_raid6->get_netpoint(), nullptr, nullptr, {sg4::LinkInRoute(link)});
 
+  zone->seal();
+
   XBT_INFO("XXXXXXXXXXXXXXX RAID 0 XXXXXXXXXXXXXXXX");
   sg4::Actor::create("", host, write_then_read, jbod_raid0);
   e.run();
