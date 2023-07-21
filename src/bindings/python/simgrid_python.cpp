@@ -12,6 +12,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/plugins/load.h"
 #include <simgrid/Exception.hpp>
+#include <simgrid/s4u/ActivitySet.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Barrier.hpp>
 #include <simgrid/s4u/Comm.hpp>
@@ -34,6 +35,10 @@
 #include <vector>
 
 namespace py = pybind11;
+using simgrid::s4u::Activity;
+using simgrid::s4u::ActivityPtr;
+using simgrid::s4u::ActivitySet;
+using simgrid::s4u::ActivitySetPtr;
 using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 using simgrid::s4u::Barrier;
@@ -223,7 +228,8 @@ PYBIND11_MODULE(simgrid, m)
               }
             });
           },
-          "Registers the main function of an actor");
+          "Registers the main function of an actor")
+      .def("set_log_control", [](Engine*, const std::string& settings) { xbt_log_control_set(settings.c_str()); });
 
   /* Class Netzone */
   py::class_<simgrid::s4u::NetZone, std::unique_ptr<simgrid::s4u::NetZone, py::nodelete>> netzone(
@@ -646,8 +652,11 @@ PYBIND11_MODULE(simgrid, m)
           "get", [](const PyGetAsync* self) { return py::reinterpret_steal<py::object>(*(self->get())); },
           "Get python object after async communication in receiver side");
 
+  /* class Activity */
+  py::class_<Activity, ActivityPtr>(m, "Activityy", "Activity. See the C++ documentation for details.");
+
   /* Class Comm */
-  py::class_<Comm, CommPtr>(m, "Comm", "Communication. See the C++ documentation for details.")
+  py::class_<Comm, CommPtr, Activity>(m, "Comm", "Communication. See the C++ documentation for details.")
       .def_property_readonly("dst_data_size", &Comm::get_dst_data_size, py::call_guard<py::gil_scoped_release>(),
                              "Retrieve the size of the received data.")
       .def_property_readonly("mailbox", &Comm::get_mailbox, py::call_guard<py::gil_scoped_release>(),
@@ -714,7 +723,8 @@ PYBIND11_MODULE(simgrid, m)
                   "one, or -1 if a timeout occurred.");
 
   /* Class Io */
-  py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr>(m, "Io", "I/O activities. See the C++ documentation for details.")
+  py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr, Activity>(m, "Io",
+                                                              "I/O activities. See the C++ documentation for details.")
       .def("test", &simgrid::s4u::Io::test, py::call_guard<py::gil_scoped_release>(),
            "Test whether the I/O is terminated.")
       .def("wait", &simgrid::s4u::Io::wait, py::call_guard<py::gil_scoped_release>(),
@@ -726,7 +736,8 @@ PYBIND11_MODULE(simgrid, m)
                   "Block until the completion of any I/O in the list and return the index of the terminated one.");
 
   /* Class Exec */
-  py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr>(m, "Exec", "Execution. See the C++ documentation for details.")
+  py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr, Activity>(m, "Exec",
+                                                                  "Execution. See the C++ documentation for details.")
       .def_property_readonly("remaining", &simgrid::s4u::Exec::get_remaining, py::call_guard<py::gil_scoped_release>(),
                              "Amount of flops that remain to be computed until completion (read-only property).")
       .def_property_readonly("remaining_ratio", &simgrid::s4u::Exec::get_remaining_ratio,
@@ -946,4 +957,41 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "__repr__", [](const IoTaskPtr io) { return "IoTask(" + io->get_name() + ")"; },
           "Textual representation of the IoTask");
+
+  /* Class ActivitySet */
+  py::class_<ActivitySet, ActivitySetPtr>(m, "ActivitySet", "ActivitySet. See the C++ documentation for details.")
+      .def(py::init([](std::vector<simgrid::s4u::ActivityPtr> activities) {
+             auto* ret = new ActivitySet();
+             for (auto a : activities)
+               ret->push(a);
+             return ActivitySetPtr(ret);
+           }),
+           "The constructor should take the parameters from the command line, as is ")
+      .def(py::init([]() { return ActivitySetPtr(new ActivitySet()); }),
+           "The constructor should take the parameters from the command line, as is ")
+
+      .def("push", &ActivitySet::push, py::call_guard<py::gil_scoped_release>(), py::arg("activity"),
+           "Add an activity to the set")
+      .def("erase", &ActivitySet::erase, py::call_guard<py::gil_scoped_release>(), py::arg("activity"),
+           "Remove that activity from the set")
+      .def_property_readonly("size", &ActivitySet::size, "Count of activities in the set")
+      .def("empty", &ActivitySet::empty, "Returns whether the set is empty")
+      .def("has_failed_activities", &ActivitySet::has_failed_activities,
+           "Returns whether there is any failed activities")
+      .def("get_failed_activity", &ActivitySet::get_failed_activity, "Returns a failed activity from the set, or None")
+
+      .def("wait_all_for", &ActivitySet::wait_all_for, py::call_guard<py::gil_scoped_release>(), py::arg("timeout"),
+           "Wait for the completion of all activities in the set, but not longer than the provided timeout")
+      .def("wait_all", &ActivitySet::wait_all, py::call_guard<py::gil_scoped_release>(),
+           "Wait for the completion of all activities in the set, endlessly")
+      .def("test_any", &ActivitySet::test_any, py::call_guard<py::gil_scoped_release>(),
+           "Returns the first terminated activity if any, or None if no activity is terminated")
+      .def("wait_any_for", &ActivitySet::wait_any_for, py::call_guard<py::gil_scoped_release>(), py::arg("timeout"),
+           "Wait for the completion of one activity in the set, but not longer than the provided timeout")
+      .def("wait_any", &ActivitySet::wait_any, py::call_guard<py::gil_scoped_release>(),
+           "Wait for the completion of one activity in the set, endlessly")
+
+      .def(
+          "__repr__", [](const ActivitySetPtr as) { return "ActivitySet([...])"; },
+          "Textual representation of the ActivitySet");
 }

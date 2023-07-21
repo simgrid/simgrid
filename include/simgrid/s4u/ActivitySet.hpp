@@ -23,8 +23,8 @@ namespace s4u {
  * activities.
  */
 class XBT_PUBLIC ActivitySet : public xbt::Extendable<ActivitySet> {
-  std::vector<ActivityPtr>
-      activities_; // We use a vector instead of a set to improve reproductibility accross architectures
+  std::atomic_int_fast32_t refcount_{1};
+  std::vector<ActivityPtr> activities_; // Use vectors, not sets for better reproductibility accross architectures
   std::vector<ActivityPtr> failed_activities_;
 
 public:
@@ -78,6 +78,19 @@ public:
 
   ActivityPtr get_failed_activity();
   bool has_failed_activities() { return not failed_activities_.empty(); }
+
+  // boost::intrusive_ptr<ActivitySet> support:
+  friend void intrusive_ptr_add_ref(ActivitySet* as)
+  {
+    XBT_ATTRIB_UNUSED auto previous = as->refcount_.fetch_add(1);
+    xbt_assert(previous != 0);
+  }
+
+  friend void intrusive_ptr_release(ActivitySet* as)
+  {
+    if (as->refcount_.fetch_sub(1) == 1)
+      delete as;
+  }
 };
 
 } // namespace s4u
