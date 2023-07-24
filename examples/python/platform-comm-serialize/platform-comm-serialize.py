@@ -6,7 +6,7 @@
 from typing import List, Tuple
 import sys
 
-from simgrid import Engine, Actor, Comm, Host, LinkInRoute, Mailbox, NetZone, this_actor
+from simgrid import Engine, Actor, ActivitySet, Comm, Host, LinkInRoute, Mailbox, NetZone, this_actor
 
 
 RECEIVER_MAILBOX_NAME = "receiver"
@@ -19,7 +19,7 @@ class Sender(object):
 
     def __call__(self) -> None:
         # List in which we store all ongoing communications
-        pending_comms: List[Comm] = []
+        pending_comms = ActivitySet()
 
         # Make a vector of the mailboxes to use
         receiver_mailbox: Mailbox = Mailbox.by_name(RECEIVER_MAILBOX_NAME)
@@ -27,12 +27,12 @@ class Sender(object):
             message_content = f"Message {i}"
             this_actor.info(f"Send '{message_content}' to '{receiver_mailbox.name}'")
             # Create a communication representing the ongoing communication, and store it in pending_comms
-            pending_comms.append(receiver_mailbox.put_async(message_content, self.message_size))
+            pending_comms.push(receiver_mailbox.put_async(message_content, self.message_size))
 
         this_actor.info("Done dispatching all messages")
 
         # Now that all message exchanges were initiated, wait for their completion in one single call
-        Comm.wait_all(pending_comms)
+        pending_comms.wait_all()
 
         this_actor.info("Goodbye now!")
 

@@ -15,13 +15,13 @@ namespace sg4 = simgrid::s4u;
 XBT_LOG_NEW_DEFAULT_CATEGORY(issue105, "Issue105");
 static void load_generator(sg4::Mailbox* mailbox)
 {
-  std::vector<sg4::CommPtr> comms;
+  sg4::ActivitySet comms;
 
   // Send the task messages
   for (int i = 0; i < 100; i++) {
     auto* payload     = new int(i);
     sg4::CommPtr comm = mailbox->put_async(payload, 1024);
-    comms.push_back(comm);
+    comms.push(comm);
     sg4::this_actor::sleep_for(1.0);
   }
 
@@ -29,10 +29,10 @@ static void load_generator(sg4::Mailbox* mailbox)
   auto* payload     = new int(-1);
   sg4::CommPtr comm = mailbox->put_async(payload, 1024);
   XBT_INFO("Sent shutdown");
-  comms.push_back(comm);
+  comms.push(comm);
 
   // Wait for all messages to be consumed before ending the simulation
-  sg4::Comm::wait_all(comms);
+  comms.wait_all();
   XBT_INFO("Load generator finished");
 }
 

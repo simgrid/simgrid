@@ -9,7 +9,7 @@ This example shows how to simulate a non-linear resource sharing for network lin
 
 import functools
 import sys
-from simgrid import Actor, Engine, Comm, Mailbox, NetZone, Link, LinkInRoute, this_actor
+from simgrid import Actor, ActivitySet, Engine, Comm, Mailbox, NetZone, Link, LinkInRoute, this_actor
 
 class Sender:
     """
@@ -22,7 +22,7 @@ class Sender:
     # Actors that are created as object will execute their __call__ method.
     # So, the following constitutes the main function of the Sender actor.
     def __call__(self):
-        pending_comms = []
+        pending_comms = ActivitySet()
         mbox = Mailbox.by_name("receiver")
 
         for i in range(self.msg_count):
@@ -30,12 +30,12 @@ class Sender:
             size = self.msg_size * (i + 1)
             this_actor.info("Send '%s' to '%s, msg size: %d'" % (msg, mbox.name, size))
             comm = mbox.put_async(msg, size)
-            pending_comms.append(comm)
+            pending_comms.push(comm)
 
         this_actor.info("Done dispatching all messages")
 
         # Now that all message exchanges were initiated, wait for their completion in one single call
-        Comm.wait_all(pending_comms)
+        pending_comms.wait_all()
 
         this_actor.info("Goodbye now!")
 

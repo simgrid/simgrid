@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 from typing import List
 import sys
 
-from simgrid import Actor, Comm, Engine, Mailbox, this_actor
+from simgrid import Actor, ActivitySet, Comm, Engine, Mailbox, this_actor
 
 
 FINALIZE_MESSAGE = "finalize"
@@ -31,7 +31,7 @@ def get_peer_mailbox(peer_id: int) -> Mailbox:
 def peer(my_id: int, message_count: int, payload_size: int, peers_count: int):
     my_mailbox: Mailbox = get_peer_mailbox(my_id)
     my_mailbox.set_receiver(Actor.self())
-    pending_comms: List[Comm] = []
+    pending_comms = ActivitySet()
     # Start dispatching all messages to peers others that myself
     for i in range(message_count):
         for peer_id in range(peers_count):
@@ -39,14 +39,14 @@ def peer(my_id: int, message_count: int, payload_size: int, peers_count: int):
                 peer_mailbox = get_peer_mailbox(peer_id)
                 message = f"Message {i} from peer {my_id}"
                 this_actor.info(f"Send '{message}' to '{peer_mailbox.name}'")
-                pending_comms.append(peer_mailbox.put_async(message, payload_size))
+                pending_comms.push(peer_mailbox.put_async(message, payload_size))
 
     # Start sending messages to let peers know that they should stop
     for peer_id in range(peers_count):
         if peer_id != my_id:
             peer_mailbox = get_peer_mailbox(peer_id)
             payload = str(FINALIZE_MESSAGE)
-            pending_comms.append(peer_mailbox.put_async(payload, payload_size))
+            pending_comms.push(peer_mailbox.put_async(payload, payload_size))
             this_actor.info(f"Send '{payload}' to '{peer_mailbox.name}'")
     this_actor.info("Done dispatching all messages")
 
@@ -69,7 +69,7 @@ def peer(my_id: int, message_count: int, payload_size: int, peers_count: int):
             this_actor.sleep_for(0.01)
 
     this_actor.info("I'm done, just waiting for my peers to receive the messages before exiting")
-    Comm.wait_all(pending_comms)
+    pending_comms.wait_all()
     this_actor.info("Goodbye now!")
 
 

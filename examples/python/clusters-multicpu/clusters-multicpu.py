@@ -28,19 +28,19 @@ class Sender:
     # Actors that are created as object will execute their __call__ method.
     # So, the following constitutes the main function of the Sender actor.
     def __call__(self):
-        pending_comms = []
+        pending_comms = simgrid.ActivitySet()
         mboxes = []
 
         for host in self.hosts:
             msg = "Hello, I'm alive and running on " + simgrid.this_actor.get_host().name
             mbox = simgrid.Mailbox.by_name(host.name)
             mboxes.append(mbox)
-            pending_comms.append(mbox.put_async(msg, self.msg_size))
+            pending_comms.push(mbox.put_async(msg, self.msg_size))
 
         simgrid.this_actor.info("Done dispatching all messages")
 
         # Now that all message exchanges were initiated, wait for their completion in one single call
-        simgrid.Comm.wait_all(pending_comms)
+        pending_comms.wait_all()
 
         simgrid.this_actor.info("Goodbye now!")
 

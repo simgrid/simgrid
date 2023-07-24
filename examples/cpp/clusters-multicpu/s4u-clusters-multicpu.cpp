@@ -24,7 +24,7 @@ public:
   void operator()() const
   {
     /* Vector in which we store all ongoing communications */
-    std::vector<sg4::CommPtr> pending_comms;
+    sg4::ActivitySet pending_comms;
 
     /* Make a vector of the mailboxes to use */
     std::vector<sg4::Mailbox*> mboxes;
@@ -40,13 +40,13 @@ public:
       auto* mbox = sg4::Mailbox::by_name(host->get_name());
       mboxes.push_back(mbox);
       sg4::CommPtr comm = mbox->put_async(payload, msg_size);
-      pending_comms.push_back(comm);
+      pending_comms.push(comm);
     }
 
     XBT_INFO("Done dispatching all messages");
 
     /* Now that all message exchanges were initiated, wait for their completion in one single call */
-    sg4::Comm::wait_all(pending_comms);
+    pending_comms.wait_all();
 
     XBT_INFO("Goodbye now!");
   }

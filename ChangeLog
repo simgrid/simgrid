@@ -15,6 +15,7 @@ SMPI:
 Python:
  - Make the host_load plugin available from Python. See examples/python/plugin-host-load
  - Mailbox::get_async() does not return a pair anymore. Use comm.get_payload() instead.
+ - Comm::waitall() is gone. Please use ActivitySet() instead.
 
 ----------------------------------------------------------------------------
 

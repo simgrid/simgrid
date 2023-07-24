@@ -481,7 +481,7 @@ ssize_t Comm::wait_any_for(const std::vector<CommPtr>& comms, double timeout)
   return changed_pos;
 }
 
-void Comm::wait_all(const std::vector<CommPtr>& comms)
+void Comm::wait_all(const std::vector<CommPtr>& comms) // XBT_ATTRIB_DEPRECATED_v339
 {
   // TODO: this should be a simcall or something
   for (const auto& comm : comms)
@@ -491,7 +491,8 @@ void Comm::wait_all(const std::vector<CommPtr>& comms)
 size_t Comm::wait_all_for(const std::vector<CommPtr>& comms, double timeout)
 {
   if (timeout < 0.0) {
-    wait_all(comms);
+    for (const auto& comm : comms)
+      comm->wait();
     return comms.size();
   }
 
