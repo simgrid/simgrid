@@ -6,6 +6,7 @@
 #include <cmath>
 #include <simgrid/Exception.hpp>
 #include <simgrid/comm.h>
+#include <simgrid/s4u/ActivitySet.hpp>
 #include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
@@ -283,6 +284,14 @@ CommPtr Comm::set_payload_size(uint64_t bytes)
   return this;
 }
 
+void* Comm::get_payload() const
+{
+  xbt_assert(get_state() == State::FINISHED,
+             "You can only retrieve the payload of a communication that gracefully terminated, but its state is %s.",
+             get_state_str());
+  return static_cast<kernel::activity::CommImpl*>(pimpl_.get())->payload_;
+}
+
 Actor* Comm::get_sender() const
 {
   kernel::actor::ActorImplPtr sender = nullptr;
@@ -309,6 +318,9 @@ Comm* Comm::do_start()
 {
   xbt_assert(get_state() == State::INITED || get_state() == State::STARTING,
              "You cannot use %s() once your communication started (not implemented)", __FUNCTION__);
+
+  auto myself = kernel::actor::ActorImpl::self();
+
   if (get_source() != nullptr || get_destination() != nullptr) {
     xbt_assert(is_assigned(), "When either from_ or to_ is specified, both must be.");
     xbt_assert(src_buff_ == nullptr && dst_buff_ == nullptr,
@@ -320,7 +332,7 @@ Comm* Comm::do_start()
     });
     fire_on_start();
     fire_on_this_start();
-  } else if (src_buff_ != nullptr) { // Sender side
+  } else if (myself == sender_) {
     on_send(*this);
     on_this_send(*this);
     kernel::actor::CommIsendSimcall observer{sender_,
@@ -337,7 +349,7 @@ Comm* Comm::do_start()
                                              "Isend"};
     pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::CommImpl::isend(&observer); },
                                              &observer);
-  } else if (dst_buff_ != nullptr) { // Receiver side
+  } else if (myself == receiver_) {
     xbt_assert(not detached_, "Receive cannot be detached");
     on_recv(*this);
     on_this_recv(*this);

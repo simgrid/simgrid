@@ -127,6 +127,13 @@ CommPtr Mailbox::get_init()
   return res;
 }
 
+CommPtr Mailbox::get_async()
+{
+  CommPtr res = get_init()->set_dst_data(nullptr, sizeof(void*));
+  res->start();
+  return res;
+}
+
 kernel::activity::ActivityImplPtr
 Mailbox::iprobe(int type, const std::function<bool(void*, void*, kernel::activity::CommImpl*)>& match_fun, void* data)
 {

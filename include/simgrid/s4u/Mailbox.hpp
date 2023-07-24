@@ -118,6 +118,9 @@ public:
   CommPtr get_init();
   /** Creates and start an async data reception to that mailbox */
   template <typename T> CommPtr get_async(T** data);
+  /** Creates and start an async data reception to that mailbox. Since the data location is not provided, you'll have to
+   * use Comm::get_payload once the comm terminates */
+  CommPtr get_async();
 
   /** Blocking data reception */
   template <typename T> T* get();

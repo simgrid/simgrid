@@ -76,15 +76,6 @@ std::string get_simgrid_version()
   sg_version_get(&major, &minor, &patch);
   return simgrid::xbt::string_printf("%i.%i.%i", major, minor, patch);
 }
-
-/** @brief Wrap for mailbox::get_async */
-class PyGetAsync {
-  std::unique_ptr<PyObject*> data = std::make_unique<PyObject*>();
-
-public:
-  PyObject** get() const { return data.get(); }
-};
-
 } // namespace
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, boost::intrusive_ptr<T>)
@@ -634,26 +625,14 @@ PYBIND11_MODULE(simgrid, m)
           "get", [](Mailbox* self) { return py::reinterpret_steal<py::object>(self->get<PyObject>()); },
           py::call_guard<py::gil_scoped_release>(), "Blocking data reception")
       .def(
-          "get_async",
-          [](Mailbox* self) -> std::tuple<CommPtr, PyGetAsync> {
-            PyGetAsync wrap;
-            auto comm = self->get_async(wrap.get());
-            return std::make_tuple(std::move(comm), std::move(wrap));
-          },
+          "get_async", [](Mailbox* self) -> CommPtr { return self->get_async(); },
           py::call_guard<py::gil_scoped_release>(),
           "Non-blocking data reception. Use data.get() to get the python object after the communication has finished")
       .def("set_receiver", &Mailbox::set_receiver, py::call_guard<py::gil_scoped_release>(),
            "Sets the actor as permanent receiver");
 
-  /* Class PyGetAsync */
-  py::class_<PyGetAsync>(m, "PyGetAsync", "Wrapper for async get communications")
-      .def(py::init<>())
-      .def(
-          "get", [](const PyGetAsync* self) { return py::reinterpret_steal<py::object>(*(self->get())); },
-          "Get python object after async communication in receiver side");
-
   /* class Activity */
-  py::class_<Activity, ActivityPtr>(m, "Activityy", "Activity. See the C++ documentation for details.");
+  py::class_<Activity, ActivityPtr>(m, "Activity", "Activity. See the C++ documentation for details.");
 
   /* Class Comm */
   py::class_<Comm, CommPtr, Activity>(m, "Comm", "Communication. See the C++ documentation for details.")
@@ -693,6 +672,11 @@ PYBIND11_MODULE(simgrid, m)
            "Block until the completion of that communication, or raises TimeoutException after the specified timeout.")
       .def("wait_until", &Comm::wait_until, py::call_guard<py::gil_scoped_release>(), py::arg("time_limit"),
            "Block until the completion of that communication, or raises TimeoutException after the specified time.")
+      .def(
+          "get_payload",
+          [](const Comm* self) { return py::reinterpret_steal<py::object>((PyObject*)self->get_payload()); },
+          py::call_guard<py::gil_scoped_release>(),
+          "Retrieve the message's payload of a get_async. You cannot call this until after the comm termination.")
       .def("detach", py::overload_cast<>(&Comm::detach), py::return_value_policy::reference_internal,
            py::call_guard<py::gil_scoped_release>(),
            "Start the comm, and ignore its result. It can be completely forgotten after that.")

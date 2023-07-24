@@ -24,9 +24,9 @@ def create_parser() -> ArgumentParser:
 def rank0():
     rank0_mailbox: Mailbox = Mailbox.by_name("rank0")
     this_actor.info("Post my asynchronous receives")
-    comm1, a1 = rank0_mailbox.get_async()
-    comm2, a2 = rank0_mailbox.get_async()
-    comm3, a3 = rank0_mailbox.get_async()
+    comm1 = rank0_mailbox.get_async()
+    comm2 = rank0_mailbox.get_async()
+    comm3 = rank0_mailbox.get_async()
     pending_comms: List[Comm] = [comm1, comm2, comm3]
 
     this_actor.info("Send some data to rank-1")

@@ -6,7 +6,7 @@
 from typing import List, Tuple
 import sys
 
-from simgrid import Engine, Actor, Comm, Host, LinkInRoute, Mailbox, NetZone, this_actor, PyGetAsync
+from simgrid import Engine, Actor, Comm, Host, LinkInRoute, Mailbox, NetZone, this_actor
 
 
 RECEIVER_MAILBOX_NAME = "receiver"
@@ -44,14 +44,13 @@ class Receiver(object):
 
     def __call__(self):
         # List in which we store all incoming msgs
-        pending_comms: List[Tuple[Comm, PyGetAsync]] = []
+        pending_comms: List[Comm] = []
         this_actor.info(f"Wait for {self.messages_count} messages asynchronously")
         for _ in range(self.messages_count):
             pending_comms.append(self.mailbox.get_async())
         while pending_comms:
-            index = Comm.wait_any([comm for (comm, _) in pending_comms])
-            _, async_data = pending_comms[index]
-            this_actor.info(f"I got '{async_data.get()}'.")
+            index = Comm.wait_any(pending_comms)
+            this_actor.info(f"I got '{pending_comms[index].get_payload()}'.")
             pending_comms.pop(index)
 
 

@@ -5,6 +5,8 @@ S4U:
  - New function NetZone::add_route(host1, host2, links) when you don't need gateways
    Also add a variant with s4u::Link, when you don't want to specify the directions
    on symmetric routes.
+ - Introduce a Mailbox::get_async() with no payload parameter. You can use the new 
+   Comm::get_payload() once the communication is over to retrieve the payload.
 
 SMPI:
  - New SMPI_app_instance_join(): wait for the completion of a started MPI instance
@@ -12,6 +14,7 @@ SMPI:
 
 Python:
  - Make the host_load plugin available from Python. See examples/python/plugin-host-load
+ - Mailbox::get_async() does not return a pair anymore. Use comm.get_payload() instead.
 
 ----------------------------------------------------------------------------
 

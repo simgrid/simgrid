@@ -98,6 +98,7 @@ expectations of the other side, too. See  */
   unsigned char* dst_buff_ = nullptr;
   size_t src_buff_size_    = 0;
   size_t* dst_buff_size_   = nullptr;
+  void* payload_           = nullptr; // If dst_buff_ is NULL, the default copy callback puts the data here
 
   void* src_data_ = nullptr; /* User data associated to the communication */
   void* dst_data_ = nullptr;

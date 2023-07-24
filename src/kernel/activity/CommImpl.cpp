@@ -37,7 +37,9 @@ CommImpl::CommImpl()
 std::function<void(CommImpl*, void*, size_t)> CommImpl::copy_data_callback_ = [](kernel::activity::CommImpl* comm,
                                                                                  void* buff, size_t buff_size) {
   xbt_assert((buff_size == sizeof(void*)), "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
-  *(void**)(comm->dst_buff_) = buff;
+  if (comm->dst_buff_ != nullptr) // get_async provided a buffer
+    *(void**)(comm->dst_buff_) = buff;
+  comm->payload_ = buff; // Setup what will be retrieved by s4u::Comm::get_payload()
 };
 
 void CommImpl::set_copy_data_callback(const std::function<void(CommImpl*, void*, size_t)>& callback)
@@ -192,7 +194,7 @@ void CommImpl::copy_data()
 {
   size_t buff_size = src_buff_size_;
   /* If there is no data to copy then return */
-  if (not src_buff_ || not dst_buff_ || copied_)
+  if (not src_buff_ || not dst_buff_size_ || copied_)
     return;
 
   XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)", this,
