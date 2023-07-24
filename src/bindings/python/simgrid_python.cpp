@@ -692,10 +692,6 @@ PYBIND11_MODULE(simgrid, m)
                   "In particular, the actor does not have to be on one of the involved hosts.")
       .def_static("test_any", &Comm::test_any, py::call_guard<py::gil_scoped_release>(), py::arg("comms"),
                   "take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done)")
-      .def_static("wait_all_for", &Comm::wait_all_for, py::call_guard<py::gil_scoped_release>(), py::arg("comms"),
-                  py::arg("timeout"),
-                  "Block until the completion of all communications in the list, or raises TimeoutException after "
-                  "the specified timeout.")
       .def_static("wait_any", &Comm::wait_any, py::call_guard<py::gil_scoped_release>(), py::arg("comms"),
                   "Block until the completion of any communication in the list and return the index of the "
                   "terminated one.")

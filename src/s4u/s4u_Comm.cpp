@@ -488,7 +488,7 @@ void Comm::wait_all(const std::vector<CommPtr>& comms) // XBT_ATTRIB_DEPRECATED_
     comm->wait();
 }
 
-size_t Comm::wait_all_for(const std::vector<CommPtr>& comms, double timeout)
+size_t Comm::wait_all_for(const std::vector<CommPtr>& comms, double timeout) // XBT_ATTRIB_DEPRECATED_v339
 {
   if (timeout < 0.0) {
     for (const auto& comm : comms)
@@ -557,19 +557,12 @@ sg_error_t sg_comm_wait_for(sg_comm_t comm, double timeout)
 
 void sg_comm_wait_all(sg_comm_t* comms, size_t count)
 {
-  sg_comm_wait_all_for(comms, count, -1);
-}
-
-size_t sg_comm_wait_all_for(sg_comm_t* comms, size_t count, double timeout)
-{
+  simgrid::s4u::ActivitySet as;
   std::vector<simgrid::s4u::CommPtr> s4u_comms;
   for (size_t i = 0; i < count; i++)
-    s4u_comms.emplace_back(comms[i], false);
+    as.push(comms[i]);
 
-  size_t pos = simgrid::s4u::Comm::wait_all_for(s4u_comms, timeout);
-  for (size_t i = pos; i < count; i++)
-    s4u_comms[i]->add_ref();
-  return pos;
+  as.wait_all();
 }
 
 ssize_t sg_comm_wait_any(sg_comm_t* comms, size_t count)

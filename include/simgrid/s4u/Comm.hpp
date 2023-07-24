@@ -193,12 +193,10 @@ public:
   /*! \static Same as wait_any, but with a timeout. Return -1 if the timeout occurs.*/
   static ssize_t wait_any_for(const std::vector<CommPtr>& comms, double timeout);
 
-  /*! \static Same as wait_all, but with a timeout. Return the number of terminated comm (less than comms.size() if
-   *  the timeout occurs). */
-  static size_t wait_all_for(const std::vector<CommPtr>& comms, double timeout);
-
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static void wait_all(const std::vector<CommPtr>& comms);
+  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static size_t
+      wait_all_for(const std::vector<CommPtr>& comms, double timeout);
 #endif
 };
 } // namespace simgrid::s4u

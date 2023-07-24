@@ -1,8 +1,8 @@
 foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate actor-suspend actor-yield actor-lifetime
         activityset-testany activityset-waitall activityset-waitallfor activityset-waitany
         app-masterworkers
-        comm-wait comm-waitallfor comm-waitany comm-failure comm-host2host comm-pingpong
-        comm-ready comm-suspend comm-testany comm-throttling comm-waitallfor comm-waituntil
+        comm-wait comm-waitany comm-failure comm-host2host comm-pingpong
+        comm-ready comm-suspend comm-testany comm-throttling comm-waituntil
         exec-async exec-basic exec-dvfs exec-remote exec-ptask
         task-io task-simple task-switch-host task-variable-load
         platform-comm-serialize platform-profile platform-failures
