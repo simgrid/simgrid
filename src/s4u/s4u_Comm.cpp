@@ -558,7 +558,6 @@ sg_error_t sg_comm_wait_for(sg_comm_t comm, double timeout)
 void sg_comm_wait_all(sg_comm_t* comms, size_t count)
 {
   simgrid::s4u::ActivitySet as;
-  std::vector<simgrid::s4u::CommPtr> s4u_comms;
   for (size_t i = 0; i < count; i++)
     as.push(comms[i]);
 
