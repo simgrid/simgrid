@@ -33,7 +33,7 @@ static void peer(int my_id, int messages_count, size_t payload_size, int peers_c
   sg4::Mailbox* my_mbox = sg4::Mailbox::by_name("peer-" + std::to_string(my_id));
   my_mbox->set_receiver(sg4::Actor::self());
 
-  std::vector<sg4::CommPtr> pending_comms;
+  sg4::ActivitySet pending_comms;
 
   /* Start dispatching all messages to peers others that myself */
   for (int i = 0; i < messages_count; i++) {
@@ -45,7 +45,7 @@ static void peer(int my_id, int messages_count, size_t payload_size, int peers_c
         // 'message' is not a stable storage location
         XBT_INFO("Send '%s' to '%s'", message.c_str(), mbox->get_cname());
         /* Create a communication representing the ongoing communication */
-        pending_comms.push_back(mbox->put_async(payload, payload_size));
+        pending_comms.push(mbox->put_async(payload, payload_size));
       }
     }
   }
@@ -55,7 +55,7 @@ static void peer(int my_id, int messages_count, size_t payload_size, int peers_c
     if (peer_id != my_id) {
       sg4::Mailbox* mbox = sg4::Mailbox::by_name("peer-" + std::to_string(peer_id));
       auto* payload      = new std::string("finalize"); // Make a copy of the data we will send
-      pending_comms.push_back(mbox->put_async(payload, payload_size));
+      pending_comms.push(mbox->put_async(payload, payload_size));
       XBT_INFO("Send 'finalize' to 'peer-%d'", peer_id);
     }
   }
@@ -84,7 +84,7 @@ static void peer(int my_id, int messages_count, size_t payload_size, int peers_c
   }
 
   XBT_INFO("I'm done, just waiting for my peers to receive the messages before exiting");
-  sg4::Comm::wait_all(pending_comms);
+  pending_comms.wait_all();
 
   XBT_INFO("Goodbye now!");
 }

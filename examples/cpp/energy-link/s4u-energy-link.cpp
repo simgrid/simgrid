@@ -33,10 +33,10 @@ static void sender(std::vector<std::string> args)
     mailbox->put(payload, comm_size);
   } else {
     // Start all comms in parallel, and wait for all completions in one shot
-    std::vector<sg4::CommPtr> comms;
+    sg4::ActivitySet comms;
     for (int i = 0; i < flow_amount; i++)
-      comms.push_back(mailbox->put_async(bprintf("%d", i), comm_size));
-    sg4::Comm::wait_all(comms);
+      comms.push(mailbox->put_async(bprintf("%d", i), comm_size));
+    comms.wait_all();
   }
   XBT_INFO("sender done.");
 }
@@ -56,11 +56,11 @@ static void receiver(std::vector<std::string> args)
     std::vector<char*> data(flow_amount);
 
     // Start all comms in parallel, and wait for their completion in one shot
-    std::vector<sg4::CommPtr> comms;
+    sg4::ActivitySet comms;
     for (int i = 0; i < flow_amount; i++)
-      comms.push_back(mailbox->get_async<char>(&data[i]));
+      comms.push(mailbox->get_async<char>(&data[i]));
 
-    sg4::Comm::wait_all(comms);
+    comms.wait_all();
     for (int i = 0; i < flow_amount; i++)
       xbt_free(data[i]);
   }
