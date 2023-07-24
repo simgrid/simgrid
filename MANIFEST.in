@@ -1912,7 +1912,7 @@ include examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
 include examples/smpi/smpi_s4u_masterworker/CMakeLists.txt
 include examples/sthread/CMakeLists.txt
 include include/simgrid/Exception.hpp
-include include/simgrid/activityset.h
+include include/simgrid/activity_set.h
 include include/simgrid/actor.h
 include include/simgrid/barrier.h
 include include/simgrid/chrono.hpp
