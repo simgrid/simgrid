@@ -187,13 +187,12 @@ public:
   /*! \static take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */
   static ssize_t test_any(const std::vector<CommPtr>& comms);
 
-  /*! \static take a vector s4u::CommPtr and return when one of them is finished.
-   * The return value is the rank of the first finished CommPtr. */
-  static ssize_t wait_any(const std::vector<CommPtr>& comms) { return wait_any_for(comms, -1); }
-  /*! \static Same as wait_any, but with a timeout. Return -1 if the timeout occurs.*/
-  static ssize_t wait_any_for(const std::vector<CommPtr>& comms, double timeout);
-
 #ifndef DOXYGEN
+  static ssize_t wait_any(const std::vector<CommPtr>& comms) { return deprecated_wait_any_for(comms, -1); }
+  static ssize_t wait_any_for(const std::vector<CommPtr>& comms, double timeout) { return deprecated_wait_any_for(comms, timeout); }
+
+  static ssize_t deprecated_wait_any_for(const std::vector<CommPtr>& comms, double timeout);
+
   XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static void wait_all(const std::vector<CommPtr>& comms);
   XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static size_t
       wait_all_for(const std::vector<CommPtr>& comms, double timeout);

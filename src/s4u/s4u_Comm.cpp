@@ -461,7 +461,7 @@ Comm* Comm::wait_for(double timeout)
   return this;
 }
 
-ssize_t Comm::wait_any_for(const std::vector<CommPtr>& comms, double timeout)
+ssize_t Comm::deprecated_wait_any_for(const std::vector<CommPtr>& comms, double timeout)
 {
   std::vector<ActivityPtr> activities;
   for (const auto& comm : comms)
@@ -566,7 +566,16 @@ void sg_comm_wait_all(sg_comm_t* comms, size_t count)
 
 ssize_t sg_comm_wait_any(sg_comm_t* comms, size_t count)
 {
-  return sg_comm_wait_any_for(comms, count, -1);
+  std::vector<simgrid::s4u::CommPtr> s4u_comms;
+  for (size_t i = 0; i < count; i++)
+    s4u_comms.emplace_back(comms[i], false);
+
+  ssize_t pos = simgrid::s4u::Comm::deprecated_wait_any_for(s4u_comms, -1);
+  for (size_t i = 0; i < count; i++) {
+    if (pos != -1 && static_cast<size_t>(pos) != i)
+      s4u_comms[i]->add_ref();
+  }
+  return pos;
 }
 
 ssize_t sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout)
@@ -575,7 +584,7 @@ ssize_t sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout)
   for (size_t i = 0; i < count; i++)
     s4u_comms.emplace_back(comms[i], false);
 
-  ssize_t pos = simgrid::s4u::Comm::wait_any_for(s4u_comms, timeout);
+  ssize_t pos = simgrid::s4u::Comm::deprecated_wait_any_for(s4u_comms, timeout);
   for (size_t i = 0; i < count; i++) {
     if (pos != -1 && static_cast<size_t>(pos) != i)
       s4u_comms[i]->add_ref();
