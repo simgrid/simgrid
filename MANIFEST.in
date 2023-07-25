@@ -73,9 +73,6 @@ include examples/c/comm-wait/comm-wait2_d.xml
 include examples/c/comm-wait/comm-wait3_d.xml
 include examples/c/comm-wait/comm-wait4_d.xml
 include examples/c/comm-wait/comm-wait_d.xml
-include examples/c/comm-waitany/comm-waitany.c
-include examples/c/comm-waitany/comm-waitany.tesh
-include examples/c/comm-waitany/comm-waitany_d.xml
 include examples/c/dht-kademlia/answer.c
 include examples/c/dht-kademlia/answer.h
 include examples/c/dht-kademlia/common.h
@@ -457,8 +454,6 @@ include examples/python/comm-ready/comm-ready.py
 include examples/python/comm-ready/comm-ready.tesh
 include examples/python/comm-suspend/comm-suspend.py
 include examples/python/comm-suspend/comm-suspend.tesh
-include examples/python/comm-testany/comm-testany.py
-include examples/python/comm-testany/comm-testany.tesh
 include examples/python/comm-throttling/comm-throttling.py
 include examples/python/comm-throttling/comm-throttling.tesh
 include examples/python/comm-wait/comm-wait.py
