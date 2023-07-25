@@ -36,16 +36,14 @@ static void broadcaster_build_chain(broadcaster_t bc)
 
 static void broadcaster_send_file(const_broadcaster_t bc)
 {
-  int nb_pending_sends = 0;
-
   for (unsigned int current_piece = 0; current_piece < bc->piece_count; current_piece++) {
     XBT_DEBUG("Sending (send) piece %u from %s into mailbox %s", current_piece, sg_host_self_get_name(),
               sg_mailbox_get_name(bc->first));
     char* file_piece = bprintf("piece-%u", current_piece);
     sg_comm_t comm   = sg_mailbox_put_async(bc->first, file_piece, MESSAGE_SEND_DATA_HEADER_SIZE + PIECE_SIZE);
-    bc->pending_sends[nb_pending_sends++] = comm;
+    sg_activity_set_push(bc->pending_sends, (sg_activity_t)comm);
   }
-  sg_comm_wait_all(bc->pending_sends, nb_pending_sends);
+  sg_activity_set_wait_all(bc->pending_sends);
 }
 
 static broadcaster_t broadcaster_init(sg_mailbox_t* mailboxes, unsigned int host_count, unsigned int piece_count)
@@ -56,7 +54,7 @@ static broadcaster_t broadcaster_init(sg_mailbox_t* mailboxes, unsigned int host
   bc->host_count    = host_count;
   bc->piece_count   = piece_count;
   bc->mailboxes     = mailboxes;
-  bc->pending_sends = xbt_malloc(sizeof(sg_comm_t) * MAX_PENDING_COMMS);
+  bc->pending_sends = sg_activity_set_init();
 
   broadcaster_build_chain(bc);
 
@@ -65,7 +63,7 @@ static broadcaster_t broadcaster_init(sg_mailbox_t* mailboxes, unsigned int host
 
 static void broadcaster_destroy(broadcaster_t bc)
 {
-  xbt_free(bc->pending_sends);
+  sg_activity_set_delete(bc->pending_sends);
   xbt_free(bc->mailboxes);
   xbt_free(bc);
 }

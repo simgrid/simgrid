@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2023. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2023. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,26 +21,21 @@ static void peer_join_chain(peer_t p)
 static void peer_forward_file(peer_t p)
 {
   void* received;
-  int done                = 0;
-  size_t nb_pending_sends = 0;
-  size_t nb_pending_recvs = 0;
+  int done = 0;
 
   while (!done) {
-    p->pending_recvs[nb_pending_recvs] = sg_mailbox_get_async(p->me, &received);
-    nb_pending_recvs++;
+    sg_activity_set_push(p->pending_recvs, (sg_activity_t)sg_mailbox_get_async(p->me, &received));
 
-    ssize_t idx = sg_comm_wait_any(p->pending_recvs, nb_pending_recvs);
-    if (idx != -1) {
+    sg_activity_t acti = sg_activity_set_wait_any(p->pending_recvs);
+    if (acti != NULL) {
+      sg_comm_unref((sg_comm_t)acti);
       XBT_DEBUG("Peer %s got a 'SEND_DATA' message", sg_mailbox_get_name(p->me));
-      /* move the last pending comm where the finished one was, and decrement */
-      p->pending_recvs[idx] = p->pending_recvs[--nb_pending_recvs];
 
       if (p->next != NULL) {
         XBT_DEBUG("Sending %s (asynchronously) from %s to %s", (char*)received, sg_mailbox_get_name(p->me),
                   sg_mailbox_get_name(p->next));
         sg_comm_t send = sg_mailbox_put_async(p->next, received, MESSAGE_SEND_DATA_HEADER_SIZE + PIECE_SIZE);
-        p->pending_sends[nb_pending_sends] = send;
-        nb_pending_sends++;
+        sg_activity_set_push(p->pending_sends, (sg_activity_t)send);
       } else
         free(received);
 
@@ -53,7 +47,7 @@ static void peer_forward_file(peer_t p)
       }
     }
   }
-  sg_comm_wait_all(p->pending_sends, nb_pending_sends);
+  sg_activity_set_wait_all(p->pending_sends);
 }
 
 static peer_t peer_init(int argc, char* argv[])
@@ -63,8 +57,8 @@ static peer_t peer_init(int argc, char* argv[])
   p->next            = NULL;
   p->received_pieces = 0;
   p->received_bytes  = 0;
-  p->pending_recvs   = xbt_malloc(sizeof(sg_comm_t) * MAX_PENDING_COMMS);
-  p->pending_sends   = xbt_malloc(sizeof(sg_comm_t) * MAX_PENDING_COMMS);
+  p->pending_recvs   = sg_activity_set_init();
+  p->pending_sends   = sg_activity_set_init();
 
   p->me = sg_mailbox_by_name(sg_host_self_get_name());
 
@@ -73,8 +67,8 @@ static peer_t peer_init(int argc, char* argv[])
 
 static void peer_delete(peer_t p)
 {
-  xbt_free(p->pending_recvs);
-  xbt_free(p->pending_sends);
+  sg_activity_set_delete(p->pending_recvs);
+  sg_activity_set_delete(p->pending_sends);
 
   xbt_free(p);
 }

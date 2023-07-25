@@ -7,6 +7,7 @@
 #ifndef CHAINSEND_H
 #define CHAINSEND_H
 
+#include "simgrid/activity_set.h"
 #include "simgrid/actor.h"
 #include "simgrid/comm.h"
 #include "simgrid/engine.h"
@@ -30,7 +31,7 @@ typedef struct s_broadcaster {
   unsigned int piece_count;
   sg_mailbox_t first;
   sg_mailbox_t* mailboxes;
-  sg_comm_t* pending_sends;
+  sg_activity_set_t pending_sends;
 } s_broadcaster_t;
 
 typedef s_broadcaster_t* broadcaster_t;
@@ -54,8 +55,8 @@ typedef struct s_peer {
   unsigned long long received_bytes;
   unsigned int received_pieces;
   unsigned int total_pieces;
-  sg_comm_t* pending_recvs;
-  sg_comm_t* pending_sends;
+  sg_activity_set_t pending_recvs;
+  sg_activity_set_t pending_sends;
 } s_peer_t;
 
 typedef s_peer_t* peer_t;

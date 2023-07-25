@@ -73,9 +73,6 @@ include examples/c/comm-wait/comm-wait2_d.xml
 include examples/c/comm-wait/comm-wait3_d.xml
 include examples/c/comm-wait/comm-wait4_d.xml
 include examples/c/comm-wait/comm-wait_d.xml
-include examples/c/comm-waitall/comm-waitall.c
-include examples/c/comm-waitall/comm-waitall.tesh
-include examples/c/comm-waitall/comm-waitall_d.xml
 include examples/c/comm-waitany/comm-waitany.c
 include examples/c/comm-waitany/comm-waitany.tesh
 include examples/c/comm-waitany/comm-waitany_d.xml

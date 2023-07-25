@@ -6,7 +6,7 @@ foreach(x
         actor-suspend actor-yield
         activityset-testany activityset-waitall activityset-waitallfor activityset-waitany
         app-masterworker app-token-ring
-        comm-pingpong comm-wait comm-waitall comm-waitany
+        comm-pingpong comm-wait comm-waitany
         cloud-capping cloud-masterworker cloud-migration cloud-simple
         dht-pastry
         exec-async exec-basic exec-dvfs exec-remote
@@ -86,7 +86,6 @@ set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-cr
                                ${CMAKE_CURRENT_SOURCE_DIR}/comm-wait/comm-wait2_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/comm-wait/comm-wait3_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/comm-wait/comm-wait4_d.xml
-                               ${CMAKE_CURRENT_SOURCE_DIR}/comm-waitall/comm-waitall_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/comm-waitany/comm-waitany_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/dht-kademlia_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/dht-pastry/dht-pastry_d.xml
@@ -99,7 +98,7 @@ foreach(x
         actor-suspend actor-yield
         activityset-testany activityset-waitall activityset-waitallfor activityset-waitany
         app-bittorrent app-chainsend app-masterworker app-token-ring
-        comm-pingpong comm-wait comm-waitall comm-waitany
+        comm-pingpong comm-wait comm-waitany
         cloud-capping  cloud-masterworker cloud-migration cloud-simple
         dht-kademlia dht-pastry
         exec-async exec-basic exec-dvfs exec-remote
