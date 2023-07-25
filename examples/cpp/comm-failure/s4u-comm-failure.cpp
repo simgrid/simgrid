@@ -33,12 +33,12 @@ public:
     auto comm2 = mailbox2->put_async((void*)666, 2);
 
     XBT_INFO("Calling wait_any..");
-    std::vector<sg4::CommPtr> pending_comms;
-    pending_comms.push_back(comm1);
-    pending_comms.push_back(comm2);
+    sg4::ActivitySet pending_comms;
+    pending_comms.push(comm1);
+    pending_comms.push(comm2);
     try {
-      long index = sg4::Comm::wait_any(pending_comms);
-      XBT_INFO("Wait any returned index %ld (comm to %s)", index, pending_comms.at(index)->get_mailbox()->get_cname());
+      auto* acti = pending_comms.wait_any().get();
+      XBT_INFO("Wait any returned comm to %s", dynamic_cast<sg4::Comm*>(acti)->get_mailbox()->get_cname());
     } catch (const simgrid::NetworkFailureException&) {
       XBT_INFO("Sender has experienced a network failure exception, so it knows that something went wrong");
       XBT_INFO("Now it needs to figure out which of the two comms failed by looking at their state:");
@@ -52,8 +52,7 @@ public:
       XBT_INFO("Waiting on a FAILED comm raises an exception: '%s'", e.what());
     }
     XBT_INFO("Wait for remaining comm, just to be nice");
-    pending_comms.erase(pending_comms.begin());
-    sg4::Comm::wait_any(pending_comms);
+    pending_comms.wait_all();
   }
 };
 

@@ -27,6 +27,8 @@ class XBT_PUBLIC ActivitySet : public xbt::Extendable<ActivitySet> {
   std::vector<ActivityPtr> activities_; // Use vectors, not sets for better reproductibility accross architectures
   std::vector<ActivityPtr> failed_activities_;
 
+  void handle_failed_activities();
+
 public:
   ActivitySet()  = default;
   ActivitySet(const std::vector<ActivityPtr> init) : activities_(init) {}
