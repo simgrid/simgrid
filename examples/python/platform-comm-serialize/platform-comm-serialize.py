@@ -44,14 +44,13 @@ class Receiver(object):
 
     def __call__(self):
         # List in which we store all incoming msgs
-        pending_comms: List[Comm] = []
+        pending_comms = ActivitySet()
         this_actor.info(f"Wait for {self.messages_count} messages asynchronously")
         for _ in range(self.messages_count):
-            pending_comms.append(self.mailbox.get_async())
-        while pending_comms:
-            index = Comm.wait_any(pending_comms)
-            this_actor.info(f"I got '{pending_comms[index].get_payload()}'.")
-            pending_comms.pop(index)
+            pending_comms.push(self.mailbox.get_async())
+        while not pending_comms.empty():
+            comm = pending_comms.wait_any()
+            this_actor.info(f"I got '{comm.get_payload()}'.")
 
 
 def main():

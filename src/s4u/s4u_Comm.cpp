@@ -395,7 +395,7 @@ Comm* Comm::detach()
   return this;
 }
 
-ssize_t Comm::test_any(const std::vector<CommPtr>& comms)
+ssize_t Comm::test_any(const std::vector<CommPtr>& comms) // XBT_ATTRIB_DEPRECATED_v339
 {
   std::vector<ActivityPtr> activities;
   for (const auto& comm : comms)
@@ -461,7 +461,7 @@ Comm* Comm::wait_for(double timeout)
   return this;
 }
 
-ssize_t Comm::deprecated_wait_any_for(const std::vector<CommPtr>& comms, double timeout)
+ssize_t Comm::deprecated_wait_any_for(const std::vector<CommPtr>& comms, double timeout) // XBT_ATTRIB_DEPRECATED_v339
 {
   std::vector<ActivityPtr> activities;
   for (const auto& comm : comms)
@@ -496,18 +496,12 @@ size_t Comm::wait_all_for(const std::vector<CommPtr>& comms, double timeout) // 
     return comms.size();
   }
 
-  double deadline = Engine::get_clock() + timeout;
-  std::vector<CommPtr> waited_comm(1, nullptr);
-  for (size_t i = 0; i < comms.size(); i++) {
-    double wait_timeout = std::max(0.0, deadline - Engine::get_clock());
-    waited_comm[0]      = comms[i];
-    // Using wait_any_for() here (and not wait_for) because we don't want comms to be invalidated on timeout
-    if (wait_any_for(waited_comm, wait_timeout) == -1) {
-      XBT_DEBUG("Timeout (%g): i = %zu", wait_timeout, i);
-      return i;
-    }
-  }
-  return comms.size();
+  ActivitySet set;
+  for (auto comm : comms)
+    set.push(comm);
+  set.wait_all_for(timeout);
+
+  return set.size();
 }
 } // namespace simgrid::s4u
 /* **************************** Public C interface *************************** */

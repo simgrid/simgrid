@@ -50,18 +50,16 @@ class Receiver:
     def __call__(self):
         mbox = Mailbox.by_name("receiver")
 
-        pending_comms = []
+        pending_comms = ActivitySet()
 
         this_actor.info("Wait for %d messages asynchronously" % self.msg_count)
         for _ in range(self.msg_count):
             comm = mbox.get_async()
-            pending_comms.append(comm)
+            pending_comms.push(comm)
 
-        while pending_comms:
-            index = Comm.wait_any(pending_comms)
-            msg = pending_comms[index].get_payload()
-            this_actor.info("I got '%s'." % msg)
-            del pending_comms[index]
+        while not pending_comms.empty():
+            comm = pending_comms.wait_any()
+            this_actor.info("I got '%s'." % comm.get_payload())
 
 ####################################################################################################
 def link_nonlinear(link: Link, capacity: float, n: int) -> float:

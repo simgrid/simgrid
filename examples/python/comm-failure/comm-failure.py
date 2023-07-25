@@ -5,7 +5,7 @@
 
 import sys
 
-from simgrid import Engine, Actor, Comm, NetZone, Link, LinkInRoute, Mailbox, this_actor, NetworkFailureException
+from simgrid import Engine, Actor, ActivitySet, Comm, NetZone, Link, LinkInRoute, Mailbox, this_actor, NetworkFailureException
 
 
 def sender(mailbox1_name: str, mailbox2_name: str) -> None:
@@ -19,10 +19,10 @@ def sender(mailbox1_name: str, mailbox2_name: str) -> None:
     comm2: Comm = mailbox2.put_async(666, 2)
 
     this_actor.info("Calling wait_any..")
-    pending_comms = [comm1, comm2]
+    pending_comms = ActivitySet([comm1, comm2])
     try:
-        index = Comm.wait_any([comm1, comm2])
-        this_actor.info(f"Wait any returned index {index} (comm to {pending_comms[index].mailbox.name})")
+        comm = pending_comms.wait_any()
+        this_actor.info(f"Wait any returned a comm to {comm.mailbox.name})")
     except NetworkFailureException:
         this_actor.info("Sender has experienced a network failure exception, so it knows that something went wrong")
         this_actor.info("Now it needs to figure out which of the two comms failed by looking at their state:")
@@ -36,9 +36,8 @@ def sender(mailbox1_name: str, mailbox2_name: str) -> None:
         this_actor.info(f"Waiting on a FAILED comm raises an exception: '{err}'")
 
     this_actor.info("Wait for remaining comm, just to be nice")
-    pending_comms.pop(0)
     try:
-        Comm.wait_any(pending_comms)
+        pending_comms.wait_all()
     except Exception as e:
         this_actor.warning(str(e))
 

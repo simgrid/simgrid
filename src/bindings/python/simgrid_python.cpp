@@ -689,14 +689,7 @@ PYBIND11_MODULE(simgrid, m)
                   py::arg("to"), py::arg("simulated_size_in_bytes"),
                   "Do a blocking communication between two arbitrary hosts.\n\nThis initializes a communication that "
                   "completely bypass the mailbox and actors mechanism. There is really no limit on the hosts involved. "
-                  "In particular, the actor does not have to be on one of the involved hosts.")
-      .def_static("wait_any", &Comm::wait_any, py::call_guard<py::gil_scoped_release>(), py::arg("comms"),
-                  "Block until the completion of any communication in the list and return the index of the "
-                  "terminated one.")
-      .def_static("wait_any_for", &Comm::wait_any_for, py::call_guard<py::gil_scoped_release>(), py::arg("comms"),
-                  py::arg("timeout"),
-                  "Block until the completion of any communication in the list and return the index of the terminated "
-                  "one, or -1 if a timeout occurred.");
+                  "In particular, the actor does not have to be on one of the involved hosts.");
 
   /* Class Io */
   py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr, Activity>(m, "Io",
