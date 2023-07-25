@@ -79,14 +79,12 @@ public:
 #ifndef DOXYGEN
   static ssize_t deprecated_wait_any_for(const std::vector<ExecPtr>& execs,
                                          double timeout); // XBT_ATTRIB_DEPRECATED_v339
-  /*! \static take a vector of s4u::ExecPtr and return when one of them is finished.
-   * The return value is the rank of the first finished ExecPtr. */
+
   XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t
       wait_any(const std::vector<ExecPtr>& execs)
   {
     return deprecated_wait_any_for(execs, -1);
   }
-  /*! \static Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
   XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t
       wait_any_for(const std::vector<ExecPtr>& execs, double timeout)
   {

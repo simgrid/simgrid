@@ -2,6 +2,7 @@ SimGrid (3.34.1) not released (Target: fall 2023)
 
 S4U:
  - New class ActivitySet to ease wait_any()/test_any()/wait_all()
+   - Deprecate {Comm,Io,Exec}::{wait_any,wait_all,test_any} and friends
  - New function NetZone::add_route(host1, host2, links) when you don't need gateways
    Also add a variant with s4u::Link, when you don't want to specify the directions
    on symmetric routes.
@@ -17,6 +18,7 @@ Python:
  - Mailbox::get_async() does not return a pair anymore. Use comm.get_payload() instead.
  - Comm::waitall() is gone. Please use ActivitySet() instead.
  - Comm::waitallfor() is gone too. Its semantic was unclear on timeout anyway.
+ - Io::waitany() and waitanyfor() are gone. Please use ActivitySet() instead.
 
 ----------------------------------------------------------------------------
 

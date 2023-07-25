@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/s4u/ActivitySet.hpp>
 #include <simgrid/s4u/Disk.hpp>
 #include <simgrid/s4u/Io.hpp>
 #include <xbt/log.h>
@@ -94,12 +95,18 @@ Io* Io::do_start()
   return this;
 }
 
-ssize_t Io::wait_any_for(const std::vector<IoPtr>& ios, double timeout)
+ssize_t Io::deprecated_wait_any_for(const std::vector<IoPtr>& ios, double timeout)
 {
-  std::vector<ActivityPtr> activities;
+  ActivitySet set;
   for (const auto& io : ios)
-    activities.push_back(boost::dynamic_pointer_cast<Activity>(io));
-  return Activity::wait_any_for(activities, timeout);
+    set.push(boost::dynamic_pointer_cast<Activity>(io));
+
+  auto* ret = set.wait_any_for(timeout).get();
+  for (size_t i = 0; i < ios.size(); i++)
+    if (ios[i].get() == ret)
+      return i;
+
+  return -1;
 }
 
 IoPtr Io::set_disk(const_sg_disk_t disk)

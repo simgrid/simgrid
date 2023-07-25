@@ -706,12 +706,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("test", &simgrid::s4u::Io::test, py::call_guard<py::gil_scoped_release>(),
            "Test whether the I/O is terminated.")
       .def("wait", &simgrid::s4u::Io::wait, py::call_guard<py::gil_scoped_release>(),
-           "Block until the completion of that I/O operation")
-      .def_static(
-          "wait_any_for", &simgrid::s4u::Io::wait_any_for, py::call_guard<py::gil_scoped_release>(),
-          "Block until the completion of any I/O in the list (or timeout) and return the index of the terminated one.")
-      .def_static("wait_any", &simgrid::s4u::Io::wait_any, py::call_guard<py::gil_scoped_release>(),
-                  "Block until the completion of any I/O in the list and return the index of the terminated one.");
+           "Block until the completion of that I/O operation");
 
   /* Class Exec */
   py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr, Activity>(m, "Exec",

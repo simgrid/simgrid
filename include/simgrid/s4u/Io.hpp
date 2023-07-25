@@ -28,16 +28,21 @@ protected:
   explicit Io(kernel::activity::IoImplPtr pimpl);
   Io* do_start() override;
 
+  static ssize_t deprecated_wait_any_for(const std::vector<IoPtr>& ios, double timeout);
+
 public:
   enum class OpType { READ, WRITE };
 
    /*! \static Initiate the creation of an I/O. Setters have to be called afterwards */
   static IoPtr init();
-  /*! \static take a vector of s4u::IoPtr and return when one of them is finished.
-   * The return value is the rank of the first finished IoPtr. */
-  static ssize_t wait_any(const std::vector<IoPtr>& ios) { return wait_any_for(ios, -1); }
-  /*! \static Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
-  static ssize_t wait_any_for(const std::vector<IoPtr>& ios, double timeout);
+#ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") 
+  static ssize_t wait_any(const std::vector<IoPtr>& ios) { return deprecated_wait_any_for(ios, -1); }
+  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") 
+  static ssize_t wait_any_for(const std::vector<IoPtr>& ios, double timeout) { 
+    return deprecated_wait_any_for(ios, timeout); 
+  }
+#endif
 
   double get_remaining() const override;
   sg_size_t get_performed_ioops() const;
