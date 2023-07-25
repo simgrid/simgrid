@@ -39,9 +39,7 @@ public:
   XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") 
   static ssize_t wait_any(const std::vector<IoPtr>& ios) { return deprecated_wait_any_for(ios, -1); }
   XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") 
-  static ssize_t wait_any_for(const std::vector<IoPtr>& ios, double timeout) { 
-    return deprecated_wait_any_for(ios, timeout); 
-  }
+  static ssize_t wait_any_for(const std::vector<IoPtr>& ios, double timeout) { return deprecated_wait_any_for(ios, timeout); }
 #endif
 
   double get_remaining() const override;

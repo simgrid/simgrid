@@ -397,10 +397,19 @@ Comm* Comm::detach()
 
 ssize_t Comm::test_any(const std::vector<CommPtr>& comms) // XBT_ATTRIB_DEPRECATED_v339
 {
-  std::vector<ActivityPtr> activities;
-  for (const auto& comm : comms)
-    activities.push_back(boost::dynamic_pointer_cast<Activity>(comm));
-  return Activity::test_any(activities);
+  std::vector<kernel::activity::ActivityImpl*> ractivities(comms.size());
+  std::transform(begin(comms), end(comms), begin(ractivities), [](const CommPtr& act) { return act->pimpl_.get(); });
+
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  kernel::actor::ActivityTestanySimcall observer{issuer, ractivities, "test_any"};
+  ssize_t changed_pos = kernel::actor::simcall_answered(
+      [&observer] {
+        return kernel::activity::ActivityImpl::test_any(observer.get_issuer(), observer.get_activities());
+      },
+      &observer);
+  if (changed_pos != -1)
+    comms.at(changed_pos)->complete(State::FINISHED);
+  return changed_pos;
 }
 
 /** @brief Block the calling actor until the communication is finished, or until timeout
@@ -463,22 +472,27 @@ Comm* Comm::wait_for(double timeout)
 
 ssize_t Comm::deprecated_wait_any_for(const std::vector<CommPtr>& comms, double timeout) // XBT_ATTRIB_DEPRECATED_v339
 {
-  std::vector<ActivityPtr> activities;
+  if (comms.empty())
+    return -1;
+  ActivitySet set;
   for (const auto& comm : comms)
-    activities.push_back(boost::dynamic_pointer_cast<Activity>(comm));
-  ssize_t changed_pos;
+    set.push(comm);
   try {
-    changed_pos = Activity::wait_any_for(activities, timeout);
+    auto* ret = set.wait_any_for(timeout).get();
+    for (size_t i = 0; i < comms.size(); i++)
+      if (comms[i].get() == ret)
+        return i;
+
+  } catch (TimeoutException& e) {
+    return -1;
   } catch (const NetworkFailureException& e) {
-    changed_pos = -1;
-    for (auto c : comms) {
-      if (c->pimpl_->get_state() == kernel::activity::State::FAILED) {
+    for (auto c : comms)
+      if (c->pimpl_->get_state() == kernel::activity::State::FAILED)
         c->complete(State::FAILED);
-      }
-    }
+
     e.rethrow_nested(XBT_THROW_POINT, boost::core::demangle(typeid(e).name()) + " raised in kernel mode.");
   }
-  return changed_pos;
+  return -1;
 }
 
 void Comm::wait_all(const std::vector<CommPtr>& comms) // XBT_ATTRIB_DEPRECATED_v339

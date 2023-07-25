@@ -107,7 +107,7 @@ ssize_t Activity::test_any(const std::vector<ActivityPtr>& activities)
   return changed_pos;
 }
 
-ssize_t Activity::wait_any_for(const std::vector<ActivityPtr>& activities, double timeout)
+ssize_t Activity::deprecated_wait_any_for(const std::vector<ActivityPtr>& activities, double timeout) // XBT_ATTRIB_DEPRECATED_v339
 {
   std::vector<kernel::activity::ActivityImpl*> ractivities(activities.size());
   std::transform(begin(activities), end(activities), begin(ractivities),

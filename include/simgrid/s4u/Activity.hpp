@@ -158,8 +158,6 @@ public:
   virtual Activity* do_start() = 0;
   /** Tests whether the given activity is terminated yet. */
   virtual bool test();
-  /*! take a vector s4u::ActivityPtr and return the rank of the first finished one (or -1 if none is done). */
-  static ssize_t test_any(const std::vector<ActivityPtr>& activities);
 
   /** Blocks the current actor until the activity is terminated */
   Activity* wait() { return wait_for(-1.0); }
@@ -169,11 +167,6 @@ public:
   /** Blocks the current actor until the activity is terminated, or until the time limit is reached\n
    * Raises: timeout exception. */
   void wait_until(double time_limit);
-  /*! take a vector of s4u::ActivityPtr and return when one of them is finished.
-   * The return value is the rank of the first finished ActivityPtr. */
-  static ssize_t wait_any(const std::vector<ActivityPtr>& activities) { return wait_any_for(activities, -1); }
-  /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
-  static ssize_t wait_any_for(const std::vector<ActivityPtr>& activities, double timeout);
 
   /** Cancel that activity */
   Activity* cancel();
@@ -205,6 +198,9 @@ public:
   kernel::activity::ActivityImpl* get_impl() const { return pimpl_.get(); }
 
 #ifndef DOXYGEN
+  static ssize_t deprecated_wait_any_for(const std::vector<ActivityPtr>& activities, double timeout); // XBT_ATTRIB_DEPRECATED_v339
+  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t test_any(const std::vector<ActivityPtr>& activities);
+
   friend void intrusive_ptr_release(Activity* a)
   {
     if (a->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
@@ -283,16 +279,13 @@ public:
    *  dependency or no resource assigned) */
   void on_this_veto_cb(const std::function<void(AnyActivity&)>& cb) { on_this_veto.connect(cb); }
 
-  XBT_ATTRIB_DEPRECATED_v338("Please use on_suspend_cb() instead") static void on_suspended_cb(
-      const std::function<void(Activity const&)>& cb)
-  {
-    on_suspend.connect(cb);
-  }
-  XBT_ATTRIB_DEPRECATED_v338("Please use on_resume_cb() instead") static void on_resumed_cb(
-      const std::function<void(Activity const&)>& cb)
-  {
-    on_resume.connect(cb);
-  }
+#ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v338("Please use on_suspend_cb() instead") static void on_suspended_cb(const std::function<void(Activity const&)>& cb) { on_suspend.connect(cb); }
+  XBT_ATTRIB_DEPRECATED_v338("Please use on_resume_cb() instead") static void on_resumed_cb(const std::function<void(Activity const&)>& cb) { on_resume.connect(cb); }
+
+  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t wait_any(const std::vector<ActivityPtr>& activities) { return deprecated_wait_any_for(activities, -1); }
+  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t wait_any_for(const std::vector<ActivityPtr>& activities, double timeout) { return deprecated_wait_any_for(activities, timeout); }
+#endif
 
   AnyActivity* add_successor(ActivityPtr a)
   {
