@@ -36,7 +36,7 @@ class Battery {
 public:
   enum Flow { CHARGE, DISCHARGE };
 
-  class Event {
+  class Handler {
     friend Battery;
 
   private:
@@ -47,34 +47,35 @@ public:
     bool repeat_;
 
   public:
-    Event(double state_of_charge, Flow flow, std::function<void()> callback, bool repeat);
-    static std::shared_ptr<Event> init(double state_of_charge, Flow flow, std::function<void()> callback, bool repeat);
+    Handler(double state_of_charge, Flow flow, bool repeat, std::function<void()> callback);
+    static std::shared_ptr<Handler> init(double state_of_charge, Flow flow, bool repeat,
+                                         std::function<void()> callback);
 
     /** @ingroup plugin_battery
-     *  @return The state of charge at which the Event will happen.
-     *  @note For Battery::Event objects
+     *  @return The state of charge at which the Handler will happen.
+     *  @note For Battery::Handler objects
      */
     double get_state_of_charge() { return state_of_charge_; }
     /** @ingroup plugin_battery
-     *  @return The flow in which the Event will happen, either when the Battery is charging or discharging.
-     *  @note For Battery::Event objects
+     *  @return The flow in which the Handler will happen, either when the Battery is charging or discharging.
+     *  @note For Battery::Handler objects
      */
     Flow get_flow() { return flow_; }
     /** @ingroup plugin_battery
-     *  @return The time delta until the Event happen.
+     *  @return The time delta until the Handler happen.
      -1 means that is will never happen with the current state the Battery,
      for instance when there is no load connected to the Battery.
-     *  @note For Battery::Event objects
+     *  @note For Battery::Handler objects
     */
     double get_time_delta() { return time_delta_; }
     /** @ingroup plugin_battery
-     *  @return The callback to trigger when the Event happen.
-     *  @note For Battery::Event objects
+     *  @return The callback to trigger when the Handler happen.
+     *  @note For Battery::Handler objects
      */
     std::function<void()> get_callback() { return callback_; }
     /** @ingroup plugin_battery
-     *  @return true if its a recurrent Event.
-     *  @note For Battery::Event objects
+     *  @return true if its a recurrent Handler.
+     *  @note For Battery::Handler objects
      */
     bool get_repeat() { return repeat_; }
   };
@@ -92,7 +93,7 @@ private:
 
   std::map<const s4u::Host*, bool> host_loads_     = {};
   std::map<const std::string, double> named_loads_ = {};
-  std::vector<std::shared_ptr<Event>> events_;
+  std::vector<std::shared_ptr<Handler>> handlers_;
 
   double capacity_wh_;
   double energy_stored_j_;
@@ -105,7 +106,7 @@ private:
                    double initial_capacity_wh, int cycles);
   static void init_plugin();
   void update();
-  double next_occurring_event();
+  double next_occurring_handler();
 
   std::atomic_int_fast32_t refcount_{0};
 #ifndef DOXYGEN
@@ -131,10 +132,10 @@ public:
   double get_energy_provided();
   double get_energy_consumed();
   double get_energy_stored(std::string unit = "J");
-  std::shared_ptr<Event> create_event(double state_of_charge, Flow flow, std::function<void()> callback,
-                                      bool repeat = false);
-  std::vector<std::shared_ptr<Event>> get_events();
-  void delete_event(std::shared_ptr<Event> event);
+  std::shared_ptr<Handler> schedule_handler(double state_of_charge, Flow flow, bool repeat,
+                                            std::function<void()> callback);
+  std::vector<std::shared_ptr<Handler>> get_handlers();
+  void delete_handler(std::shared_ptr<Handler> handler);
 };
 } // namespace simgrid::plugins
 #endif

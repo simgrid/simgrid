@@ -19,8 +19,8 @@ static void manager()
   auto* host2 = simgrid::s4u::Engine::get_instance()->host_by_name("MyHost2");
   auto* host3 = simgrid::s4u::Engine::get_instance()->host_by_name("MyHost3");
 
-  battery->create_event(0.2, simgrid::plugins::Battery::DISCHARGE, [battery, &host1, &host2, &host3]() {
-    XBT_INFO("Event -> Battery low: SoC: %f SoH: %f Energy stored: %fJ Energy provided: %fJ Energy consumed %fJ",
+  battery->schedule_handler(0.2, simgrid::plugins::Battery::DISCHARGE, true, [battery, &host1, &host2, &host3]() {
+    XBT_INFO("Handler -> Battery low: SoC: %f SoH: %f Energy stored: %fJ Energy provided: %fJ Energy consumed %fJ",
              battery->get_state_of_charge(), battery->get_state_of_health(), battery->get_energy_stored(),
              battery->get_energy_provided(), battery->get_energy_consumed());
     XBT_INFO("Disconnecting hosts %s and %s", host1->get_cname(), host2->get_cname());

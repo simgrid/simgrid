@@ -77,11 +77,11 @@ You can add named loads to a battery. Those loads may be positive and consume en
 provide energy to the battery. You can also connect hosts to a battery. Theses hosts will consume their energy from the
 battery until the battery is empty or until the connection between the hosts and the battery is set inactive.
 
-Events
+Handlers
 ......
 
-You can create events that will happen at specific SoC of the battery and trigger a callback.
-Theses events may be recurrent, for instance you may want to always set all loads to zero and deactivate all hosts
+You can schedule handlers that will happen at specific SoC of the battery and trigger a callback.
+Theses handlers may be recurrent, for instance you may want to always set all loads to zero and deactivate all hosts
 connections when the battery reaches 20% SoC.
 
   @endrst
@@ -109,23 +109,23 @@ double BatteryModel::next_occurring_event(double now)
 {
   double time_delta = -1;
   for (auto battery : batteries_) {
-    double time_delta_battery = battery->next_occurring_event();
+    double time_delta_battery = battery->next_occurring_handler();
     time_delta                = time_delta == -1 or time_delta_battery < time_delta ? time_delta_battery : time_delta;
   }
   return time_delta;
 }
 
-/* Event */
+/* Handler */
 
-Battery::Event::Event(double state_of_charge, Flow flow, std::function<void()> callback, bool repeat)
+Battery::Handler::Handler(double state_of_charge, Flow flow,  bool repeat, std::function<void()> callback)
     : state_of_charge_(state_of_charge), flow_(flow), callback_(callback), repeat_(repeat)
 {
 }
 
-std::shared_ptr<Battery::Event> Battery::Event::init(double state_of_charge, Flow flow, std::function<void()> callback,
-                                                     bool repeat)
+std::shared_ptr<Battery::Handler> Battery::Handler::init(double state_of_charge, Flow flow, bool repeat,
+                                                         std::function<void()> callback)
 {
-  return std::make_shared<Battery::Event>(state_of_charge, flow, callback, repeat);
+  return std::make_shared<Battery::Handler>(state_of_charge, flow, repeat, callback);
 }
 
 /* Battery */
@@ -189,22 +189,22 @@ void Battery::update()
     energy_stored_j_ = std::min(energy_stored_j_, 3600 * capacity_wh_);
     last_updated_    = now;
 
-    std::vector<std::shared_ptr<Event>> to_delete = {};
-    for (auto event : events_) {
-      if (abs(event->time_delta_ - time_delta_s) < 0.000000001) {
-        event->callback_();
-        if (event->repeat_)
-          event->time_delta_ = -1;
+    std::vector<std::shared_ptr<Handler>> to_delete = {};
+    for (auto handler : handlers_) {
+      if (abs(handler->time_delta_ - time_delta_s) < 0.000000001) {
+        handler->callback_();
+        if (handler->repeat_)
+          handler->time_delta_ = -1;
         else
-          to_delete.push_back(event);
+          to_delete.push_back(handler);
       }
     }
-    for (auto event : to_delete)
-      delete_event(event);
+    for (auto handler : to_delete)
+      delete_handler(handler);
   });
 }
 
-double Battery::next_occurring_event()
+double Battery::next_occurring_handler()
 {
   double provided_power_w = 0;
   double consumed_power_w = 0;
@@ -221,29 +221,30 @@ double Battery::next_occurring_event()
   consumed_power_w = std::min(consumed_power_w, -nominal_charge_power_w_);
 
   double time_delta = -1;
-  for (auto& event : events_) {
+  for (auto& handler : handlers_) {
     double lost_power_w   = provided_power_w / discharge_efficiency_;
     double gained_power_w = consumed_power_w * charge_efficiency_;
-    // Event cannot happen
-    if ((lost_power_w == gained_power_w) or (event->state_of_charge_ == energy_stored_j_ / (3600 * capacity_wh_)) or
-        (lost_power_w > gained_power_w and event->flow_ == Flow::CHARGE) or
-        (lost_power_w < gained_power_w and event->flow_ == Flow::DISCHARGE)) {
+    // Handler cannot happen
+    if ((lost_power_w == gained_power_w) or (handler->state_of_charge_ == energy_stored_j_ / (3600 * capacity_wh_)) or
+        (lost_power_w > gained_power_w and handler->flow_ == Flow::CHARGE) or
+        (lost_power_w < gained_power_w and handler->flow_ == Flow::DISCHARGE)) {
       continue;
     }
-    // Evaluate time until event happen
+    // Evaluate time until handler happen
     else {
       /* The time to reach a state of charge depends on the capacity, but charging and discharging deteriorate the
        * capacity, so we need to evaluate the time considering a capacity that also depends on time
        */
-      event->time_delta_ =
-          (3600 * event->state_of_charge_ * initial_capacity_wh_ *
+      handler->time_delta_ =
+          (3600 * handler->state_of_charge_ * initial_capacity_wh_ *
                (1 - (energy_provided_j_ / discharge_efficiency_ + energy_consumed_j_ * charge_efficiency_) /
                         energy_budget_j_) -
            energy_stored_j_) /
           (gained_power_w - lost_power_w +
-           3600 * event->state_of_charge_ * initial_capacity_wh_ * (gained_power_w + lost_power_w) / energy_budget_j_);
-      if ((time_delta == -1 or event->time_delta_ < time_delta) and abs(event->time_delta_) > 0.000000001)
-        time_delta = event->time_delta_;
+           3600 * handler->state_of_charge_ * initial_capacity_wh_ * (gained_power_w + lost_power_w) /
+               energy_budget_j_);
+      if ((time_delta == -1 or handler->time_delta_ < time_delta) and abs(handler->time_delta_) > 0.000000001)
+        time_delta = handler->time_delta_;
     }
   }
   return time_delta;
@@ -384,36 +385,35 @@ double Battery::get_energy_stored(std::string unit)
 }
 
 /** @ingroup plugin_battery
- *  @brief Create a new Event.
- *  @param state_of_charge The state of charge at which the Event will happen.
- *  @param flow The flow in which the Event will happen, either when the Battery is charging or discharging.
- *  @param callback The callable to trigger when the Event happen.
- *  @param repeat If the Event is a recurrent Event or a single Event.
- *  @return A shared pointer of the new Event.
+ *  @brief Schedule a new Handler.
+ *  @param state_of_charge The state of charge at which the Handler will happen.
+ *  @param flow The flow in which the Handler will happen, either when the Battery is charging or discharging.
+ *  @param callback The callable to trigger when the Handler happen.
+ *  @param repeat If the Handler is recurrent or unique.
+ *  @return A shared pointer of the new Handler.
  */
-std::shared_ptr<Battery::Event> Battery::create_event(double state_of_charge, Flow flow, std::function<void()> callback,
-                                                      bool repeat)
+std::shared_ptr<Battery::Handler> Battery::schedule_handler(double state_of_charge, Flow flow, bool repeat, std::function<void()> callback)
 {
-  auto event = Event::init(state_of_charge, flow, callback, repeat);
-  events_.push_back(event);
-  return event;
+  auto handler = Handler::init(state_of_charge, flow, repeat, callback);
+  handlers_.push_back(handler);
+  return handler;
 }
 
 /** @ingroup plugin_battery
- *  @return A vector containing the Events associated to the Battery.
+ *  @return A vector containing the Handlers associated to the Battery.
  */
-std::vector<std::shared_ptr<Battery::Event>> Battery::get_events()
+std::vector<std::shared_ptr<Battery::Handler>> Battery::get_handlers()
 {
-  return events_;
+  return handlers_;
 }
 
 /** @ingroup plugin_battery
- *  @brief Remove an Event from the Battery.
+ *  @brief Remove an Handler from the Battery.
  */
-void Battery::delete_event(std::shared_ptr<Event> event)
+void Battery::delete_handler(std::shared_ptr<Handler> handler)
 {
-  events_.erase(
-      std::remove_if(events_.begin(), events_.end(), [&event](std::shared_ptr<Event> e) { return event == e; }),
-      events_.end());
+  handlers_.erase(std::remove_if(handlers_.begin(), handlers_.end(),
+                                 [&handler](std::shared_ptr<Handler> e) { return handler == e; }),
+                  handlers_.end());
 }
 } // namespace simgrid::plugins

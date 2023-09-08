@@ -16,28 +16,22 @@ static void manager()
 
   battery->set_load("load", 100);
 
-  auto event1 = battery->create_event(
-      0.2, simgrid::plugins::Battery::DISCHARGE,
-      [battery]() {
-        XBT_INFO("%f,%f,SoC", simgrid::s4u::Engine::get_clock(), battery->get_state_of_charge());
-        XBT_INFO("%f,%f,SoH", simgrid::s4u::Engine::get_clock(), battery->get_state_of_health());
-        battery->set_load("load", -100);
-      },
-      true);
+  auto handler1 = battery->schedule_handler(0.2, simgrid::plugins::Battery::DISCHARGE, true, [battery]() {
+    XBT_INFO("%f,%f,SoC", simgrid::s4u::Engine::get_clock(), battery->get_state_of_charge());
+    XBT_INFO("%f,%f,SoH", simgrid::s4u::Engine::get_clock(), battery->get_state_of_health());
+    battery->set_load("load", -100);
+  });
 
-  std::shared_ptr<simgrid::plugins::Battery::Event> event2;
-  event2 = battery->create_event(
-      0.8, simgrid::plugins::Battery::CHARGE,
-      [battery, event1, event2]() {
-        XBT_INFO("%f,%f,SoC", simgrid::s4u::Engine::get_clock(), battery->get_state_of_charge());
-        XBT_INFO("%f,%f,SoH", simgrid::s4u::Engine::get_clock(), battery->get_state_of_health());
-        if (battery->get_state_of_health() < 0.1) {
-          battery->delete_event(event1);
-          battery->delete_event(event2);
-        }
-        battery->set_load("load", 100);
-      },
-      true);
+  std::shared_ptr<simgrid::plugins::Battery::Handler> handler2;
+  handler2 = battery->schedule_handler(0.8, simgrid::plugins::Battery::CHARGE, true, [battery, handler1, handler2]() {
+    XBT_INFO("%f,%f,SoC", simgrid::s4u::Engine::get_clock(), battery->get_state_of_charge());
+    XBT_INFO("%f,%f,SoH", simgrid::s4u::Engine::get_clock(), battery->get_state_of_health());
+    if (battery->get_state_of_health() < 0.1) {
+      battery->delete_handler(handler1);
+      battery->delete_handler(handler2);
+    }
+    battery->set_load("load", 100);
+  });
 }
 
 int main(int argc, char* argv[])

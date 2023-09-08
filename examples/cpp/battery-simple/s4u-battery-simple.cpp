@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
   battery->set_load("load", load_w);
   XBT_INFO("Set load to %fW", load_w);
 
-  battery->create_event(0.2, simgrid::plugins::Battery::DISCHARGE, [battery, &load_w]() {
+  battery->schedule_handler(0.2, simgrid::plugins::Battery::DISCHARGE, true, [battery, &load_w]() {
     XBT_INFO("Discharged state: SoC: %f SoH: %f Energy stored: %fJ Energy provided: %fJ Energy consumed %fJ",
              battery->get_state_of_charge(), battery->get_state_of_health(), battery->get_energy_stored(),
              battery->get_energy_provided(), battery->get_energy_consumed());
@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     XBT_INFO("Set load to %fW", -load_w);
   });
 
-  battery->create_event(0.8, simgrid::plugins::Battery::CHARGE, [battery]() {
+  battery->schedule_handler(0.8, simgrid::plugins::Battery::CHARGE, true, [battery]() {
     XBT_INFO("Charged state: SoC: %f SoH: %f Energy stored: %fJ Energy provided: %fJ Energy consumed %fJ",
              battery->get_state_of_charge(), battery->get_state_of_health(), battery->get_energy_stored(),
              battery->get_energy_provided(), battery->get_energy_consumed());
