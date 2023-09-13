@@ -19,17 +19,19 @@ static void manager()
   auto* host2 = simgrid::s4u::Engine::get_instance()->host_by_name("MyHost2");
   auto* host3 = simgrid::s4u::Engine::get_instance()->host_by_name("MyHost3");
 
-  battery->schedule_handler(0.2, simgrid::plugins::Battery::DISCHARGE, true, [battery, &host1, &host2, &host3]() {
-    XBT_INFO("Handler -> Battery low: SoC: %f SoH: %f Energy stored: %fJ Energy provided: %fJ Energy consumed %fJ",
-             battery->get_state_of_charge(), battery->get_state_of_health(), battery->get_energy_stored(),
-             battery->get_energy_provided(), battery->get_energy_consumed());
-    XBT_INFO("Disconnecting hosts %s and %s", host1->get_cname(), host2->get_cname());
-    battery->connect_host(host1, false);
-    battery->connect_host(host2, false);
-    XBT_INFO("Energy consumed this far by: %s: %fJ, %s: %fJ, %s: %fJ", host1->get_cname(),
-             sg_host_get_consumed_energy(host1), host2->get_cname(), sg_host_get_consumed_energy(host2),
-             host3->get_cname(), sg_host_get_consumed_energy(host3));
-  });
+  battery->schedule_handler(
+      0.2, simgrid::plugins::Battery::DISCHARGE, simgrid::plugins::Battery::Handler::PERSISTANT,
+      [battery, &host1, &host2, &host3]() {
+        XBT_INFO("Handler -> Battery low: SoC: %f SoH: %f Energy stored: %fJ Energy provided: %fJ Energy consumed %fJ",
+                 battery->get_state_of_charge(), battery->get_state_of_health(), battery->get_energy_stored(),
+                 battery->get_energy_provided(), battery->get_energy_consumed());
+        XBT_INFO("Disconnecting hosts %s and %s", host1->get_cname(), host2->get_cname());
+        battery->connect_host(host1, false);
+        battery->connect_host(host2, false);
+        XBT_INFO("Energy consumed this far by: %s: %fJ, %s: %fJ, %s: %fJ", host1->get_cname(),
+                 sg_host_get_consumed_energy(host1), host2->get_cname(), sg_host_get_consumed_energy(host2),
+                 host3->get_cname(), sg_host_get_consumed_energy(host3));
+      });
 
   XBT_INFO("Battery state: SoC: %f SoH: %f Energy stored: %fJ Energy provided: %fJ Energy consumed %fJ",
            battery->get_state_of_charge(), battery->get_state_of_health(), battery->get_energy_stored(),

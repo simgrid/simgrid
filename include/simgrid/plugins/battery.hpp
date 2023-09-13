@@ -39,16 +39,19 @@ public:
   class Handler {
     friend Battery;
 
+  public:
+    enum Persistancy { PERSISTANT, ONESHOT };
+
   private:
     double state_of_charge_;
     Flow flow_;
     double time_delta_ = -1;
     std::function<void()> callback_;
-    bool repeat_;
+    Persistancy persistancy_;
 
   public:
-    Handler(double state_of_charge, Flow flow, bool repeat, std::function<void()> callback);
-    static std::shared_ptr<Handler> init(double state_of_charge, Flow flow, bool repeat,
+    Handler(double state_of_charge, Flow flow, Persistancy p, std::function<void()> callback);
+    static std::shared_ptr<Handler> init(double state_of_charge, Flow flow, Persistancy p,
                                          std::function<void()> callback);
 
     /** @ingroup plugin_battery
@@ -77,7 +80,7 @@ public:
      *  @return true if its a recurrent Handler.
      *  @note For Battery::Handler objects
      */
-    bool get_repeat() { return repeat_; }
+    Persistancy get_persistancy() { return persistancy_; }
   };
 
 private:
@@ -132,7 +135,7 @@ public:
   double get_energy_provided();
   double get_energy_consumed();
   double get_energy_stored(std::string unit = "J");
-  std::shared_ptr<Handler> schedule_handler(double state_of_charge, Flow flow, bool repeat,
+  std::shared_ptr<Handler> schedule_handler(double state_of_charge, Flow flow, Handler::Persistancy p,
                                             std::function<void()> callback);
   std::vector<std::shared_ptr<Handler>> get_handlers();
   void delete_handler(std::shared_ptr<Handler> handler);

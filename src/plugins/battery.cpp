@@ -117,15 +117,15 @@ double BatteryModel::next_occurring_event(double now)
 
 /* Handler */
 
-Battery::Handler::Handler(double state_of_charge, Flow flow,  bool repeat, std::function<void()> callback)
-    : state_of_charge_(state_of_charge), flow_(flow), callback_(callback), repeat_(repeat)
+Battery::Handler::Handler(double state_of_charge, Flow flow, Persistancy p, std::function<void()> callback)
+    : state_of_charge_(state_of_charge), flow_(flow), callback_(callback), persistancy_(p)
 {
 }
 
-std::shared_ptr<Battery::Handler> Battery::Handler::init(double state_of_charge, Flow flow, bool repeat,
+std::shared_ptr<Battery::Handler> Battery::Handler::init(double state_of_charge, Flow flow, Persistancy p,
                                                          std::function<void()> callback)
 {
-  return std::make_shared<Battery::Handler>(state_of_charge, flow, repeat, callback);
+  return std::make_shared<Battery::Handler>(state_of_charge, flow, p, callback);
 }
 
 /* Battery */
@@ -193,7 +193,7 @@ void Battery::update()
     for (auto handler : handlers_) {
       if (abs(handler->time_delta_ - time_delta_s) < 0.000000001) {
         handler->callback_();
-        if (handler->repeat_)
+        if (handler->persistancy_ == Handler::Persistancy::PERSISTANT)
           handler->time_delta_ = -1;
         else
           to_delete.push_back(handler);
@@ -389,12 +389,13 @@ double Battery::get_energy_stored(std::string unit)
  *  @param state_of_charge The state of charge at which the Handler will happen.
  *  @param flow The flow in which the Handler will happen, either when the Battery is charging or discharging.
  *  @param callback The callable to trigger when the Handler happen.
- *  @param repeat If the Handler is recurrent or unique.
+ *  @param Persistancy If the Handler is recurrent or unique.
  *  @return A shared pointer of the new Handler.
  */
-std::shared_ptr<Battery::Handler> Battery::schedule_handler(double state_of_charge, Flow flow, bool repeat, std::function<void()> callback)
+std::shared_ptr<Battery::Handler> Battery::schedule_handler(double state_of_charge, Flow flow, Handler::Persistancy p,
+                                                            std::function<void()> callback)
 {
-  auto handler = Handler::init(state_of_charge, flow, repeat, callback);
+  auto handler = Handler::init(state_of_charge, flow, p, callback);
   handlers_.push_back(handler);
   return handler;
 }
