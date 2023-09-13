@@ -24,6 +24,9 @@ C API:
  - Introduce sg_activity_set_t and deprecate wait_all/wait_any/test_any for
    Exec, Io and Comm.
 
+Plugins:
+ - Revamp the battery plugin: rewrite completely the API, for a better usability.
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.34) June 26. 2023
