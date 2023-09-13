@@ -1805,7 +1805,6 @@ include examples/README.rst
 include examples/c/CMakeLists.txt
 include examples/cpp/CMakeLists.txt
 include examples/platforms/CMakeLists.txt
-include examples/platforms/battery_platform.xml
 include examples/platforms/bypassRoute.xml
 include examples/platforms/bypassZoneRoute.xml
 include examples/platforms/cloud.xml

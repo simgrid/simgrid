@@ -5,37 +5,43 @@
 
 #include "simgrid/plugins/battery.hpp"
 #include "simgrid/s4u.hpp"
+#include <simgrid/s4u/Actor.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(battery_simple, "Messages specific for this s4u example");
-
-static void manager()
-{
-  const auto* battery  = simgrid::s4u::Engine::get_instance()->host_by_name("battery");
-  double consumption_w = 200;
-
-  XBT_INFO("Initial Battery: SoC: %f SoH: %f Capacity (Total): %fWh Capacity (Usable): %fWh P: %f",
-           sg_battery_get_state_of_charge(battery), sg_battery_get_state_of_health(battery),
-           sg_battery_get_capacity(battery),
-           sg_battery_get_capacity(battery) *
-               (sg_battery_get_state_of_charge_max(battery) - sg_battery_get_state_of_charge_min(battery)),
-           sg_battery_get_power(battery));
-  double start = simgrid::s4u::Engine::get_clock();
-  sg_battery_set_power(battery, consumption_w);
-  XBT_INFO("Battery power set to: %fW", consumption_w);
-  double end = sg_battery_get_next_event_date(battery);
-  XBT_INFO("The battery will be depleted at: %f", end);
-  simgrid::s4u::this_actor::sleep_until(end);
-  XBT_INFO("Energy consumed : %fJ (%fWh)", (end - start) * consumption_w, (end - start) * consumption_w / 3600);
-}
 
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  sg_battery_plugin_init();
+  auto battery = simgrid::plugins::Battery::init("Battery", 0.8, -100, 100, 0.9, 0.9, 10, 1000);
 
-  simgrid::s4u::Actor::create("manager", e.host_by_name("host1"), manager);
+  XBT_INFO("Initial state: SoC: %f SoH: %f Energy stored: %fJ Energy provided: %fJ Energy consumed %fJ",
+           battery->get_state_of_charge(), battery->get_state_of_health(), battery->get_energy_stored(),
+           battery->get_energy_provided(), battery->get_energy_consumed());
+
+  /* This power is beyond the nominal values of the battery
+   * see documentation for more info
+   */
+  double load_w = 150;
+  battery->set_load("load", load_w);
+  XBT_INFO("Set load to %fW", load_w);
+
+  battery->schedule_handler(0.2, simgrid::plugins::Battery::DISCHARGE, true, [battery, &load_w]() {
+    XBT_INFO("Discharged state: SoC: %f SoH: %f Energy stored: %fJ Energy provided: %fJ Energy consumed %fJ",
+             battery->get_state_of_charge(), battery->get_state_of_health(), battery->get_energy_stored(),
+             battery->get_energy_provided(), battery->get_energy_consumed());
+    battery->set_load("load", -load_w);
+    XBT_INFO("Set load to %fW", -load_w);
+  });
+
+  battery->schedule_handler(0.8, simgrid::plugins::Battery::CHARGE, true, [battery]() {
+    XBT_INFO("Charged state: SoC: %f SoH: %f Energy stored: %fJ Energy provided: %fJ Energy consumed %fJ",
+             battery->get_state_of_charge(), battery->get_state_of_health(), battery->get_energy_stored(),
+             battery->get_energy_provided(), battery->get_energy_consumed());
+    XBT_INFO("Set load to %fW", 0.0);
+  });
+
   e.run();
   return 0;
 }
