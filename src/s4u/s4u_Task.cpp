@@ -86,9 +86,10 @@ void Task::complete()
 }
 
 /** @param n The new parallelism degree of the Task.
- *  @brief Set the parallelism degree of the Task.
- *  @note When increasing the degree the function starts new instances.
+ *  @brief Set the parallelism degree of the Task to inscrease or decrease horizontal scaling.
+ *  @note When increasing the degree the function starts new instances if there is queued firings.
  *        When decreasing the degree the function does NOT stop running instances.
+
  */
 void Task::set_parallelism_degree(int n)
 {
