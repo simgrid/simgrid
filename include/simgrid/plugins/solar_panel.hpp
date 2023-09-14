@@ -37,14 +37,15 @@ private:
   std::string name_;
   double area_m2_;
   double conversion_efficiency_;
-  double solar_irradiance_w_per_m2_ ;
+  double solar_irradiance_w_per_m2_;
   double min_power_w_;
   double max_power_w_;
 
   double power_w_      = 0;
   double last_updated_ = 0;
 
-  explicit SolarPanel(std::string name, double area_m2, double conversion_efficiency, double solar_irradiance_w_per_m2, double min_power_w, double max_power_w);
+  explicit SolarPanel(std::string name, double area_m2, double conversion_efficiency, double solar_irradiance_w_per_m2,
+                      double min_power_w, double max_power_w);
   static void init_plugin();
   void update();
 
@@ -61,8 +62,8 @@ private:
 #endif
 
 public:
-
-  static SolarPanelPtr init(const std::string& name, double area_m2, double conversion_efficiency, double solar_irradiance_w_per_m2, double min_power_w, double max_power_w);
+  static SolarPanelPtr init(const std::string& name, double area_m2, double conversion_efficiency,
+                            double solar_irradiance_w_per_m2, double min_power_w, double max_power_w);
 
   SolarPanelPtr set_name(std::string name);
   SolarPanelPtr set_area(double area_m2);
@@ -72,8 +73,8 @@ public:
   SolarPanelPtr set_max_power(double power_w);
 
   std::string get_name() { return name_; }
-  const char* get_cname() { return name_.c_str();}
-  double get_area() { return area_m2_;}
+  const char* get_cname() { return name_.c_str(); }
+  double get_area() { return area_m2_; }
   double get_conversion_efficiency() { return conversion_efficiency_; }
   double get_solar_irradiance() { return solar_irradiance_w_per_m2_; }
   double get_min_power() { return min_power_w_; }

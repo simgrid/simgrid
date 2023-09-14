@@ -11,7 +11,6 @@
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/simgrid/module.hpp"
 
-
 SIMGRID_REGISTER_PLUGIN(solar_panel, "Solar Panel management", nullptr)
 
 /** @defgroup plugin_solar_panel Plugin Solar Panel
@@ -24,13 +23,14 @@ This plugin allows the use of solar panels to generate power during simulation d
 irradiance and conversion factor.
 
 The power model is taken from the paper `"Reinforcement Learning Based Load Balancing for
-Geographically Distributed Data Centres" <https://dro.dur.ac.uk/33395/1/33395.pdf?DDD280+kkgc95+vbdv77>`_ by Max Mackie et. al.
+Geographically Distributed Data Centres" <https://dro.dur.ac.uk/33395/1/33395.pdf?DDD280+kkgc95+vbdv77>`_ by Max Mackie
+et. al.
 
 Solar Panel
 ....................
 
-A solar panel has an area :math:`A` in m², a conversion efficiency :math:`\eta` and a solar irradiance :math:`S` in W/m². 
-The power generated :math:`P` in W by a solar panel is given by the following equation: 
+A solar panel has an area :math:`A` in m², a conversion efficiency :math:`\eta` and a solar irradiance :math:`S` in
+W/m². The power generated :math:`P` in W by a solar panel is given by the following equation:
 
 .. math::
 
@@ -85,12 +85,13 @@ void SolarPanel::update()
       power_w = 0;
     if (power_w_ > max_power_w_)
       power_w = max_power_w_;
-    power_w_ = power_w;
+    power_w_      = power_w;
     last_updated_ = now;
   });
 }
 
-SolarPanel::SolarPanel(std::string name, double area_m2, double conversion_efficiency, double solar_irradiance_w_per_m2, double min_power_w, double max_power_w)
+SolarPanel::SolarPanel(std::string name, double area_m2, double conversion_efficiency, double solar_irradiance_w_per_m2,
+                       double min_power_w, double max_power_w)
     : name_(name)
     , area_m2_(area_m2)
     , conversion_efficiency_(conversion_efficiency)
@@ -99,11 +100,14 @@ SolarPanel::SolarPanel(std::string name, double area_m2, double conversion_effic
     , max_power_w_(max_power_w)
 {
   xbt_assert(area_m2 >= 0, " : area must be >= 0 (provided: %f)", area_m2);
-  xbt_assert(conversion_efficiency >= 0 and conversion_efficiency <= 1, " : conversion efficiency must be in [0,1] (provided: %f)", conversion_efficiency);
-  xbt_assert(solar_irradiance_w_per_m2 >= 0, " : solar irradiance must be >= 0 (provided: %f)", solar_irradiance_w_per_m2);
+  xbt_assert(conversion_efficiency >= 0 and conversion_efficiency <= 1,
+             " : conversion efficiency must be in [0,1] (provided: %f)", conversion_efficiency);
+  xbt_assert(solar_irradiance_w_per_m2 >= 0, " : solar irradiance must be >= 0 (provided: %f)",
+             solar_irradiance_w_per_m2);
   xbt_assert(min_power_w >= 0, " : minimal power must be >= 0 (provided: %f)", min_power_w);
   xbt_assert(max_power_w > 0, " : maximal power must be > 0 (provided: %f)", max_power_w);
-  xbt_assert(max_power_w > min_power_w, " : maximal power must be above minimal power (provided: %f, %f)", max_power_w, min_power_w);
+  xbt_assert(max_power_w > min_power_w, " : maximal power must be above minimal power (provided: %f, %f)", max_power_w,
+             min_power_w);
 }
 
 /** @ingroup plugin_solar_panel
@@ -115,14 +119,16 @@ SolarPanel::SolarPanel(std::string name, double area_m2, double conversion_effic
  *  @param max_power_w The maximal power delivered by the Solar Panel in W (> 0 and > min_power_w).
  *  @return A SolarPanelPtr pointing to the new SolarPanel.
  */
-SolarPanelPtr SolarPanel::init(const std::string& name, double area_m2, double conversion_efficiency, double solar_irradiance_w_per_m2, double min_power_w, double max_power_w)
+SolarPanelPtr SolarPanel::init(const std::string& name, double area_m2, double conversion_efficiency,
+                               double solar_irradiance_w_per_m2, double min_power_w, double max_power_w)
 {
   static bool plugin_inited = false;
   if (not plugin_inited) {
     init_plugin();
     plugin_inited = true;
   }
-  auto solar_panel = SolarPanelPtr(new SolarPanel(name, area_m2, conversion_efficiency, solar_irradiance_w_per_m2, min_power_w, max_power_w));
+  auto solar_panel = SolarPanelPtr(
+      new SolarPanel(name, area_m2, conversion_efficiency, solar_irradiance_w_per_m2, min_power_w, max_power_w));
   solar_panel_model_->add_solar_panel(solar_panel);
   return solar_panel;
 }
@@ -133,7 +139,7 @@ SolarPanelPtr SolarPanel::init(const std::string& name, double area_m2, double c
  */
 SolarPanelPtr SolarPanel::set_name(std::string name)
 {
-  kernel::actor::simcall_answered([this, name] {name_ = name;});
+  kernel::actor::simcall_answered([this, name] { name_ = name; });
   return this;
 }
 
@@ -144,7 +150,7 @@ SolarPanelPtr SolarPanel::set_name(std::string name)
 SolarPanelPtr SolarPanel::set_area(double area_m2)
 {
   xbt_assert(area_m2 >= 0, " : area must be > 0 (provided: %f)", area_m2);
-  kernel::actor::simcall_answered([this, area_m2] {area_m2_ = area_m2;});
+  kernel::actor::simcall_answered([this, area_m2] { area_m2_ = area_m2; });
   return this;
 }
 
@@ -155,7 +161,7 @@ SolarPanelPtr SolarPanel::set_area(double area_m2)
 SolarPanelPtr SolarPanel::set_conversion_efficiency(double e)
 {
   xbt_assert(e >= 0 and e <= 1, " : conversion efficiency must be in [0,1] (provided: %f)", e);
-  kernel::actor::simcall_answered([this, e] {conversion_efficiency_ = e;});
+  kernel::actor::simcall_answered([this, e] { conversion_efficiency_ = e; });
   return this;
 }
 
@@ -165,8 +171,10 @@ SolarPanelPtr SolarPanel::set_conversion_efficiency(double e)
  */
 SolarPanelPtr SolarPanel::set_solar_irradiance(double solar_irradiance_w_per_m2)
 {
-  xbt_assert(solar_irradiance_w_per_m2 >= 0, " : solar irradiance must be >= 0 (provided: %f)", solar_irradiance_w_per_m2);
-  kernel::actor::simcall_answered([this, solar_irradiance_w_per_m2] {solar_irradiance_w_per_m2_ = solar_irradiance_w_per_m2;});
+  xbt_assert(solar_irradiance_w_per_m2 >= 0, " : solar irradiance must be >= 0 (provided: %f)",
+             solar_irradiance_w_per_m2);
+  kernel::actor::simcall_answered(
+      [this, solar_irradiance_w_per_m2] { solar_irradiance_w_per_m2_ = solar_irradiance_w_per_m2; });
   return this;
 }
 
@@ -177,8 +185,9 @@ SolarPanelPtr SolarPanel::set_solar_irradiance(double solar_irradiance_w_per_m2)
 SolarPanelPtr SolarPanel::set_min_power(double power_w)
 {
   xbt_assert(power_w >= 0, " : minimal power must be >= 0 (provided: %f)", power_w);
-  xbt_assert(max_power_w_ > power_w, " : maximal power must be above minimal power (provided: %f, max: %f)", power_w, max_power_w_);
-  kernel::actor::simcall_answered([this, power_w] {min_power_w_ = power_w;});
+  xbt_assert(max_power_w_ > power_w, " : maximal power must be above minimal power (provided: %f, max: %f)", power_w,
+             max_power_w_);
+  kernel::actor::simcall_answered([this, power_w] { min_power_w_ = power_w; });
   return this;
 }
 
@@ -189,8 +198,9 @@ SolarPanelPtr SolarPanel::set_min_power(double power_w)
 SolarPanelPtr SolarPanel::set_max_power(double power_w)
 {
   xbt_assert(power_w > 0, " : maximal power must be > 0 (provided: %f)", power_w);
-  xbt_assert(min_power_w_ < power_w, " : maximal power must be above minimal power (provided: %f, min: %f)", power_w, min_power_w_);
-  kernel::actor::simcall_answered([this, power_w] {max_power_w_ = power_w;});
+  xbt_assert(min_power_w_ < power_w, " : maximal power must be above minimal power (provided: %f, min: %f)", power_w,
+             min_power_w_);
+  kernel::actor::simcall_answered([this, power_w] { max_power_w_ = power_w; });
   return this;
 }
 
