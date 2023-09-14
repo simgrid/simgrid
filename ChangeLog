@@ -70,10 +70,10 @@ S4U:
    That is, callbacks registered in Exec::on_suspend_cb will not be fired for Comms nor Ios.
 
 New S4U plugins:
- - Battery: Enable the management of batteries on hosts.
+ - Battery: Enable the management of batteries.
    See the examples under examples/cpp/battery-* and the documentation in the Plugins page.
- - Photovoltaic: Enable the management of photovoltaic panels on hosts.
-   See the examples under examples/cpp/photovoltaic-* and the documentation in the Plugins page.
+ - SolarPanel: Enable the management of solar panels.
+   See the examples under examples/cpp/solar-panel-* and the documentation in the Plugins page.
 
 Kernel:
  - optimize an internal data structure (use a set instead of a list for ongoing activities),

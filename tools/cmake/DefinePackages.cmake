@@ -453,7 +453,7 @@ set(PLUGINS_SRC
   src/plugins/vm/VmLiveMigration.hpp
   src/plugins/vm/dirty_page_tracking.cpp
   src/plugins/battery.cpp
-  src/plugins/photovoltaic.cpp
+  src/plugins/solar_panel.cpp
   )
 
 
@@ -663,7 +663,7 @@ set(headers_to_install
   include/simgrid/plugins/jbod.hpp
   include/simgrid/plugins/live_migration.h
   include/simgrid/plugins/load.h
-  include/simgrid/plugins/photovoltaic.hpp
+  include/simgrid/plugins/solar_panel.hpp
   include/simgrid/plugins/ProducerConsumer.hpp
   include/simgrid/instr.h
   include/simgrid/mailbox.h
@@ -1141,7 +1141,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/optorsim/gridpp_grid_2004.conf
   examples/platforms/optorsim/lcg_sept2004_grid.conf
   examples/platforms/optorsim/transform_optorsim_platform.pl
-  examples/platforms/photovoltaic_platform.xml
   examples/platforms/profiles/fafard_state.profile
   examples/platforms/profiles/faulty_host.profile
   examples/platforms/profiles/ginette_state.profile
