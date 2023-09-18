@@ -173,6 +173,8 @@ include examples/cpp/battery-energy/s4u-battery-energy.cpp
 include examples/cpp/battery-energy/s4u-battery-energy.tesh
 include examples/cpp/battery-simple/s4u-battery-simple.cpp
 include examples/cpp/battery-simple/s4u-battery-simple.tesh
+include examples/cpp/chiller-simple/s4u-chiller-simple.cpp
+include examples/cpp/chiller-simple/s4u-chiller-simple.tesh
 include examples/cpp/cloud-capping/s4u-cloud-capping.cpp
 include examples/cpp/cloud-capping/s4u-cloud-capping.tesh
 include examples/cpp/cloud-migration/s4u-cloud-migration.cpp
@@ -1940,6 +1942,7 @@ include include/simgrid/modelchecker.h
 include include/simgrid/mutex.h
 include include/simgrid/plugins/ProducerConsumer.hpp
 include include/simgrid/plugins/battery.hpp
+include include/simgrid/plugins/chiller.hpp
 include include/simgrid/plugins/dvfs.h
 include include/simgrid/plugins/energy.h
 include include/simgrid/plugins/file_system.h
@@ -2316,6 +2319,7 @@ include src/mc/transition/TransitionSynchro.hpp
 include src/plugins/ProducerConsumer.cpp
 include src/plugins/battery.cpp
 include src/plugins/chaos_monkey.cpp
+include src/plugins/chiller.cpp
 include src/plugins/file_system/s4u_FileSystem.cpp
 include src/plugins/host_dvfs.cpp
 include src/plugins/host_energy.cpp

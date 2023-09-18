@@ -231,4 +231,9 @@ Photovoltaic
 
 .. doxygengroup:: plugin_photovoltaic
 
+Chiller
+===========
+
+.. doxygengroup:: plugin_chiller
+
 ..  LocalWords:  SimGrid
