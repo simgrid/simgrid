@@ -39,16 +39,16 @@ private:
   double specific_heat_j_per_kg_per_c_;
   double alpha_;
   double cooling_efficiency_;
+  double temp_in_c_;
+  double temp_out_c_;
   double goal_temp_c_;
   double max_power_w_;
 
   std::set<const s4u::Host*> hosts_ = {};
   bool active_                      = true;
-  double temp_in_c_;
-  double temp_out_c_;
-  double power_w_           = 0;
-  double energy_consumed_j_ = 0;
-  double last_updated_      = 0;
+  double power_w_                   = 0;
+  double energy_consumed_j_         = 0;
+  double last_updated_              = 0;
 
   explicit Chiller(const std::string& name, double air_mass_kg, double specific_heat_j_per_kg_per_c, double alpha,
                    double cooling_efficiency, double initial_temp_c, double goal_temp_c, double max_power_w);
