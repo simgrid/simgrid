@@ -158,6 +158,7 @@ foreach (example activityset-testany activityset-waitany activityset-waitall act
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-token-ring
                  battery-degradation battery-simple battery-energy
+                 chiller-simple
                  comm-pingpong comm-ready comm-suspend comm-wait comm-waituntil
                  comm-dependent comm-host2host comm-failure comm-throttling
                  cloud-capping cloud-migration cloud-simple
