@@ -1,0 +1,41 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-task-parallelism ${platfdir}/three_multicore_hosts.xml
+> [0.000000] [task_parallelism/INFO] Task exec_A start
+> [100.000000] [task_parallelism/INFO] Task exec_A finished (1)
+> [100.000000] [task_parallelism/INFO] Task exec_A start
+> [200.000000] [task_parallelism/INFO] Task exec_A finished (2)
+> [300.000000] [task_parallelism/INFO] Task exec_A start
+> [300.000000] [task_parallelism/INFO] Task exec_A start
+> [400.000000] [task_parallelism/INFO] Task exec_A finished (3)
+> [400.000000] [task_parallelism/INFO] Task exec_A start
+> [400.000000] [task_parallelism/INFO] Task exec_A finished (4)
+> [400.000000] [task_parallelism/INFO] Task exec_A start
+> [500.000000] [task_parallelism/INFO] Task exec_A finished (5)
+> [500.000000] [task_parallelism/INFO] Task exec_A finished (6)
+> [600.000000] [task_parallelism/INFO] Task exec_A start
+> [700.000000] [task_parallelism/INFO] Task exec_A finished (7)
+> [700.000000] [task_parallelism/INFO] Task exec_A start
+> [800.000000] [task_parallelism/INFO] Task exec_A finished (8)
+> [900.000000] [task_parallelism/INFO] Task exec_A start
+> [900.000000] [task_parallelism/INFO] Task exec_A start
+> [1000.000000] [task_parallelism/INFO] Task exec_A finished (9)
+> [1000.000000] [task_parallelism/INFO] Task exec_A start
+> [1000.000000] [task_parallelism/INFO] Task exec_A finished (10)
+> [1000.000000] [task_parallelism/INFO] Task exec_A start
+> [1100.000000] [task_parallelism/INFO] Task exec_A finished (11)
+> [1100.000000] [task_parallelism/INFO] Task exec_A finished (12)
+> [1100.000000] [task_parallelism/INFO] Task exec_A start
+> [1200.000000] [task_parallelism/INFO] Task exec_A finished (13)
+> [1200.000000] [task_parallelism/INFO] Task exec_A start
+> [1250.000000] [task_parallelism/INFO] Task exec_A start
+> [1250.000000] [task_parallelism/INFO] Task exec_A start
+> [1300.000000] [task_parallelism/INFO] Task exec_A finished (14)
+> [1300.000000] [task_parallelism/INFO] Task exec_A start
+> [1350.000000] [task_parallelism/INFO] Task exec_A finished (15)
+> [1350.000000] [task_parallelism/INFO] Task exec_A start
+> [1350.000000] [task_parallelism/INFO] Task exec_A finished (16)
+> [1350.000000] [task_parallelism/INFO] Task exec_A start
+> [1400.000000] [task_parallelism/INFO] Task exec_A finished (17)
+> [1450.000000] [task_parallelism/INFO] Task exec_A finished (18)
+> [1450.000000] [task_parallelism/INFO] Task exec_A finished (19)

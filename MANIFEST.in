@@ -394,6 +394,10 @@ include examples/cpp/synchro-semaphore/s4u-synchro-semaphore.cpp
 include examples/cpp/synchro-semaphore/s4u-synchro-semaphore.tesh
 include examples/cpp/task-io/s4u-task-io.cpp
 include examples/cpp/task-io/s4u-task-io.tesh
+include examples/cpp/task-microservice/s4u-task-microservice.cpp
+include examples/cpp/task-microservice/s4u-task-microservice.tesh
+include examples/cpp/task-parallelism/s4u-task-parallelism.cpp
+include examples/cpp/task-parallelism/s4u-task-parallelism.tesh
 include examples/cpp/task-simple/s4u-task-simple.cpp
 include examples/cpp/task-simple/s4u-task-simple.tesh
 include examples/cpp/task-storm/s4u-task-storm.cpp

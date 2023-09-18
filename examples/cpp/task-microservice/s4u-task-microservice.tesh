@@ -1,0 +1,4 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-task-microservice ${platfdir}/three_multicore_hosts.xml
+> [7.008495] [task_microservice/INFO] Requests processed per second: 500.000000

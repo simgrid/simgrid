@@ -29,9 +29,10 @@ class XBT_PUBLIC Token : public xbt::Extendable<Token> {};
 class Task {
   std::string name_;
   double amount_;
-  int queued_firings_ = 0;
-  int count_          = 0;
-  bool working_       = false;
+  int queued_firings_     = 0;
+  int count_              = 0;
+  int running_instances_  = 0;
+  int parallelism_degree_ = 1;
 
   std::set<Task*> successors_                 = {};
   std::map<Task*, unsigned int> predecessors_ = {};
@@ -42,8 +43,7 @@ class Task {
 
   std::shared_ptr<Token> token_ = nullptr;
   std::deque<std::map<TaskPtr, std::shared_ptr<Token>>> tokens_received_;
-  ActivityPtr previous_activity_;
-  ActivityPtr current_activity_;
+  std::deque<ActivityPtr> current_activities_;
 
   inline static xbt::signal<void(Task*)> on_start;
   xbt::signal<void(Task*)> on_this_start;
@@ -57,14 +57,17 @@ protected:
   virtual void fire();
   void complete();
 
-  void set_current_activity(ActivityPtr a) { current_activity_ = a; }
+  void store_activity(ActivityPtr a) { current_activities_.push_back(a); }
 
 public:
+  void set_name(std::string name);
   const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
   void set_amount(double amount);
   double get_amount() const { return amount_; }
   int get_count() const { return count_; }
+  void set_parallelism_degree(int n);
+  int get_parallelism_degree() { return parallelism_degree_; }
 
   void set_token(std::shared_ptr<Token> token);
   std::shared_ptr<Token> get_next_token_from(TaskPtr t);
