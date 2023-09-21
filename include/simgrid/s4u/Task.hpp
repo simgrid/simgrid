@@ -67,7 +67,7 @@ public:
   double get_amount() const { return amount_; }
   int get_count() const { return count_; }
   void set_parallelism_degree(int n);
-  int get_parallelism_degree() { return parallelism_degree_; }
+  int get_parallelism_degree() const { return parallelism_degree_; }
 
   void set_token(std::shared_ptr<Token> token);
   std::shared_ptr<Token> get_next_token_from(TaskPtr t);

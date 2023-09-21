@@ -71,14 +71,14 @@ continuous use of the battery alternating between charge and discharge:
 The natural depletion of batteries over time is not taken into account.
 
 Loads & Hosts
-..............
+.............
 
 You can add named loads to a battery. Those loads may be positive and consume energy from the battery, or negative and
 provide energy to the battery. You can also connect hosts to a battery. Theses hosts will consume their energy from the
 battery until the battery is empty or until the connection between the hosts and the battery is set inactive.
 
 Handlers
-......
+........
 
 You can schedule handlers that will happen at specific SoC of the battery and trigger a callback.
 Theses handlers may be recurrent, for instance you may want to always set all loads to zero and deactivate all hosts
@@ -389,7 +389,7 @@ double Battery::get_energy_stored(std::string unit)
  *  @param state_of_charge The state of charge at which the Handler will happen.
  *  @param flow The flow in which the Handler will happen, either when the Battery is charging or discharging.
  *  @param callback The callable to trigger when the Handler happen.
- *  @param Persistancy If the Handler is recurrent or unique.
+ *  @param p If the Handler is recurrent or unique.
  *  @return A shared pointer of the new Handler.
  */
 std::shared_ptr<Battery::Handler> Battery::schedule_handler(double state_of_charge, Flow flow, Handler::Persistancy p,

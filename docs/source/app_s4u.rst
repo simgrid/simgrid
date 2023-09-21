@@ -206,9 +206,17 @@ concept of |API_s4u_Tasks|, that can be seen as repeatable activities. A Dataflo
 is defined as a graph of |API_s4u_Tasks| through which circulate Tokens. Tokens
 can carry any user-defined data, using the same internal mechanisms as for the
 other simulated objects. Each Task has to receive a token from each of its
-predecessor to fire a new instance of a |API_s4u_Comm|, |API_s4u_Exec|, or
-|API_s4u_Io| activity. On completion of this activity, the Task propagates tokens
+predecessor to fire a new instance of a :ref:`Communication <API_s4u_Comm>`,
+:ref:`Execution <API_s4u_Exec>`, or :ref:`I/O <API_s4u_Io>` activity.
+On completion of this activity, the Task propagates tokens
 to its successors, and waits for the next set of tokens to arrive.
+Multiple instances of the same Task can run in parallel by adjusting its
+horizontal scaling with
+:cpp:func:`s4u::Task::set_parallelism_degree() <simgrid::s4u::Task::set_parallelism_degree>`.
+
+:ref:`Communications <API_s4u_Comm>` (started on Mailboxes and consuming links),
+:ref:`Executions <API_s4u_Exec>` (started on Host and consuming CPU resources)
+:ref:`I/O <API_s4u_Io>` (started on and consuming disks).
 
 To initiate the execution of a Dataflow, it is possible to some make
 |API_s4u_Tasks| fire one or more activities without waiting for any token with the
@@ -2583,7 +2591,7 @@ class Task
 **Known subclasses:**
 :ref:`Communication Tasks <API_s4u_CommTask>`,
 :ref:`Executions Tasks <API_s4u_ExecTask>`,
-:ref:`I/O Tasks <API_s4u_Task>`.
+:ref:`I/O Tasks <API_s4u_IoTask>`.
 See also the :ref:`section on activities <s4u_Tasks>` above.
 
 Basic management
@@ -2610,7 +2618,10 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Task::get_name() const
       .. doxygenfunction:: simgrid::s4u::Task::get_count() const
       .. doxygenfunction:: simgrid::s4u::Task::get_amount() const
+      .. doxygenfunction:: simgrid::s4u::Task::get_parallelism_degree() const
+      .. doxygenfunction:: simgrid::s4u::Task::set_name(std::string name)
       .. doxygenfunction:: simgrid::s4u::Task::set_amount(double amount)
+      .. doxygenfunction:: simgrid::s4u::Task::set_parallelism_degree(int n)
 
 Life cycle
 ----------
@@ -2637,8 +2648,8 @@ Managing Tokens
 .. tabs::
 
    .. group-tab:: C++
-      .. doxygenfunction:: simgrid::s4u::Task::set_token(std::shared_ptr<Token> token)
       .. doxygenfunction:: simgrid::s4u::Task::get_next_token_from(TaskPtr t)
+      .. doxygenfunction:: simgrid::s4u::Task::set_token(std::shared_ptr<Token> token)
 
 Signals
 -------
@@ -2653,9 +2664,9 @@ Signals
 
 .. _API_s4u_CommTask:
 
-================
+=================
 ⁣  class CommTask
-================
+=================
 .. tabs::
 
    .. group-tab:: C++
@@ -2682,19 +2693,19 @@ Querying info
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::Task::get_source() const
-      .. doxygenfunction:: simgrid::s4u::Task::get_destination() const
-      .. doxygenfunction:: simgrid::s4u::Task::get_bytes() const
-      .. doxygenfunction:: simgrid::s4u::Task::set_source(simgrid::s4u::Host* source);
-      .. doxygenfunction:: simgrid::s4u::Task::set_destination(simgrid::s4u::Host* destination);
-      .. doxygenfunction:: simgrid::s4u::Task::set_bytes(double bytes)
+      .. doxygenfunction:: simgrid::s4u::CommTask::get_source() const
+      .. doxygenfunction:: simgrid::s4u::CommTask::get_destination() const
+      .. doxygenfunction:: simgrid::s4u::CommTask::get_bytes() const
+      .. doxygenfunction:: simgrid::s4u::CommTask::set_source(Host* source);
+      .. doxygenfunction:: simgrid::s4u::CommTask::set_destination(Host* destination);
+      .. doxygenfunction:: simgrid::s4u::CommTask::set_bytes(double bytes)
 
 
 .. _API_s4u_ExecTask:
 
-================
+=================
 ⁣  class ExecTask
-================
+=================
 .. tabs::
 
    .. group-tab:: C++
@@ -2721,10 +2732,10 @@ Querying info
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::Task::get_host() const
-      .. doxygenfunction:: simgrid::s4u::Task::get_flops() const
-      .. doxygenfunction:: simgrid::s4u::Task::set_host(simgrid::s4u::Host* host);
-      .. doxygenfunction:: simgrid::s4u::Task::set_flops(double flops);
+      .. doxygenfunction:: simgrid::s4u::ExecTask::get_host() const
+      .. doxygenfunction:: simgrid::s4u::ExecTask::get_flops() const
+      .. doxygenfunction:: simgrid::s4u::ExecTask::set_host(Host* host);
+      .. doxygenfunction:: simgrid::s4u::ExecTask::set_flops(double flops);
 
 .. _API_s4u_IoTask:
 
@@ -2757,12 +2768,12 @@ Querying info
 
    .. group-tab:: C++
 
-     .. doxygenfunction:: simgrid::s4u::Task::get_disk() const
-     .. doxygenfunction:: simgrid::s4u::Task::get_bytes() const
-     .. doxygenfunction:: simgrid::s4u::Task::get_op_type() const
-     .. doxygenfunction:: simgrid::s4u::Task::set_disk(simgrid::s4u::Disk* disk);
-     .. doxygenfunction:: simgrid::s4u::Task::set_bytes(simgrid::double bytes);
-     .. doxygenfunction:: simgrid::s4u::Task::set_op_type(simgrid::s4u::Io::OpType type);
+     .. doxygenfunction:: simgrid::s4u::IoTask::get_disk() const
+     .. doxygenfunction:: simgrid::s4u::IoTask::get_bytes() const
+     .. doxygenfunction:: simgrid::s4u::IoTask::get_op_type() const
+     .. doxygenfunction:: simgrid::s4u::IoTask::set_disk(Disk* disk);
+     .. doxygenfunction:: simgrid::s4u::IoTask::set_bytes(double bytes);
+     .. doxygenfunction:: simgrid::s4u::IoTask::set_op_type(Io::OpType type);
 
 .. _API_s4u_Synchronizations:
 
