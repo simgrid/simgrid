@@ -243,13 +243,13 @@ std::string Engine::flatify_platform() const
   ss << "<?xml version='1.0'?>\n";
   ss << "<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n";
   ss << "<platform version=\"" << version << "\">\n";
-  ss << "<AS id=\"" << get_netzone_root()->get_name() << "\" routing=\"Full\">\n";
+  ss << "<zone id=\"" << get_netzone_root()->get_name() << "\" routing=\"Full\">\n";
 
   flatify_hosts(*this, ss);
   flatify_links(*this, ss);
   flatify_routes(*this, ss);
 
-  ss << "</AS>\n";
+  ss << "</zone>\n";
   ss << "</platform>\n";
   return ss.str();
 }
