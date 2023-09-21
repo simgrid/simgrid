@@ -70,6 +70,24 @@ public:
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
   unsigned long add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
 
+
+/**
+   * @brief Add a route between 2 netzones, and same in other direction
+   * @param src Source netzone
+   * @param dst Destination netzone
+   * @param link_list List of links
+   */
+  void add_route(NetZone* src, NetZone* dst, const std::vector<const Link*>& links);
+
+/**
+   * @brief Add a route between 2 netzones, and same in other direction
+   * @param src Source netzone
+   * @param dst Destination netzone
+   * @param link_list List of links and their direction used in this communication
+   * @param symmetrical Bi-directional communication
+   */
+  void add_route(NetZone* src, NetZone* dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
+
   /**
    * @brief Add a route between 2 netpoints
    *
