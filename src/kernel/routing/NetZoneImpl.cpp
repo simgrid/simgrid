@@ -669,12 +669,34 @@ void NetZoneImpl::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xb
   }
 }
 
+void NetZoneImpl::set_gateway(const std::string& name, NetPoint* router)
+{
+  xbt_enforce(not sealed_, "Impossible to create gateway: %s. NetZone %s already sealed", name.c_str(), get_cname());
+  if (auto gateway_it = gateways_.find(name); gateway_it != gateways_.end())
+    xbt_die("Impossible to create a gateway named %s. It already exists", name.c_str());
+  else
+    gateways_[name] = router;
+}
+
+NetPoint* NetZoneImpl::get_gateway() const
+{
+  xbt_enforce(not gateways_.empty(), "No default gateway has been defined for NetZone '%s'. Try to seal it first", get_cname());
+  xbt_enforce(gateways_.size() < 2, "NetZone '%s' has more than one gateway, please provide a gateway name", get_cname());
+  auto gateway_it = gateways_.find("default");
+  xbt_enforce(gateway_it != gateways_.end(), "NetZone '%s' hasno default gateway, please define one", get_cname());
+  return gateway_it->second;
+}
+
 void NetZoneImpl::seal()
 {
   /* already sealed netzone */
   if (sealed_)
     return;
   do_seal(); // derived class' specific sealing procedure
+
+  // for zone with a single host, this host is its own default gateway
+  if (gateways_.empty() && hosts_.size() == 1)
+    gateways_["default"] = hosts_.begin()->second->get_iface()->get_netpoint();
 
   /* seals sub-netzones and hosts */
   for (auto* host : get_all_hosts()) {

@@ -57,7 +57,12 @@ public:
   const char* get_property(const std::string& key) const;
   void set_property(const std::string& key, const std::string& value);
   /** @brief Get the netpoint associated to this netzone */
-  kernel::routing::NetPoint* get_netpoint();
+  kernel::routing::NetPoint* get_netpoint() const;
+  /** @brief Get the gateway associated to this netzone */
+  kernel::routing::NetPoint* get_gateway() const;
+  kernel::routing::NetPoint* get_gateway(const std::string& name) const;
+  void set_gateway(kernel::routing::NetPoint* router);
+  void set_gateway(const std::string& name, kernel::routing::NetPoint* router);
 
   void extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                          std::map<std::string, xbt_edge_t, std::less<>>* edges);

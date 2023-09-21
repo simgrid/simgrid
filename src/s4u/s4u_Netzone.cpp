@@ -231,9 +231,29 @@ kernel::routing::NetPoint* NetZone::create_router(const std::string& name)
   return kernel::actor::simcall_answered([this, &name] { return pimpl_->create_router(name); });
 }
 
-kernel::routing::NetPoint* NetZone::get_netpoint()
+kernel::routing::NetPoint* NetZone::get_netpoint() const
 {
   return pimpl_->get_netpoint();
+}
+
+kernel::routing::NetPoint* NetZone::get_gateway() const
+{
+  return pimpl_->get_gateway();
+}
+
+kernel::routing::NetPoint* NetZone::get_gateway(const std::string& name) const
+{
+  return pimpl_->get_gateway(name);
+}
+
+void NetZone::set_gateway(kernel::routing::NetPoint* router)
+{
+  set_gateway("default", router);
+}
+
+void NetZone::set_gateway(const std::string& name, kernel::routing::NetPoint* router)
+{
+  kernel::actor::simcall_answered([this, name, router] { pimpl_->set_gateway(name, router); });
 }
 
 kernel::resource::NetworkModel* NetZone::get_network_model() const
