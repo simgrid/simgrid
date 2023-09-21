@@ -158,6 +158,7 @@ foreach (example activityset-testany activityset-waitany activityset-waitall act
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-token-ring
                  battery-degradation battery-simple battery-energy
+                 chiller-simple
                  comm-pingpong comm-ready comm-suspend comm-wait comm-waituntil
                  comm-dependent comm-host2host comm-failure comm-throttling
                  cloud-capping cloud-migration cloud-simple
@@ -171,7 +172,7 @@ foreach (example activityset-testany activityset-waitany activityset-waitall act
                  mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-bugged2-liveness mc-centralized-mutex mc-electric-fence mc-failing-assert
                  network-ns3 network-ns3-wifi network-wifi
                  io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-dependent
-                 task-io task-simple task-variable-load task-storm task-switch-host
+                 task-io task-microservice task-parallelism task-simple task-storm task-switch-host task-variable-load 
                  solar-panel-simple
                  platform-comm-serialize platform-failures platform-profile platform-properties
                  plugin-host-load plugin-jbod plugin-link-load plugin-prodcons

@@ -453,6 +453,7 @@ set(PLUGINS_SRC
   src/plugins/vm/VmLiveMigration.hpp
   src/plugins/vm/dirty_page_tracking.cpp
   src/plugins/battery.cpp
+  src/plugins/chiller.cpp
   src/plugins/solar_panel.cpp
   )
 
@@ -657,6 +658,7 @@ set(headers_to_install
   include/simgrid/Exception.hpp
   include/simgrid/chrono.hpp
   include/simgrid/plugins/battery.hpp
+  include/simgrid/plugins/chiller.hpp
   include/simgrid/plugins/dvfs.h
   include/simgrid/plugins/energy.h
   include/simgrid/plugins/file_system.h

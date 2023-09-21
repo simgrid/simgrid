@@ -231,4 +231,9 @@ Solar Panel
 
 .. doxygengroup:: plugin_solar_panel
 
+Chiller
+===========
+
+.. doxygengroup:: plugin_chiller
+
 ..  LocalWords:  SimGrid
