@@ -93,16 +93,19 @@ void NetZone::add_route(NetZone* src, NetZone* dst, const std::vector<const Link
     links_direct.emplace_back(LinkInRoute(l, LinkInRoute::Direction::UP));
     links_reverse.emplace_back(LinkInRoute(l, LinkInRoute::Direction::DOWN));
   }
-  pimpl_->add_route(src->get_netpoint(), dst->get_netpoint(), src->get_gateway(), dst->get_gateway(), links_direct,
-                    false);
-  pimpl_->add_route(dst->get_netpoint(), src->get_netpoint(), dst->get_gateway(), src->get_gateway(), links_reverse,
-                    false);
+  pimpl_->add_route(src ? src->get_netpoint() : nullptr, dst ? dst->get_netpoint(): nullptr,
+                    src ? src->get_gateway() : nullptr, dst ? dst->get_gateway() : nullptr,
+                    links_direct, false);
+  pimpl_->add_route(src ? src->get_netpoint() : nullptr, dst ? dst->get_netpoint(): nullptr,
+                    src ? src->get_gateway() : nullptr, dst ? dst->get_gateway() : nullptr,
+                    links_reverse, false);
 }
 
 void NetZone::add_route(NetZone* src, NetZone* dst, const std::vector<LinkInRoute>& link_list, bool symmetrical)
 {
-  pimpl_->add_route(src->get_netpoint(), dst->get_netpoint(), src->get_gateway(), dst->get_gateway(), link_list,
-                    symmetrical);
+  pimpl_->add_route(src ? src->get_netpoint() : nullptr, dst ? dst->get_netpoint(): nullptr,
+                    src ? src->get_gateway() : nullptr, dst ? dst->get_gateway() : nullptr,
+                    link_list, symmetrical);
 }
 
 void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
