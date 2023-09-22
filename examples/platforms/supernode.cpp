@@ -26,8 +26,7 @@ static std::string int_string(int n)
  */
 static sg4::NetZone* create_node(const sg4::NetZone* root, const std::string& node_name, const int nb_cpu)
 {
-  auto* node = sg4::create_star_zone(node_name);
-  node->set_parent(root);
+  auto* node = sg4::create_star_zone(node_name)->set_parent(root);
 
   /* create all hosts and connect them to outside world */
   for (int i = 0; i < nb_cpu; i++) {
@@ -35,9 +34,8 @@ static sg4::NetZone* create_node(const sg4::NetZone* root, const std::string& no
     const auto& linkname = "link_" + cpuname;
 
     const sg4::Host* host = node->create_host(cpuname, 1e9);
-    const sg4::Link* l    = node->create_split_duplex_link(linkname, BW_CPU)->set_latency(LAT_CPU)->seal();
-
-    node->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {{l, sg4::LinkInRoute::Direction::UP}}, true);
+    const sg4::Link* l    = node->create_split_duplex_link(linkname, BW_CPU)->set_latency(LAT_CPU);
+    node->add_route(host, nullptr, {{l, sg4::LinkInRoute::Direction::UP}}, true);
   }
 
   return node;
@@ -50,8 +48,7 @@ static sg4::NetZone* create_node(const sg4::NetZone* root, const std::string& no
 static sg4::NetZone* create_supernode(const sg4::NetZone* root, const std::string& supernode_name, const int nb_nodes,
                                       const int nb_cpu)
 {
-  auto* supernode = sg4::create_star_zone(supernode_name);
-  supernode->set_parent(root);
+  auto* supernode = sg4::create_star_zone(supernode_name)->set_parent(root);
 
   /* create all nodes and connect them to outside world */
   for (int i = 0; i < nb_nodes; i++) {
@@ -59,11 +56,11 @@ static sg4::NetZone* create_supernode(const sg4::NetZone* root, const std::strin
     const auto& linkname  = "link_" + node_name;
 
     sg4::NetZone* node = create_node(supernode, node_name, nb_cpu);
-    auto* router       = node->create_router("router_" + node_name);
+    node->set_gateway(node->create_router("router_" + node_name));
     node->seal();
 
-    const sg4::Link* l = supernode->create_split_duplex_link(linkname, BW_NODE)->set_latency(LAT_NODE)->seal();
-    supernode->add_route(node->get_netpoint(), nullptr, router, nullptr, {{l, sg4::LinkInRoute::Direction::UP}}, true);
+    const sg4::Link* l = supernode->create_split_duplex_link(linkname, BW_NODE)->set_latency(LAT_NODE);
+    supernode->add_route(node, nullptr, {{l, sg4::LinkInRoute::Direction::UP}}, true);
   }
   return supernode;
 }
@@ -83,12 +80,11 @@ static sg4::NetZone* create_cluster(const std::string& cluster_name, const int n
     const auto& linkname       = "link_" + supernode_name;
 
     sg4::NetZone* supernode = create_supernode(cluster, supernode_name, nb_nodes, nb_cpu);
-    auto* router            = supernode->create_router("router_" + supernode_name);
+    supernode->set_gateway(supernode->create_router("router_" + supernode_name));
     supernode->seal();
 
-    const sg4::Link* l = cluster->create_split_duplex_link(linkname, BW_NETWORK)->set_latency(LAT_NETWORK)->seal();
-    cluster->add_route(supernode->get_netpoint(), nullptr, router, nullptr, {{l, sg4::LinkInRoute::Direction::UP}},
-                       true);
+    const sg4::Link* l = cluster->create_split_duplex_link(linkname, BW_NETWORK)->set_latency(LAT_NETWORK);
+    cluster->add_route(supernode, nullptr, {{l, sg4::LinkInRoute::Direction::UP}}, true);
   }
   return cluster;
 }
