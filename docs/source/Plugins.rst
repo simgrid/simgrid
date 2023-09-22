@@ -220,7 +220,7 @@ File System
 .. _plugin_battery:
 
 Battery
-===========
+=======
 
 .. doxygengroup:: plugin_battery
 
@@ -232,8 +232,10 @@ Solar Panel
 .. doxygengroup:: plugin_solar_panel
 
 Chiller
-===========
+=======
 
 .. doxygengroup:: plugin_chiller
+
+   .. doxygentypedef:: ChillerPtr
 
 ..  LocalWords:  SimGrid

@@ -21,7 +21,7 @@ SIMGRID_REGISTER_PLUGIN(chiller, "Chiller management", nullptr)
 This is the chiller plugin, enabling management of chillers.
 
 Chiller
-....................
+.......
 
 A chiller is placed inside a room with several machines. The role of the chiller is to keep the temperature of the room
 below a threshold. This plugin and its equations are based on the paper "Co-simulation of FMUs and Distributed
