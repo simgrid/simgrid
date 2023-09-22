@@ -16,18 +16,17 @@ namespace sg4 = simgrid::s4u;
  * @param root Root netzone
  * @param name Cabinet name
  * @param radicals IDs of nodes inside the cabinet
- * @return netzone,router the created netzone and its router
+ * @return netzone the created netzone
  */
-static std::pair<sg4::NetZone*, simgrid::kernel::routing::NetPoint*>
+static sg4::NetZone*
 create_cabinet(const sg4::NetZone* root, const std::string& name, const std::vector<int>& radicals)
 {
-  auto* cluster      = sg4::create_star_zone(name);
+  auto* cluster      = sg4::create_star_zone(name)->set_parent(root);
   std::string prefix = "griffon-";
   std::string suffix = ".nancy.grid5000.fr";
-  cluster->set_parent(root);
 
   /* create the backbone link */
-  const sg4::Link* l_bb = cluster->create_link("backbone-" + name, "1.25GBps")->seal();
+  const sg4::Link* l_bb = cluster->create_link("backbone-" + name, "1.25GBps");
   sg4::LinkInRoute backbone(l_bb);
 
   /* create all hosts and connect them to outside world */
@@ -36,18 +35,18 @@ create_cabinet(const sg4::NetZone* root, const std::string& name, const std::vec
     /* create host */
     const sg4::Host* host = cluster->create_host(hostname, "286.087kf");
     /* create UP/DOWN link */
-    const sg4::Link* link = cluster->create_split_duplex_link(hostname, "125MBps")->set_latency("24us")->seal();
+    const sg4::Link* link = cluster->create_split_duplex_link(hostname, "125MBps")->set_latency("24us");
 
     /* add link and backbone for communications from the host */
     cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr,
                        {{link, sg4::LinkInRoute::Direction::UP}, backbone}, true);
   }
 
-  /* create router */
-  auto* router = cluster->create_router(prefix + name + "-router" + suffix);
+  /* create gateway */
+  cluster->set_gateway(cluster->create_router(prefix + name + "-router" + suffix));
 
   cluster->seal();
-  return std::make_pair(cluster, router);
+  return cluster;
 }
 
 /** @brief Programmatic version of griffon.xml */
@@ -75,7 +74,6 @@ void load_platform(const sg4::Engine& /*e*/)
 
   auto* root = sg4::create_star_zone("AS_griffon");
   sg4::NetZone* cab_zone;
-  simgrid::kernel::routing::NetPoint* router;
 
   /* create top link */
   const sg4::Link* l_bb = root->create_link("backbone", "1.25GBps")->set_latency("24us")->seal();
@@ -84,23 +82,23 @@ void load_platform(const sg4::Engine& /*e*/)
   /* create cabinet1 */
   std::vector<int> rad(32);
   std::iota(rad.begin(), rad.end(), 1); // 1-29,58,59,60
-  rad[rad.size() - 1]        = 60;
-  rad[rad.size() - 2]        = 59;
-  rad[rad.size() - 3]        = 58;
-  std::tie(cab_zone, router) = create_cabinet(root, "cabinet1", rad);
-  root->add_route(cab_zone->get_netpoint(), nullptr, router, nullptr, {backbone});
+  rad[rad.size() - 1]  = 60;
+  rad[rad.size() - 2]  = 59;
+  rad[rad.size() - 3]  = 58;
+  cab_zone             = create_cabinet(root, "cabinet1", rad);
+  root->add_route(cab_zone, nullptr, {backbone});
 
   /* create cabinet2 */
   rad.resize(28);
   std::iota(rad.begin(), rad.end(), 30); // 30-57
-  std::tie(cab_zone, router) = create_cabinet(root, "cabinet2", rad);
-  root->add_route(cab_zone->get_netpoint(), nullptr, router, nullptr, {backbone});
+  cab_zone = create_cabinet(root, "cabinet2", rad);
+  root->add_route(cab_zone, nullptr, {backbone});
 
   /* create cabinet3 */
   rad.resize(32);
   std::iota(rad.begin(), rad.end(), 61); // 61-92
-  std::tie(cab_zone, router) = create_cabinet(root, "cabinet3", rad);
-  root->add_route(cab_zone->get_netpoint(), nullptr, router, nullptr, {backbone});
+  cab_zone = create_cabinet(root, "cabinet3", rad);
+  root->add_route(cab_zone, nullptr, {backbone});
 
   root->seal();
 }
