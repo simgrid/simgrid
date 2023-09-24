@@ -85,7 +85,7 @@ unsigned long NetZone::add_component(kernel::routing::NetPoint* elm)
   return pimpl_->add_component(elm);
 }
 
-void NetZone::add_route(NetZone* src, NetZone* dst, const std::vector<const Link*>& links)
+void NetZone::add_route(const NetZone* src, const NetZone* dst, const std::vector<const Link*>& links)
 {
   std::vector<LinkInRoute> links_direct;
   std::vector<LinkInRoute> links_reverse;
@@ -101,7 +101,7 @@ void NetZone::add_route(NetZone* src, NetZone* dst, const std::vector<const Link
                     links_reverse, false);
 }
 
-void NetZone::add_route(NetZone* src, NetZone* dst, const std::vector<LinkInRoute>& link_list, bool symmetrical)
+void NetZone::add_route(const NetZone* src, const NetZone* dst, const std::vector<LinkInRoute>& link_list, bool symmetrical)
 {
   pimpl_->add_route(src ? src->get_netpoint() : nullptr, dst ? dst->get_netpoint(): nullptr,
                     src ? src->get_gateway() : nullptr, dst ? dst->get_gateway() : nullptr,
@@ -110,14 +110,14 @@ void NetZone::add_route(NetZone* src, NetZone* dst, const std::vector<LinkInRout
 
 void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                        const std::vector<LinkInRoute>& link_list, bool symmetrical)
+                        const std::vector<LinkInRoute>& link_list, bool symmetrical) //XBT_ATTRIB_DEPRECATED_v339
 {
   pimpl_->add_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
 }
 
 void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                        const std::vector<const Link*>& links)
+                        const std::vector<const Link*>& links) //XBT_ATTRIB_DEPRECATED_v339
 {
   std::vector<LinkInRoute> links_direct;
   std::vector<LinkInRoute> links_reverse;

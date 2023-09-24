@@ -40,9 +40,9 @@ static sg4::NetZone* create_cluster(const sg4::NetZone* root, const std::string&
     sg4::LinkInRoute link_down{l_down};
 
     /* add link UP and backbone for communications from the host */
-    cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {link_up, backbone}, false);
+    cluster->add_route(host, nullptr, {link_up, backbone}, false);
     /* add backbone and link DOWN for communications to the host */
-    cluster->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, {backbone, link_down}, false);
+    cluster->add_route(nullptr, host, {backbone, link_down}, false);
   }
 
   /* create gateway*/

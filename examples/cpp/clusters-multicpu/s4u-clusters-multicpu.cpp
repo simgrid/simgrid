@@ -105,16 +105,14 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned long>& /*co
   /* create CPUs */
   for (int i = 0; i < num_cpus; i++) {
     std::string cpu_name  = hostname + "-cpu" + std::to_string(i);
-    const sg4::Host* host = host_zone->create_host(cpu_name, speed)->seal();
+    const sg4::Host* host = host_zone->create_host(cpu_name, speed);
     /* the first CPU is the gateway */
     if (i == 0)
       gateway = host->get_netpoint();
     /* create split-duplex link */
-    sg4::SplitDuplexLink* link = host_zone->create_split_duplex_link("link-" + cpu_name, link_bw);
-    link->set_latency(link_lat)->seal();
+    auto* link = host_zone->create_split_duplex_link("link-" + cpu_name, link_bw)->set_latency(link_lat);
     /* connecting CPU to outer world */
-    host_zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {{link, sg4::LinkInRoute::Direction::UP}},
-                         true);
+    host_zone->add_route(host, nullptr, {{link, sg4::LinkInRoute::Direction::UP}}, true);
   }
   /* seal newly created netzone */
   host_zone->seal();

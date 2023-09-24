@@ -38,8 +38,7 @@ create_cabinet(const sg4::NetZone* root, const std::string& name, const std::vec
     const sg4::Link* link = cluster->create_split_duplex_link(hostname, "125MBps")->set_latency("24us");
 
     /* add link and backbone for communications from the host */
-    cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr,
-                       {{link, sg4::LinkInRoute::Direction::UP}, backbone}, true);
+    cluster->add_route(host, nullptr, {{link, sg4::LinkInRoute::Direction::UP}, backbone}, true);
   }
 
   /* create gateway */

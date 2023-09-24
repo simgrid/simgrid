@@ -77,7 +77,7 @@ public:
    * @param dst Destination netzone
    * @param link_list List of links
    */
-  void add_route(NetZone* src, NetZone* dst, const std::vector<const Link*>& links);
+  void add_route(const NetZone* src, const NetZone* dst, const std::vector<const Link*>& links);
 
 /**
    * @brief Add a route between 2 netzones, and same in other direction
@@ -86,7 +86,7 @@ public:
    * @param link_list List of links and their direction used in this communication
    * @param symmetrical Bi-directional communication
    */
-  void add_route(NetZone* src, NetZone* dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
+  void add_route(const NetZone* src, const NetZone* dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
 
   /**
    * @brief Add a route between 2 netpoints
@@ -102,6 +102,7 @@ public:
    * @param link_list List of links and their direction used in this communication
    * @param symmetrical Bi-directional communication
    */
+  //XBT_ATTRIB_DEPRECATED_v339("Please call add_route either from Host to Host or NetZone to NetZone")
   void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
                  kernel::routing::NetPoint* gw_dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
   /**
@@ -117,7 +118,8 @@ public:
    * @param gw_dst Netpoint of the gateway in the destination netzone
    * @param link_list List of links
    */
-  void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
+ //XBT_ATTRIB_DEPRECATED_v339("Please call add_route either from Host to Host or NetZone to NetZone")
+ void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
                  kernel::routing::NetPoint* gw_dst, const std::vector<const Link*>& links);
 
   /**
