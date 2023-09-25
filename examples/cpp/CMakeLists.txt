@@ -172,7 +172,7 @@ foreach (example activityset-testany activityset-waitany activityset-waitall act
                  mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-bugged2-liveness mc-centralized-mutex mc-electric-fence mc-failing-assert
                  network-ns3 network-ns3-wifi network-wifi
                  io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-dependent
-                 task-io task-microservice task-parallelism task-simple task-storm task-switch-host task-variable-load
+                 task-dispatch task-io task-microservice task-parallelism task-simple task-storm task-switch-host task-variable-load
                  photovoltaic-simple
                  platform-comm-serialize platform-failures platform-profile platform-properties
                  plugin-host-load plugin-jbod plugin-link-load plugin-prodcons
