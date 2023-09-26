@@ -248,8 +248,29 @@ struct ClusterCallbacks {
    * @param id: Internal identifier of the element
    * @return pair<NetPoint*, NetPoint*>: returns a pair of netpoint and gateway.
    */
+  // XBT_ATTRIB_DEPRECATED_v339
   using ClusterNetPointCb = std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*>(
       NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id);
+
+   /**
+   * @brief Callback used to set the NetZone located at some leaf of clusters (Torus, FatTree, etc)
+   *
+   * @param zone: The parent zone, needed for creating new resources (hosts, links)
+   * @param coord: the coordinates of the element
+   * @param id: Internal identifier of the element
+   * @return NetZone*: returns newly created netzone
+   */
+  using ClusterNetZoneCb = NetZone*(NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id);
+  /**
+   * @brief Callback used to set the Host located at some leaf of clusters (Torus, FatTree, etc)
+   *
+   * @param zone: The parent zone, needed for creating new resources (hosts, links)
+   * @param coord: the coordinates of the element
+   * @param id: Internal identifier of the element
+   * @return Host*: returns newly created host
+   */
+  using ClusterHostCb = Host*(NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id);
+
   /**
    * @brief Callback used to set the links for some leaf of the cluster (Torus, FatTree, etc)
    *
@@ -267,14 +288,36 @@ struct ClusterCallbacks {
    */
   using ClusterLinkCb = Link*(NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id);
 
-  std::function<ClusterNetPointCb> netpoint;
+  bool by_netzone_ = false;
+  bool is_by_netzone() const { return by_netzone_; }
+  bool by_netpoint_ = false; // XBT_ATTRIB_DEPRECATED_v339
+  bool is_by_netpoint() const { return by_netpoint_; } // XBT_ATTRIB_DEPRECATED_v339
+  std::function<ClusterNetPointCb> netpoint; // XBT_ATTRIB_DEPRECATED_v339
+  std::function<ClusterHostCb> host;
+  std::function<ClusterNetZoneCb> netzone;
   std::function<ClusterLinkCb> loopback = {};
   std::function<ClusterLinkCb> limiter  = {};
+  explicit ClusterCallbacks(const std::function<ClusterNetZoneCb>& set_netzone)
+      : by_netzone_(true), netzone(set_netzone){/* nothing to do */};
+
+  ClusterCallbacks(const std::function<ClusterNetZoneCb>& set_netzone,
+                   const std::function<ClusterLinkCb>& set_loopback, const std::function<ClusterLinkCb>& set_limiter)
+      :  by_netzone_(true), netzone(set_netzone), loopback(set_loopback), limiter(set_limiter){/* nothing to do */};
+
+  explicit ClusterCallbacks(const std::function<ClusterHostCb>& set_host)
+      : host(set_host) {/* nothing to do */};
+
+  ClusterCallbacks(const std::function<ClusterHostCb>& set_host,
+                   const std::function<ClusterLinkCb>& set_loopback, const std::function<ClusterLinkCb>& set_limiter)
+      :  host(set_host), loopback(set_loopback), limiter(set_limiter){/* nothing to do */};
+
+  XBT_ATTRIB_DEPRECATED_v339("Please use callback with either a Host/NetZone creation function as first parameter")
   explicit ClusterCallbacks(const std::function<ClusterNetPointCb>& set_netpoint)
-      : netpoint(set_netpoint){/*nothing to do */};
+      : by_netpoint_(true), netpoint(set_netpoint){/* nothing to do */};
+  XBT_ATTRIB_DEPRECATED_v339("Please use callback with either a Host/NetZone creation function as first parameter")
   ClusterCallbacks(const std::function<ClusterNetPointCb>& set_netpoint,
                    const std::function<ClusterLinkCb>& set_loopback, const std::function<ClusterLinkCb>& set_limiter)
-      : netpoint(set_netpoint), loopback(set_loopback), limiter(set_limiter){/*nothing to do */};
+      : by_netpoint_(true), netpoint(set_netpoint), loopback(set_loopback), limiter(set_limiter){/* nothing to do */};
 };
 /**
  * @brief Create a torus zone

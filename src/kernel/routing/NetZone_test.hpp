@@ -6,17 +6,20 @@
 #ifndef NETZONE_TEST_HPP
 #define NETZONE_TEST_HPP
 
-#include "simgrid/kernel/routing/NetPoint.hpp"
-#include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/NetZone.hpp"
+#include "xbt/log.h"
+XBT_LOG_EXTERNAL_CATEGORY(ker_platform);
 
 // Callback function common to several routing unit tests
 struct CreateHost {
-  std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
-  operator()(simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id) const
+  simgrid::s4u::NetZone* operator()(simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& /*coord*/,
+                                    unsigned long id) const
   {
-    const simgrid::s4u::Host* host = zone->create_host(std::to_string(id), 1e9)->seal();
-    return std::make_pair(host->get_netpoint(), nullptr);
+    XBT_CINFO(ker_platform,"PROUT");
+    auto* host_zone = simgrid::s4u::create_empty_zone("zone-" +std::to_string(id))->set_parent(zone);
+    host_zone->create_host(std::to_string(id), "1Gf");
+    host_zone->seal();
+    return host_zone;
   }
 };
 

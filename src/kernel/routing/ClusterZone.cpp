@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Host.hpp"
 #include "simgrid/kernel/routing/ClusterZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
@@ -82,7 +83,17 @@ void ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<un
   kernel::routing::NetPoint* netpoint = nullptr;
   kernel::routing::NetPoint* gw       = nullptr;
   auto dims                           = index_to_dims(position);
-  std::tie(netpoint, gw)              = set_callbacks.netpoint(get_iface(), dims, position);
+  if (set_callbacks.is_by_netpoint()) { // XBT_ATTRIB_DEPRECATED_v339
+    std::tie(netpoint, gw) = set_callbacks.netpoint(get_iface(), dims, position); // XBT_ATTRIB_DEPRECATED_v339
+  } else if (set_callbacks.is_by_netzone()) {
+    s4u::NetZone* netzone = set_callbacks.netzone(get_iface(), dims, position);
+    netpoint              = netzone->get_netpoint();
+    gw                    = netzone->get_gateway();
+  } else {
+    s4u::Host* host = set_callbacks.host(get_iface(), dims, position);
+    netpoint        = host->get_netpoint();
+  }
+
   xbt_assert(netpoint, "set_netpoint(elem=%lu): Invalid netpoint (nullptr)", position);
   if (netpoint->is_netzone()) {
     xbt_assert(gw && not gw->is_netzone(),
