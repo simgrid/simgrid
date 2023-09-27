@@ -12,14 +12,10 @@ XBT_LOG_EXTERNAL_CATEGORY(ker_platform);
 
 // Callback function common to several routing unit tests
 struct CreateHost {
-  simgrid::s4u::NetZone* operator()(simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& /*coord*/,
+  simgrid::s4u::Host* operator()(simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& /*coord*/,
                                     unsigned long id) const
   {
-    XBT_CINFO(ker_platform,"PROUT");
-    auto* host_zone = simgrid::s4u::create_empty_zone("zone-" +std::to_string(id))->set_parent(zone);
-    host_zone->create_host(std::to_string(id), "1Gf");
-    host_zone->seal();
-    return host_zone;
+    return zone->create_host(std::to_string(id), "1Gf");
   }
 };
 
