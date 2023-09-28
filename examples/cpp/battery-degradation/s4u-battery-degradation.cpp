@@ -14,13 +14,13 @@ static void manager()
 {
   auto battery = simgrid::plugins::Battery::init("Battery", 0.8, -200, 200, 0.9, 0.9, 10, 100);
 
-  battery->set_load("load", 100);
+  battery->set_load("load", 100.0);
 
   auto handler1 = battery->schedule_handler(
       0.2, simgrid::plugins::Battery::DISCHARGE, simgrid::plugins::Battery::Handler::PERSISTANT, [battery]() {
         XBT_INFO("%f,%f,SoC", simgrid::s4u::Engine::get_clock(), battery->get_state_of_charge());
         XBT_INFO("%f,%f,SoH", simgrid::s4u::Engine::get_clock(), battery->get_state_of_health());
-        battery->set_load("load", -100);
+        battery->set_load("load", -100.0);
       });
 
   std::shared_ptr<simgrid::plugins::Battery::Handler> handler2;
@@ -33,7 +33,7 @@ static void manager()
           battery->delete_handler(handler1);
           battery->delete_handler(handler2);
         }
-        battery->set_load("load", 100);
+        battery->set_load("load", 100.0);
       });
 }
 

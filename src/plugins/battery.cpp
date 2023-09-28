@@ -6,10 +6,7 @@
 #include <simgrid/plugins/battery.hpp>
 #include <simgrid/plugins/energy.h>
 #include <simgrid/s4u/Engine.hpp>
-#include <simgrid/s4u/Host.hpp>
 #include <simgrid/simix.hpp>
-#include <xbt/asserts.h>
-#include <xbt/log.h>
 
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/simgrid/module.hpp"
@@ -154,11 +151,13 @@ void Battery::update()
     double consumed_power_w = 0;
     for (auto const& [host, active] : host_loads_)
       provided_power_w += active ? sg_host_get_current_consumption(host) : 0;
-    for (auto const& [name, load] : named_loads_) {
-      if (load > 0)
-        provided_power_w += load;
+    for (auto const& [name, pair] : named_loads_) {
+      if (not pair.first)
+        continue;
+      if (pair.second > 0)
+        provided_power_w += pair.second;
       else
-        consumed_power_w += -load;
+        consumed_power_w += -pair.second;
     }
     provided_power_w = std::min(provided_power_w, nominal_discharge_power_w_ * discharge_efficiency_);
     consumed_power_w = std::min(consumed_power_w, -nominal_charge_power_w_);
@@ -210,11 +209,13 @@ double Battery::next_occurring_handler()
   double consumed_power_w = 0;
   for (auto const& [host, active] : host_loads_)
     provided_power_w += active ? sg_host_get_current_consumption(host) : 0;
-  for (auto const& [name, load] : named_loads_) {
-    if (load > 0)
-      provided_power_w += load;
+  for (auto const& [name, pair] : named_loads_) {
+    if (not pair.first)
+      continue;
+    if (pair.second > 0)
+      provided_power_w += pair.second;
     else
-      consumed_power_w += -load;
+      consumed_power_w += -pair.second;
   }
 
   provided_power_w = std::min(provided_power_w, nominal_discharge_power_w_ * discharge_efficiency_);
@@ -224,10 +225,11 @@ double Battery::next_occurring_handler()
   for (auto& handler : handlers_) {
     double lost_power_w   = provided_power_w / discharge_efficiency_;
     double gained_power_w = consumed_power_w * charge_efficiency_;
-    // Handler cannot happen
-    if ((lost_power_w == gained_power_w) or (handler->state_of_charge_ == energy_stored_j_ / (3600 * capacity_wh_)) or
-        (lost_power_w > gained_power_w and handler->flow_ == Flow::CHARGE) or
-        (lost_power_w < gained_power_w and handler->flow_ == Flow::DISCHARGE)) {
+    if ((lost_power_w == gained_power_w) or (handler->state_of_charge_ == get_state_of_charge()) or
+        (lost_power_w > gained_power_w and
+         (handler->flow_ == Flow::CHARGE or handler->state_of_charge_ > get_state_of_charge())) or
+        (lost_power_w < gained_power_w and
+         (handler->flow_ == Flow::DISCHARGE or handler->state_of_charge_ < get_state_of_charge()))) {
       continue;
     }
     // Evaluate time until handler happen
@@ -263,7 +265,7 @@ Battery::Battery(const std::string& name, double state_of_charge, double nominal
     , capacity_wh_(initial_capacity_wh)
     , energy_stored_j_(state_of_charge * 3600 * initial_capacity_wh)
 {
-  xbt_assert(nominal_charge_power_w <= 0, " : nominal charge power must be non-negative (provided: %f)",
+  xbt_assert(nominal_charge_power_w <= 0, " : nominal charge power must be <= 0 (provided: %f)",
              nominal_charge_power_w);
   xbt_assert(nominal_discharge_power_w >= 0, " : nominal discharge power must be non-negative (provided: %f)",
              nominal_discharge_power_w);
@@ -309,7 +311,21 @@ BatteryPtr Battery::init(const std::string& name, double state_of_charge, double
  */
 void Battery::set_load(const std::string& name, double power_w)
 {
-  named_loads_[name] = power_w;
+  kernel::actor::simcall_answered([this, &name, &power_w] {
+    if (named_loads_.find(name) == named_loads_.end())
+      named_loads_[name] = std::make_pair(true, power_w);
+    else
+      named_loads_[name].second = power_w;
+  });
+}
+
+/** @ingroup plugin_battery
+ *  @param name The name of the load
+ *  @param active Status of the load. If false then the load is ignored by the Battery.
+ */
+void Battery::set_load(const std::string& name, bool active)
+{
+  kernel::actor::simcall_answered([this, &name, &active] { named_loads_[name].first = active; });
 }
 
 /** @ingroup plugin_battery
@@ -322,7 +338,7 @@ void Battery::set_load(const std::string& name, double power_w)
  */
 void Battery::connect_host(s4u::Host* host, bool active)
 {
-  host_loads_[host] = active;
+  kernel::actor::simcall_answered([this, &host, &active] { host_loads_[host] = active; });
 }
 
 /** @ingroup plugin_battery

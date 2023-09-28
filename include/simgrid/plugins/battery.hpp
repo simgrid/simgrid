@@ -94,8 +94,8 @@ private:
   double initial_capacity_wh_;
   double energy_budget_j_;
 
-  std::map<const s4u::Host*, bool> host_loads_     = {};
-  std::map<const std::string, double> named_loads_ = {};
+  std::map<const s4u::Host*, bool> host_loads_                      = {};
+  std::map<const std::string, std::pair<bool, double>> named_loads_ = {};
   std::vector<std::shared_ptr<Handler>> handlers_;
 
   double capacity_wh_;
@@ -128,6 +128,7 @@ public:
                          double nominal_discharge_power_w, double charge_efficiency, double discharge_efficiency,
                          double initial_capacity_wh, int cycles);
   void set_load(const std::string& name, double power_w);
+  void set_load(const std::string& name, bool active);
   void connect_host(s4u::Host* host, bool active = true);
   double get_state_of_charge();
   double get_state_of_health();
