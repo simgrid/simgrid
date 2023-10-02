@@ -44,12 +44,16 @@ def parse():
     return parser.parse_args()
 
 def callback(t):
-    print(f'[{Engine.clock}] {t} finished ({t.count})')
+    print(f'[{Engine.clock}] {t} finished ({t.get_count()})')
 
-def switch(t, hosts, execs):
-    comm0.destination = hosts[t.count % 2]
-    comm0.remove_successor(execs[t.count % 2 - 1])
-    comm0.add_successor(execs[t.count % 2])
+def switch_destination(t, hosts):
+    t.destination = hosts[switch_destination.count % 2]
+    switch_destination.count += 1
+switch_destination.count = 0
+
+def switch_successor(t, execs):
+    t.remove_successor(execs[t.get_count() % 2])
+    t.add_successor(execs[t.get_count() % 2 - 1])
 
 if __name__ == '__main__':
     args = parse()
@@ -74,13 +78,16 @@ if __name__ == '__main__':
     exec1.add_successor(comm1)
     exec2.add_successor(comm2)
 
-    # Add a function to be called when tasks end for log purpose
+    # Add a callback when tasks end for log purpose
     Task.on_completion_cb(callback)
 
-    # Add a function to be called before each firing of comm0
-    # This function modifies the graph of tasks by adding or removing
-    # successors to comm0
-    comm0.on_this_start_cb(lambda t: switch(t, [jupiter, fafard], [exec1,exec2]))
+    # Add a callback before each firing of comm0
+    # It switches the destination of comm0
+    comm0.on_this_start_cb(lambda t: switch_destination(t, [jupiter, fafard]))
+
+    # Add a callback before comm0 send tokens to successors
+    # It switches the successor of comm0
+    comm0.on_this_completion_cb(lambda t: switch_successor(t, [exec1,exec2]))
 
     # Enqueue two firings for task exec1
     comm0.enqueue_firings(4)

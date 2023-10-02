@@ -48,7 +48,7 @@ class Task {
   void receive(Task* source);
 
   std::shared_ptr<Token> token_ = nullptr;
-  std::deque<std::map<TaskPtr, std::shared_ptr<Token>>> tokens_received_;
+  std::map<TaskPtr, std::deque<std::shared_ptr<Token>>> tokens_received_;
   std::map<std::string, std::deque<ActivityPtr>> current_activities_ = {
       {"instance_0", {}}, {"dispatcher", {}}, {"collector", {}}};
 
@@ -83,7 +83,9 @@ public:
   void set_load_balancing_function(std::function<std::string()> func);
 
   void set_token(std::shared_ptr<Token> token);
-  std::shared_ptr<Token> get_next_token_from(TaskPtr t) const { return tokens_received_.front().at(t); }
+  std::shared_ptr<Token> get_token_from(TaskPtr t) const { return tokens_received_.at(t).front(); }
+  std::deque<std::shared_ptr<Token>> get_tokens_from(TaskPtr t) const { return tokens_received_.at(t); }
+  void deque_token_from(TaskPtr t);
 
   void add_successor(TaskPtr t);
   void remove_successor(TaskPtr t);

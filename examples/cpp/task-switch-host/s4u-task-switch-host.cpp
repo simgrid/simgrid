@@ -54,12 +54,19 @@ int main(int argc, char* argv[])
   // successors to comm0
   comm0->on_this_start_cb([&comm0, exec1, exec2, jupiter, fafard](const sg4::Task*) {
     static int count = 0;
-    if (count % 2 == 0) {
+    if (count % 2 == 0)
       comm0->set_destination(jupiter);
+    else
+      comm0->set_destination(fafard);
+    count++;
+  });
+
+  comm0->on_this_completion_cb([&comm0, exec1, exec2, jupiter, fafard](const sg4::Task*) {
+    static int count = 0;
+    if (count % 2 == 0) {
       comm0->add_successor(exec1);
       comm0->remove_successor(exec2);
     } else {
-      comm0->set_destination(fafard);
       comm0->add_successor(exec2);
       comm0->remove_successor(exec1);
     }
