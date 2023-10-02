@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
     count++;
   });
 
-  comm0->on_this_completion_cb([&comm0, exec1, exec2, jupiter, fafard](const sg4::Task*) {
+  comm0->on_this_completion_cb([&comm0, exec1, exec2](const sg4::Task*) {
     static int count = 0;
     if (count % 2 == 0) {
       comm0->add_successor(exec1);
