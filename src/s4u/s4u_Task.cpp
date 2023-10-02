@@ -49,7 +49,6 @@ bool Task::ready_to_run(std::string instance)
 void Task::receive(Task* source)
 {
   XBT_DEBUG("Task %s received a token from %s", name_.c_str(), source->name_.c_str());
-  auto source_count = predecessors_[source];
   predecessors_[source]++;
   tokens_received_[source].push_back(source->token_);
   bool enough_tokens = true;
