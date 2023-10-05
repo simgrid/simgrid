@@ -46,7 +46,7 @@ void MailboxImpl::set_receiver(s4u::ActorPtr actor)
 /** @brief Pushes a communication activity into a mailbox
  *  @param comm What to add
  */
-void MailboxImpl::push(CommImplPtr comm)
+void MailboxImpl::push(const CommImplPtr& comm)
 {
   comm->set_mailbox(this);
   this->comm_queue_.push_back(std::move(comm));
@@ -61,12 +61,11 @@ void MailboxImpl::remove(const CommImplPtr& comm)
              (comm->get_mailbox() ? comm->get_mailbox()->get_cname() : "(null)"), this->get_cname());
 
   comm->set_mailbox(nullptr);
-  for (auto it = this->comm_queue_.begin(); it != this->comm_queue_.end(); it++)
-    if (*it == comm) {
-      this->comm_queue_.erase(it);
-      return;
-    }
-  xbt_die("Comm %p not found in mailbox %s", comm.get(), this->get_cname());
+  auto it = std::find(this->comm_queue_.begin(), this->comm_queue_.end(), comm);
+  if (it != this->comm_queue_.end())
+    this->comm_queue_.erase(it);
+  else
+    xbt_die("Comm %p not found in mailbox %s", comm.get(), this->get_cname());
 }
 
 /** @brief Removes all communication activities from a mailbox
@@ -74,7 +73,7 @@ void MailboxImpl::remove(const CommImplPtr& comm)
 void MailboxImpl::clear(bool do_finish)
 {
   // CommImpl::cancel() will remove the comm from the mailbox..
-  for (auto comm : done_comm_queue_) {
+  for (const auto& comm : done_comm_queue_) {
     comm->cancel();
     comm->set_state(State::FAILED);
     if (do_finish)

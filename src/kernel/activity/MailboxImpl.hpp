@@ -11,21 +11,17 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 
-#include <boost/circular_buffer.hpp>
-
 namespace simgrid::kernel::activity {
 
 /** @brief Implementation of the s4u::Mailbox */
 
 class MailboxImpl {
-  static constexpr size_t MAX_MAILBOX_SIZE = 10000000;
-
   s4u::Mailbox piface_;
   std::string name_;
   actor::ActorImplPtr permanent_receiver_; // actor to which the mailbox is attached
-  boost::circular_buffer_space_optimized<CommImplPtr> comm_queue_{MAX_MAILBOX_SIZE};
+  std::list<CommImplPtr> comm_queue_;
   // messages already received in the permanent receive mode
-  boost::circular_buffer_space_optimized<CommImplPtr> done_comm_queue_{MAX_MAILBOX_SIZE};
+  std::list<CommImplPtr> done_comm_queue_;
 
   friend s4u::Engine;
   friend s4u::Mailbox;
@@ -50,8 +46,8 @@ public:
   const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
   void set_receiver(s4u::ActorPtr actor);
-  void push(CommImplPtr comm);
-  void push_done(CommImplPtr done_comm) { done_comm_queue_.push_back(done_comm); }
+  void push(const CommImplPtr& comm);
+  void push_done(const CommImplPtr& done_comm) { done_comm_queue_.push_back(done_comm); }
   void remove(const CommImplPtr& comm);
   void clear(bool do_finish);
   CommImplPtr iprobe(int type, const std::function<bool(void*, void*, CommImpl*)>& match_fun, void* data);
@@ -61,9 +57,9 @@ public:
   actor::ActorImplPtr get_permanent_receiver() const { return permanent_receiver_; }
   bool empty() const { return comm_queue_.empty(); }
   size_t size() const { return comm_queue_.size(); }
-  CommImplPtr front() const { return comm_queue_.front(); }
+  const CommImplPtr& front() const { return comm_queue_.front(); }
   bool has_some_done_comm() const { return not done_comm_queue_.empty(); }
-  CommImplPtr done_front() const { return done_comm_queue_.front(); }
+  const CommImplPtr& done_front() const { return done_comm_queue_.front(); }
 };
 } // namespace simgrid::kernel::activity
 
