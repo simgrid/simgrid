@@ -197,6 +197,7 @@ class StandardLinkImpl;
 class SplitDuplexLinkImpl;
 class NetworkAction;
 class DiskImpl;
+using DiskImplPtr = boost::intrusive_ptr<DiskImpl>;
 class DiskModel;
 class VirtualMachineImpl;
 class VMModel;

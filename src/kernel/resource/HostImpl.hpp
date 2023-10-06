@@ -49,7 +49,7 @@ class XBT_PRIVATE HostImpl : public xbt::PropertyHolder, public actor::ObjectAcc
   ActorList actor_list_;
   std::vector<actor::ProcessArg*> actors_at_boot_;
   s4u::Host piface_;
-  std::map<std::string, DiskImpl*, std::less<>> disks_;
+  std::map<std::string, DiskImplPtr, std::less<>> disks_;
   std::map<std::string, VirtualMachineImpl*, std::less<>> vms_;
   std::string name_{"noname"};
   routing::NetZoneImpl* englobing_zone_ = nullptr;
