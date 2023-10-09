@@ -66,18 +66,6 @@ static void end_manager(sp::BatteryPtr b)
     b->delete_handler(handler);
 }
 
-static void logger(sp::BatteryPtr battery, sp::SolarPanelPtr solar_panel, sp::ChillerPtr chiller, sg4::Host* host1,
-                   sg4::Host* host2)
-{
-  while (true) {
-    XBT_INFO("SoC: %f Solar_Power: %f E_chiller: %f E_hosts_brown: %f E_hosts_green: %f",
-             battery->get_state_of_charge(), solar_panel->get_power(), chiller->get_energy_consumed(),
-             sg_host_get_consumed_energy(host1) + sg_host_get_consumed_energy(host2) - battery->get_energy_provided(),
-             battery->get_energy_provided());
-    simgrid::s4u::this_actor::sleep_for(100);
-  }
-}
-
 int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
@@ -113,7 +101,6 @@ int main(int argc, char* argv[])
   sg4::Actor::create("host_job_manager", myhost1, host_job_manager, 12 * 60 * 60, 4 * 60 * 60);
   sg4::Actor::create("host_job_manager", myhost2, host_job_manager, 12 * 60 * 60, 4 * 60 * 60);
   sg4::Actor::create("end_manager", myhost1, end_manager, battery);
-  // sg4::Actor::create("logger", myhost1, logger, battery, solar_panel, chiller, myhost1, myhost2)->daemonize();
 
   e.run();
   XBT_INFO("State of charge of the battery: %0.1f%%", battery->get_state_of_charge() * 100);

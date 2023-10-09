@@ -81,6 +81,12 @@ You can schedule handlers that will happen at specific SoC of the battery and tr
 Theses handlers may be recurrent, for instance you may want to always set all loads to zero and deactivate all hosts
 connections when the battery reaches 20% SoC.
 
+Connector
+.........
+
+A Battery can act as a connector to connect Solar Panels direcly to loads. Such Battery is created without any
+parameter, cannot store energy and has a transfer efficiency of 100%.
+
   @endrst
  */
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(Battery, kernel, "Logging specific to the battery plugin");
@@ -104,6 +110,11 @@ void BatteryModel::update_actions_state(double now, double delta)
 
 double BatteryModel::next_occurring_event(double now)
 {
+  static bool init = false;
+  if (!init) {
+    init = true;
+    return 0;
+  }
   double time_delta = -1;
   for (auto battery : batteries_) {
     double time_delta_battery = battery->next_occurring_handler();
@@ -159,6 +170,7 @@ void Battery::update()
       else
         consumed_power_w += -pair.second;
     }
+
     provided_power_w = std::min(provided_power_w, nominal_discharge_power_w_ * discharge_efficiency_);
     consumed_power_w = std::min(consumed_power_w, -nominal_charge_power_w_);
 
@@ -181,6 +193,14 @@ void Battery::update()
     // Updating battery
     energy_provided_j_ += energy_lost_delta_j * discharge_efficiency_;
     energy_consumed_j_ += energy_gained_delta_j / charge_efficiency_;
+
+    // This battery is a simple connector, we only update energy provided and consumed
+    if (energy_budget_j_ == 0) {
+      energy_consumed_j_ = energy_provided_j_;
+      last_updated_      = now;
+      return;
+    }
+
     capacity_wh_ =
         initial_capacity_wh_ *
         (1 - (energy_provided_j_ / discharge_efficiency_ + energy_consumed_j_ * charge_efficiency_) / energy_budget_j_);
@@ -252,6 +272,8 @@ double Battery::next_occurring_handler()
   return time_delta;
 }
 
+Battery::Battery() {}
+
 Battery::Battery(const std::string& name, double state_of_charge, double nominal_charge_power_w,
                  double nominal_discharge_power_w, double charge_efficiency, double discharge_efficiency,
                  double initial_capacity_wh, int cycles)
@@ -280,10 +302,28 @@ Battery::Battery(const std::string& name, double state_of_charge, double nominal
 }
 
 /** @ingroup plugin_battery
+ *  @brief Init a Battery with this constructor makes it only usable as a connector.
+ *         A connector has no capacity and only delivers as much power as it receives
+           with a transfer efficiency of 100%.
+ *  @return A BatteryPtr pointing to the new Battery.
+ */
+BatteryPtr Battery::init()
+{
+  static bool plugin_inited = false;
+  if (not plugin_inited) {
+    init_plugin();
+    plugin_inited = true;
+  }
+  auto battery = BatteryPtr(new Battery());
+  battery_model_->add_battery(battery);
+  return battery;
+}
+
+/** @ingroup plugin_battery
  *  @param name The name of the Battery.
  *  @param state_of_charge The initial state of charge of the Battery [0,1].
- *  @param nominal_charge_power_w The maximum power delivered by the Battery in W (<= 0).
- *  @param nominal_discharge_power_w The maximum power absorbed by the Battery in W (>= 0).
+ *  @param nominal_charge_power_w The maximum power absorbed by the Battery in W (<= 0).
+ *  @param nominal_discharge_power_w The maximum power delivered by the Battery in W (>= 0).
  *  @param charge_efficiency The charge efficiency of the Battery [0,1].
  *  @param discharge_efficiency The discharge efficiency of the Battery [0,1].
  *  @param initial_capacity_wh The initial capacity of the Battery in Wh (>0).

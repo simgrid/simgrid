@@ -75,7 +75,19 @@ void ChillerModel::update_actions_state(double now, double delta)
 
 double ChillerModel::next_occurring_event(double now)
 {
-  return -1;
+  static bool init = false;
+  if (!init) {
+    init = true;
+    return 0;
+  }
+  double next_event = -1;
+  double tmp;
+  for (auto chiller : chillers_) {
+    tmp = chiller->get_next_event();
+    if (tmp != -1 and (next_event == -1 or tmp < next_event))
+      next_event = tmp;
+  }
+  return next_event;
 }
 
 /* Chiller */
@@ -105,7 +117,7 @@ void Chiller::update()
     temp_out_c_             = temp_in_c_ + heat_generated_j / (air_mass_kg_ * specific_heat_j_per_kg_per_c_);
     double delta_temp_c     = temp_out_c_ - goal_temp_c_;
 
-    if (not active_ or delta_temp_c < 0) {
+    if (not active_ or delta_temp_c <= 0) {
       temp_in_c_    = temp_out_c_;
       power_w_      = 0;
       last_updated_ = now;
@@ -113,17 +125,16 @@ void Chiller::update()
     }
 
     double cooling_demand_w = delta_temp_c * air_mass_kg_ * specific_heat_j_per_kg_per_c_ / time_delta_s;
-    if (cooling_demand_w / cooling_efficiency_ <= max_power_w_) {
-      power_w_   = cooling_demand_w / cooling_efficiency_;
-      temp_in_c_ = temp_out_c_ -
-                   (power_w_ * time_delta_s * cooling_efficiency_) / (air_mass_kg_ * specific_heat_j_per_kg_per_c_);
-    } else {
-      power_w_   = max_power_w_;
-      temp_in_c_ = temp_out_c_ -
-                   (power_w_ * time_delta_s * cooling_efficiency_) / (air_mass_kg_ * specific_heat_j_per_kg_per_c_);
-    }
+    double previous_power_w = power_w_;
+    power_w_                = std::min(max_power_w_, cooling_demand_w / cooling_efficiency_);
+    temp_in_c_ =
+        temp_out_c_ - (power_w_ * time_delta_s * cooling_efficiency_) / (air_mass_kg_ * specific_heat_j_per_kg_per_c_);
 
     energy_consumed_j_ += power_w_ * time_delta_s;
+    if (previous_power_w != power_w_) {
+      on_this_power_change(this);
+      on_power_change(this);
+    }
     last_updated_ = now;
   });
 }
@@ -284,4 +295,20 @@ ChillerPtr Chiller::remove_host(s4u::Host* host)
   return this;
 }
 
+/** @ingroup plugin_chiller
+ *  @return Time of the next event, i.e.,
+ when the chiller will reach the goal temp if possible, -1 otherwise.
+ */
+double Chiller::get_next_event()
+{
+  if (not is_active() or goal_temp_c_ <= temp_out_c_)
+    return -1;
+  else {
+    double heat_power_w = 0;
+    for (auto const& host : hosts_)
+      heat_power_w += sg_host_get_current_consumption(host);
+    heat_power_w = heat_power_w * (1 + alpha_);
+    return air_mass_kg_ * (goal_temp_c_ - temp_out_c_) * specific_heat_j_per_kg_per_c_ / heat_power_w;
+  }
+}
 } // namespace simgrid::plugins

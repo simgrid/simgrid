@@ -6,6 +6,7 @@
 #ifndef SIMGRID_PLUGINS_BATTERY_HPP_
 #define SIMGRID_PLUGINS_BATTERY_HPP_
 
+#include <cmath>
 #include <memory>
 #include <simgrid/kernel/resource/Model.hpp>
 #include <simgrid/s4u/Activity.hpp>
@@ -87,23 +88,24 @@ private:
   static std::shared_ptr<BatteryModel> battery_model_;
 
   std::string name_;
-  double nominal_charge_power_w_;
-  double nominal_discharge_power_w_;
-  double charge_efficiency_;
-  double discharge_efficiency_;
-  double initial_capacity_wh_;
-  double energy_budget_j_;
+  double nominal_charge_power_w_    = -INFINITY;
+  double nominal_discharge_power_w_ = INFINITY;
+  double charge_efficiency_         = 1;
+  double discharge_efficiency_      = 1;
+  double initial_capacity_wh_       = 0;
+  double energy_budget_j_           = 0;
 
   std::map<const s4u::Host*, bool> host_loads_                      = {};
   std::map<const std::string, std::pair<bool, double>> named_loads_ = {};
   std::vector<std::shared_ptr<Handler>> handlers_;
 
-  double capacity_wh_;
-  double energy_stored_j_;
+  double capacity_wh_       = 0;
+  double energy_stored_j_   = 0;
   double energy_provided_j_ = 0;
   double energy_consumed_j_ = 0;
   double last_updated_      = 0;
 
+  explicit Battery();
   explicit Battery(const std::string& name, double state_of_charge, double nominal_charge_power_w,
                    double nominal_discharge_power_w, double charge_efficiency, double discharge_efficiency,
                    double initial_capacity_wh, int cycles);
@@ -124,6 +126,7 @@ private:
 #endif
 
 public:
+  static BatteryPtr init();
   static BatteryPtr init(const std::string& name, double state_of_charge, double nominal_charge_power_w,
                          double nominal_discharge_power_w, double charge_efficiency, double discharge_efficiency,
                          double initial_capacity_wh, int cycles);

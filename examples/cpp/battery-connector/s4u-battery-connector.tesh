@@ -1,0 +1,13 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-battery-connector ${platfdir}/energy_platform.xml
+> [MyHost1:manager:(1) 0.000000] [battery_chiller_solar/INFO] Solar Panel power = 200.00W, MyHost1 power = 100.00W. The Solar Panel provides more than needed.
+> [MyHost1:manager:(1) 100.000000] [battery_chiller_solar/INFO] Energy consumption MyHost1: 10.00kJ, Energy from the Solar Panel 10.00kJ
+> [MyHost1:manager:(1) 100.000000] [battery_chiller_solar/INFO] Solar Panel power = 100.00W, MyHost1 power = 100.00W. The Solar Panel provides exactly what is needed.
+> [MyHost1:manager:(1) 200.000000] [battery_chiller_solar/INFO] Energy consumption MyHost1: 10.00kJ, Energy from the Solar Panel 10.00kJ
+> [MyHost1:manager:(1) 200.000000] [battery_chiller_solar/INFO] MyHost1 executes something for 100s. The Solar Panel does not provide enough energy.
+> [MyHost1:manager:(1) 300.000000] [battery_chiller_solar/INFO] Energy MyHost1: 12.00kJ, Energy from the Solar Panel 10.00kJ
+> [300.000000] [host_energy/INFO] Total energy consumption: 92000.000000 Joules (used hosts: 32000.000000 Joules; unused/idle hosts: 60000.000000)
+> [300.000000] [host_energy/INFO] Energy consumption of host MyHost1: 32000.000000 Joules
+> [300.000000] [host_energy/INFO] Energy consumption of host MyHost2: 30000.000000 Joules
+> [300.000000] [host_energy/INFO] Energy consumption of host MyHost3: 30000.000000 Joules
