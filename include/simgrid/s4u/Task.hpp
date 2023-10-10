@@ -75,6 +75,8 @@ public:
   const char* get_cname() const { return name_.c_str(); }
   void set_amount(double amount, std::string instance = "instance_0");
   double get_amount(std::string instance = "instance_0") const { return amount_.at(instance); }
+  int get_queued_firings(std::string instance = "instance_0") { return queued_firings_.at(instance); }
+  int get_running_count(std::string instance = "instance_0") { return running_instances_.at(instance); }
   int get_count(std::string instance = "collector") const { return count_.at(instance); }
   void set_parallelism_degree(int n, std::string instance = "all");
   int get_parallelism_degree(std::string instance = "instance_0") const { return parallelism_degree_.at(instance); }
