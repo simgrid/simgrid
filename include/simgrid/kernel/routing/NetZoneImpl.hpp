@@ -74,12 +74,13 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
   s4u::NetZone piface_;
 
   // our content, as known to our graph routing algorithm (maps vertex_id -> vertex)
-  std::vector<kernel::routing::NetPoint*> vertices_;
+  std::vector<NetPoint*> vertices_;
   std::map<std::string, resource::StandardLinkImpl*, std::less<>> links_;
   /* save split-duplex links separately, keep links_ with only LinkImpl* seen by the user
    * members of a split-duplex are saved in the links_ */
   std::map<std::string, std::unique_ptr<resource::SplitDuplexLinkImpl>, std::less<>> split_duplex_links_;
   std::map<std::string, resource::HostImpl*, std::less<>> hosts_;
+  std::map<std::string, NetPoint*, std::less<>> gateways_;
 
   NetZoneImpl* parent_ = nullptr;
   std::vector<NetZoneImpl*> children_; // sub-netzones
@@ -87,7 +88,7 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
   bool sealed_ = false; // We cannot add more content when sealed
 
   std::map<std::pair<const NetPoint*, const NetPoint*>, BypassRoute*> bypass_routes_; // src x dst -> route
-  routing::NetPoint* netpoint_ = nullptr; // Our representative in the parent NetZone
+  NetPoint* netpoint_ = nullptr; // Our representative in the parent NetZone
 
 protected:
   explicit NetZoneImpl(const std::string& name);
@@ -142,7 +143,7 @@ public:
   const s4u::NetZone* get_iface() const { return &piface_; }
   s4u::NetZone* get_iface() { return &piface_; }
   unsigned int get_table_size() const { return vertices_.size(); }
-  std::vector<kernel::routing::NetPoint*> get_vertices() const { return vertices_; }
+  std::vector<NetPoint*> get_vertices() const { return vertices_; }
   NetZoneImpl* get_parent() const { return parent_; }
   /** @brief Returns the list of direct children (no grand-children). This returns the internal data, no copy.
    * Don't mess with it.*/
@@ -156,7 +157,12 @@ public:
   const char* get_cname() const { return name_.c_str(); };
 
   /** @brief Gets the netpoint associated to this netzone */
-  kernel::routing::NetPoint* get_netpoint() const { return netpoint_; }
+  NetPoint* get_netpoint() const { return netpoint_; }
+
+  void set_gateway(const std::string& name, NetPoint* router);
+  /** @brief Gets the gateway associated to this netzone */
+  NetPoint* get_gateway() const;
+  NetPoint* get_gateway(const std::string& name) const { return gateways_.at(name); }
 
   std::vector<s4u::Host*> get_all_hosts() const;
   size_t get_host_count() const;

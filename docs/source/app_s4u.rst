@@ -2592,7 +2592,7 @@ class Task
 **Known subclasses:**
 :ref:`Communication Tasks <API_s4u_CommTask>`,
 :ref:`Executions Tasks <API_s4u_ExecTask>`,
-:ref:`I/O Tasks <API_s4u_Task>`.
+:ref:`I/O Tasks <API_s4u_IoTask>`.
 See also the :ref:`section on activities <s4u_Tasks>` above.
 
 Basic management
@@ -2619,7 +2619,10 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Task::get_name() const
       .. doxygenfunction:: simgrid::s4u::Task::get_count() const
       .. doxygenfunction:: simgrid::s4u::Task::get_amount() const
+      .. doxygenfunction:: simgrid::s4u::Task::get_parallelism_degree() const
+      .. doxygenfunction:: simgrid::s4u::Task::set_name(std::string name)
       .. doxygenfunction:: simgrid::s4u::Task::set_amount(double amount)
+      .. doxygenfunction:: simgrid::s4u::Task::set_parallelism_degree(int n)
 
 Life cycle
 ----------
@@ -2646,8 +2649,8 @@ Managing Tokens
 .. tabs::
 
    .. group-tab:: C++
-      .. doxygenfunction:: simgrid::s4u::Task::set_token(std::shared_ptr<Token> token)
       .. doxygenfunction:: simgrid::s4u::Task::get_next_token_from(TaskPtr t)
+      .. doxygenfunction:: simgrid::s4u::Task::set_token(std::shared_ptr<Token> token)
 
 Signals
 -------
@@ -2662,9 +2665,9 @@ Signals
 
 .. _API_s4u_CommTask:
 
-================
+=================
 ⁣  class CommTask
-================
+=================
 .. tabs::
 
    .. group-tab:: C++
@@ -2691,19 +2694,19 @@ Querying info
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::Task::get_source() const
-      .. doxygenfunction:: simgrid::s4u::Task::get_destination() const
-      .. doxygenfunction:: simgrid::s4u::Task::get_bytes() const
-      .. doxygenfunction:: simgrid::s4u::Task::set_source(simgrid::s4u::Host* source);
-      .. doxygenfunction:: simgrid::s4u::Task::set_destination(simgrid::s4u::Host* destination);
-      .. doxygenfunction:: simgrid::s4u::Task::set_bytes(double bytes)
+      .. doxygenfunction:: simgrid::s4u::CommTask::get_source() const
+      .. doxygenfunction:: simgrid::s4u::CommTask::get_destination() const
+      .. doxygenfunction:: simgrid::s4u::CommTask::get_bytes() const
+      .. doxygenfunction:: simgrid::s4u::CommTask::set_source(Host* source);
+      .. doxygenfunction:: simgrid::s4u::CommTask::set_destination(Host* destination);
+      .. doxygenfunction:: simgrid::s4u::CommTask::set_bytes(double bytes)
 
 
 .. _API_s4u_ExecTask:
 
-================
+=================
 ⁣  class ExecTask
-================
+=================
 .. tabs::
 
    .. group-tab:: C++
@@ -2730,10 +2733,10 @@ Querying info
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::Task::get_host() const
-      .. doxygenfunction:: simgrid::s4u::Task::get_flops() const
-      .. doxygenfunction:: simgrid::s4u::Task::set_host(simgrid::s4u::Host* host);
-      .. doxygenfunction:: simgrid::s4u::Task::set_flops(double flops);
+      .. doxygenfunction:: simgrid::s4u::ExecTask::get_host() const
+      .. doxygenfunction:: simgrid::s4u::ExecTask::get_flops() const
+      .. doxygenfunction:: simgrid::s4u::ExecTask::set_host(Host* host);
+      .. doxygenfunction:: simgrid::s4u::ExecTask::set_flops(double flops);
 
 .. _API_s4u_IoTask:
 
@@ -2766,12 +2769,12 @@ Querying info
 
    .. group-tab:: C++
 
-     .. doxygenfunction:: simgrid::s4u::Task::get_disk() const
-     .. doxygenfunction:: simgrid::s4u::Task::get_bytes() const
-     .. doxygenfunction:: simgrid::s4u::Task::get_op_type() const
-     .. doxygenfunction:: simgrid::s4u::Task::set_disk(simgrid::s4u::Disk* disk);
-     .. doxygenfunction:: simgrid::s4u::Task::set_bytes(simgrid::double bytes);
-     .. doxygenfunction:: simgrid::s4u::Task::set_op_type(simgrid::s4u::Io::OpType type);
+     .. doxygenfunction:: simgrid::s4u::IoTask::get_disk() const
+     .. doxygenfunction:: simgrid::s4u::IoTask::get_bytes() const
+     .. doxygenfunction:: simgrid::s4u::IoTask::get_op_type() const
+     .. doxygenfunction:: simgrid::s4u::IoTask::set_disk(Disk* disk);
+     .. doxygenfunction:: simgrid::s4u::IoTask::set_bytes(double bytes);
+     .. doxygenfunction:: simgrid::s4u::IoTask::set_op_type(Io::OpType type);
 
 .. _API_s4u_Synchronizations:
 

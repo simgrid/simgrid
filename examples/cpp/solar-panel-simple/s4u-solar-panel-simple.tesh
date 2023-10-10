@@ -1,0 +1,7 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-solar-panel-simple ${platfdir}/small_platform.xml
+> [Tremblay:manager:(1) 1.000000] [solar_panel_simple/INFO] Solar Panel: area: 10.000000m² efficiency: 0.900000 irradiance: 10.000000W/m² power: 90.000000W
+> [Tremblay:manager:(1) 2.000000] [solar_panel_simple/INFO] Solar Panel: area: 20.000000m² efficiency: 0.900000 irradiance: 10.000000W/m² power: 180.000000W
+> [Tremblay:manager:(1) 3.000000] [solar_panel_simple/INFO] Solar Panel: area: 20.000000m² efficiency: 0.800000 irradiance: 10.000000W/m² power: 160.000000W
+> [Tremblay:manager:(1) 4.000000] [solar_panel_simple/INFO] Solar Panel: area: 20.000000m² efficiency: 0.800000 irradiance: 20.000000W/m² power: 320.000000W

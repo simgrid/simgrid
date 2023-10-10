@@ -149,7 +149,7 @@ void sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
 
 /*************************************************************************************************/
 /** @brief Auxiliary function to create hosts */
-static std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
+static simgrid::s4u::Host*
 sg_platf_cluster_create_host(const simgrid::kernel::routing::ClusterCreationArgs* cluster, simgrid::s4u::NetZone* zone,
                              const std::vector<unsigned long>& /*coord*/, unsigned long id)
 {
@@ -160,11 +160,10 @@ sg_platf_cluster_create_host(const simgrid::kernel::routing::ClusterCreationArgs
 
   std::string host_id = cluster->prefix + std::to_string(cluster->radicals[id]) + cluster->suffix;
   XBT_DEBUG("Cluster: creating host=%s speed=%f", host_id.c_str(), cluster->speeds.front());
-  const simgrid::s4u::Host* host = zone->create_host(host_id, cluster->speeds)
-                                       ->set_core_count(cluster->core_amount)
-                                       ->set_properties(cluster->properties)
-                                       ->seal();
-  return std::make_pair(host->get_netpoint(), nullptr);
+  simgrid::s4u::Host* host = zone->create_host(host_id, cluster->speeds)
+                                 ->set_core_count(cluster->core_amount)
+                                 ->set_properties(cluster->properties);
+  return host;
 }
 
 /** @brief Auxiliary function to create loopback links */
@@ -210,7 +209,8 @@ static void sg_platf_new_cluster_hierarchical(const simgrid::kernel::routing::Cl
   using simgrid::kernel::routing::FatTreeZone;
   using simgrid::kernel::routing::TorusZone;
 
-  auto set_host = std::bind(sg_platf_cluster_create_host, cluster, _1, _2, _3);
+  std::function<simgrid::s4u::ClusterCallbacks::ClusterHostCb> set_host =
+    std::bind(sg_platf_cluster_create_host, cluster, _1, _2, _3);
   std::function<simgrid::s4u::ClusterCallbacks::ClusterLinkCb> set_loopback{};
   std::function<simgrid::s4u::ClusterCallbacks::ClusterLinkCb> set_limiter{};
 
@@ -293,8 +293,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
                                  ->set_latency(cluster->loopback_lat)
                                  ->seal();
 
-      zone->add_route(host->get_netpoint(), host->get_netpoint(), nullptr, nullptr,
-                      {simgrid::s4u::LinkInRoute(loopback)});
+      zone->add_route(host, host, {simgrid::s4u::LinkInRoute(loopback)});
     }
 
     // add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -322,7 +321,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
     if (backbone)
       links.emplace_back(backbone);
 
-    zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, links, true);
+    zone->add_route(host, nullptr, links, true);
   }
 
   // Add a router.
@@ -330,9 +329,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id.c_str());
   if (cluster->router_id.empty())
     cluster->router_id = cluster->prefix + cluster->id + "_router" + cluster->suffix;
-  auto* router = zone->create_router(cluster->router_id);
-  std::vector<simgrid::s4u::LinkInRoute> links;
-  zone->add_route(router, nullptr, nullptr, nullptr, links);
+  zone->create_router(cluster->router_id);
 
   simgrid::kernel::routing::on_cluster_creation(*cluster);
 }

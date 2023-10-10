@@ -627,8 +627,8 @@ completion) are now specialized by activity class. That is, callbacks registered
 Comms nor Ios
 
 Two new useful plugins were added: The :ref:`battery plugin<plugin_battery>` can be used to create batteries that get discharged
-by the energy consumption of a given host, while the :ref:`photovoltaic plugin <plugin_photovoltaic>` can be used to create
-photovoltaic panels which energy production depends on the solar irradiance. These plugins could probably be better integrated
+by the energy consumption of a given host, while the :ref:`solar panel plugin <plugin_solar_panel>` can be used to create
+solar panels which energy production depends on the solar irradiance. These plugins could probably be better integrated
 in the framework, but our goal is to include in SimGrid the building blocks upon which everybody would agree, while the model
 elements that are more arguable are provided as plugins, in the hope that the users will carefully assess the plugins and adapt
 them to their specific needs before usage. Here for example, there is several models of batteries (the one provided does not

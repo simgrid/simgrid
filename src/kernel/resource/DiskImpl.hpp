@@ -50,6 +50,7 @@ class DiskImpl : public Resource_T<DiskImpl>, public xbt::PropertyHolder {
   Metric read_bw_      = {0.0, 0, nullptr};
   Metric write_bw_     = {0.0, 0, nullptr};
   double readwrite_bw_ = -1; /* readwrite constraint bound, usually max(read, write) */
+  std::atomic_int_fast32_t refcount_{0};
 
   void apply_sharing_policy_cfg();
 
@@ -60,6 +61,17 @@ public:
   explicit DiskImpl(const std::string& name, double read_bandwidth, double write_bandwidth);
   DiskImpl(const DiskImpl&) = delete;
   DiskImpl& operator=(const DiskImpl&) = delete;
+  friend void intrusive_ptr_add_ref(DiskImpl* disk)
+  {
+    disk->refcount_.fetch_add(1, std::memory_order_acq_rel);
+  }
+  friend void intrusive_ptr_release(DiskImpl* disk)
+  {
+    if (disk->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+      std::atomic_thread_fence(std::memory_order_acquire);
+      delete disk;
+    }
+  }
 
   /** @brief Public interface */
   const s4u::Disk* get_iface() const { return &piface_; }

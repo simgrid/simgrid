@@ -87,8 +87,7 @@ public:
  * @param id Internal identifier in the torus (for information)
  * @return netpoint, gateway: the netpoint to the StarZone and CPU0 as gateway
  */
-static std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
-create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
+static sg4::NetZone* create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
 {
   constexpr int num_cpus    = 8;     //!< Number of CPUs in the zone
   constexpr double speed    = 1e9;   //!< Speed of each CPU
@@ -101,24 +100,21 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned long>& /*co
   /* setting my Torus parent zone */
   host_zone->set_parent(zone);
 
-  simgrid::kernel::routing::NetPoint* gateway = nullptr;
   /* create CPUs */
   for (int i = 0; i < num_cpus; i++) {
     std::string cpu_name  = hostname + "-cpu" + std::to_string(i);
-    const sg4::Host* host = host_zone->create_host(cpu_name, speed)->seal();
+    const sg4::Host* host = host_zone->create_host(cpu_name, speed);
     /* the first CPU is the gateway */
     if (i == 0)
-      gateway = host->get_netpoint();
+      host_zone->set_gateway(host->get_netpoint());
     /* create split-duplex link */
-    sg4::SplitDuplexLink* link = host_zone->create_split_duplex_link("link-" + cpu_name, link_bw);
-    link->set_latency(link_lat)->seal();
+    auto* link = host_zone->create_split_duplex_link("link-" + cpu_name, link_bw)->set_latency(link_lat);
     /* connecting CPU to outer world */
-    host_zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {{link, sg4::LinkInRoute::Direction::UP}},
-                         true);
+    host_zone->add_route(host, nullptr, {{link, sg4::LinkInRoute::Direction::UP}}, true);
   }
   /* seal newly created netzone */
   host_zone->seal();
-  return std::make_pair(host_zone->get_netpoint(), gateway);
+  return host_zone;
 }
 
 /*************************************************************************************************/

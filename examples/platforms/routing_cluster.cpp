@@ -16,40 +16,40 @@ namespace sg4 = simgrid::s4u;
  * @param host List of hostname inside the cluster
  * @param single_link_host Hostname of "special" node
  */
-static void create_cluster(const sg4::NetZone* root, const std::string& cluster_suffix,
+static sg4::NetZone* create_cluster(const sg4::NetZone* root, const std::string& cluster_suffix,
                            const std::vector<std::string>& hosts, const std::string& single_link_host)
 {
-  auto* cluster = sg4::create_star_zone("cluster" + cluster_suffix);
-  cluster->set_parent(root);
+  auto* cluster = sg4::create_star_zone("cluster" + cluster_suffix)->set_parent(root);
 
   /* create the backbone link */
-  const sg4::Link* l_bb = cluster->create_link("backbone" + cluster_suffix, 2.25e9)->set_latency(5e-4)->seal();
+  const sg4::Link* l_bb = cluster->create_link("backbone" + cluster_suffix, "20Gbps")->set_latency("500us");
 
   /* create all hosts and connect them to outside world */
   for (const auto& hostname : hosts) {
     /* create host */
-    const sg4::Host* host = cluster->create_host(hostname, 1e9);
+    const sg4::Host* host = cluster->create_host(hostname, "1Gf");
     /* create UP link */
-    const sg4::Link* l_up = cluster->create_link(hostname + "_up", 1.25e8)->set_latency(0.0001)->seal();
+    const sg4::Link* l_up = cluster->create_link(hostname + "_up", "1Gbps")->set_latency("100us");
     /* create DOWN link, if needed */
     const sg4::Link* l_down = l_up;
     if (hostname != single_link_host) {
-      l_down = cluster->create_link(hostname + "_down", 1.25e8)->set_latency(0.0001)->seal();
+      l_down = cluster->create_link(hostname + "_down", "1Gbps")->set_latency("100us");
     }
     sg4::LinkInRoute backbone{l_bb};
     sg4::LinkInRoute link_up{l_up};
     sg4::LinkInRoute link_down{l_down};
 
     /* add link UP and backbone for communications from the host */
-    cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {link_up, backbone}, false);
+    cluster->add_route(host, nullptr, {link_up, backbone}, false);
     /* add backbone and link DOWN for communications to the host */
-    cluster->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, {backbone, link_down}, false);
+    cluster->add_route(nullptr, host, {backbone, link_down}, false);
   }
 
-  /* create router */
-  cluster->create_router("router" + cluster_suffix);
+  /* create gateway*/
+  cluster->set_gateway(cluster->create_router("router" + cluster_suffix));
 
   cluster->seal();
+  return cluster;
 }
 
 /** @brief Programmatic version of routing_cluster.xml */
@@ -76,15 +76,14 @@ void load_platform(const sg4::Engine& e)
   auto* root = sg4::create_full_zone("AS0");
 
   /* create left cluster */
-  create_cluster(root, "1", {"host1", "host2", "host3"}, "host3");
+  auto* left_cluster = create_cluster(root, "1", {"host1", "host2", "host3"}, "host3");
   /* create right cluster */
-  create_cluster(root, "2", {"host4", "host5", "host6"}, "host6");
+  auto* right_cluster = create_cluster(root, "2", {"host4", "host5", "host6"}, "host6");
 
-  /* connect both cluster through their respective routers */
-  const sg4::Link* l = root->create_link("link1-2", 2.25e9)->set_latency(5e-4)->seal();
+  /* connect both clusters */
+  const sg4::Link* l = root->create_link("link1-2", "20Gbps")->set_latency("500us");
   sg4::LinkInRoute link{l};
-  root->add_route(e.netpoint_by_name_or_null("cluster1"), e.netpoint_by_name_or_null("cluster2"),
-                  e.netpoint_by_name_or_null("router1"), e.netpoint_by_name_or_null("router2"), {link});
+  root->add_route(left_cluster, right_cluster, {link});
 
   root->seal();
 }

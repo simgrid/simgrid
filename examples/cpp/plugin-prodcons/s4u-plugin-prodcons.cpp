@@ -65,13 +65,8 @@ int main(int argc, char* argv[])
     std::string linkname = "cluster_link_" + std::to_string(i);
     const auto* link     = cluster->create_split_duplex_link(linkname, "1Gbps");
 
-    cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {{link, sg4::LinkInRoute::Direction::UP}},
-                       true);
+    cluster->add_route(host, nullptr,  {{link, sg4::LinkInRoute::Direction::UP}}, true);
   }
-
-  auto* router = cluster->create_router("cluster_router");
-  std::vector<sg4::LinkInRoute> links; // empty
-  cluster->add_route(router, nullptr, nullptr, nullptr, links);
   cluster->seal();
 
   simgrid::plugin::ProducerConsumerPtr<int> pc = simgrid::plugin::ProducerConsumer<int>::create(2);

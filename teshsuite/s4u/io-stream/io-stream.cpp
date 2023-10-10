@@ -106,8 +106,8 @@ int main(int argc, char** argv)
   auto* bob  = zone->create_host("bob", 1e6);
   auto* alice  = zone->create_host("alice", 1e6);
 
-  sg4::LinkInRoute link(zone->create_link("link", "2MBps")->set_latency("50us")->seal());
-  zone->add_route(bob->get_netpoint(), alice->get_netpoint(), nullptr, nullptr, {link}, true);
+  auto* link = zone->create_link("link", "2MBps")->set_latency("50us");
+  zone->add_route(bob, alice, {link});
 
   bob->create_disk("bob_disk", "1MBps", "500kBps");
   alice->create_disk("alice_disk", "4MBps", "4MBps");

@@ -53,9 +53,6 @@ HostImpl::~HostImpl()
     delete arg;
   actors_at_boot_.clear();
 
-  for (auto const& [_, d] : disks_)
-    d->destroy();
-
   for (auto const& [_, vm] : vms_)
     vm->vm_destroy();
 }
@@ -216,7 +213,7 @@ s4u::Disk* HostImpl::create_disk(const std::string& name, double read_bandwidth,
 
 void HostImpl::add_disk(const s4u::Disk* disk)
 {
-  disks_[disk->get_name()] = disk->get_impl();
+  disks_[disk->get_name()] = kernel::resource::DiskImplPtr(disk->get_impl());
 }
 
 void HostImpl::remove_disk(const std::string& name)
