@@ -19,9 +19,9 @@ class MailboxImpl {
   s4u::Mailbox piface_;
   std::string name_;
   actor::ActorImplPtr permanent_receiver_; // actor to which the mailbox is attached
-  std::list<CommImplPtr> comm_queue_;
+  std::deque<CommImplPtr> comm_queue_;
   // messages already received in the permanent receive mode
-  std::list<CommImplPtr> done_comm_queue_;
+  std::deque<CommImplPtr> done_comm_queue_;
 
   friend s4u::Engine;
   friend s4u::Mailbox;
