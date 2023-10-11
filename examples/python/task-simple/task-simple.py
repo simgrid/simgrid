@@ -28,7 +28,7 @@ def parse():
     return parser.parse_args()
 
 def callback(t):
-    print(f'[{Engine.clock}] {t} finished ({t.count})')
+    print(f'[{Engine.clock}] {t} finished ({t.get_count()})')
 
 if __name__ == '__main__':
     args = parse()

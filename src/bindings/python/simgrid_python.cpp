@@ -861,9 +861,14 @@ PYBIND11_MODULE(simgrid, m)
           },
           "Add a callback called when each task ends.")
       .def_property_readonly("name", &Task::get_name, "The name of this task (read-only).")
-      .def_property_readonly("count", &Task::get_count, "The execution count of this task (read-only).")
       .def_property_readonly("successors", &Task::get_successors, "The successors of this task (read-only).")
       .def_property("amount", &Task::get_amount, &Task::set_amount, "The amount of work to do for this task.")
+      .def(
+          "get_count", [](const TaskPtr t) { return t->get_count("instance_0"); },
+          "The execution count of this task instance_0.")
+      .def(
+          "get_count", [](const TaskPtr t, const std::string& instance) { return t->get_count(instance); },
+          "The execution count of this task instance.")
       .def("enqueue_firings", py::overload_cast<int>(&Task::enqueue_firings), py::call_guard<py::gil_scoped_release>(),
            py::arg("n"), "Enqueue firings for this task.")
       .def("add_successor", py::overload_cast<TaskPtr>(&Task::add_successor), py::call_guard<py::gil_scoped_release>(),

@@ -74,10 +74,10 @@ int main(int argc, char* argv[])
      Alternatively we: remove/add the link between SA and SA_to_B2
                        add/remove the link between SA and SA_to_B1
   */
-  SA->on_this_start_cb([SA_to_B1, SA_to_B2](sg4::Task* t) {
+  SA->on_this_completion_cb([&SA_to_B1, &SA_to_B2](sg4::Task* t) {
     int count = t->get_count();
     sg4::CommTaskPtr comm;
-    if (count % 2 == 0) {
+    if (count % 2 == 1) {
       t->remove_successor(SA_to_B2);
       t->add_successor(SA_to_B1);
       comm = SA_to_B1;
@@ -86,7 +86,8 @@ int main(int argc, char* argv[])
       t->add_successor(SA_to_B2);
       comm = SA_to_B2;
     }
-    std::vector<double> amount = {1e3, 1e6, 1e9};
+    std::vector<double> amount = {1e9, 1e3, 1e6};
+    // XBT_INFO("Comm %f", amount[count % 3]);
     comm->set_amount(amount[count % 3]);
     auto token = std::make_shared<sg4::Token>();
     token->set_data(new double(amount[count % 3]));
@@ -94,18 +95,26 @@ int main(int argc, char* argv[])
   });
 
   // The token sent by SA is forwarded by both communication tasks
-  SA_to_B1->on_this_start_cb([&SA](sg4::Task* t) { t->set_token(t->get_next_token_from(SA)); });
-  SA_to_B2->on_this_start_cb([&SA](sg4::Task* t) { t->set_token(t->get_next_token_from(SA)); });
+  SA_to_B1->on_this_completion_cb([&SA](sg4::Task* t) {
+    t->set_token(t->get_token_from(SA));
+    t->deque_token_from(SA);
+  });
+  SA_to_B2->on_this_completion_cb([&SA](sg4::Task* t) {
+    t->set_token(t->get_token_from(SA));
+    t->deque_token_from(SA);
+  });
 
   /* B1 and B2 read the value of the token received by their predecessors
      and use it to adapt their amount of work to do.
   */
-  B1->on_this_start_cb([SA_to_B1](sg4::Task* t) {
-    auto data = t->get_next_token_from(SA_to_B1)->get_unique_data<double>();
+  B1->on_this_start_cb([&SA_to_B1](sg4::Task* t) {
+    auto data = t->get_token_from(SA_to_B1)->get_data<double>();
+    t->deque_token_from(SA_to_B1);
     t->set_amount(*data * 10);
   });
-  B2->on_this_start_cb([SA_to_B2](sg4::Task* t) {
-    auto data = t->get_next_token_from(SA_to_B2)->get_unique_data<double>();
+  B2->on_this_start_cb([&SA_to_B2](sg4::Task* t) {
+    auto data = t->get_token_from(SA_to_B2)->get_data<double>();
+    t->deque_token_from(SA_to_B2);
     t->set_amount(*data * 10);
   });
 

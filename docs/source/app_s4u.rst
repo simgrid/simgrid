@@ -203,32 +203,33 @@ Repeatable Activities
 
 In order to simulate the execution of Dataflow applications, we introduced the
 concept of |API_s4u_Tasks|, that can be seen as repeatable activities. A Dataflow
-is defined as a graph of |API_s4u_Tasks| through which circulate Tokens. Tokens
-can carry any user-defined data, using the same internal mechanisms as for the
-other simulated objects. Each Task has to receive a token from each of its
-predecessor to fire a new instance of a :ref:`Communication <API_s4u_Comm>`,
-:ref:`Execution <API_s4u_Exec>`, or :ref:`I/O <API_s4u_Io>` activity.
-On completion of this activity, the Task propagates tokens
-to its successors, and waits for the next set of tokens to arrive.
-Multiple instances of the same Task can run in parallel by adjusting its
-horizontal scaling with
-:cpp:func:`s4u::Task::set_parallelism_degree() <simgrid::s4u::Task::set_parallelism_degree>`.
+is defined as a graph of |API_s4u_Tasks|, where each |API_s4u_Tasks| has a set of
+successors and predecessors. When a |API_s4u_Tasks| ends it sends a token to each
+of its successors. Each |API_s4u_Tasks| has to receive a token from each of its
+predecessor to start. Tokens can carry any user-defined data.
 
-:ref:`Communications <API_s4u_Comm>` (started on Mailboxes and consuming links),
-:ref:`Executions <API_s4u_Exec>` (started on Host and consuming CPU resources)
-:ref:`I/O <API_s4u_Io>` (started on and consuming disks).
+|API_s4u_Tasks| are composed of several instances: a dispatcher, a collector, and
+instance_0 to instance_n. The dispatcher rely on a load balancing function to select
+the next instance to fire. Once this instance finishes it fires the collector.
+
+Each instance of an |API_s4u_ExecTask| can be placed on a different host.
+|API_s4u_Comm| activities are automatically created when an instance triggers
+another instance on a different host. Each instance has its own parallelism degree
+to scale horizontally on several cores.
 
 To initiate the execution of a Dataflow, it is possible to some make
 |API_s4u_Tasks| fire one or more activities without waiting for any token with the
 :cpp:func:`s4u::Task::enqueue_firings() <simgrid::s4u::Task::enqueue_firings>`
 function.
 
-The parameters and successors of a Task can be redefined at runtime by attaching
+The parameters of Tasks can be redefined at runtime by attaching
 callbacks to the
 :cpp:func:`s4u::Task::on_this_start <simgrid::s4u::Task::on_this_start>`
 and
 :cpp:func:`s4u::Task::on_this_completion <simgrid::s4u::Task::on_this_completion>`
-signals.
+signals. The former is triggered by instances others than the dispatcher and the collector,
+and the latter is triggered by the collector.
+
 
 
 .. _s4u_mailbox:

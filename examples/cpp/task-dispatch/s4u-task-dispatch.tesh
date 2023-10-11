@@ -1,0 +1,82 @@
+#!/usr/bin/env tesh
+
+> > $ ${bindir:=.}/s4u-task-parallelism ${platfdir}/three_multicore_hosts.xml
+> [PM0:manager:(1) 0.000000] [task_dispatch/INFO] Test set_flops
+> [0.000000] [task_dispatch/INFO] Task A start
+> [0.000000] [task_dispatch/INFO] Task A start
+> [PM0:manager:(1) 50.000000] [task_dispatch/INFO] Set instance_0 flops to 50.
+> [100.000000] [task_dispatch/INFO] Task A finished (1)
+> [100.000000] [task_dispatch/INFO] Task B start
+> [150.000000] [task_dispatch/INFO] Task A finished (2)
+> [150.000000] [task_dispatch/INFO] Task B start
+> [150.000000] [task_dispatch/INFO] Task B finished (1)
+> [200.000000] [task_dispatch/INFO] Task B finished (2)
+> [PM0:manager:(1) 300.000000] [task_dispatch/INFO] Test set_parallelism degree
+> [300.000000] [task_dispatch/INFO] Task A start
+> [300.000000] [task_dispatch/INFO] Task A start
+> [300.000000] [task_dispatch/INFO] Task A start
+> [PM0:manager:(1) 350.000000] [task_dispatch/INFO] Set Task parallelism degree to 2.
+> [400.000000] [task_dispatch/INFO] Task A finished (3)
+> [400.000000] [task_dispatch/INFO] Task B start
+> [450.000000] [task_dispatch/INFO] Task A finished (4)
+> [450.000000] [task_dispatch/INFO] Task B start
+> [450.000000] [task_dispatch/INFO] Task B finished (3)
+> [500.000000] [task_dispatch/INFO] Task A finished (5)
+> [500.000000] [task_dispatch/INFO] Task B start
+> [500.000000] [task_dispatch/INFO] Task B finished (4)
+> [550.000000] [task_dispatch/INFO] Task B finished (5)
+> [PM0:manager:(1) 600.000000] [task_dispatch/INFO] Test set_host dispatcher
+> [600.000000] [task_dispatch/INFO] Task A start
+> [600.000000] [task_dispatch/INFO] Task A start
+> [PM0:manager:(1) 650.000000] [task_dispatch/INFO] Move dispatcher to PM1
+> [700.000000] [task_dispatch/INFO] Task A finished (6)
+> [700.000000] [task_dispatch/INFO] Task B start
+> [750.000000] [task_dispatch/INFO] Task B finished (6)
+> [800.009961] [task_dispatch/INFO] Task A finished (7)
+> [800.009961] [task_dispatch/INFO] Task B start
+> [850.009961] [task_dispatch/INFO] Task B finished (7)
+> [PM0:manager:(1) 900.000000] [task_dispatch/INFO] Test set_host instance_0
+> [900.000000] [task_dispatch/INFO] Task A start
+> [900.000000] [task_dispatch/INFO] Task A start
+> [PM0:manager:(1) 950.000000] [task_dispatch/INFO] Move instance_0 to PM1
+> [1000.000000] [task_dispatch/INFO] Task A finished (8)
+> [1000.000000] [task_dispatch/INFO] Task B start
+> [1050.000000] [task_dispatch/INFO] Task B finished (8)
+> [1100.019922] [task_dispatch/INFO] Task A finished (9)
+> [1100.019922] [task_dispatch/INFO] Task B start
+> [1150.019922] [task_dispatch/INFO] Task B finished (9)
+> [PM0:manager:(1) 1200.000000] [task_dispatch/INFO] Test set_host collector
+> [1200.000000] [task_dispatch/INFO] Task A start
+> [1200.000000] [task_dispatch/INFO] Task A start
+> [PM0:manager:(1) 1250.000000] [task_dispatch/INFO] Move collector to PM1
+> [1300.000000] [task_dispatch/INFO] Task A finished (10)
+> [1300.000000] [task_dispatch/INFO] Task B start
+> [1350.000000] [task_dispatch/INFO] Task B finished (10)
+> [1400.009961] [task_dispatch/INFO] Task A finished (11)
+> [1400.009961] [task_dispatch/INFO] Task B start
+> [1450.009961] [task_dispatch/INFO] Task B finished (11)
+> [PM0:manager:(1) 1500.000000] [task_dispatch/INFO] Test add_instances
+> [1500.000000] [task_dispatch/INFO] Task A start
+> [PM0:manager:(1) 1550.000000] [task_dispatch/INFO] Add 1 instance and update load balancing function
+> [1550.000000] [task_dispatch/INFO] Task A start
+> [1550.000000] [task_dispatch/INFO] Task A start
+> [1600.000000] [task_dispatch/INFO] Task A finished (12)
+> [1600.000000] [task_dispatch/INFO] Task B start
+> [1650.000000] [task_dispatch/INFO] Task A finished (13)
+> [1650.000000] [task_dispatch/INFO] Task B start
+> [1650.000000] [task_dispatch/INFO] Task B finished (12)
+> [1700.000000] [task_dispatch/INFO] Task A finished (14)
+> [1700.000000] [task_dispatch/INFO] Task B start
+> [1700.000000] [task_dispatch/INFO] Task B finished (13)
+> [1750.000000] [task_dispatch/INFO] Task B finished (14)
+> [PM0:manager:(1) 1800.000000] [task_dispatch/INFO] Test remove_instances
+> [PM0:manager:(1) 1800.000000] [task_dispatch/INFO] Remove 1 instance and update load balancing function
+> [1800.000000] [task_dispatch/INFO] Task A start
+> [1800.000000] [task_dispatch/INFO] Task A start
+> [1900.000000] [task_dispatch/INFO] Task A finished (15)
+> [1900.000000] [task_dispatch/INFO] Task B start
+> [1950.000000] [task_dispatch/INFO] Task B finished (15)
+> [2000.000000] [task_dispatch/INFO] Task A finished (16)
+> [2000.000000] [task_dispatch/INFO] Task B start
+> [2050.000000] [task_dispatch/INFO] Task B finished (16)
+> 

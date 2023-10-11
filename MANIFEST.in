@@ -394,6 +394,8 @@ include examples/cpp/synchro-mutex/s4u-synchro-mutex.tesh
 include examples/cpp/synchro-semaphore/s4u-mc-synchro-semaphore.tesh
 include examples/cpp/synchro-semaphore/s4u-synchro-semaphore.cpp
 include examples/cpp/synchro-semaphore/s4u-synchro-semaphore.tesh
+include examples/cpp/task-dispatch/s4u-task-dispatch.cpp
+include examples/cpp/task-dispatch/s4u-task-dispatch.tesh
 include examples/cpp/task-io/s4u-task-io.cpp
 include examples/cpp/task-io/s4u-task-io.tesh
 include examples/cpp/task-microservice/s4u-task-microservice.cpp
