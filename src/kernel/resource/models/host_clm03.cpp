@@ -50,28 +50,6 @@ static inline double has_cost(const double* array, size_t pos)
   return -1.0;
 }
 
-Action* HostCLM03Model::io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk,
-                                  double size)
-{
-  auto* net_model = src_host->get_englobing_zone()->get_network_model();
-  auto* system    = net_model->get_maxmin_system();
-  auto* action   = net_model->communicate(src_host, dst_host, size, -1, true);
-
-  // We don't want to apply the network model bandwidth factor to the I/O constraints
-  double bw_factor = net_model->get_bandwidth_factor();
-  if (src_disk != nullptr) {
-    // FIXME: if the stream starts from a disk, we might not want to pay the network latency
-    system->expand(src_disk->get_constraint(), action->get_variable(), bw_factor);
-    system->expand(src_disk->get_read_constraint(), action->get_variable(), bw_factor);
-  }
-  if (dst_disk != nullptr) {
-    system->expand(dst_disk->get_constraint(), action->get_variable(), bw_factor);
-    system->expand(dst_disk->get_write_constraint(), action->get_variable(), bw_factor);
-  }
-
-  return action;
-}
-
 Action* HostCLM03Model::execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                          const double* bytes_amount, double rate)
 {

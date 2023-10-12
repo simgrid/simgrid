@@ -8,6 +8,7 @@
 #include <simgrid/s4u/Host.hpp>
 
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "xbt/asserts.hpp"
 
@@ -16,7 +17,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_host, ker_resource, "Host resources agregate CPU, networking and I/O features");
 
 /*************
- * Callbacks *t
+ * Callbacks *
  *************/
 
 namespace simgrid::kernel::resource {
@@ -24,6 +25,28 @@ namespace simgrid::kernel::resource {
 /*********
  * Model *
  *********/
+Action* HostModel::io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk,
+                                double size)
+{
+  auto* net_model = src_host->get_englobing_zone()->get_network_model();
+  auto* system    = net_model->get_maxmin_system();
+  auto* action   = net_model->communicate(src_host, dst_host, size, -1, true);
+
+  // We don't want to apply the network model bandwidth factor to the I/O constraints
+  double bw_factor = net_model->get_bandwidth_factor();
+  if (src_disk != nullptr) {
+    // FIXME: if the stream starts from a disk, we might not want to pay the network latency
+    system->expand(src_disk->get_constraint(), action->get_variable(), bw_factor);
+    system->expand(src_disk->get_read_constraint(), action->get_variable(), bw_factor);
+  }
+  if (dst_disk != nullptr) {
+    system->expand(dst_disk->get_constraint(), action->get_variable(), bw_factor);
+    system->expand(dst_disk->get_write_constraint(), action->get_variable(), bw_factor);
+  }
+
+  return action;
+}
+
 /************
  * Resource *
  ************/
@@ -125,6 +148,7 @@ std::vector<s4u::ActorPtr> HostImpl::get_all_actors()
     res.emplace_back(actor.get_ciface());
   return res;
 }
+
 size_t HostImpl::get_actor_count() const
 {
   return actor_list_.size();

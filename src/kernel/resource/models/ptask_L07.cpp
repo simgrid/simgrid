@@ -204,7 +204,8 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
   XBT_DEBUG("Creating a parallel task (%p) with %zu hosts and %zu unique links.", this, host_nb, link_nb);
   latency_ = latency;
 
-  set_variable(model->get_maxmin_system()->variable_new(this, 1.0, (rate > 0 ? rate : -1.0), host_nb + link_nb));
+  // Allocate more space for constraints (+4) in case users want to mix ptasks and io streams
+  set_variable(model->get_maxmin_system()->variable_new(this, 1.0, (rate > 0 ? rate : -1.0), host_nb + link_nb + 4));
 
   if (latency_ > 0)
     model->get_maxmin_system()->update_variable_penalty(get_variable(), 0.0);
