@@ -26,8 +26,8 @@ ActorExt::ActorExt(s4u::Actor* actor) : actor_(actor)
   if (not simgrid::smpi::ActorExt::EXTENSION_ID.valid())
     simgrid::smpi::ActorExt::EXTENSION_ID = simgrid::s4u::Actor::extension_create<simgrid::smpi::ActorExt>();
 
-  mailbox_         = s4u::Mailbox::by_name("SMPI-" + std::to_string(actor_->get_pid()));
-  mailbox_small_   = s4u::Mailbox::by_name("small-" + std::to_string(actor_->get_pid()));
+  mailbox_         = nullptr;
+  mailbox_small_   = nullptr;
   mailboxes_mutex_ = s4u::Mutex::create();
   timer_           = xbt_os_timer_new();
   state_           = SmpiProcessState::UNINITIALIZED;
@@ -89,6 +89,22 @@ int ActorExt::initialized() const
   // TODO cheinrich: Check if we still need this. This should be a global condition, not for a
   // single process ... ?
   return (state_ == SmpiProcessState::INITIALIZED);
+}
+
+/** @brief Return main mailbox of the process */
+s4u::Mailbox* ActorExt::mailbox()
+{
+  if(mailbox_==nullptr)
+    mailbox_=s4u::Mailbox::by_name("SMPI-" + std::to_string(actor_->get_pid()));
+  return mailbox_;
+}
+
+/** @brief Return mailbox for small messages */
+s4u::Mailbox* ActorExt::mailbox_small()
+{
+  if(mailbox_small_==nullptr)
+    mailbox_small_=s4u::Mailbox::by_name("small-" + std::to_string(actor_->get_pid()));
+  return mailbox_small_;
 }
 
 /** @brief Mark a process as initialized (=MPI_Init called) */
@@ -242,7 +258,7 @@ void ActorExt::init()
   ext->comm_world_ = smpi_deployment_comm_world(ext->instance_id_);
 
   // set the process attached to the mailbox
-  ext->mailbox_small_->set_receiver(ext->actor_);
+  ext->mailbox_small()->set_receiver(ext->actor_);
   XBT_DEBUG("<%ld> SMPI process has been initialized: %p", ext->actor_->get_pid(), ext->actor_);
 }
 

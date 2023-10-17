@@ -68,8 +68,8 @@ public:
   smpi_trace_call_location_t* call_location();
   void set_privatized_region(smpi_privatization_region_t region);
   smpi_privatization_region_t privatized_region() const;
-  s4u::Mailbox* mailbox() const { return mailbox_; }
-  s4u::Mailbox* mailbox_small() const { return mailbox_small_; }
+  s4u::Mailbox* mailbox();
+  s4u::Mailbox* mailbox_small();
   s4u::MutexPtr mailboxes_mutex() const;
 #if HAVE_PAPI
   int papi_event_set() const;
