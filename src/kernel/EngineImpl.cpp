@@ -155,6 +155,9 @@ EngineImpl::~EngineImpl()
   for (auto const& [_, mailbox] : mailboxes_)
     delete mailbox;
 
+  for (auto const& [_, queue] : mqueues_)
+    delete queue;
+
   /* Kill all actors (but maestro) */
   maestro_->kill_all();
   run_all_actors();

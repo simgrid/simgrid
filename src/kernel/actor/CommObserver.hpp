@@ -186,6 +186,52 @@ public:
   auto const& get_copy_data_fun() const { return copy_data_fun_; }
 };
 
+class MessIputSimcall final : public SimcallObserver {
+  activity::MessageQueueImpl* queue_;
+  void* payload_;
+  activity::MessImpl* mess_ = {};
+
+public:
+  MessIputSimcall(
+      ActorImpl* actor, activity::MessageQueueImpl* queue, void* payload)
+      : SimcallObserver(actor)
+      , queue_(queue)
+      , payload_(payload)
+  {
+  }
+  void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
+  activity::MessageQueueImpl* get_queue() const { return queue_; }
+  void* get_payload() const { return payload_; }
+  void set_message(activity::MessImpl* mess) { mess_ = mess; }
+};
+
+class MessIgetSimcall final : public SimcallObserver {
+  activity::MessageQueueImpl* queue_;
+  unsigned char* dst_buff_;
+  size_t* dst_buff_size_;
+  void* payload_;
+  activity::MessImpl* mess_ = {};
+
+public:
+  MessIgetSimcall(ActorImpl* actor, activity::MessageQueueImpl* queue, unsigned char* dst_buff, size_t* dst_buff_size,
+                  void* payload)
+      : SimcallObserver(actor)
+      , queue_(queue)
+      , dst_buff_(dst_buff)
+      , dst_buff_size_(dst_buff_size)
+      , payload_(payload)
+  {
+  }
+  void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
+  activity::MessageQueueImpl* get_queue() const { return queue_; }
+  unsigned char* get_dst_buff() const { return dst_buff_; }
+  size_t* get_dst_buff_size() const { return dst_buff_size_; }
+  void* get_payload() const { return payload_; }
+  void set_message(activity::MessImpl* mess) { mess_ = mess; }
+};
+
 } // namespace simgrid::kernel::actor
 
 #endif

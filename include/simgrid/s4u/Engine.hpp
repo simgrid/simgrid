@@ -155,6 +155,7 @@ public:
   Link* link_by_name_or_null(const std::string& name) const;
 
   Mailbox* mailbox_by_name_or_create(const std::string& name) const;
+  MessageQueue* message_queue_by_name_or_create(const std::string& name) const;
 
   size_t get_actor_count() const;
   std::vector<ActorPtr> get_all_actors() const;

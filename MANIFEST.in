@@ -330,6 +330,8 @@ include examples/cpp/mc-failing-assert/s4u-mc-failing-assert-nodpor.tesh
 include examples/cpp/mc-failing-assert/s4u-mc-failing-assert-statequality.tesh
 include examples/cpp/mc-failing-assert/s4u-mc-failing-assert.cpp
 include examples/cpp/mc-failing-assert/s4u-mc-failing-assert.tesh
+include examples/cpp/mess-wait/s4u-mess-wait.cpp
+include examples/cpp/mess-wait/s4u-mess-wait.tesh
 include examples/cpp/network-factors/s4u-network-factors.cpp
 include examples/cpp/network-factors/s4u-network-factors.tesh
 include examples/cpp/network-nonlinear/s4u-network-nonlinear.cpp
@@ -348,8 +350,6 @@ include examples/cpp/network-ns3/s4u-network-ns3-timed.tesh
 include examples/cpp/network-ns3/s4u-network-ns3.cpp
 include examples/cpp/network-wifi/s4u-network-wifi.cpp
 include examples/cpp/network-wifi/s4u-network-wifi.tesh
-include examples/cpp/solar-panel-simple/s4u-solar-panel-simple.cpp
-include examples/cpp/solar-panel-simple/s4u-solar-panel-simple.tesh
 include examples/cpp/platform-comm-serialize/s4u-platform-comm-serialize.cpp
 include examples/cpp/platform-comm-serialize/s4u-platform-comm-serialize.tesh
 include examples/cpp/platform-failures/s4u-platform-failures.cpp
@@ -380,6 +380,8 @@ include examples/cpp/replay-io/s4u-replay-io.txt
 include examples/cpp/replay-io/s4u-replay-io_d.xml
 include examples/cpp/routing-get-clusters/s4u-routing-get-clusters.cpp
 include examples/cpp/routing-get-clusters/s4u-routing-get-clusters.tesh
+include examples/cpp/solar-panel-simple/s4u-solar-panel-simple.cpp
+include examples/cpp/solar-panel-simple/s4u-solar-panel-simple.tesh
 include examples/cpp/synchro-barrier/s4u-mc-synchro-barrier.tesh
 include examples/cpp/synchro-barrier/s4u-synchro-barrier.cpp
 include examples/cpp/synchro-barrier/s4u-synchro-barrier.tesh
@@ -1966,6 +1968,7 @@ include include/simgrid/s4u/Host.hpp
 include include/simgrid/s4u/Io.hpp
 include include/simgrid/s4u/Link.hpp
 include include/simgrid/s4u/Mailbox.hpp
+include include/simgrid/s4u/MessageQueue.hpp
 include include/simgrid/s4u/Mutex.hpp
 include include/simgrid/s4u/NetZone.hpp
 include include/simgrid/s4u/Semaphore.hpp
@@ -2062,6 +2065,10 @@ include src/kernel/activity/IoImpl.cpp
 include src/kernel/activity/IoImpl.hpp
 include src/kernel/activity/MailboxImpl.cpp
 include src/kernel/activity/MailboxImpl.hpp
+include src/kernel/activity/MessImpl.cpp
+include src/kernel/activity/MessImpl.hpp
+include src/kernel/activity/MessageQueueImpl.cpp
+include src/kernel/activity/MessageQueueImpl.hpp
 include src/kernel/activity/MutexImpl.cpp
 include src/kernel/activity/MutexImpl.hpp
 include src/kernel/activity/SemaphoreImpl.cpp
@@ -2346,6 +2353,8 @@ include src/s4u/s4u_Host.cpp
 include src/s4u/s4u_Io.cpp
 include src/s4u/s4u_Link.cpp
 include src/s4u/s4u_Mailbox.cpp
+include src/s4u/s4u_Mess.cpp
+include src/s4u/s4u_MessageQueue.cpp
 include src/s4u/s4u_Mutex.cpp
 include src/s4u/s4u_Netzone.cpp
 include src/s4u/s4u_Semaphore.cpp

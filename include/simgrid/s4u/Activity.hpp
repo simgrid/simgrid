@@ -38,6 +38,7 @@ class XBT_PUBLIC Activity : public xbt::Extendable<Activity> {
   friend Comm;
   friend Exec;
   friend Io;
+  friend Mess;
   friend kernel::activity::ActivityImpl;
   friend std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename);
   friend std::vector<ActivityPtr> create_DAG_from_DAX(const std::string& filename);

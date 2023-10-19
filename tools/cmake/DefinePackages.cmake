@@ -322,6 +322,10 @@ set(KERNEL_SRC
   src/kernel/activity/IoImpl.hpp
   src/kernel/activity/MailboxImpl.cpp
   src/kernel/activity/MailboxImpl.hpp
+  src/kernel/activity/MessImpl.cpp
+  src/kernel/activity/MessImpl.hpp
+  src/kernel/activity/MessageQueueImpl.cpp
+  src/kernel/activity/MessageQueueImpl.hpp
   src/kernel/activity/MutexImpl.cpp
   src/kernel/activity/MutexImpl.hpp
   src/kernel/activity/SemaphoreImpl.cpp
@@ -472,6 +476,8 @@ set(S4U_SRC
   src/s4u/s4u_Io.cpp
   src/s4u/s4u_Link.cpp
   src/s4u/s4u_Mailbox.cpp
+  src/s4u/s4u_Mess.cpp
+  src/s4u/s4u_MessageQueue.cpp
   src/s4u/s4u_Mutex.cpp
   src/s4u/s4u_Netzone.cpp
   src/s4u/s4u_Semaphore.cpp
@@ -695,6 +701,7 @@ set(headers_to_install
   include/simgrid/s4u/Io.hpp
   include/simgrid/s4u/Link.hpp
   include/simgrid/s4u/Mailbox.hpp
+  include/simgrid/s4u/MessageQueue.hpp
   include/simgrid/s4u/Mutex.hpp
   include/simgrid/s4u/NetZone.hpp
   include/simgrid/s4u/Semaphore.hpp
