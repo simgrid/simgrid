@@ -67,6 +67,9 @@ possible_details = {
     'GlobalConcurrency':'DGlobalConcurrency',
     # larger scope
     'BufferingHazard':'EBufferingHazard',
+    # Input Hazard
+    'IHCallMatching':'InputHazard',
+    
     'OK':'FOK'}
 
 error_scope = {

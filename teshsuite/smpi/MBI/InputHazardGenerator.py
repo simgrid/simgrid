@@ -26,11 +26,11 @@ END_MPI_FEATURES
 
 BEGIN_MBI_TESTS
   $ mpirun -np 2 ${EXE} 1
-  | @{outcome}@
-  | @{errormsg}@
+  | @{outcome1}@
+  | @{errormsg1}@
   $ mpirun -np 2 ${EXE} 2
-  | @{outcome}@
-  | @{errormsg}@
+  | @{outcome2}@
+  | @{errormsg2}@
 END_MBI_TESTS
 //////////////////////       End of MBI headers        /////////////////// */
 
@@ -127,16 +127,20 @@ for s in gen.send + gen.isend:
         replace = patterns.copy()
         replace['shortdesc'] = 'Correct call ordering.'
         replace['longdesc'] = 'Correct call ordering.'
-        replace['outcome'] = 'OK'
-        replace['errormsg'] = 'OK'
+        replace['outcome1'] = 'OK'
+        replace['errormsg1'] = 'OK'
+        replace['outcome2'] = 'OK'
+        replace['errormsg2'] = 'OK'
         gen.make_file(template, f'InputHazardCallOrdering_{r}_{s}_ok.c', replace)
 
         # Generate the incorrect matching
         replace = patterns.copy()
         replace['shortdesc'] = 'Missing Send function.'
         replace['longdesc'] = 'Missing Send function call for a path depending to input, a deadlock is created.'
-        replace['outcome'] = 'ERROR: IHCallMatching'
-        replace['errormsg'] = 'P2P mistmatch. Missing @{r}@ at @{filename}@:@{line:MBIERROR}@.'
+        replace['outcome1'] = 'OK'
+        replace['errormsg1'] = 'OK'
+        replace['outcome2'] = 'ERROR: IHCallMatching'
+        replace['errormsg2'] = 'P2P mistmatch. Missing @{r}@ at @{filename}@:@{line:MBIERROR}@.'
         replace['errorcond'] = '/* MBIERROR */'
         replace['operation1b'] = ''
         replace['fini1b'] = ''
@@ -172,16 +176,20 @@ for c in gen.coll:
     replace = patterns.copy()
     replace['shortdesc'] = 'Correct call ordering.'
     replace['longdesc'] = 'Correct call ordering.'
-    replace['outcome'] = 'OK'
-    replace['errormsg'] = 'OK'
+    replace['outcome1'] = 'OK'
+    replace['errormsg1'] = 'OK'
+    replace['outcome2'] = 'OK'
+    replace['errormsg2'] = 'OK'
     gen.make_file(template, f'InputHazardCallOrdering_{c}_ok.c', replace)
 
     # Generate the incorrect matching
     replace = patterns.copy()
     replace['shortdesc'] = 'Missing collective function call.'
     replace['longdesc'] = 'Missing collective function call for a path depending to input, a deadlock is created.'
-    replace['outcome'] = 'ERROR: IHCallMatching'
-    replace['errormsg'] = 'P2P mistmatch. Missing @{c}@ at @{filename}@:@{line:MBIERROR}@.'
+    replace['outcome1'] = 'OK'
+    replace['errormsg1'] = 'OK'
+    replace['outcome2'] = 'ERROR: IHCallMatching'
+    replace['errormsg2'] = 'P2P mistmatch. Missing @{c}@ at @{filename}@:@{line:MBIERROR}@.'
     replace['errorcond'] = '/* MBIERROR */'
     replace['operation1b'] = ''
     replace['fini1b'] = ''
