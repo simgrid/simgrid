@@ -73,7 +73,7 @@ static ObjectOwner* get_owner(void* object)
   return o;
 }
 
-int sthread_access_begin(void* objaddr, const char* objname, const char* file, int line)
+int sthread_access_begin(void* objaddr, const char* objname, const char* file, int line, const char* func)
 {
   sthread_disable();
   auto* self = simgrid::kernel::actor::ActorImpl::self();
@@ -106,7 +106,7 @@ int sthread_access_begin(void* objaddr, const char* objname, const char* file, i
   sthread_enable();
   return true;
 }
-void sthread_access_end(void* objaddr, const char* objname, const char* file, int line)
+void sthread_access_end(void* objaddr, const char* objname, const char* file, int line, const char* func)
 {
   sthread_disable();
   auto* self = simgrid::kernel::actor::ActorImpl::self();
