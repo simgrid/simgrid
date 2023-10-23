@@ -25,11 +25,11 @@ END_MPI_FEATURES
 
 BEGIN_MBI_TESTS
   $ mpirun -np 4 $zero_buffer ${EXE}
-  | @{outcome1}@
-  | @{errormsg1}@
+  | @{outcome_zerob}@
+  | @{errormsg_zerob}@
   $ mpirun -np 4 $infty_buffer ${EXE}
-  | @{outcome1}@
-  | @{errormsg1}@
+  | @{outcome_infty}@
+  | @{errormsg_infty}@
 END_MBI_TESTS
 //////////////////////       End of MBI headers        /////////////////// */
 
@@ -123,8 +123,10 @@ for s in gen.send + gen.isend:
         replace = patterns.copy()
         replace['shortdesc'] = 'Point to point @{s}@ and @{r}@ may not be matched'
         replace['longdesc'] = 'Processes 0 and 1 both call @{s}@ and @{r}@. This results in a deadlock depending on the buffering mode'
-        replace['outcome1'] = 'ERROR: BufferingHazard'
-        replace['errormsg1'] = f'Buffering Hazard. Possible deadlock depending the buffer size of MPI implementation and system environment cause by two processes call {s} before {r}.'
+        replace['outcome_zerob'] = 'ERROR: BufferingHazard'
+        replace['errormsg_zerob'] = f'Buffering Hazard. Possible deadlock depending the buffer size of MPI implementation and system environment cause by two processes call {s} before {r}.'
+        replace['outcome_infty'] = 'OK'
+        replace['errormsg_infty'] = 'OK'
         gen.make_file(template, f'P2PBuffering_{s}_{r}_{s}_{r}_nok.c', replace)
 
         # Generate the incorrect matching with send message to the same process depending on the buffering mode (send + recv)
@@ -136,8 +138,10 @@ for s in gen.send + gen.isend:
         replace['dest2'] = '1'
         replace['shortdesc'] = 'Point to point @{s}@ and @{r}@ may not be matched'
         replace['longdesc'] = 'Processes 0 and 1 both call @{s}@ and @{r}@. This results in a deadlock depending on the buffering mode'
-        replace['outcome1'] = 'ERROR: BufferingHazard'
-        replace['errormsg1'] = f'Buffering Hazard. Possible deadlock depending the buffer size of MPI implementation and system environment cause Send message to the same process.'
+        replace['outcome_zerob'] = 'ERROR: BufferingHazard'
+        replace['errormsg_zerob'] = f'Buffering Hazard. Possible deadlock depending the buffer size of MPI implementation and system environment cause Send message to the same process.'
+        replace['outcome_infty'] = 'OK'
+        replace['errormsg_infty'] = 'OK'
         gen.make_file(template, f'P2PBuffering_SameProcess_{s}_{r}_nok.c', replace)
 
         # Generate the incorrect matching with circular send message depending on the buffering mode (send + recv)
@@ -155,16 +159,20 @@ for s in gen.send + gen.isend:
         replace['operation2c'] = gen.operation[r]("2")
         replace['shortdesc'] = 'Point to point @{s}@ and @{r}@ may not be matched'
         replace['longdesc'] = 'Processes 0 and 1 both call @{s}@ and @{r}@. This results in a deadlock depending on the buffering mode'
-        replace['outcome1'] = 'ERROR: BufferingHazard'
-        replace['errormsg1'] = f'Buffering Hazard. Possible deadlock depending the buffer size of MPI implementation and system environment cause circular send message.'
+        replace['outcome_zerob'] = 'ERROR: BufferingHazard'
+        replace['errormsg_zerob'] = f'Buffering Hazard. Possible deadlock depending the buffer size of MPI implementation and system environment cause circular send message.'
+        replace['outcome_infty'] = 'OK'
+        replace['errormsg_infty'] = 'OK'
         gen.make_file(template, f'P2PBuffering_Circular_{s}_{r}_nok.c', replace)
 
         # Generate the incorrect matching depending on the buffering mode (recv + send)
         replace = patterns.copy()
         replace['shortdesc'] = 'Point to point @{s}@ and @{r}@ are not matched'
         replace['longdesc'] = 'Processes 0 and 1 both call @{r}@ and @{s}@. This results in a deadlock'
-        replace['outcome1'] = 'ERROR: CallMatching'
-        replace['errormsg1'] = 'ERROR: CallMatching'
+        replace['outcome_zerob'] = 'ERROR: CallMatching'
+        replace['errormsg_zerob'] = 'ERROR: CallMatching'
+        replace['outcome_infty'] = 'ERROR: CallMatching'
+        replace['errormsg_infty'] = 'ERROR: CallMatching'
         replace['operation1a'] = gen.operation[r]("2")
         replace['fini1a'] = gen.fini[r]("2")
         replace['operation2a'] = gen.operation[s]("1")
@@ -179,10 +187,19 @@ for s in gen.send + gen.isend:
         replace = patterns.copy()
         replace['shortdesc'] = 'Point to point @{s}@ and @{r}@ are correctly  matched'
         replace['longdesc'] = 'Process 0 calls @{s}@ and process 1 calls @{r}@.'
-        replace['outcome1'] = 'OK'
-        replace['errormsg1'] = 'OK'
-        replace['fini1a'] = gen.fini[s]("1")
-        replace['fini2a'] = gen.fini[r]("2")
+        replace['outcome_zerob'] = 'OK'
+        replace['errormsg_zerob'] = 'OK'
+        replace['outcome_infty'] = 'OK'
+        replace['errormsg_infty'] = 'OK'
+        patterns['init1'] = gen.init[s]("1")
         replace['operation1a'] = gen.operation[s]("1")
-        replace['operation2a'] = gen.operation[r]("2")
+        replace['fini1a'] = gen.fini[s]("1")
+        replace['operation2a'] = ''
+        replace['fini2a'] = ''
+        
+        patterns['init2'] = gen.init[r]("2")
+        replace['operation1b'] = gen.operation[r]("2")
+        replace['fini1b'] = gen.fini[r]("2")
+        replace['operation2b'] = ''
+        replace['fini2b'] = ''
         gen.make_file(template, f'P2PCallMatching_{s}_{r}_{r}_{s}_ok.c', replace)
