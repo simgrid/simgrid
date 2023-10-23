@@ -126,7 +126,7 @@ for s in gen.send:
             # Generate a code with non distinct buffer
             replace = patterns.copy()
             replace['shortdesc'] = 'Invalid buffer on Sendrecv function.'
-            replace['longdesc'] = 'Invalid buffer on Sendrecv, the tow buffers must be distinct.'
+            replace['longdesc'] = 'Invalid buffer on Sendrecv, the two buffers must be distinct.'
             replace['outcome'] = 'ERROR: InvalidBuffer'
             replace['errormsg'] = '@{sr}@ at @{filename}@:@{line:MBIERROR}@ send buffer and recv buffer must be distinct.'
             replace['change_arg'] = gen.write[sr]("2")

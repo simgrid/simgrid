@@ -358,7 +358,7 @@ start['MPI_Sendrecv'] = lambda n: ""
 operation['MPI_Sendrecv'] = lambda n: f'MPI_Sendrecv(psbuf{n}, buff_size, type, dest, stag, prbuf{n}, buff_size, type, src, rtag, newcom, &sta{n});'
 fini['MPI_Sendrecv'] = lambda n: ""
 free['MPI_Sendrecv'] = lambda n: ""
-write['MPI_Sendrecv'] = lambda n: f"prbuf{n} = &sbuf{n}[2];"
+write['MPI_Sendrecv'] = lambda n: f"prbuf{n} = &sbuf{n}[0];"
 
 
 ### P2P:nonblocking
