@@ -51,6 +51,7 @@ struct ObjectOwner {
   simgrid::kernel::actor::ActorImpl* owner = nullptr;
   const char* file                         = nullptr;
   int line                                 = -1;
+  int recursive_depth                      = 0;
   explicit ObjectOwner(simgrid::kernel::actor::ActorImpl* o) : owner(o) {}
 };
 
@@ -83,7 +84,9 @@ int sthread_access_begin(void* objaddr, const char* objname, const char* file, i
       [self, objaddr, objname, file, line]() -> bool {
         XBT_INFO("%s takes %s", self->get_cname(), objname);
         auto* ownership = get_owner(objaddr);
-        if (ownership->owner != nullptr) {
+        if (ownership->owner == self) {
+          ownership->recursive_depth++;
+        } else if (ownership->owner != nullptr) {
           auto msg = std::string("Unprotected concurent access to ") + objname + ": " + ownership->owner->get_name();
           if (not xbt_log_no_loc)
             msg += simgrid::xbt::string_printf(" at %s:%d", ownership->file, ownership->line);
@@ -98,6 +101,7 @@ int sthread_access_begin(void* objaddr, const char* objname, const char* file, i
         ownership->owner = self;
         ownership->file  = file;
         ownership->line  = line;
+        ownership->recursive_depth = 1;
         return true;
       },
       &observer);
@@ -118,7 +122,9 @@ void sthread_access_end(void* objaddr, const char* objname, const char* file, in
         auto* ownership = get_owner(objaddr);
         xbt_assert(ownership->owner == self, "safety check failed: %s is not owner of the object it's releasing.",
                    self->get_cname());
-        ownership->owner = nullptr;
+        ownership->recursive_depth--;
+        if (ownership->recursive_depth == 0)
+          ownership->owner = nullptr;
       },
       &observer);
   sthread_enable();
