@@ -120,8 +120,9 @@ void sthread_access_end(void* objaddr, const char* objname, const char* file, in
       [self, objaddr, objname]() -> void {
         XBT_INFO("%s releases %s", self->get_cname(), objname);
         auto* ownership = get_owner(objaddr);
-        xbt_assert(ownership->owner == self, "safety check failed: %s is not owner of the object it's releasing.",
-                   self->get_cname());
+        xbt_assert(ownership->owner == self,
+                   "safety check failed: %s is not owner of the object it's releasing. That object owned by %s.",
+                   self->get_cname(), (ownership->owner == nullptr ? "nobody" : ownership->owner->get_cname()));
         ownership->recursive_depth--;
         if (ownership->recursive_depth == 0)
           ownership->owner = nullptr;
