@@ -13,6 +13,8 @@ namespace simgrid::s4u {
 
 /** @brief A classical mutex, but blocking in the simulation world.
  *
+ * S4U mutexes are not recursive. If an actor tries to lock the same object twice, it deadlocks with itself.
+ *
  * @beginrst
  * It is strictly impossible to use a real mutex, such as
  * `std::mutex <http://en.cppreference.com/w/cpp/thread/mutex>`_
