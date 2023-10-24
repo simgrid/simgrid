@@ -6,13 +6,15 @@
 std::vector<int> v = {1, 2, 3, 5, 8, 13};
 
 extern "C" {
-extern int sthread_access_begin(void* addr, const char* objname, const char* file, int line) __attribute__((weak));
-extern void sthread_access_end(void* addr, const char* objname, const char* file, int line) __attribute__((weak));
+extern int sthread_access_begin(void* addr, const char* objname, const char* file, int line, const char* func)
+    __attribute__((weak));
+extern void sthread_access_end(void* addr, const char* objname, const char* file, int line, const char* func)
+    __attribute__((weak));
 }
 
 #define STHREAD_ACCESS(obj)                                                                                            \
-  for (bool first = sthread_access_begin(static_cast<void*>(obj), #obj, __FILE__, __LINE__) || true; first;            \
-       sthread_access_end(static_cast<void*>(obj), #obj, __FILE__, __LINE__), first = false)
+  for (bool first = sthread_access_begin(static_cast<void*>(obj), #obj, __FILE__, __LINE__, __FUNCTION__) || true;     \
+       first; sthread_access_end(static_cast<void*>(obj), #obj, __FILE__, __LINE__, __FUNCTION__), first = false)
 
 static void thread_code()
 {

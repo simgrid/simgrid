@@ -40,11 +40,11 @@ double xbt_os_time(void)
 #if HAVE_GETTIMEOFDAY
   struct timeval tv;
   gettimeofday(&tv, NULL);
+
+  return (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
 #else                           /* no gettimeofday => poor resolution */
   return (double) (time(NULL));
 #endif                          /* HAVE_GETTIMEOFDAY? */
-
-  return (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
 }
 
 void xbt_os_sleep(double sec)
@@ -59,7 +59,7 @@ void xbt_os_sleep(double sec)
   struct timeval timeout;
 
   timeout.tv_sec  = (long)sec;
-  timeout.tv_usec = (long)(sec - floor(sec)) * 1e6);
+  timeout.tv_usec = (long)(sec - floor(sec)) * 1e6;
 
   select(0, NULL, NULL, NULL, &timeout);
 #endif

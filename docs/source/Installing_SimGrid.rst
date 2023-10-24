@@ -108,7 +108,7 @@ Eigen3 (optional)
   - On Debian / Ubuntu: ``apt install libeigen3-dev``
   - On CentOS / Fedora: ``dnf install eigen3-devel``
   - On macOS with homebrew: ``brew install eigen``
-  - Use EIGEN3_HINT to specify where it's installed if cmake doesn't find it automatically.
+  - Use EIGEN3_HINT to specify where it's installed if cmake doesn't find it automatically. Set EIGEN3_HINT=OFF to disable detection even if it could be found.
 JSON (optional, for the DAG wfcommons loader)
   - On Debian / Ubuntu: ``apt install nlohmann-json3-dev``
   - Use nlohmann_json_HINT to specify where it's installed if cmake doesn't find it automatically.
@@ -269,6 +269,7 @@ NS3_HINT (empty by default)
 
 EIGEN3_HINT (empty by default)
   Alternative path into which Eigen3 should be searched for.
+  Providing the value OFF as an hint will disable the detection alltogether.
 
 SIMGRID_PYTHON_LIBDIR (auto-detected)
   Where to install the Python module library. By default, it is set to the cmake Python3_SITEARCH variable if installing to /usr,
