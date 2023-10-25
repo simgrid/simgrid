@@ -28,6 +28,12 @@ static int (*raw_mutex_trylock)(pthread_mutex_t*);
 static int (*raw_mutex_unlock)(pthread_mutex_t*);
 static int (*raw_mutex_destroy)(pthread_mutex_t*);
 
+static int (*raw_pthread_mutexattr_init)(pthread_mutexattr_t*);
+static int (*raw_pthread_mutexattr_settype)(pthread_mutexattr_t*, int);
+static int (*raw_pthread_mutexattr_gettype)(const pthread_mutexattr_t* restrict, int* restrict);
+static int (*raw_pthread_mutexattr_getrobust)(const pthread_mutexattr_t*, int*);
+static int (*raw_pthread_mutexattr_setrobust)(pthread_mutexattr_t*, int);
+
 static unsigned int (*raw_sleep)(unsigned int);
 static int (*raw_usleep)(useconds_t);
 static int (*raw_gettimeofday)(struct timeval*, void*);
@@ -49,6 +55,12 @@ static void intercepter_init()
   raw_mutex_trylock  = dlsym(RTLD_NEXT, "pthread_mutex_trylock");
   raw_mutex_unlock   = dlsym(RTLD_NEXT, "pthread_mutex_unlock");
   raw_mutex_destroy  = dlsym(RTLD_NEXT, "pthread_mutex_destroy");
+
+  raw_pthread_mutexattr_init      = dlsym(RTLD_NEXT, "pthread_mutexattr_init");
+  raw_pthread_mutexattr_settype   = dlsym(RTLD_NEXT, "pthread_mutexattr_settype");
+  raw_pthread_mutexattr_gettype   = dlsym(RTLD_NEXT, "pthread_mutexattr_gettype");
+  raw_pthread_mutexattr_getrobust = dlsym(RTLD_NEXT, "pthread_mutexattr_getrobust");
+  raw_pthread_mutexattr_setrobust = dlsym(RTLD_NEXT, "pthread_mutexattr_setrobust");
 
   raw_sleep        = dlsym(RTLD_NEXT, "sleep");
   raw_usleep       = dlsym(RTLD_NEXT, "usleep");
@@ -85,6 +97,32 @@ int pthread_create(pthread_t* thread, const pthread_attr_t* attr, void* (*start_
   sthread_enable();
   return res;
 }
+
+#define _STHREAD_CONCAT(a, b) a##b
+#define intercepted_call(name, raw_params, call_params, sim_params)                                                    \
+  int _STHREAD_CONCAT(pthread_, name) raw_params                                                                       \
+  {                                                                                                                    \
+    if (_STHREAD_CONCAT(raw_pthread_, name) == NULL)                                                                   \
+      intercepter_init();                                                                                              \
+    if (sthread_inside_simgrid)                                                                                        \
+      return _STHREAD_CONCAT(raw_pthread_, name) call_params;                                                          \
+                                                                                                                       \
+    sthread_disable();                                                                                                 \
+    int res = _STHREAD_CONCAT(sthread_, name) sim_params;                                                              \
+    sthread_enable();                                                                                                  \
+    return res;                                                                                                        \
+  }
+
+intercepted_call(mutexattr_init, (pthread_mutexattr_t * attr), (attr), ((sthread_mutexattr_t*)attr));
+intercepted_call(mutexattr_settype, (pthread_mutexattr_t * attr, int type), (attr, type),
+                 ((sthread_mutexattr_t*)attr, type));
+intercepted_call(mutexattr_gettype, (const pthread_mutexattr_t* restrict attr, int* type), (attr, type),
+                 ((sthread_mutexattr_t*)attr, type));
+intercepted_call(mutexattr_setrobust, (pthread_mutexattr_t* restrict attr, int robustness), (attr, robustness),
+                 ((sthread_mutexattr_t*)attr, robustness));
+intercepted_call(mutexattr_getrobust, (const pthread_mutexattr_t* restrict attr, int* restrict robustness),
+                 (attr, robustness), ((sthread_mutexattr_t*)attr, robustness));
+
 int pthread_join(pthread_t thread, void** retval)
 {
   if (raw_pthread_join == NULL)
@@ -107,7 +145,7 @@ int pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t* attr)
     return raw_mutex_init(mutex, attr);
 
   sthread_disable();
-  int res = sthread_mutex_init((sthread_mutex_t*)mutex, attr);
+  int res = sthread_mutex_init((sthread_mutex_t*)mutex, (sthread_mutexattr_t*)attr);
   sthread_enable();
   return res;
 }

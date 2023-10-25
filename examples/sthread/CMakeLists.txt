@@ -5,7 +5,7 @@ find_package(Threads REQUIRED)
 #########################################################################
 
 foreach(x
-        mutex-simple
+        mutex-simple mutex-recursive
 	producer-consumer)
 
   if("${CMAKE_SYSTEM}" MATCHES "Linux")

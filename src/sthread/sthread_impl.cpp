@@ -6,6 +6,7 @@
 /* SimGrid's pthread interposer. Actual implementation of the symbols (see the comment in sthread.h) */
 
 #include "smpi/smpi.h"
+#include "xbt/ex.h"
 #include "xbt/string.hpp"
 #include <simgrid/actor.h>
 #include <simgrid/s4u/Actor.hpp>
@@ -115,7 +116,57 @@ int sthread_join(sthread_t thread, void** /*retval*/)
   return 0;
 }
 
-int sthread_mutex_init(sthread_mutex_t* mutex, const void* /*pthread_mutexattr_t* attr*/)
+int sthread_mutexattr_init(sthread_mutexattr_t* attr)
+{
+  memset(attr, 0, sizeof(*attr));
+  return 0;
+}
+int sthread_mutexattr_settype(sthread_mutexattr_t* attr, int type)
+{
+  // reset
+  attr->recursive  = 0;
+  attr->errorcheck = 0;
+
+  switch (type) {
+    case PTHREAD_MUTEX_NORMAL:
+      attr->recursive = 0;
+      break;
+    case PTHREAD_MUTEX_RECURSIVE:
+      attr->recursive = 1;
+      break;
+    case PTHREAD_MUTEX_ERRORCHECK:
+      attr->errorcheck = 1;
+      THROW_UNIMPLEMENTED;
+      break;
+    default:
+      THROW_IMPOSSIBLE;
+  }
+  return 0;
+}
+int sthread_mutexattr_gettype(const sthread_mutexattr_t* attr, int* type)
+{
+  if (attr->recursive)
+    *type = PTHREAD_MUTEX_RECURSIVE;
+  else if (attr->errorcheck)
+    *type = PTHREAD_MUTEX_ERRORCHECK;
+  else
+    *type = PTHREAD_MUTEX_NORMAL;
+  return 0;
+}
+int sthread_mutexattr_getrobust(const sthread_mutexattr_t* attr, int* robustness)
+{
+  *robustness = attr->robust;
+  return 0;
+}
+int sthread_mutexattr_setrobust(sthread_mutexattr_t* attr, int robustness)
+{
+  attr->robust = robustness;
+  if (robustness)
+    THROW_UNIMPLEMENTED;
+  return 0;
+}
+
+int sthread_mutex_init(sthread_mutex_t* mutex, const sthread_mutexattr_t* attr)
 {
   auto m = sg4::Mutex::create();
   intrusive_ptr_add_ref(m.get());
@@ -130,6 +181,7 @@ int sthread_mutex_lock(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
+  XBT_DEBUG("%s(%p)", __FUNCTION__, mutex);
   static_cast<sg4::Mutex*>(mutex->mutex)->lock();
   return 0;
 }
@@ -152,6 +204,7 @@ int sthread_mutex_unlock(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
+  XBT_DEBUG("%s(%p)", __FUNCTION__, mutex);
   static_cast<sg4::Mutex*>(mutex->mutex)->unlock();
   return 0;
 }
@@ -161,6 +214,7 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
+  XBT_DEBUG("%s(%p)", __FUNCTION__, mutex);
   intrusive_ptr_release(static_cast<sg4::Mutex*>(mutex->mutex));
   return 0;
 }
