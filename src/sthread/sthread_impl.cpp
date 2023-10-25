@@ -38,14 +38,22 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 {
   /* Do not intercept the main when run from SMPI: it will initialize the simulation properly */
   for (int i = 0; envp[i] != nullptr; i++)
-    if (std::string_view(envp[i]).rfind("SMPI_GLOBAL_SIZE", 0) == 0)
+    if (std::string_view(envp[i]).rfind("SMPI_GLOBAL_SIZE", 0) == 0) {
+      printf("sthread refuses to intercept the SMPI application %s directly, as its interception is done otherwise.\n",
+             argv[0]);
       return raw_main(argc, argv, envp);
+    }
+
+  /* Do not intercept valgrind step 1 */
+  if (not strcmp(argv[0], "/usr/bin/valgrind.bin") || not strcmp(argv[0], "/bin/sh")) {
+    printf("sthread refuses to intercept the execution of %s. Running the application unmodified.\n", argv[0]);
+    fflush(stdout);
+    return raw_main(argc, argv, envp);
+  }
 
   /* If not in SMPI, the old main becomes an actor in a newly created simulation */
-  std::ostringstream id;
-  id << std::this_thread::get_id();
-
-  XBT_DEBUG("sthread main() is starting in thread %s", id.str().c_str());
+  printf("sthread is intercepting the execution of %s\n", argv[0]);
+  fflush(stdout);
 
   sg4::Engine e(&argc, argv);
   auto* zone = sg4::create_full_zone("world");
@@ -56,7 +64,6 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
   sthread_enable();
   sg4::ActorPtr main_actor = sg4::Actor::create("main thread", lilibeth, raw_main, argc, argv, envp);
 
-  XBT_INFO("Starting the simulation.");
   sg4::Engine::get_instance()->run();
   sthread_disable();
   XBT_INFO("All threads exited. Terminating the simulation.");

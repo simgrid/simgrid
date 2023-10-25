@@ -1,5 +1,5 @@
 $ env ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS LD_PRELOAD=${libdir:=.}/libsthread.so ./pthread-producer-consumer
-> [0.000000] [sthread/INFO] Starting the simulation.
+> sthread is intercepting the execution of ./pthread-producer-consumer
 > Producer 1: Insert Item 0 at 0
 > Producer 2: Insert Item 0 at 1
 > Consumer 1: Remove Item 0 from 0
@@ -15,7 +15,7 @@ $ env ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS LD_PRELOAD=${libdir:=.
 > [0.000000] [sthread/INFO] All threads exited. Terminating the simulation.
 
 $ env ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS LD_PRELOAD=${libdir:=.}/libsthread.so ./pthread-producer-consumer -c 2 -C 1 -p 2 -P 1
-> [0.000000] [sthread/INFO] Starting the simulation.
+> sthread is intercepting the execution of ./pthread-producer-consumer
 > Producer 1: Insert Item 0 at 0
 > Consumer 1: Remove Item 0 from 0
 > Producer 1: Insert Item 1 at 1
