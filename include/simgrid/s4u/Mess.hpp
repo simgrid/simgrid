@@ -23,7 +23,6 @@ class XBT_PUBLIC Mess : public Activity_T<Mess> {
   void* payload_        = nullptr;
   size_t dst_buff_size_ = 0;
   void* dst_buff_       = nullptr;
-  kernel::activity::ActivityImplPtr pimpl_;
 
   Mess() = default;
   Mess* do_start() override;
