@@ -222,8 +222,8 @@ void CommIsendSimcall::serialize(std::stringstream& stream) const
 }
 std::string CommIsendSimcall::to_string() const
 {
-  return "CommAsyncSend(comm_id: " + std::to_string(comm_->get_id()) + " mbox:" + std::to_string(mbox_->get_id()) +
-         " tag: " + std::to_string(tag_) + ")";
+  return "CommAsyncSend(comm_id: " + std::to_string((comm_ ? comm_->get_id() : 0)) + " mbox:" +
+         std::to_string(mbox_->get_id()) + " tag: " + std::to_string(tag_) + ")";
 }
 
 void CommIrecvSimcall::serialize(std::stringstream& stream) const
@@ -237,8 +237,8 @@ void CommIrecvSimcall::serialize(std::stringstream& stream) const
 
 std::string CommIrecvSimcall::to_string() const
 {
-  return "CommAsyncRecv(comm_id: " + std::to_string(comm_->get_id()) + " mbox:" + std::to_string(mbox_->get_id()) +
-         " tag: " + std::to_string(tag_) + ")";
+  return "CommAsyncRecv(comm_id: " + std::to_string((comm_ ? comm_->get_id() : 0)) + " mbox:" +
+         std::to_string(mbox_->get_id()) + " tag: " + std::to_string(tag_) + ")";
 }
 
 void MessIputSimcall::serialize(std::stringstream& stream) const
