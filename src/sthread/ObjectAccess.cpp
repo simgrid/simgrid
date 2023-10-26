@@ -91,11 +91,15 @@ int sthread_access_begin(void* objaddr, const char* objname, const char* file, i
           auto msg = std::string("Unprotected concurent access to ") + objname + ": " + ownership->owner->get_name();
           if (not xbt_log_no_loc) {
             msg += simgrid::xbt::string_printf(" at %s:%d", ownership->file, ownership->line);
-            if (ownership->recursive_depth > 1)
+            if (ownership->recursive_depth > 1) {
               msg += simgrid::xbt::string_printf(" (and %d other locations)", ownership->recursive_depth - 1);
+              if (ownership->recursive_depth != 2)
+                msg += "s";
+            }
           } else {
-            msg += simgrid::xbt::string_printf(" from %d locations (remove --log=no_loc for details)",
-                                               ownership->recursive_depth);
+            msg += simgrid::xbt::string_printf(" from %d location", ownership->recursive_depth);
+            if (ownership->recursive_depth != 1)
+              msg += "s";
           }
           msg += " vs " + self->get_name();
           if (xbt_log_no_loc)

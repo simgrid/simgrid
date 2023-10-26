@@ -6,7 +6,9 @@
 /* SimGrid's pthread interposer. Actual implementation of the symbols (see the comment in sthread.h) */
 
 #include "smpi/smpi.h"
+#include "xbt/asserts.h"
 #include "xbt/ex.h"
+#include "xbt/log.h"
 #include "xbt/string.hpp"
 #include <simgrid/actor.h>
 #include <simgrid/s4u/Actor.hpp>
@@ -123,16 +125,14 @@ int sthread_mutexattr_init(sthread_mutexattr_t* attr)
 }
 int sthread_mutexattr_settype(sthread_mutexattr_t* attr, int type)
 {
-  // reset
-  attr->recursive  = 0;
-  attr->errorcheck = 0;
-
   switch (type) {
     case PTHREAD_MUTEX_NORMAL:
+      xbt_assert(not attr->recursive, "S4U does not allow to remove the recursivness of a mutex.");
       attr->recursive = 0;
       break;
     case PTHREAD_MUTEX_RECURSIVE:
       attr->recursive = 1;
+      attr->errorcheck = 0; // reset
       break;
     case PTHREAD_MUTEX_ERRORCHECK:
       attr->errorcheck = 1;
@@ -168,7 +168,7 @@ int sthread_mutexattr_setrobust(sthread_mutexattr_t* attr, int robustness)
 
 int sthread_mutex_init(sthread_mutex_t* mutex, const sthread_mutexattr_t* attr)
 {
-  auto m = sg4::Mutex::create();
+  auto m = sg4::Mutex::create(attr != nullptr && attr->recursive);
   intrusive_ptr_add_ref(m.get());
 
   mutex->mutex = m.get();

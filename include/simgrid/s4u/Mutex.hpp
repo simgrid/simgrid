@@ -50,7 +50,8 @@ class XBT_PUBLIC Mutex {
 
 public:
   /** \static Constructs a new mutex */
-  static MutexPtr create();
+  static MutexPtr create(bool recursive = false);
+
   void lock();
   void unlock();
   bool try_lock();
