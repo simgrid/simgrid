@@ -131,6 +131,7 @@ using ActorCodeFactory = std::function<ActorCode(std::vector<std::string> args)>
 
 class Simcall;
 class SimcallObserver;
+class MutexObserver;
 class ObjectAccessSimcallObserver;
 class ObjectAccessSimcallItem;
 } // namespace actor

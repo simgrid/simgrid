@@ -1,5 +1,5 @@
 $ ./sthread-mutex-simple
-> [0.000000] [sthread/INFO] Starting the simulation.
+> sthread is intercepting the execution of ./sthread-mutex-simple
 > All threads are started.
 > The thread 0 is terminating.
 > The thread 1 is terminating.

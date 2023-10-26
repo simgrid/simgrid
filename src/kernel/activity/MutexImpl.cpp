@@ -47,13 +47,41 @@ unsigned MutexImpl::next_id_ = 0;
 
 MutexAcquisitionImplPtr MutexImpl::lock_async(actor::ActorImpl* issuer)
 {
-  auto res = MutexAcquisitionImplPtr(new kernel::activity::MutexAcquisitionImpl(issuer, this), true);
+  /* If the mutex is recursive */
+  if (is_recursive_) {
+    if (owner_ == issuer) {
+      recursive_depth++;
+      auto res = MutexAcquisitionImplPtr(new kernel::activity::MutexAcquisitionImpl(issuer, this), true);
+      res->grant();
+      return res;
+    } else if (owner_ == nullptr) { // Free
+      owner_          = issuer;
+      recursive_depth = 1;
+      auto res        = MutexAcquisitionImplPtr(new kernel::activity::MutexAcquisitionImpl(issuer, this), true);
+      res->grant();
+      return res;
+    }
 
-  if (owner_ != nullptr) {
-    /* Somebody is using the mutex; register the acquisition */
+    for (auto acq : ongoing_acquisitions_)
+      if (acq->get_issuer() == issuer) {
+        acq->recursive_depth_++;
+        return acq;
+      }
+
+    // Not yet in the ongoing acquisition list. Get in there
+    auto res = MutexAcquisitionImplPtr(new kernel::activity::MutexAcquisitionImpl(issuer, this), true);
     ongoing_acquisitions_.push_back(res);
-  } else {
+    return res;
+  }
+
+  // None-recursive mutex
+  auto res = MutexAcquisitionImplPtr(new kernel::activity::MutexAcquisitionImpl(issuer, this), true);
+  if (owner_ == nullptr) { // Lock is free, take it
     owner_  = issuer;
+    recursive_depth = 1;
+    res->grant();
+  } else { // Somebody is using the mutex; register the acquisition
+    ongoing_acquisitions_.push_back(res);
   }
   return res;
 }
@@ -65,14 +93,14 @@ MutexAcquisitionImplPtr MutexImpl::lock_async(actor::ActorImpl* issuer)
  */
 bool MutexImpl::try_lock(actor::ActorImpl* issuer)
 {
-  XBT_IN("(%p, %p)", this, issuer);
-  if (owner_ != nullptr) {
-    XBT_OUT();
-    return false;
+  if (owner_ == issuer && is_recursive_) {
+    recursive_depth++;
+    return true;
   }
+  if (owner_ != nullptr)
+    return false;
 
-  owner_  = issuer;
-  XBT_OUT();
+  owner_ = issuer;
   return true;
 }
 
@@ -88,12 +116,20 @@ void MutexImpl::unlock(actor::ActorImpl* issuer)
   xbt_assert(issuer == owner_, "Cannot release that mutex: you're not the owner. %s is (pid:%ld).",
              owner_ != nullptr ? owner_->get_cname() : "(nobody)", owner_ != nullptr ? owner_->get_pid() : -1);
 
+  if (is_recursive_) {
+    recursive_depth--;
+    if (recursive_depth > 0) // Still owning the lock
+      return;
+  }
+
   if (not ongoing_acquisitions_.empty()) {
     /* Give the ownership to the first waiting actor */
     auto acq = ongoing_acquisitions_.front();
     ongoing_acquisitions_.pop_front();
 
     owner_ = acq->get_issuer();
+    acq->grant();
+    recursive_depth = acq->recursive_depth_;
     if (acq == owner_->waiting_synchro_)
       acq->finish();
     // else, the issuer is not blocked on this acquisition so no need to release it

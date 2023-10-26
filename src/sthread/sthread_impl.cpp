@@ -6,6 +6,9 @@
 /* SimGrid's pthread interposer. Actual implementation of the symbols (see the comment in sthread.h) */
 
 #include "smpi/smpi.h"
+#include "xbt/asserts.h"
+#include "xbt/ex.h"
+#include "xbt/log.h"
 #include "xbt/string.hpp"
 #include <simgrid/actor.h>
 #include <simgrid/s4u/Actor.hpp>
@@ -38,14 +41,22 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 {
   /* Do not intercept the main when run from SMPI: it will initialize the simulation properly */
   for (int i = 0; envp[i] != nullptr; i++)
-    if (std::string_view(envp[i]).rfind("SMPI_GLOBAL_SIZE", 0) == 0)
+    if (std::string_view(envp[i]).rfind("SMPI_GLOBAL_SIZE", 0) == 0) {
+      printf("sthread refuses to intercept the SMPI application %s directly, as its interception is done otherwise.\n",
+             argv[0]);
       return raw_main(argc, argv, envp);
+    }
+
+  /* Do not intercept valgrind step 1 */
+  if (not strcmp(argv[0], "/usr/bin/valgrind.bin") || not strcmp(argv[0], "/bin/sh")) {
+    printf("sthread refuses to intercept the execution of %s. Running the application unmodified.\n", argv[0]);
+    fflush(stdout);
+    return raw_main(argc, argv, envp);
+  }
 
   /* If not in SMPI, the old main becomes an actor in a newly created simulation */
-  std::ostringstream id;
-  id << std::this_thread::get_id();
-
-  XBT_DEBUG("sthread main() is starting in thread %s", id.str().c_str());
+  printf("sthread is intercepting the execution of %s\n", argv[0]);
+  fflush(stdout);
 
   sg4::Engine e(&argc, argv);
   auto* zone = sg4::create_full_zone("world");
@@ -56,7 +67,6 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
   sthread_enable();
   sg4::ActorPtr main_actor = sg4::Actor::create("main thread", lilibeth, raw_main, argc, argv, envp);
 
-  XBT_INFO("Starting the simulation.");
   sg4::Engine::get_instance()->run();
   sthread_disable();
   XBT_INFO("All threads exited. Terminating the simulation.");
@@ -108,9 +118,57 @@ int sthread_join(sthread_t thread, void** /*retval*/)
   return 0;
 }
 
-int sthread_mutex_init(sthread_mutex_t* mutex, const void* /*pthread_mutexattr_t* attr*/)
+int sthread_mutexattr_init(sthread_mutexattr_t* attr)
 {
-  auto m = sg4::Mutex::create();
+  memset(attr, 0, sizeof(*attr));
+  return 0;
+}
+int sthread_mutexattr_settype(sthread_mutexattr_t* attr, int type)
+{
+  switch (type) {
+    case PTHREAD_MUTEX_NORMAL:
+      xbt_assert(not attr->recursive, "S4U does not allow to remove the recursivness of a mutex.");
+      attr->recursive = 0;
+      break;
+    case PTHREAD_MUTEX_RECURSIVE:
+      attr->recursive = 1;
+      attr->errorcheck = 0; // reset
+      break;
+    case PTHREAD_MUTEX_ERRORCHECK:
+      attr->errorcheck = 1;
+      THROW_UNIMPLEMENTED;
+      break;
+    default:
+      THROW_IMPOSSIBLE;
+  }
+  return 0;
+}
+int sthread_mutexattr_gettype(const sthread_mutexattr_t* attr, int* type)
+{
+  if (attr->recursive)
+    *type = PTHREAD_MUTEX_RECURSIVE;
+  else if (attr->errorcheck)
+    *type = PTHREAD_MUTEX_ERRORCHECK;
+  else
+    *type = PTHREAD_MUTEX_NORMAL;
+  return 0;
+}
+int sthread_mutexattr_getrobust(const sthread_mutexattr_t* attr, int* robustness)
+{
+  *robustness = attr->robust;
+  return 0;
+}
+int sthread_mutexattr_setrobust(sthread_mutexattr_t* attr, int robustness)
+{
+  attr->robust = robustness;
+  if (robustness)
+    THROW_UNIMPLEMENTED;
+  return 0;
+}
+
+int sthread_mutex_init(sthread_mutex_t* mutex, const sthread_mutexattr_t* attr)
+{
+  auto m = sg4::Mutex::create(attr != nullptr && attr->recursive);
   intrusive_ptr_add_ref(m.get());
 
   mutex->mutex = m.get();
@@ -123,6 +181,7 @@ int sthread_mutex_lock(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
+  XBT_DEBUG("%s(%p)", __FUNCTION__, mutex);
   static_cast<sg4::Mutex*>(mutex->mutex)->lock();
   return 0;
 }
@@ -133,7 +192,10 @@ int sthread_mutex_trylock(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
-  return static_cast<sg4::Mutex*>(mutex->mutex)->try_lock();
+  XBT_DEBUG("%s(%p)", __FUNCTION__, mutex);
+  if (static_cast<sg4::Mutex*>(mutex->mutex)->try_lock())
+    return 0;
+  return EBUSY;
 }
 
 int sthread_mutex_unlock(sthread_mutex_t* mutex)
@@ -142,6 +204,7 @@ int sthread_mutex_unlock(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
+  XBT_DEBUG("%s(%p)", __FUNCTION__, mutex);
   static_cast<sg4::Mutex*>(mutex->mutex)->unlock();
   return 0;
 }
@@ -151,6 +214,7 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
+  XBT_DEBUG("%s(%p)", __FUNCTION__, mutex);
   intrusive_ptr_release(static_cast<sg4::Mutex*>(mutex->mutex));
   return 0;
 }

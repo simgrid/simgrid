@@ -55,9 +55,9 @@ bool Mutex::try_lock()
  *
  * See @ref s4u_raii.
  */
-MutexPtr Mutex::create()
+MutexPtr Mutex::create(bool recursive)
 {
-  auto* mutex = new kernel::activity::MutexImpl();
+  auto* mutex = new kernel::activity::MutexImpl(recursive);
   return MutexPtr(&mutex->mutex(), false);
 }
 
