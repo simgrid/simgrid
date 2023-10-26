@@ -7,6 +7,8 @@ $ ${bindir:=.}/s4u-activityset-testany ${platfdir}/hosts_with_disks.xml "--log=r
 > [1.00] [  bob] Test for completed activities
 > [1.00] [  bob] Nothing matches, test again in 0.5s
 > [1.50] [  bob] Nothing matches, test again in 0.5s
+> [1.99] [ carl] Send 'Control Message'
+> [2.00] [  bob] Completed a Mess
 > [2.00] [  bob] Nothing matches, test again in 0.5s
 > [2.50] [  bob] Nothing matches, test again in 0.5s
 > [3.00] [  bob] Completed an I/O
