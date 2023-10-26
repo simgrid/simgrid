@@ -88,8 +88,8 @@ Mess* Mess::do_start()
   pimpl_->set_actor(sender_);
   // Only throw the signal when both sides are here and the status is READY
   if (pimpl_->get_state() != kernel::activity::State::WAITING) {
-      fire_on_start();
-      fire_on_this_start();
+    fire_on_start();
+    fire_on_this_start();
   }
   state_ = State::STARTED;
   return this;
