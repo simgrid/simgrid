@@ -456,6 +456,9 @@ void EngineImpl::display_all_actor_status() const
       if (boost::dynamic_pointer_cast<kernel::activity::CommImpl>(actor->waiting_synchro_) != nullptr)
         synchro_description = "communication";
 
+      if (boost::dynamic_pointer_cast<kernel::activity::MessImpl>(actor->waiting_synchro_) != nullptr)
+        synchro_description = "message";
+
       if (boost::dynamic_pointer_cast<kernel::activity::SleepImpl>(actor->waiting_synchro_) != nullptr)
         synchro_description = "sleeping";
 
