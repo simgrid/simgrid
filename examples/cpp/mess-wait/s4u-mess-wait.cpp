@@ -39,7 +39,7 @@ static void sender(int messages_count)
 
   /* Send message to let the receiver know that it should stop */
   XBT_INFO("Send 'finalize' to 'receiver'");
-  mqueue->put(new std::string("finalize"), 0);
+  mqueue->put(new std::string("finalize"));
 }
 
 /* Receiver actor expects 1 argument: its ID */
