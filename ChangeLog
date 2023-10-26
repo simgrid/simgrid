@@ -8,10 +8,15 @@ S4U:
    on symmetric routes.
  - Introduce a Mailbox::get_async() with no payload parameter. You can use the new 
    Comm::get_payload() once the communication is over to retrieve the payload.
+ - Implement recursive mutexes. Simply pass true to the constructor to get one.
 
 SMPI:
  - New SMPI_app_instance_join(): wait for the completion of a started MPI instance
  - MPI_UNIVERSE_SIZE now initialized to the total amount of hosts in the platform
+
+sthread:
+ - Implement recursive pthreads.
+ - Many bug fixes.
 
 Python:
  - Make the host_load plugin available from Python. See examples/python/plugin-host-load
