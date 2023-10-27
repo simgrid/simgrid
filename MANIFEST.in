@@ -348,8 +348,6 @@ include examples/cpp/network-ns3/s4u-network-ns3-timed.tesh
 include examples/cpp/network-ns3/s4u-network-ns3.cpp
 include examples/cpp/network-wifi/s4u-network-wifi.cpp
 include examples/cpp/network-wifi/s4u-network-wifi.tesh
-include examples/cpp/solar-panel-simple/s4u-solar-panel-simple.cpp
-include examples/cpp/solar-panel-simple/s4u-solar-panel-simple.tesh
 include examples/cpp/platform-comm-serialize/s4u-platform-comm-serialize.cpp
 include examples/cpp/platform-comm-serialize/s4u-platform-comm-serialize.tesh
 include examples/cpp/platform-failures/s4u-platform-failures.cpp
@@ -380,6 +378,8 @@ include examples/cpp/replay-io/s4u-replay-io.txt
 include examples/cpp/replay-io/s4u-replay-io_d.xml
 include examples/cpp/routing-get-clusters/s4u-routing-get-clusters.cpp
 include examples/cpp/routing-get-clusters/s4u-routing-get-clusters.tesh
+include examples/cpp/solar-panel-simple/s4u-solar-panel-simple.cpp
+include examples/cpp/solar-panel-simple/s4u-solar-panel-simple.tesh
 include examples/cpp/synchro-barrier/s4u-mc-synchro-barrier.tesh
 include examples/cpp/synchro-barrier/s4u-synchro-barrier.cpp
 include examples/cpp/synchro-barrier/s4u-synchro-barrier.tesh
@@ -643,9 +643,12 @@ include examples/smpi/trace_call_location/trace_call_location.c
 include examples/smpi/trace_call_location/trace_call_location.tesh
 include examples/smpi/trace_simple/trace_simple.c
 include examples/smpi/trace_simple/trace_simple.tesh
+include examples/sthread/pthread-mc-mutex-recursive.tesh
 include examples/sthread/pthread-mc-mutex-simple.tesh
 include examples/sthread/pthread-mc-mutex-simpledeadlock.tesh
 include examples/sthread/pthread-mc-producer-consumer.tesh
+include examples/sthread/pthread-mutex-recursive.c
+include examples/sthread/pthread-mutex-recursive.tesh
 include examples/sthread/pthread-mutex-simple.c
 include examples/sthread/pthread-mutex-simple.tesh
 include examples/sthread/pthread-mutex-simpledeadlock.c
