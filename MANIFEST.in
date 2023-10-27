@@ -645,9 +645,12 @@ include examples/smpi/trace_call_location/trace_call_location.c
 include examples/smpi/trace_call_location/trace_call_location.tesh
 include examples/smpi/trace_simple/trace_simple.c
 include examples/smpi/trace_simple/trace_simple.tesh
+include examples/sthread/pthread-mc-mutex-recursive.tesh
 include examples/sthread/pthread-mc-mutex-simple.tesh
 include examples/sthread/pthread-mc-mutex-simpledeadlock.tesh
 include examples/sthread/pthread-mc-producer-consumer.tesh
+include examples/sthread/pthread-mutex-recursive.c
+include examples/sthread/pthread-mutex-recursive.tesh
 include examples/sthread/pthread-mutex-simple.c
 include examples/sthread/pthread-mutex-simple.tesh
 include examples/sthread/pthread-mutex-simpledeadlock.c
