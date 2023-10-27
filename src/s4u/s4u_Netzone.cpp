@@ -96,8 +96,8 @@ void NetZone::add_route(const NetZone* src, const NetZone* dst, const std::vecto
   pimpl_->add_route(src ? src->get_netpoint() : nullptr, dst ? dst->get_netpoint(): nullptr,
                     src ? src->get_gateway() : nullptr, dst ? dst->get_gateway() : nullptr,
                     links_direct, false);
-  pimpl_->add_route(src ? src->get_netpoint() : nullptr, dst ? dst->get_netpoint(): nullptr,
-                    src ? src->get_gateway() : nullptr, dst ? dst->get_gateway() : nullptr,
+  pimpl_->add_route(dst ? dst->get_netpoint(): nullptr, src ? src->get_netpoint() : nullptr,
+                    dst ? dst->get_gateway() : nullptr, src ? src->get_gateway() : nullptr,
                     links_reverse, false);
 }
 
