@@ -26,7 +26,7 @@ get_json(){
 }
 
 get_ns3(){
-  sed -n 's/.*-- ns-3 found (v\(3[-.0-9a-z]\+\); minor:.*/\1/p;T;q' ./consoleText
+  sed -n 's/.*-- ns-3 found (v\(3[-.0-9a-z]\+\).*/\1/p;T;q' ./consoleText
 }
 
 get_python(){
