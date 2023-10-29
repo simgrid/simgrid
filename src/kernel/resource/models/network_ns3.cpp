@@ -119,8 +119,14 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
   wifiPhy.Set("Antennas", ns3::UintegerValue(nss_value));
   wifiPhy.Set("MaxSupportedTxSpatialStreams", ns3::UintegerValue(nss_value));
   wifiPhy.Set("MaxSupportedRxSpatialStreams", ns3::UintegerValue(nss_value));
-#if NS3_MINOR_VERSION > 33
+#if NS3_MINOR_VERSION < 33
+  // This fails with "The channel width does not uniquely identify an operating channel" on v3.34,
+  // so we specified the ChannelWidth of wifiPhy to 40, above, when creating wifiPhy with v3.34 and higher
+  ns3::Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", ns3::UintegerValue(40));
+#elif NS3_MINOR_VERSION < 36
   wifiPhy.Set("ChannelWidth", ns3::UintegerValue(40));
+#else
+  wifiPhy.Set("ChannelSettings", ns3::StringValue("{0, 40, BAND_UNSPECIFIED, 0}"));
 #endif
   wifiMac.SetType("ns3::ApWifiMac", "Ssid", ns3::SsidValue(ssid));
 
@@ -165,12 +171,6 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
     device->GetPhy()->SetOffMode();
     ns3::Simulator::Schedule(ns3::Seconds(start_time_value), &resumeWifiDevice, device);
   }
-
-#if NS3_MINOR_VERSION < 33
-  // This fails with "The channel width does not uniquely identify an operating channel" on v3.34,
-  // so we specified the ChannelWidth of wifiPhy to 40, above, when creating wifiPhy with v3.34 and higher
-  ns3::Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", ns3::UintegerValue(40));
-#endif
 
   mobility.SetPositionAllocator(positionAllocS);
   mobility.Install(nodes);
