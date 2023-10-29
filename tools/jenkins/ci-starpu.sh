@@ -9,8 +9,8 @@ set -ex
 export SUDO=""
 
 echo "XXXXXXXXXXXXXXXX Install APT dependencies"
-#$SUDO apt-get update
-#$SUDO apt-get -y install build-essential libboost-all-dev wget git xsltproc
+$SUDO apt-get update
+$SUDO apt-get -y install build-essential libboost-all-dev wget git xsltproc
 
 for i in master starpu-1.3 ; do
   echo "XXXXXXXXXXXXXXXX Build and test StarPU $i"
