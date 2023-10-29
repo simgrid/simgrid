@@ -461,6 +461,16 @@ class Cmd:
 
                 logs.append("Test suite `{file}': NOK (<{cmd}> output mismatch)".format(
                     file=FileReader().filename, cmd=cmd_name))
+
+                # Also report any failed return code and/or signal we got in case of output mismatch
+                if not proc.returncode in self.expect_return:
+                    if proc.returncode >= 0:
+                        logs.append("In addition, <{cmd}> returned code {code}.".format(
+                            cmd=cmd_name, code=proc.returncode))
+                    else:
+                        logs.append("In addition, <{cmd}> got signal {sig}.".format(cmd=cmd_name,
+                            sig=SIGNALS_TO_NAMES_DICT[-proc.returncode]))
+
                 if lock is not None:
                     lock.release()
                 if TeshState().keep:

@@ -14,6 +14,7 @@
 > @@ -0,0 +1 @@
 > +I crashed
 > Test suite `(stdin)': NOK (<(stdin):2> output mismatch)
+> In addition, <(stdin):2> got signal SIGTERM.
 $ ${bindir:=.}/tesh
 
 
