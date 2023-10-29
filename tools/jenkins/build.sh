@@ -130,9 +130,11 @@ echo "Branch built is $branch_name"
 NUMBER_OF_PROCESSORS="$(nproc)" || NUMBER_OF_PROCESSORS=1
 GENERATOR="Unix Makefiles"
 BUILDER=make
+VERBOSE_BUILD="VERBOSE=1"
 if which ninja 2>/dev/null >/dev/null ; then
   GENERATOR=Ninja
   BUILDER=ninja
+  VERBOSE_BUILD="-v"
 fi
 
 ulimit -c 0 || true
@@ -222,7 +224,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
   "$SRCFOLDER"
 
-${BUILDER} -j $NUMBER_OF_PROCESSORS VERBOSE=1 tests
+${BUILDER} -j $NUMBER_OF_PROCESSORS ${VERBOSE_BUILD} tests
 
 echo "XX"
 echo "XX Run the tests"
