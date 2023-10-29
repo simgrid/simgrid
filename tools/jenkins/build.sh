@@ -129,6 +129,11 @@ echo "Branch built is $branch_name"
 
 NUMBER_OF_PROCESSORS="$(nproc)" || NUMBER_OF_PROCESSORS=1
 GENERATOR="Unix Makefiles"
+BUILDER=make
+if which ninja 2>/dev/null >/dev/null ; then
+  GENERATOR=Ninja
+  BUILDER=ninja
+fi
 
 ulimit -c 0 || true
 
@@ -169,7 +174,7 @@ echo "XX   pwd: $(pwd)"
 echo "XX"
 
 cmake -G"$GENERATOR" -Denable_documentation=OFF "$WORKSPACE"
-make dist -j $NUMBER_OF_PROCESSORS
+${BUILDER} dist -j $NUMBER_OF_PROCESSORS
 SIMGRID_VERSION=$(cat VERSION)
 
 echo "XX"
@@ -217,7 +222,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
   "$SRCFOLDER"
 
-make -j $NUMBER_OF_PROCESSORS VERBOSE=1 tests
+${BUILDER} -j $NUMBER_OF_PROCESSORS VERBOSE=1 tests
 
 echo "XX"
 echo "XX Run the tests"
@@ -233,7 +238,7 @@ if test -n "$INSTALL" && [ "${branch_name}" = "origin/master" ] ; then
 
   rm -rf "$INSTALL"
 
-  make install
+  ${BUILDER} install
 fi
 
 echo "XX"
