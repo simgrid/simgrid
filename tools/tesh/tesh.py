@@ -196,6 +196,7 @@ class TeshState(Singleton):
         self.args_suffix = ""
         self.ignore_regexps_common = []
         self.jenkins = False  # not a Jenkins run by default
+        self.auto_valgrind = True
         self.timeout = 10  # default value: 10 sec
         self.wrapper = None
         self.keep = False
@@ -303,9 +304,11 @@ class Cmd:
             _thread.start_new_thread(Cmd._run, (self, lock))
         else:
             self._run()
-            if self.rerun_with_valgrind:
-                print('\n\n\nXXXXXXXXX Rerunning this test with valgrind to help debugging it XXXXXXXXX')
-                print('(this will fail if valgrind is not installed, of course)\n\n\n')
+            if self.rerun_with_valgrind and TeshState().auto_valgrind:
+                print('\n\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+                print(      'XXXXXXXXX Rerunning this test with valgrind to help debugging it XXXXXXXXX')
+                print(      'XXXXXXXX (this will fail if valgrind is not installed, of course) XXXXXXXX')
+                print(      'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n\n')
 
                 self.args = "valgrind " + self.args
                 self._run()
@@ -418,12 +421,16 @@ class Cmd:
                 print('\n'.join(logs))
                 return
 
-        if self.output_display:
-            logs.append(str(stdout_data))
-
         # remove text colors
         ansi_escape = re.compile(r'\x1b[^m]*m')
         stdout_data = ansi_escape.sub('', stdout_data)
+
+        if self.output_display:
+            logs.append(str(stdout_data))
+
+        if self.rerun_with_valgrind:
+            print(str(stdout_data), file=sys.stderr)
+            return
 
         if self.ignore_output:
             logs.append("(ignoring the output of <{cmd}> as requested)".format(cmd=cmd_name))
@@ -558,6 +565,10 @@ def main():
         '--ignore-jenkins',
         action='store_true',
         help='ignore all cruft generated on SimGrid continuous integration servers')
+    group1.add_argument(
+        '--no-auto-valgrind',
+        action='store_true',
+        help='do not automaticall launch segfaulting commands in valgrind')
     group1.add_argument('--wrapper', metavar='arg', help='Run each command in the provided wrapper (eg valgrind)')
     group1.add_argument(
         '--keep',
@@ -590,6 +601,9 @@ def main():
             re.compile(r".*dlopen\+thread broken on Apple and BSD\. Switching to raw contexts\."),
         ]
         TeshState().jenkins = True  # This is a Jenkins build
+
+    if options.no_auto_valgrind:
+        TeshState().auto_valgrind = False
 
     if options.teshfile is None:
         file = FileReader(None)
