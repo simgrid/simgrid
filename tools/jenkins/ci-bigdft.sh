@@ -23,7 +23,8 @@ export LD_LIBRARY_PATH=$PWD/simgrid-dev/lib/:$LD_LIBRARY_PATH
 export JHBUILD_RUN_AS_ROOT=1
 
 #workaround issue with ntpoly 3.0.0
-sed -i 's|repository type="tarball" name="ntpoly" href="https://github.com/william-dawson/NTPoly/archive/"|repository type="git" name="ntpoly" href="https://github.com/william-dawson/NTPoly/"|' ../modulesets/hpc-upstream.modules
+sed -i 's|repository type="tarball" name="ntpoly" href="https://github.com/william-dawson/NTPoly/archive/"|repository type="git" name="ntpoly" href="https://github.com/william-dawson/"|' ../modulesets/hpc-upstream.modules
+sed -i 's|module="ntpoly-v3.0.0.tar.gz"|module="ntpoly"|' ../modulesets/hpc-upstream.modules
 
 ../Installer.py autogen -y
 
