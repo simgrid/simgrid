@@ -237,7 +237,7 @@ s4u::Disk* HostImpl::create_disk(const std::string& name, double read_bandwidth,
 
 void HostImpl::add_disk(const s4u::Disk* disk)
 {
-  disks_[disk->get_name()] = kernel::resource::DiskImplPtr(disk->get_impl());
+  disks_.insert({disk->get_name(), kernel::resource::DiskImplPtr(disk->get_impl())});
 }
 
 void HostImpl::remove_disk(const std::string& name)
