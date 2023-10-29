@@ -237,6 +237,7 @@ class Cmd:
         self.output_display = False
 
         self.sort = -1
+        self.rerun_with_valgrind = False
 
         self.ignore_regexps = TeshState().ignore_regexps_common
 
@@ -302,6 +303,12 @@ class Cmd:
             _thread.start_new_thread(Cmd._run, (self, lock))
         else:
             self._run()
+            if self.rerun_with_valgrind:
+                print('\n\n\nXXXXXXXXX Rerunning this test with valgrind to help debugging it XXXXXXXXX')
+                print('(this will fail if valgrind is not installed, of course)\n\n\n')
+
+                self.args = "valgrind " + self.args
+                self._run()
         return True
 
     def _run(self, lock=None):
@@ -470,6 +477,8 @@ class Cmd:
                     else:
                         logs.append("In addition, <{cmd}> got signal {sig}.".format(cmd=cmd_name,
                             sig=SIGNALS_TO_NAMES_DICT[-proc.returncode]))
+                    if proc.returncode == -signal.SIGSEGV:
+                        self.rerun_with_valgrind = True
 
                 if lock is not None:
                     lock.release()
@@ -505,6 +514,10 @@ class Cmd:
             logs.append("Test suite `{file}': NOK (<{cmd}> got signal {sig})".format(
                 file=FileReader().filename, cmd=cmd_name,
                 sig=SIGNALS_TO_NAMES_DICT[-proc.returncode]))
+
+            if proc.returncode == -signal.SIGSEGV:
+                self.rerun_with_valgrind = True
+
             if lock is not None:
                 lock.release()
             TeshState().set_return_code(max(-proc.returncode, 1))
