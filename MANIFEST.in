@@ -1975,6 +1975,7 @@ include include/simgrid/s4u/Host.hpp
 include include/simgrid/s4u/Io.hpp
 include include/simgrid/s4u/Link.hpp
 include include/simgrid/s4u/Mailbox.hpp
+include include/simgrid/s4u/Mess.hpp
 include include/simgrid/s4u/MessageQueue.hpp
 include include/simgrid/s4u/Mutex.hpp
 include include/simgrid/s4u/NetZone.hpp
