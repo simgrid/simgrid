@@ -667,7 +667,13 @@ This feature is not very usable yet, as you have to manually annotate your code,
 
 Version 3.35 (TBD)
 ------------------
-
+**On the interface front**, we introduced a new MessageQueue abstraction and associated Mess simulated object. The behavior of a
+MessageQueue is similar to that of a Mailbox, but intended for control messages that do not incur any simulated cost.
+Information is automagically transported over thin air between producer and consumer. Internally, the implementation is very
+similar to Mailboxes and Comms, only simpler. The motivation for this new abstraction came from a scalability issue observed in
+the WRENCH framework, which is heavily based on control messages. When the simulated size of these messages is set to 0, it creates
+very short lived network actions (i.e., lasting for only the route latency) that tend to overwhelm the LMM. Switching from Mailbox
+to MessageQueue for such information exchange avoid this problem and greatly improves the scalability of WRENCH-based simulators.
 
 .. |br| raw:: html
 
