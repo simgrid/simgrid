@@ -334,6 +334,8 @@ include examples/cpp/mc-failing-assert/s4u-mc-failing-assert-nodpor.tesh
 include examples/cpp/mc-failing-assert/s4u-mc-failing-assert-statequality.tesh
 include examples/cpp/mc-failing-assert/s4u-mc-failing-assert.cpp
 include examples/cpp/mc-failing-assert/s4u-mc-failing-assert.tesh
+include examples/cpp/mess-wait/s4u-mess-wait.cpp
+include examples/cpp/mess-wait/s4u-mess-wait.tesh
 include examples/cpp/network-factors/s4u-network-factors.cpp
 include examples/cpp/network-factors/s4u-network-factors.tesh
 include examples/cpp/network-nonlinear/s4u-network-nonlinear.cpp
@@ -1973,6 +1975,7 @@ include include/simgrid/s4u/Host.hpp
 include include/simgrid/s4u/Io.hpp
 include include/simgrid/s4u/Link.hpp
 include include/simgrid/s4u/Mailbox.hpp
+include include/simgrid/s4u/MessageQueue.hpp
 include include/simgrid/s4u/Mutex.hpp
 include include/simgrid/s4u/NetZone.hpp
 include include/simgrid/s4u/Semaphore.hpp
@@ -2069,6 +2072,10 @@ include src/kernel/activity/IoImpl.cpp
 include src/kernel/activity/IoImpl.hpp
 include src/kernel/activity/MailboxImpl.cpp
 include src/kernel/activity/MailboxImpl.hpp
+include src/kernel/activity/MessImpl.cpp
+include src/kernel/activity/MessImpl.hpp
+include src/kernel/activity/MessageQueueImpl.cpp
+include src/kernel/activity/MessageQueueImpl.hpp
 include src/kernel/activity/MutexImpl.cpp
 include src/kernel/activity/MutexImpl.hpp
 include src/kernel/activity/SemaphoreImpl.cpp
@@ -2353,6 +2360,8 @@ include src/s4u/s4u_Host.cpp
 include src/s4u/s4u_Io.cpp
 include src/s4u/s4u_Link.cpp
 include src/s4u/s4u_Mailbox.cpp
+include src/s4u/s4u_Mess.cpp
+include src/s4u/s4u_MessageQueue.cpp
 include src/s4u/s4u_Mutex.cpp
 include src/s4u/s4u_Netzone.cpp
 include src/s4u/s4u_Semaphore.cpp

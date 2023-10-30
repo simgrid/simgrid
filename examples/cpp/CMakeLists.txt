@@ -170,6 +170,7 @@ foreach (example activityset-testany activityset-waitany activityset-waitall act
                  exec-ptask-multicore exec-ptask-multicore-latency exec-cpu-nonlinear exec-cpu-factors exec-failure exec-threads
                  maestro-set
                  mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-bugged2-liveness mc-centralized-mutex mc-electric-fence mc-failing-assert
+                 mess-wait
                  network-ns3 network-ns3-wifi network-wifi
                  io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-dependent
                  task-dispatch task-io task-microservice task-parallelism task-simple task-storm task-switch-host task-variable-load

@@ -16,6 +16,7 @@
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
+#include "src/kernel/activity/MessageQueueImpl.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/Synchro.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
@@ -33,6 +34,7 @@ namespace simgrid::kernel {
 class EngineImpl {
   std::unordered_map<std::string, routing::NetPoint*> netpoints_;
   std::unordered_map<std::string, activity::MailboxImpl*> mailboxes_;
+  std::unordered_map<std::string, activity::MessageQueueImpl*> mqueues_;
 
   std::unordered_map<std::string, actor::ActorCodeFactory> registered_functions; // Maps function names to actor code
   actor::ActorCodeFactory default_function; // Function to use as a fallback when the provided name matches nothing

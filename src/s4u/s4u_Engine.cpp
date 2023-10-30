@@ -400,6 +400,20 @@ Mailbox* Engine::mailbox_by_name_or_create(const std::string& name) const
   return mbox->get_iface();
 }
 
+MessageQueue* Engine::message_queue_by_name_or_create(const std::string& name) const
+{
+  /* two actors may have pushed the same mbox_create simcall at the same time */
+  kernel::activity::MessageQueueImpl* queue = kernel::actor::simcall_answered([&name, this] {
+    auto [m, inserted] = pimpl_->mqueues_.try_emplace(name, nullptr);
+    if (inserted) {
+      m->second = new kernel::activity::MessageQueueImpl(name);
+      XBT_DEBUG("Creating a message queue at %p with name %s", m->second, name.c_str());
+    }
+    return m->second;
+  });
+  return queue->get_iface();
+}
+
 /** @brief Returns the amount of links in the platform */
 size_t Engine::get_link_count() const
 {

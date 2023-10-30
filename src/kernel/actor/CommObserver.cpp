@@ -6,6 +6,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
+#include "src/kernel/activity/MessageQueueImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_config.hpp"
@@ -221,8 +222,8 @@ void CommIsendSimcall::serialize(std::stringstream& stream) const
 }
 std::string CommIsendSimcall::to_string() const
 {
-  return "CommAsyncSend(comm_id: " + std::to_string(comm_->get_id()) + " mbox:" + std::to_string(mbox_->get_id()) +
-         " tag: " + std::to_string(tag_) + ")";
+  return "CommAsyncSend(comm_id: " + std::to_string((comm_ ? comm_->get_id() : 0)) + " mbox:" +
+         std::to_string(mbox_->get_id()) + " tag: " + std::to_string(tag_) + ")";
 }
 
 void CommIrecvSimcall::serialize(std::stringstream& stream) const
@@ -233,10 +234,35 @@ void CommIrecvSimcall::serialize(std::stringstream& stream) const
   XBT_DEBUG("RecvObserver comm:%p mbox:%u tag:%d", comm_, mbox_->get_id(), tag_);
   stream << ' ' << fun_call_;
 }
+
 std::string CommIrecvSimcall::to_string() const
 {
-  return "CommAsyncRecv(comm_id: " + std::to_string(comm_->get_id()) + " mbox:" + std::to_string(mbox_->get_id()) +
-         " tag: " + std::to_string(tag_) + ")";
+  return "CommAsyncRecv(comm_id: " + std::to_string((comm_ ? comm_->get_id() : 0)) + " mbox:" +
+         std::to_string(mbox_->get_id()) + " tag: " + std::to_string(tag_) + ")";
 }
+
+void MessIputSimcall::serialize(std::stringstream& stream) const
+{
+  stream << mess_  << ' ' << queue_;
+  XBT_DEBUG("PutObserver mess:%p queue:%p", mess_, queue_);
+}
+
+std::string MessIputSimcall::to_string() const
+{
+  return "MessAsyncPut(queue:" + queue_->get_name() + ")";
+}
+
+void MessIgetSimcall::serialize(std::stringstream& stream) const
+{
+  stream << mess_ << ' ' << queue_;
+  XBT_DEBUG("GettObserver mess:%p queue:%p", mess_, queue_);
+}
+
+std::string MessIgetSimcall::to_string() const
+{
+  return "MessAsyncGet(queue:" + queue_->get_name() + ")";
+}
+
+
 
 } // namespace simgrid::kernel::actor
