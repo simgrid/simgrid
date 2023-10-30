@@ -1,0 +1,10 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-battery-chiller-solar ${platfdir}/energy_platform.xml
+> [172800.000000] [host_energy/INFO] Total energy consumption: 53568000.000000 Joules (used hosts: 36288000.000000 Joules; unused/idle hosts: 17280000.000000)
+> [172800.000000] [battery_chiller_solar/INFO] State of charge of the battery: 20.4%
+> [172800.000000] [battery_chiller_solar/INFO] Energy consumed by the hosts (green / brown): 21.60MJ / 14.69MJ
+> [172800.000000] [battery_chiller_solar/INFO] Energy consumed by the chiller (brown): 48.38MJ
+> [172800.000000] [host_energy/INFO] Energy consumption of host MyHost1: 17568000.000000 Joules
+> [172800.000000] [host_energy/INFO] Energy consumption of host MyHost2: 18720000.000000 Joules
+> [172800.000000] [host_energy/INFO] Energy consumption of host MyHost3: 17280000.000000 Joules

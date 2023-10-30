@@ -166,6 +166,10 @@ include examples/cpp/app-masterworkers/s4u-app-masterworkers.tesh
 include examples/cpp/app-masterworkers/s4u-app-masterworkers_d.xml
 include examples/cpp/app-token-ring/s4u-app-token-ring.cpp
 include examples/cpp/app-token-ring/s4u-app-token-ring.tesh
+include examples/cpp/battery-chiller-solar/s4u-battery-chiller-solar.cpp
+include examples/cpp/battery-chiller-solar/s4u-battery-chiller-solar.tesh
+include examples/cpp/battery-connector/s4u-battery-connector.cpp
+include examples/cpp/battery-connector/s4u-battery-connector.tesh
 include examples/cpp/battery-degradation/plot_battery_degradation.py
 include examples/cpp/battery-degradation/s4u-battery-degradation.cpp
 include examples/cpp/battery-degradation/s4u-battery-degradation.tesh
