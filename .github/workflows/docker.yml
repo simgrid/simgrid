@@ -33,14 +33,8 @@ jobs:
       - name: build docker unstable
         run: |
           cd tools/docker
-          docker pull simgrid/unstable
-          docker tag simgrid/unstable simgrid/unstable_old
-          docker pull simgrid/stable
           make unstable
-          git clone https://github.com/adegomme/master_worker_flashback
-          cd master_worker_flashback
-          make build
-          make run
+          docker push simgrid/unstable
       - name: Create the failure Message
         if: ${{ failure() }}
         run: |
