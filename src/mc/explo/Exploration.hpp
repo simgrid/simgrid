@@ -60,7 +60,7 @@ public:
   virtual RecordTrace get_record_trace() = 0;
 
   /** Generate a textual execution trace of the simulated application */
-  std::vector<std::string> get_textual_trace();
+  std::vector<std::string> get_textual_trace(int max_elements = -1);
 
   /** Log additional information about the state of the model-checker */
   virtual void log_state();
