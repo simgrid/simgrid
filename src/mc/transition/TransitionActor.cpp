@@ -27,6 +27,10 @@ std::string ActorJoinTransition::to_string(bool verbose) const
 }
 bool ActorJoinTransition::depends(const Transition* other) const
 {
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
+
   // Joining is dependent with any transition whose
   // actor is that of the `other` action. , Join i
   if (other->aid_ == target_) {
@@ -54,6 +58,10 @@ std::string ActorSleepTransition::to_string(bool verbose) const
 }
 bool ActorSleepTransition::depends(const Transition* other) const
 {
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
+
   // Sleeping is indep with any other transitions: always enabled, not impacted by any transition
   return false;
 }
