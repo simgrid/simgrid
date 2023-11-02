@@ -56,3 +56,38 @@ ENDIF()
 if(enable_coverage)
   ADD_TEST(cover-mc-mutex-handling ${CMAKE_CURRENT_BINARY_DIR}/mutex-handling/mutex-handling ${CMAKE_HOME_DIRECTORY}/examples/platforms/small_platform.xml)
 endif()
+
+
+if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  foreach(x  
+#             barber_shop_deadlock producer_consumer_deadlock
+#             simple_cond_broadcast_deadlock  simple_semaphore_deadlock  simple_barrier_deadlock  simple_cond_deadlock
+#      	     simple_semaphores_deadlock
+#      	     philosophers_mutex_deadlock
+#      	     philosophers_semaphores_deadlock
+#      	     philosophers_spurious_deadlock
+#      	     simple_barrier_with_threads_deadlock
+#      	     simple_semaphores_with_threads_deadlock
+#      	     simple_cond_broadcast_with_semaphore_deadlock1  simple_cond_broadcast_with_semaphore_deadlock2
+#      	     simple_mutex_deadlock
+#      	     simple_mutex_with_threads_deadlock
+	     
+             barber_shop_ok
+#             philosophers_mutex_ok philosophers_semaphores_ok 
+#             producer_consumer_ok producer_consumer_spurious_nok
+#             simple_barrier_ok simple_barrier_with_threads_ok simple_cond_broadcast_ok
+#             simple_cond_broadcast_with_semaphore_ok simple_cond_ok simple_mutex_ok
+#             simple_mutex_with_threads_ok simple_semaphores_ok simple_semaphores_with_threads_ok simple_threads_ok
+             )
+
+    add_executable       (mcmini-${x}  EXCLUDE_FROM_ALL mcmini/${x}.c)
+    set_target_properties(mcmini-${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mcmini)
+    target_link_libraries(mcmini-${x}  PRIVATE Threads::Threads)
+    add_dependencies(tests-mc mcmini-${x})
+    if(SIMGRID_HAVE_STATEFUL_MC) # Only needed to introspect the binary
+      target_link_libraries(mc-mini-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
+    endif()
+
+    ADD_TESH_FACTORIES(mc-mini-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
+  endforeach()	     
+endif()
