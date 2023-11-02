@@ -5,7 +5,6 @@
 ! ignore .*LD_PRELOAD.*
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/stdobject "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" --log=no_loc
-> sthread is intercepting the execution of ./stdobject
 > starting two helpers...
 > waiting for helpers to finish...
 > [   0.000000] (maestro@) Start a DFS exploration. Reduction is: dpor.
