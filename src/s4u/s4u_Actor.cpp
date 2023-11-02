@@ -336,12 +336,12 @@ void sleep_for(double duration)
   kernel::actor::simcall_blocking(
       [issuer, duration]() {
         if (MC_is_active() || MC_record_replay_is_active()) {
-          MC_process_clock_add(issuer, duration);
+          // MC_process_clock_add(issuer, duration); // BUG: Makes the exploration loop
           issuer->simcall_answer();
-          return;
+        } else {
+          kernel::activity::ActivityImplPtr sync = issuer->sleep(duration);
+          sync->register_simcall(&issuer->simcall_);
         }
-        kernel::activity::ActivityImplPtr sync = issuer->sleep(duration);
-        sync->register_simcall(&issuer->simcall_);
       },
       &observer);
 

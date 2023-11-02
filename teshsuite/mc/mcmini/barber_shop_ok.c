@@ -33,6 +33,7 @@ sem_t seatBelt;
 // Flag to stop the barber thread when all customers
 // have been serviced.
 int allDone = 0;
+int DEBUG   = 0;
 
 static void randwait(int secs)
 {
@@ -49,13 +50,16 @@ static void* customer(void* number)
 
   // Leave for the shop and take some random amount of
   // time to arrive.
-  printf("Customer %d leaving for barber shop.\n", num);
+  if (DEBUG)
+    printf("Customer %d leaving for barber shop.\n", num);
   randwait(5);
-  printf("Customer %d arrived at barber shop.\n", num);
+  if (DEBUG)
+    printf("Customer %d arrived at barber shop.\n", num);
 
   // Wait for space to open up in the waiting room...
   sem_wait(&waitingRoom);
-  printf("Customer %d entering waiting room.\n", num);
+  if (DEBUG)
+    printf("Customer %d entering waiting room.\n", num);
 
   // Wait for the barber chair to become free.
   sem_wait(&barberChair);
@@ -65,7 +69,8 @@ static void* customer(void* number)
   sem_post(&waitingRoom);
 
   // Wake up the barber...
-  printf("Customer %d waking the barber.\n", num);
+  if (DEBUG)
+    printf("Customer %d waking the barber.\n", num);
   sem_post(&barberPillow);
 
   // Wait for the barber to finish cutting your hair.
@@ -73,7 +78,8 @@ static void* customer(void* number)
 
   // Give up the chair.
   sem_post(&barberChair);
-  printf("Customer %d leaving barber shop.\n", num);
+  if (DEBUG)
+    printf("Customer %d leaving barber shop.\n", num);
   return NULL;
 }
 
@@ -85,7 +91,8 @@ static void* barber(void* junk)
   while (!allDone) {
 
     // Sleep until someone arrives and wakes you..
-    printf("The barber is sleeping\n");
+    if (DEBUG)
+      printf("The barber is sleeping\n");
     sem_wait(&barberPillow);
 
     // Skip this stuff at the end...
@@ -93,14 +100,17 @@ static void* barber(void* junk)
 
       // Take a random amount of time to cut the
       // customer's hair.
-      printf("The barber is cutting hair\n");
+      if (DEBUG)
+        printf("The barber is cutting hair\n");
       randwait(3);
-      printf("The barber has finished cutting hair.\n");
+      if (DEBUG)
+        printf("The barber has finished cutting hair.\n");
 
       // Release the customer when done cutting...
       sem_post(&seatBelt);
     } else {
-      printf("The barber is going home for the day.\n");
+      if (DEBUG)
+        printf("The barber is going home for the day.\n");
     }
   }
   return NULL;
@@ -116,8 +126,8 @@ int main(int argc, char* argv[])
 
   // Check to make sure there are the right number of
   // command line arguments.
-  if (argc != 4) {
-    printf("Use: SleepBarber <Num Customers> <Num Chairs> <rand seed>\n");
+  if (argc != 5) {
+    printf("Use: SleepBarber <Num Customers> <Num Chairs> <rand seed> <DEBUG>\n");
     exit(-1);
   }
 
@@ -126,6 +136,7 @@ int main(int argc, char* argv[])
   numCustomers = atoi(argv[1]);
   numChairs    = atoi(argv[2]);
   RandSeed     = atol(argv[3]);
+  DEBUG        = atoi(argv[4]);
 
   // Make sure the number of threads is less than the number of
   // customers we can support.

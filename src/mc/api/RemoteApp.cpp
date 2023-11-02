@@ -158,7 +158,8 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
       actor_transitions.emplace_back(deserialize_transition(actor.aid, times_considered, stream));
     }
 
-    XBT_DEBUG("Received %zu transitions for actor %ld", actor_transitions.size(), actor.aid);
+    XBT_DEBUG("Received %zu transitions for actor %ld. The first one is %s", actor_transitions.size(), actor.aid,
+              (actor_transitions.size() > 0 ? actor_transitions[0]->to_string().c_str() : "null"));
     whereto.try_emplace(actor.aid, actor.aid, actor.enabled, actor.max_considered, std::move(actor_transitions));
   }
 }
