@@ -127,6 +127,14 @@ public:
   double get_timeout() const { return timeout_; }
 };
 
+class ActorSleepSimcall final : public SimcallObserver {
+
+public:
+  ActorSleepSimcall(ActorImpl* actor) : SimcallObserver(actor) {}
+  void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
+};
+
 class ObjectAccessSimcallObserver final : public SimcallObserver {
   ObjectAccessSimcallItem* const object_;
 

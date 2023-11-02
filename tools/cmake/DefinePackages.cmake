@@ -564,8 +564,8 @@ set(MC_SRC_STATELESS
   src/mc/remote/mc_protocol.h
 
   src/mc/transition/Transition.hpp
-  src/mc/transition/TransitionActorJoin.cpp
-  src/mc/transition/TransitionActorJoin.hpp
+  src/mc/transition/TransitionActor.cpp
+  src/mc/transition/TransitionActor.hpp
   src/mc/transition/TransitionAny.cpp
   src/mc/transition/TransitionAny.hpp
   src/mc/transition/TransitionComm.cpp

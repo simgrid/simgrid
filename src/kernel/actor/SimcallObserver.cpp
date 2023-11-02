@@ -73,6 +73,15 @@ std::string ActorJoinSimcall::to_string() const
 {
   return "ActorJoin(pid:" + std::to_string(other_->get_pid()) + ")";
 }
+void ActorSleepSimcall::serialize(std::stringstream& stream) const
+{
+  stream << (short)mc::Transition::Type::ACTOR_SLEEP;
+}
+
+std::string ActorSleepSimcall::to_string() const
+{
+  return "ActorSleep()";
+}
 
 void ObjectAccessSimcallObserver::serialize(std::stringstream& stream) const
 {

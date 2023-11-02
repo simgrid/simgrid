@@ -225,6 +225,9 @@ void AppSide::handle_actors_status() const
 
   std::vector<s_mc_message_actors_status_one_t> status;
   for (auto const& [aid, actor] : actor_list) {
+    xbt_assert(actor);
+    xbt_assert(actor->simcall_.observer_, "simcall %s in actor %s has no observer.", actor->simcall_.get_cname(),
+               actor->get_cname());
     s_mc_message_actors_status_one_t one = {};
     one.type                             = MessageType::ACTORS_STATUS_REPLY_TRANSITION;
     one.aid                              = aid;

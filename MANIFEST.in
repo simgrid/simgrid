@@ -2320,8 +2320,8 @@ include src/mc/sosp/Snapshot.hpp
 include src/mc/sosp/Snapshot_test.cpp
 include src/mc/transition/Transition.cpp
 include src/mc/transition/Transition.hpp
-include src/mc/transition/TransitionActorJoin.cpp
-include src/mc/transition/TransitionActorJoin.hpp
+include src/mc/transition/TransitionActor.cpp
+include src/mc/transition/TransitionActor.hpp
 include src/mc/transition/TransitionAny.cpp
 include src/mc/transition/TransitionAny.hpp
 include src/mc/transition/TransitionComm.cpp

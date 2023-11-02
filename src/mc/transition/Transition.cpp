@@ -11,7 +11,7 @@
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/explo/Exploration.hpp"
-#include "src/mc/transition/TransitionActorJoin.hpp"
+#include "src/mc/transition/TransitionActor.hpp"
 #include "src/mc/transition/TransitionAny.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
 #include "src/mc/transition/TransitionObjectAccess.hpp"
@@ -95,6 +95,8 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
 
     case Transition::Type::ACTOR_JOIN:
       return new ActorJoinTransition(issuer, times_considered, stream);
+    case Transition::Type::ACTOR_SLEEP:
+      return new ActorSleepTransition(issuer, times_considered, stream);
 
     case Transition::Type::OBJECT_ACCESS:
       return new ObjectAccessTransition(issuer, times_considered, stream);
