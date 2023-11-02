@@ -36,10 +36,6 @@ set_target_properties(without-mutex-handling PROPERTIES COMPILE_FLAGS -DDISABLE_
 set_target_properties(without-mutex-handling PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mutex-handling)
 add_dependencies(tests-mc without-mutex-handling)
 
-set(teshsuite_src  ${teshsuite_src}                                                                        PARENT_SCOPE)
-set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/random-bug/random-bug-replay.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/mutex-handling/without-mutex-handling.tesh PARENT_SCOPE)
-
 ADD_TESH(mc-random-bug-replay                --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/random-bug --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/random-bug random-bug-replay.tesh)
 IF(SIMGRID_HAVE_MC)
   ADD_TESH(tesh-mc-mutex-handling              --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/mutex-handling --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/mutex-handling mutex-handling.tesh --cfg=model-check/reduction:none)
@@ -80,14 +76,21 @@ if("${CMAKE_SYSTEM}" MATCHES "Linux")
 #             simple_mutex_with_threads_ok simple_semaphores_ok simple_semaphores_with_threads_ok simple_threads_ok
              )
 
-    add_executable       (mcmini-${x}  EXCLUDE_FROM_ALL mcmini/${x}.c)
+    set(teshsuite_src  ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.c)
+    set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
+
+    add_executable       (mcmini-${x}  EXCLUDE_FROM_ALL mcmini/${x}.c)         
     set_target_properties(mcmini-${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mcmini)
     target_link_libraries(mcmini-${x}  PRIVATE Threads::Threads)
     add_dependencies(tests-mc mcmini-${x})
     if(SIMGRID_HAVE_STATEFUL_MC) # Only needed to introspect the binary
       target_link_libraries(mc-mini-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
-    endif()
+    endif()  
 
     ADD_TESH_FACTORIES(mc-mini-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
   endforeach()	     
 endif()
+
+set(teshsuite_src  ${teshsuite_src}                                                                        PARENT_SCOPE)
+set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/random-bug/random-bug-replay.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/mutex-handling/without-mutex-handling.tesh PARENT_SCOPE)
