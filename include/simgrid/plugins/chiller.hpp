@@ -96,16 +96,9 @@ public:
   double get_max_power() { return max_power_w_; }
   bool is_active() { return active_; }
   double get_temp_in() { return temp_in_c_; }
-  double get_temp_out() { return temp_out_c_; }
   double get_power() { return power_w_; }
   double get_energy_consumed() { return energy_consumed_j_; }
-  double get_next_event();
-
-  /** Add a callback fired after this chiller power changed. */
-  void on_this_power_change_cb(const std::function<void(Chiller*)>& func) { on_this_power_change.connect(func); };
-  /** Add a callback fired after a chiller power changed.
-   * Triggered after the on_this_power_change function.**/
-  static void on_power_change_cb(const std::function<void(Chiller*)>& cb) { on_power_change.connect(cb); }
+  double get_time_to_goal_temp();
 };
 
 } // namespace simgrid::plugins
