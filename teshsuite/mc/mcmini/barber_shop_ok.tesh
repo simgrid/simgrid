@@ -2,7 +2,7 @@
 ! ignore .*LD_PRELOAD.*
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-barber_shop_ok 3 2 0 0
-> sthread is intercepting the execution of /home/mquinson/Code/simgrid/build/default/teshsuite/mc/mcmini/mcmini-barber_shop_ok
+> sthread is intercepting the execution of teshsuite/mc/mcmini/mcmini-barber_shop_ok
 > 
 > SleepBarber.c
 > 

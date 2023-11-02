@@ -84,7 +84,7 @@ if("${CMAKE_SYSTEM}" MATCHES "Linux")
     target_link_libraries(mcmini-${x}  PRIVATE Threads::Threads)
     add_dependencies(tests-mc mcmini-${x})
     if(SIMGRID_HAVE_STATEFUL_MC) # Only needed to introspect the binary
-      target_link_libraries(mc-mini-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
+      target_link_libraries(mcmini-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
     endif()  
 
     ADD_TESH_FACTORIES(mc-mini-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)

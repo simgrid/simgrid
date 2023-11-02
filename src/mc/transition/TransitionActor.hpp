@@ -30,8 +30,6 @@ public:
 };
 
 class ActorSleepTransition : public Transition {
-  bool timeout_;
-  aid_t target_;
 
 public:
   ActorSleepTransition(aid_t issuer, int times_considered, std::stringstream& stream);
