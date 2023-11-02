@@ -275,6 +275,7 @@ int sthread_gettimeofday(struct timeval* tv)
 
 void sthread_sleep(double seconds)
 {
+  XBT_DEBUG("sleep(%lf)", seconds);
   simgrid::s4u::this_actor::sleep_for(seconds);
 }
 

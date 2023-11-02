@@ -253,8 +253,10 @@ void DFSExplorer::run()
           continue;
         } else if (prev_state->get_transition_out()->depends(state->get_transition_out().get())) {
           XBT_VERB("Dependent Transitions:");
-          XBT_VERB("  %s (state=%ld)", prev_state->get_transition_out()->to_string().c_str(), prev_state->get_num());
-          XBT_VERB("  %s (state=%ld)", state->get_transition_out()->to_string().c_str(), state->get_num());
+          XBT_VERB(" #%ld %s (state=%ld)", prev_state->get_transition_out()->aid_,
+                   prev_state->get_transition_out()->to_string().c_str(), prev_state->get_num());
+          XBT_VERB(" #%ld %s (state=%ld)", state->get_transition_out()->aid_,
+                   state->get_transition_out()->to_string().c_str(), state->get_num());
 
           if (prev_state->is_actor_enabled(issuer_id)) {
             if (not prev_state->is_actor_done(issuer_id)) {
@@ -273,8 +275,10 @@ void DFSExplorer::run()
           break;
         } else {
           XBT_VERB("INDEPENDENT Transitions:");
-          XBT_VERB("  %s (state=%ld)", prev_state->get_transition_out()->to_string().c_str(), prev_state->get_num());
-          XBT_VERB("  %s (state=%ld)", state->get_transition_out()->to_string().c_str(), state->get_num());
+          XBT_VERB(" #%ld %s (state=%ld)", prev_state->get_transition_out()->aid_,
+                   prev_state->get_transition_out()->to_string().c_str(), prev_state->get_num());
+          XBT_VERB(" #%ld %s (state=%ld)", state->get_transition_out()->aid_,
+                   state->get_transition_out()->to_string().c_str(), state->get_num());
         }
         tmp_stack.pop_back();
       }
