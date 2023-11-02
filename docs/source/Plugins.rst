@@ -25,6 +25,7 @@ documents some of the plugins distributed with SimGrid:
   - :ref:`WiFi Energy <plugin_link_energy_wifi>`: models the energy dissipation of wifi links.
   - :ref:`Battery <plugin_battery>`: models batteries that get discharged by the energy consumption of a given host.
   - :ref:`Solar Panel <plugin_solar_panel>`: models solar panels which energy production depends on the solar irradiance.
+  - :ref:`Chiller <plugin_chiller>`: models chillers which dissipate heat by consuming energy.
 
 You can activate these plugins with the :ref:`--cfg=plugin <cfg=plugin>` command
 line option, for example with ``--cfg=plugin:host_energy``. You can get the full
@@ -231,11 +232,11 @@ Solar Panel
 
 .. doxygengroup:: plugin_solar_panel
 
+.. _plugin_chiller:
+
 Chiller
 =======
 
 .. doxygengroup:: plugin_chiller
-
-   .. doxygentypedef:: ChillerPtr
 
 ..  LocalWords:  SimGrid
