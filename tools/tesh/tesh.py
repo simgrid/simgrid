@@ -710,7 +710,16 @@ def main():
             cmd.add_ignore(line[len("! ignore "):])
 
         else:
-            fatal_error(f"UNRECOGNIZED OPTION LINE: {line}")
+            fatal_error(f"UNRECOGNIZED OPTION LINE: {line}\n"
+            "Valid requests:\n"
+            "   ! output ignore\n"
+            "   ! output sort\n"
+            "   ! output display\n"
+            "   ! setenv XX=YY\n"
+            "   ! ignore XYZ\n"
+            "   ! expect return NN\n"
+            "   ! expect signal NN\n"
+            "   ! timeout NN\n")
 
         line = file.readfullline()
 
