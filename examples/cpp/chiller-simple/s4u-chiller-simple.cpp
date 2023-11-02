@@ -10,7 +10,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(chiller_simple, "Messages specific for this s4u example");
 namespace sg4 = simgrid::s4u;
 
-void display_chiller(simgrid::plugins::ChillerPtr c)
+static void display_chiller(simgrid::plugins::ChillerPtr c)
 {
   XBT_INFO("%s: Power: %.2fW T_in: %.2f°C Energy consumed: %.2fJ", c->get_cname(), c->get_power(), c->get_temp_in(),
            c->get_energy_consumed());
