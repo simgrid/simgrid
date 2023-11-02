@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* This example shows how to use the battery as a connector.
+   A connector has no capacity and only delivers as much power as it receives
+   with a transfer efficiency of 100%.
    A solar panel is connected to the connector and power a host.
 */
 

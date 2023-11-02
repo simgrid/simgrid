@@ -82,6 +82,8 @@ int main(int argc, char* argv[])
   chiller->add_host(myhost2);
   solar_panel->on_this_power_change_cb(
       [battery](sp::SolarPanel* s) { battery->set_load("Solar Panel", s->get_power() * -1); });
+
+  // These handlers connect/disconnect the solar panel and the hosts depending on the state of charge of the battery
   battery->schedule_handler(0.8, sp::Battery::CHARGE, sp::Battery::Handler::PERSISTANT,
                             [battery]() { battery->set_load("Solar Panel", false); });
   battery->schedule_handler(0.75, sp::Battery::DISCHARGE, sp::Battery::Handler::PERSISTANT,
@@ -97,10 +99,17 @@ int main(int argc, char* argv[])
                               battery->connect_host(myhost2);
                             });
 
+  /* Handlers create simulation events preventing the simulation from finishing
+     To avoid this behaviour this actor sleeps for 2 days and then delete all handlers
+  */
+  sg4::Actor::create("end_manager", myhost1, end_manager, battery);
+
+  // This actor updates the solar irradiance of the solar panel
   sg4::Actor::create("irradiance_manager", myhost1, irradiance_manager, solar_panel)->daemonize();
+
+  // These actors start a job on a host for a specific duration
   sg4::Actor::create("host_job_manager", myhost1, host_job_manager, 12 * 60 * 60, 4 * 60 * 60);
   sg4::Actor::create("host_job_manager", myhost2, host_job_manager, 12 * 60 * 60, 4 * 60 * 60);
-  sg4::Actor::create("end_manager", myhost1, end_manager, battery);
 
   e.run();
   XBT_INFO("State of charge of the battery: %0.1f%%", battery->get_state_of_charge() * 100);
