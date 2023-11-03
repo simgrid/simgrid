@@ -43,6 +43,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(SolarPanel, kernel, "Logging specific to the sol
 
 namespace simgrid::plugins {
 
+xbt::signal<void(SolarPanel*)> SolarPanel::on_power_change;
+
 /* SolarPanel */
 
 void SolarPanel::update()

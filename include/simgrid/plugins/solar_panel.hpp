@@ -42,7 +42,7 @@ class SolarPanel {
   friend void intrusive_ptr_add_ref(SolarPanel* o) { o->refcount_.fetch_add(1, std::memory_order_relaxed); }
 #endif
 
-  inline static xbt::signal<void(SolarPanel*)> on_power_change;
+  static xbt::signal<void(SolarPanel*)> on_power_change;
   xbt::signal<void(SolarPanel*)> on_this_power_change;
 
 public:
