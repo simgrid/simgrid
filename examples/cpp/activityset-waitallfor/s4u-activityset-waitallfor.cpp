@@ -9,20 +9,23 @@
 #include <string>
 namespace sg4 = simgrid::s4u;
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_activity_waittany, "Messages specific for this s4u example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_activity_waitallfor, "Messages specific for this s4u example");
 
 static void bob()
 {
   sg4::Mailbox* mbox    = sg4::Mailbox::by_name("mbox");
+  sg4::MessageQueue* mqueue = sg4::MessageQueue::by_name("mqueue");
   const sg4::Disk* disk = sg4::Host::current()->get_disks().front();
   std::string* payload;
+  std::string* message;
 
   XBT_INFO("Create my asynchronous activities");
   auto exec = sg4::this_actor::exec_async(5e9);
   auto comm = mbox->get_async(&payload);
   auto io   = disk->read_async(3e8);
+  auto mess = mqueue->get_async(&message);
 
-  sg4::ActivitySet pending_activities({exec, comm, io});
+  sg4::ActivitySet pending_activities({exec, comm, io, mess});
 
   XBT_INFO("Wait for asynchronous activities to complete");
   while (not pending_activities.empty()) {
@@ -34,6 +37,8 @@ static void bob()
     while (auto completed_one = pending_activities.test_any()) {
       if (boost::dynamic_pointer_cast<sg4::Comm>(completed_one))
         XBT_INFO("Completed a Comm");
+      if (boost::dynamic_pointer_cast<sg4::Mess>(completed_one))
+        XBT_INFO("Completed a Mess");
       if (boost::dynamic_pointer_cast<sg4::Exec>(completed_one))
         XBT_INFO("Completed an Exec");
       if (boost::dynamic_pointer_cast<sg4::Io>(completed_one))
@@ -42,6 +47,7 @@ static void bob()
   }
   XBT_INFO("Last activity is complete");
   delete payload;
+  delete message;
 }
 
 static void alice()
@@ -49,6 +55,14 @@ static void alice()
   auto* payload = new std::string("Message");
   XBT_INFO("Send '%s'", payload->c_str());
   sg4::Mailbox::by_name("mbox")->put(payload, 6e8);
+}
+
+static void carl()
+{
+  sg4::this_actor::sleep_for(1.99);
+  auto* payload = new std::string("Control Message");
+  XBT_INFO("Send '%s'", payload->c_str());
+  sg4::MessageQueue::by_name("mqueue")->put(payload);
 }
 
 int main(int argc, char* argv[])
@@ -59,6 +73,7 @@ int main(int argc, char* argv[])
 
   sg4::Actor::create("bob", e.host_by_name("bob"), bob);
   sg4::Actor::create("alice", e.host_by_name("alice"), alice);
+  sg4::Actor::create("carl", e.host_by_name("carl"), carl);
 
   e.run();
 

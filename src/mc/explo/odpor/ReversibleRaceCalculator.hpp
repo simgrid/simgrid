@@ -9,7 +9,7 @@
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
-#include "src/mc/transition/TransitionActorJoin.hpp"
+#include "src/mc/transition/TransitionActor.hpp"
 #include "src/mc/transition/TransitionAny.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
 #include "src/mc/transition/TransitionObjectAccess.hpp"

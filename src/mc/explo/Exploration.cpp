@@ -83,7 +83,7 @@ static const char* signal_name(int status)
   }
 }
 
-std::vector<std::string> Exploration::get_textual_trace()
+std::vector<std::string> Exploration::get_textual_trace(int max_elements)
 {
   std::vector<std::string> trace;
   for (auto const& transition : get_record_trace()) {
@@ -93,6 +93,9 @@ std::vector<std::string> Exploration::get_textual_trace()
                                          transition->to_string().c_str()));
     else
       trace.push_back(xbt::string_printf("Actor %ld in simcall %s", transition->aid_, transition->to_string().c_str()));
+    max_elements--;
+    if (max_elements == 0)
+      break;
   }
   return trace;
 }

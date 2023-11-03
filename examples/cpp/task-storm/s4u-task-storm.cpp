@@ -111,11 +111,13 @@ int main(int argc, char* argv[])
     auto data = t->get_token_from(SA_to_B1)->get_data<double>();
     t->deque_token_from(SA_to_B1);
     t->set_amount(*data * 10);
+    delete data;
   });
   B2->on_this_start_cb([&SA_to_B2](sg4::Task* t) {
     auto data = t->get_token_from(SA_to_B2)->get_data<double>();
     t->deque_token_from(SA_to_B2);
     t->set_amount(*data * 10);
+    delete data;
   });
 
   // Enqueue firings for tasks without predecessors

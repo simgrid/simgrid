@@ -328,18 +328,22 @@ void sleep_for(double duration)
   }
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  kernel::actor::ActorSleepSimcall observer(issuer);
+
   Actor::on_sleep(*issuer->get_ciface());
   issuer->get_ciface()->on_this_sleep(*issuer->get_ciface());
 
-  kernel::actor::simcall_blocking([issuer, duration]() {
-    if (MC_is_active() || MC_record_replay_is_active()) {
-      MC_process_clock_add(issuer, duration);
-      issuer->simcall_answer();
-      return;
-    }
-    kernel::activity::ActivityImplPtr sync = issuer->sleep(duration);
-    sync->register_simcall(&issuer->simcall_);
-  });
+  kernel::actor::simcall_blocking(
+      [issuer, duration]() {
+        if (MC_is_active() || MC_record_replay_is_active()) {
+          // MC_process_clock_add(issuer, duration); // BUG: Makes the exploration loop
+          issuer->simcall_answer();
+        } else {
+          kernel::activity::ActivityImplPtr sync = issuer->sleep(duration);
+          sync->register_simcall(&issuer->simcall_);
+        }
+      },
+      &observer);
 
   Actor::on_wake_up(*issuer->get_ciface());
   issuer->get_ciface()->on_this_wake_up(*issuer->get_ciface());

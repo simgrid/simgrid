@@ -104,6 +104,10 @@ tags
 callgrind.out.*
 ### Examples and traces
 *.exe
+examples/c/activityset-testany/c-activityset-testany
+examples/c/activityset-waitall/c-activityset-waitall
+examples/c/activityset-waitallfor/c-activityset-waitallfor
+examples/c/activityset-waitany/c-activityset-waitany
 examples/c/actor-create/c-actor-create
 examples/c/actor-daemon/c-actor-daemon
 examples/c/actor-exiting/c-actor-exiting
@@ -143,6 +147,10 @@ examples/c/platform-failures/c-platform-failures
 examples/c/platform-properties/c-platform-properties
 examples/c/plugin-host-load/c-plugin-host-load
 examples/c/synchro-semaphore/c-synchro-semaphore
+examples/cpp/activityset-testany/s4u-activityset-testany
+examples/cpp/activityset-waitall/s4u-activityset-waitall
+examples/cpp/activityset-waitallfor/s4u-activityset-waitallfor
+examples/cpp/activityset-waitany/s4u-activityset-waitany
 examples/cpp/actor-create/s4u-actor-create
 examples/cpp/actor-daemon/s4u-actor-daemon
 examples/cpp/actor-exiting/s4u-actor-exiting
@@ -175,8 +183,11 @@ examples/cpp/comm-waitall/s4u-comm-waitall
 examples/cpp/comm-waitany/s4u-comm-waitany
 examples/cpp/comm-waituntil/s4u-comm-waituntil
 examples/cpp/dag-comm/s4u-dag-comm
+examples/cpp/dag-tuto/s4u-dag-tuto
 examples/cpp/dag-failure/s4u-dag-failure
 examples/cpp/dag-from-dax/s4u-dag-from-dax
+examples/cpp/dag-from-dax-simple/s4u-dag-from-dax-simple
+examples/cpp/dag-from-json-simple/s4u-dag-from-json-simple
 examples/cpp/dag-from-dot/s4u-dag-from-dot
 examples/cpp/dag-io/s4u-dag-io
 examples/cpp/dag-scheduling/s4u-dag-scheduling
@@ -239,6 +250,13 @@ examples/cpp/synchro-condition-variable/s4u-synchro-condition-variable
 examples/cpp/synchro-condition-variable-waituntil/s4u-synchro-condition-variable-waituntil
 examples/cpp/synchro-mutex/s4u-synchro-mutex
 examples/cpp/synchro-semaphore/s4u-synchro-semaphore
+examples/cpp/task-dispatch/s4u-task-dispatch
+examples/cpp/task-io/s4u-task-io
+examples/cpp/task-microservice/s4u-task-microservice
+examples/cpp/task-parallelism/s4u-task-parallelism
+examples/cpp/task-simple/s4u-task-simple
+examples/cpp/task-storm/s4u-task-storm
+examples/cpp/task-switch-host/s4u-task-switch-host
 examples/cpp/torus-multicpu/
 examples/cpp/trace-categories/s4u-trace-categories
 examples/cpp/trace-host-user-variables/s4u-trace-host-user-variables

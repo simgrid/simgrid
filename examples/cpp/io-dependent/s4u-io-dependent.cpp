@@ -17,10 +17,7 @@ static void test()
   sg4::IoPtr carl_read = sg4::Host::by_name("carl")->get_disks().front()->io_init(4000000, sg4::Io::OpType::READ);
   sg4::ExecPtr carl_compute = sg4::Host::by_name("carl")->exec_init(1e9);
 
-  sg4::ActivitySet pending_activities ({boost::dynamic_pointer_cast<sg4::Activity>(bob_compute),
-                                        boost::dynamic_pointer_cast<sg4::Activity>(bob_write),
-                                        boost::dynamic_pointer_cast<sg4::Activity>(carl_read),
-                                        boost::dynamic_pointer_cast<sg4::Activity>(carl_compute)});
+  sg4::ActivitySet pending_activities ({bob_compute, bob_write, carl_read, carl_compute});
 
   // Name the activities (for logging purposes only)
   bob_compute->set_name("bob compute");

@@ -1,0 +1,10 @@
+# We ignore the LD_PRELOAD lines from the expected output because they contain the build path
+! ignore .*LD_PRELOAD.*
+
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-barber_shop_ok 3 2 0 0
+> 
+> SleepBarber.c
+> 
+> A solution to the sleeping barber problem using semaphores.
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 5169 unique states visited; 959 backtracks (21531 transition replays, 27659 states visited overall)

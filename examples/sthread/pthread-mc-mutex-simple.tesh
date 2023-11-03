@@ -3,7 +3,6 @@
 ! ignore .*LD_PRELOAD.*
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/pthread-mutex-simple
-> sthread is intercepting the execution of ./pthread-mutex-simple
 > All threads are started.
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
 > The thread 0 is terminating.

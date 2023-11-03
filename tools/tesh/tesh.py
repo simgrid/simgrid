@@ -594,6 +594,7 @@ def main():
             re.compile(r"For details see http://code\.google\.com/p/address-sanitizer/issues/detail\?id=189"),
             re.compile(r"For details see https://github\.com/google/sanitizers/issues/189"),
             re.compile(r"Python runtime initialized with LC_CTYPE=C .*"),
+            re.compile(r"sthread is intercepting the execution of \.*"),
             # Seen on CircleCI
             re.compile(r"cmake: /usr/local/lib/libcurl\.so\.4: no version information available \(required by cmake\)"),
             re.compile(
@@ -709,7 +710,16 @@ def main():
             cmd.add_ignore(line[len("! ignore "):])
 
         else:
-            fatal_error(f"UNRECOGNIZED OPTION LINE: {line}")
+            fatal_error(f"UNRECOGNIZED OPTION LINE: {line}\n"
+            "Valid requests:\n"
+            "   ! output ignore\n"
+            "   ! output sort\n"
+            "   ! output display\n"
+            "   ! setenv XX=YY\n"
+            "   ! ignore XYZ\n"
+            "   ! expect return NN\n"
+            "   ! expect signal NN\n"
+            "   ! timeout NN\n")
 
         line = file.readfullline()
 

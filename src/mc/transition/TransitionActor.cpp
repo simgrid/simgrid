@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/transition/TransitionActorJoin.hpp"
+#include "src/mc/transition/TransitionActor.hpp"
 #include "simgrid/config.h"
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
@@ -27,6 +27,10 @@ std::string ActorJoinTransition::to_string(bool verbose) const
 }
 bool ActorJoinTransition::depends(const Transition* other) const
 {
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
+
   // Joining is dependent with any transition whose
   // actor is that of the `other` action. , Join i
   if (other->aid_ == target_) {
@@ -40,6 +44,25 @@ bool ActorJoinTransition::depends(const Transition* other) const
   // Otherwise, joining is indep with any other transitions:
   // - It is only enabled once the target ends, and after this point it's enabled no matter what
   // - Other joins don't affect it, and it does not impact on the enabledness of any other transition
+  return false;
+}
+
+ActorSleepTransition::ActorSleepTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+    : Transition(Type::ACTOR_SLEEP, issuer, times_considered)
+{
+  XBT_DEBUG("ActorSleepTransition()");
+}
+std::string ActorSleepTransition::to_string(bool verbose) const
+{
+  return xbt::string_printf("ActorSleep()");
+}
+bool ActorSleepTransition::depends(const Transition* other) const
+{
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
+
+  // Sleeping is indep with any other transitions: always enabled, not impacted by any transition
   return false;
 }
 
