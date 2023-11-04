@@ -1123,7 +1123,16 @@ MPI_CALL(XBT_PUBLIC int, MPI_Ineighbor_alltoallw,
           const MPI_Aint* recvdisps, const MPI_Datatype* recvtypes, MPI_Comm comm, MPI_Request *request));
 MPI_CALL(XBT_PUBLIC int, MPI_Status_f2c, (MPI_Fint *f_status, MPI_Status *c_status));
 MPI_CALL(XBT_PUBLIC int, MPI_Status_c2f, (MPI_Status *c_status, MPI_Fint *f_status));
-
+MPI_CALL(XBT_PUBLIC int, MPI_Parrived, (MPI_Request request, int partition, int *flag));
+MPI_CALL(XBT_PUBLIC int, MPI_Pready, (int partitions, MPI_Request request));
+MPI_CALL(XBT_PUBLIC int, MPI_Pready_range, (int partition_low, int partition_high, MPI_Request request));
+MPI_CALL(XBT_PUBLIC int, MPI_Pready_list, (int length, int partition_list[], MPI_Request request));
+MPI_CALL(XBT_PUBLIC int, MPI_Precv_init, (void* buf, int partitions, MPI_Count count,
+                                  MPI_Datatype datatype, int source, int tag, MPI_Comm comm,
+                                  MPI_Info info, MPI_Request *request));
+MPI_CALL(XBT_PUBLIC int, MPI_Psend_init, (const void* buf, int partitions, MPI_Count count,
+                                  MPI_Datatype datatype, int dest, int tag, MPI_Comm comm,
+                                  MPI_Info info, MPI_Request *request));
 
 
 //FIXME: End of all the not yet implemented stuff
