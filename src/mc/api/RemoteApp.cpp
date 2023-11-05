@@ -32,23 +32,15 @@ namespace simgrid::mc {
 
 static std::string master_socket_name;
 
-RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspection) : app_args_(args)
+RemoteApp::RemoteApp(const std::vector<char*>& args) : app_args_(args)
 {
-  if (need_memory_introspection) {
-#if SIMGRID_HAVE_STATEFUL_MC
-    checker_side_     = std::make_unique<simgrid::mc::CheckerSide>(app_args_, need_memory_introspection);
-    initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_, *checker_side_->get_remote_memory());
-#else
-    xbt_die("SimGrid MC was compiled without memory introspection support.");
-#endif
-  } else {
-    master_socket_ = socket(AF_UNIX,
+  master_socket_ = socket(AF_UNIX,
 #ifdef __APPLE__
-                            SOCK_STREAM, /* Mac OSX does not have AF_UNIX + SOCK_SEQPACKET, even if that's faster */
+                          SOCK_STREAM, /* Mac OSX does not have AF_UNIX + SOCK_SEQPACKET, even if that's faster */
 #else
-                            SOCK_SEQPACKET,
+                          SOCK_SEQPACKET,
 #endif
-                            0);
+                          0);
     xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
 
     master_socket_name = "/tmp/simgrid-mc-" + std::to_string(getpid());
@@ -75,19 +67,13 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, bool need_memory_introspect
 
     xbt_assert(listen(master_socket_, SOMAXCONN) >= 0, "Cannot listen to the master socket: %s.", strerror(errno));
 
-    application_factory_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_, need_memory_introspection);
+    application_factory_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
     checker_side_        = application_factory_->clone(master_socket_, master_socket_name);
-  }
 }
 
 void RemoteApp::restore_initial_state()
 {
-  if (initial_snapshot_ == nullptr) // No memory introspection
     checker_side_ = application_factory_->clone(master_socket_, master_socket_name);
-#if SIMGRID_HAVE_STATEFUL_MC
-  else
-    initial_snapshot_->restore(*checker_side_->get_remote_memory());
-#endif
 }
 
 unsigned long RemoteApp::get_maxpid() const
@@ -201,10 +187,6 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
   m.times_considered_              = times_considered;
   checker_side_->get_channel().send(m);
 
-#if SIMGRID_HAVE_STATEFUL_MC
-  if (auto* memory = get_remote_process_memory(); memory != nullptr)
-    memory->clear_cache();
-#endif
   if (checker_side_->running())
     checker_side_->dispatch_events(); // The app may send messages while processing the transition
 

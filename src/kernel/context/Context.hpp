@@ -35,7 +35,6 @@ protected:
   template <class T, class... Args> T* new_context(Args&&... args)
   {
     auto* context = new T(std::forward<Args>(args)...);
-    context->declare_context(sizeof(T));
     return context;
   }
 };
@@ -49,7 +48,6 @@ class XBT_PUBLIC Context {
   std::function<void()> code_;
   actor::ActorImpl* actor_ = nullptr;
   bool is_maestro_;
-  void declare_context(std::size_t size);
 
 public:
   static e_xbt_parmap_mode_t parallel_mode;

@@ -20,7 +20,6 @@
 #include "src/simgrid/module.hpp"
 #include "src/simgrid/sg_config.hpp"
 #include "src/smpi/include/smpi_config.hpp"
-#include "src/xbt/mmalloc/mmalloc.h"
 
 #include <string_view>
 
@@ -202,15 +201,8 @@ void sg_config_init(int *argc, char **argv)
       [](int value) { simgrid::kernel::context::Context::guard_size = value * xbt_pagesize; }};
 
   static simgrid::config::Flag<int> cfg_context_nthreads{
-      "contexts/nthreads", "Number of parallel threads used to execute user contexts", 1, [](int nthreads) {
-#if HAVE_MMALLOC
-        xbt_assert(
-            nthreads == 1 || not malloc_use_mmalloc(),
-            "Parallel simulation is forbidden in the verified program, as there is no protection against race "
-            "conditions in mmalloc itself. Please don't be so greedy and show some mercy for our implementation.");
-#endif
-        simgrid::kernel::context::Context::set_nthreads(nthreads);
-      }};
+      "contexts/nthreads", "Number of parallel threads used to execute user contexts", 1,
+      [](int nthreads) { simgrid::kernel::context::Context::set_nthreads(nthreads); }};
 
   /* synchronization mode for parallel user contexts */
 #if HAVE_FUTEX_H

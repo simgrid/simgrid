@@ -36,7 +36,7 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   const unsigned id_ = ++next_id_; // ID of this comm (for MC) -- 0 as an ID denotes "invalid/unknown comm"
 
 public:
-  CommImpl();
+  CommImpl() = default;
 
   static void set_copy_data_callback(const std::function<void(CommImpl*, void*, size_t)>& callback);
 
@@ -82,9 +82,6 @@ public:
 looking if a given communication matches my needs. For that, myself must match the
 expectations of the other side, too. See  */
   std::function<void(CommImpl*, void*, size_t)> copy_data_fun;
-
-  /* In stateful MC, we need to ignore some private memory that is not relevant to the application state */
-  static void setup_mc();
 
   /* Model actions */
   timeout_action_type src_timeout_{nullptr, [](resource::Action* a) { a->unref(); }}; /* timeout set by the sender */

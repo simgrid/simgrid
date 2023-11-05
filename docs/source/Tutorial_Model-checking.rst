@@ -4,7 +4,7 @@ Formal Verification and Model-checking
 ======================================
 
 SimGrid can not only predict the performance of your application, but also assess its correctness through formal methods. Mc SimGrid is
-a full-featured model-checker that is embedded in the SimGrid framework. It can be used to formally verify safety and liveness
+a full-featured model-checker that is embedded in the SimGrid framework. It can be used to formally verify safety 
 properties on codes running on top of SimGrid, be it :ref:`simple algorithms <usecase_simalgo>` or :ref:`full MPI applications
 <usecase_smpi>`.
 
@@ -31,7 +31,7 @@ barrier, etc). Since it does not explicitly observe memory accesses, Mc SimGrid 
 multithreaded programs. It can however be used to detect misuses of the synchronization functions, such as the ones resulting in
 deadlocks.
 
-Mc SimGrid can be used to verify classical `safety and liveness properties <https://en.wikipedia.org/wiki/Linear_time_property>`_, but
+Mc SimGrid can be used to verify classical `safety properties <https://en.wikipedia.org/wiki/Linear_time_property>`_, but
 also `communication determinism <https://hal.inria.fr/hal-01953167/document>`_, a property that allows more efficient solutions toward
 fault-tolerance. It can alleviate the state space explosion problem through `Dynamic Partial Ordering Reduction (DPOR)
 <https://en.wikipedia.org/wiki/Partial_order_reduction>`_ and `state equality <https://hal.inria.fr/hal-01900120/document>`_. Note that
@@ -324,11 +324,12 @@ Going further
 -------------
 
 This tutorial is not complete yet, as there is nothing on reduction
-techniques nor on liveness properties. For now, the best source of
+techniques. For now, the best source of
 information on these topics is `this old tutorial
 <https://simgrid.org/tutorials/simgrid-mc-101.pdf>`_ and `that old
 presentation
-<http://people.irisa.fr/Martin.Quinson/blog/2018/0123/McSimGrid-Boston.pdf>`_.
+<http://people.irisa.fr/Martin.Quinson/blog/2018/0123/McSimGrid-Boston.pdf>`_. But be warned that these source of 
+information are very old: the liveness verification was removed in v3.35, even if these docs still mention it.
 
 .. |br| raw:: html
 

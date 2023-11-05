@@ -12,9 +12,6 @@
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
-#if SIMGRID_HAVE_STATEFUL_MC
-#include "src/mc/sosp/RemoteProcessMemory.hpp"
-#endif
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif
@@ -51,7 +48,7 @@ AppSide* AppSide::get()
   if (std::getenv(MC_ENV_SOCKET_FD) == nullptr) // We are not in MC mode: don't initialize the MC world
     return nullptr;
 
-  XBT_DEBUG("Initialize the MC world. %s=%s", MC_ENV_NEED_PTRACE, std::getenv(MC_ENV_NEED_PTRACE));
+  XBT_DEBUG("Initialize the MC world.");
 
   simgrid::mc::set_model_checking_mode(ModelCheckingMode::APP_SIDE);
 
@@ -63,21 +60,6 @@ AppSide* AppSide::get()
   XBT_DEBUG("Model-checked application found socket FD %i", fd);
 
   instance_ = std::make_unique<simgrid::mc::AppSide>(fd);
-
-  // Wait for the model-checker:
-  if (getenv(MC_ENV_NEED_PTRACE) != nullptr) {
-    errno = 0;
-#if defined __linux__
-    ptrace(PTRACE_TRACEME, 0, nullptr, nullptr);
-#elif defined BSD
-    ptrace(PT_TRACE_ME, 0, nullptr, 0);
-#else
-    xbt_die("no ptrace equivalent coded for this platform, please don't use the liveness checker here.");
-#endif
-
-    xbt_assert(errno == 0 && raise(SIGSTOP) == 0, "Could not wait for the model-checker (errno = %d: %s)", errno,
-               strerror(errno));
-  }
 
   instance_->handle_messages();
   return instance_.get();
@@ -206,18 +188,6 @@ void AppSide::handle_wait_child(const s_mc_message_int_t* msg)
   answer.value              = status;
   xbt_assert(channel_.send(answer) == 0, "Could not send response to WAIT_CHILD: %s", strerror(errno));
 }
-void AppSide::handle_need_meminfo()
-{
-#if SIMGRID_HAVE_STATEFUL_MC
-  this->need_memory_info_                  = true;
-  s_mc_message_need_meminfo_reply_t answer = {};
-  answer.type                              = MessageType::NEED_MEMINFO_REPLY;
-  answer.mmalloc_default_mdp               = mmalloc_get_current_heap();
-  xbt_assert(channel_.send(answer) == 0, "Could not send response to the request for meminfo: %s", strerror(errno));
-#else
-  xbt_die("SimGrid was compiled without MC suppport, so liveness and similar features are not available.");
-#endif
-}
 void AppSide::handle_actors_status() const
 {
   auto const& actor_list = kernel::EngineImpl::get_instance()->get_actor_list();
@@ -339,11 +309,6 @@ void AppSide::handle_messages()
         handle_wait_child((s_mc_message_int_t*)message_buffer.data());
         break;
 
-      case MessageType::NEED_MEMINFO:
-        assert_msg_size("NEED_MEMINFO", s_mc_message_t);
-        handle_need_meminfo();
-        break;
-
       case MessageType::ACTORS_STATUS:
         assert_msg_size("ACTORS_STATUS", s_mc_message_t);
         handle_actors_status();
@@ -364,9 +329,6 @@ void AppSide::handle_messages()
 void AppSide::main_loop()
 {
   simgrid::mc::processes_time.resize(simgrid::kernel::actor::ActorImpl::get_maxpid());
-  MC_ignore_heap(simgrid::mc::processes_time.data(),
-                 simgrid::mc::processes_time.size() * sizeof(simgrid::mc::processes_time[0]));
-  kernel::activity::CommImpl::setup_mc();
 
   sthread_disable();
   coverage_checkpoint();
@@ -385,132 +347,5 @@ void AppSide::report_assertion_failure()
              strerror(errno));
   this->handle_messages();
 }
-
-void AppSide::ignore_memory(void* addr, std::size_t size) const
-{
-  if (not MC_is_active() || not need_memory_info_)
-    return;
-
-#if SIMGRID_HAVE_STATEFUL_MC
-  s_mc_message_ignore_memory_t message = {};
-  message.type = MessageType::IGNORE_MEMORY;
-  message.addr = (std::uintptr_t)addr;
-  message.size = size;
-  xbt_assert(channel_.send(message) == 0, "Could not send IGNORE_MEMORY message to model-checker: %s", strerror(errno));
-#else
-  xbt_die("Cannot really call ignore_memory() in non-SIMGRID_MC mode.");
-#endif
-}
-
-void AppSide::unignore_memory(void* addr, std::size_t size) const
-{
-  if (not MC_is_active() || not need_memory_info_)
-    return;
-
-#if SIMGRID_HAVE_STATEFUL_MC
-  s_mc_message_ignore_memory_t message = {};
-  message.type                         = MessageType::UNIGNORE_MEMORY;
-  message.addr                         = (std::uintptr_t)addr;
-  message.size                         = size;
-  xbt_assert(channel_.send(message) == 0, "Could not send UNIGNORE_MEMORY message to model-checker: %s",
-             strerror(errno));
-#else
-  xbt_die("Cannot really call unignore_memory() in non-SIMGRID_MC mode.");
-#endif
-}
-
-void AppSide::ignore_heap(void* address, std::size_t size) const
-{
-  if (not MC_is_active() || not need_memory_info_)
-    return;
-
-#if SIMGRID_HAVE_STATEFUL_MC
-  const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
-
-  s_mc_message_ignore_heap_t message = {};
-  message.type    = MessageType::IGNORE_HEAP;
-  message.address = address;
-  message.size    = size;
-  message.block   = ((char*)address - (char*)heap->heapbase) / BLOCKSIZE + 1;
-  if (heap->heapinfo[message.block].type == 0) {
-    message.fragment = -1;
-    heap->heapinfo[message.block].busy_block.ignore++;
-  } else {
-    message.fragment = (ADDR2UINT(address) % BLOCKSIZE) >> heap->heapinfo[message.block].type;
-    heap->heapinfo[message.block].busy_frag.ignore[message.fragment]++;
-  }
-
-  xbt_assert(channel_.send(message) == 0, "Could not send ignored region to MCer: %s", strerror(errno));
-#else
-  xbt_die("Cannot really call ignore_heap() in non-SIMGRID_MC mode.");
-#endif
-}
-
-void AppSide::unignore_heap(void* address, std::size_t size) const
-{
-  if (not MC_is_active() || not need_memory_info_)
-    return;
-
-#if SIMGRID_HAVE_STATEFUL_MC
-  s_mc_message_ignore_memory_t message = {};
-  message.type = MessageType::UNIGNORE_HEAP;
-  message.addr = (std::uintptr_t)address;
-  message.size = size;
-  xbt_assert(channel_.send(message) == 0, "Could not send IGNORE_HEAP message to model-checker: %s", strerror(errno));
-#else
-  xbt_die("Cannot really call unignore_heap() in non-SIMGRID_MC mode.");
-#endif
-}
-
-void AppSide::declare_symbol(const char* name, int* value) const
-{
-  if (not MC_is_active() || not need_memory_info_) {
-    XBT_CRITICAL("Ignore AppSide::declare_symbol(%s)", name);
-    return;
-  }
-
-#if SIMGRID_HAVE_STATEFUL_MC
-  s_mc_message_register_symbol_t message = {};
-  message.type = MessageType::REGISTER_SYMBOL;
-  xbt_assert(strlen(name) + 1 <= message.name.size(), "Symbol is too long");
-  strncpy(message.name.data(), name, message.name.size() - 1);
-  message.callback = nullptr;
-  message.data     = value;
-  xbt_assert(channel_.send(message) == 0, "Could send REGISTER_SYMBOL message to model-checker: %s", strerror(errno));
-#else
-  xbt_die("Cannot really call declare_symbol() in non-SIMGRID_MC mode.");
-#endif
-}
-
-/** Register a stack in the model checker
- *
- *  The stacks are allocated in the heap. The MC handle them specifically
- *  when we analyze/compare the content of the heap so it must be told where
- *  they are with this function.
- */
-#if HAVE_UCONTEXT_H /* Apple don't want us to use ucontexts */
-void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context) const
-{
-  if (not MC_is_active() || not need_memory_info_)
-    return;
-
-#if SIMGRID_HAVE_STATEFUL_MC
-  const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
-
-  s_stack_region_t region = {};
-  region.address = stack;
-  region.context = context;
-  region.size    = size;
-  region.block   = ((char*)stack - (char*)heap->heapbase) / BLOCKSIZE + 1;
-
-  s_mc_message_stack_region_t message = {};
-  message.type         = MessageType::STACK_REGION;
-  message.stack_region = region;
-  xbt_assert(channel_.send(message) == 0, "Could not send STACK_REGION to model-checker: %s", strerror(errno));
-#else
-  xbt_die("Cannot really call declare_stack() in non-SIMGRID_MC mode.");
-#endif
-}
-#endif
 
 } // namespace simgrid::mc

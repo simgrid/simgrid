@@ -14,6 +14,7 @@
 #include "xbt/string.hpp"
 
 #include <cstdint>
+#include <inttypes.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_determinism, mc, "Logging specific to MC communication determinism detection");
 
@@ -327,7 +328,7 @@ Exploration* create_communication_determinism_checker(const std::vector<char*>& 
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
-  auto* base      = new DFSExplorer(args, mode, true);
+  auto* base      = new DFSExplorer(args, mode);
   auto* extension = new CommDetExtension(*base);
 
   DFSExplorer::on_exploration_start([extension](RemoteApp const&) {

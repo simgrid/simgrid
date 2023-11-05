@@ -1,10 +1,5 @@
-if (NOT SIMGRID_HAVE_STATEFUL_MC)
-  set(dwarf_disable 1)
-  set(dwarf-expression_disable 1)
-endif()
 
-
-foreach(x dwarf dwarf-expression random-bug mutex-handling)
+foreach(x random-bug mutex-handling)
 
   if(NOT DEFINED ${x}_sources)
     set(${x}_sources ${x}/${x}.cpp)
@@ -43,10 +38,6 @@ IF(SIMGRID_HAVE_MC)
   ADD_TESH(tesh-mc-without-mutex-handling      --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/mutex-handling --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/mutex-handling without-mutex-handling.tesh --cfg=model-check/reduction:none)
   ADD_TESH(tesh-mc-without-mutex-handling-dpor --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/mutex-handling --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/mutex-handling without-mutex-handling.tesh --cfg=model-check/reduction:dpor)
   ADD_TESH(mc-random-bug                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/random-bug --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/random-bug random-bug.tesh)
-ENDIF()
-IF(SIMGRID_HAVE_STATEFUL_MC)
-  ADD_TESH(tesh-mc-dwarf                       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/dwarf            --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf dwarf.tesh)
-  ADD_TESH(tesh-mc-dwarf-expression            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/dwarf-expression --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf-expression dwarf-expression.tesh)
 ENDIF()
 
 if(enable_coverage)
@@ -90,9 +81,6 @@ foreach(x
     set_target_properties(mcmini-${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mcmini)
     target_link_libraries(mcmini-${x}  PRIVATE Threads::Threads)
     add_dependencies(tests-mc mcmini-${x})
-    if(SIMGRID_HAVE_STATEFUL_MC) # Only needed to introspect the binary
-      target_link_libraries(mcmini-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
-    endif()  
 
     ADD_TESH(mc-mini-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
   endif()

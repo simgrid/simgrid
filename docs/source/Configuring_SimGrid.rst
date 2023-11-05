@@ -108,18 +108,14 @@ Existing Configuration Items
 - **maxmin/concurrency-limit:** :ref:`cfg=maxmin/concurrency-limit`
 
 - **model-check:** :ref:`options_modelchecking`
-- **model-check/checkpoint:** :ref:`cfg=model-check/checkpoint`
 - **model-check/communications-determinism:** :ref:`cfg=model-check/communications-determinism`
 - **model-check/dot-output:** :ref:`cfg=model-check/dot-output`
 - **model-check/max-depth:** :ref:`cfg=model-check/max-depth`
-- **model-check/property:** :ref:`cfg=model-check/property`
 - **model-check/reduction:** :ref:`cfg=model-check/reduction`
 - **model-check/replay:** :ref:`cfg=model-check/replay`
 - **model-check/send-determinism:** :ref:`cfg=model-check/send-determinism`
 - **model-check/setenv:** :ref:`cfg=model-check/setenv`
-- **model-check/termination:** :ref:`cfg=model-check/termination`
 - **model-check/timeout:** :ref:`cfg=model-check/timeout`
-- **model-check/visited:** :ref:`cfg=model-check/visited`
 
 - **network/bandwidth-factor:** :ref:`cfg=network/bandwidth-factor`
 - **network/crosstraffic:** :ref:`cfg=network/crosstraffic`
@@ -647,38 +643,6 @@ The ``smpi/buffering`` (only valid with MC) option gives an easier interface to 
 - **zero:** means that buffering should be disabled. All communications are actually blocking.
 - **infty:** means that buffering should be made infinite. All communications are non-blocking.
 
-.. _cfg=model-check/property:
-
-Specifying a liveness property
-..............................
-
-**Option** ``model-check/property`` **Default:** unset
-
-If you want to specify liveness properties, you have to pass them on
-the command line, specifying the name of the file containing the
-property, as formatted by the `ltl2ba <https://github.com/utwente-fmt/ltl2ba>`_ program.
-Note that ltl2ba is not part of SimGrid and must be installed separately.
-
-.. code-block:: console
-
-   $ simgrid-mc ./my_program --cfg=model-check/property:<filename>
-
-.. _cfg=model-check/checkpoint:
-
-Going for Stateful Verification
-...............................
-
-By default, the system is backtracked to its initial state to explore
-another path, instead of backtracking to the exact step before the fork
-that we want to explore (this is called stateless verification). This
-is done this way because saving intermediate states can rapidly
-exhaust the available memory. If you want, you can change the value of
-the ``model-check/checkpoint`` item. For example,
-``--cfg=model-check/checkpoint:1`` asks to take a checkpoint every
-step.  Beware, this will certainly explode your memory. Larger values
-are probably better, make sure to experiment a bit to find the right
-setting for your specific system.
-
 .. _cfg=model-check/reduction:
 
 Specifying the kind of reduction
@@ -691,7 +655,7 @@ explosion. You can activate some reduction technique with
 ``--cfg=model-check/reduction:<technique>``. For now, this
 configuration variable can take 2 values:
 
- - **none:** Do not apply any kind of reduction (mandatory for liveness properties, as our current DPOR algorithm breaks cycles)
+ - **none:** Do not apply any kind of reduction
  - **dpor:** Apply Dynamic Partial Ordering Reduction. Only valid if you verify local safety properties (default value for
    safety checks).
  - **sdpor:** Source-set DPOR, as described in "Source Sets: A Foundation for Optimal Dynamic Partial Order Reduction"
@@ -699,15 +663,9 @@ configuration variable can take 2 values:
  - **odpor:** Optimal DPOR, as described in "Source Sets: A Foundation for Optimal Dynamic Partial Order Reduction"
     by Abdulla et al.
 
-Another way to mitigate the state space explosion is to search for
-cycles in the exploration with the :ref:`cfg=model-check/visited`
-configuration. Note that DPOR and state-equality reduction may not
-play well together. You should choose between them.
-
 Our current DPOR implementation could be improved in may ways. We are
 currently improving its efficiency (both in term of reduction ability
-and computational speed), and future work could make it compatible
-with liveness properties.
+and computational speed).
 
 .. _cfg=model-check/strategy:
 
@@ -730,45 +688,6 @@ DFS exploration.
  - **uniform**: this is a boring random strategy where choices are based on a uniform sampling of possible choices.
    Surprisingly, it gives really really good results.
 
-.. _cfg=model-check/visited:
-
-Size of Cycle Detection Set (state equality reduction)
-......................................................
-
-Mc SimGrid can be asked to search for cycles during the exploration,
-i.e. situations where a new explored state is in fact the same state
-than a previous one.. This can prove useful to mitigate the state
-space explosion with safety properties, and this is the crux when
-searching for counter-examples to the liveness properties.
-
-Note that this feature may break the current implementation of the
-DPOR reduction technique.
-
-The ``model-check/visited`` item is the maximum number of states, which
-are stored in memory. If the maximum number of snapshotted state is
-reached, some states will be removed from the memory and some cycles
-might be missed. Small values can lead to incorrect verifications, but
-large values can exhaust your memory and be CPU intensive as each new
-state must be compared to that amount of older saved states.
-
-The default settings depend on the kind of exploration. With safety
-checking, no state is snapshotted and cycles cannot be detected. With
-liveness checking, all states are snapshotted because missing a cycle
-could hinder the exploration soundness.
-
-.. _cfg=model-check/termination:
-
-Non-Termination Detection
-.........................
-
-The ``model-check/termination`` configuration item can be used to
-report if a non-termination execution path has been found. This is a
-path with a cycle, which means that the program might never terminate.
-
-This only works in safety mode, not in liveness mode.
-
-This options is disabled by default.
-
 .. _cfg=model-check/dot-output:
 
 Dot Output
@@ -776,8 +695,7 @@ Dot Output
 
 If set, the ``model-check/dot-output`` configuration item is the name
 of a file in which to write a dot file of the path leading to the
-property violation discovered (safety or liveness violation), as well
-as the cycle for liveness properties. This dot file can then be fed to the
+property violation discovered (safety violation). This dot file can then be fed to the
 graphviz dot tool to generate a corresponding graphical representation.
 
 .. _cfg=model-check/max-depth:
@@ -852,7 +770,7 @@ this path reported by the model checker, enabling the usage of classical
 debugging tools.
 
 When the model checker finds an interesting path in the application
-execution graph (where a safety or liveness property is violated), it
+execution graph (where a safety property is violated), it
 generates an identifier for this path. Here is an example of the output:
 
 .. code-block:: console

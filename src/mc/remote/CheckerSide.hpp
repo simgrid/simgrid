@@ -21,9 +21,6 @@ class CheckerSide {
   event* socket_event_;
   event* signal_event_;
   std::unique_ptr<event_base, decltype(&event_base_free)> base_{nullptr, &event_base_free};
-#if SIMGRID_HAVE_STATEFUL_MC
-  std::unique_ptr<RemoteProcessMemory> remote_memory_;
-#endif
 
   Channel channel_;
   bool running_ = false;
@@ -33,13 +30,12 @@ class CheckerSide {
   CheckerSide* child_checker_ = nullptr;
 
   void setup_events(bool socket_only); // Part of the initialization
-  void clear_memory_cache();
   void handle_dead_child(int status); // Launched when the dying child is the PID we follow
   void handle_waitpid();              // Launched when receiving a sigchild
 
 public:
   explicit CheckerSide(int socket, CheckerSide* child_checker);
-  explicit CheckerSide(const std::vector<char*>& args, bool need_memory_introspection);
+  explicit CheckerSide(const std::vector<char*>& args);
   ~CheckerSide();
 
   // No copy:
@@ -66,9 +62,6 @@ public:
   pid_t get_pid() const { return pid_; }
   bool running() const { return running_; }
   void terminate() { running_ = false; }
-#if SIMGRID_HAVE_STATEFUL_MC
-  RemoteProcessMemory* get_remote_memory() { return remote_memory_.get(); }
-#endif
 };
 
 } // namespace simgrid::mc

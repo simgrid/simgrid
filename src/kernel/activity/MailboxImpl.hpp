@@ -20,18 +20,10 @@ class MailboxImpl {
   s4u::Mailbox piface_;
   std::string name_;
   actor::ActorImplPtr permanent_receiver_; // actor to which the mailbox is attached
-#if SIMGRID_HAVE_STATEFUL_MC
-  /* Using deque here is faster in benchmarks, but break the state equality heuristic of Liveness checking on Debian
-   * testing. This would desserve a proper investiguation, but simply use a single-sided list for the time being. HACK.
-   */
-  std::list<CommImplPtr> comm_queue_;
-  // messages already received in the permanent receive mode
-  std::list<CommImplPtr> done_comm_queue_;
-#else
+
   std::deque<CommImplPtr> comm_queue_;
   // messages already received in the permanent receive mode
   std::deque<CommImplPtr> done_comm_queue_;
-#endif
 
   friend s4u::Engine;
   friend s4u::Mailbox;

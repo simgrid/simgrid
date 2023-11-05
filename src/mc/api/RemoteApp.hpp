@@ -10,7 +10,6 @@
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/remote/CheckerSide.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
-#include "src/mc/sosp/PageStore.hpp"
 
 #include <functional>
 
@@ -26,12 +25,6 @@ namespace simgrid::mc {
  */
 class XBT_PUBLIC RemoteApp {
 private:
-#if SIMGRID_HAVE_STATEFUL_MC
-  PageStore page_store_{500};
-  std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
-#else
-  void* initial_snapshot_ = nullptr; // The code tests it to decide whether to use the refork exec path
-#endif
   std::unique_ptr<CheckerSide> checker_side_;
   std::unique_ptr<CheckerSide> application_factory_; // when no meminfo, create checker_side_ by cloning this one
   int master_socket_ = -1;
@@ -50,7 +43,7 @@ public:
    *
    *  The code is expected to `exec` the model-checked application.
    */
-  explicit RemoteApp(const std::vector<char*>& args, bool need_memory_introspection);
+  explicit RemoteApp(const std::vector<char*>& args);
 
   void restore_initial_state();
   void wait_for_requests();
@@ -69,13 +62,6 @@ public:
 
   /** Take a transition. A new Transition is created iff the last parameter is true */
   Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
-
-#if SIMGRID_HAVE_STATEFUL_MC
-  /* Get the memory of the remote process */
-  RemoteProcessMemory* get_remote_process_memory() { return checker_side_->get_remote_memory(); }
-
-  PageStore& get_page_store() { return page_store_; }
-#endif
 };
 } // namespace simgrid::mc
 

@@ -37,12 +37,6 @@ else()
   set(EXTRA_DIST ${EXTRA_DIST} ${STHREAD_SRC})
 endif()
 
-if(HAVE_MMALLOC)
-  add_library(sgmalloc SHARED ${SGMALLOC_SRC})
-  set_property(TARGET sgmalloc
-                APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
-endif()
-
 if(SIMGRID_HAVE_MC)
   add_executable(simgrid-mc ${MC_SIMGRID_MC_SRC})
   target_link_libraries(simgrid-mc simgrid)

@@ -3,10 +3,9 @@ set(_replay_sources    ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.cpp)
 set(_ampi_test_sources ${CMAKE_CURRENT_SOURCE_DIR}/ampi_test/ampi_test.cpp)
 
 # These tests are only used when MC is actived
-set(MC_tests bugged1 bugged2 bugged1_liveness only_send_deterministic mutual_exclusion non_termination1
-             non_termination2 non_termination3 non_termination4 sendsend)
+set(MC_tests bugged1 bugged2 only_send_deterministic mutual_exclusion sendsend)
 foreach(x ${MC_tests})
-  if(NOT SIMGRID_HAVE_STATEFUL_MC)
+  if(NOT SIMGRID_HAVE_MC)
     set(_${x}_disable 1)
   endif()
   set(_${x}_sources ${CMAKE_CURRENT_SOURCE_DIR}/mc/${x}.c)
@@ -65,13 +64,10 @@ set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/energy/energy.tes
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.tesh                          PARENT_SCOPE)
 set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                    ${CMAKE_CURRENT_SOURCE_DIR}/energy/hostfile
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc/promela_bugged1_liveness
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged1_liveness
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged1
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged2
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_only_send_deterministic
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_mutual_exclusion
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_non_termination
                                    ${CMAKE_CURRENT_SOURCE_DIR}/simple-execute/hostfile_griffon             PARENT_SCOPE)
 set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions1.txt
@@ -91,7 +87,7 @@ set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.t
 
 if(enable_smpi)
   # MC is currently broken with threads (deadlock => timeout)
-  if(SIMGRID_HAVE_STATEFUL_MC)
+  if(SIMGRID_HAVE_MC)
     add_dependencies(tests-mc smpimain)
     add_dependencies(tests-mc smpi_only_send_deterministic)
     ADD_TESH(smpi-mc-only-send-determinism --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/mc --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/mc ${CMAKE_HOME_DIRECTORY}/examples/smpi/mc/only_send_deterministic.tesh)

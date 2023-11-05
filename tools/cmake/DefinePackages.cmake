@@ -56,19 +56,6 @@ set(EXTRA_DIST
   src/xbt/log_private.hpp
   src/xbt/mallocator_private.h
   src/xbt/parmap.hpp
-
-  src/xbt/mmalloc/mmalloc.h
-  src/xbt/mmalloc/mfree.c
-  src/xbt/mmalloc/mm_legacy.c
-  src/xbt/mmalloc/mm_module.c
-  src/xbt/mmalloc/mmalloc.c
-  src/xbt/mmalloc/mmalloc.info
-  src/xbt/mmalloc/mmalloc.texi
-  src/xbt/mmalloc/mmorecore.c
-  src/xbt/mmalloc/mmprivate.h
-  src/xbt/mmalloc/mrealloc.c
-  src/xbt/mmalloc/swag.c
-  src/xbt/mmalloc/swag.h
   )
 
 set(SMPI_SRC
@@ -291,13 +278,6 @@ set(XBT_SRC
   src/xbt/utils/iter/LazyKSubsets.hpp
   src/xbt/utils/iter/LazyPowerset.hpp
   )
-
-if(HAVE_MMALLOC)
-  set(SGMALLOC_SRC src/xbt/mmalloc/mm.c)
-  set(XBT_SRC      ${XBT_SRC} src/xbt/mmalloc/mm.c)
-else()
-  set(EXTRA_DIST ${EXTRA_DIST} src/xbt/mmalloc/mm.c)
-endif()
 
 set(NS3_SRC
   src/kernel/resource/models/network_ns3.cpp
@@ -542,6 +522,28 @@ set(MC_SRC_STATELESS
   src/mc/explo/DFSExplorer.hpp
   src/mc/explo/Exploration.cpp
   src/mc/explo/Exploration.hpp
+  src/mc/explo/CommunicationDeterminismChecker.cpp
+
+  src/mc/explo/UdporChecker.cpp
+  src/mc/explo/UdporChecker.hpp
+
+  src/mc/explo/udpor/Comb.hpp
+  src/mc/explo/udpor/Configuration.hpp
+  src/mc/explo/udpor/Configuration.cpp
+  src/mc/explo/udpor/EventSet.cpp
+  src/mc/explo/udpor/EventSet.hpp
+  src/mc/explo/udpor/ExtensionSetCalculator.cpp
+  src/mc/explo/udpor/ExtensionSetCalculator.hpp
+  src/mc/explo/udpor/History.cpp
+  src/mc/explo/udpor/History.hpp
+  src/mc/explo/udpor/maximal_subsets_iterator.cpp
+  src/mc/explo/udpor/maximal_subsets_iterator.hpp
+  src/mc/explo/udpor/UnfoldingEvent.cpp
+  src/mc/explo/udpor/UnfoldingEvent.hpp
+  src/mc/explo/udpor/Unfolding.cpp
+  src/mc/explo/udpor/Unfolding.hpp
+  src/mc/explo/udpor/udpor_forward.hpp
+  src/mc/explo/udpor/udpor_tests_private.hpp
 
   src/mc/explo/odpor/Execution.cpp
   src/mc/explo/odpor/Execution.hpp
@@ -576,67 +578,7 @@ set(MC_SRC_STATELESS
   src/mc/transition/TransitionRandom.hpp
   src/mc/transition/TransitionSynchro.cpp
   src/mc/transition/TransitionSynchro.hpp
-  )
 
-set(MC_SRC_STATEFUL
-  src/mc/explo/CommunicationDeterminismChecker.cpp
-  src/mc/explo/LivenessChecker.cpp
-  src/mc/explo/LivenessChecker.hpp
-  src/mc/explo/UdporChecker.cpp
-  src/mc/explo/UdporChecker.hpp
-
-  src/mc/explo/udpor/Comb.hpp
-  src/mc/explo/udpor/Configuration.hpp
-  src/mc/explo/udpor/Configuration.cpp
-  src/mc/explo/udpor/EventSet.cpp
-  src/mc/explo/udpor/EventSet.hpp
-  src/mc/explo/udpor/ExtensionSetCalculator.cpp
-  src/mc/explo/udpor/ExtensionSetCalculator.hpp
-  src/mc/explo/udpor/History.cpp
-  src/mc/explo/udpor/History.hpp
-  src/mc/explo/udpor/maximal_subsets_iterator.cpp
-  src/mc/explo/udpor/maximal_subsets_iterator.hpp
-  src/mc/explo/udpor/UnfoldingEvent.cpp
-  src/mc/explo/udpor/UnfoldingEvent.hpp
-  src/mc/explo/udpor/Unfolding.cpp
-  src/mc/explo/udpor/Unfolding.hpp
-  src/mc/explo/udpor/udpor_forward.hpp
-  src/mc/explo/udpor/udpor_tests_private.hpp
-
-  src/mc/inspect/DwarfExpression.cpp
-  src/mc/inspect/DwarfExpression.hpp
-  src/mc/inspect/Frame.cpp
-  src/mc/inspect/Frame.hpp
-  src/mc/inspect/LocationList.cpp
-  src/mc/inspect/LocationList.hpp
-  src/mc/inspect/ObjectInformation.cpp
-  src/mc/inspect/ObjectInformation.hpp
-  src/mc/inspect/Type.hpp
-  src/mc/inspect/Variable.hpp
-  src/mc/inspect/mc_dwarf.cpp
-  src/mc/inspect/mc_dwarf.hpp
-  src/mc/inspect/mc_dwarf_attrnames.cpp
-  src/mc/inspect/mc_dwarf_tagnames.cpp
-  src/mc/inspect/mc_member.cpp
-  src/mc/inspect/mc_unw.cpp
-  src/mc/inspect/mc_unw.hpp
-  src/mc/inspect/mc_unw_vmread.cpp
-
-  src/mc/sosp/ChunkedData.cpp
-  src/mc/sosp/ChunkedData.hpp
-  src/mc/sosp/PageStore.cpp
-  src/mc/sosp/PageStore.hpp
-  src/mc/sosp/Region.cpp
-  src/mc/sosp/Region.hpp
-  src/mc/sosp/RemoteProcessMemory.cpp
-  src/mc/sosp/RemoteProcessMemory.hpp
-  src/mc/sosp/Snapshot.cpp
-  src/mc/sosp/Snapshot.hpp
-
-  src/mc/AddressSpace.hpp
-  src/mc/VisitedState.cpp
-  src/mc/VisitedState.hpp
-  src/mc/compare.cpp
   src/mc/mc_environ.h
   src/mc/mc_exit.hpp
   src/mc/mc_forward.hpp
@@ -648,8 +590,6 @@ set(MC_SRC_STATEFUL
   src/mc/api/strategy/MinMatchComm.hpp
   src/mc/api/strategy/Strategy.hpp
   src/mc/api/strategy/UniformStrategy.hpp
-
-  src/xbt/mmalloc/mm_interface.c
   )
 
 set(MC_SIMGRID_MC_SRC  src/mc/explo/simgrid_mc.cpp)
@@ -808,10 +748,7 @@ endif()
 if(SIMGRID_HAVE_MC)
   set(simgrid_sources  ${simgrid_sources}  ${MC_SRC_STATELESS})
 endif()
-if(SIMGRID_HAVE_STATEFUL_MC)
-  set(simgrid_sources  ${simgrid_sources}  ${MC_SRC_STATEFUL})
-endif()
-set(EXTRA_DIST ${EXTRA_DIST} ${MC_SRC_STATELESS} ${MC_SRC_STATEFUL})
+set(EXTRA_DIST ${EXTRA_DIST} ${MC_SRC_STATELESS})
 
 if(SIMGRID_HAVE_NS3)
   set(headers_to_install ${headers_to_install} include/simgrid/plugins/ns3.hpp)
@@ -1083,10 +1020,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/MaintainerMode.cmake
   tools/cmake/MakeLib.cmake
   tools/cmake/Modules/FindGraphviz.cmake
-  tools/cmake/Modules/FindLibdw.cmake
-  tools/cmake/Modules/FindLibelf.cmake
   tools/cmake/Modules/FindLibevent.cmake
-  tools/cmake/Modules/FindLibunwind.cmake
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindPAPI.cmake
   tools/cmake/Modules/FindValgrind.cmake
