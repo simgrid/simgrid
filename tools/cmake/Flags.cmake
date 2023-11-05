@@ -1,7 +1,7 @@
 ##
 ## This file is in charge of setting our paranoid flags with regard to warnings and optimization.
 ##
-##   It is only used for gcc and clang. MSVC builds don't load this file.
+##   It is only used for gcc, clang and Intel compilers.
 ##
 ##   These flags do break some classical CMake tests, so you don't
 ##   want to do so before the very end of the configuration.
@@ -78,12 +78,12 @@ endif()
 
 # Activate the warnings on #if FOOBAR when FOOBAR has no value
 # It breaks on FreeBSD within Boost headers, so activate this only in Pure Hardcore debug mode.
-if(enable_maintainer_mode)
+ if(enable_maintainer_mode)
   set(warnCFLAGS "${warnCFLAGS} -Wundef")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wundef")
 endif()
 
-# Se the optimisation flags
+# Set the optimisation flags
 # NOTE, we should CMAKE_BUILD_TYPE for this
 if(enable_compile_optimizations)
   set(optCFLAGS "-O3 -funroll-loops -fno-strict-aliasing ")
@@ -91,13 +91,12 @@ else()
   set(optCFLAGS "-O0 ")
 endif()
 
-#ARM platforms have signed char by default, switch to unsigned for consistancy
+# ARM platforms have signed char by default, switch to unsigned for consistancy
 if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
   set(optCFLAGS "${optCFLAGS} -fsigned-char")
 endif()
 
-if(enable_compile_optimizations AND CMAKE_COMPILER_IS_GNUCC
-    AND (NOT enable_model-checking))
+if(enable_compile_optimizations AND CMAKE_COMPILER_IS_GNUCC)
   # This is redundant (already in -03):
   set(optCFLAGS "${optCFLAGS} -finline-functions ")
 endif()
@@ -120,8 +119,7 @@ endif()
 # Configure LTO
 if(enable_lto) # User wants LTO. Try if we can do that
   set(enable_lto OFF)
-  if(enable_compile_optimizations
-      AND (NOT enable_model-checking))
+  if(enable_compile_optimizations)
     include(CheckIPOSupported)
     check_ipo_supported(RESULT ipo LANGUAGES C CXX)
     if(ipo)
@@ -135,11 +133,7 @@ if(enable_lto) # User wants LTO. Try if we can do that
     if(NOT enable_compile_optimizations)
       message(STATUS "LTO disabled: Compile-time optimizations turned off.")
     else()
-      if(enable_model-checking)
-        message(STATUS "LTO disabled when compiling with model-checking.")
-      else()
-        message(STATUS "LTO does not seem usable -- try updating your build chain.")
-      endif()
+      message(STATUS "LTO does not seem usable -- try updating your build chain.")
     endif()
   endif()
 else()
@@ -170,25 +164,6 @@ if(enable_lto) # User wants LTO, and it seems usable. Go for it
     set (CMAKE_AR gcc-ar)
     set (CMAKE_RANLIB gcc-ranlib)
   endif()
-endif()
-
-if(enable_model-checking AND enable_compile_optimizations)
-  # Forget it, do not optimize the code (because it confuses the MC):
-  set(optCFLAGS "-O0")
-  # But you can still optimize this:
-  set(src_list ${simgrid_sources})
-  # except...
-  list(FILTER src_list EXCLUDE REGEX "^src/kernel/activity/")
-  list(FILTER src_list EXCLUDE REGEX "^src/kernel/actor/")
-  list(FILTER src_list EXCLUDE REGEX "^src/kernel/context/")
-  list(FILTER src_list EXCLUDE REGEX "^src/s4u/")
-  foreach(src ${src_list})
-      set (mcCFLAGS "-O3 -funroll-loops -fno-strict-aliasing")
-      if(CMAKE_COMPILER_IS_GNUCC)
-        set (mcCFLAGS "${mcCFLAGS} -finline-functions")
-      endif()
-      set_source_files_properties(${src} PROPERTIES COMPILE_FLAGS ${mcCFLAGS})
-  endforeach()
 endif()
 
 if (CMAKE_C_COMPILER_ID MATCHES "Intel")
