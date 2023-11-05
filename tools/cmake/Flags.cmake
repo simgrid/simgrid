@@ -77,11 +77,9 @@ if(enable_compile_warnings AND enable_debug)
 endif()
 
 # Activate the warnings on #if FOOBAR when FOOBAR has no value
-# It breaks on FreeBSD within Boost headers, so activate this only in Pure Hardcore debug mode.
- if(enable_maintainer_mode)
-  set(warnCFLAGS "${warnCFLAGS} -Wundef")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wundef")
-endif()
+# It used to break on FreeBSD within Boost headers and was only activated in maintainer mode, but I hope it works nowadays
+set(warnCFLAGS "${warnCFLAGS} -Wundef")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wundef")
 
 # Set the optimisation flags
 # NOTE, we should CMAKE_BUILD_TYPE for this
