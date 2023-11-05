@@ -11,7 +11,7 @@ ctest-debug:
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y binutils xsltproc
-  - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - make -j$(nproc) VERBOSE=1 all tests
   - ctest -T Test -j$(nproc) --output-on-failure
   - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml
@@ -31,7 +31,7 @@ ctest-modelchecking:
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y binutils xsltproc clang
-  - cmake -Denable_model-checking=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" -DCMAKE_C_COMPILER=/usr/bin/clang  -DCMAKE_CXX_COMPILER=/usr/bin/clang++ .
+  - cmake -Denable_model-checking=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_testsuite_smpi_MPICH3=OFF -Denable_testsuite_McMini=OFF -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" -DCMAKE_C_COMPILER=/usr/bin/clang  -DCMAKE_CXX_COMPILER=/usr/bin/clang++ .
   - make -j$(nproc) VERBOSE=1 all tests
   - ctest -T Test -j$(nproc) --output-on-failure
   - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml

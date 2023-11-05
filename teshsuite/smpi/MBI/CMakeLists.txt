@@ -7,7 +7,7 @@
 
 file(GLOB generator_scripts *Generator.py)
 
-if (enable_smpi_MBI_testsuite)
+if (enable_testsuite_smpi_MBI)
   if (NOT enable_smpi)
     message(FATAL_ERROR "The MBI test suite cannot be enabled without SMPI. Please change either setting.")
   endif()

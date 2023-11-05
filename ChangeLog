@@ -42,7 +42,7 @@ sthread:
  - Allow to use on valgrind-observed processes
  - Install sthread on user's disk.
  - Implement recursive pthreads.
- - Add some McMini codes to test sthread further.
+ - Add some McMini codes to test sthread further (controlled with enable_testsuite_McMini).
 
 Model checking:
  - More informative backtraces on assertion failure.

@@ -254,10 +254,13 @@ enable_ns3 (on/OFF)
 enable_smpi (ON/off)
   Allows one to run MPI code on top of SimGrid.
 
-enable_smpi_MBI_testsuite (on/OFF)
-  Adds many extra tests for the model checker module.
+enable_testsuite_McMini (on/OFF)
+  Adds several extra tests for the model checker module (targeting threaded applications).
 
-enable_smpi_MPICH3_testsuite (on/OFF)
+enable_testsuite_smpi_MBI (on/OFF)
+  Adds many extra tests for the model checker module (targeting MPI applications).
+
+enable_testsuite_smpi_MPICH3 (on/OFF)
   Adds many extra tests for the MPI module.
 
 minimal-bindings (on/OFF)

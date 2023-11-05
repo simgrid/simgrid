@@ -211,9 +211,9 @@ fi
 cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
-  -Denable_smpi_MBI_testsuite=OFF \
+  -Denable_testsuite_smpi_MBI=OFF -Denable_testsuite_McMini=ON \
   -Denable_compile_optimizations=$(onoff test "$build_mode" != "DynamicAnalysis") \
-  -Denable_smpi_MPICH3_testsuite=$(onoff test "$build_mode" = "Debug") \
+  -Denable_testsuite_smpi_MPICH3=$(onoff test "$build_mode" = "Debug") \
   -Denable_mallocators=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
   -Denable_compile_warnings=$(onoff test "$GENERATOR" != "MSYS Makefiles") -Denable_smpi=ON \

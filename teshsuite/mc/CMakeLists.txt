@@ -54,8 +54,7 @@ if(enable_coverage)
 endif()
 
 
-if("${CMAKE_SYSTEM}" MATCHES "Linux")
-  foreach(x  
+foreach(x
 #              
 #             simple_cond_broadcast_deadlock  simple_semaphore_deadlock  simple_barrier_deadlock  simple_cond_deadlock
 #      	     simple_semaphores_deadlock
@@ -83,9 +82,10 @@ if("${CMAKE_SYSTEM}" MATCHES "Linux")
 #             simple_mutex_with_threads_ok simple_semaphores_ok simple_semaphores_with_threads_ok simple_threads_ok
              )
 
-    set(teshsuite_src  ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.c)
-    set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
+  set(teshsuite_src  ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.c)
+  set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
 
+  if("${CMAKE_SYSTEM}" MATCHES "Linux" AND ${enable_testsuite_McMini})
     add_executable       (mcmini-${x}  EXCLUDE_FROM_ALL mcmini/${x}.c)         
     set_target_properties(mcmini-${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mcmini)
     target_link_libraries(mcmini-${x}  PRIVATE Threads::Threads)
@@ -95,8 +95,8 @@ if("${CMAKE_SYSTEM}" MATCHES "Linux")
     endif()  
 
     ADD_TESH(mc-mini-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
-  endforeach()	     
-endif()
+  endif()
+endforeach()
 
 set(teshsuite_src  ${teshsuite_src}                                                                        PARENT_SCOPE)
 set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/random-bug/random-bug-replay.tesh

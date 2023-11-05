@@ -47,8 +47,22 @@ endif()
 
 option(enable_smpi "Whether SMPI is included in the library." on)
 option(enable_smpi_papi    "Whether SMPI supports PAPI bindings." off)
-option(enable_smpi_MPICH3_testsuite "Whether the test suite form MPICH 3 should be built" off)
-option(enable_smpi_MBI_testsuite "Whether the test suite from MBI should be built." off)
+
+option(enable_testsuite_smpi_MPICH3 "Whether the test suite form MPICH 3 should be built." off)
+option(enable_smpi_MPICH3_testsuite "Please use 'enable_testsuite_smpi_MPICH3' instead." off)
+mark_as_advanced(enable_smpi_MPICH3_testsuite)
+if(enable_smpi_MPICH3_testsuite)
+  SET(enable_testsuite_smpi_MPICH3 ON CACHE BOOL "Whether the test suite form MPICH 3 should be built." FORCE)
+endif()
+
+option(enable_testsuite_smpi_MBI "Whether the test suite from MBI should be built." off)
+option(enable_smpi_MBI_testsuite "Please use 'enable_testsuite_smpi_MBI' instead." off)
+mark_as_advanced(enable_smpi_MBI_testsuite)
+if(enable_smpi_MBI_testsuite)
+  SET(enable_testsuite_smpi_MBI ON CACHE BOOL "Whether the test suite from MBI should be built." FORCE)
+endif()
+
+option(enable_testsuite_McMini "Whether the test suite from McMini should be built." off)
 
 # Internal targets used by jenkins
 ###
