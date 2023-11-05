@@ -6,21 +6,11 @@
 #ifndef SIMGRID_KERNEL_CONTEXT_BOOST_CONTEXT_HPP
 #define SIMGRID_KERNEL_CONTEXT_BOOST_CONTEXT_HPP
 
-/* Boost uses undef preprocessor symbols on FreeBSD, so disable our Werror for this file */
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wundef"
-#endif
-
 #include <boost/version.hpp>
 #if BOOST_VERSION < 106100
 #include <boost/context/fcontext.hpp>
 #else
 #include <boost/context/detail/fcontext.hpp>
-#endif
-
-#ifdef __clang__
-#pragma clang diagnostic pop
 #endif
 
 #include <atomic>

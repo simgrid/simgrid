@@ -77,9 +77,10 @@ if(enable_compile_warnings AND enable_debug)
 endif()
 
 # Activate the warnings on #if FOOBAR when FOOBAR has no value
-# It used to break on FreeBSD within Boost headers and was only activated in maintainer mode, but I hope it works nowadays
-set(warnCFLAGS "${warnCFLAGS} -Wundef")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wundef")
+if("${CMAKE_SYSTEM}" MATCHES "Linux") # Breaks on FreeBSD within Boost headers :(
+  set(warnCFLAGS "${warnCFLAGS} -Wundef")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wundef")
+endif()
 
 # Set the optimisation flags
 # NOTE, we should CMAKE_BUILD_TYPE for this
