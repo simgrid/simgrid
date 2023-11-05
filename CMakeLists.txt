@@ -352,14 +352,6 @@ else()
   set(SG_HAVE_SENDFILE 0)
 endif()
 
-if(enable_model-checking AND NOT "${CMAKE_SYSTEM}" MATCHES "Linux|FreeBSD")
-  message(FATAL_ERROR "Support for model-checking has not been enabled on ${CMAKE_SYSTEM}. Please use a Linux docker to use the model checker.")
-endif()
-
-if(enable_model-checking AND minimal-bindings)
-  message(FATAL_ERROR "Compile-time option 'minimal-bindings' cannot be enabled with 'model-checking'")
-endif()
-
 if(enable_mallocators)
   SET(SIMGRID_HAVE_MALLOCATOR 1)
 else()
@@ -771,11 +763,6 @@ else()
 endif()
 
 option(enable_python "Whether the Python bindings are activated." ${default_enable_python}) # ON by default if dependencies are met
-
-if("${CMAKE_SYSTEM}" MATCHES "FreeBSD" AND enable_model-checking AND enable_python)
-  message(WARNING "FreeBSD + Model-Checking + Python = too much for now. Disabling the Python bindings.")
-  set(enable_python FALSE)
-endif()
 
 if(enable_python)
   if(NOT Python3_Development_FOUND)
