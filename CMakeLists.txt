@@ -36,6 +36,7 @@ include(GNUInstallDirs)
 #     Check for the compiler        #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
+INCLUDE(CheckCCompilerFlag)
 ## Request full debugging flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
