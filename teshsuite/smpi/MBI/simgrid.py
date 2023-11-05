@@ -55,7 +55,7 @@ class Tool(mbi.AbstractTool):
         execcmd = execcmd.replace('$infty_buffer', "--cfg=smpi/buffering:infty")
 
         mbi.run_cmd(
-            buildcmd=f"smpicc {filename} -trace-call-location -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",
+            buildcmd=f"smpicc {filename} -trace-call-location -g -o {binary}",
             execcmd=execcmd,
             cachefile=cachefile,
             filename=filename,
