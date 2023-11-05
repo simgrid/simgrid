@@ -97,7 +97,7 @@ private:
    * @brief An identifier which is used to sort events
    * deterministically
    */
-  uint64_t id = 0;
+  unsigned long id = 0;
 };
 
 } // namespace simgrid::mc::udpor
