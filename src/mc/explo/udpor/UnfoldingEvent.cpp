@@ -58,9 +58,9 @@ std::string UnfoldingEvent::to_string() const
   }
   dependencies_string += "]";
 
-  return xbt::string_printf("Event %lu, Actor %ld: %s (%zu dependencies: %s)", this->id, associated_transition->aid_,
-                            associated_transition->to_string().c_str(), immediate_causes.size(),
-                            dependencies_string.c_str());
+  return xbt::string_printf("Event %lu, Actor %ld: %s (%lu dependencies: %s)", this->id, associated_transition->aid_,
+                            associated_transition->to_string().c_str(),
+                            static_cast<long unsigned>(immediate_causes.size()), dependencies_string.c_str());
 }
 
 EventSet UnfoldingEvent::get_history() const
