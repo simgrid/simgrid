@@ -233,14 +233,18 @@ void State::sprout_tree_from_parent_state()
                                            "parent with an empty wakeup tree. This indicates either that ODPOR "
                                            "actor selection in State.cpp is incorrect, or that the code "
                                            "deciding when to make subtrees in ODPOR is incorrect");
-  xbt_assert((get_transition_in()->aid_ == min_process_node.value()->get_actor()) &&
-                 (get_transition_in()->type_ == min_process_node.value()->get_action()->type_),
-             "We tried to make a subtree from a parent state who claimed to have executed `%s` on actor %ld"
-             "but whose wakeup tree indicates it should have executed `%s` on actor %ld. This indicates "
-             "that exploration is not following ODPOR. Are you sure you're choosing actors "
-             "to schedule from the wakeup tree?",
-             get_transition_in()->to_string(false).c_str(), get_transition_in()->aid_,
-             min_process_node.value()->get_action()->to_string(false).c_str(), min_process_node.value()->get_actor());
+  if (not(get_transition_in()->aid_ == min_process_node.value()->get_actor() &&
+          get_transition_in()->type_ == min_process_node.value()->get_action()->type_)) {
+    XBT_ERROR("We tried to make a subtree from a parent state who claimed to have executed `%s` on actor %ld "
+              "but whose wakeup tree indicates it should have executed `%s` on actor %ld. This indicates "
+              "that exploration is not following ODPOR. Are you sure you're choosing actors "
+              "to schedule from the wakeup tree? Trace so far:",
+              get_transition_in()->to_string(false).c_str(), get_transition_in()->aid_,
+              min_process_node.value()->get_action()->to_string(false).c_str(), min_process_node.value()->get_actor());
+    for (auto elm : Exploration::get_instance()->get_textual_trace())
+      XBT_ERROR("%s", elm.c_str());
+    xbt_abort();
+  }
   this->wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(min_process_node.value());
 }
 
