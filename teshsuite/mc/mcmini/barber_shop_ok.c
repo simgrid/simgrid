@@ -145,8 +145,10 @@ int main(int argc, char* argv[])
     exit(-1);
   }
 
-  printf("\nSleepBarber.c\n\n");
-  printf("A solution to the sleeping barber problem using semaphores.\n");
+  if (DEBUG) {
+    printf("\nSleepBarber.c\n\n");
+    printf("A solution to the sleeping barber problem using semaphores.\n");
+  }
 
   // Initialize the random number generator with a new seed.
   srand48(RandSeed);
