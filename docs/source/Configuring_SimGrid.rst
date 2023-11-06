@@ -523,8 +523,6 @@ Note that with the default host model this option is activated by default.
 Simulating Asynchronous Send
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-(this configuration item is experimental and may change or disappear)
-
 It is possible to specify that messages below a certain size (in bytes) will be
 sent as soon as the call to MPI_Send is issued, without waiting for
 the correspondent receive. This threshold can be configured through
