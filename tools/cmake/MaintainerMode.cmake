@@ -39,40 +39,9 @@ if(enable_maintainer_mode)
   find_program(FLEX_EXE NAMES flex)
   find_program(FLEXML_EXE NAMES flexml)
   find_program(SED_EXE NAMES sed)
-  find_program(BISON_EXE NAMES bison)
   find_program(LEX_EXE NAMES lex)
 
-  mark_as_advanced(BISON_EXE)
   mark_as_advanced(LEX_EXE)
-
-  if(BISON_EXE AND LEX_EXE)
-    add_custom_command(
-      OUTPUT
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/automaton_lexer.yy.c
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.tab.cacc
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.tab.hacc
-
-      DEPENDS
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.lex
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.yacc
-
-      COMMENT "Generating automaton source files"
-      COMMAND ${BISON_EXE} --name-prefix=xbt_automaton_parser_ -d -t parserPromela.yacc
-      COMMAND ${LEX_EXE} --prefix=xbt_automaton_parser_ --outfile=automaton_lexer.yy.c parserPromela.lex
-      WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/
-      )
-
-    add_custom_target(automaton_generated_src
-      DEPENDS
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/automaton_lexer.yy.c
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.tab.cacc
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.tab.hacc
-      )
-
-    SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
-      "${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.tab.cacc;${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.tab.hacc;${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/automaton_parse.yy.c"
-      )
-  endif()
 
   message(STATUS "Found flex: ${FLEX_EXE}")
   IF(FLEX_EXE)

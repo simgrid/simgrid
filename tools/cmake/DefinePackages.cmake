@@ -46,11 +46,6 @@ set(EXTRA_DIST
   src/kernel/xml/simgrid_dtd.h
   src/kernel/xml/platf_sax_cb.cpp
 
-  src/xbt/automaton/automaton_lexer.yy.c
-  src/xbt/automaton/parserPromela.lex
-  src/xbt/automaton/parserPromela.tab.cacc
-  src/xbt/automaton/parserPromela.tab.hacc
-  src/xbt/automaton/parserPromela.yacc
   src/xbt/coverage.h
   src/xbt/dict_private.h
   src/xbt/log_private.hpp
@@ -244,8 +239,6 @@ set(STHREAD_SRC
 set(XBT_SRC
   src/xbt/OsSemaphore.hpp
   src/xbt/PropertyHolder.cpp
-  src/xbt/automaton/automaton.c
-  src/xbt/automaton/automatonparse_promela.c
   src/xbt/backtrace.cpp
   src/xbt/config.cpp
   src/xbt/dict.cpp
@@ -679,8 +672,6 @@ set(headers_to_install
   include/xbt.h
   include/xbt/asserts.h
   include/xbt/asserts.hpp
-  include/xbt/automaton.h
-  include/xbt/automaton.hpp
   include/xbt/backtrace.hpp
   include/xbt/base.h
   include/xbt/config.h
@@ -1130,13 +1121,3 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/wifi_large_cell.xml
   examples/platforms/wifi_ns3.xml
   )
-
-set(generated_src_files
-  src/xbt/automaton/automaton_lexer.yy.c
-  src/xbt/automaton/parserPromela.tab.cacc
-  src/xbt/automaton/parserPromela.tab.hacc
-  )
-
-foreach(file ${generated_src_files})
-  set_source_files_properties(${file} PROPERTIES GENERATED true)
-endforeach(file ${generated_src_files})

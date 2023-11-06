@@ -1991,8 +1991,6 @@ include include/xbt/Extendable.hpp
 include include/xbt/PropertyHolder.hpp
 include include/xbt/asserts.h
 include include/xbt/asserts.hpp
-include include/xbt/automaton.h
-include include/xbt/automaton.hpp
 include include/xbt/backtrace.hpp
 include include/xbt/base.h
 include include/xbt/config.h
@@ -2522,13 +2520,6 @@ include src/sthread/sthread.h
 include src/sthread/sthread_impl.cpp
 include src/xbt/OsSemaphore.hpp
 include src/xbt/PropertyHolder.cpp
-include src/xbt/automaton/automaton.c
-include src/xbt/automaton/automaton_lexer.yy.c
-include src/xbt/automaton/automatonparse_promela.c
-include src/xbt/automaton/parserPromela.lex
-include src/xbt/automaton/parserPromela.tab.cacc
-include src/xbt/automaton/parserPromela.tab.hacc
-include src/xbt/automaton/parserPromela.yacc
 include src/xbt/backtrace.cpp
 include src/xbt/config.cpp
 include src/xbt/config_test.cpp
