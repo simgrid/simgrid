@@ -43,6 +43,17 @@ email.
 .. _simgrid AUR package: https://aur.archlinux.org/packages/simgrid/
 .. _AUR official documentation: https://wiki.archlinux.org/title/Arch_User_Repository
 
+Binaries from macOS
+^^^^^^^^^^^^^^^^^^^
+
+SimGrid can be found in the Homebrew package manager. Troubleshooting:
+
+warning: dylib (libsimgrid.dylib) was built for newer macOS version (14.0) than being linked (13.3)
+  This was reported with the SimGrid version from Homebrew on a Mac book air M1 (ARM).
+  The solution is simply to export this variable before the compilation of your binaries:
+
+  ``export MACOSX_DEPLOYMENT_TARGET=14.0``
+
 .. _deprecation_policy:
 
 Version numbering and deprecation
