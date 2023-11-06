@@ -125,6 +125,10 @@ bool SemaphoreTransition::depends(const Transition* o) const
   if (o->type_ < type_)
     return o->depends(this);
 
+  // Actions executed by the same actor are always dependent
+  if (o->aid_ == aid_)
+    return true;
+
   if (const auto* other = dynamic_cast<const SemaphoreTransition*>(o)) {
     if (sem_ != other->sem_)
       return false;
