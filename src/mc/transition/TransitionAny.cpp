@@ -59,7 +59,7 @@ std::string WaitAnyTransition::to_string(bool verbose) const
   auto res = xbt::string_printf("WaitAny{ ");
   for (auto const* t : transitions_)
     res += t->to_string(verbose);
-  res += " }";
+  res += " } (times considered = " + std::to_string(times_considered_) + ")";
   return res;
 }
 bool WaitAnyTransition::depends(const Transition* other) const

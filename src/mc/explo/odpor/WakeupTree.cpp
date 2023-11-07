@@ -13,12 +13,27 @@
 #include <memory>
 #include <queue>
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wut, mc, "Logging specific to ODPOR WakeupTrees");
+
+
 namespace simgrid::mc::odpor {
 
 void WakeupTreeNode::add_child(WakeupTreeNode* node)
 {
   this->children_.push_back(node);
   node->parent_ = this;
+}
+
+std::string WakeupTreeNode::string_of_whole_tree(int indentation_level) const
+{
+  std::string tabulations = "";
+  for (int i = 0; i < indentation_level; i++)
+    tabulations += "  ";
+  std::string final_string = action_ == nullptr ? "<>\n" :
+      tabulations + "Actor " + std::to_string(action_->aid_) + ": " + action_->to_string(true) + "\n";
+  for (auto node : children_)
+    final_string += node->string_of_whole_tree(indentation_level + 1);
+  return final_string;
 }
 
 PartialExecution WakeupTreeNode::get_sequence() const
@@ -83,6 +98,11 @@ std::optional<WakeupTreeNode*> WakeupTree::get_min_single_process_node() const
   // the root is by definition the smallest of the single-process nodes
   xbt_assert(not this->root_->children_.empty(), "What the");
   return this->root_->children_.front();
+}
+
+std::string WakeupTree::string_of_whole_tree() const
+{
+  return root_->string_of_whole_tree(0);
 }
 
 WakeupTree WakeupTree::make_subtree_rooted_at(WakeupTreeNode* root)

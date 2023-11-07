@@ -113,7 +113,7 @@ void DFSExplorer::log_state() // override
   XBT_INFO("DFS exploration ended. %ld unique states visited; %lu backtracks (%lu transition replays, %lu states "
            "visited overall)",
            State::get_expanded_states(), backtrack_count_, Transition::get_replayed_transitions(),
-	   visited_states_count_);
+           visited_states_count_);
   Exploration::log_state();
 }
 
@@ -210,7 +210,7 @@ void DFSExplorer::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_VERB("Execute %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition_out()->aid_,
+    XBT_VERB("Execute %ld: %.150s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition_out()->aid_,
              state->get_transition_out()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
@@ -402,6 +402,8 @@ std::shared_ptr<State> DFSExplorer::next_odpor_state()
     for (const auto& [aid, transition] : state->get_sleep_set())
       XBT_DEBUG("\t  <%ld,%s>", aid, transition->to_string().c_str());
     if (not state->has_empty_tree()) {
+	XBT_DEBUG("\t    found the following non-empty WuT:\n"
+		  "%s", state->string_of_wut().c_str());
       return state;
     }
   }
@@ -430,9 +432,12 @@ void DFSExplorer::backtrack()
         if (const auto v = execution_seq_.get_odpor_extension_from(e, e_prime, prev_state); v.has_value()) {
           switch (prev_state.insert_into_wakeup_tree(v.value(), execution_seq_.get_prefix_before(e))) {
             case odpor::WakeupTree::InsertionResult::root: {
-              XBT_DEBUG("ODPOR: Reversible race with `%u` unaccounted for in the wakeup tree for "
-                        "the execution prior to event `%u`:",
-                        e_prime, e);
+              XBT_DEBUG("ODPOR: Reversible race with `%u`(%ld: %.20s) unaccounted for in the wakeup tree for "
+                        "the execution prior to event `%u`(%ld: %.20s):",
+                        e_prime, stack_[e_prime]->get_transition_out()->aid_,
+                        stack_[e_prime]->get_transition_out()->to_string(true).c_str(), e,
+                        prev_state.get_transition_out()->aid_,
+                        prev_state.get_transition_out()->to_string(true).c_str());
               break;
             }
             case odpor::WakeupTree::InsertionResult::interior_node: {

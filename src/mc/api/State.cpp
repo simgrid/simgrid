@@ -25,7 +25,6 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
 {
   XBT_VERB("Creating a guide for the state");
 
-  
   if (_sg_mc_strategy == "none")
     strategy_ = std::make_shared<BasicStrategy>();
   else if (_sg_mc_strategy == "max_match_comm")
@@ -33,10 +32,9 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
   else if (_sg_mc_strategy == "min_match_comm")
     strategy_ = std::make_shared<MinMatchComm>();
   else if (_sg_mc_strategy == "uniform") {
-    xbt::random::set_mersenne_seed(_sg_mc_random_seed);  
+    xbt::random::set_mersenne_seed(_sg_mc_random_seed);
     strategy_ = std::make_shared<UniformStrategy>();
-  }
-  else
+  } else
     THROW_IMPOSSIBLE;
 
   remote_app.get_actors_status(strategy_->actors_to_run_);
@@ -58,7 +56,7 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
     strategy_ = std::make_shared<MaxMatchComm>();
   else if (_sg_mc_strategy == "min_match_comm")
     strategy_ = std::make_shared<MinMatchComm>();
-  else if (_sg_mc_strategy == "uniform") 
+  else if (_sg_mc_strategy == "uniform")
     strategy_ = std::make_shared<UniformStrategy>();
   else
     THROW_IMPOSSIBLE;
@@ -214,6 +212,9 @@ void State::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
 {
   // TODO: It would be better not to have such a flag.
   if (has_initialized_wakeup_tree) {
+    XBT_DEBUG("Reached a node with the following initialized WuT:");
+    XBT_DEBUG("\n%s", wakeup_tree_.string_of_whole_tree().c_str());
+
     return;
   }
   // TODO: Note that the next action taken by the actor may be updated
@@ -239,6 +240,11 @@ void State::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
 
 void State::sprout_tree_from_parent_state()
 {
+
+    XBT_DEBUG("Initializing Wut with parent one:");
+    XBT_DEBUG("\n%s", parent_state_->wakeup_tree_.string_of_whole_tree().c_str());
+
+    
   xbt_assert(parent_state_ != nullptr, "Attempting to construct a wakeup tree for the root state "
                                        "(or what appears to be, rather for state without a parent defined)");
   const auto min_process_node = parent_state_->wakeup_tree_.get_min_single_process_node();
@@ -248,7 +254,7 @@ void State::sprout_tree_from_parent_state()
                                            "deciding when to make subtrees in ODPOR is incorrect");
   xbt_assert((get_transition_in()->aid_ == min_process_node.value()->get_actor()) &&
                  (get_transition_in()->type_ == min_process_node.value()->get_action()->type_),
-             "We tried to make a subtree from a parent state who claimed to have executed `%s` on actor %ld"
+             "We tried to make a subtree from a parent state who claimed to have executed `%s` on actor %ld "
              "but whose wakeup tree indicates it should have executed `%s` on actor %ld. This indicates "
              "that exploration is not following ODPOR. Are you sure you're choosing actors "
              "to schedule from the wakeup tree?",

@@ -72,6 +72,8 @@ public:
   std::shared_ptr<Transition> get_action() const { return action_; }
   const std::list<WakeupTreeNode*>& get_ordered_children() const { return children_; }
 
+  std::string string_of_whole_tree(int indentation_level) const;
+
   /** Insert a node `node` as a new child of this node */
   void add_child(WakeupTreeNode* node);
 };
@@ -151,6 +153,8 @@ public:
   auto end() const { return WakeupTreeIterator(); }
 
   std::vector<std::string> get_single_process_texts() const;
+
+  std::string string_of_whole_tree() const;
 
   /**
    * @brief Remove the subtree of the smallest (with respect
