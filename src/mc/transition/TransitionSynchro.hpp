@@ -35,7 +35,7 @@ public:
 };
 
 class SemaphoreTransition : public Transition {
-  uintptr_t sem_;
+  unsigned int sem_; // ID
   bool granted_;
 
 public:
