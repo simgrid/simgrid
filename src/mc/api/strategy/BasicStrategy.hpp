@@ -40,11 +40,10 @@ public:
   ~BasicStrategy() override           = default;
 
   std::pair<aid_t, int> best_transition(bool must_be_todo) const override {
-      for (auto const& [aid, actor] : actors_to_run_) {
-	  /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
-	  if ((not actor.is_todo() && must_be_todo) || not actor.is_enabled() || actor.is_done()) {
+    for (auto const& [aid, actor] : actors_to_run_) {
+      /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
+      if ((not actor.is_todo() && must_be_todo) || not actor.is_enabled() || actor.is_done())
         continue;
-      }
 
       return std::make_pair(aid, depth_);
     }

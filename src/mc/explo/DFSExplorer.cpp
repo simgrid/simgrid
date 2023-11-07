@@ -65,12 +65,9 @@ void DFSExplorer::restore_stack(std::shared_ptr<State> state)
   }
   XBT_DEBUG("Replaced stack by %s", get_record_trace().to_string().c_str());
   if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
-    // NOTE: The outgoing transition for the top-most
-    // state of the  stack refers to that which was taken
-    // as part of the last trace explored by the algorithm.
-    // Thus, only the sequence of transitions leading up to,
-    // but not including, the last state must be included
-    // when reconstructing the Exploration for SDPOR.
+    // NOTE: The outgoing transition for the top-most state of the  stack refers to that which was taken
+    // as part of the last trace explored by the algorithm. Thus, only the sequence of transitions leading up to,
+    // but not including, the last state must be included when reconstructing the Exploration for SDPOR.
     for (auto iter = std::next(stack_.begin()); iter != stack_.end(); ++iter) {
       execution_seq_.push_transition((*iter)->get_transition_in());
     }
@@ -124,16 +121,12 @@ void DFSExplorer::run()
     }
 
     if (reduction_mode_ == ReductionMode::odpor) {
-      // In the case of ODPOR, the wakeup tree for this
-      // state may be empty if we're exploring new territory
-      // (rather than following the partial execution of a
-      // wakeup tree). This corresponds to lines 9 to 13 of
+      // In the case of ODPOR, the wakeup tree for this state may be empty if we're exploring new territory
+      // (rather than following the partial execution of a wakeup tree). This corresponds to lines 9 to 13 of
       // the ODPOR pseudocode
       //
-      // INVARIANT: The execution sequence should be consistent
-      // with the state when seeding the tree. If the sequence
-      // gets out of sync with the state, selection will not
-      // work as we intend
+      // INVARIANT: The execution sequence should be consistent with the state when seeding the tree. If the sequence
+      // gets out of sync with the state, selection will not work as we intend
       state->seed_wakeup_tree_if_needed(execution_seq_);
     }
 
@@ -180,13 +173,10 @@ void DFSExplorer::run()
     on_state_creation_signal(next_state.get(), get_remote_app());
 
     if (reduction_mode_ == ReductionMode::odpor) {
-      // With ODPOR, after taking a step forward, we must
-      // assign a copy of that subtree to the next state.
+      // With ODPOR, after taking a step forward, we must assign a copy of that subtree to the next state.
       //
-      // NOTE: We only add actions to the sleep set AFTER
-      // we've regenerated states. We must perform the search
-      // fully down a single path before we consider adding
-      // any elements to the sleep set according to the pseudocode
+      // NOTE: We only add actions to the sleep set AFTER we've regenerated states. We must perform the search
+      // fully down a single path before we consider adding any elements to the sleep set according to the pseudocode
       next_state->sprout_tree_from_parent_state();
     } else {
       /* Sleep set procedure:
@@ -248,15 +238,13 @@ void DFSExplorer::run()
       /**
        * SDPOR Source Set Procedure:
        *
-       * Find "reversible races" in the current execution `E` with respect
-       * to the latest action `p`. For each such race, determine one thread
-       * not contained in the backtrack set at the "race point" `r` which
-       * "represents" the trace formed by first executing everything after
-       * `r` that doesn't depend on it (`v := notdep(r, E)`) and then `p` to
+       * Find "reversible races" in the current execution `E` with respect to the latest action `p`. For each such race,
+       * determine one thread not contained in the backtrack set at the "race point" `r` which "represents" the trace
+       * formed by first executing everything after `r` that doesn't depend on it (`v := notdep(r, E)`) and then `p` to
        * flip the race.
        *
-       * The intuition is that some subsequence of `v` may enable `p`, so
-       * we want to be sure that search "in that direction"
+       * The intuition is that some subsequence of `v` may enable `p`, so we want to be sure that search "in that
+       * direction"
        */
       execution_seq_.push_transition(std::move(executed_transition));
       xbt_assert(execution_seq_.get_latest_event_handle().has_value(), "No events are contained in the SDPOR execution "
@@ -267,12 +255,10 @@ void DFSExplorer::run()
         State* prev_state  = stack_[e_race].get();
         const auto choices = execution_seq_.get_missing_source_set_actors_from(e_race, prev_state->get_backtrack_set());
         if (not choices.empty()) {
-          // NOTE: To incorporate the idea of attempting to select the "best"
-          // backtrack point into SDPOR, instead of selecting the `first` initial,
-          // we should instead compute all choices and decide which is best
+          // NOTE: To incorporate the idea of attempting to select the "best" backtrack point into SDPOR, instead of
+          // selecting the `first` initial, we should instead compute all choices and decide which is best
           //
-          // Here, we choose the actor with the lowest ID to ensure
-          // we get deterministic results
+          // Here, we choose the actor with the lowest ID to ensure we get deterministic results
           const auto q =
               std::min_element(choices.begin(), choices.end(), [](const aid_t a1, const aid_t a2) { return a1 < a2; });
           prev_state->consider_one(*q);
@@ -280,8 +266,7 @@ void DFSExplorer::run()
         }
       }
     } else if (reduction_mode_ == ReductionMode::odpor) {
-      // In the case of ODPOR, we simply observe the transition that was executed
-      // until we've reached a maximal trace
+      // In the case of ODPOR, we simply observe the transition that was executed until we've reached a maximal trace
       execution_seq_.push_transition(std::move(executed_transition));
     }
 
@@ -363,13 +348,10 @@ void DFSExplorer::backtrack()
     /**
      * ODPOR Race Detection Procedure:
      *
-     * For each reversible race in the current execution, we
-     * note if there are any continuations `C` equivalent to that which
-     * would reverse the race that have already either a) been searched by ODPOR or
-     * b) been *noted* to be searched by the wakeup tree at the
-     * appropriate reversal point, either as `C` directly or
-     * an as equivalent to `C` ("eventually looks like C", viz. the `~_E`
-     * relation)
+     * For each reversible race in the current execution, we note if there are any continuations `C` equivalent to that
+     * which would reverse the race that have already either a) been searched by ODPOR or b) been *noted* to be searched
+     * by the wakeup tree at the appropriate reversal point, either as `C` directly or an as equivalent to `C`
+     * ("eventually looks like C", viz. the `~_E` relation)
      */
     for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
       for (const auto e : execution_seq_.get_reversible_races_of(e_prime)) {
