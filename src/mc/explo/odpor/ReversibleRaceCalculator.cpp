@@ -5,6 +5,8 @@
 
 #include "src/mc/explo/odpor/ReversibleRaceCalculator.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/transition/Transition.hpp"
+#include "src/mc/transition/TransitionSynchro.hpp"
 
 #include <functional>
 #include <unordered_map>
@@ -160,11 +162,15 @@ bool ReversibleRaceCalculator::is_race_reversible_SemUnlock(const Execution&, Ex
   return true;
 }
 
-bool ReversibleRaceCalculator::is_race_reversible_SemWait(const Execution&, Execution::EventHandle /*e1*/,
+bool ReversibleRaceCalculator::is_race_reversible_SemWait(const Execution& E, Execution::EventHandle e1,
                                                           const Transition* /*e2*/)
 {
-  // TODO: Get the semantics correct here
-  return false;
+  // Reversible with everynbody but unlock which creates a free token
+  const auto e1_transition = E.get_transition_for_handle(e1);
+  if (e1_transition->type_ == Transition::Type::SEM_UNLOCK &&
+      static_cast<const SemaphoreTransition*>(e1_transition)->get_capacity() == 0)
+    return false;
+  return true;
 }
 
 bool ReversibleRaceCalculator::is_race_reversible_ObjectAccess(const Execution&, Execution::EventHandle /*e1*/,
