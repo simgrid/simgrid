@@ -13,8 +13,8 @@ extern void sthread_access_end(void* addr, const char* objname, const char* file
 }
 
 #define STHREAD_ACCESS(obj)                                                                                            \
-  for (bool first = sthread_access_begin(static_cast<void*>(obj), #obj, __FILE__, __LINE__, __FUNCTION__) || true;     \
-       first; sthread_access_end(static_cast<void*>(obj), #obj, __FILE__, __LINE__, __FUNCTION__), first = false)
+  for (bool first = sthread_access_begin(static_cast<void*>(obj), #obj, __FILE__, __LINE__, __func__) || true; first;  \
+       sthread_access_end(static_cast<void*>(obj), #obj, __FILE__, __LINE__, __func__), first = false)
 
 static void thread_code()
 {

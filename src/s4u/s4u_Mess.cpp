@@ -35,7 +35,7 @@ MessPtr Mess::set_payload(void* payload)
 MessPtr Mess::set_dst_data(void** buff, size_t size)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
-             __FUNCTION__);
+             __func__);
 
   dst_buff_      = buff;
   dst_buff_size_ = size;
@@ -61,7 +61,7 @@ Actor* Mess::get_receiver() const
 Mess* Mess::do_start()
 {
   xbt_assert(get_state() == State::INITED || get_state() == State::STARTING,
-             "You cannot use %s() once your message exchange has started (not implemented)", __FUNCTION__);
+             "You cannot use %s() once your message exchange has started (not implemented)", __func__);
 
   auto myself = kernel::actor::ActorImpl::self();
   if (myself == sender_) {
