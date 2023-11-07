@@ -163,13 +163,16 @@ void DFSExplorer::run()
         XBT_VERB("  <%ld,%s>", aid, transition->to_string().c_str());
     }
 
+    auto todo = state->get_actors_list().at(next).get_transition();
+    XBT_DEBUG("wanna execute %ld: %.60s", next, todo->to_string().c_str());
+
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
     auto executed_transition = state->execute_next(next, get_remote_app());
     on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_VERB("Execute %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition_out()->aid_,
+    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition_out()->aid_,
              state->get_transition_out()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */

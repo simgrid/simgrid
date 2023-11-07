@@ -509,8 +509,10 @@ void create_maestro(const std::function<void()>& code)
 /** (in kernel mode) unpack the simcall and activate the handler */
 void ActorImpl::simcall_handle(int times_considered)
 {
-  XBT_DEBUG("Handling simcall %p: %s(%ld) %s", &simcall_, simcall_.issuer_->get_cname(), simcall_.issuer_->get_pid(),
-            (simcall_.observer_ != nullptr ? simcall_.observer_->to_string().c_str() : simcall_.get_cname()));
+  XBT_DEBUG("Handling simcall %p: %s(%ld) %s (times_considered:%d)", &simcall_, simcall_.issuer_->get_cname(),
+            simcall_.issuer_->get_pid(),
+            (simcall_.observer_ != nullptr ? simcall_.observer_->to_string().c_str() : simcall_.get_cname()),
+            times_considered);
   if (simcall_.observer_ != nullptr)
     simcall_.observer_->prepare(times_considered);
   if (wannadie())
