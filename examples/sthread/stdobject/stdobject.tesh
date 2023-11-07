@@ -5,7 +5,6 @@
 ! ignore .*LD_PRELOAD.*
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/stdobject "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" --log=no_loc
-> [   0.000000] (maestro@) Starting the simulation.
 > starting two helpers...
 > waiting for helpers to finish...
 > [   0.000000] (maestro@) Start a DFS exploration. Reduction is: dpor.
@@ -16,7 +15,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > v = { 1, 2, 3, 5, 8, 13, 21, 21, }; 
 > [   0.000000] (maestro@) thread 1 takes &v
 > [   0.000000] (maestro@) thread 2 takes &v
-> [   0.000000] (maestro@) Unprotected concurent access to &v: thread 1 vs thread 2 (locations hidden because of --log=no_loc).
+> [   0.000000] (maestro@) Unprotected concurent access to &v: thread 1 from 1 location vs thread 2 (locations hidden because of --log=no_loc).
 > [   0.000000] (maestro@) **************************
 > [   0.000000] (maestro@) *** PROPERTY NOT VALID ***
 > [   0.000000] (maestro@) **************************

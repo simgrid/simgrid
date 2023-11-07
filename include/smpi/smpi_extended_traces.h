@@ -394,3 +394,13 @@
 #define MPI_Ineighbor_alltoallw(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Ineighbor_alltoallw"), MPI_Ineighbor_alltoallw(__VA_ARGS__))
 #define MPI_Status_f2c(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Status_f2c"), MPI_Status_f2c(__VA_ARGS__))
 #define MPI_Status_c2f(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Status_c2f"), MPI_Status_c2f(__VA_ARGS__))
+#define MPI_Parrived(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Parrived"), MPI_Parrived(__VA_ARGS__))
+#define MPI_Pready(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pready"), MPI_Pready(__VA_ARGS__))
+#define MPI_Pready_range(...)                                                                                          \
+  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pready_range"), MPI_Pready_range(__VA_ARGS__))
+#define MPI_Pready_list(...)                                                                                           \
+  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pready_list"), MPI_Pready_list(__VA_ARGS__))
+#define MPI_Precv_init(...)                                                                                            \
+  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Precv_init"), MPI_Precv_init(__VA_ARGS__))
+#define MPI_Psend_init(...)                                                                                            \
+  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Psend_init"), MPI_Psend_init(__VA_ARGS__))

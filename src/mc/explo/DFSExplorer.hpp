@@ -12,10 +12,6 @@
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
 
-#if SIMGRID_HAVE_STATEFUL_MC
-#include "src/mc/VisitedState.hpp"
-#endif
-
 #include <deque>
 #include <list>
 #include <memory>
@@ -47,7 +43,7 @@ private:
   static xbt::signal<void(RemoteApp&)> on_log_state_signal;
 
 public:
-  explicit DFSExplorer(const std::vector<char*>& args, ReductionMode mode, bool need_memory_info = false);
+  explicit DFSExplorer(const std::vector<char*>& args, ReductionMode mode);
   void run() override;
   RecordTrace get_record_trace() override;
   void log_state() override;
@@ -92,7 +88,6 @@ public:
   static void on_log_state(std::function<void(RemoteApp&)> const& f) { on_log_state_signal.connect(f); }
 
 private:
-  void check_non_termination(const State* current_state);
   void backtrack();
 
   /** Stack representing the position in the exploration graph */
@@ -106,13 +101,6 @@ private:
 
   /** Per-actor clock vectors used to compute the "happens-before" relation */
   std::unordered_map<aid_t, ClockVector> per_actor_clocks_;
-
-#if SIMGRID_HAVE_STATEFUL_MC
-  VisitedStates visited_states_;
-  std::unique_ptr<VisitedState> visited_state_;
-#else
-  void* visited_state_ = nullptr; /* The code uses it to detect whether we are doing stateful MC */
-#endif
 
   /** Opened states are states that still contains todo actors.
    *  When backtracking, we pick a state from it*/

@@ -4,7 +4,7 @@ Formal Verification and Model-checking
 ======================================
 
 SimGrid can not only predict the performance of your application, but also assess its correctness through formal methods. Mc SimGrid is
-a full-featured model-checker that is embedded in the SimGrid framework. It can be used to formally verify safety and liveness
+a full-featured model-checker that is embedded in the SimGrid framework. It can be used to formally verify safety 
 properties on codes running on top of SimGrid, be it :ref:`simple algorithms <usecase_simalgo>` or :ref:`full MPI applications
 <usecase_smpi>`.
 
@@ -31,7 +31,7 @@ barrier, etc). Since it does not explicitly observe memory accesses, Mc SimGrid 
 multithreaded programs. It can however be used to detect misuses of the synchronization functions, such as the ones resulting in
 deadlocks.
 
-Mc SimGrid can be used to verify classical `safety and liveness properties <https://en.wikipedia.org/wiki/Linear_time_property>`_, but
+Mc SimGrid can be used to verify classical `safety properties <https://en.wikipedia.org/wiki/Linear_time_property>`_, but
 also `communication determinism <https://hal.inria.fr/hal-01953167/document>`_, a property that allows more efficient solutions toward
 fault-tolerance. It can alleviate the state space explosion problem through `Dynamic Partial Ordering Reduction (DPOR)
 <https://en.wikipedia.org/wiki/Partial_order_reduction>`_ and `state equality <https://hal.inria.fr/hal-01900120/document>`_. Note that
@@ -308,11 +308,6 @@ If you want to run such analysis on your own code, out of the provided docker, t
 - SimGrid should naturally :ref:`be compiled <install_src>` with model-checking support. This requires a full set of dependencies
   (documented on the :ref:`relevant page <install_src>`) and should not be activated by default as there is a small performance penalty for
   codes using a SimGrid with MC enabled (even if you don't activate the model-checking at run time).
-- You should pass some specific flags to the linker when compiling your application: ``-Wl,-znorelro -Wl,-znoseparate-code`` In the
-  docker, the provided CMakeLists.txt provides them for you when compiling the provided code. ``smpicc`` and friends also add this
-  parameter automatically.
-- If you get error messages complaining about the Dwarf version used, try adding ``-gdwarf-4`` to you CFLAGS and CXXFLAGS.
-  If you find a situation where this flag is needed in ``smpicc``, please report this issue.
 - Also install ``libboost-stacktrace-dev`` to display nice backtraces from the application side (the one from the model-checking side is
   available in any case, but it contains less details).
 - Mc SimGrid uses the ``ptrace`` system call to spy on the verified application. Some versions of Docker forbid the use of this call by
@@ -324,11 +319,12 @@ Going further
 -------------
 
 This tutorial is not complete yet, as there is nothing on reduction
-techniques nor on liveness properties. For now, the best source of
+techniques. For now, the best source of
 information on these topics is `this old tutorial
 <https://simgrid.org/tutorials/simgrid-mc-101.pdf>`_ and `that old
 presentation
-<http://people.irisa.fr/Martin.Quinson/blog/2018/0123/McSimGrid-Boston.pdf>`_.
+<http://people.irisa.fr/Martin.Quinson/blog/2018/0123/McSimGrid-Boston.pdf>`_. But be warned that these source of 
+information are very old: the liveness verification was removed in v3.35, even if these docs still mention it.
 
 .. |br| raw:: html
 

@@ -143,48 +143,6 @@
    fun:agconcat
 }
 
-# libunwind seems to be using msync poorly, thus triggering these
-# https://github.com/JuliaLang/julia/issues/4533
-{
-   msync unwind
-   Memcheck:Param
-   msync(start)
-   ...
-   obj:*/libpthread*.so
-   ...
-}
-
-{
-   ignore unwind cruft
-   Memcheck:Param
-   rt_sigprocmask(set)
-   ...
-   obj:/usr/lib/x86_64-linux-gnu/libunwind.so.*
-   ...
-}
-{
-   ignore unwind cruft
-   Memcheck:Param
-   msync(start)
-   ...
-   obj:/usr/lib/x86_64-linux-gnu/libunwind.so.*
-   ...
-}
-{
-   ignore unwind cruft
-   Memcheck:Param
-   write(buf)
-   ...
-   fun:_ULx86_64_step
-   obj:/usr/lib/x86_64-linux-gnu/libunwind.so.*
-}
-
-{
-   ignore unwind invalid reads
-   Memcheck:Addr8
-   fun:_Ux86_64_setcontext
-}
-
 # Ignore python cruft
 {
    ignore python cruft 1

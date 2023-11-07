@@ -13,10 +13,6 @@
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "src/mc/transition/Transition.hpp"
 
-#if SIMGRID_HAVE_STATEFUL_MC
-#include "src/mc/sosp/Snapshot.hpp"
-#endif
-
 namespace simgrid::mc {
 
 /* A node in the exploration graph (kind-of) */
@@ -31,9 +27,6 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
 
   /** Sequential state ID (used for debugging) */
   long num_ = 0;
-
-  /** Snapshot of system state (if needed) */
-  std::shared_ptr<Snapshot> system_state_;
 
   /** Unique parent of this state. Required both for sleep set computation
       and for guided model-checking */
@@ -97,9 +90,6 @@ public:
 
   unsigned long get_actor_count() const { return strategy_->actors_to_run_.size(); }
   bool is_actor_enabled(aid_t actor) const { return strategy_->actors_to_run_.at(actor).is_enabled(); }
-
-  Snapshot* get_system_state() const { return system_state_.get(); }
-  void set_system_state(std::shared_ptr<Snapshot> state) { system_state_ = std::move(state); }
 
   /**
    * @brief Computes the backtrack set for this state

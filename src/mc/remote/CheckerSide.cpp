@@ -9,11 +9,6 @@
 #include "xbt/config.hpp"
 #include "xbt/system_error.hpp"
 
-#if SIMGRID_HAVE_STATEFUL_MC
-#include "src/mc/explo/LivenessChecker.hpp"
-#include "src/mc/sosp/RemoteProcessMemory.hpp"
-#endif
-
 #ifdef __linux__
 #include <sys/prctl.h>
 #endif
@@ -41,7 +36,7 @@ static simgrid::config::Flag<std::string> _sg_mc_setenv{
 
 namespace simgrid::mc {
 
-XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<char*>& args, bool need_ptrace)
+XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<char*>& args)
 {
   /* On startup, simix_global_init() calls simgrid::mc::Client::initialize(), which checks whether the MC_ENV_SOCKET_FD
    * env variable is set. If so, MC mode is assumed, and the client is setup from its side
@@ -56,8 +51,6 @@ XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<
 #endif
 
   setenv(MC_ENV_SOCKET_FD, std::to_string(socket).c_str(), 1);
-  if (need_ptrace)
-    setenv(MC_ENV_NEED_PTRACE, "1", 1);
 
   /* Setup the tokenizer that parses the cfg:model-check/setenv parameter */
   using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
@@ -175,9 +168,9 @@ void CheckerSide::setup_events(bool socket_only)
 }
 
 /* When this constructor is called, no other checkerside exists */
-CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) : running_(true)
+CheckerSide::CheckerSide(const std::vector<char*>& args) : running_(true)
 {
-  XBT_DEBUG("Create a CheckerSide. Needs_meminfo: %s", need_memory_info ? "YES" : "no");
+  XBT_DEBUG("Create a CheckerSide.");
 
   // Create an AF_UNIX socketpair used for exchanging messages between the model-checker process (ancestor)
   // and the application process (child)
@@ -196,7 +189,7 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) 
 
   if (pid_ == 0) { // Child
     ::close(sockets[1]);
-    run_child_process(sockets[0], args, need_memory_info); // We need ptrace if we need the mem info
+    run_child_process(sockets[0], args);
     DIE_IMPOSSIBLE;
   }
 
@@ -205,28 +198,6 @@ CheckerSide::CheckerSide(const std::vector<char*>& args, bool need_memory_info) 
   channel_.reset_socket(sockets[1]);
 
   setup_events(false); /* we need a signal handler too */
-  if (need_memory_info) {
-#if SIMGRID_HAVE_STATEFUL_MC
-    // setup ptrace and sync with the app
-    wait_application_process(pid_);
-
-    // Request the initial memory on need
-    channel_.send(MessageType::NEED_MEMINFO);
-    s_mc_message_need_meminfo_reply_t answer;
-    ssize_t answer_size = channel_.receive(answer);
-    xbt_assert(answer_size != -1, "Could not receive message");
-    xbt_assert(answer.type == MessageType::NEED_MEMINFO_REPLY,
-               "The received message is not the NEED_MEMINFO_REPLY I was expecting but of type %s",
-               to_c_str(answer.type));
-    xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
-
-    /* We now have enough info to create the memory address space */
-    remote_memory_ = std::make_unique<simgrid::mc::RemoteProcessMemory>(pid_, answer.mmalloc_default_mdp);
-#else
-    xbt_die("Cannot introspect memory without MC support");
-#endif
-  }
-
   wait_for_requests();
 }
 
@@ -306,97 +277,6 @@ bool CheckerSide::handle_message(const char* buffer, ssize_t size)
   memcpy(&base_message, buffer, sizeof(base_message));
 
   switch (base_message.type) {
-    case MessageType::IGNORE_HEAP: {
-      consumed = sizeof(s_mc_message_ignore_heap_t);
-#if SIMGRID_HAVE_STATEFUL_MC
-      if (remote_memory_ != nullptr) {
-        s_mc_message_ignore_heap_t message;
-        xbt_assert(size >= static_cast<ssize_t>(sizeof(message)), "Broken message");
-        memcpy(&message, buffer, sizeof(message));
-
-        IgnoredHeapRegion region;
-        region.block    = message.block;
-        region.fragment = message.fragment;
-        region.address  = message.address;
-        region.size     = message.size;
-        get_remote_memory()->ignore_heap(region);
-      } else
-#endif
-        XBT_INFO("Ignoring a IGNORE_HEAP message because we don't need to introspect memory.");
-      break;
-    }
-
-    case MessageType::UNIGNORE_HEAP: {
-      consumed = sizeof(s_mc_message_ignore_memory_t);
-#if SIMGRID_HAVE_STATEFUL_MC
-      if (remote_memory_ != nullptr) {
-        s_mc_message_ignore_memory_t message;
-        xbt_assert(size == static_cast<ssize_t>(sizeof(message)), "Broken message");
-        memcpy(&message, buffer, sizeof(message));
-        get_remote_memory()->unignore_heap((void*)message.addr, message.size);
-      } else
-#endif
-        XBT_INFO("Ignoring an UNIGNORE_HEAP message because we don't need to introspect memory.");
-      break;
-    }
-
-    case MessageType::IGNORE_MEMORY: {
-      consumed = sizeof(s_mc_message_ignore_memory_t);
-#if SIMGRID_HAVE_STATEFUL_MC
-      if (remote_memory_ != nullptr) {
-        s_mc_message_ignore_memory_t message;
-        xbt_assert(size >= static_cast<ssize_t>(sizeof(message)), "Broken message");
-        memcpy(&message, buffer, sizeof(message));
-        get_remote_memory()->ignore_region(message.addr, message.size);
-      } else
-#endif
-        XBT_INFO("Ignoring an IGNORE_MEMORY message because we don't need to introspect memory.");
-      break;
-    }
-
-    case MessageType::UNIGNORE_MEMORY: {
-      consumed = sizeof(s_mc_message_ignore_memory_t);
-#if SIMGRID_HAVE_STATEFUL_MC
-      if (remote_memory_ != nullptr) {
-        s_mc_message_ignore_memory_t message;
-        xbt_assert(size >= static_cast<ssize_t>(sizeof(message)), "Broken message");
-        memcpy(&message, buffer, sizeof(message));
-        get_remote_memory()->unignore_region(message.addr, message.size);
-      } else
-#endif
-        XBT_INFO("Ignoring an UNIGNORE_MEMORY message because we don't need to introspect memory.");
-      break;
-    }
-
-    case MessageType::STACK_REGION: {
-      consumed = sizeof(s_mc_message_stack_region_t);
-#if SIMGRID_HAVE_STATEFUL_MC
-      if (remote_memory_ != nullptr) {
-        s_mc_message_stack_region_t message;
-        xbt_assert(size >= static_cast<ssize_t>(sizeof(message)), "Broken message");
-        memcpy(&message, buffer, sizeof(message));
-        get_remote_memory()->stack_areas().push_back(message.stack_region);
-      } else
-#endif
-        XBT_INFO("Ignoring an STACK_REGION message because we don't need to introspect memory.");
-      break;
-    }
-
-    case MessageType::REGISTER_SYMBOL: {
-      consumed = sizeof(s_mc_message_register_symbol_t);
-#if SIMGRID_HAVE_STATEFUL_MC
-      s_mc_message_register_symbol_t message;
-      xbt_assert(size >= static_cast<ssize_t>(sizeof(message)), "Broken message");
-      memcpy(&message, buffer, sizeof(message));
-      xbt_assert(not message.callback, "Support for client-side function proposition is not implemented.");
-      XBT_DEBUG("Received symbol: %s", message.name.data());
-
-      LivenessChecker::automaton_register_symbol(*get_remote_memory(), message.name.data(), remote((int*)message.data));
-#else
-      xbt_die("Please don't use liveness properties when MC is compiled out.");
-#endif
-      break;
-    }
 
     case MessageType::WAITING:
       consumed = sizeof(s_mc_message_t);
@@ -430,18 +310,9 @@ void CheckerSide::wait_for_requests()
   XBT_DEBUG("Resume the application");
   if (get_channel().send(MessageType::CONTINUE) != 0)
     throw xbt::errno_error();
-  clear_memory_cache();
 
   if (running())
     dispatch_events();
-}
-
-void CheckerSide::clear_memory_cache()
-{
-#if SIMGRID_HAVE_STATEFUL_MC
-  if (remote_memory_)
-    remote_memory_->clear_cache();
-#endif
 }
 
 void CheckerSide::handle_dead_child(int status)

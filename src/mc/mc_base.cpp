@@ -13,10 +13,6 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
 
-#if SIMGRID_HAVE_STATEFUL_MC
-#include "src/mc/sosp/RemoteProcessMemory.hpp"
-#endif
-
 XBT_LOG_NEW_DEFAULT_CATEGORY(mc, "All MC categories");
 bool simgrid_mc_replay_show_backtraces = false;
 

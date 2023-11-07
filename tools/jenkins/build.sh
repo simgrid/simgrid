@@ -129,6 +129,13 @@ echo "Branch built is $branch_name"
 
 NUMBER_OF_PROCESSORS="$(nproc)" || NUMBER_OF_PROCESSORS=1
 GENERATOR="Unix Makefiles"
+BUILDER=make
+VERBOSE_BUILD="VERBOSE=1"
+if which ninja 2>/dev/null >/dev/null ; then
+  GENERATOR=Ninja
+  BUILDER=ninja
+  VERBOSE_BUILD="-v"
+fi
 
 ulimit -c 0 || true
 
@@ -169,7 +176,7 @@ echo "XX   pwd: $(pwd)"
 echo "XX"
 
 cmake -G"$GENERATOR" -Denable_documentation=OFF "$WORKSPACE"
-make dist -j $NUMBER_OF_PROCESSORS
+${BUILDER} dist -j $NUMBER_OF_PROCESSORS
 SIMGRID_VERSION=$(cat VERSION)
 
 echo "XX"
@@ -204,9 +211,9 @@ fi
 cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
-  -Denable_smpi_MBI_testsuite=OFF \
+  -Denable_testsuite_smpi_MBI=OFF -Denable_testsuite_McMini=ON \
   -Denable_compile_optimizations=$(onoff test "$build_mode" != "DynamicAnalysis") \
-  -Denable_smpi_MPICH3_testsuite=$(onoff test "$build_mode" = "Debug") \
+  -Denable_testsuite_smpi_MPICH3=$(onoff test "$build_mode" = "Debug") \
   -Denable_mallocators=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
   -Denable_compile_warnings=$(onoff test "$GENERATOR" != "MSYS Makefiles") -Denable_smpi=ON \
@@ -217,7 +224,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
   "$SRCFOLDER"
 
-make -j $NUMBER_OF_PROCESSORS VERBOSE=1 tests
+${BUILDER} -j $NUMBER_OF_PROCESSORS ${VERBOSE_BUILD} tests
 
 echo "XX"
 echo "XX Run the tests"
@@ -233,7 +240,7 @@ if test -n "$INSTALL" && [ "${branch_name}" = "origin/master" ] ; then
 
   rm -rf "$INSTALL"
 
-  make install
+  ${BUILDER} install
 fi
 
 echo "XX"

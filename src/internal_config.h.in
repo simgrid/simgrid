@@ -59,8 +59,6 @@
 #define PTH_STACKGROWTH @PTH_STACKGROWTH@
 
 /* MC variables */
-/* Did we compile mmalloc in? */
-#cmakedefine01 HAVE_MMALLOC
 /* process_vm_readv: transfer data between process address spaces */
 #cmakedefine01 HAVE_PROCESS_VM_READV
 
@@ -82,8 +80,6 @@
 /* Other function checks */
 /* Function dlfunc */
 #cmakedefine01 HAVE_DLFUNC
-/* Function mmap */
-#cmakedefine01 HAVE_MMAP
 /* Function mremap */
 #cmakedefine01 HAVE_MREMAP
 /* Function vasprintf */

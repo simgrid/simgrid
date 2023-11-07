@@ -10,7 +10,7 @@
 
 /** Config Globals */
 
-XBT_PUBLIC_DATA int _sg_cfg_init_status;
+XBT_PUBLIC_DATA int _sg_cfg_init_status; /* 0: not inited; 1: config module inited; 2: root zone of platform created */
 
 XBT_PUBLIC void sg_config_init(int* argc, char** argv);
 XBT_PUBLIC void sg_config_finalize();

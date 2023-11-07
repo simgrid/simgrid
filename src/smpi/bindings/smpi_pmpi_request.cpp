@@ -381,6 +381,8 @@ int PMPI_Sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int
   CHECK_TYPE(8, recvtype)
   CHECK_BUFFER(1, sendbuf, sendcount, sendtype)
   CHECK_BUFFER(6, recvbuf, recvcount, recvtype)
+  CHECK_ARGS(sendbuf == recvbuf && sendcount > 0 && recvcount > 0, MPI_ERR_BUFFER,
+             "%s: Invalid parameters 1 and 6: sendbuf and recvbuf must be disjoint", __func__);
   CHECK_TAG(10, recvtag)
   CHECK_COMM(11)
   const SmpiBenchGuard suspend_bench;

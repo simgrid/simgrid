@@ -68,6 +68,9 @@ private:
   friend void intrusive_ptr_add_ref(Chiller* o) { o->refcount_.fetch_add(1, std::memory_order_relaxed); }
 #endif
 
+  inline static xbt::signal<void(Chiller*)> on_power_change;
+  xbt::signal<void(Chiller*)> on_this_power_change;
+
 public:
   static ChillerPtr init(const std::string& name, double air_mass_kg, double specific_heat_j_per_kg_per_c, double alpha,
                          double cooling_efficiency, double initial_temp_c, double goal_temp_c, double max_power_w);
@@ -93,9 +96,9 @@ public:
   double get_max_power() { return max_power_w_; }
   bool is_active() { return active_; }
   double get_temp_in() { return temp_in_c_; }
-  double get_temp_out() { return temp_out_c_; }
   double get_power() { return power_w_; }
   double get_energy_consumed() { return energy_consumed_j_; }
+  double get_time_to_goal_temp();
 };
 
 } // namespace simgrid::plugins

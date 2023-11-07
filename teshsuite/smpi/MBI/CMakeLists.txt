@@ -7,7 +7,7 @@
 
 file(GLOB generator_scripts *Generator.py)
 
-if (enable_smpi_MBI_testsuite)
+if (enable_testsuite_smpi_MBI)
   if (NOT enable_smpi)
     message(FATAL_ERROR "The MBI test suite cannot be enabled without SMPI. Please change either setting.")
   endif()
@@ -64,6 +64,7 @@ if (enable_smpi_MBI_testsuite)
     add_executable(mbi_${basefile} EXCLUDE_FROM_ALL ${CMAKE_BINARY_DIR}/MBI/${cfile})
     target_link_libraries(mbi_${basefile} simgrid)
     target_compile_options(mbi_${basefile} PRIVATE "-Wno-unused-variable")
+    target_compile_options(mbi_${basefile} PRIVATE "-Wno-unused-but-set-variable")
     set_target_properties(mbi_${basefile} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/MBI)
     add_dependencies(tests-mbi mbi_${basefile})
 

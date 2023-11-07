@@ -1,10 +1,5 @@
-if (NOT SIMGRID_HAVE_STATEFUL_MC)
-  set(dwarf_disable 1)
-  set(dwarf-expression_disable 1)
-endif()
 
-
-foreach(x dwarf dwarf-expression random-bug mutex-handling)
+foreach(x random-bug mutex-handling)
 
   if(NOT DEFINED ${x}_sources)
     set(${x}_sources ${x}/${x}.cpp)
@@ -36,10 +31,6 @@ set_target_properties(without-mutex-handling PROPERTIES COMPILE_FLAGS -DDISABLE_
 set_target_properties(without-mutex-handling PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mutex-handling)
 add_dependencies(tests-mc without-mutex-handling)
 
-set(teshsuite_src  ${teshsuite_src}                                                                        PARENT_SCOPE)
-set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/random-bug/random-bug-replay.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/mutex-handling/without-mutex-handling.tesh PARENT_SCOPE)
-
 ADD_TESH(mc-random-bug-replay                --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/random-bug --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/random-bug random-bug-replay.tesh)
 IF(SIMGRID_HAVE_MC)
   ADD_TESH(tesh-mc-mutex-handling              --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/mutex-handling --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/mutex-handling mutex-handling.tesh --cfg=model-check/reduction:none)
@@ -48,11 +39,53 @@ IF(SIMGRID_HAVE_MC)
   ADD_TESH(tesh-mc-without-mutex-handling-dpor --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/mutex-handling --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/mutex-handling without-mutex-handling.tesh --cfg=model-check/reduction:dpor)
   ADD_TESH(mc-random-bug                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/random-bug --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/random-bug random-bug.tesh)
 ENDIF()
-IF(SIMGRID_HAVE_STATEFUL_MC)
-  ADD_TESH(tesh-mc-dwarf                       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/dwarf            --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf dwarf.tesh)
-  ADD_TESH(tesh-mc-dwarf-expression            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/dwarf-expression --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf-expression dwarf-expression.tesh)
-ENDIF()
 
 if(enable_coverage)
   ADD_TEST(cover-mc-mutex-handling ${CMAKE_CURRENT_BINARY_DIR}/mutex-handling/mutex-handling ${CMAKE_HOME_DIRECTORY}/examples/platforms/small_platform.xml)
 endif()
+
+
+foreach(x
+#              
+#             simple_cond_broadcast_deadlock  simple_semaphore_deadlock  simple_barrier_deadlock  simple_cond_deadlock
+#      	     simple_semaphores_deadlock
+#      	     
+#      	     
+#      	     philosophers_spurious_deadlock
+#      	     simple_barrier_with_threads_deadlock
+#      	     simple_semaphores_with_threads_deadlock
+#      	     simple_cond_broadcast_with_semaphore_deadlock1  simple_cond_broadcast_with_semaphore_deadlock2
+#      	     simple_mutex_deadlock
+#      	     simple_mutex_with_threads_deadlock
+	     
+             barber_shop_ok             barber_shop_deadlock
+             philosophers_semaphores_ok philosophers_semaphores_deadlock
+             philosophers_mutex_ok      philosophers_mutex_deadlock
+             producer_consumer_ok       producer_consumer_deadlock    
+             
+             
+             # producer_consumer_spurious_nok # infinite no-op loop
+             
+#               
+#              
+#             simple_barrier_ok simple_barrier_with_threads_ok simple_cond_broadcast_ok
+#             simple_cond_broadcast_with_semaphore_ok simple_cond_ok simple_mutex_ok
+#             simple_mutex_with_threads_ok simple_semaphores_ok simple_semaphores_with_threads_ok simple_threads_ok
+             )
+
+  set(teshsuite_src  ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.c)
+  set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
+
+  if("${CMAKE_SYSTEM}" MATCHES "Linux" AND ${enable_testsuite_McMini})
+    add_executable       (mcmini-${x}  EXCLUDE_FROM_ALL mcmini/${x}.c)         
+    set_target_properties(mcmini-${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mcmini)
+    target_link_libraries(mcmini-${x}  PRIVATE Threads::Threads)
+    add_dependencies(tests-mc mcmini-${x})
+
+    ADD_TESH(mc-mini-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
+  endif()
+endforeach()
+
+set(teshsuite_src  ${teshsuite_src}                                                                        PARENT_SCOPE)
+set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/random-bug/random-bug-replay.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/mutex-handling/without-mutex-handling.tesh PARENT_SCOPE)

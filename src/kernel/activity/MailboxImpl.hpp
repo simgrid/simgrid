@@ -6,6 +6,7 @@
 #ifndef SIMGRID_KERNEL_ACTIVITY_MAILBOX_HPP
 #define SIMGRID_KERNEL_ACTIVITY_MAILBOX_HPP
 
+#include "simgrid/config.h" /* FIXME: KILLME. This makes the ABI config-dependent, but mandatory for the hack below */
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
@@ -19,6 +20,7 @@ class MailboxImpl {
   s4u::Mailbox piface_;
   std::string name_;
   actor::ActorImplPtr permanent_receiver_; // actor to which the mailbox is attached
+
   std::deque<CommImplPtr> comm_queue_;
   // messages already received in the permanent receive mode
   std::deque<CommImplPtr> done_comm_queue_;

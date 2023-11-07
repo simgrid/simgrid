@@ -42,11 +42,18 @@ namespace simgrid::kernel::activity {
 class XBT_PUBLIC MutexAcquisitionImpl : public ActivityImpl_T<MutexAcquisitionImpl> {
   actor::ActorImpl* issuer_ = nullptr;
   MutexImpl* mutex_         = nullptr;
+  int recursive_depth_      = 1;
+  // TODO: use granted_ this instead of owner_ == self to test().
+  // This is mandatory to get double-lock on non-recursive locks to properly deadlock
+  bool granted_ = false;
+
+  friend MutexImpl;
 
 public:
   MutexAcquisitionImpl(actor::ActorImpl* issuer, MutexImpl* mutex) : issuer_(issuer), mutex_(mutex) {}
   MutexImplPtr get_mutex() { return mutex_; }
   actor::ActorImpl* get_issuer() { return issuer_; }
+  void grant() { granted_ = true; }
 
   bool test(actor::ActorImpl* issuer = nullptr) override;
   void wait_for(actor::ActorImpl* issuer, double timeout) override;
@@ -63,11 +70,13 @@ class XBT_PUBLIC MutexImpl {
   std::deque<MutexAcquisitionImplPtr> ongoing_acquisitions_;
   static unsigned next_id_;
   unsigned id_ = next_id_++;
+  bool is_recursive_  = false;
+  int recursive_depth = 0;
 
   friend MutexAcquisitionImpl;
 
 public:
-  MutexImpl() : piface_(this) {}
+  MutexImpl(bool recursive = false) : piface_(this), is_recursive_(recursive) {}
   MutexImpl(MutexImpl const&) = delete;
   MutexImpl& operator=(MutexImpl const&) = delete;
 

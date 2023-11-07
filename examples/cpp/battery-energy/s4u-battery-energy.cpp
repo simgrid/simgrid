@@ -21,7 +21,7 @@ static void manager()
 
   battery->schedule_handler(
       0.2, simgrid::plugins::Battery::DISCHARGE, simgrid::plugins::Battery::Handler::PERSISTANT,
-      [battery, &host1, &host2, &host3]() {
+      [&battery, &host1, &host2, &host3]() {
         XBT_INFO("Handler -> Battery low: SoC: %f SoH: %f Energy stored: %fJ Energy provided: %fJ Energy consumed %fJ",
                  battery->get_state_of_charge(), battery->get_state_of_health(), battery->get_energy_stored(),
                  battery->get_energy_provided(), battery->get_energy_consumed());

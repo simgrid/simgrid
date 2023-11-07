@@ -1,4 +1,4 @@
-if(enable_smpi AND enable_smpi_MPICH3_testsuite)
+if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff")
 
@@ -19,7 +19,7 @@ foreach(file cartcreates cartshift1 cartsuball cartzero cartmap1 dgraph_unwgt di
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
 endforeach()
 
-if (enable_smpi_MPICH3_testsuite AND HAVE_RAW_CONTEXTS)
+if (enable_testsuite_smpi_MPICH3 AND HAVE_RAW_CONTEXTS)
   ADD_TEST(test-smpi-mpich3-topo-raw       ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/topo ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests "-wrapper=${VALGRIND_WRAPPER}" -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/topo -tests=testlist -execarg=--cfg=contexts/factory:raw)
   SET_TESTS_PROPERTIES(test-smpi-mpich3-topo-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
 endif()

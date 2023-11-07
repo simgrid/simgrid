@@ -79,8 +79,8 @@ fi
 cmake -Denable_documentation=OFF \
       -Denable_compile_optimizations=${runtests} -Denable_compile_warnings=ON \
       -Denable_mallocators=ON -Denable_debug=${builddebug} \
-      -Denable_smpi=${buildsmpi} -Denable_smpi_MPICH3_testsuite=${buildsmpi} -Denable_model-checking=${buildmc} \
-      -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_MBI_testsuite=OFF \
+      -Denable_smpi=${buildsmpi} -Denable_testsuite_smpi_MPICH3=${buildsmpi} -Denable_model-checking=${buildmc} \
+      -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_testsuite_smpi_MBI=OFF -Denable_testsuite_McMini=OFF \
       -Denable_ns3=$(onoff test "$buildmc" != "ON") -DNS3_HINT=/builds/ns-3-dev/build/ \
       -Denable_coverage=OFF -DLTO_EXTRA_FLAG="auto" -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
       "$WORKSPACE"

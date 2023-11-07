@@ -14,24 +14,24 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Sleep set actually containing:
 > [Checker] Execute 2: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (stack depth: 4, state: 4, 0 interleaves)
 > [Checker] INDEPENDENT Transitions:
-> [Checker]   MUTEX_UNLOCK(mutex: 0, owner: -1) (state=3)
-> [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=4)
+> [Checker]  #1 MUTEX_UNLOCK(mutex: 0, owner: -1) (state=3)
+> [Checker]  #2 MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=4)
 > [Checker] INDEPENDENT Transitions:
-> [Checker]   MUTEX_WAIT(mutex: 0, owner: 1) (state=2)
-> [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=4)
+> [Checker]  #1 MUTEX_WAIT(mutex: 0, owner: 1) (state=2)
+> [Checker]  #2 MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=4)
 > [Checker] Dependent Transitions:
-> [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 1) (state=1)
-> [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=4)
+> [Checker]  #1 MUTEX_ASYNC_LOCK(mutex: 0, owner: 1) (state=1)
+> [Checker]  #2 MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=4)
 > [Checker] Sleep set actually containing:
 > [Checker] Execute 2: MUTEX_WAIT(mutex: 0, owner: 2) (stack depth: 5, state: 5, 0 interleaves)
 > [Checker] Dependent Transitions:
-> [Checker]   MUTEX_UNLOCK(mutex: 0, owner: -1) (state=3)
-> [Checker]   MUTEX_WAIT(mutex: 0, owner: 2) (state=5)
+> [Checker]  #1 MUTEX_UNLOCK(mutex: 0, owner: -1) (state=3)
+> [Checker]  #2 MUTEX_WAIT(mutex: 0, owner: 2) (state=5)
 > [Checker] Sleep set actually containing:
 > [Checker] Execute 2: MUTEX_UNLOCK(mutex: 0, owner: -1) (stack depth: 6, state: 6, 0 interleaves)
 > [Checker] Dependent Transitions:
-> [Checker]   MUTEX_UNLOCK(mutex: 0, owner: -1) (state=3)
-> [Checker]   MUTEX_UNLOCK(mutex: 0, owner: -1) (state=6)
+> [Checker]  #1 MUTEX_UNLOCK(mutex: 0, owner: -1) (state=3)
+> [Checker]  #2 MUTEX_UNLOCK(mutex: 0, owner: -1) (state=6)
 > [Checker] 0 actors remain, but none of them need to be interleaved (depth 8).
 > [Checker] Execution came to an end at 1;1;1;2;2;2 (state: 7, depth: 7)
 > [Checker] Backtracking from 1;1;1;2;2;2
@@ -39,11 +39,11 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker]   <1,MUTEX_UNLOCK(mutex: 0, owner: -1)>
 > [Checker] Execute 2: MUTEX_ASYNC_LOCK(mutex: 0, owner: 1) (stack depth: 3, state: 3, 0 interleaves)
 > [Checker] INDEPENDENT Transitions:
-> [Checker]   MUTEX_WAIT(mutex: 0, owner: 1) (state=2)
-> [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 1) (state=3)
+> [Checker]  #1 MUTEX_WAIT(mutex: 0, owner: 1) (state=2)
+> [Checker]  #2 MUTEX_ASYNC_LOCK(mutex: 0, owner: 1) (state=3)
 > [Checker] Dependent Transitions:
-> [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 1) (state=1)
-> [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 1) (state=3)
+> [Checker]  #1 MUTEX_ASYNC_LOCK(mutex: 0, owner: 1) (state=1)
+> [Checker]  #2 MUTEX_ASYNC_LOCK(mutex: 0, owner: 1) (state=3)
 > [Checker] 2 actors remain, but none of them need to be interleaved (depth 5).
 > [Checker] Backtracking from 1;1;2
 > [Checker] Sleep set actually containing:
@@ -52,28 +52,28 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Sleep set actually containing:
 > [Checker] Execute 1: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (stack depth: 2, state: 9, 0 interleaves)
 > [Checker] Dependent Transitions:
-> [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=1)
-> [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=9)
+> [Checker]  #2 MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=1)
+> [Checker]  #1 MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=9)
 > [Checker] Sleep set actually containing:
 > [Checker] Execute 2: MUTEX_WAIT(mutex: 0, owner: 2) (stack depth: 3, state: 10, 0 interleaves)
 > [Checker] INDEPENDENT Transitions:
-> [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=9)
-> [Checker]   MUTEX_WAIT(mutex: 0, owner: 2) (state=10)
+> [Checker]  #1 MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=9)
+> [Checker]  #2 MUTEX_WAIT(mutex: 0, owner: 2) (state=10)
 > [Checker] Sleep set actually containing:
 > [Checker] Execute 2: MUTEX_UNLOCK(mutex: 0, owner: 1) (stack depth: 4, state: 11, 0 interleaves)
 > [Checker] INDEPENDENT Transitions:
-> [Checker]   MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=9)
-> [Checker]   MUTEX_UNLOCK(mutex: 0, owner: 1) (state=11)
+> [Checker]  #1 MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (state=9)
+> [Checker]  #2 MUTEX_UNLOCK(mutex: 0, owner: 1) (state=11)
 > [Checker] Sleep set actually containing:
 > [Checker] Execute 1: MUTEX_WAIT(mutex: 0, owner: 1) (stack depth: 5, state: 12, 0 interleaves)
 > [Checker] Dependent Transitions:
-> [Checker]   MUTEX_UNLOCK(mutex: 0, owner: 1) (state=11)
-> [Checker]   MUTEX_WAIT(mutex: 0, owner: 1) (state=12)
+> [Checker]  #2 MUTEX_UNLOCK(mutex: 0, owner: 1) (state=11)
+> [Checker]  #1 MUTEX_WAIT(mutex: 0, owner: 1) (state=12)
 > [Checker] Sleep set actually containing:
 > [Checker] Execute 1: MUTEX_UNLOCK(mutex: 0, owner: -1) (stack depth: 6, state: 13, 0 interleaves)
 > [Checker] Dependent Transitions:
-> [Checker]   MUTEX_UNLOCK(mutex: 0, owner: 1) (state=11)
-> [Checker]   MUTEX_UNLOCK(mutex: 0, owner: -1) (state=13)
+> [Checker]  #2 MUTEX_UNLOCK(mutex: 0, owner: 1) (state=11)
+> [Checker]  #1 MUTEX_UNLOCK(mutex: 0, owner: -1) (state=13)
 > [Checker] 0 actors remain, but none of them need to be interleaved (depth 8).
 > [Checker] Execution came to an end at 2;1;2;2;1;1 (state: 14, depth: 7)
 > [Checker] Backtracking from 2;1;2;2;1;1

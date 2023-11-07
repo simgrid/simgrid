@@ -17,10 +17,6 @@ if(enable_compile_warnings AND enable_compile_optimizations)
   SET(BUILDNAME "FULL_FLAGS" CACHE INTERNAL "Buildname" FORCE)
 endif()
 
-if(SIMGRID_HAVE_STATEFUL_MC)
-  SET(BUILDNAME "MODEL-CHECKING" CACHE INTERNAL "Buildname" FORCE)
-endif()
-
 if(enable_memcheck)
   SET(BUILDNAME "MEMCHECK" CACHE INTERNAL "Buildname" FORCE)
 endif()

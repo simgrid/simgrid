@@ -19,6 +19,8 @@
 #include <simgrid/s4u/Host.hpp>
 #include <simgrid/s4u/Link.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
+#include <simgrid/s4u/Mess.hpp>
+#include <simgrid/s4u/MessageQueue.hpp>
 #include <simgrid/s4u/Mutex.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/s4u/Semaphore.hpp>

@@ -1,3 +1,8 @@
+/* Copyright (c) 2002-2023. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 /* Simple test code that may deadlock:
 
    Thread 1 locks mutex1 then mutex2 while thread 2 locks in reverse order.

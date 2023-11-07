@@ -196,6 +196,7 @@ class TeshState(Singleton):
         self.args_suffix = ""
         self.ignore_regexps_common = []
         self.jenkins = False  # not a Jenkins run by default
+        self.auto_valgrind = True
         self.timeout = 10  # default value: 10 sec
         self.wrapper = None
         self.keep = False
@@ -237,6 +238,7 @@ class Cmd:
         self.output_display = False
 
         self.sort = -1
+        self.rerun_with_valgrind = False
 
         self.ignore_regexps = TeshState().ignore_regexps_common
 
@@ -302,6 +304,14 @@ class Cmd:
             _thread.start_new_thread(Cmd._run, (self, lock))
         else:
             self._run()
+            if self.rerun_with_valgrind and TeshState().auto_valgrind:
+                print('\n\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+                print(      'XXXXXXXXX Rerunning this test with valgrind to help debugging it XXXXXXXXX')
+                print(      'XXXXXXXX (this will fail if valgrind is not installed, of course) XXXXXXXX')
+                print(      'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n\n')
+
+                self.args = "valgrind " + self.args
+                self._run()
         return True
 
     def _run(self, lock=None):
@@ -411,12 +421,16 @@ class Cmd:
                 print('\n'.join(logs))
                 return
 
-        if self.output_display:
-            logs.append(str(stdout_data))
-
         # remove text colors
         ansi_escape = re.compile(r'\x1b[^m]*m')
         stdout_data = ansi_escape.sub('', stdout_data)
+
+        if self.output_display:
+            logs.append(str(stdout_data))
+
+        if self.rerun_with_valgrind:
+            print(str(stdout_data), file=sys.stderr)
+            return
 
         if self.ignore_output:
             logs.append("(ignoring the output of <{cmd}> as requested)".format(cmd=cmd_name))
@@ -461,6 +475,18 @@ class Cmd:
 
                 logs.append("Test suite `{file}': NOK (<{cmd}> output mismatch)".format(
                     file=FileReader().filename, cmd=cmd_name))
+
+                # Also report any failed return code and/or signal we got in case of output mismatch
+                if not proc.returncode in self.expect_return:
+                    if proc.returncode >= 0:
+                        logs.append("In addition, <{cmd}> returned code {code}.".format(
+                            cmd=cmd_name, code=proc.returncode))
+                    else:
+                        logs.append("In addition, <{cmd}> got signal {sig}.".format(cmd=cmd_name,
+                            sig=SIGNALS_TO_NAMES_DICT[-proc.returncode]))
+                    if proc.returncode == -signal.SIGSEGV:
+                        self.rerun_with_valgrind = True
+
                 if lock is not None:
                     lock.release()
                 if TeshState().keep:
@@ -495,6 +521,10 @@ class Cmd:
             logs.append("Test suite `{file}': NOK (<{cmd}> got signal {sig})".format(
                 file=FileReader().filename, cmd=cmd_name,
                 sig=SIGNALS_TO_NAMES_DICT[-proc.returncode]))
+
+            if proc.returncode == -signal.SIGSEGV:
+                self.rerun_with_valgrind = True
+
             if lock is not None:
                 lock.release()
             TeshState().set_return_code(max(-proc.returncode, 1))
@@ -535,6 +565,10 @@ def main():
         '--ignore-jenkins',
         action='store_true',
         help='ignore all cruft generated on SimGrid continuous integration servers')
+    group1.add_argument(
+        '--no-auto-valgrind',
+        action='store_true',
+        help='do not automaticall launch segfaulting commands in valgrind')
     group1.add_argument('--wrapper', metavar='arg', help='Run each command in the provided wrapper (eg valgrind)')
     group1.add_argument(
         '--keep',
@@ -560,6 +594,7 @@ def main():
             re.compile(r"For details see http://code\.google\.com/p/address-sanitizer/issues/detail\?id=189"),
             re.compile(r"For details see https://github\.com/google/sanitizers/issues/189"),
             re.compile(r"Python runtime initialized with LC_CTYPE=C .*"),
+            re.compile(r"sthread is intercepting the execution of \.*"),
             # Seen on CircleCI
             re.compile(r"cmake: /usr/local/lib/libcurl\.so\.4: no version information available \(required by cmake\)"),
             re.compile(
@@ -567,6 +602,9 @@ def main():
             re.compile(r".*dlopen\+thread broken on Apple and BSD\. Switching to raw contexts\."),
         ]
         TeshState().jenkins = True  # This is a Jenkins build
+
+    if options.no_auto_valgrind:
+        TeshState().auto_valgrind = False
 
     if options.teshfile is None:
         file = FileReader(None)
@@ -672,7 +710,16 @@ def main():
             cmd.add_ignore(line[len("! ignore "):])
 
         else:
-            fatal_error(f"UNRECOGNIZED OPTION LINE: {line}")
+            fatal_error(f"UNRECOGNIZED OPTION LINE: {line}\n"
+            "Valid requests:\n"
+            "   ! output ignore\n"
+            "   ! output sort\n"
+            "   ! output display\n"
+            "   ! setenv XX=YY\n"
+            "   ! ignore XYZ\n"
+            "   ! expect return NN\n"
+            "   ! expect signal NN\n"
+            "   ! timeout NN\n")
 
         line = file.readfullline()
 

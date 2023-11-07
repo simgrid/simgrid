@@ -34,7 +34,7 @@ from the heat of the other devices, such as lighing, accounted using a factor :m
 
   Q_{room} = (1 + \alpha) \times Q_{machines}
 
-This energy heats the input temperature :math:`T_{in}` and gives an output temperature :math:`T_{out}` based on the the
+This energy heats the input temperature :math:`T_{in}` and gives an output temperature :math:`T_{out}` based on the
 mass of air inside the room :math:`m_{air}` and its specific heat :math:`C_{p}`:
 
 .. math::
@@ -75,7 +75,12 @@ void ChillerModel::update_actions_state(double now, double delta)
 
 double ChillerModel::next_occurring_event(double now)
 {
-  return -1;
+  static bool init = false;
+  if (not init) {
+    init = true;
+    return 0;
+  } else
+    return -1;
 }
 
 /* Chiller */
@@ -99,30 +104,20 @@ void Chiller::update()
       return;
 
     double hosts_power_w = 0;
-    for (auto const& host : hosts_)
+    for (auto const& host : hosts_) {
       hosts_power_w += sg_host_get_current_consumption(host);
+    }
+
     double heat_generated_j = hosts_power_w * (1 + alpha_) * time_delta_s;
     temp_out_c_             = temp_in_c_ + heat_generated_j / (air_mass_kg_ * specific_heat_j_per_kg_per_c_);
-    double delta_temp_c     = temp_out_c_ - goal_temp_c_;
-
-    if (not active_ or delta_temp_c < 0) {
-      temp_in_c_    = temp_out_c_;
-      power_w_      = 0;
-      last_updated_ = now;
-      return;
-    }
-
-    double cooling_demand_w = delta_temp_c * air_mass_kg_ * specific_heat_j_per_kg_per_c_ / time_delta_s;
-    if (cooling_demand_w / cooling_efficiency_ <= max_power_w_) {
-      power_w_   = cooling_demand_w / cooling_efficiency_;
-      temp_in_c_ = temp_out_c_ -
-                   (power_w_ * time_delta_s * cooling_efficiency_) / (air_mass_kg_ * specific_heat_j_per_kg_per_c_);
-    } else {
-      power_w_   = max_power_w_;
-      temp_in_c_ = temp_out_c_ -
-                   (power_w_ * time_delta_s * cooling_efficiency_) / (air_mass_kg_ * specific_heat_j_per_kg_per_c_);
-    }
-
+    double cooling_demand_w =
+        std::max(temp_out_c_ - goal_temp_c_, 0.0) * air_mass_kg_ * specific_heat_j_per_kg_per_c_ / time_delta_s;
+    if (not active_)
+      power_w_ = 0;
+    else
+      power_w_ = std::min(max_power_w_, cooling_demand_w / cooling_efficiency_);
+    temp_in_c_ =
+        temp_out_c_ - (power_w_ * time_delta_s * cooling_efficiency_) / (air_mass_kg_ * specific_heat_j_per_kg_per_c_);
     energy_consumed_j_ += power_w_ * time_delta_s;
     last_updated_ = now;
   });
@@ -284,4 +279,26 @@ ChillerPtr Chiller::remove_host(s4u::Host* host)
   return this;
 }
 
+/** @ingroup plugin_chiller
+ *  @return The time to reach to goal temp, assuming that the system remain in the same state.
+ */
+double Chiller::get_time_to_goal_temp()
+{
+  if (goal_temp_c_ == temp_in_c_)
+    return 0;
+
+  double heat_power_w = 0;
+  for (auto const& host : hosts_)
+    heat_power_w += sg_host_get_current_consumption(host);
+  heat_power_w = heat_power_w * (1 + alpha_);
+
+  if (temp_in_c_ < goal_temp_c_)
+    return air_mass_kg_ * (goal_temp_c_ - temp_in_c_) * specific_heat_j_per_kg_per_c_ / heat_power_w;
+
+  if (not active_)
+    return -1;
+  else
+    return air_mass_kg_ * (temp_in_c_ - goal_temp_c_) * specific_heat_j_per_kg_per_c_ /
+           (power_w_ * cooling_efficiency_ - heat_power_w);
+}
 } // namespace simgrid::plugins

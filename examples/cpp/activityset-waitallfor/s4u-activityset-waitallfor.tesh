@@ -5,7 +5,9 @@ $ ${bindir:=.}/s4u-activityset-waitallfor ${platfdir}/hosts_with_disks.xml "--lo
 > [0.000000] [  bob] Create my asynchronous activities
 > [0.000000] [  bob] Wait for asynchronous activities to complete
 > [1.000000] [  bob] Not all activities are terminated yet.
+> [1.990000] [ carl] Send 'Control Message'
 > [2.000000] [  bob] Not all activities are terminated yet.
+> [2.000000] [  bob] Completed a Mess
 > [3.000000] [  bob] Not all activities are terminated yet.
 > [3.000000] [  bob] Completed an I/O
 > [4.000000] [  bob] Not all activities are terminated yet.

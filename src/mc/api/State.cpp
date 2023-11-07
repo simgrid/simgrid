@@ -38,13 +38,6 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
     THROW_IMPOSSIBLE;
 
   remote_app.get_actors_status(strategy_->actors_to_run_);
-
-#if SIMGRID_HAVE_STATEFUL_MC
-  /* Stateful model checking */
-  if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
-    system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store(),
-                                                            *remote_app.get_remote_process_memory());
-#endif
 }
 
 State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
@@ -63,12 +56,6 @@ State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
   strategy_->copy_from(parent_state_->strategy_.get());
 
   remote_app.get_actors_status(strategy_->actors_to_run_);
-
-#if SIMGRID_HAVE_STATEFUL_MC /* Stateful model checking */
-  if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
-    system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store(),
-                                                            *remote_app.get_remote_process_memory());
-#endif
 
   /* Copy the sleep set and eventually removes things from it: */
   /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.
@@ -252,14 +239,18 @@ void State::sprout_tree_from_parent_state()
                                            "parent with an empty wakeup tree. This indicates either that ODPOR "
                                            "actor selection in State.cpp is incorrect, or that the code "
                                            "deciding when to make subtrees in ODPOR is incorrect");
-  xbt_assert((get_transition_in()->aid_ == min_process_node.value()->get_actor()) &&
-                 (get_transition_in()->type_ == min_process_node.value()->get_action()->type_),
-             "We tried to make a subtree from a parent state who claimed to have executed `%s` on actor %ld "
-             "but whose wakeup tree indicates it should have executed `%s` on actor %ld. This indicates "
-             "that exploration is not following ODPOR. Are you sure you're choosing actors "
-             "to schedule from the wakeup tree?",
-             get_transition_in()->to_string(false).c_str(), get_transition_in()->aid_,
-             min_process_node.value()->get_action()->to_string(false).c_str(), min_process_node.value()->get_actor());
+  if (not(get_transition_in()->aid_ == min_process_node.value()->get_actor() &&
+          get_transition_in()->type_ == min_process_node.value()->get_action()->type_)) {
+    XBT_ERROR("We tried to make a subtree from a parent state who claimed to have executed `%s` on actor %ld "
+              "but whose wakeup tree indicates it should have executed `%s` on actor %ld. This indicates "
+              "that exploration is not following ODPOR. Are you sure you're choosing actors "
+              "to schedule from the wakeup tree? Trace so far:",
+              get_transition_in()->to_string(false).c_str(), get_transition_in()->aid_,
+              min_process_node.value()->get_action()->to_string(false).c_str(), min_process_node.value()->get_actor());
+    for (auto elm : Exploration::get_instance()->get_textual_trace())
+      XBT_ERROR("%s", elm.c_str());
+    xbt_abort();
+  }
   this->wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(min_process_node.value());
 }
 

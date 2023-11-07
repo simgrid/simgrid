@@ -17,13 +17,13 @@
 namespace simgrid::mc::udpor {
 
 class Comb;
-class ExtensionSetCalculator;
+struct ExtensionSetCalculator;
 class EventSet;
 class Configuration;
 class History;
 class Unfolding;
 class UnfoldingEvent;
-class maximal_subsets_iterator;
+struct maximal_subsets_iterator;
 
 } // namespace simgrid::mc::udpor
 

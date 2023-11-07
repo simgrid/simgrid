@@ -7,7 +7,6 @@
 #define SIMGRID_MC_PRIVATE_HPP
 
 #include "src/mc/mc.h"
-#include "xbt/automaton.h"
 
 #include "src/mc/mc_forward.hpp"
 #include "src/xbt/memory_map.hpp"

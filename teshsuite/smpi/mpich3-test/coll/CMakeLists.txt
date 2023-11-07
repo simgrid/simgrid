@@ -1,4 +1,4 @@
-if(enable_smpi AND enable_smpi_MPICH3_testsuite)
+if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff")
   # There are too many warnings with these programs

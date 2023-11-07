@@ -10,11 +10,6 @@
 #include "src/mc/mc_record.hpp"
 #include "src/mc/transition/Transition.hpp"
 
-#if SIMGRID_HAVE_STATEFUL_MC
-#include "src/mc/VisitedState.hpp"
-#endif
-
-#include "src/xbt/mmalloc/mmprivate.h"
 #include "xbt/log.h"
 #include "xbt/string.hpp"
 #include "xbt/sysdep.h"
@@ -43,30 +38,6 @@ xbt::signal<void(Transition*, RemoteApp&)> DFSExplorer::on_transition_replay_sig
 xbt::signal<void(Transition*, RemoteApp&)> DFSExplorer::on_transition_execute_signal;
 
 xbt::signal<void(RemoteApp&)> DFSExplorer::on_log_state_signal;
-
-void DFSExplorer::check_non_termination(const State* current_state)
-{
-#if SIMGRID_HAVE_STATEFUL_MC
-  for (auto const& state : stack_) {
-    if (state->get_system_state()->equals_to(*current_state->get_system_state(),
-                                             *get_remote_app().get_remote_process_memory())) {
-      XBT_INFO("Non-progressive cycle: state %ld -> state %ld", state->get_num(), current_state->get_num());
-      XBT_INFO("******************************************");
-      XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
-      XBT_INFO("******************************************");
-      XBT_INFO("Counter-example execution trace:");
-      for (auto const& s : get_textual_trace())
-        XBT_INFO("  %s", s.c_str());
-      XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
-               "--cfg=model-check/replay:'%s'",
-               get_record_trace().to_string().c_str());
-      log_state();
-
-      throw McError(ExitStatus::NON_TERMINATION);
-    }
-  }
-#endif
-}
 
 RecordTrace DFSExplorer::get_record_trace() // override
 {
@@ -151,18 +122,6 @@ void DFSExplorer::run()
       this->backtrack();
       continue;
     }
-
-#if SIMGRID_HAVE_STATEFUL_MC
-    // Backtrack if we are revisiting a state we saw previously while applying state-equality reduction
-    if (visited_state_ != nullptr) {
-      XBT_DEBUG("State already visited (equal to state %ld), exploration stopped on this path.",
-                visited_state_->original_num_ == -1 ? visited_state_->num_ : visited_state_->original_num_);
-
-      visited_state_ = nullptr;
-      this->backtrack();
-      continue;
-    }
-#endif
 
     if (reduction_mode_ == ReductionMode::odpor) {
       // In the case of ODPOR, the wakeup tree for this
@@ -253,8 +212,10 @@ void DFSExplorer::run()
           continue;
         } else if (prev_state->get_transition_out()->depends(state->get_transition_out().get())) {
           XBT_VERB("Dependent Transitions:");
-          XBT_VERB("  %s (state=%ld)", prev_state->get_transition_out()->to_string().c_str(), prev_state->get_num());
-          XBT_VERB("  %s (state=%ld)", state->get_transition_out()->to_string().c_str(), state->get_num());
+          XBT_VERB(" #%ld %s (state=%ld)", prev_state->get_transition_out()->aid_,
+                   prev_state->get_transition_out()->to_string().c_str(), prev_state->get_num());
+          XBT_VERB(" #%ld %s (state=%ld)", state->get_transition_out()->aid_,
+                   state->get_transition_out()->to_string().c_str(), state->get_num());
 
           if (prev_state->is_actor_enabled(issuer_id)) {
             if (not prev_state->is_actor_done(issuer_id)) {
@@ -273,8 +234,10 @@ void DFSExplorer::run()
           break;
         } else {
           XBT_VERB("INDEPENDENT Transitions:");
-          XBT_VERB("  %s (state=%ld)", prev_state->get_transition_out()->to_string().c_str(), prev_state->get_num());
-          XBT_VERB("  %s (state=%ld)", state->get_transition_out()->to_string().c_str(), state->get_num());
+          XBT_VERB(" #%ld %s (state=%ld)", prev_state->get_transition_out()->aid_,
+                   prev_state->get_transition_out()->to_string().c_str(), prev_state->get_num());
+          XBT_VERB(" #%ld %s (state=%ld)", state->get_transition_out()->aid_,
+                   state->get_transition_out()->to_string().c_str(), state->get_num());
         }
         tmp_stack.pop_back();
       }
@@ -324,36 +287,18 @@ void DFSExplorer::run()
     if (stack_.back()->count_todo_multiples() > 0)
       opened_states_.emplace_back(stack_.back());
 
-    if (_sg_mc_termination)
-      this->check_non_termination(next_state.get());
-
-#if SIMGRID_HAVE_STATEFUL_MC
-    /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction)
-     */
-    if (_sg_mc_max_visited_states > 0)
-      visited_state_ = visited_states_.addVisitedState(next_state->get_num(), next_state.get(), get_remote_app());
-#endif
-
     stack_.emplace_back(std::move(next_state));
 
     /* If this is a new state (or if we don't care about state-equality reduction) */
-    if (visited_state_ == nullptr) {
-      /* Get an enabled process and insert it in the interleave set of the next state */
-      if (reduction_mode_ == ReductionMode::dpor)
-        stack_.back()->consider_best(); // Take only one transition if DPOR: others may be considered later if required
-      else {
-        stack_.back()->consider_all();
-      }
-
-      dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
-                 state->get_transition_out()->dot_string().c_str());
-#if SIMGRID_HAVE_STATEFUL_MC
-    } else {
-      dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(),
-                 visited_state_->original_num_ == -1 ? visited_state_->num_ : visited_state_->original_num_,
-                 state->get_transition_out()->dot_string().c_str());
-#endif
+    /* Get an enabled process and insert it in the interleave set of the next state */
+    if (reduction_mode_ == ReductionMode::dpor)
+      stack_.back()->consider_best(); // Take only one transition if DPOR: others may be considered later if required
+    else {
+      stack_.back()->consider_all();
     }
+
+    dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
+               state->get_transition_out()->dot_string().c_str());
   }
   log_state();
 }
@@ -486,41 +431,16 @@ void DFSExplorer::backtrack()
   backtrack_count_++;
   XBT_DEBUG("Backtracking to state#%ld", backtracking_point->get_num());
 
-#if SIMGRID_HAVE_STATEFUL_MC
-  /* If asked to rollback on a state that has a snapshot, restore it */
-  if (const auto* system_state = backtracking_point->get_system_state()) {
-    system_state->restore(*get_remote_app().get_remote_process_memory());
-    on_restore_system_state_signal(backtracking_point.get(), get_remote_app());
-    this->restore_stack(backtracking_point);
-    return;
-  }
-#endif
-
   // Search how to restore the backtracking point
-  State* init_state = nullptr;
   std::deque<Transition*> replay_recipe;
   for (auto* s = backtracking_point.get(); s != nullptr; s = s->get_parent_state().get()) {
-#if SIMGRID_HAVE_STATEFUL_MC
-    if (s->get_system_state() != nullptr) { // Found a state that I can restore
-      init_state = s;
-      break;
-    }
-#endif
     if (s->get_transition_in() != nullptr) // The root has no transition_in
       replay_recipe.push_front(s->get_transition_in().get());
   }
 
-  // Restore the init_state, if any
-  if (init_state != nullptr) {
-#if SIMGRID_HAVE_STATEFUL_MC
-    const auto* system_state = init_state->get_system_state();
-    system_state->restore(*get_remote_app().get_remote_process_memory());
-    on_restore_system_state_signal(init_state, get_remote_app());
-#endif
-  } else { // Restore the initial state if no intermediate state was found
-    get_remote_app().restore_initial_state();
-    on_restore_initial_state_signal(get_remote_app());
-  }
+  // Restore the initial state if no intermediate state was found
+  get_remote_app().restore_initial_state();
+  on_restore_initial_state_signal(get_remote_app());
 
   /* if no snapshot, we need to restore the initial state and replay the transitions */
   /* Traverse the stack from the state at position start and re-execute the transitions */
@@ -532,23 +452,9 @@ void DFSExplorer::backtrack()
   this->restore_stack(backtracking_point);
 }
 
-DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode, bool need_memory_info)
-    : Exploration(args, need_memory_info || _sg_mc_termination
-#if SIMGRID_HAVE_STATEFUL_MC
-                            || _sg_mc_checkpoint > 0
-#endif
-                  )
-    , reduction_mode_(mode)
+DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration(args), reduction_mode_(mode)
 {
-  if (_sg_mc_termination) {
-    if (mode != ReductionMode::none) {
-      XBT_INFO("Check non progressive cycles (turning DPOR off)");
-      reduction_mode_ = ReductionMode::none;
-    } else {
-      XBT_INFO("Check non progressive cycles");
-    }
-  } else
-    XBT_INFO("Start a DFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
+  XBT_INFO("Start a DFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
 
   auto initial_state = std::make_shared<State>(get_remote_app());
 

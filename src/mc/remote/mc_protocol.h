@@ -14,7 +14,6 @@
 
 #include "simgrid/forward.h" // aid_t
 #include "src/mc/datatypes.h"
-#include "src/xbt/mmalloc/mmalloc.h"
 #include <xbt/utility.hpp>
 
 #include <array>
@@ -24,12 +23,10 @@
 // ***** Messages
 namespace simgrid::mc {
 
-XBT_DECLARE_ENUM_CLASS(MessageType, NONE, NEED_MEMINFO, NEED_MEMINFO_REPLY, FORK, FORK_REPLY, WAIT_CHILD,
-                       WAIT_CHILD_REPLY, CONTINUE, IGNORE_HEAP, UNIGNORE_HEAP, IGNORE_MEMORY, UNIGNORE_MEMORY,
-                       STACK_REGION, REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_EXECUTE,
-                       SIMCALL_EXECUTE_REPLY, ASSERTION_FAILED, ACTORS_STATUS, ACTORS_STATUS_REPLY_COUNT,
-                       ACTORS_STATUS_REPLY_SIMCALL, ACTORS_STATUS_REPLY_TRANSITION, ACTORS_MAXPID, ACTORS_MAXPID_REPLY,
-                       FINALIZE, FINALIZE_REPLY);
+XBT_DECLARE_ENUM_CLASS(MessageType, NONE, FORK, FORK_REPLY, WAIT_CHILD, WAIT_CHILD_REPLY, CONTINUE, DEADLOCK_CHECK,
+                       DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_EXECUTE, SIMCALL_EXECUTE_REPLY, ASSERTION_FAILED,
+                       ACTORS_STATUS, ACTORS_STATUS_REPLY_COUNT, ACTORS_STATUS_REPLY_SIMCALL,
+                       ACTORS_STATUS_REPLY_TRANSITION, ACTORS_MAXPID, ACTORS_MAXPID_REPLY, FINALIZE, FINALIZE_REPLY);
 } // namespace simgrid::mc
 
 constexpr unsigned MC_MESSAGE_LENGTH                 = 512;
@@ -57,38 +54,8 @@ struct s_mc_message_int_t {
 };
 
 /* Client->Server */
-struct s_mc_message_ignore_heap_t {
-  simgrid::mc::MessageType type;
-  int block;
-  int fragment;
-  void* address;
-  size_t size;
-};
-
-struct s_mc_message_ignore_memory_t {
-  simgrid::mc::MessageType type;
-  uint64_t addr;
-  size_t size;
-};
-
-struct s_mc_message_stack_region_t {
-  simgrid::mc::MessageType type;
-  s_stack_region_t stack_region;
-};
-
-struct s_mc_message_register_symbol_t {
-  simgrid::mc::MessageType type;
-  std::array<char, 128> name;
-  int (*callback)(void*);
-  void* data;
-};
 
 /* Server -> client */
-struct s_mc_message_need_meminfo_reply_t {
-  simgrid::mc::MessageType type;
-  xbt_mheap_t mmalloc_default_mdp;
-};
-
 struct s_mc_message_fork_t {
   simgrid::mc::MessageType type;
   std::array<char, MC_SOCKET_NAME_LEN> socket_name;

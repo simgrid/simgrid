@@ -173,13 +173,6 @@ Copyright: 1997, Rolf Rabenseifner. Computing Center University of Stuttgart
 License: other-reduce-rab
  The usage of this software is free, but this header must not be removed.
 
-Files: src/xbt/automaton/parserPromela.tab.cacc
-Copyright:
- Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
- Copyright (C) 2003-2023. The SimGrid team.
-License: GPL-3+ and LGPL-2.1-only
-Comment: Generated with the Bison processor generator (which is GPL-3+) using SimGrid configuration files (that are LGPL-2.1-only)
-
 Files: src/3rd-party/catch.hpp
 Copyright:
   Copyright (c) 2022 Two Blue Cubes Ltd.

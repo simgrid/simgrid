@@ -34,67 +34,6 @@ else()
   endforeach()
 endif()
 
-set(tesh_files ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/synchro-mutex/s4u-mc-synchro-mutex-stateful.tesh)
-if(SIMGRID_HAVE_STATEFUL_MC)
-  if(HAVE_C_STACK_CLEANER)
-    add_executable       (s4u-mc-bugged1-liveness-cleaner-on  EXCLUDE_FROM_ALL s4u-mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
-    target_link_libraries(s4u-mc-bugged1-liveness-cleaner-on  simgrid)
-    set_target_properties(s4u-mc-bugged1-liveness-cleaner-on  PROPERTIES COMPILE_FLAGS "-DGARBAGE_STACK -fstack-cleaner")
-    add_dependencies(tests-mc s4u-mc-bugged1-liveness-cleaner-on)
-
-    add_executable       (s4u-mc-bugged1-liveness-cleaner-off EXCLUDE_FROM_ALL s4u-mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
-    target_link_libraries(s4u-mc-bugged1-liveness-cleaner-off simgrid)
-    set_target_properties(s4u-mc-bugged1-liveness-cleaner-off PROPERTIES COMPILE_FLAGS "-DGARBAGE_STACK -fno-stack-cleaner")
-    add_dependencies(tests-mc s4u-mc-bugged1-liveness-cleaner-off)
-  endif()
-
-  ADD_TESH(s4u-mc-synchro-mutex-stateful
-     --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/synchro-mutex
-     --setenv libdir=${CMAKE_BINARY_DIR}/lib
-     --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-     --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/synchro-mutex
-     --cd ${CMAKE_CURRENT_SOURCE_DIR}/synchro-mutex
-      ${CMAKE_HOME_DIRECTORY}/examples/cpp/synchro-mutex/s4u-mc-synchro-mutex-stateful.tesh)
-
-  # Model-checking liveness
-  if(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64)
-    # liveness model-checking works only on 64bits (for now ...)
-    set(_mc-bugged1-liveness_factories "ucontext")
-    add_dependencies(tests-mc s4u-mc-bugged1-liveness)
-    set(_mc-bugged2-liveness_factories "ucontext")
-
-    # This example never ends, disable it for now
-    set(_mc-bugged2-liveness_disable 1)
-
-    if ("${CMAKE_SYSTEM}" MATCHES "Linux")
-      # timeout under FreeBSD (test never stops)
-      ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness
-                                                        --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                                        --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
-                                                        ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh)
-    endif()
-    IF(HAVE_C_STACK_CLEANER)
-      add_dependencies(tests-mc s4u-mc-bugged1-liveness-stack-cleaner)
-      # This test checks if the stack cleaner is making a difference:
-      ADD_TEST(s4u-mc-bugged1-liveness-stack-cleaner ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
-                                                     ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/
-                                                     ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness/)
-    ENDIF()
-  else()
-    set(_mc-bugged1-liveness_disable 1)
-    set(_mc-bugged2-liveness_disable 1)
-  endif()
-
-  if(enable_coverage)
-    ADD_TEST(cover-mc-bugged1-liveness ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness ${CMAKE_HOME_DIRECTORY}/examples/platforms/small_platform.xml 1 1001)
-  endif()
-
-else()
-  foreach (example mc-bugged1-liveness mc-bugged2-liveness)
-    set(_${example}_disable 1)
-  endforeach()
-endif()
-
 # Hijack some regular tests to run them on top of the MC
 foreach (example synchro-barrier synchro-mutex synchro-semaphore)
   set(tesh_files ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-mc-${example}.tesh)
@@ -157,7 +96,7 @@ foreach (example activityset-testany activityset-waitany activityset-waitall act
                  actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-token-ring
-                 battery-degradation battery-simple battery-energy
+                 battery-chiller-solar battery-connector battery-degradation battery-simple battery-energy
                  chiller-simple
                  comm-pingpong comm-ready comm-suspend comm-wait comm-waituntil
                  comm-dependent comm-host2host comm-failure comm-throttling
@@ -169,7 +108,8 @@ foreach (example activityset-testany activityset-waitany activityset-waitall act
                  exec-async exec-basic exec-dvfs exec-remote exec-waitfor exec-dependent exec-unassigned
                  exec-ptask-multicore exec-ptask-multicore-latency exec-cpu-nonlinear exec-cpu-factors exec-failure exec-threads
                  maestro-set
-                 mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-bugged2-liveness mc-centralized-mutex mc-electric-fence mc-failing-assert
+                 mc-bugged1 mc-bugged2 mc-centralized-mutex mc-electric-fence mc-failing-assert
+                 mess-wait
                  network-ns3 network-ns3-wifi network-wifi
                  io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-dependent
                  task-dispatch task-io task-microservice task-parallelism task-simple task-storm task-switch-host task-variable-load
@@ -263,18 +203,6 @@ endforeach()
 
 # Test non-DPOR reductions on a given MC test
 foreach(example mc-failing-assert)
-# State equality is not tested because it would take about 15 hours to run that test on my machine.
-# We should first optimize mmalloc_heap_differ() which takes ~4sec for each pair to compare (maybe {175 x 174/ 2} pairs here)
-# See the comment on mmalloc_heap_differ() in compare.cpp for more info on why it's hard to optimize.
-#
-#  if(SIMGRID_HAVE_STATEFUL_MC)
-#    ADD_TESH(s4u-${example}-statequality  --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
-#                                      --setenv libdir=${CMAKE_BINARY_DIR}/lib
-#                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-#                                      --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
-#                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
-#                                      ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-statequality.tesh)
-#  endif()
 
   if(SIMGRID_HAVE_MC)
     ADD_TESH(s4u-${example}-nodpor    --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
@@ -284,7 +212,6 @@ foreach(example mc-failing-assert)
                                       --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
                                       ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-nodpor.tesh)
   endif()
-  set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-statequality.tesh)
   set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-nodpor.tesh)
 endforeach()
 
@@ -316,10 +243,8 @@ endif()
 
 # Add all extra files to the archive
 ####################################
-set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp        PARENT_SCOPE)
-set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/comm-pingpong/debug-breakpoint.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh  PARENT_SCOPE)
+set(examples_src  ${examples_src}    PARENT_SCOPE)
+set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/comm-pingpong/debug-breakpoint.tesh  PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-actor-create_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent_d.xml
@@ -340,10 +265,7 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/onelink_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml                PARENT_SCOPE)
 set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/battery-degradation/plot_battery_degradation.py
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/promela_bugged1_liveness
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged2-liveness/promela_bugged2_liveness PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py  PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/simple_dax_with_cycle.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/smalldax.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax-simple/dag.xml

@@ -1,0 +1,14 @@
+# We ignore the LD_PRELOAD lines from the expected output because they contain the build path
+! ignore .*LD_PRELOAD.*
+
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/pthread-mutex-recursive
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> Got the lock on the default mutex.
+> Failed to relock the default mutex.
+> Got the lock on the recursive mutex.
+> Got the lock again on the recursive mutex.
+> Got the lock on the default mutex.
+> Failed to relock the default mutex.
+> Got the lock on the recursive mutex.
+> Got the lock again on the recursive mutex.
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 17 unique states visited; 1 backtracks (3 transition replays, 21 states visited overall)

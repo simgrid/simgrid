@@ -16,10 +16,6 @@
  */
 #define MC_ENV_SOCKET_FD "SIMGRID_MC_SOCKET_FD"
 
-/** Environment variable name defined when ptrace(2) is used to control the MCed process.
- */
-#define MC_ENV_NEED_PTRACE "SIMGRID_MC_NEED_PTRACE"
-
 /** Environment variable used to request additional system statistics.
  */
 #define MC_ENV_SYSTEM_STATISTICS "SIMGRID_MC_SYSTEM_STATISTICS"

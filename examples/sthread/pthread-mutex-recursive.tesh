@@ -1,0 +1,6 @@
+$ env ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS LD_PRELOAD=${libdir:=.}/libsthread.so ./pthread-mutex-recursive
+> Got the lock on the default mutex.
+> Failed to relock the default mutex.
+> Got the lock on the recursive mutex.
+> Got the lock again on the recursive mutex.
+> [0.000000] [sthread/INFO] All threads exited. Terminating the simulation.

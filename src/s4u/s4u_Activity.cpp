@@ -9,6 +9,7 @@
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Io.hpp>
+#include <simgrid/s4u/Mess.hpp>
 #include <xbt/log.h>
 
 #include "src/kernel/activity/ActivityImpl.hpp"
@@ -52,6 +53,8 @@ Activity* Activity::wait_for(double timeout)
   if (state_ == State::FAILED) {
     if (dynamic_cast<Comm*>(this))
       throw NetworkFailureException(XBT_THROW_POINT, "Cannot wait for a failed comm");
+    if (dynamic_cast<Mess*>(this))
+      throw NetworkFailureException(XBT_THROW_POINT, "Cannot wait for a failed mess");
     if (dynamic_cast<Exec*>(this))
       throw HostFailureException(XBT_THROW_POINT, "Cannot wait for a failed exec");
     if (dynamic_cast<Io*>(this))

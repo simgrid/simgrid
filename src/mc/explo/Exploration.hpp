@@ -36,7 +36,7 @@ class Exploration : public xbt::Extendable<Exploration> {
   FILE* dot_output_ = nullptr;
 
 public:
-  explicit Exploration(const std::vector<char*>& args, bool need_memory_introspection);
+  explicit Exploration(const std::vector<char*>& args);
   virtual ~Exploration();
 
   static Exploration* get_instance() { return instance_; }
@@ -60,7 +60,7 @@ public:
   virtual RecordTrace get_record_trace() = 0;
 
   /** Generate a textual execution trace of the simulated application */
-  std::vector<std::string> get_textual_trace();
+  std::vector<std::string> get_textual_trace(int max_elements = -1);
 
   /** Log additional information about the state of the model-checker */
   virtual void log_state();
@@ -72,7 +72,6 @@ public:
 };
 
 // External constructors so that the types (and the types of their content) remain hidden
-XBT_PUBLIC Exploration* create_liveness_checker(const std::vector<char*>& args);
 XBT_PUBLIC Exploration* create_dfs_exploration(const std::vector<char*>& args, ReductionMode mode);
 XBT_PUBLIC Exploration* create_communication_determinism_checker(const std::vector<char*>& args, ReductionMode mode);
 XBT_PUBLIC Exploration* create_udpor_checker(const std::vector<char*>& args);

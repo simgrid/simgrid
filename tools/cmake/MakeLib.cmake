@@ -29,17 +29,12 @@ add_dependencies(simgrid maintainer_files)
 
 if("${CMAKE_SYSTEM}" MATCHES "Linux")
   add_library(sthread SHARED ${STHREAD_SRC})
+  set_target_properties(sthread PROPERTIES VERSION ${libsimgrid_version})
   set_property(TARGET sthread
                 APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
   target_link_libraries(sthread simgrid)
 else()
   set(EXTRA_DIST ${EXTRA_DIST} ${STHREAD_SRC})
-endif()
-
-if(HAVE_MMALLOC)
-  add_library(sgmalloc SHARED ${SGMALLOC_SRC})
-  set_property(TARGET sgmalloc
-                APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
 endif()
 
 if(SIMGRID_HAVE_MC)
@@ -178,17 +173,10 @@ if(CMAKE_COMPILER_IS_GNUCC AND GCCLIBATOMIC_LIBRARY)
 endif()
 mark_as_advanced(GCCLIBATOMIC_LIBRARY)
 
-if(enable_model-checking AND (NOT LINKER_VERSION VERSION_LESS "2.30"))
-    set(SIMGRID_DEP   "${SIMGRID_DEP}   -Wl,-znorelro -Wl,-znoseparate-code")
-endif()
-
 target_link_libraries(simgrid 	${SIMGRID_DEP})
 
 # Dependencies from maintainer mode
 ###################################
 if(enable_maintainer_mode)
   add_dependencies(simgrid smpi_generated_headers_call_location_tracing)
-endif()
-if(enable_maintainer_mode AND BISON_EXE AND LEX_EXE)
-  add_dependencies(simgrid automaton_generated_src)
 endif()

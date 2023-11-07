@@ -54,12 +54,6 @@ void Context::set_current(Context* self)
   current_context_ = self;
 }
 
-void Context::declare_context(std::size_t size)
-{
-  /* Store the address of the stack in heap to compare it apart of heap comparison */
-  MC_ignore_heap(this, size);
-}
-
 Context* ContextFactory::attach(actor::ActorImpl*)
 {
   xbt_die("Cannot attach with this ContextFactory.\n"

@@ -1,5 +1,4 @@
 $ env ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS LD_PRELOAD=${libdir:=.}/libsthread.so ./pthread-mutex-simple
-> [0.000000] [sthread/INFO] Starting the simulation.
 > All threads are started.
 > The thread 0 is terminating.
 > The thread 1 is terminating.

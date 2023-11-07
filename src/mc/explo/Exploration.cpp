@@ -10,10 +10,6 @@
 #include "src/mc/mc_private.hpp"
 #include "xbt/string.hpp"
 
-#if SIMGRID_HAVE_STATEFUL_MC
-#include "src/mc/sosp/RemoteProcessMemory.hpp"
-#endif
-
 #include <sys/wait.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_explo, mc, "Generic exploration algorithm of the model-checker");
@@ -25,8 +21,7 @@ static simgrid::config::Flag<std::string> cfg_dot_output_file{
 
 Exploration* Exploration::instance_ = nullptr; // singleton instance
 
-Exploration::Exploration(const std::vector<char*>& args, bool need_memory_introspection)
-    : remote_app_(std::make_unique<RemoteApp>(args, need_memory_introspection))
+Exploration::Exploration(const std::vector<char*>& args) : remote_app_(std::make_unique<RemoteApp>(args))
 {
   xbt_assert(instance_ == nullptr, "Cannot have more than one exploration instance");
   instance_ = this;
@@ -83,7 +78,7 @@ static const char* signal_name(int status)
   }
 }
 
-std::vector<std::string> Exploration::get_textual_trace()
+std::vector<std::string> Exploration::get_textual_trace(int max_elements)
 {
   std::vector<std::string> trace;
   for (auto const& transition : get_record_trace()) {
@@ -93,6 +88,9 @@ std::vector<std::string> Exploration::get_textual_trace()
                                          transition->to_string().c_str()));
     else
       trace.push_back(xbt::string_printf("Actor %ld in simcall %s", transition->aid_, transition->to_string().c_str()));
+    max_elements--;
+    if (max_elements == 0)
+      break;
   }
   return trace;
 }
@@ -116,18 +114,6 @@ XBT_ATTRIB_NORETURN void Exploration::report_crash(int status)
            "--cfg=model-check/replay:'%s'",
            get_record_trace().to_string().c_str());
   log_state();
-  if (xbt_log_no_loc) {
-    XBT_INFO("Stack trace not displayed because you passed --log=no_loc");
-  } else {
-#if SIMGRID_HAVE_STATEFUL_MC
-    const auto* memory = get_remote_app().get_remote_process_memory();
-    if (memory) {
-      XBT_INFO("Stack trace:");
-      memory->dump_stack();
-    } else
-#endif
-      XBT_INFO("Stack trace not shown because there is no memory introspection.");
-  }
 
   throw McError(ExitStatus::PROGRAM_CRASH);
 }

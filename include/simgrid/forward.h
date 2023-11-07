@@ -76,6 +76,14 @@ class SplitDuplexLink;
 
 class Mailbox;
 
+class Mess;
+/** Smart pointer to a simgrid::s4u::Mess */
+using MessPtr = boost::intrusive_ptr<Mess>;
+XBT_PUBLIC void intrusive_ptr_release(Mess* c);
+XBT_PUBLIC void intrusive_ptr_add_ref(Mess* c);
+
+class MessageQueue;
+
 class Mutex;
 XBT_PUBLIC void intrusive_ptr_release(const Mutex* m);
 XBT_PUBLIC void intrusive_ptr_add_ref(const Mutex* m);
@@ -123,6 +131,7 @@ using ActorCodeFactory = std::function<ActorCode(std::vector<std::string> args)>
 
 class Simcall;
 class SimcallObserver;
+class MutexObserver;
 class ObjectAccessSimcallObserver;
 class ObjectAccessSimcallItem;
 } // namespace actor
@@ -152,6 +161,8 @@ namespace activity {
   using ExecImplPtr = boost::intrusive_ptr<ExecImpl>;
   class IoImpl;
   using IoImplPtr = boost::intrusive_ptr<IoImpl>;
+  class MessImpl;
+  using MessImplPtr = boost::intrusive_ptr<MessImpl>;
   class MutexImpl;
   using MutexImplPtr = boost::intrusive_ptr<MutexImpl>;
   class MutexAcquisitionImpl;
@@ -170,6 +181,7 @@ namespace activity {
   using SleepImplPtr = boost::intrusive_ptr<SleepImpl>;
 
   class MailboxImpl;
+  class MessageQueueImpl;
 }
 namespace context {
 class Context;
@@ -232,6 +244,7 @@ using s4u_Link              = simgrid::s4u::Link;
 using s4u_File              = simgrid::s4u::File;
 using s4u_ConditionVariable = simgrid::s4u::ConditionVariable;
 using s4u_Mailbox           = simgrid::s4u::Mailbox;
+using s4u_MessageQueue      = simgrid::s4u::MessageQueue;
 using s4u_Mutex             = simgrid::s4u::Mutex;
 using s4u_Semaphore         = simgrid::s4u::Semaphore;
 using s4u_Disk              = simgrid::s4u::Disk;
@@ -252,6 +265,7 @@ typedef struct s4u_Link s4u_Link;
 typedef struct s4u_File s4u_File;
 typedef struct s4u_ConditionVariable s4u_ConditionVariable;
 typedef struct s4u_Mailbox s4u_Mailbox;
+typedef struct s4u_MessageQueue s4u_MessageQueue;
 typedef struct s4u_Mutex s4u_Mutex;
 typedef struct s4u_Semaphore s4u_Semaphore;
 typedef struct s4u_Disk s4u_Disk;
@@ -271,6 +285,8 @@ typedef s4u_ConditionVariable* sg_cond_t;
 typedef const s4u_ConditionVariable* const_sg_cond_t;
 typedef s4u_Mailbox* sg_mailbox_t;
 typedef const s4u_Mailbox* const_sg_mailbox_t;
+typedef s4u_MessageQueue* sg_messagequeue_t;
+typedef const s4u_MessageQueue* const_sg_messagequeue_t;
 typedef s4u_Mutex* sg_mutex_t;
 typedef const s4u_Mutex* const_sg_mutex_t;
 typedef s4u_Semaphore* sg_sem_t;

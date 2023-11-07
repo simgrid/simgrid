@@ -750,7 +750,8 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<Mutex, MutexPtr>(m, "Mutex",
                               "A classical mutex, but blocking in the simulation world."
                               "See the C++ documentation for details.")
-      .def(py::init<>(&Mutex::create), py::call_guard<py::gil_scoped_release>(), "Mutex constructor.")
+      .def(py::init<>(&Mutex::create), py::call_guard<py::gil_scoped_release>(),
+           "Mutex constructor (pass True as a parameter to get a recursive Mutex).", py::arg("recursive") = false)
       .def("lock", &Mutex::lock, py::call_guard<py::gil_scoped_release>(), "Block until the mutex is acquired.")
       .def("try_lock", &Mutex::try_lock, py::call_guard<py::gil_scoped_release>(),
            "Try to acquire the mutex. Return true if the mutex was acquired, false otherwise.")

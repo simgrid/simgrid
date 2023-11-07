@@ -99,7 +99,7 @@ ssize_t Io::deprecated_wait_any_for(const std::vector<IoPtr>& ios, double timeou
 {
   ActivitySet set;
   for (const auto& io : ios)
-    set.push(boost::dynamic_pointer_cast<Activity>(io));
+    set.push(io);
 
   auto* ret = set.wait_any_for(timeout).get();
   for (size_t i = 0; i < ios.size(); i++)

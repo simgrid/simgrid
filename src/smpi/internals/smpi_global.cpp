@@ -59,51 +59,51 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
  * See https://www.akkadia.org/drepper/dsohowto.pdf
  * and https://lists.freebsd.org/pipermail/freebsd-current/2016-March/060284.html
 */
-#if !RTLD_DEEPBIND || HAVE_SANITIZER_ADDRESS || HAVE_SANITIZER_THREAD
+#if !defined(RTLD_DEEPBIND) || !RTLD_DEEPBIND || HAVE_SANITIZER_ADDRESS || HAVE_SANITIZER_THREAD
 #define WANT_RTLD_DEEPBIND 0
 #else
 #define WANT_RTLD_DEEPBIND RTLD_DEEPBIND
 #endif
 
 #if HAVE_PAPI
-std::map</* computation unit name */ std::string, papi_process_data, std::less<>> units2papi_setup;
+  std::map</* computation unit name */ std::string, papi_process_data, std::less<>> units2papi_setup;
 #endif
 
-std::unordered_map<std::string, double> location2speedup;
+  std::unordered_map<std::string, double> location2speedup;
 
-static int smpi_exit_status = 0;
-static xbt_os_timer_t global_timer;
-static std::vector<std::string> privatize_libs_paths;
+  static int smpi_exit_status = 0;
+  static xbt_os_timer_t global_timer;
+  static std::vector<std::string> privatize_libs_paths;
 
-// No instance gets manually created; check also the smpirun.in script as
-// this default name is used there as well (when the <actor> tag is generated).
-static const std::string smpi_default_instance_name("smpirun");
+  // No instance gets manually created; check also the smpirun.in script as
+  // this default name is used there as well (when the <actor> tag is generated).
+  static const std::string smpi_default_instance_name("smpirun");
 
-static simgrid::config::Flag<std::string>
-    smpi_hostfile("smpi/hostfile",
-                  "Classical MPI hostfile containing list of machines to dispatch "
-                  "the processes, one per line",
-                  "");
+  static simgrid::config::Flag<std::string>
+      smpi_hostfile("smpi/hostfile",
+                    "Classical MPI hostfile containing list of machines to dispatch "
+                    "the processes, one per line",
+                    "");
 
-static simgrid::config::Flag<std::string> smpi_replay("smpi/replay",
-                                                      "Replay a trace instead of executing the application", "");
+  static simgrid::config::Flag<std::string> smpi_replay("smpi/replay",
+                                                        "Replay a trace instead of executing the application", "");
 
-static simgrid::config::Flag<int> smpi_np("smpi/np", "Number of processes to be created", 0);
+  static simgrid::config::Flag<int> smpi_np("smpi/np", "Number of processes to be created", 0);
 
-static simgrid::config::Flag<int> smpi_map("smpi/map", "Display the mapping between nodes and processes", 0);
+  static simgrid::config::Flag<int> smpi_map("smpi/map", "Display the mapping between nodes and processes", 0);
 
-std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)> smpi_comm_copy_data_callback =
-    &smpi_comm_copy_buffer_callback;
+  std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)> smpi_comm_copy_data_callback =
+      &smpi_comm_copy_buffer_callback;
 
-simgrid::smpi::ActorExt* smpi_process()
-{
-  simgrid::s4u::ActorPtr me = simgrid::s4u::Actor::self();
+  simgrid::smpi::ActorExt* smpi_process()
+  {
+    simgrid::s4u::ActorPtr me = simgrid::s4u::Actor::self();
 
-  if (me == nullptr) // This happens sometimes (eg, when linking against NS3 because it pulls openMPI...)
-    return nullptr;
+    if (me == nullptr) // This happens sometimes (eg, when linking against NS3 because it pulls openMPI...)
+      return nullptr;
 
-  return me->extension<simgrid::smpi::ActorExt>();
-}
+    return me->extension<simgrid::smpi::ActorExt>();
+  }
 
 simgrid::smpi::ActorExt* smpi_process_remote(simgrid::s4u::ActorPtr actor)
 {

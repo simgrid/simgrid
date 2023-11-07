@@ -12,12 +12,12 @@ echo "XXXXXXXXXXXXXXXX Install APT dependencies"
 $SUDO apt-get update
 $SUDO apt-get -y install build-essential libboost-all-dev wget git xsltproc
 
-for i in master 1.3 ; do
+for i in master starpu-1.3 ; do
   echo "XXXXXXXXXXXXXXXX Build and test StarPU $i"
   rm -rf starpu*
-  wget https://files.inria.fr/starpu/simgrid/starpu-simgrid-$i.tar.gz
-  md5sum starpu-simgrid-$i.tar.gz
-  tar xf starpu-simgrid-$i.tar.gz
+  wget https://files.inria.fr/starpu/testing/$i/starpu-nightly-latest.tar.gz
+  md5sum starpu-nightly-latest.tar.gz
+  tar xf starpu-nightly-latest.tar.gz
   cd starpu-1*
 
   # NOTE: Do *not* introduce parameters to "make it work" here.

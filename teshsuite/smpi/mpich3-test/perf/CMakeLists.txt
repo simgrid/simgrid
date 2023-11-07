@@ -1,4 +1,4 @@
-if(enable_smpi AND enable_smpi_MPICH3_testsuite)
+if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff")
 
@@ -13,7 +13,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   endforeach()
 endif()
 
-if (enable_smpi_MPICH3_testsuite AND HAVE_RAW_CONTEXTS)
+if (enable_testsuite_smpi_MPICH3 AND HAVE_RAW_CONTEXTS)
   ADD_TEST(test-smpi-mpich3-perf-raw       ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/perf ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests "-wrapper=${VALGRIND_WRAPPER}" -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -tests=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/perf/testlist -execarg=-platform\ ${CMAKE_HOME_DIRECTORY}/examples/platforms/cluster_backbone.xml -execarg=--log=root.thr:critical -execarg=--cfg=smpi/async-small-thresh:65536 -execarg=--cfg=contexts/factory:raw -execarg=--cfg=smpi/simulate-computation:0)
 endif()
 

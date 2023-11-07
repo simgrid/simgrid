@@ -43,6 +43,9 @@ add_custom_target(simgrid_convert_TI_traces ALL
 
 # libraries
 install(TARGETS simgrid DESTINATION ${CMAKE_INSTALL_LIBDIR}/)
+if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  install(TARGETS sthread DESTINATION ${CMAKE_INSTALL_LIBDIR}/)
+endif()
 
 # pkg-config files
 configure_file("${CMAKE_HOME_DIRECTORY}/tools/pkg-config/simgrid.pc.in"

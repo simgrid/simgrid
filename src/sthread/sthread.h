@@ -32,9 +32,21 @@ int sthread_create(sthread_t* thread, const /*pthread_attr_t*/ void* attr, void*
 int sthread_join(sthread_t thread, void** retval);
 
 typedef struct {
+  unsigned recursive : 1;
+  unsigned errorcheck : 1;
+  unsigned robust : 1;
+} sthread_mutexattr_t;
+
+int sthread_mutexattr_init(sthread_mutexattr_t* attr);
+int sthread_mutexattr_settype(sthread_mutexattr_t* attr, int type);
+int sthread_mutexattr_gettype(const sthread_mutexattr_t* attr, int* type);
+int sthread_mutexattr_getrobust(const sthread_mutexattr_t* attr, int* robustness);
+int sthread_mutexattr_setrobust(sthread_mutexattr_t* attr, int robustness);
+
+typedef struct {
   void* mutex;
 } sthread_mutex_t;
-int sthread_mutex_init(sthread_mutex_t* mutex, const /*pthread_mutexattr_t*/ void* attr);
+int sthread_mutex_init(sthread_mutex_t* mutex, const sthread_mutexattr_t* attr);
 int sthread_mutex_lock(sthread_mutex_t* mutex);
 int sthread_mutex_trylock(sthread_mutex_t* mutex);
 int sthread_mutex_unlock(sthread_mutex_t* mutex);
@@ -53,8 +65,8 @@ int sthread_sem_timedwait(sthread_sem_t* sem, const struct timespec* abs_timeout
 int sthread_gettimeofday(struct timeval* tv);
 void sthread_sleep(double seconds);
 
-int sthread_access_begin(void* objaddr, const char* objname, const char* file, int line);
-void sthread_access_end(void* objaddr, const char* objname, const char* file, int line);
+int sthread_access_begin(void* objaddr, const char* objname, const char* file, int line, const char* function);
+void sthread_access_end(void* objaddr, const char* objname, const char* file, int line, const char* function);
 
 #if defined(__cplusplus)
 }

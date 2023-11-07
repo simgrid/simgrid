@@ -43,6 +43,17 @@ email.
 .. _simgrid AUR package: https://aur.archlinux.org/packages/simgrid/
 .. _AUR official documentation: https://wiki.archlinux.org/title/Arch_User_Repository
 
+Binaries from macOS
+^^^^^^^^^^^^^^^^^^^
+
+SimGrid can be found in the Homebrew package manager. Troubleshooting:
+
+warning: dylib (libsimgrid.dylib) was built for newer macOS version (14.0) than being linked (13.3)
+  This was reported with the SimGrid version from Homebrew on a Mac book air M1 (ARM).
+  The solution is simply to export this variable before the compilation of your binaries:
+
+  ``export MACOSX_DEPLOYMENT_TARGET=14.0``
+
 .. _deprecation_policy:
 
 Version numbering and deprecation
@@ -102,13 +113,11 @@ python bindings (optional):
   - On Debian / Ubuntu: ``apt install pybind11-dev python3-dev``
 Model-checking mandatory dependencies
   - On Debian / Ubuntu: ``apt install libevent-dev``
-Model-checking optional dependencies
-  - On Debian / Ubuntu: ``apt install libunwind-dev libdw-dev libelf-dev``
 Eigen3 (optional)
   - On Debian / Ubuntu: ``apt install libeigen3-dev``
   - On CentOS / Fedora: ``dnf install eigen3-devel``
   - On macOS with homebrew: ``brew install eigen``
-  - Use EIGEN3_HINT to specify where it's installed if cmake doesn't find it automatically.
+  - Use EIGEN3_HINT to specify where it's installed if cmake doesn't find it automatically. Set EIGEN3_HINT=OFF to disable detection even if it could be found.
 JSON (optional, for the DAG wfcommons loader)
   - On Debian / Ubuntu: ``apt install nlohmann-json3-dev``
   - Use nlohmann_json_HINT to specify where it's installed if cmake doesn't find it automatically.
@@ -243,10 +252,9 @@ enable_mallocators (ON/off)
   Activates our internal memory caching mechanism. This produces faster
   code, but it may fool the debuggers.
 
-enable_model-checking (on/OFF)
-  Activates the liveness verification mode. This will hinder simulation speed even when the model checker is not activated at run
-  time, because some optimizations such as LTO must be disabled at compile time. You need to have the :ref:`required
-  build-dependencies <install_src_deps>` to activate this option.
+enable_model-checking (ON/off)
+  Activates the verification mode. This should not impact the performance of your simulations if you build it but don't use it,
+  but you can still disable it to save some compilation time.
 
 enable_ns3 (on/OFF)
   Activates the ns-3 bindings. See section :ref:`models_ns3`.
@@ -254,10 +262,13 @@ enable_ns3 (on/OFF)
 enable_smpi (ON/off)
   Allows one to run MPI code on top of SimGrid.
 
-enable_smpi_MBI_testsuite (on/OFF)
-  Adds many extra tests for the model checker module.
+enable_testsuite_McMini (on/OFF)
+  Adds several extra tests for the model checker module (targeting threaded applications).
 
-enable_smpi_MPICH3_testsuite (on/OFF)
+enable_testsuite_smpi_MBI (on/OFF)
+  Adds many extra tests for the model checker module (targeting MPI applications).
+
+enable_testsuite_smpi_MPICH3 (on/OFF)
   Adds many extra tests for the MPI module.
 
 minimal-bindings (on/OFF)
@@ -269,6 +280,7 @@ NS3_HINT (empty by default)
 
 EIGEN3_HINT (empty by default)
   Alternative path into which Eigen3 should be searched for.
+  Providing the value OFF as an hint will disable the detection alltogether.
 
 SIMGRID_PYTHON_LIBDIR (auto-detected)
   Where to install the Python module library. By default, it is set to the cmake Python3_SITEARCH variable if installing to /usr,
@@ -401,7 +413,7 @@ Windows-specific instructions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The best solution to get SimGrid working on windows is to install the
-Ubuntu subsystem of Windows 10. All of SimGrid (but the liveness model checker)
+Ubuntu subsystem of Windows 10. All of SimGrid 
 works in this setting. Native builds never really worked, and they are
 disabled starting with SimGrid v3.33.
 
