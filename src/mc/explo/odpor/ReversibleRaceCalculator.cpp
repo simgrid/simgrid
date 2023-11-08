@@ -199,7 +199,7 @@ bool ReversibleRaceCalculator::is_race_reversible_WaitAny(const Execution&, Exec
 {
   // TODO: We need to check if any of the transitions
   // waited on occurred before `e1`
-  return false;
+  return true; // Let's overapproximate to not miss branches
 }
 
 } // namespace simgrid::mc::odpor

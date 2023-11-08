@@ -136,7 +136,9 @@ void DFSExplorer::run()
     const aid_t next = reduction_mode_ == ReductionMode::odpor ? state->next_odpor_transition()
                                                                : std::get<0>(state->next_transition_guided());
 
-    if (next < 0) { // If there is no more transition in the current state, backtrack.
+    if (next < 0 || not state->is_actor_enabled(next)) {
+      // If there is no more transition in the current state (or if ODPOR picked an actor that is not enabled --
+      // ReversibleRace is an overapproximation), backtrace
       XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
                stack_.size() + 1);
 
