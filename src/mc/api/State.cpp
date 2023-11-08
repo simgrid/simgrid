@@ -212,9 +212,8 @@ void State::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
     // Find an enabled transition to pick
     for (const auto& [_, actor] : get_actors_list()) {
       if (actor.is_enabled()) {
-        // For each variant of the transition, we want
-        // to insert the action into the tree. This ensures
-        // that all variants are searched
+        // For each variant of the transition that is enabled, we want to insert the action into the tree.
+        // This ensures that all variants are searched
         for (unsigned times = 0; times < actor.get_max_considered(); ++times) {
           wakeup_tree_.insert(prior, odpor::PartialExecution{actor.get_transition(times)});
         }

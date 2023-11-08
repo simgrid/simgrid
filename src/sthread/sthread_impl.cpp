@@ -181,7 +181,7 @@ int sthread_mutex_lock(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
-  XBT_DEBUG("%s(%p)", __FUNCTION__, mutex);
+  XBT_DEBUG("%s(%p)", __func__, mutex);
   static_cast<sg4::Mutex*>(mutex->mutex)->lock();
   return 0;
 }
@@ -192,7 +192,7 @@ int sthread_mutex_trylock(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
-  XBT_DEBUG("%s(%p)", __FUNCTION__, mutex);
+  XBT_DEBUG("%s(%p)", __func__, mutex);
   if (static_cast<sg4::Mutex*>(mutex->mutex)->try_lock())
     return 0;
   return EBUSY;
@@ -204,7 +204,7 @@ int sthread_mutex_unlock(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
-  XBT_DEBUG("%s(%p)", __FUNCTION__, mutex);
+  XBT_DEBUG("%s(%p)", __func__, mutex);
   static_cast<sg4::Mutex*>(mutex->mutex)->unlock();
   return 0;
 }
@@ -214,7 +214,7 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
-  XBT_DEBUG("%s(%p)", __FUNCTION__, mutex);
+  XBT_DEBUG("%s(%p)", __func__, mutex);
   intrusive_ptr_release(static_cast<sg4::Mutex*>(mutex->mutex));
   return 0;
 }

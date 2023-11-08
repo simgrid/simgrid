@@ -3,9 +3,9 @@
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-barrier 1 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
 > [Checker] Start a DFS exploration. Reduction is: dpor.
 > [Checker] Sleep set actually containing:
-> [Checker] Execute 1: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
+> [Checker] Executed 1: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
 > [Checker] Sleep set actually containing:
-> [Checker] Execute 1: BARRIER_WAIT(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
+> [Checker] Executed 1: BARRIER_WAIT(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
 > [Checker] 0 actors remain, but none of them need to be interleaved (depth 4).
 > [Checker] Execution came to an end at 1;1 (state: 3, depth: 3)
 > [Checker] Backtracking from 1;1
@@ -14,19 +14,19 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-barrier 2 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
 > [Checker] Start a DFS exploration. Reduction is: dpor.
 > [Checker] Sleep set actually containing:
-> [Checker] Execute 1: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
+> [Checker] Executed 1: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
 > [Checker] Sleep set actually containing:
-> [Checker] Execute 2: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
+> [Checker] Executed 2: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
 > [Checker] INDEPENDENT Transitions:
 > [Checker]  #1 BARRIER_ASYNC_LOCK(barrier: 0) (state=1)
 > [Checker]  #2 BARRIER_ASYNC_LOCK(barrier: 0) (state=2)
 > [Checker] Sleep set actually containing:
-> [Checker] Execute 1: BARRIER_WAIT(barrier: 0) (stack depth: 3, state: 3, 0 interleaves)
+> [Checker] Executed 1: BARRIER_WAIT(barrier: 0) (stack depth: 3, state: 3, 0 interleaves)
 > [Checker] Dependent Transitions:
 > [Checker]  #2 BARRIER_ASYNC_LOCK(barrier: 0) (state=2)
 > [Checker]  #1 BARRIER_WAIT(barrier: 0) (state=3)
 > [Checker] Sleep set actually containing:
-> [Checker] Execute 2: BARRIER_WAIT(barrier: 0) (stack depth: 4, state: 4, 0 interleaves)
+> [Checker] Executed 2: BARRIER_WAIT(barrier: 0) (stack depth: 4, state: 4, 0 interleaves)
 > [Checker] INDEPENDENT Transitions:
 > [Checker]  #1 BARRIER_WAIT(barrier: 0) (state=3)
 > [Checker]  #2 BARRIER_WAIT(barrier: 0) (state=4)
@@ -38,7 +38,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Backtracking from 1;2;1;2
 > [Checker] Sleep set actually containing:
 > [Checker]   <1,BARRIER_ASYNC_LOCK(barrier: 0)>
-> [Checker] Execute 2: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
+> [Checker] Executed 2: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
 > [Checker] 2 actors remain, but none of them need to be interleaved (depth 3).
 > [Checker] Backtracking from 2
 > [Checker] DFS exploration ended. 6 unique states visited; 1 backtracks (0 transition replays, 7 states visited overall)
@@ -46,14 +46,14 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-barrier 3 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
 > [Checker] Start a DFS exploration. Reduction is: dpor.
 > [Checker] Sleep set actually containing:
-> [Checker] Execute 1: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
+> [Checker] Executed 1: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
 > [Checker] Sleep set actually containing:
-> [Checker] Execute 2: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
+> [Checker] Executed 2: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
 > [Checker] INDEPENDENT Transitions:
 > [Checker]  #1 BARRIER_ASYNC_LOCK(barrier: 0) (state=1)
 > [Checker]  #2 BARRIER_ASYNC_LOCK(barrier: 0) (state=2)
 > [Checker] Sleep set actually containing:
-> [Checker] Execute 3: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 3, state: 3, 0 interleaves)
+> [Checker] Executed 3: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 3, state: 3, 0 interleaves)
 > [Checker] INDEPENDENT Transitions:
 > [Checker]  #2 BARRIER_ASYNC_LOCK(barrier: 0) (state=2)
 > [Checker]  #3 BARRIER_ASYNC_LOCK(barrier: 0) (state=3)
@@ -61,12 +61,12 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker]  #1 BARRIER_ASYNC_LOCK(barrier: 0) (state=1)
 > [Checker]  #3 BARRIER_ASYNC_LOCK(barrier: 0) (state=3)
 > [Checker] Sleep set actually containing:
-> [Checker] Execute 1: BARRIER_WAIT(barrier: 0) (stack depth: 4, state: 4, 0 interleaves)
+> [Checker] Executed 1: BARRIER_WAIT(barrier: 0) (stack depth: 4, state: 4, 0 interleaves)
 > [Checker] Dependent Transitions:
 > [Checker]  #3 BARRIER_ASYNC_LOCK(barrier: 0) (state=3)
 > [Checker]  #1 BARRIER_WAIT(barrier: 0) (state=4)
 > [Checker] Sleep set actually containing:
-> [Checker] Execute 2: BARRIER_WAIT(barrier: 0) (stack depth: 5, state: 5, 0 interleaves)
+> [Checker] Executed 2: BARRIER_WAIT(barrier: 0) (stack depth: 5, state: 5, 0 interleaves)
 > [Checker] INDEPENDENT Transitions:
 > [Checker]  #1 BARRIER_WAIT(barrier: 0) (state=4)
 > [Checker]  #2 BARRIER_WAIT(barrier: 0) (state=5)
@@ -74,7 +74,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker]  #3 BARRIER_ASYNC_LOCK(barrier: 0) (state=3)
 > [Checker]  #2 BARRIER_WAIT(barrier: 0) (state=5)
 > [Checker] Sleep set actually containing:
-> [Checker] Execute 3: BARRIER_WAIT(barrier: 0) (stack depth: 6, state: 6, 0 interleaves)
+> [Checker] Executed 3: BARRIER_WAIT(barrier: 0) (stack depth: 6, state: 6, 0 interleaves)
 > [Checker] INDEPENDENT Transitions:
 > [Checker]  #2 BARRIER_WAIT(barrier: 0) (state=5)
 > [Checker]  #3 BARRIER_WAIT(barrier: 0) (state=6)
@@ -89,7 +89,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Backtracking from 1;2;3;1;2;3
 > [Checker] Sleep set actually containing:
 > [Checker]   <2,BARRIER_ASYNC_LOCK(barrier: 0)>
-> [Checker] Execute 3: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
+> [Checker] Executed 3: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
 > [Checker] INDEPENDENT Transitions:
 > [Checker]  #1 BARRIER_ASYNC_LOCK(barrier: 0) (state=1)
 > [Checker]  #3 BARRIER_ASYNC_LOCK(barrier: 0) (state=2)

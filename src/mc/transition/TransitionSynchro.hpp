@@ -35,13 +35,15 @@ public:
 };
 
 class SemaphoreTransition : public Transition {
-  uintptr_t sem_;
+  unsigned int sem_; // ID
   bool granted_;
+  unsigned capacity_;
 
 public:
   std::string to_string(bool verbose) const override;
   SemaphoreTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream);
   bool depends(const Transition* other) const override;
+  int get_capacity() const { return capacity_; }
 };
 
 } // namespace simgrid::mc

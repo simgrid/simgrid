@@ -168,7 +168,7 @@ CommImpl* CommImpl::start()
 
 std::vector<s4u::Link*> CommImpl::get_traversed_links() const
 {
-  xbt_assert(get_state() != State::WAITING, "You cannot use %s() if your communication is not ready (%s)", __FUNCTION__,
+  xbt_assert(get_state() != State::WAITING, "You cannot use %s() if your communication is not ready (%s)", __func__,
              get_state_str());
   std::vector<s4u::Link*> vlinks;
   XBT_ATTRIB_UNUSED double res = 0;

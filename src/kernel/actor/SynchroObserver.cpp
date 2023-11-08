@@ -31,7 +31,8 @@ void MutexObserver::serialize(std::stringstream& stream) const
 std::string MutexObserver::to_string() const
 {
   return std::string(mc::Transition::to_c_str(type_)) + "(mutex_id:" + std::to_string(get_mutex()->get_id()) +
-         " owner:" + std::to_string(get_mutex()->get_owner()->get_pid()) + ")";
+         " owner:" +
+         (get_mutex()->get_owner() == nullptr ? "none" : std::to_string(get_mutex()->get_owner()->get_pid())) + ")";
 }
 
 bool MutexObserver::is_enabled()
@@ -48,7 +49,8 @@ SemaphoreObserver::SemaphoreObserver(ActorImpl* actor, mc::Transition::Type type
 
 void SemaphoreObserver::serialize(std::stringstream& stream) const
 {
-  stream << (short)type_ << ' ' << get_sem()->get_id() << ' ' << false /* Granted is ignored for LOCK/UNLOCK */;
+  stream << (short)type_ << ' ' << get_sem()->get_id() << ' ' << false /* Granted is ignored for LOCK/UNLOCK */ << ' '
+         << get_sem()->get_capacity();
 }
 std::string SemaphoreObserver::to_string() const
 {
@@ -66,7 +68,8 @@ bool SemaphoreAcquisitionObserver::is_enabled()
 }
 void SemaphoreAcquisitionObserver::serialize(std::stringstream& stream) const
 {
-  stream << (short)type_ << ' ' << acquisition_->semaphore_->get_id() << ' ' << acquisition_->granted_;
+  stream << (short)type_ << ' ' << acquisition_->semaphore_->get_id() << ' ' << acquisition_->granted_ << ' '
+         << acquisition_->semaphore_->get_capacity();
 }
 std::string SemaphoreAcquisitionObserver::to_string() const
 {

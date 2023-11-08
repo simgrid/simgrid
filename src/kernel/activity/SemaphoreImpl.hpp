@@ -49,7 +49,7 @@ class XBT_PUBLIC SemaphoreImpl {
   std::deque<SemAcquisitionImplPtr> ongoing_acquisitions_;
 
   static unsigned next_id_;
-  unsigned id_ = next_id_++;
+  const unsigned id_ = next_id_++;
 
   friend SemAcquisitionImpl;
   friend actor::SemaphoreObserver;

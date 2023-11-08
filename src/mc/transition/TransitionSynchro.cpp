@@ -109,16 +109,16 @@ bool MutexTransition::depends(const Transition* o) const
 std::string SemaphoreTransition::to_string(bool verbose) const
 {
   if (type_ == Type::SEM_ASYNC_LOCK || type_ == Type::SEM_UNLOCK)
-    return xbt::string_printf("%s(semaphore: %" PRIxPTR ")", Transition::to_c_str(type_), sem_);
+    return xbt::string_printf("%s(semaphore: %u, capacity: %u)", Transition::to_c_str(type_), capacity_, sem_);
   if (type_ == Type::SEM_WAIT)
-    return xbt::string_printf("%s(semaphore: %" PRIxPTR ", granted: %s)", Transition::to_c_str(type_), sem_,
-                              granted_ ? "yes" : "no");
+    return xbt::string_printf("%s(semaphore: %u, capacity: %u, granted: %s)", Transition::to_c_str(type_), capacity_,
+                              sem_, granted_ ? "yes" : "no");
   THROW_IMPOSSIBLE;
 }
 SemaphoreTransition::SemaphoreTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream)
     : Transition(type, issuer, times_considered)
 {
-  xbt_assert(stream >> sem_ >> granted_);
+  xbt_assert(stream >> sem_ >> granted_ >> capacity_);
 }
 bool SemaphoreTransition::depends(const Transition* o) const
 {

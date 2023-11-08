@@ -89,6 +89,8 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
 {
   kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(message->aid_);
   xbt_assert(actor != nullptr, "Invalid pid %ld", message->aid_);
+  xbt_assert(actor->simcall_.observer_ == nullptr || actor->simcall_.observer_->is_enabled(),
+             "Please, model-checker, don't execute disabled transitions.");
 
   // The client may send some messages to the server while processing the transition
   actor->simcall_handle(message->times_considered_);
