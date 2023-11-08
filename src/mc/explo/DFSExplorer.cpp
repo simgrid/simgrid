@@ -371,7 +371,8 @@ void DFSExplorer::backtrack()
      * relation)
      */
     for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
-      for (const auto e : execution_seq_.get_reversible_races_of(e_prime)) {
+	XBT_DEBUG("ODPOR: Now considering all possible race with `%u`", e_prime);
+	for (const auto e : execution_seq_.get_reversible_races_of(e_prime)) {
         XBT_DEBUG("ODPOR: Reversible race detected between events `%u` and `%u`", e, e_prime);
         State& prev_state = *stack_[e];
         if (const auto v = execution_seq_.get_odpor_extension_from(e, e_prime, prev_state); v.has_value()) {

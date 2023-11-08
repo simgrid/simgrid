@@ -11,7 +11,17 @@
 #include <xbt/asserts.h>
 #include <xbt/ex.h>
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor_reversible_race, mc_dfs, "ODPOR exploration algorithm of the model-checker");
+
 namespace simgrid::mc::odpor {
+
+/**
+   The reversible race detector should only be used if we already have the assumption
+   e1 <* e2 (see Source set: a foundation for ODPOR). In particular this means that :
+   - e1 -->_E e2
+   - proc(e1) != proc(e2)
+   - there is no event e3 s.t. e1 --> e3 --> e2
+*/
 
 bool ReversibleRaceCalculator::is_race_reversible(const Execution& E, Execution::EventHandle e1,
                                                   Execution::EventHandle e2)
@@ -141,8 +151,12 @@ bool ReversibleRaceCalculator::is_race_reversible_MutexUnlock(const Execution&, 
 bool ReversibleRaceCalculator::is_race_reversible_MutexWait(const Execution& E, Execution::EventHandle e1,
                                                             const Transition* /*e2*/)
 {
-  // TODO: Get the semantics correct here
+  // The only possibilities for e1 to satisfy the pre-condition are :
+    // - MUTEX_ASYNC_LOCK
+
+  
   const auto e1_action = E.get_transition_for_handle(e1)->type_;
+  xbt_assert(e1_action == Transition::Type::MUTEX_UNLOCK);
   return e1_action != Transition::Type::MUTEX_ASYNC_LOCK && e1_action != Transition::Type::MUTEX_UNLOCK;
 }
 
@@ -164,6 +178,10 @@ bool ReversibleRaceCalculator::is_race_reversible_SemWait(const Execution&, Exec
                                                           const Transition* /*e2*/)
 {
   // TODO: Get the semantics correct here
+    // Certainement qu'il suffit de considérer les SemUnlock. ⋀ a priori,
+    // il doit même suffir de considérer le cas où leur capacity après execution est <=1
+    // ces cas disent qu'avant éxecution la capacity était de 0. Donc aucune chance de pouvoir
+    // wait avant le unlock.
   return false;
 }
 

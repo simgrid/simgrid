@@ -12,6 +12,8 @@
 #include <limits>
 #include <vector>
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor_execution, mc_dfs, "ODPOR exploration algorithm of the model-checker");
+
 namespace simgrid::mc::odpor {
 
 std::vector<std::string> get_textual_trace(const PartialExecution& w)
@@ -64,18 +66,22 @@ std::vector<std::string> Execution::get_textual_trace() const
 std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execution::EventHandle target) const
 {
   std::unordered_set<Execution::EventHandle> racing_events;
+  // This keep tracks of events that happens-before the target
   std::unordered_set<Execution::EventHandle> disqualified_events;
 
   // For each event of the execution
   for (auto e_i = target; e_i != std::numeric_limits<Execution::EventHandle>::max(); e_i--) {
     // We need `e_i -->_E target` as a necessary condition
     if (not happens_before(e_i, target)) {
+      XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` discarded because `%u` --\\-->_E `%u`", target, e_i, e_i, target);
       continue;
     }
 
     // Further, `proc(e_i) != proc(target)`
     if (get_actor_with_handle(e_i) == get_actor_with_handle(target)) {
       disqualified_events.insert(e_i);
+      XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` disqualified because proc(`%u`)=proc(`%u`)", target, e_i, e_i,
+                target);
       continue;
     }
 
@@ -87,6 +93,8 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
       // then e_i --->_E target indirectly (either through
       // e_j directly, or transitively through e_j)
       if (disqualified_events.count(e_j) > 0 && happens_before(e_i, e_j)) {
+        XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` disqualified because `%u` happens-between `%u`-->`%u`-->`%u`)",
+                  target, e_i, e_j, e_i, e_j, target);
         disqualified_events.insert(e_i);
         break;
       }
@@ -98,6 +106,9 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
     // it (since this would transitively make it the event
     // which "happens-between" `target` and `e`)
     if (disqualified_events.count(e_i) == 0) {
+	XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` is a valid racing event",
+                  target, e_i);
+        disqualified_events.insert(e_i);
       racing_events.insert(e_i);
       disqualified_events.insert(e_i);
     }
