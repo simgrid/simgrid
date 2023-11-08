@@ -108,7 +108,6 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
     if (disqualified_events.count(e_i) == 0) {
 	XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` is a valid racing event",
                   target, e_i);
-        disqualified_events.insert(e_i);
       racing_events.insert(e_i);
       disqualified_events.insert(e_i);
     }
