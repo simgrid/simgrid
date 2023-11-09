@@ -106,8 +106,7 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
     // it (since this would transitively make it the event
     // which "happens-between" `target` and `e`)
     if (disqualified_events.count(e_i) == 0) {
-	XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` is a valid racing event",
-                  target, e_i);
+      XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` is a valid racing event", target, e_i);
       racing_events.insert(e_i);
       disqualified_events.insert(e_i);
     }

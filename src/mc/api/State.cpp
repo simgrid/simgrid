@@ -227,10 +227,9 @@ void State::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
 void State::sprout_tree_from_parent_state()
 {
 
-    XBT_DEBUG("Initializing Wut with parent one:");
-    XBT_DEBUG("\n%s", parent_state_->wakeup_tree_.string_of_whole_tree().c_str());
+  XBT_DEBUG("Initializing Wut with parent one:");
+  XBT_DEBUG("\n%s", parent_state_->wakeup_tree_.string_of_whole_tree().c_str());
 
-    
   xbt_assert(parent_state_ != nullptr, "Attempting to construct a wakeup tree for the root state "
                                        "(or what appears to be, rather for state without a parent defined)");
   const auto min_process_node = parent_state_->wakeup_tree_.get_min_single_process_node();
@@ -270,11 +269,11 @@ void State::remove_subtree_using_current_out_transition()
   wakeup_tree_.remove_min_single_process_subtree();
 }
 
-    void State::remove_subtree_at_aid(const aid_t proc) {
-	wakeup_tree_.remove_subtree_at_aid(proc);
-	
-    }
-    
+void State::remove_subtree_at_aid(const aid_t proc)
+{
+  wakeup_tree_.remove_subtree_at_aid(proc);
+}
+
 odpor::WakeupTree::InsertionResult State::insert_into_wakeup_tree(const odpor::PartialExecution& pe,
                                                                   const odpor::Execution& E)
 {

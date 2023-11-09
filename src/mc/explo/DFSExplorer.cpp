@@ -138,7 +138,6 @@ void DFSExplorer::run()
     const aid_t next = reduction_mode_ == ReductionMode::odpor ? state->next_odpor_transition()
                                                                : std::get<0>(state->next_transition_guided());
 
-
     if (next < 0 || not state->is_actor_enabled(next)) {
       if (next >= 0) { // Actor is not enabled, then
         XBT_INFO("Reduction %s wants to execute a disabled transition %s. If it's ODPOR, ReversibleRace is suboptimal.",
@@ -148,9 +147,9 @@ void DFSExplorer::run()
           XBT_INFO("Current trace:");
           for (auto elm : get_textual_trace())
             XBT_ERROR("%s", elm.c_str());
-	  // Remove the disabled transition from the wakeup tree so that ODPOR doesn't try it again
-	  state->remove_subtree_at_aid(next);
-	  state->add_sleep_set(state->get_actors_list().at(next).get_transition());
+          // Remove the disabled transition from the wakeup tree so that ODPOR doesn't try it again
+          state->remove_subtree_at_aid(next);
+          state->add_sleep_set(state->get_actors_list().at(next).get_transition());
         }
       }
       // If there is no more transition in the current state (or if ODPOR picked an actor that is not enabled --

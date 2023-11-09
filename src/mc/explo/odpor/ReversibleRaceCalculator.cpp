@@ -175,7 +175,7 @@ bool ReversibleRaceCalculator::is_race_reversible_SemUnlock(const Execution&, Ex
 bool ReversibleRaceCalculator::is_race_reversible_SemWait(const Execution& E, Execution::EventHandle e1,
                                                           const Transition* /*e2*/)
 {
-  
+
   const auto e1_transition = E.get_transition_for_handle(e1);
   if (e1_transition->type_ == Transition::Type::SEM_UNLOCK &&
       static_cast<const SemaphoreTransition*>(e1_transition)->get_capacity() <= 1) {
