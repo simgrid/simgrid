@@ -169,6 +169,8 @@ public:
    */
   void remove_min_single_process_subtree();
 
+  void remove_subtree_at_aid(aid_t proc);
+
   /**
    * @brief Whether or not this tree is considered empty
    *

@@ -15,7 +15,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wut, mc, "Logging specific to ODPOR WakeupTrees");
 
-
 namespace simgrid::mc::odpor {
 
 void WakeupTreeNode::add_child(WakeupTreeNode* node)
@@ -29,8 +28,9 @@ std::string WakeupTreeNode::string_of_whole_tree(int indentation_level) const
   std::string tabulations = "";
   for (int i = 0; i < indentation_level; i++)
     tabulations += "  ";
-  std::string final_string = action_ == nullptr ? "<>\n" :
-      tabulations + "Actor " + std::to_string(action_->aid_) + ": " + action_->to_string(true) + "\n";
+  std::string final_string = action_ == nullptr ? "<>\n"
+                                                : tabulations + "Actor " + std::to_string(action_->aid_) + ": " +
+                                                      action_->to_string(true) + "\n";
   for (auto node : children_)
     final_string += node->string_of_whole_tree(indentation_level + 1);
   return final_string;
@@ -157,6 +157,15 @@ void WakeupTree::remove_subtree_rooted_at(WakeupTreeNode* root)
   for (WakeupTreeNode* node_to_remove : subtree_contents) {
     this->remove_node(node_to_remove);
   }
+}
+
+void WakeupTree::remove_subtree_at_aid(aid_t proc)
+{
+  for (const auto& child : root_->get_ordered_children())
+    if (child->get_actor() == proc) {
+      this->remove_subtree_rooted_at(child);
+      break;
+    }
 }
 
 void WakeupTree::remove_min_single_process_subtree()

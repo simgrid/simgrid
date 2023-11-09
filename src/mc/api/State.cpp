@@ -270,6 +270,11 @@ void State::remove_subtree_using_current_out_transition()
   wakeup_tree_.remove_min_single_process_subtree();
 }
 
+    void State::remove_subtree_at_aid(const aid_t proc) {
+	wakeup_tree_.remove_subtree_at_aid(proc);
+	
+    }
+    
 odpor::WakeupTree::InsertionResult State::insert_into_wakeup_tree(const odpor::PartialExecution& pe,
                                                                   const odpor::Execution& E)
 {

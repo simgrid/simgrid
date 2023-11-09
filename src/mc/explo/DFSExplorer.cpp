@@ -136,9 +136,29 @@ void DFSExplorer::run()
     const aid_t next = reduction_mode_ == ReductionMode::odpor ? state->next_odpor_transition()
                                                                : std::get<0>(state->next_transition_guided());
 
-    if (next < 0 || not state->is_actor_enabled(next)) {
-      // If there is no more transition in the current state (or if ODPOR picked an actor that is not enabled --
-      // ReversibleRace is an overapproximation), backtrace
+    if (next < 0) {
+      // If there is no more transition in the current state ), backtrace
+      XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
+               stack_.size() + 1);
+
+      if (state->get_actor_count() == 0) {
+        get_remote_app().finalize_app();
+        XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
+                 state->get_num(), stack_.size());
+      }
+
+      this->backtrack();
+      continue;
+    }
+    if (not state->is_actor_enabled(next)) {
+      // if ODPOR picked an actor that is not enabled -- ReversibleRace is an overapproximation
+      xbt_assert(reduction_mode_ == ReductionMode::odpor,
+                 "Only ODPOR should be fool enough to try to execute a disabled transition");
+      XBT_VERB("Preventing ODPOR exploration from executing a disabled transition. The reversibility of the race "
+               "must have been overapproximated");
+
+      state->remove_subtree_at_aid(next);
+      state->add_sleep_set(state->get_actors_list().at(next).get_transition());
       XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
                stack_.size() + 1);
 
@@ -336,11 +356,6 @@ std::shared_ptr<State> DFSExplorer::next_odpor_state()
     XBT_DEBUG("\tPerformed ODPOR 'clean-up'. Sleep set has:");
     for (const auto& [aid, transition] : state->get_sleep_set())
       XBT_DEBUG("\t  <%ld,%s>", aid, transition->to_string().c_str());
-    if (not state->has_empty_tree()) {
-	XBT_DEBUG("\t    found the following non-empty WuT:\n"
-		  "%s", state->string_of_wut().c_str());
-      return state;
-    }
   }
   return nullptr;
 }
@@ -358,8 +373,8 @@ void DFSExplorer::backtrack()
      * ("eventually looks like C", viz. the `~_E` relation)
      */
     for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
-	XBT_DEBUG("ODPOR: Now considering all possible race with `%u`", e_prime);
-	for (const auto e : execution_seq_.get_reversible_races_of(e_prime)) {
+      XBT_DEBUG("ODPOR: Now considering all possible race with `%u`", e_prime);
+      for (const auto e : execution_seq_.get_reversible_races_of(e_prime)) {
         XBT_DEBUG("ODPOR: Reversible race detected between events `%u` and `%u`", e, e_prime);
         State& prev_state = *stack_[e];
         if (const auto v = execution_seq_.get_odpor_extension_from(e, e_prime, prev_state); v.has_value()) {

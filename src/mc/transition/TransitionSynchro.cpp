@@ -109,10 +109,11 @@ bool MutexTransition::depends(const Transition* o) const
 std::string SemaphoreTransition::to_string(bool verbose) const
 {
   if (type_ == Type::SEM_ASYNC_LOCK || type_ == Type::SEM_UNLOCK)
-    return xbt::string_printf("%s(semaphore: %u, capacity: %u)", Transition::to_c_str(type_), capacity_, sem_);
+      return xbt::string_printf("%s(semaphore: %u, capacity: %u)", Transition::to_c_str(type_), sem_, capacity_);
   if (type_ == Type::SEM_WAIT)
-    return xbt::string_printf("%s(semaphore: %u, capacity: %u, granted: %s)", Transition::to_c_str(type_), capacity_,
-                              sem_, granted_ ? "yes" : "no");
+    return xbt::string_printf("%s(semaphore: %u, capacity: %u, granted: %s)", Transition::to_c_str(type_), sem_,
+			      capacity_,
+                              granted_ ? "yes" : "no");
   THROW_IMPOSSIBLE;
 }
 SemaphoreTransition::SemaphoreTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream)
@@ -146,6 +147,10 @@ bool SemaphoreTransition::depends(const Transition* o) const
     if (type_ == Type::SEM_UNLOCK && other->type_ == Type::SEM_UNLOCK)
       return false;
 
+    // UNLCOK indep with a WAIT if the semaphore had enought capacity anyway
+    if (type_ == Type::SEM_UNLOCK && capacity_ > 1 && other->type_ == Type::SEM_WAIT )
+      return false;
+    
     // WAIT indep WAIT:
     // if both enabled (may happen in the initial value is sufficient), the ordering has no impact on the result.
     // If only one enabled, the other won't be enabled by the first one.
@@ -153,6 +158,7 @@ bool SemaphoreTransition::depends(const Transition* o) const
     if (type_ == Type::SEM_WAIT && other->type_ == Type::SEM_WAIT)
       return false;
 
+    
     return true; // Other semaphore cases are dependent
   }
 

@@ -153,13 +153,9 @@ bool ReversibleRaceCalculator::is_race_reversible_MutexUnlock(const Execution&, 
 bool ReversibleRaceCalculator::is_race_reversible_MutexWait(const Execution& E, Execution::EventHandle e1,
                                                             const Transition* /*e2*/)
 {
-  // The only possibilities for e1 to satisfy the pre-condition are :
-    // - MUTEX_ASYNC_LOCK
+  // TODO: for now we over approximate the reversibility
 
-  
-  const auto e1_action = E.get_transition_for_handle(e1)->type_;
-  xbt_assert(e1_action == Transition::Type::MUTEX_UNLOCK);
-  return e1_action != Transition::Type::MUTEX_ASYNC_LOCK && e1_action != Transition::Type::MUTEX_UNLOCK;
+  return true;
 }
 
 bool ReversibleRaceCalculator::is_race_reversible_SemAsyncLock(const Execution&, Execution::EventHandle /*e1*/,
@@ -179,11 +175,13 @@ bool ReversibleRaceCalculator::is_race_reversible_SemUnlock(const Execution&, Ex
 bool ReversibleRaceCalculator::is_race_reversible_SemWait(const Execution& E, Execution::EventHandle e1,
                                                           const Transition* /*e2*/)
 {
-  // Reversible with everynbody but unlock which creates a free token
+  
   const auto e1_transition = E.get_transition_for_handle(e1);
   if (e1_transition->type_ == Transition::Type::SEM_UNLOCK &&
-      static_cast<const SemaphoreTransition*>(e1_transition)->get_capacity() <= 1)
+      static_cast<const SemaphoreTransition*>(e1_transition)->get_capacity() <= 1) {
     return false;
+  }
+  xbt_assert(false, "SEM_WAIT that is dependent with a SEM_UNLOCK should not be reversible. FixMe");
   return true;
 }
 

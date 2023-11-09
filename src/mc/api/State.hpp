@@ -143,6 +143,7 @@ public:
    * `N` running actor `p` of this state's wakeup tree
    */
   void remove_subtree_using_current_out_transition();
+  void remove_subtree_at_aid(aid_t proc);
   bool has_empty_tree() const { return this->wakeup_tree_.empty(); }
   std::string string_of_wut() const { return this->wakeup_tree_.string_of_whole_tree(); }
 
