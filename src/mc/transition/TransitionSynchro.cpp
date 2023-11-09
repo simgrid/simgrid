@@ -146,7 +146,7 @@ bool SemaphoreTransition::depends(const Transition* o) const
     if (type_ == Type::SEM_UNLOCK && other->type_ == Type::SEM_UNLOCK)
       return false;
 
-    // UNLCOK indep with a WAIT if the semaphore had enought capacity anyway
+    // UNLOCK indep with a WAIT if the semaphore had enought capacity anyway
     if (type_ == Type::SEM_UNLOCK && capacity_ > 1 && other->type_ == Type::SEM_WAIT)
       return false;
 
