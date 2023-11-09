@@ -88,6 +88,12 @@ bool MutexTransition::depends(const Transition* o) const
     if (type_ == Type::MUTEX_ASYNC_LOCK && other->type_ == Type::MUTEX_UNLOCK)
       return false;
 
+    // Theorem 4.4.9: LOCK indep UNLOCK.
+    //  any combination of wait and test is indenpendent.
+    if ((type_ == Type::MUTEX_WAIT || type_ == Type::MUTEX_TEST) &&
+        (other->type_ == Type::MUTEX_WAIT || other->type_ == Type::MUTEX_TEST))
+      return false;
+
     // TEST is a pure function; TEST/WAIT won't change the owner; TRYLOCK will always fail if TEST is enabled (because a
     // request is queued)
     if (type_ == Type::MUTEX_TEST &&
