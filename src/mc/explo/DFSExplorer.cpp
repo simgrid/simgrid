@@ -8,8 +8,10 @@
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
+#include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"
 
+#include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/string.hpp"
 #include "xbt/sysdep.h"
@@ -136,29 +138,23 @@ void DFSExplorer::run()
     const aid_t next = reduction_mode_ == ReductionMode::odpor ? state->next_odpor_transition()
                                                                : std::get<0>(state->next_transition_guided());
 
-    if (next < 0) {
-      // If there is no more transition in the current state ), backtrace
-      XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
-               stack_.size() + 1);
 
-      if (state->get_actor_count() == 0) {
-        get_remote_app().finalize_app();
-        XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
-                 state->get_num(), stack_.size());
+    if (next < 0 || not state->is_actor_enabled(next)) {
+      if (next >= 0) { // Actor is not enabled, then
+        XBT_INFO("Reduction %s wants to execute a disabled transition %s. If it's ODPOR, ReversibleRace is suboptimal.",
+                 to_c_str(reduction_mode_),
+                 state->get_actors_list().at(next).get_transition()->to_string(true).c_str());
+        if (reduction_mode_ == ReductionMode::odpor) {
+          XBT_INFO("Current trace:");
+          for (auto elm : get_textual_trace())
+            XBT_ERROR("%s", elm.c_str());
+	  // Remove the disabled transition from the wakeup tree so that ODPOR doesn't try it again
+	  state->remove_subtree_at_aid(next);
+	  state->add_sleep_set(state->get_actors_list().at(next).get_transition());
+        }
       }
-
-      this->backtrack();
-      continue;
-    }
-    if (not state->is_actor_enabled(next)) {
-      // if ODPOR picked an actor that is not enabled -- ReversibleRace is an overapproximation
-      xbt_assert(reduction_mode_ == ReductionMode::odpor,
-                 "Only ODPOR should be fool enough to try to execute a disabled transition");
-      XBT_VERB("Preventing ODPOR exploration from executing a disabled transition. The reversibility of the race "
-               "must have been overapproximated");
-
-      state->remove_subtree_at_aid(next);
-      state->add_sleep_set(state->get_actors_list().at(next).get_transition());
+      // If there is no more transition in the current state (or if ODPOR picked an actor that is not enabled --
+      // ReversibleRace is an overapproximation), backtrace
       XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
                stack_.size() + 1);
 

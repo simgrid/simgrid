@@ -124,7 +124,7 @@ if(NOT PERL_FOUND)
   message(FATAL_ERROR "Please install Perl to compile SimGrid.")
 endif()
 
-# tesh.py needs python 3 (or the module python-subprocess32 on python2.8+)
+# tesh.py needs python 3
 find_package(Python3 COMPONENTS Interpreter)
 if(NOT Python3_Interpreter_FOUND)
   message(FATAL_ERROR "Please install Python (version 3 or higher) to compile SimGrid.")
