@@ -278,6 +278,9 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
       E_prime_v.push_transition(get_event_with_handle(e_star).get_transition());
       v.push_back(get_event_with_handle(e_star).get_transition());
 
+      XBT_DEBUG("Added Event `%u` (%ld:%s) to the construction of v", e_star, get_actor_with_handle(e_star),
+                get_event_with_handle(e_star).get_transition()->to_string().c_str());
+
       const EventHandle e_star_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
 
       // When checking whether any event in `dom_[E'](v)` happens before
@@ -315,6 +318,9 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
         // relation orders actions taken by each actor
         disqualified_actors.insert(q);
       }
+    } else {
+      XBT_DEBUG("Event `%u` (%ld:%s) dismissed from the construction of v", e_star, get_actor_with_handle(e_star),
+                get_event_with_handle(e_star).get_transition()->to_string().c_str());
     }
   }
 
