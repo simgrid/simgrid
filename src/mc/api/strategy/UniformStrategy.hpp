@@ -59,6 +59,21 @@ public:
     return std::make_pair(-1, 0);
   }
 
+  // FIXME: this is not using the strategy
+  void consider_best_among_set(std::unordered_set<aid_t> E) override
+  {
+    if (std::any_of(begin(E), end(E), [this](const auto& aid) { return actors_to_run_.at(aid).is_todo(); }))
+      return;
+    for (auto& [aid, actor] : actors_to_run_) {
+      /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
+      if (E.count(aid) > 0) {
+        xbt_assert(actor.is_enabled(), "Asked to consider one among a set containing the disabled actor %ld", aid);
+        actor.mark_todo();
+        return;
+      }
+    }
+  }
+
   void execute_next(aid_t aid, RemoteApp& app) override {}
 };
 
