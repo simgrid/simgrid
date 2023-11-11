@@ -47,6 +47,22 @@ bool ActorJoinTransition::depends(const Transition* other) const
   return false;
 }
 
+bool ActorJoinTransition::can_be_co_enabled(const Transition* other) const
+{
+  if (other->type_ < type_)
+    return other->can_be_co_enabled(this);
+
+  // Tansitions of a same actor have no chance at being co-enabled
+  if (other->aid_ == aid_)
+    return false;
+
+  // An actor join isn't enabled if the target can still act
+  if (other->aid_ == target_)
+    return false;
+
+  return true;
+}
+
 ActorSleepTransition::ActorSleepTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::ACTOR_SLEEP, issuer, times_considered)
 {

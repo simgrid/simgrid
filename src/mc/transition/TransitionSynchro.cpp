@@ -112,6 +112,34 @@ bool MutexTransition::depends(const Transition* o) const
   return false; // mutexes are INDEP with non-mutex transitions
 }
 
+bool MutexTransition::can_be_co_enabled(const Transition* o) const
+{
+  if (o->type_ < type_)
+    return o->depends(this);
+
+  // Transition executed by the same actor can never be co-enabled
+  if (o->aid_ == aid_)
+    return false;
+
+  // type_ <= other->type_ in  MUTEX_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT,
+
+  if (const auto* other = dynamic_cast<const MutexTransition*>(o)) {
+    // No interaction between two different mutexes
+    if (mutex_ != other->mutex_)
+      return true;
+
+    // If someone can unlock, that someon has the mutex. Hence, nobody can wait on it
+    if (type_ == Type::MUTEX_UNLOCK && other->type_ == Type::MUTEX_WAIT)
+      return false;
+
+    // If someone can wait, that someon has the mutex. Hence, nobody else can wait on it
+    if (type_ == Type::MUTEX_WAIT && other->type_ == Type::MUTEX_WAIT)
+      return false;
+  }
+
+  return true; // mutexes are INDEP with non-mutex transitions
+}
+
 std::string SemaphoreTransition::to_string(bool verbose) const
 {
   if (type_ == Type::SEM_ASYNC_LOCK || type_ == Type::SEM_UNLOCK)

@@ -84,6 +84,16 @@ public:
 
   virtual bool depends(const Transition* other) const { return true; }
 
+  /* Transitions can be co-enabled if there can exist a state in which one actor wants to do one of them
+     and an other actor wants to do the other one */
+  virtual bool can_be_co_enabled(const Transition* other) const
+  {
+    if (other->type_ < type_)
+      return other->can_be_co_enabled(this);
+    else
+      return other->aid_ != aid_;
+  }
+
   /* Returns the total amount of transitions executed so far (for statistics) */
   static unsigned long get_executed_transitions() { return executed_transitions_; }
   /* Returns the total amount of transitions replayed so far while backtracing (for statistics) */
