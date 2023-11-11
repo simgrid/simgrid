@@ -73,6 +73,8 @@ public:
 
 // External constructors so that the types (and the types of their content) remain hidden
 XBT_PUBLIC Exploration* create_dfs_exploration(const std::vector<char*>& args, ReductionMode mode);
+XBT_PUBLIC Exploration* create_dpor_exploration(const std::vector<char*>& args);
+
 XBT_PUBLIC Exploration* create_communication_determinism_checker(const std::vector<char*>& args, ReductionMode mode);
 XBT_PUBLIC Exploration* create_udpor_checker(const std::vector<char*>& args);
 

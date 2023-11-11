@@ -40,6 +40,8 @@ int main(int argc, char** argv)
         create_communication_determinism_checker(argv_copy, get_model_checking_reduction()));
   else if (_sg_mc_unfolding_checker)
     explo = std::unique_ptr<Exploration>(create_udpor_checker(argv_copy));
+  else if (get_model_checking_reduction() == ReductionMode::dpor)
+    explo = std::unique_ptr<Exploration>(create_dpor_exploration(argv_copy));
   else
     explo = std::unique_ptr<Exploration>(create_dfs_exploration(argv_copy, get_model_checking_reduction()));
 

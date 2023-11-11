@@ -1,0 +1,262 @@
+/* Copyright (c) 2016-2023. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include "src/mc/explo/DPORExplorer.hpp"
+#include "simgrid/forward.h"
+#include "src/mc/explo/odpor/odpor_forward.hpp"
+#include "src/mc/mc_config.hpp"
+#include "src/mc/mc_exit.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_record.hpp"
+#include "src/mc/remote/mc_protocol.h"
+#include "src/mc/transition/Transition.hpp"
+
+#include "xbt/asserts.h"
+#include "xbt/log.h"
+#include "xbt/string.hpp"
+#include "xbt/sysdep.h"
+
+#include <bits/types/stack_t.h>
+#include <cassert>
+#include <cstdio>
+
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <unordered_set>
+#include <vector>
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc_dfs, "DFS exploration algorithm of the model-checker");
+
+namespace simgrid::mc {
+using std::unique_ptr;
+
+xbt::signal<void(RemoteApp&)> DPORExplorer::on_exploration_start_signal;
+xbt::signal<void(RemoteApp&)> DPORExplorer::on_backtracking_signal;
+
+xbt::signal<void(State*, RemoteApp&)> DPORExplorer::on_state_creation_signal;
+
+xbt::signal<void(State*, RemoteApp&)> DPORExplorer::on_restore_system_state_signal;
+xbt::signal<void(RemoteApp&)> DPORExplorer::on_restore_initial_state_signal;
+xbt::signal<void(Transition*, RemoteApp&)> DPORExplorer::on_transition_replay_signal;
+xbt::signal<void(Transition*, RemoteApp&)> DPORExplorer::on_transition_execute_signal;
+
+xbt::signal<void(RemoteApp&)> DPORExplorer::on_log_state_signal;
+
+RecordTrace DPORExplorer::get_record_trace() // override
+{
+  RecordTrace res;
+
+  if (const auto trans = stack_.back()->get_transition_out(); trans != nullptr)
+    res.push_back(trans.get());
+  for (const auto* state = stack_.back().get(); state != nullptr; state = state->get_parent_state().get())
+    if (state->get_transition_in() != nullptr)
+      res.push_front(state->get_transition_in().get());
+
+  return res;
+}
+
+void DPORExplorer::log_state() // override
+{
+  on_log_state_signal(get_remote_app());
+  XBT_INFO("DPOR exploration ended. %ld unique states visited; %lu backtracks (%lu transition replays, %lu states "
+           "visited overall)",
+           State::get_expanded_states(), backtrack_count_, Transition::get_replayed_transitions(),
+           visited_states_count_);
+  Exploration::log_state();
+}
+
+bool happens_before_over_process(const odpor::Execution S, EventHandle i, aid_t p)
+{
+  if (S.get_actor_with_handle(i) == p)
+    return true;
+
+  for (EventHandle k = i + 1; k < S.size(); k++) {
+    if (S.happens_before(i, k) && S.get_actor_with_handle(k) == p)
+      return true;
+  }
+  return false;
+}
+
+std::optional<EventHandle> max_dependent_dpor(const odpor::Execution S, const State* s, aid_t p)
+{
+
+  if (S.size() == 0)
+    return {};
+
+  for (EventHandle i = S.size(); i > 0; i--) {
+    XBT_DEBUG("Asking the execution of size %lu for the event %d", S.size(), i - 1);
+    auto past_transition      = S.get_transition_for_handle(i - 1);
+    auto next_transition_of_p = s->get_actors_list().at(p).get_transition(
+        0); // For now, let's do like multi time considered transition do not exist FIXME
+
+    if (past_transition->depends(next_transition_of_p.get()) &&
+        past_transition->can_be_co_enabled(next_transition_of_p.get()) && not happens_before_over_process(S, i - 1, p))
+      return i - 1;
+  }
+
+  return {};
+}
+
+std::unordered_set<aid_t> compute_E_dpor_algorithm(const odpor::Execution S, stack_t state_stack, aid_t p,
+                                                   EventHandle i)
+{
+
+  std::unordered_set<aid_t> E = std::unordered_set<aid_t>();
+  for (aid_t q : state_stack[i]->get_enabled_actors()) {
+
+    if (q == p) {
+      E.insert(q);
+      continue;
+    }
+
+    for (EventHandle j = i + 1; j < S.size() - 1; j++) {
+      if (q == S.get_actor_with_handle(j) && happens_before_over_process(S, j, p)) {
+        E.insert(q);
+        break;
+      }
+    }
+  }
+
+  return E;
+}
+
+void DPORExplorer::simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, stack_t state_stack)
+{
+
+  // This means the exploration asked us to visit a parallel history
+  // So firt, go to their in the application
+  if (not is_execution_descending) {
+    backtrack_count_++;
+    on_backtracking_signal(get_remote_app());
+
+    std::deque<Transition*> replay_recipe;
+    for (auto* s = state_stack.back().get(); s != nullptr; s = s->get_parent_state().get()) {
+      if (s->get_transition_in() != nullptr) // The root has no transition_in
+        replay_recipe.push_front(s->get_transition_in().get());
+    }
+
+    get_remote_app().restore_initial_state();
+    on_restore_initial_state_signal(get_remote_app());
+
+    for (auto& transition : replay_recipe) {
+      transition->replay(get_remote_app());
+      on_transition_replay_signal(transition, get_remote_app());
+      visited_states_count_++;
+    }
+    is_execution_descending = true;
+  }
+
+  auto state = state_stack.back();
+
+  if (XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_verbose)) {
+    XBT_VERB("Sleep set actually containing:");
+    for (const auto& [aid, transition] : state->get_sleep_set())
+      XBT_VERB("  <%ld,%s>", aid, transition->to_string().c_str());
+  }
+
+  auto transition_to_be_executed = state->get_actors_list().at(next_actor).get_transition();
+
+  auto executed_transition = state->execute_next(next_actor, get_remote_app());
+  on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
+
+  XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition_out()->aid_,
+           state->get_transition_out()->to_string().c_str(), state_stack.size(), state->get_num(), state->count_todo());
+
+  auto next_state = std::make_shared<State>(get_remote_app(), state);
+  on_state_creation_signal(next_state.get(), get_remote_app());
+
+  state_stack.emplace_back(std::move(next_state));
+  stack_ = state_stack;
+
+  S.push_transition(executed_transition);
+
+  explore(S, state_stack);
+
+  XBT_DEBUG("Backtracking from the exploration by one step");
+
+  is_execution_descending = false;
+
+  state_stack.pop_back();
+  stack_ = state_stack;
+
+  state_stack.back()->add_sleep_set(executed_transition);
+
+  S = S.get_prefix_before(S.size() - 1);
+}
+
+void DPORExplorer::explore(odpor::Execution S, stack_t state_stack)
+{
+
+  visited_states_count_++;
+
+  State* s = state_stack.back().get();
+
+  for (const auto& [p, _] : s->get_actors_list()) {
+
+    if (std::optional<EventHandle> opt_i = max_dependent_dpor(S, s, p); opt_i.has_value()) {
+      EventHandle i               = opt_i.value();
+      std::unordered_set<aid_t> E = compute_E_dpor_algorithm(S, state_stack, p, i);
+
+      if (not E.empty()) {
+        state_stack[i]->ensure_one_considered_among_set(E);
+      } else {
+        state_stack[i]->consider_all();
+      }
+    }
+  }
+
+  if (not s->get_enabled_minus_sleep().empty()) {
+    aid_t first_considered = *s->get_enabled_minus_sleep().rbegin();
+
+    s->consider_one(first_considered);
+
+    while (not s->get_batrack_minus_done().empty()) {
+
+      aid_t p = *s->get_batrack_minus_done().rbegin();
+
+      simgrid_wrapper_explore(S, p, state_stack);
+    }
+
+  } else {
+    XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", s->get_actor_count(),
+             state_stack.size() + 1);
+    get_remote_app().check_deadlock();
+    if (s->get_actor_count() == 0) {
+      get_remote_app().finalize_app();
+      XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
+               s->get_num(), state_stack.size());
+    }
+  }
+}
+
+void DPORExplorer::run()
+{
+  XBT_INFO("Start a DFS exploration. Reduction is: dpor.");
+
+  auto initial_state = std::make_shared<State>(get_remote_app());
+
+  XBT_DEBUG("**************************************************");
+
+  stack_t state_stack = std::vector<std::shared_ptr<State>>();
+  state_stack.emplace_back(std::move(initial_state));
+
+  odpor::Execution empty_seq = odpor::Execution();
+
+  on_exploration_start_signal(get_remote_app());
+
+  explore(empty_seq, state_stack);
+
+  log_state();
+}
+
+DPORExplorer::DPORExplorer(const std::vector<char*>& args) : Exploration(args), reduction_mode_(ReductionMode::dpor) {}
+
+Exploration* create_dpor_exploration(const std::vector<char*>& args)
+{
+  return new DPORExplorer(args);
+}
+
+} // namespace simgrid::mc

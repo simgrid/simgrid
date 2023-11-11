@@ -513,6 +513,8 @@ set(MC_SRC_STATELESS
 
   src/mc/explo/DFSExplorer.cpp
   src/mc/explo/DFSExplorer.hpp
+  src/mc/explo/DPORExplorer.cpp
+  src/mc/explo/DPORExplorer.hpp
   src/mc/explo/Exploration.cpp
   src/mc/explo/Exploration.hpp
   src/mc/explo/CommunicationDeterminismChecker.cpp
