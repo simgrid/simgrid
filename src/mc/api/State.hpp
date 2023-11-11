@@ -79,6 +79,7 @@ public:
    *  + consider_all mark all enabled actor that are not done yet */
   void consider_one(aid_t aid) const { strategy_->consider_one(aid); }
   void consider_best() const { strategy_->consider_best(); }
+  void ensure_one_considered_among_set(std::unordered_set<aid_t> E) { strategy_->ensure_one_considered_among_set(E); }
   unsigned long consider_all() const { return strategy_->consider_all(); }
 
   bool is_actor_done(aid_t actor) const { return strategy_->actors_to_run_.at(actor).is_done(); }
@@ -107,6 +108,9 @@ public:
   std::unordered_set<aid_t> get_backtrack_set() const;
   std::unordered_set<aid_t> get_sleeping_actors() const;
   std::unordered_set<aid_t> get_enabled_actors() const;
+  std::vector<aid_t> get_batrack_minus_done() const;
+  std::vector<aid_t> get_enabled_minus_sleep() const;
+
   std::map<aid_t, std::shared_ptr<Transition>> const& get_sleep_set() const { return sleep_set_; }
   void add_sleep_set(std::shared_ptr<Transition> t) { sleep_set_.insert_or_assign(t->aid_, std::move(t)); }
   bool is_actor_sleeping(aid_t actor) const

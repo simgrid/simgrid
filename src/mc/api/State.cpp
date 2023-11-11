@@ -135,6 +135,7 @@ std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
   auto& actor_state                        = strategy_->actors_to_run_.at(next);
   const unsigned times_considered          = actor_state.do_consider();
   const auto* expected_executed_transition = actor_state.get_transition(times_considered).get();
+  xbt_assert(actor_state.is_enabled(), "Tried to execute a disabled actor");
   xbt_assert(expected_executed_transition != nullptr,
              "Expected a transition with %u times considered to be noted in actor %ld", times_considered, next);
 
@@ -149,7 +150,6 @@ std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
              "is not what was purportedly scheduled to execute, which was:\n"
              "%s\n",
              next, just_executed->to_string().c_str(), expected_executed_transition->to_string().c_str());
-
   // 3. Update the state with the newest information. This means recording
   // both
   //  1. what action was last taken from this state (viz. `executed_transition`)
@@ -190,6 +190,28 @@ std::unordered_set<aid_t> State::get_enabled_actors() const
   for (const auto& [aid, state] : get_actors_list()) {
     if (state.is_enabled()) {
       actors.insert(aid);
+    }
+  }
+  return actors;
+}
+
+std::vector<aid_t> State::get_batrack_minus_done() const
+{
+  std::vector<aid_t> actors;
+  for (const auto& [aid, state] : get_actors_list()) {
+    if (state.is_todo()) {
+      actors.insert(actors.begin(), aid);
+    }
+  }
+  return actors;
+}
+
+std::vector<aid_t> State::get_enabled_minus_sleep() const
+{
+  std::vector<aid_t> actors;
+  for (const auto& [aid, state] : get_actors_list()) {
+    if (state.is_enabled() && sleep_set_.count(aid) < 1) {
+      actors.insert(actors.begin(), aid);
     }
   }
   return actors;
