@@ -194,7 +194,10 @@ void DPORExplorer::explore(odpor::Execution S, stack_t state_stack)
 
   State* s = state_stack.back().get();
 
-  for (const auto& [p, _] : s->get_actors_list()) {
+  for (const auto& [p, actor] : s->get_actors_list()) {
+
+    if (not actor.is_enabled())
+      continue;
 
     if (std::optional<EventHandle> opt_i = max_dependent_dpor(S, s, p); opt_i.has_value()) {
       EventHandle i               = opt_i.value();
