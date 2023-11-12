@@ -354,8 +354,11 @@ class Cmd:
         self.args += TeshState().args_suffix
 
         logs = list()
-        print("[{file}:{number}] {args}".format(file=FileReader().filename,
-                                                      number=self.linenumber, args=self.args), flush=True)
+        msg = "[{file}:{number}] {args}".format(file=FileReader().filename, number=self.linenumber, args=self.args)
+        if self.background:
+            logs.append(msg)
+        else:
+            print(msg, flush=True)
 
         args = shlex.split(self.args)
 
