@@ -92,6 +92,7 @@ public:
                             double timeout = -1.0)
       : ResultingSimcall(actor, false), cond_(cond), mutex_(mutex), timeout_(timeout)
   {
+    xbt_assert(mutex != nullptr, "Cannot wait on a condition variable without a valid mutex");
   }
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
