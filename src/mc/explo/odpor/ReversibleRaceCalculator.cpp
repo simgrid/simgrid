@@ -156,9 +156,10 @@ bool ReversibleRaceCalculator::is_race_reversible_MutexUnlock(const Execution&, 
 bool ReversibleRaceCalculator::is_race_reversible_MutexWait(const Execution& E, const Transition* /*other_transition*/,
                                                             const Transition* /*t2*/)
 {
-  // TODO: for now we over approximate the reversibility
-
-  return true;
+  // Only an Unlock can be dependent with a Wait
+  // and in this case, the Unlock enbaled the wait
+  // Not reversibled
+  return false;
 }
 
 bool ReversibleRaceCalculator::is_race_reversible_SemAsyncLock(const Execution&, const Transition* /*other_transition*/,
