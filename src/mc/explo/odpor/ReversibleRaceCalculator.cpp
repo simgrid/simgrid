@@ -157,8 +157,8 @@ bool ReversibleRaceCalculator::is_race_reversible_MutexWait(const Execution& E, 
                                                             const Transition* /*t2*/)
 {
   // Only an Unlock can be dependent with a Wait
-  // and in this case, the Unlock enbaled the wait
-  // Not reversibled
+  // and in this case, that Unlock enabled the wait
+  // Not reversible
   return false;
 }
 
