@@ -61,6 +61,14 @@ MutexPtr Mutex::create(bool recursive)
   return MutexPtr(&mutex->mutex(), false);
 }
 
+Actor* Mutex::get_owner()
+{
+  auto* owner = pimpl_->get_owner();
+  if (owner == nullptr)
+    return nullptr;
+  return owner->get_ciface();
+}
+
 /* refcounting of the intrusive_ptr is delegated to the implementation object */
 void intrusive_ptr_add_ref(const Mutex* mutex)
 {

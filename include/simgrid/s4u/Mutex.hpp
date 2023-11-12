@@ -6,6 +6,7 @@
 #ifndef SIMGRID_S4U_MUTEX_HPP
 #define SIMGRID_S4U_MUTEX_HPP
 
+#include "simgrid/s4u/Actor.hpp"
 #include <simgrid/forward.h>
 #include <xbt/asserts.h>
 
@@ -55,6 +56,8 @@ public:
   void lock();
   void unlock();
   bool try_lock();
+
+  Actor* get_owner();
 };
 
 } // namespace simgrid::s4u

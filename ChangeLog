@@ -20,6 +20,7 @@ S4U:
    The behavior of a MessageQueue is similar to that of a Mailbox, but intended for
    control messages that do not incur any simulated cost. Information is automagically
    transported over thin air between producer and consumer. See examples/cpp/mess-wait
+ - New function: Mutex::get_owner()
 
 New S4U plugins:
  - Add a JBOD (just a bunch of disks) concept. It's a sort of host with many disks.
