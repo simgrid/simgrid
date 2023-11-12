@@ -106,7 +106,7 @@ bool BarrierObserver::is_enabled()
          (type_ == mc::Transition::Type::BARRIER_WAIT && acquisition_ != nullptr && acquisition_->granted_);
 }
 
-bool ConditionWaitSimcall::is_enabled()
+bool ConditionVariableObserver::is_enabled()
 {
   if (static bool warned = false; not warned) {
     XBT_INFO("Using condition variables in model-checked code is still experimental. Use at your own risk");
@@ -114,11 +114,11 @@ bool ConditionWaitSimcall::is_enabled()
   }
   return true;
 }
-void ConditionWaitSimcall::serialize(std::stringstream& stream) const
+void ConditionVariableObserver::serialize(std::stringstream& stream) const
 {
   THROW_UNIMPLEMENTED;
 }
-std::string ConditionWaitSimcall::to_string() const
+std::string ConditionVariableObserver::to_string() const
 {
   return "ConditionWait(cond_id:" + ptr_to_id<activity::ConditionVariableImpl const>(get_cond()) +
          " mutex_id:" + std::to_string(get_mutex()->get_id()) + ")";

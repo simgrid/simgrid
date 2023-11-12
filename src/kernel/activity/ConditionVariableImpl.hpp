@@ -7,7 +7,9 @@
 #define SIMGRID_KERNEL_ACTIVITY_CONDITIONVARIABLE_HPP
 
 #include "simgrid/s4u/ConditionVariable.hpp"
+#include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+
 #include <boost/intrusive/list.hpp>
 
 namespace simgrid::kernel::activity {

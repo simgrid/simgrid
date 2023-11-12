@@ -81,15 +81,15 @@ public:
   double get_timeout() const { return timeout_; }
 };
 
-class ConditionWaitSimcall final : public ResultingSimcall<bool> {
+class ConditionVariableObserver final : public ResultingSimcall<bool> {
   mc::Transition::Type type_;
   activity::ConditionVariableImpl* const cond_;
   activity::MutexImpl* const mutex_;
   const double timeout_;
 
 public:
-  ConditionWaitSimcall(ActorImpl* actor, activity::ConditionVariableImpl* cond, activity::MutexImpl* mutex,
-                       double timeout = -1.0)
+  ConditionVariableObserver(ActorImpl* actor, activity::ConditionVariableImpl* cond, activity::MutexImpl* mutex,
+                            double timeout = -1.0)
       : ResultingSimcall(actor, false), cond_(cond), mutex_(mutex), timeout_(timeout)
   {
   }

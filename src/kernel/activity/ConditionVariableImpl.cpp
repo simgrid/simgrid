@@ -35,7 +35,7 @@ void ConditionVariableImpl::signal()
 
     /* Now transform the cond wait simcall into a mutex lock one */
     actor::Simcall* simcall = &proc.simcall_;
-    const auto* observer  = dynamic_cast<kernel::actor::ConditionWaitSimcall*>(simcall->observer_);
+    const auto* observer    = dynamic_cast<kernel::actor::ConditionVariableObserver*>(simcall->observer_);
     xbt_assert(observer != nullptr);
     observer->get_mutex()->lock_async(simcall->issuer_)->wait_for(simcall->issuer_, -1);
   }
@@ -64,16 +64,18 @@ void ConditionVariableImpl::wait(MutexImpl* mutex, double timeout, actor::ActorI
 
   /* If there is a mutex unlock it */
   if (mutex != nullptr) {
-    xbt_assert(mutex->get_owner() == issuer,
-               "Actor %s cannot wait on ConditionVariable %p since it does not own the provided mutex %p",
-               issuer->get_cname(), this, mutex);
+    auto* owner = mutex->get_owner();
+    xbt_assert(owner == issuer,
+               "Actor %s cannot wait on ConditionVariable %p since it does not own the provided mutex %p (which is "
+               "owned by %s).",
+               issuer->get_cname(), this, mutex, (owner == nullptr ? "nobody" : owner->get_cname()));
     mutex_ = mutex;
     mutex->unlock(issuer);
   }
 
   SynchroImplPtr synchro(new SynchroImpl([this, issuer]() {
     this->remove_sleeping_actor(*issuer);
-    auto* observer = dynamic_cast<kernel::actor::ConditionWaitSimcall*>(issuer->simcall_.observer_);
+    auto* observer = dynamic_cast<kernel::actor::ConditionVariableObserver*>(issuer->simcall_.observer_);
     xbt_assert(observer != nullptr);
     observer->set_result(true);
   }));
