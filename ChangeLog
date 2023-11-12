@@ -42,10 +42,15 @@ sthread:
  - Allow to use on valgrind-observed processes
  - Install sthread on user's disk.
  - Implement recursive pthreads.
+ - Implement pthread_barrier.
  - Add some McMini codes to test sthread further (controlled with enable_testsuite_McMini).
 
 Model checking:
+ - Remove stateful model-checking. This was not used, not really working, and very hard to fix.
+   Liveness properties cannot be verified anymore.
  - More informative backtraces on assertion failure.
+ - Fix dependency bugs for mutex and other transitions
+ - Fix some reversible_race definitions, and also the rest of ODPOR.
 
 Python:
  - Make the host_load plugin available from Python. See examples/python/plugin-host-load
