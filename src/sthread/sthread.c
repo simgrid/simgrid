@@ -34,6 +34,10 @@ static int (*raw_pthread_mutexattr_gettype)(const pthread_mutexattr_t* restrict,
 static int (*raw_pthread_mutexattr_getrobust)(const pthread_mutexattr_t*, int*);
 static int (*raw_pthread_mutexattr_setrobust)(pthread_mutexattr_t*, int);
 
+static int (*raw_pthread_barrier_init)(pthread_barrier_t*, const pthread_barrierattr_t*, unsigned int count);
+static int (*raw_pthread_barrier_wait)(pthread_barrier_t*);
+static int (*raw_pthread_barrier_destroy)(pthread_barrier_t*);
+
 static unsigned int (*raw_sleep)(unsigned int);
 static int (*raw_usleep)(useconds_t);
 static int (*raw_gettimeofday)(struct timeval*, void*);
@@ -61,6 +65,10 @@ static void intercepter_init()
   raw_pthread_mutexattr_gettype   = dlsym(RTLD_NEXT, "pthread_mutexattr_gettype");
   raw_pthread_mutexattr_getrobust = dlsym(RTLD_NEXT, "pthread_mutexattr_getrobust");
   raw_pthread_mutexattr_setrobust = dlsym(RTLD_NEXT, "pthread_mutexattr_setrobust");
+
+  raw_pthread_barrier_init = dlsym(RTLD_NEXT, "raw_pthread_barrier_init");
+  raw_pthread_barrier_wait = dlsym(RTLD_NEXT, "raw_pthread_barrier_wait");
+  raw_pthread_barrier_destroy = dlsym(RTLD_NEXT, "raw_pthread_barrier_destroy");
 
   raw_sleep        = dlsym(RTLD_NEXT, "sleep");
   raw_usleep       = dlsym(RTLD_NEXT, "usleep");
@@ -120,6 +128,11 @@ intercepted_pthcall(mutex_lock, (pthread_mutex_t * mutex), (mutex), ((sthread_mu
 intercepted_pthcall(mutex_trylock, (pthread_mutex_t * mutex), (mutex), ((sthread_mutex_t*)mutex));
 intercepted_pthcall(mutex_unlock, (pthread_mutex_t * mutex), (mutex), ((sthread_mutex_t*)mutex));
 intercepted_pthcall(mutex_destroy, (pthread_mutex_t * mutex), (mutex), ((sthread_mutex_t*)mutex));
+
+intercepted_pthcall(barrier_init, (pthread_barrier_t * barrier, const pthread_barrierattr_t* attr, unsigned count),
+                    (barrier, attr, count), ((sthread_barrier_t*)barrier, (const sthread_barrierattr_t*)attr, count));
+intercepted_pthcall(barrier_wait, (pthread_barrier_t* barrier),( barrier),((sthread_barrier_t*) barrier));
+intercepted_pthcall(barrier_destroy, (pthread_barrier_t* barrier),( barrier),((sthread_barrier_t*) barrier));
 
 #define intercepted_call(rettype, name, raw_params, call_params, sim_params)                                           \
   rettype name raw_params                                                                                              \

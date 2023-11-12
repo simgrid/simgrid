@@ -53,6 +53,17 @@ int sthread_mutex_unlock(sthread_mutex_t* mutex);
 int sthread_mutex_destroy(sthread_mutex_t* mutex);
 
 typedef struct {
+  unsigned unused : 1;
+} sthread_barrierattr_t;
+
+typedef struct {
+  void* barrier;
+} sthread_barrier_t;
+int sthread_barrier_init(sthread_barrier_t* barrier, const sthread_barrierattr_t* attr, unsigned count);
+int sthread_barrier_wait(sthread_barrier_t* barrier);
+int sthread_barrier_destroy(sthread_barrier_t* barrier);
+
+typedef struct {
   void* sem;
 } sthread_sem_t;
 int sthread_sem_init(sthread_sem_t* sem, int pshared, unsigned int value);

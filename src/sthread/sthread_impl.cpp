@@ -5,6 +5,7 @@
 
 /* SimGrid's pthread interposer. Actual implementation of the symbols (see the comment in sthread.h) */
 
+#include "simgrid/s4u/Barrier.hpp"
 #include "smpi/smpi.h"
 #include "xbt/asserts.h"
 #include "xbt/ex.h"
@@ -48,7 +49,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
     }
 
   /* Do not intercept valgrind step 1 */
-  if (not strcmp(argv[0], "/usr/bin/valgrind.bin") || not strcmp(argv[0], "/bin/sh")) {
+  if (not strcmp(argv[0], "/usr/bin/valgrind.bin") || not strcmp(argv[0], "/bin/sh")|| not strcmp(argv[0], "/bin/bash")|| not strcmp(argv[0], "gdb")) {
     printf("sthread refuses to intercept the execution of %s. Running the application unmodified.\n", argv[0]);
     fflush(stdout);
     return raw_main(argc, argv, envp);
@@ -218,6 +219,25 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
   intrusive_ptr_release(static_cast<sg4::Mutex*>(mutex->mutex));
   return 0;
 }
+
+int sthread_barrier_init(sthread_barrier_t* barrier, const sthread_barrierattr_t* attr, unsigned count){
+  auto b = sg4::Barrier::create(count);
+  intrusive_ptr_add_ref(b.get());
+
+  barrier->barrier = b.get();
+  return 0;
+}
+int sthread_barrier_wait(sthread_barrier_t* barrier){
+  XBT_DEBUG("%s(%p)", __func__, barrier);
+  static_cast<sg4::Barrier*>(barrier->barrier)->wait();
+  return 0;
+}
+int sthread_barrier_destroy(sthread_barrier_t* barrier){
+  XBT_DEBUG("%s(%p)", __func__, barrier);
+  intrusive_ptr_release(static_cast<sg4::Barrier*>(barrier->barrier));
+  return 0;
+}
+
 int sthread_sem_init(sthread_sem_t* sem, int /*pshared*/, unsigned int value)
 {
   auto s = sg4::Semaphore::create(value);

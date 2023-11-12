@@ -1,0 +1,26 @@
+# We ignore the LD_PRELOAD lines from the expected output because they contain the build path
+! ignore .*LD_PRELOAD.*
+
+! expect return 3
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-simple_barrier_with_threads_deadlock 3 0
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [ker_engine/INFO] 2 actors are still running, waiting for something.
+> [0.000000] [ker_engine/INFO] Legend of the following listing: "Actor <pid> (<name>@<host>): <status>"
+> [0.000000] [ker_engine/INFO] Actor 1 (main thread@Lilibeth) simcall ActorJoin(pid:4)
+> [0.000000] [ker_engine/INFO] Actor 4 (thread 3@Lilibeth) simcall BARRIER_WAIT(barrier_id:0)
+> [0.000000] [mc_global/INFO] Counter-example execution trace:
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall BARRIER_ASYNC_LOCK(barrier: 0)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall BARRIER_ASYNC_LOCK(barrier: 0)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall BARRIER_ASYNC_LOCK(barrier: 0)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall BARRIER_WAIT(barrier: 0)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall BARRIER_WAIT(barrier: 0)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorJoin(target 2, no timeout)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall BARRIER_WAIT(barrier: 0)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorJoin(target 3, no timeout)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall BARRIER_ASYNC_LOCK(barrier: 0)
+> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;2;3;1;2;1;3;1;4'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 10 unique states visited; 0 backtracks (0 transition replays, 10 states visited overall)

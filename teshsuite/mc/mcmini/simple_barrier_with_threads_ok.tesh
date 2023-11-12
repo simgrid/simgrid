@@ -1,0 +1,7 @@
+# We ignore the LD_PRELOAD lines from the expected output because they contain the build path
+! ignore .*LD_PRELOAD.*
+
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-simple_barrier_with_threads_ok 3 0
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 10 unique states visited; 0 backtracks (0 transition replays, 10 states visited overall)

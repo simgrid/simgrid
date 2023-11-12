@@ -56,7 +56,6 @@ foreach(x
              simple_semaphores_with_threads_ok simple_semaphores_with_threads_deadlock
 #      	     
 #      	     philosophers_spurious_deadlock
-#      	     simple_barrier_with_threads_deadlock
 #      	     simple_cond_broadcast_with_semaphore_deadlock1  simple_cond_broadcast_with_semaphore_deadlock2
 	     
              barber_shop_ok             barber_shop_deadlock
@@ -67,7 +66,9 @@ foreach(x
              
              # producer_consumer_spurious_nok # infinite no-op loop
              
-#             simple_barrier_ok simple_barrier_with_threads_ok simple_cond_broadcast_ok
+             simple_barrier_ok              simple_barrier_deadlock
+             simple_barrier_with_threads_ok simple_barrier_with_threads_deadlock
+#              simple_cond_broadcast_ok
 #             simple_cond_broadcast_with_semaphore_ok simple_cond_ok 
 #               simple_threads_ok
              )
