@@ -696,6 +696,8 @@ include teshsuite/mc/mcmini/simple_semaphores_with_threads_deadlock.c
 include teshsuite/mc/mcmini/simple_semaphores_with_threads_deadlock.tesh
 include teshsuite/mc/mcmini/simple_semaphores_with_threads_ok.c
 include teshsuite/mc/mcmini/simple_semaphores_with_threads_ok.tesh
+include teshsuite/mc/mcmini/simple_threads_ok.c
+include teshsuite/mc/mcmini/simple_threads_ok.tesh
 include teshsuite/mc/mutex-handling/mutex-handling.cpp
 include teshsuite/mc/mutex-handling/mutex-handling.tesh
 include teshsuite/mc/mutex-handling/without-mutex-handling.tesh
