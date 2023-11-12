@@ -1,0 +1,24 @@
+# We ignore the LD_PRELOAD lines from the expected output because they contain the build path
+! ignore .*LD_PRELOAD.*
+
+! expect return 3
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-simple_mutex_with_threads_deadlock
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [ker_engine/INFO] 3 actors are still running, waiting for something.
+> [0.000000] [ker_engine/INFO] Legend of the following listing: "Actor <pid> (<name>@<host>): <status>"
+> [0.000000] [ker_engine/INFO] Actor 1 (main thread@Lilibeth) simcall ActorJoin(pid:2)
+> [0.000000] [ker_engine/INFO] Actor 2 (thread 1@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:3)
+> [0.000000] [ker_engine/INFO] Actor 3 (thread 2@Lilibeth) simcall MUTEX_WAIT(mutex_id:1 owner:2)
+> [0.000000] [mc_global/INFO] Counter-example execution trace:
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 2)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 1, owner: 2)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 3)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 3)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_WAIT(mutex: 0, owner: 3)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 2)
+> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;3;2;3;3'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 19 unique states visited; 1 backtracks (2 transition replays, 22 states visited overall)

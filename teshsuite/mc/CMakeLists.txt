@@ -47,16 +47,17 @@ endif()
 
 foreach(x
 #              
-#             simple_cond_broadcast_deadlock  simple_semaphore_deadlock  simple_barrier_deadlock  simple_cond_deadlock
-#      	     simple_semaphores_deadlock
-#      	     
+#             simple_cond_broadcast_deadlock   simple_barrier_deadlock  simple_cond_deadlock
+             simple_mutex_ok simple_mutex_deadlock
+             simple_mutex_with_threads_ok simple_mutex_with_threads_deadlock
+
+             simple_semaphore_deadlock simple_semaphores_deadlock
+             simple_semaphores_ok
+             simple_semaphores_with_threads_ok simple_semaphores_with_threads_deadlock
 #      	     
 #      	     philosophers_spurious_deadlock
 #      	     simple_barrier_with_threads_deadlock
-#      	     simple_semaphores_with_threads_deadlock
 #      	     simple_cond_broadcast_with_semaphore_deadlock1  simple_cond_broadcast_with_semaphore_deadlock2
-#      	     simple_mutex_deadlock
-#      	     simple_mutex_with_threads_deadlock
 	     
              barber_shop_ok             barber_shop_deadlock
              philosophers_semaphores_ok philosophers_semaphores_deadlock
@@ -66,11 +67,9 @@ foreach(x
              
              # producer_consumer_spurious_nok # infinite no-op loop
              
-#               
-#              
 #             simple_barrier_ok simple_barrier_with_threads_ok simple_cond_broadcast_ok
-#             simple_cond_broadcast_with_semaphore_ok simple_cond_ok simple_mutex_ok
-#             simple_mutex_with_threads_ok simple_semaphores_ok simple_semaphores_with_threads_ok simple_threads_ok
+#             simple_cond_broadcast_with_semaphore_ok simple_cond_ok 
+#               simple_threads_ok
              )
 
   set(teshsuite_src  ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.c)
