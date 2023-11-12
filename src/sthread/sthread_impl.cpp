@@ -265,6 +265,10 @@ int sthread_cond_wait(sthread_cond_t* cond, sthread_mutex_t* mutex)
   static_cast<sg4::ConditionVariable*>(cond->cond)->wait(static_cast<sg4::Mutex*>(mutex->mutex));
   return 0;
 }
+int sthread_cond_timedwait(sthread_cond_t* cond, sthread_mutex_t* mutex, const struct timespec* abs_timeout)
+{
+  THROW_UNIMPLEMENTED;
+}
 int sthread_cond_destroy(sthread_cond_t* cond)
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
@@ -339,30 +343,3 @@ int sthread_usleep(double seconds)
   simgrid::s4u::this_actor::sleep_for(seconds);
   return 0;
 }
-
-#if 0
-int pthread_cond_init(pthread_cond_t *cond, pthread_condattr_t *cond_attr) {
-    *cond = sg_cond_init();
-    return 0;
-}
-
-int pthread_cond_signal(pthread_cond_t *cond) {
-	sg_cond_notify_one(*cond);
-    return 0;
-}
-
-int pthread_cond_broadcast(pthread_cond_t *cond) {
-	sg_cond_notify_all(*cond);
-    return 0;
-}
-
-int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
-	sg_cond_wait(*cond, *mutex);
-    return 0;
-}
-
-int pthread_cond_destroy(pthread_cond_t *cond) {
-	sg_cond_destroy(*cond);
-    return 0;
-}
-#endif

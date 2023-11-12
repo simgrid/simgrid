@@ -74,6 +74,7 @@ int sthread_cond_init(sthread_cond_t* cond, sthread_condattr_t* attr);
 int sthread_cond_signal(sthread_cond_t* cond);
 int sthread_cond_broadcast(sthread_cond_t* cond);
 int sthread_cond_wait(sthread_cond_t* cond, sthread_mutex_t* mutex);
+int sthread_cond_timedwait(sthread_cond_t* cond, sthread_mutex_t* mutex, const struct timespec* abs_timeout);
 int sthread_cond_destroy(sthread_cond_t* cond);
 
 typedef struct {
