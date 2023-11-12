@@ -38,24 +38,6 @@ int RandomSimcall::get_max_consider() const
   return max_ - min_ + 1;
 }
 
-bool ConditionWaitSimcall::is_enabled()
-{
-  if (static bool warned = false; not warned) {
-    XBT_INFO("Using condition variables in model-checked code is still experimental. Use at your own risk");
-    warned = true;
-  }
-  return true;
-}
-void ConditionWaitSimcall::serialize(std::stringstream& stream) const
-{
-  THROW_UNIMPLEMENTED;
-}
-std::string ConditionWaitSimcall::to_string() const
-{
-  return "ConditionWait(cond_id:" + ptr_to_id<activity::ConditionVariableImpl const>(get_cond()) +
-         " mutex_id:" + std::to_string(get_mutex()->get_id()) + ")";
-}
-
 ActorJoinSimcall::ActorJoinSimcall(ActorImpl* actor, ActorImpl* other, double timeout)
     : SimcallObserver(actor), other_(s4u::ActorPtr(other->get_iface())), timeout_(timeout)
 {

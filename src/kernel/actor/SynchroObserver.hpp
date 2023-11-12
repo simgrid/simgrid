@@ -7,6 +7,7 @@
 #define SIMGRID_MC_MUTEX_OBSERVER_HPP
 
 #include "simgrid/forward.h"
+#include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
@@ -77,6 +78,26 @@ public:
   std::string to_string() const override;
   bool is_enabled() override;
 
+  double get_timeout() const { return timeout_; }
+};
+
+class ConditionWaitSimcall final : public ResultingSimcall<bool> {
+  mc::Transition::Type type_;
+  activity::ConditionVariableImpl* const cond_;
+  activity::MutexImpl* const mutex_;
+  const double timeout_;
+
+public:
+  ConditionWaitSimcall(ActorImpl* actor, activity::ConditionVariableImpl* cond, activity::MutexImpl* mutex,
+                       double timeout = -1.0)
+      : ResultingSimcall(actor, false), cond_(cond), mutex_(mutex), timeout_(timeout)
+  {
+  }
+  void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
+  bool is_enabled() override;
+  activity::ConditionVariableImpl* get_cond() const { return cond_; }
+  activity::MutexImpl* get_mutex() const { return mutex_; }
   double get_timeout() const { return timeout_; }
 };
 

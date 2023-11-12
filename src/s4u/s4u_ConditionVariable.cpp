@@ -9,7 +9,7 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
-#include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/kernel/actor/SynchroObserver.hpp"
 
 #include <mutex>
 
