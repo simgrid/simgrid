@@ -273,10 +273,17 @@ int sthread_gettimeofday(struct timeval* tv)
   return 0;
 }
 
-void sthread_sleep(double seconds)
+unsigned int sthread_sleep(double seconds)
 {
   XBT_DEBUG("sleep(%lf)", seconds);
   simgrid::s4u::this_actor::sleep_for(seconds);
+  return 0;
+}
+int sthread_usleep(double seconds)
+{
+  XBT_DEBUG("sleep(%lf)", seconds);
+  simgrid::s4u::this_actor::sleep_for(seconds);
+  return 0;
 }
 
 #if 0
