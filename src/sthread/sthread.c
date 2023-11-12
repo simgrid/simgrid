@@ -38,6 +38,12 @@ static int (*raw_pthread_barrier_init)(pthread_barrier_t*, const pthread_barrier
 static int (*raw_pthread_barrier_wait)(pthread_barrier_t*);
 static int (*raw_pthread_barrier_destroy)(pthread_barrier_t*);
 
+static int (*raw_pthread_cond_init)(pthread_cond_t*, const pthread_condattr_t*);
+static int (*raw_pthread_cond_signal)(pthread_cond_t*);
+static int (*raw_pthread_cond_broadcast)(pthread_cond_t*);
+static int (*raw_pthread_cond_wait)(pthread_cond_t*, pthread_mutex_t*);
+static int (*raw_pthread_cond_destroy)(pthread_cond_t*);
+
 static unsigned int (*raw_sleep)(unsigned int);
 static int (*raw_usleep)(useconds_t);
 static int (*raw_gettimeofday)(struct timeval*, void*);
@@ -69,6 +75,12 @@ static void intercepter_init()
   raw_pthread_barrier_init = dlsym(RTLD_NEXT, "raw_pthread_barrier_init");
   raw_pthread_barrier_wait = dlsym(RTLD_NEXT, "raw_pthread_barrier_wait");
   raw_pthread_barrier_destroy = dlsym(RTLD_NEXT, "raw_pthread_barrier_destroy");
+
+  raw_pthread_cond_init      = dlsym(RTLD_NEXT, "raw_pthread_cond_init");
+  raw_pthread_cond_signal    = dlsym(RTLD_NEXT, "raw_pthread_cond_signal");
+  raw_pthread_cond_broadcast = dlsym(RTLD_NEXT, "raw_pthread_cond_broadcast");
+  raw_pthread_cond_wait      = dlsym(RTLD_NEXT, "raw_pthread_cond_wait");
+  raw_pthread_cond_destroy   = dlsym(RTLD_NEXT, "raw_pthread_cond_destroy");
 
   raw_sleep        = dlsym(RTLD_NEXT, "sleep");
   raw_usleep       = dlsym(RTLD_NEXT, "usleep");
@@ -134,6 +146,14 @@ intercepted_pthcall(barrier_init, (pthread_barrier_t * barrier, const pthread_ba
 intercepted_pthcall(barrier_wait, (pthread_barrier_t* barrier),( barrier),((sthread_barrier_t*) barrier));
 intercepted_pthcall(barrier_destroy, (pthread_barrier_t* barrier),( barrier),((sthread_barrier_t*) barrier));
 
+intercepted_pthcall(cond_init, (pthread_cond_t * cond, const pthread_condattr_t* attr), (cond, attr),
+                    ((sthread_cond_t*)cond, (sthread_condattr_t*)attr));
+intercepted_pthcall(cond_signal, (pthread_cond_t * cond), (cond), ((sthread_cond_t*)cond));
+intercepted_pthcall(cond_broadcast, (pthread_cond_t * cond), (cond), ((sthread_cond_t*)cond));
+intercepted_pthcall(cond_wait, (pthread_cond_t * cond, pthread_mutex_t* mutex), (cond, mutex),
+                    ((sthread_cond_t*)cond, (sthread_mutex_t*)mutex));
+intercepted_pthcall(cond_destroy, (pthread_cond_t * cond), (cond), ((sthread_cond_t*)cond));
+
 #define intercepted_call(rettype, name, raw_params, call_params, sim_params)                                           \
   rettype name raw_params                                                                                              \
   {                                                                                                                    \
@@ -170,33 +190,6 @@ intercepted_call(int, sem_timedwait, (sem_t * sem, const struct timespec* abs_ti
 intercepted_call(int, gettimeofday, (struct timeval * tv, XBT_ATTRIB_UNUSED TIMEZONE_TYPE* tz), (tv, tz), (tv));
 intercepted_call(unsigned int, sleep, (unsigned int seconds), (seconds), (seconds));
 intercepted_call(int, usleep, (useconds_t usec), (usec), (((double)usec) / 1000000.));
-
-#if 0
-int pthread_cond_init(pthread_cond_t *cond, pthread_condattr_t *cond_attr) {
-    *cond = sg_cond_init();
-    return 0;
-}
-
-int pthread_cond_signal(pthread_cond_t *cond) {
-	sg_cond_notify_one(*cond);
-    return 0;
-}
-
-int pthread_cond_broadcast(pthread_cond_t *cond) {
-	sg_cond_notify_all(*cond);
-    return 0;
-}
-
-int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
-	sg_cond_wait(*cond, *mutex);
-    return 0;
-}
-
-int pthread_cond_destroy(pthread_cond_t *cond) {
-	sg_cond_destroy(*cond);
-    return 0;
-}
-#endif
 
 /* Trampoline for the real main() */
 static int (*raw_main)(int, char**, char**);

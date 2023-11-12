@@ -6,6 +6,7 @@
 /* SimGrid's pthread interposer. Actual implementation of the symbols (see the comment in sthread.h) */
 
 #include "simgrid/s4u/Barrier.hpp"
+#include "simgrid/s4u/ConditionVariable.hpp"
 #include "smpi/smpi.h"
 #include "xbt/asserts.h"
 #include "xbt/ex.h"
@@ -235,6 +236,39 @@ int sthread_barrier_wait(sthread_barrier_t* barrier){
 int sthread_barrier_destroy(sthread_barrier_t* barrier){
   XBT_DEBUG("%s(%p)", __func__, barrier);
   intrusive_ptr_release(static_cast<sg4::Barrier*>(barrier->barrier));
+  return 0;
+}
+
+int sthread_cond_init(sthread_cond_t* cond, sthread_condattr_t* attr)
+{
+  auto cv = sg4::ConditionVariable::create();
+  intrusive_ptr_add_ref(cv.get());
+
+  cond->cond = cv.get();
+  return 0;
+}
+int sthread_cond_signal(sthread_cond_t* cond)
+{
+  XBT_DEBUG("%s(%p)", __func__, cond);
+  static_cast<sg4::ConditionVariable*>(cond->cond)->notify_one();
+  return 0;
+}
+int sthread_cond_broadcast(sthread_cond_t* cond)
+{
+  XBT_DEBUG("%s(%p)", __func__, cond);
+  static_cast<sg4::ConditionVariable*>(cond->cond)->notify_all();
+  return 0;
+}
+int sthread_cond_wait(sthread_cond_t* cond, sthread_mutex_t* mutex)
+{
+  XBT_DEBUG("%s(%p)", __func__, cond);
+  static_cast<sg4::ConditionVariable*>(cond->cond)->wait(static_cast<sg4::Mutex*>(mutex->mutex));
+  return 0;
+}
+int sthread_cond_destroy(sthread_cond_t* cond)
+{
+  XBT_DEBUG("%s(%p)", __func__, cond);
+  intrusive_ptr_release(static_cast<sg4::ConditionVariable*>(cond->cond));
   return 0;
 }
 

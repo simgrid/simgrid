@@ -64,6 +64,19 @@ int sthread_barrier_wait(sthread_barrier_t* barrier);
 int sthread_barrier_destroy(sthread_barrier_t* barrier);
 
 typedef struct {
+  unsigned unused : 1;
+} sthread_condattr_t;
+
+typedef struct {
+  void* cond;
+} sthread_cond_t;
+int sthread_cond_init(sthread_cond_t* cond, sthread_condattr_t* attr);
+int sthread_cond_signal(sthread_cond_t* cond);
+int sthread_cond_broadcast(sthread_cond_t* cond);
+int sthread_cond_wait(sthread_cond_t* cond, sthread_mutex_t* mutex);
+int sthread_cond_destroy(sthread_cond_t* cond);
+
+typedef struct {
   void* sem;
 } sthread_sem_t;
 int sthread_sem_init(sthread_sem_t* sem, int pshared, unsigned int value);
