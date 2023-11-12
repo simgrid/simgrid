@@ -69,6 +69,7 @@ typedef struct {
 
 typedef struct {
   void* cond;
+  void* mutex;
 } sthread_cond_t;
 int sthread_cond_init(sthread_cond_t* cond, sthread_condattr_t* attr);
 int sthread_cond_signal(sthread_cond_t* cond);

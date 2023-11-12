@@ -245,28 +245,76 @@ int sthread_cond_init(sthread_cond_t* cond, sthread_condattr_t* attr)
   intrusive_ptr_add_ref(cv.get());
 
   cond->cond = cv.get();
+  cond->mutex = nullptr;
   return 0;
 }
 int sthread_cond_signal(sthread_cond_t* cond)
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
+
+  if (cond->mutex == nullptr)
+    XBT_WARN("No mutex was associated so far with condition variable %p. Safety checks skipped.", cond);
+  else {
+    auto* owner = static_cast<sg4::Mutex*>(cond->mutex)->get_owner();
+    if (owner == nullptr)
+      XBT_WARN("The mutex associated to condition %p is not currently owned by anyone when calling "
+               "pthread_cond_signal(). The signal could get lost.",
+               cond);
+    else if (owner != simgrid::s4u::Actor::self())
+      XBT_WARN("The mutex associated to condition %p is currently owned by %s, not by the thread currently calling "
+               "calling pthread_cond_signal(). The signal could get lost.",
+               cond, owner->get_cname());
+  }
+
   static_cast<sg4::ConditionVariable*>(cond->cond)->notify_one();
   return 0;
 }
 int sthread_cond_broadcast(sthread_cond_t* cond)
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
+
+  if (cond->mutex == nullptr)
+    XBT_WARN("No mutex was associated so far with condition variable %p. Safety checks skipped.", cond);
+  else {
+    auto* owner = static_cast<sg4::Mutex*>(cond->mutex)->get_owner();
+    if (owner == nullptr)
+      XBT_WARN("The mutex associated to condition %p is not currently owned by anyone when calling "
+               "pthread_cond_broadcast(). The signal could get lost.",
+               cond);
+    else if (owner != simgrid::s4u::Actor::self())
+      XBT_WARN("The mutex associated to condition %p is currently owned by %s, not by the thread currently calling "
+               "calling pthread_cond_broadcast(). The signal could get lost.",
+               cond, owner->get_cname());
+  }
+
   static_cast<sg4::ConditionVariable*>(cond->cond)->notify_all();
   return 0;
 }
 int sthread_cond_wait(sthread_cond_t* cond, sthread_mutex_t* mutex)
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
+
+  if (cond->mutex == nullptr)
+    cond->mutex = mutex->mutex;
+  else if (cond->mutex != mutex->mutex)
+    XBT_WARN("The condition %p is now waited with mutex %p while it was previoulsy waited with mutex %p. sthread may "
+             "not work with such a dangerous code.",
+             cond, cond->mutex, mutex->mutex);
+
   static_cast<sg4::ConditionVariable*>(cond->cond)->wait(static_cast<sg4::Mutex*>(mutex->mutex));
   return 0;
 }
 int sthread_cond_timedwait(sthread_cond_t* cond, sthread_mutex_t* mutex, const struct timespec* abs_timeout)
 {
+  XBT_DEBUG("%s(%p)", __func__, cond);
+
+  if (cond->mutex == nullptr)
+    cond->mutex = mutex->mutex;
+  else if (cond->mutex != mutex->mutex)
+    XBT_WARN("The condition %p is now waited with mutex %p while it was previoulsy waited with mutex %p. sthread may "
+             "not work with such a dangerous code.",
+             cond, cond->mutex, mutex->mutex);
+
   THROW_UNIMPLEMENTED;
 }
 int sthread_cond_destroy(sthread_cond_t* cond)
