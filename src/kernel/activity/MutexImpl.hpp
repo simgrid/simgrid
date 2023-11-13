@@ -55,6 +55,7 @@ public:
   MutexImplPtr get_mutex() { return mutex_; }
   actor::ActorImpl* get_issuer() { return issuer_; }
   void grant() { granted_ = true; }
+  bool is_granted() { return granted_; }
 
   bool test(actor::ActorImpl* issuer = nullptr) override;
   void wait_for(actor::ActorImpl* issuer, double timeout) override;
