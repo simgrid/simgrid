@@ -97,6 +97,8 @@ int Win::del(Win* win){
   }
   if (win->allocated_)
     xbt_free(win->base_);
+  if (win->mut_->get_owner() != nullptr)
+    win->mut_->unlock();
 
   F2C::free_f(win->f2c_id());
   win->cleanup_attr<Win>();

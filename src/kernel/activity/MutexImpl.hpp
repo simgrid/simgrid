@@ -100,7 +100,8 @@ public:
   {
     if (mutex->refcount_.fetch_sub(1) == 1) {
       xbt_assert(mutex->ongoing_acquisitions_.empty(), "The destroyed mutex still had ongoing acquisitions");
-      xbt_assert(mutex->owner_ == nullptr, "The destroyed mutex is still owned by %s", mutex->owner_->get_cname());
+      xbt_assert(mutex->owner_ == nullptr, "The destroyed mutex is still owned by actor %s",
+                 mutex->owner_->get_cname());
       delete mutex;
     }
   }
