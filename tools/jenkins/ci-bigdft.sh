@@ -31,6 +31,8 @@ sed -i 's|module="ntpoly-v3.0.0.tar.gz"|module="ntpoly"|' ../modulesets/hpc-upst
 ../Installer.py -f ../../tools/jenkins/gfortran-simgrid.rc -y build
 
 export OMP_NUM_THREADS=1
+#workaround issue with profiling optimization (for fugaku) which prevent f_free_ptr to use the simgrid version. Fix pending.
+export FUTILE_PROFILING_DEPTH=-1
 
 #cubic version
 cd ../bigdft/tests/DFT/cubic/C
