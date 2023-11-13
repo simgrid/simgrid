@@ -58,7 +58,7 @@ bool Mutex::try_lock()
 MutexPtr Mutex::create(bool recursive)
 {
   auto* mutex = new kernel::activity::MutexImpl(recursive);
-  return MutexPtr(&mutex->mutex(), false);
+  return MutexPtr(&mutex->get_iface(), false);
 }
 
 Actor* Mutex::get_owner()
