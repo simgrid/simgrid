@@ -41,23 +41,23 @@ int main(int argc, char** argv)
 
   auto* jbod_raid0 =
     simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid0", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID0, 1e7, 5e6);
-  zone->add_route(host, jbod_raid0, {link});
+  zone->add_route(host, jbod_raid0->get_controller(), {link});
 
   auto* jbod_raid1 =
     simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid1", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID1, 1e7, 5e6);
-  zone->add_route(host, jbod_raid1, {link});
+  zone->add_route(host, jbod_raid1->get_controller(), {link});
 
   auto* jbod_raid4 =
     simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid4", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID4, 1e7, 5e6);
-  zone->add_route(host, jbod_raid4, {link});
+  zone->add_route(host, jbod_raid4->get_controller(), {link});
 
   auto* jbod_raid5 =
     simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid5", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID5, 1e7, 5e6);
-  zone->add_route(host, jbod_raid5, {link});
+  zone->add_route(host, jbod_raid5->get_controller(), {link});
 
   auto* jbod_raid6 =
     simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid6", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID6, 1e7, 5e6);
-  zone->add_route(host, jbod_raid6, {link});
+  zone->add_route(host, jbod_raid6->get_controller(), {link});
 
   zone->seal();
 
