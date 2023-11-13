@@ -2242,8 +2242,6 @@ include src/mc/explo/odpor/ClockVector_test.cpp
 include src/mc/explo/odpor/Execution.cpp
 include src/mc/explo/odpor/Execution.hpp
 include src/mc/explo/odpor/Execution_test.cpp
-include src/mc/explo/odpor/ReversibleRaceCalculator.cpp
-include src/mc/explo/odpor/ReversibleRaceCalculator.hpp
 include src/mc/explo/odpor/WakeupTree.cpp
 include src/mc/explo/odpor/WakeupTree.hpp
 include src/mc/explo/odpor/WakeupTreeIterator.cpp

@@ -23,4 +23,14 @@ RandomTransition::RandomTransition(aid_t issuer, int times_considered, std::stri
   xbt_assert(stream >> min_ >> max_);
 }
 
+bool RandomTransition::reversible_race(const Transition* other) const
+{
+  switch (type_) {
+    case Type::RANDOM:
+      return true; // Random is always enabled
+    default:
+      xbt_die("Unexpected transition type %s", to_c_str(type_));
+  }
+}
+
 } // namespace simgrid::mc

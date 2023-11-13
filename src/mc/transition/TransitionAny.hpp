@@ -23,6 +23,7 @@ public:
   TestAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+  bool reversible_race(const Transition* other) const override;
 
   Transition* get_current_transition() const { return transitions_.at(times_considered_); }
   bool result() const
@@ -41,6 +42,7 @@ public:
   WaitAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+  bool reversible_race(const Transition* other) const override;
 
   Transition* get_current_transition() const { return transitions_.at(times_considered_); }
 };

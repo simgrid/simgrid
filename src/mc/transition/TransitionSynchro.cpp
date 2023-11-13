@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/transition/TransitionSynchro.hpp"
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/transition/TransitionObjectAccess.hpp"
 #include "xbt/asserts.h"
 #include "xbt/ex.h"
 #include "xbt/string.hpp"
@@ -49,6 +51,19 @@ bool BarrierTransition::depends(const Transition* o) const
   }
 
   return false; // barriers are INDEP with non-barrier transitions
+}
+bool BarrierTransition::reversible_race(const Transition* other) const
+{
+  switch (type_) {
+    case Type::BARRIER_ASYNC_LOCK:
+      return true; // BarrierAsyncLock is always enabled
+    case Type::BARRIER_WAIT:
+      // If the other event is a barrier lock event, then we are not reversible;
+      // otherwise we are reversible.
+      return other->type_ != Transition::Type::BARRIER_ASYNC_LOCK;
+    default:
+      xbt_die("Unexpected transition type %s", to_c_str(type_));
+  }
 }
 
 std::string MutexTransition::to_string(bool verbose) const
@@ -112,6 +127,25 @@ bool MutexTransition::depends(const Transition* o) const
   return false; // mutexes are INDEP with non-mutex transitions
 }
 
+bool SemaphoreTransition::reversible_race(const Transition* other) const
+{
+  switch (type_) {
+    case Type::SEM_ASYNC_LOCK:
+      return true; // SemAsyncLock is always enabled
+    case Type::SEM_UNLOCK:
+      return true; // SemUnlock is always enabled
+    case Type::SEM_WAIT:
+      if (other->type_ == Transition::Type::SEM_UNLOCK &&
+          static_cast<const SemaphoreTransition*>(other)->get_capacity() <= 1) {
+        return false;
+      }
+      xbt_die("SEM_WAIT that is dependent with a SEM_UNLOCK should not be reversible. FixMe");
+      return true;
+    default:
+      xbt_die("Unexpected transition type %s", to_c_str(type_));
+  }
+}
+
 std::string SemaphoreTransition::to_string(bool verbose) const
 {
   if (type_ == Type::SEM_ASYNC_LOCK || type_ == Type::SEM_UNLOCK)
@@ -167,6 +201,28 @@ bool SemaphoreTransition::depends(const Transition* o) const
   }
 
   return false; // semaphores are INDEP with non-semaphore transitions
+}
+
+bool MutexTransition::reversible_race(const Transition* other) const
+{
+  switch (type_) {
+    case Type::MUTEX_ASYNC_LOCK:
+      return true; // MutexAsyncLock is always enabled
+    case Type::MUTEX_TEST:
+      return true; // MutexTest is always enabled
+    case Type::MUTEX_TRYLOCK:
+      return true; // MutexTrylock is always enabled
+    case Type::MUTEX_UNLOCK:
+      return true; // MutexUnlock is always enabled
+
+    case Type::MUTEX_WAIT:
+      // Only an Unlock can be dependent with a Wait
+      // and in this case, that Unlock enabled the wait
+      // Not reversible
+      return false;
+    default:
+      xbt_die("Unexpected transition type %s", to_c_str(type_));
+  }
 }
 
 } // namespace simgrid::mc

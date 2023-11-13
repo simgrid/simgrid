@@ -35,6 +35,7 @@ public:
   CommWaitTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+  bool reversible_race(const Transition* other) const override;
 
   bool get_timeout() const { return timeout_; }
   /** ID of the corresponding Communication object in the application, or 0 if unknown */
@@ -60,6 +61,7 @@ public:
   CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+  bool reversible_race(const Transition* other) const override;
 
   /** ID of the corresponding Communication object in the application, or 0 if unknown */
   unsigned get_comm() const { return comm_; }
@@ -81,6 +83,7 @@ public:
   CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+  bool reversible_race(const Transition* other) const override;
 
   /** ID of the corresponding Communication object in the application (or 0 if unknown)*/
   unsigned get_comm() const { return comm_; }
@@ -100,6 +103,7 @@ public:
   CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+  bool reversible_race(const Transition* other) const override;
 
   /** ID of the corresponding Communication object in the application, or 0 if unknown */
   unsigned get_comm() const { return comm_; }

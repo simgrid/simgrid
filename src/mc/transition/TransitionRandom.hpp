@@ -24,6 +24,7 @@ public:
 
     return aid_ == other->aid_;
   } // Independent with any other transition
+  bool reversible_race(const Transition* other) const override;
 };
 
 } // namespace simgrid::mc
