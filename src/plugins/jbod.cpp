@@ -14,8 +14,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_jbod, s4u, "Logging specific to the JBOD imp
 
 namespace simgrid::plugin {
 
-Jbod* Jbod::create_jbod(s4u::NetZone* zone, const std::string& name, double speed, unsigned int num_disks,
-                        RAID raid_level, double read_bandwidth, double write_bandwidth)
+JbodPtr Jbod::create_jbod(s4u::NetZone* zone, const std::string& name, double speed, unsigned int num_disks,
+                          RAID raid_level, double read_bandwidth, double write_bandwidth)
 {
   xbt_assert(not ((raid_level == RAID::RAID4 || raid_level == RAID::RAID5) && num_disks < 3),
              "RAID%d requires at least 3 disks", (int) raid_level);
@@ -30,7 +30,7 @@ Jbod* Jbod::create_jbod(s4u::NetZone* zone, const std::string& name, double spee
   for (unsigned int i = 0; i < num_disks; i++)
     jbod->get_controller()->create_disk(name + "_disk_" + std::to_string(i), read_bandwidth, write_bandwidth);
 
-  return jbod;
+  return JbodPtr(jbod);
 }
 
 JbodIoPtr Jbod::read_async(sg_size_t size)

@@ -9,7 +9,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(jbod_test, "Messages specific for this simulation");
 namespace sg4 = simgrid::s4u;
 
-static void write_then_read(simgrid::plugin::Jbod* jbod)
+static void write_then_read(simgrid::plugin::JbodPtr jbod)
 {
   simgrid::plugin::JbodIoPtr io = jbod->write_async(1e7);
   XBT_INFO("asynchronous write posted, wait for it");
@@ -39,24 +39,24 @@ int main(int argc, char** argv)
   // set up link so that data transfer from host to JBOD takes exactly 1 second (without crosstraffic)
   auto* link = zone->create_link("link", 1e7/0.97)->set_latency(0);
 
-  auto* jbod_raid0 =
-    simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid0", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID0, 1e7, 5e6);
+  auto jbod_raid0 =
+      simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid0", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID0, 1e7, 5e6);
   zone->add_route(host, jbod_raid0->get_controller(), {link});
 
-  auto* jbod_raid1 =
-    simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid1", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID1, 1e7, 5e6);
+  auto jbod_raid1 =
+      simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid1", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID1, 1e7, 5e6);
   zone->add_route(host, jbod_raid1->get_controller(), {link});
 
-  auto* jbod_raid4 =
-    simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid4", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID4, 1e7, 5e6);
+  auto jbod_raid4 =
+      simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid4", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID4, 1e7, 5e6);
   zone->add_route(host, jbod_raid4->get_controller(), {link});
 
-  auto* jbod_raid5 =
-    simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid5", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID5, 1e7, 5e6);
+  auto jbod_raid5 =
+      simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid5", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID5, 1e7, 5e6);
   zone->add_route(host, jbod_raid5->get_controller(), {link});
 
-  auto* jbod_raid6 =
-    simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid6", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID6, 1e7, 5e6);
+  auto jbod_raid6 =
+      simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid6", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID6, 1e7, 5e6);
   zone->add_route(host, jbod_raid6->get_controller(), {link});
 
   zone->seal();

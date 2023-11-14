@@ -10,11 +10,10 @@
 
 namespace simgrid::plugin {
 
+class Jbod;
+using JbodPtr = boost::intrusive_ptr<Jbod>;
 class JbodIo;
-/** Smart pointer to a simgrid::s4u::Activity */
 using JbodIoPtr = boost::intrusive_ptr<JbodIo>;
-XBT_PUBLIC void intrusive_ptr_release(const JbodIo* io);
-XBT_PUBLIC void intrusive_ptr_add_ref(const JbodIo* io);
 
 class Jbod {
 public:
@@ -31,8 +30,8 @@ public:
   JbodIoPtr write_async(sg_size_t size);
   sg_size_t write(sg_size_t size);
 
-  static Jbod* create_jbod(s4u::NetZone* zone, const std::string& name, double speed, unsigned int num_disks,
-                           RAID raid_level, double read_bandwidth, double write_bandwidth);
+  static JbodPtr create_jbod(s4u::NetZone* zone, const std::string& name, double speed, unsigned int num_disks,
+                             RAID raid_level, double read_bandwidth, double write_bandwidth);
 
 protected:
   void set_controller(s4u::Host* host) { controller_ = host; }
@@ -47,6 +46,17 @@ private:
   RAID raid_level_;
   unsigned int parity_disk_idx_;
   int read_disk_idx_;
+  std::atomic_int_fast32_t refcount_{1};
+#ifndef DOXYGEN
+  friend void intrusive_ptr_release(Jbod* jbod)
+  {
+    if (jbod->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+      std::atomic_thread_fence(std::memory_order_acquire);
+      delete jbod;
+    }
+  }
+  friend void intrusive_ptr_add_ref(Jbod* jbod) { jbod->refcount_.fetch_add(1, std::memory_order_relaxed); }
+#endif
 };
 
 class JbodIo {
@@ -76,6 +86,12 @@ public:
   friend void intrusive_ptr_add_ref(JbodIo* io) { io->refcount_.fetch_add(1, std::memory_order_relaxed); }
 #endif
 };
+
+/* Refcounting functions */
+XBT_PUBLIC void intrusive_ptr_release(const Jbod* io);
+XBT_PUBLIC void intrusive_ptr_add_ref(const Jbod* io);
+XBT_PUBLIC void intrusive_ptr_release(const JbodIo* io);
+XBT_PUBLIC void intrusive_ptr_add_ref(const JbodIo* io);
 
 } // namespace simgrid::plugin
 #endif
