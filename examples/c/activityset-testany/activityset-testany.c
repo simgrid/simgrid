@@ -41,6 +41,7 @@ static void bob(int argc, char* argv[])
         XBT_INFO("Completed a Comm");
       if (sg_exec_isinstance(completed_one))
         XBT_INFO("Completed an Exec");
+      sg_activity_unref(completed_one);
     } else {
       XBT_INFO("Nothing matches, test again in 0.5s");
       sg_actor_sleep_for(.5);

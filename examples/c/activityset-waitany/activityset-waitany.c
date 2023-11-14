@@ -40,6 +40,7 @@ static void bob()
       XBT_INFO("Completed an Exec");
     else
       xbt_die("This activity set is supposed to only contain Comm or Exec");
+    sg_activity_unref(completed_one);
   }
   XBT_INFO("Last activity is complete");
   free(payload);
