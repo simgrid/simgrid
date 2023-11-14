@@ -68,7 +68,7 @@ private:
   friend void intrusive_ptr_add_ref(Chiller* o) { o->refcount_.fetch_add(1, std::memory_order_relaxed); }
 #endif
 
-  inline static xbt::signal<void(Chiller*)> on_power_change;
+  static xbt::signal<void(Chiller*)> on_power_change;
   xbt::signal<void(Chiller*)> on_this_power_change;
 
 public:
