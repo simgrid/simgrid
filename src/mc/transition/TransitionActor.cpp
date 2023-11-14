@@ -61,7 +61,19 @@ bool ActorJoinTransition::can_be_co_enabled(const Transition* other) const
     return false;
 
   return true;
-}
+
+  bool ActorJoinTransition::reversible_race(const Transition* other) const
+  {
+    switch (type_) {
+      case Type::ACTOR_JOIN:
+        // ActorJoin races with another event iff its target `T` is the same as
+        // the actor executing the other transition. Clearly, then, we could not join
+        // on that actor `T` and then run a transition by `T`, so no race is reversible
+        return false;
+      default:
+        xbt_die("Unexpected transition type %s", to_c_str(type_));
+    }
+  }
 
 ActorSleepTransition::ActorSleepTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::ACTOR_SLEEP, issuer, times_considered)
@@ -80,6 +92,16 @@ bool ActorSleepTransition::depends(const Transition* other) const
 
   // Sleeping is indep with any other transitions: always enabled, not impacted by any transition
   return false;
+}
+
+bool ActorSleepTransition::reversible_race(const Transition* other) const
+{
+  switch (type_) {
+    case Type::ACTOR_SLEEP:
+      return true; // Always enabled
+    default:
+      xbt_die("Unexpected transition type %s", to_c_str(type_));
+  }
 }
 
 } // namespace simgrid::mc

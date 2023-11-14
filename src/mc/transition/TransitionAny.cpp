@@ -43,6 +43,16 @@ bool TestAnyTransition::depends(const Transition* other) const
 
   return transitions_[times_considered_]->depends(other);
 }
+bool TestAnyTransition::reversible_race(const Transition* other) const
+{
+  switch (type_) {
+    case Type::TESTANY:
+      return true; // TestAny is always enabled
+    default:
+      xbt_die("Unexpected transition type %s", to_c_str(type_));
+  }
+}
+
 WaitAnyTransition::WaitAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::WAITANY, issuer, times_considered)
 {
@@ -68,6 +78,16 @@ bool WaitAnyTransition::depends(const Transition* other) const
   if (other->aid_ == aid_)
     return true;
   return transitions_[times_considered_]->depends(other);
+}
+bool WaitAnyTransition::reversible_race(const Transition* other) const
+{
+  switch (type_) {
+    case Type::WAITANY:
+      // TODO: We need to check if any of the transitions waited on occurred before `e1`
+      return true; // Let's overapproximate to not miss branches
+    default:
+      xbt_die("Unexpected transition type %s", to_c_str(type_));
+  }
 }
 
 } // namespace simgrid::mc

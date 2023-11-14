@@ -94,25 +94,6 @@ public:
   int get_value() const { return next_value_; }
 };
 
-class ConditionWaitSimcall final : public ResultingSimcall<bool> {
-  activity::ConditionVariableImpl* const cond_;
-  activity::MutexImpl* const mutex_;
-  const double timeout_;
-
-public:
-  ConditionWaitSimcall(ActorImpl* actor, activity::ConditionVariableImpl* cond, activity::MutexImpl* mutex,
-                       double timeout = -1.0)
-      : ResultingSimcall(actor, false), cond_(cond), mutex_(mutex), timeout_(timeout)
-  {
-  }
-  void serialize(std::stringstream& stream) const override;
-  std::string to_string() const override;
-  bool is_enabled() override;
-  activity::ConditionVariableImpl* get_cond() const { return cond_; }
-  activity::MutexImpl* get_mutex() const { return mutex_; }
-  double get_timeout() const { return timeout_; }
-};
-
 class ActorJoinSimcall final : public SimcallObserver {
   s4u::ActorPtr const other_; // We need a Ptr to ensure access to the actor after its end, but Ptr requires s4u
   const double timeout_;

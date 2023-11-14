@@ -7,6 +7,7 @@ p Order: in, out, cmd
 < $ cat
 > Test suite from stdin
 > [(stdin):3] cat
+> 
 > Test suite from stdin OK
 $ ${bindir:=.}/tesh
 
@@ -16,6 +17,7 @@ p Order: out, in, cmd
 < $ cat
 > Test suite from stdin
 > [(stdin):3] cat
+> 
 > Test suite from stdin OK
 $ ${bindir:=.}/tesh
 
@@ -25,6 +27,7 @@ p Order: out, cmd, in
 < < TOTO
 > Test suite from stdin
 > [(stdin):2] cat
+> 
 > Test suite from stdin OK
 $ ${bindir:=.}/tesh
 
@@ -34,6 +37,7 @@ p Order: in, cmd, out
 < > TOTO
 > Test suite from stdin
 > [(stdin):2] cat
+> 
 > Test suite from stdin OK
 $ ${bindir:=.}/tesh
 
@@ -43,6 +47,7 @@ p Order: cmd, out, in
 < < TOTO
 > Test suite from stdin
 > [(stdin):1] cat
+> 
 > Test suite from stdin OK
 $ ${bindir:=.}/tesh
 
@@ -52,5 +57,6 @@ p Order: cmd, in, out
 < > TOTO
 > Test suite from stdin
 > [(stdin):1] cat
+> 
 > Test suite from stdin OK
 $ ${bindir:=.}/tesh

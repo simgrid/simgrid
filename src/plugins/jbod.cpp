@@ -14,52 +14,53 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_jbod, s4u, "Logging specific to the JBOD imp
 
 namespace simgrid::plugin {
 
-Jbod* Jbod::create_jbod(s4u::NetZone* zone, const std::string& name, double speed, unsigned int num_disks,
-                        RAID raid_level, double read_bandwidth, double write_bandwidth)
+JbodPtr Jbod::create_jbod(s4u::NetZone* zone, const std::string& name, double speed, unsigned int num_disks,
+                          RAID raid_level, double read_bandwidth, double write_bandwidth)
 {
   xbt_assert(not ((raid_level == RAID::RAID4 || raid_level == RAID::RAID5) && num_disks < 3),
              "RAID%d requires at least 3 disks", (int) raid_level);
   xbt_assert(not (raid_level == RAID::RAID6 && num_disks < 4), "RAID6 requires at least 4 disks");
 
-  auto* jbod = static_cast<Jbod*>(zone->create_host(name, speed));
+  auto* jbod = new Jbod();
+  jbod->set_controller(zone->create_host(name, speed));
   jbod->set_num_disks(num_disks);
   jbod->set_parity_disk_idx(num_disks -1 );
   jbod->set_read_disk_idx(-1);
   jbod->set_raid_level(raid_level);
   for (unsigned int i = 0; i < num_disks; i++)
-    jbod->create_disk(name + "_disk_" + std::to_string(i), read_bandwidth, write_bandwidth);
+    jbod->get_controller()->create_disk(name + "_disk_" + std::to_string(i), read_bandwidth, write_bandwidth);
 
-  return jbod;
+  return JbodPtr(jbod);
 }
 
 JbodIoPtr Jbod::read_async(sg_size_t size)
 {
-  auto comm = s4u::Comm::sendto_init()->set_source(const_cast<Jbod*>(this))->set_payload_size(size);
+  auto comm = s4u::Comm::sendto_init()->set_source(this->controller_)->set_payload_size(size);
   std::vector<s4u::IoPtr> pending_ios;
   sg_size_t read_size = 0;
   std::vector<s4u::Disk*> targets;
   switch(raid_level_) {
     case RAID::RAID0:
       read_size = size / num_disks_;
-      targets = get_disks();
+      targets   = controller_->get_disks();
       break;
     case RAID::RAID1:
       read_size = size;
-      targets.push_back(get_disks().at(get_next_read_disk_idx()));
+      targets.push_back(controller_->get_disks().at(get_next_read_disk_idx()));
       break;
     case RAID::RAID4:
       read_size = size / (num_disks_ - 1);
-      targets = get_disks();
+      targets   = controller_->get_disks();
       targets.pop_back();
       break;
     case RAID::RAID5:
       read_size = size / (num_disks_ - 1);
-      targets = get_disks();
+      targets   = controller_->get_disks();
       targets.erase(targets.begin() + (get_parity_disk_idx() + 1 % num_disks_));
       break;
     case RAID::RAID6:
       read_size = size / (num_disks_ - 2);
-      targets = get_disks();
+      targets   = controller_->get_disks();
       if ( (get_parity_disk_idx() + 2 % num_disks_) == 0 ) {
         targets.pop_back();
         targets.erase(targets.begin());
@@ -91,7 +92,7 @@ sg_size_t Jbod::read(sg_size_t size)
 
 JbodIoPtr Jbod::write_async(sg_size_t size)
 {
-  auto comm = s4u::Comm::sendto_init(s4u::Host::current(), const_cast<Jbod*>(this));
+  auto comm = s4u::Comm::sendto_init(s4u::Host::current(), this->get_controller());
   std::vector<s4u::IoPtr> pending_ios;
   sg_size_t write_size = 0;
   switch(raid_level_) {
@@ -116,7 +117,7 @@ JbodIoPtr Jbod::write_async(sg_size_t size)
     default:
       xbt_die("Unsupported RAID level. Supported level are: 0, 1, 4, 5, and 6");
   }
-  for (const auto* disk : get_disks()) {
+  for (const auto* disk : get_controller()->get_disks()) {
     auto io = s4u::IoPtr(disk->io_init(write_size, s4u::Io::OpType::WRITE));
     io->set_name(disk->get_name());
     pending_ios.push_back(io);
@@ -148,7 +149,7 @@ void JbodIo::wait()
     transfer_->wait();
     XBT_DEBUG("Data received on JBOD");
     if (parity_block_comp_) {
-      parity_block_comp_->set_host(const_cast<Jbod*>(jbod_))->wait();
+      parity_block_comp_->set_host(jbod_->get_controller())->wait();
       XBT_DEBUG("Parity block computed");
     }
     XBT_DEBUG("Start writing");

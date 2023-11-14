@@ -53,6 +53,32 @@ int sthread_mutex_unlock(sthread_mutex_t* mutex);
 int sthread_mutex_destroy(sthread_mutex_t* mutex);
 
 typedef struct {
+  unsigned unused : 1;
+} sthread_barrierattr_t;
+
+typedef struct {
+  void* barrier;
+} sthread_barrier_t;
+int sthread_barrier_init(sthread_barrier_t* barrier, const sthread_barrierattr_t* attr, unsigned count);
+int sthread_barrier_wait(sthread_barrier_t* barrier);
+int sthread_barrier_destroy(sthread_barrier_t* barrier);
+
+typedef struct {
+  unsigned unused : 1;
+} sthread_condattr_t;
+
+typedef struct {
+  void* cond;
+  void* mutex;
+} sthread_cond_t;
+int sthread_cond_init(sthread_cond_t* cond, sthread_condattr_t* attr);
+int sthread_cond_signal(sthread_cond_t* cond);
+int sthread_cond_broadcast(sthread_cond_t* cond);
+int sthread_cond_wait(sthread_cond_t* cond, sthread_mutex_t* mutex);
+int sthread_cond_timedwait(sthread_cond_t* cond, sthread_mutex_t* mutex, const struct timespec* abs_timeout);
+int sthread_cond_destroy(sthread_cond_t* cond);
+
+typedef struct {
   void* sem;
 } sthread_sem_t;
 int sthread_sem_init(sthread_sem_t* sem, int pshared, unsigned int value);
@@ -63,7 +89,8 @@ int sthread_sem_trywait(sthread_sem_t* sem);
 int sthread_sem_timedwait(sthread_sem_t* sem, const struct timespec* abs_timeout);
 
 int sthread_gettimeofday(struct timeval* tv);
-void sthread_sleep(double seconds);
+unsigned int sthread_sleep(double seconds);
+int sthread_usleep(double seconds);
 
 int sthread_access_begin(void* objaddr, const char* objname, const char* file, int line, const char* function);
 void sthread_access_end(void* objaddr, const char* objname, const char* file, int line, const char* function);

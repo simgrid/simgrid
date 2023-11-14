@@ -22,6 +22,7 @@ public:
   ObjectAccessTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+  bool reversible_race(const Transition* other) const override;
 };
 
 } // namespace simgrid::mc

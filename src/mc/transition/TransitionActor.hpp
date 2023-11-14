@@ -23,7 +23,11 @@ public:
   ActorJoinTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+<<<<<<< HEAD
   bool can_be_co_enabled(const Transition* other) const override;
+=======
+  bool reversible_race(const Transition* other) const override;
+>>>>>>> 130f51aeb55bd3bf2706c1f5b09ca59fa291c087
 
   bool get_timeout() const { return timeout_; }
   /** Target ID */
@@ -36,6 +40,7 @@ public:
   ActorSleepTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+  bool reversible_race(const Transition* other) const override;
 };
 
 } // namespace simgrid::mc

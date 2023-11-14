@@ -5,6 +5,8 @@
 
 /* SimGrid's pthread interposer. Actual implementation of the symbols (see the comment in sthread.h) */
 
+#include "simgrid/s4u/Barrier.hpp"
+#include "simgrid/s4u/ConditionVariable.hpp"
 #include "smpi/smpi.h"
 #include "xbt/asserts.h"
 #include "xbt/ex.h"
@@ -48,7 +50,8 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
     }
 
   /* Do not intercept valgrind step 1 */
-  if (not strcmp(argv[0], "/usr/bin/valgrind.bin") || not strcmp(argv[0], "/bin/sh")) {
+  if (not strcmp(argv[0], "/usr/bin/valgrind.bin") || not strcmp(argv[0], "/bin/sh") ||
+      not strcmp(argv[0], "/bin/bash") || not strcmp(argv[0], "gdb")) {
     printf("sthread refuses to intercept the execution of %s. Running the application unmodified.\n", argv[0]);
     fflush(stdout);
     return raw_main(argc, argv, envp);
@@ -218,6 +221,113 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
   intrusive_ptr_release(static_cast<sg4::Mutex*>(mutex->mutex));
   return 0;
 }
+
+int sthread_barrier_init(sthread_barrier_t* barrier, const sthread_barrierattr_t* attr, unsigned count)
+{
+  auto b = sg4::Barrier::create(count);
+  intrusive_ptr_add_ref(b.get());
+
+  barrier->barrier = b.get();
+  return 0;
+}
+int sthread_barrier_wait(sthread_barrier_t* barrier)
+{
+  XBT_DEBUG("%s(%p)", __func__, barrier);
+  static_cast<sg4::Barrier*>(barrier->barrier)->wait();
+  return 0;
+}
+int sthread_barrier_destroy(sthread_barrier_t* barrier)
+{
+  XBT_DEBUG("%s(%p)", __func__, barrier);
+  intrusive_ptr_release(static_cast<sg4::Barrier*>(barrier->barrier));
+  return 0;
+}
+
+int sthread_cond_init(sthread_cond_t* cond, sthread_condattr_t* attr)
+{
+  auto cv = sg4::ConditionVariable::create();
+  intrusive_ptr_add_ref(cv.get());
+
+  cond->cond  = cv.get();
+  cond->mutex = nullptr;
+  return 0;
+}
+int sthread_cond_signal(sthread_cond_t* cond)
+{
+  XBT_DEBUG("%s(%p)", __func__, cond);
+
+  if (cond->mutex == nullptr)
+    XBT_WARN("No mutex was associated so far with condition variable %p. Safety checks skipped.", cond);
+  else {
+    auto* owner = static_cast<sg4::Mutex*>(cond->mutex)->get_owner();
+    if (owner == nullptr)
+      XBT_WARN("The mutex associated to condition %p is not currently owned by anyone when calling "
+               "pthread_cond_signal(). The signal could get lost.",
+               cond);
+    else if (owner != simgrid::s4u::Actor::self())
+      XBT_WARN("The mutex associated to condition %p is currently owned by %s, not by the thread currently calling "
+               "calling pthread_cond_signal(). The signal could get lost.",
+               cond, owner->get_cname());
+  }
+
+  static_cast<sg4::ConditionVariable*>(cond->cond)->notify_one();
+  return 0;
+}
+int sthread_cond_broadcast(sthread_cond_t* cond)
+{
+  XBT_DEBUG("%s(%p)", __func__, cond);
+
+  if (cond->mutex == nullptr)
+    XBT_WARN("No mutex was associated so far with condition variable %p. Safety checks skipped.", cond);
+  else {
+    auto* owner = static_cast<sg4::Mutex*>(cond->mutex)->get_owner();
+    if (owner == nullptr)
+      XBT_WARN("The mutex associated to condition %p is not currently owned by anyone when calling "
+               "pthread_cond_broadcast(). The signal could get lost.",
+               cond);
+    else if (owner != simgrid::s4u::Actor::self())
+      XBT_WARN("The mutex associated to condition %p is currently owned by %s, not by the thread currently calling "
+               "calling pthread_cond_broadcast(). The signal could get lost.",
+               cond, owner->get_cname());
+  }
+
+  static_cast<sg4::ConditionVariable*>(cond->cond)->notify_all();
+  return 0;
+}
+int sthread_cond_wait(sthread_cond_t* cond, sthread_mutex_t* mutex)
+{
+  XBT_DEBUG("%s(%p)", __func__, cond);
+
+  if (cond->mutex == nullptr)
+    cond->mutex = mutex->mutex;
+  else if (cond->mutex != mutex->mutex)
+    XBT_WARN("The condition %p is now waited with mutex %p while it was previoulsy waited with mutex %p. sthread may "
+             "not work with such a dangerous code.",
+             cond, cond->mutex, mutex->mutex);
+
+  static_cast<sg4::ConditionVariable*>(cond->cond)->wait(static_cast<sg4::Mutex*>(mutex->mutex));
+  return 0;
+}
+int sthread_cond_timedwait(sthread_cond_t* cond, sthread_mutex_t* mutex, const struct timespec* abs_timeout)
+{
+  XBT_DEBUG("%s(%p)", __func__, cond);
+
+  if (cond->mutex == nullptr)
+    cond->mutex = mutex->mutex;
+  else if (cond->mutex != mutex->mutex)
+    XBT_WARN("The condition %p is now waited with mutex %p while it was previoulsy waited with mutex %p. sthread may "
+             "not work with such a dangerous code.",
+             cond, cond->mutex, mutex->mutex);
+
+  THROW_UNIMPLEMENTED;
+}
+int sthread_cond_destroy(sthread_cond_t* cond)
+{
+  XBT_DEBUG("%s(%p)", __func__, cond);
+  intrusive_ptr_release(static_cast<sg4::ConditionVariable*>(cond->cond));
+  return 0;
+}
+
 int sthread_sem_init(sthread_sem_t* sem, int /*pshared*/, unsigned int value)
 {
   auto s = sg4::Semaphore::create(value);
@@ -273,35 +383,15 @@ int sthread_gettimeofday(struct timeval* tv)
   return 0;
 }
 
-void sthread_sleep(double seconds)
+unsigned int sthread_sleep(double seconds)
 {
   XBT_DEBUG("sleep(%lf)", seconds);
   simgrid::s4u::this_actor::sleep_for(seconds);
+  return 0;
 }
-
-#if 0
-int pthread_cond_init(pthread_cond_t *cond, pthread_condattr_t *cond_attr) {
-    *cond = sg_cond_init();
-    return 0;
+int sthread_usleep(double seconds)
+{
+  XBT_DEBUG("sleep(%lf)", seconds);
+  simgrid::s4u::this_actor::sleep_for(seconds);
+  return 0;
 }
-
-int pthread_cond_signal(pthread_cond_t *cond) {
-	sg_cond_notify_one(*cond);
-    return 0;
-}
-
-int pthread_cond_broadcast(pthread_cond_t *cond) {
-	sg_cond_notify_all(*cond);
-    return 0;
-}
-
-int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
-	sg_cond_wait(*cond, *mutex);
-    return 0;
-}
-
-int pthread_cond_destroy(pthread_cond_t *cond) {
-	sg_cond_destroy(*cond);
-    return 0;
-}
-#endif

@@ -9,6 +9,7 @@
 #include "simgrid/s4u/Mutex.hpp"
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "xbt/asserts.h"
 #include <boost/intrusive/list.hpp>
 
 namespace simgrid::kernel::activity {
@@ -54,6 +55,7 @@ public:
   MutexImplPtr get_mutex() { return mutex_; }
   actor::ActorImpl* get_issuer() { return issuer_; }
   void grant() { granted_ = true; }
+  bool is_granted() { return granted_; }
 
   bool test(actor::ActorImpl* issuer = nullptr) override;
   void wait_for(actor::ActorImpl* issuer, double timeout) override;
@@ -96,11 +98,15 @@ public:
 
   friend void intrusive_ptr_release(MutexImpl* mutex)
   {
-    if (mutex->refcount_.fetch_sub(1) == 1)
+    if (mutex->refcount_.fetch_sub(1) == 1) {
+      xbt_assert(mutex->ongoing_acquisitions_.empty(), "The destroyed mutex still had ongoing acquisitions");
+      xbt_assert(mutex->owner_ == nullptr, "The destroyed mutex is still owned by actor %s",
+                 mutex->owner_->get_cname());
       delete mutex;
+    }
   }
 
-  s4u::Mutex& mutex() { return piface_; }
+  s4u::Mutex& get_iface() { return piface_; }
 };
 } // namespace simgrid::kernel::activity
 #endif

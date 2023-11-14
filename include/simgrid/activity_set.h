@@ -26,6 +26,9 @@ XBT_PUBLIC sg_activity_t sg_activity_set_wait_any(sg_activity_set_t as);
 XBT_PUBLIC sg_activity_t sg_activity_set_wait_any_for(sg_activity_set_t as, double timeout);
 XBT_PUBLIC void sg_activity_set_delete(sg_activity_set_t as);
 
+/** You must call this function manually on activities extracted from an activity_set with waitany and friends */
+XBT_PUBLIC void sg_activity_unref(sg_activity_t acti);
+
 SG_END_DECL
 
 #endif /* INCLUDE_SIMGRID_ACTIVITY_SET_H */

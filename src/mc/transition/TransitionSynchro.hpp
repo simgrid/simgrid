@@ -19,6 +19,7 @@ public:
   std::string to_string(bool verbose) const override;
   BarrierTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream);
   bool depends(const Transition* other) const override;
+  bool reversible_race(const Transition* other) const override;
 };
 
 class MutexTransition : public Transition {
@@ -30,6 +31,7 @@ public:
   MutexTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream);
   bool depends(const Transition* other) const override;
   bool can_be_co_enabled(const Transition* other) const override;
+  bool reversible_race(const Transition* other) const override;
 
   uintptr_t get_mutex() const { return this->mutex_; }
   aid_t get_owner() const { return this->owner_; }
@@ -44,6 +46,8 @@ public:
   std::string to_string(bool verbose) const override;
   SemaphoreTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream);
   bool depends(const Transition* other) const override;
+  bool reversible_race(const Transition* other) const override;
+
   int get_capacity() const { return capacity_; }
 };
 

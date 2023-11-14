@@ -58,7 +58,15 @@ bool Mutex::try_lock()
 MutexPtr Mutex::create(bool recursive)
 {
   auto* mutex = new kernel::activity::MutexImpl(recursive);
-  return MutexPtr(&mutex->mutex(), false);
+  return MutexPtr(&mutex->get_iface(), false);
+}
+
+Actor* Mutex::get_owner()
+{
+  auto* owner = pimpl_->get_owner();
+  if (owner == nullptr)
+    return nullptr;
+  return owner->get_ciface();
 }
 
 /* refcounting of the intrusive_ptr is delegated to the implementation object */

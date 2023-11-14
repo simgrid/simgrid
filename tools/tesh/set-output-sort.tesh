@@ -75,19 +75,33 @@ $ ${bindir:=.}/tesh --ignore-jenkins
 > Test suite from stdin
 > [(stdin):1] Test sorting and filtering of output
 > [(stdin):3] true
+> 
 > [(stdin):6] true
+> 
 > [(stdin):8] printf 'profiling: foo\n'
+> 
 > [(stdin):10] printf 'profiling: foo'
+> 
 > [(stdin):13] printf 'profiling: foo\n'
+> 
 > [(stdin):16] printf 'profiling: foo'
+> 
 > [(stdin):18] printf 'a\nb\nc\nd\n'
+> 
 > [(stdin):24] printf 'a\nb\nc\nd'
+> 
 > [(stdin):31] printf 'c\nd\nb\na\n'
+> 
 > [(stdin):38] printf 'c\nd\nb\na'
+> 
 > [(stdin):44] printf 'a\nprofiling: foo\nprofiling: bar\nb\nc\nd\nprofiling: baz\n'
+> 
 > [(stdin):50] printf 'a\nprofiling: foo\nprofiling: bar\nb\nc\nd\nprofiling: baz'
+> 
 > [(stdin):57] printf 'c\nprofiling: foo\nprofiling: bar\nd\nb\na\nprofiling: baz\n'
+> 
 > [(stdin):64] printf 'c\nprofiling: foo\nprofiling: bar\nd\nb\na\nprofiling: baz'
+> 
 > Test suite from stdin OK
 
 p Check the Right Prefix Length (19) for "output sort"

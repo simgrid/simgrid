@@ -42,6 +42,7 @@ static void bob()
         XBT_INFO("Completed a Comm");
       if (sg_exec_isinstance(completed_one))
         XBT_INFO("Completed an Exec");
+      sg_activity_unref(completed_one);
       completed_one = sg_activity_set_test_any(pending_activities);
     }
   }

@@ -32,6 +32,8 @@ static void bob()
 
   XBT_INFO("Wait for asynchronous activities to complete, all in one shot.");
   sg_activity_set_wait_all(pending_activities);
+  sg_activity_unref((sg_activity_t)exec);
+  sg_activity_unref((sg_activity_t)comm);
 
   XBT_INFO("All activities are completed.");
   free(payload);

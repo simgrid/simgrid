@@ -74,7 +74,7 @@ MutexAcquisitionImplPtr MutexImpl::lock_async(actor::ActorImpl* issuer)
     return res;
   }
 
-  // None-recursive mutex
+  // Non-recursive mutex
   auto res = MutexAcquisitionImplPtr(new kernel::activity::MutexAcquisitionImpl(issuer, this), true);
   if (owner_ == nullptr) { // Lock is free, take it
     owner_  = issuer;

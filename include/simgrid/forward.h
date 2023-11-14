@@ -132,6 +132,7 @@ using ActorCodeFactory = std::function<ActorCode(std::vector<std::string> args)>
 class Simcall;
 class SimcallObserver;
 class MutexObserver;
+class ConditionVariableObserver;
 class ObjectAccessSimcallObserver;
 class ObjectAccessSimcallItem;
 } // namespace actor
@@ -154,6 +155,8 @@ namespace activity {
   using ConditionVariableImplPtr = boost::intrusive_ptr<ConditionVariableImpl>;
   XBT_PUBLIC void intrusive_ptr_add_ref(ConditionVariableImpl* cond);
   XBT_PUBLIC void intrusive_ptr_release(ConditionVariableImpl* cond);
+  class ConditionVariableAcquisitionImpl;
+  using ConditionVariableAcquisitionImplPtr = boost::intrusive_ptr<ConditionVariableAcquisitionImpl>;
 
   class CommImpl;
   using CommImplPtr = boost::intrusive_ptr<CommImpl>;

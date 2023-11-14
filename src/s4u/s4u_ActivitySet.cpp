@@ -182,5 +182,9 @@ void sg_activity_set_delete(sg_activity_set_t as)
 {
   delete as;
 }
+void sg_activity_unref(sg_activity_t acti)
+{
+  acti->unref();
+}
 
 SG_END_DECL

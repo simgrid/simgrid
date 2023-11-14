@@ -7,6 +7,7 @@
 #define SIMGRID_MC_TRANSITION_HPP
 
 #include "simgrid/forward.h" // aid_t
+#include "xbt/ex.h"
 #include "xbt/utility.hpp"   // XBT_DECLARE_ENUM_CLASS
 
 #include <sstream>
@@ -23,7 +24,7 @@ namespace simgrid::mc {
  *  calls.
  */
 class Transition {
-  /* Textual representation of the transition, to display backtraces */
+  /* Global statistics */
   static unsigned long executed_transitions_;
   static unsigned long replayed_transitions_;
 
@@ -92,6 +93,21 @@ public:
       return other->can_be_co_enabled(this);
     else
       return other->aid_ != aid_;
+  }
+
+  /**
+   The reversible race detector should only be used if we already have the assumption
+   this <* other (see Source set: a foundation for ODPOR). In particular this means that :
+   - this -->_E other
+   - proc(this) != proc(other)
+   - there is no event e s.t. this --> e --> other
+
+    @note: It is safe to assume that there is indeed a race between the two events in the execution;
+     indeed, the question the method answers is only sensible in the context of a race
+  */
+  virtual bool reversible_race(const Transition* other) const
+  {
+    xbt_die("%s unimplemented for %s", __func__, to_c_str(type_));
   }
 
   /* Returns the total amount of transitions executed so far (for statistics) */

@@ -20,6 +20,7 @@ S4U:
    The behavior of a MessageQueue is similar to that of a Mailbox, but intended for
    control messages that do not incur any simulated cost. Information is automagically
    transported over thin air between producer and consumer. See examples/cpp/mess-wait
+ - New function: Mutex::get_owner()
 
 New S4U plugins:
  - Add a JBOD (just a bunch of disks) concept. It's a sort of host with many disks.
@@ -42,10 +43,15 @@ sthread:
  - Allow to use on valgrind-observed processes
  - Install sthread on user's disk.
  - Implement recursive pthreads.
+ - Implement pthread_barrier and pthread_cond.
  - Add some McMini codes to test sthread further (controlled with enable_testsuite_McMini).
 
 Model checking:
+ - Remove stateful model-checking. This was not used, not really working, and very hard to fix.
+   Liveness properties cannot be verified anymore.
  - More informative backtraces on assertion failure.
+ - Fix dependency bugs for mutex and other transitions
+ - Fix some reversible_race definitions, and also the rest of ODPOR.
 
 Python:
  - Make the host_load plugin available from Python. See examples/python/plugin-host-load
