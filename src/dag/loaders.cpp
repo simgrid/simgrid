@@ -107,7 +107,7 @@ std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename)
   for (auto const& task: data["workflow"]["tasks"]) {
     if (task["type"] == "compute") {
       current =
-          Exec::init()->set_name(task["name"].get<std::string>())->set_flops_amount(task["runtime"].get<double>());
+          Exec::init()->set_name(task["name"].get<std::string>())->set_flops_amount(task["runtimeInSeconds"].get<double>());
       if (task.contains("machine"))
         dynamic_cast<Exec*>(current.get())
             ->set_host(simgrid::s4u::Engine::get_instance()->host_by_name(task["machine"].get<std::string>()));
@@ -115,7 +115,7 @@ std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename)
     else if (task["type"] == "transfer"){
       current = Comm::sendto_init()
                     ->set_name(task["name"].get<std::string>())
-                    ->set_payload_size(task["bytesWritten"].get<double>());
+                    ->set_payload_size(task["writtenBytes"].get<double>());
       if (task.contains("machine"))
         comms_destinations[current] =
             simgrid::s4u::Engine::get_instance()->host_by_name(task["machine"].get<std::string>());
