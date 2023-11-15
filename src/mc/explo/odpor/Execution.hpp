@@ -342,6 +342,20 @@ public:
   bool happens_before(EventHandle e1, EventHandle e2) const;
 
   /**
+   * @brief Whether the event represented by `e`
+   * "happens-before" the process p
+   * in the context of this execution
+   *
+   * In the terminology of the DPOR paper,
+   * this function computes
+   *
+   * `e --->_E p`
+   *
+   * where `E` is this execution
+   */
+  bool happens_before_process(EventHandle e, aid_t p) const;
+
+  /**
    * @brief Extends the execution by one more step
    *
    * Intutively, pushing a transition `t` onto execution `E`

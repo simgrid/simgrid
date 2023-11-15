@@ -153,6 +153,7 @@ bool MutexTransition::can_be_co_enabled(const Transition* o) const
   }
 
   return true; // mutexes are INDEP with non-mutex transitions
+}
 
   bool SemaphoreTransition::reversible_race(const Transition* other) const
   {

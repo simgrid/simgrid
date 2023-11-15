@@ -10,6 +10,7 @@
 #include "src/mc/api/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/mc_config.hpp"
 
 #include <deque>
@@ -27,6 +28,7 @@ using EventHandle = uint32_t;
 
 class XBT_PRIVATE DPORExplorer : public Exploration {
 private:
+  Reduction reduction_algo_ = DPOR();
   ReductionMode reduction_mode_;
   unsigned long backtrack_count_      = 0; // for statistics
   unsigned long visited_states_count_ = 0; // for statistics

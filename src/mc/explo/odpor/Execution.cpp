@@ -475,6 +475,19 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
   return std::optional<PartialExecution>{std::move(w_now)};
 }
 
+bool Execution::happens_before_process(Execution::EventHandle e, aid_t p) const
+{
+
+  if (get_actor_with_handle(e) == p)
+    return true;
+
+  for (EventHandle k = e + 1; k < contents_.size(); k++) {
+    if (happens_before(e, k) && get_actor_with_handle(k) == p)
+      return true;
+  }
+  return false;
+}
+
 bool Execution::happens_before(Execution::EventHandle e1_handle, Execution::EventHandle e2_handle) const
 {
   // 1. "happens-before" (-->_E) is a subset of "occurs before" (<_E)

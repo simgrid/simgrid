@@ -61,6 +61,7 @@ bool ActorJoinTransition::can_be_co_enabled(const Transition* other) const
     return false;
 
   return true;
+}
 
   bool ActorJoinTransition::reversible_race(const Transition* other) const
   {

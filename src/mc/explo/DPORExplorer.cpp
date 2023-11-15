@@ -6,6 +6,7 @@
 #include "src/mc/explo/DPORExplorer.hpp"
 #include "simgrid/forward.h"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
+#include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
@@ -68,18 +69,6 @@ void DPORExplorer::log_state() // override
   Exploration::log_state();
 }
 
-bool happens_before_over_process(const odpor::Execution S, EventHandle i, aid_t p)
-{
-  if (S.get_actor_with_handle(i) == p)
-    return true;
-
-  for (EventHandle k = i + 1; k < S.size(); k++) {
-    if (S.happens_before(i, k) && S.get_actor_with_handle(k) == p)
-      return true;
-  }
-  return false;
-}
-
 std::optional<EventHandle> max_dependent_dpor(const odpor::Execution S, const State* s, aid_t p)
 {
 
@@ -93,7 +82,7 @@ std::optional<EventHandle> max_dependent_dpor(const odpor::Execution S, const St
         0); // For now, let's do like multi time considered transition do not exist FIXME
 
     if (past_transition->depends(next_transition_of_p.get()) &&
-        past_transition->can_be_co_enabled(next_transition_of_p.get()) && not happens_before_over_process(S, i - 1, p))
+        past_transition->can_be_co_enabled(next_transition_of_p.get()) && not S.happens_before_process(i - 1, p))
       return i - 1;
   }
 
@@ -113,7 +102,7 @@ std::unordered_set<aid_t> compute_E_dpor_algorithm(const odpor::Execution S, sta
     }
 
     for (EventHandle j = i + 1; j < S.size() - 1; j++) {
-      if (q == S.get_actor_with_handle(j) && happens_before_over_process(S, j, p)) {
+      if (q == S.get_actor_with_handle(j) && S.happens_before_process(j, p)) {
         E.insert(q);
         break;
       }
@@ -194,33 +183,15 @@ void DPORExplorer::explore(odpor::Execution S, stack_t state_stack)
 
   State* s = state_stack.back().get();
 
-  for (const auto& [p, actor] : s->get_actors_list()) {
+  reduction_algo_.races_computation(S, &state_stack);
 
-    if (not actor.is_enabled())
-      continue;
+  if (reduction_algo_.has_to_be_explored(S, &state_stack)) {
 
-    if (std::optional<EventHandle> opt_i = max_dependent_dpor(S, s, p); opt_i.has_value()) {
-      EventHandle i               = opt_i.value();
-      std::unordered_set<aid_t> E = compute_E_dpor_algorithm(S, state_stack, p, i);
+    aid_t next_to_explore;
 
-      if (not E.empty()) {
-        state_stack[i]->ensure_one_considered_among_set(E);
-      } else {
-        state_stack[i]->consider_all();
-      }
-    }
-  }
+    while ((next_to_explore = reduction_algo_.next_to_explore(S, &state_stack)) != -1) {
 
-  if (not s->get_enabled_minus_sleep().empty()) {
-    aid_t first_considered = *s->get_enabled_minus_sleep().rbegin();
-
-    s->consider_one(first_considered);
-
-    while (not s->get_batrack_minus_done().empty()) {
-
-      aid_t p = *s->get_batrack_minus_done().rbegin();
-
-      simgrid_wrapper_explore(S, p, state_stack);
+      simgrid_wrapper_explore(S, next_to_explore, state_stack);
     }
 
   } else {

@@ -521,7 +521,7 @@ set(MC_SRC_STATELESS
 
   src/mc/explo/UdporChecker.cpp
   src/mc/explo/UdporChecker.hpp
-
+  
   src/mc/explo/udpor/Comb.hpp
   src/mc/explo/udpor/Configuration.hpp
   src/mc/explo/udpor/Configuration.cpp
@@ -583,6 +583,10 @@ set(MC_SRC_STATELESS
   src/mc/api/strategy/MinMatchComm.hpp
   src/mc/api/strategy/Strategy.hpp
   src/mc/api/strategy/UniformStrategy.hpp
+  
+  src/mc/explo/reduction/Reduction.hpp
+  src/mc/explo/reduction/NoReduction.hpp
+  src/mc/explo/reduction/DPOR.hpp
   )
 
 set(MC_SIMGRID_MC_SRC  src/mc/explo/simgrid_mc.cpp)
