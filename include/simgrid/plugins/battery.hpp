@@ -133,6 +133,7 @@ public:
   void set_load(const std::string& name, double power_w);
   void set_load(const std::string& name, bool active);
   void connect_host(s4u::Host* host, bool active = true);
+  std::string get_name() {return name_;}
   double get_state_of_charge();
   double get_state_of_health();
   double get_capacity();
