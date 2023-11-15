@@ -705,7 +705,7 @@ def main():
                 cmd.timeout = None
             else:
                 try:
-                    cmd.timeout = [int(line[len("! timeout "):])]
+                    cmd.timeout = int(line[len("! timeout "):])
                 except ValueError as err:
                     fatal_error("Invalid timeout value: \""+(line[len("! timeout "):])+"\"")
 
