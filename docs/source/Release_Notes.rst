@@ -664,17 +664,88 @@ is still rather young, but it could probably be useful already, e.g. to verify t
 IPC and synchronization. Check `the examples <https://framagit.org/simgrid/simgrid/tree/master/examples/sthread>`_. In addition,
 sthread can now also check concurrent accesses to a given collection, loosely inspired from `this paper
 <https://www.microsoft.com/en-us/research/publication/efficient-and-scalable-thread-safety-violation-detection-finding-thousands-of-concurrency-bugs-during-testing>`_.
-This feature is not very usable yet, as you have to manually annotate your code, but we hope to improve it in the near future.
+This feature is not very usable yet, as you have to manually annotate your code, but we hope to improve it in the future.
 
 Version 3.35 (TBD)
 ------------------
-**On the interface front**, we introduced a new MessageQueue abstraction and associated Mess simulated object. The behavior of a
-MessageQueue is similar to that of a Mailbox, but intended for control messages that do not incur any simulated cost.
-Information is automagically transported over thin air between producer and consumer. Internally, the implementation is very
-similar to Mailboxes and Comms, only simpler. The motivation for this new abstraction came from a scalability issue observed in
-the WRENCH framework, which is heavily based on control messages. When the simulated size of these messages is set to 0, it creates
-very short lived network actions (i.e., lasting for only the route latency) that tend to overwhelm the LMM. Switching from Mailbox
-to MessageQueue for such information exchange avoid this problem and greatly improves the scalability of WRENCH-based simulators.
+
+**On the performance front**, we did some profiling and optimisation for this release. We saved some memory in simulation
+mixing MPI applications and S4U actors, and we greatly improved the performance of simulation exchanging many messages. We even
+introduced a new abstraction called MessageQueue and associated Mess simulated object to represent control messages in a very
+efficient way. When using MessageQueue and Mess instead of Mailboxes and Comms, information is automagically transported over
+thin air between producer and consumer in no simulated time. The implementation is much simpler, yielding much better
+performance. Indeed, this abstraction solves a scalability issue observed in the WRENCH framework, which is heavily based on
+control messages.
+
+
+**On the interface front**, we introduced a new abstraction called ActivitySets. It makes it easy to interact with a bag of
+mixed activities, waiting for the next occurring one, or for the completion of the whole set. This feature already existed in
+SimGrid, but was implemented in a crude way with vectors of activities and static functions. It is also much easier than earlier
+to mix several kinds of activities in activity sets.
+
+We introduced a new plugin called JBOD (just a bunch of disks), that proves useful to represent a sort of hosts gathering many
+disks. We also revamped the battery, photovoltaic and chiller plugins introduced in previous release to make it even easier to
+study green computing scenarios. On a similar topic, we eased the expression of vertical scaling with the :ref:`Task
+<API_s4u_Tasks>`, the repeatable activities introduced in the previous release that can be used to represent microservices
+applications.
+
+We not only added new abstractions and plugins, but also polished the existing interfaces. For example, the declaration of
+multi-zoned platforms was greatly simplified by adding methods with fewer parameters to cover the common cases, leaving the
+complete methods for the more advanced use cases (see the ChangeLog for details). Another difficulty in the earlier interface
+was related to :ref:`Mailbox::get_async()` which used to require the user to store the payload somewhere on her side. Instead,
+it is now possible to retrieve the payload from the communication object once it's over with :ref:`Comm::get_payload()`.
+
+Finally on the SMPI front, we introduced :ref:`SMPI_app_instance_join()` to wait for the completion of a started MPI instance.
+This enables further mixture of MPI codes and controlled by S4U applications and plugins. We are currently considering
+implementing some MPI4 calls, but nothing happened so far.
+
+**On the model-checking front**, the first big news is that we completely removed the liveness checker from the code base. This
+is unfortunate, but the truth is that this code was very fragile and not really tested.
+
+For the context, liveness checking is the part of model checking that can determine whether the studied system always terminates
+(absence of infinite loops, called non-progression loops in this context), or whether the system can reach a desirable state in
+a finite time (for example, when you press the button, you want the elevator to come eventually). This relies on the ability to
+detect loops in the execution, most often through the detection that this system state was already explored earlier. SimGrid
+relied on tricks and heuristics to detect such state equality by leveraging debug information meant for gdb or valgrind. It
+kinda worked, but was very fragile because neither this information nor the compilation process are meant for state equality
+evaluation. Not zeroing the memory induces many crufty bits, for example in the padding bytes of the data structures or on the
+stack. This can be solved by only comparing the relevant bits (as instructed by the debug information), but this process was
+rather slow. Detecting equality in the stack was even more hackish, as we usually don't have any debug information about the
+memory blocks retrieved from malloc(). This prevents any introspection into these blocks, which is problematic because the order
+of malloc calls will create states that are syntactically different (the blocks are not in the same location in memory) but
+semantically equivalent (the data meaning rarely depends on the block location itself). The heuristics we used here were so
+crude that I don't want to detail them here.
+
+If liveness checking were to be re-implemented nowadays, I would go for a compiler-aided approach. I would maybe use a compiler
+plugin to save the type of malloced blocks as in `Compiler-aided type tracking for correctness checking of MPI applications
+<https://scholar.google.com/citations?view_op=view_citation&citation_for_view=dRhZFBsAAAAJ:9yKSN-GCB0IC>`_ and zero the stack on
+call returns to ease introspection. We could even rely on a complete introspection mechanism such as `MetaCPP
+<https://github.com/mlomb/MetaCPP>`_ or similar. We had a great piece of code to checkpoint millions of states in a
+memory-efficient way. It was able to detect the common memory pages between states, and only save the modified ones. I guess
+that this would need to be exhumed from the git when reimplementing liveness checking in SimGrid. But I doubt that we will
+happen anytime soon, as we concentrate our scarce manpower on other parts. In particular, safety checking is about searching for
+failed assertions by inspecting each state. A counter example to a safety property is simply a state where the assertion failed
+/ the property is violated. A counter example to a liveness property is an infinite execution path that violates the property.
+In some sense, safety checking is much easier than liveness checking, but it's already very powerful to exhaustively test an
+application.
+
+In this release, we made several interesting progress on the safety side of model checking. First, we ironed out many bugs in
+the ODPOR exploration algorithm (and dependency and reversible race theorems on which it relies). ODPOR should now be usable,
+and it's much faster than our previous DPOR reduction. We also extended sthread a bit, by adding many tests from the McMini tool
+and by implementing pthread barriers and conditionals. It seems to work rather well with C codes using pthreads and with C++
+codes using the standard library. You can even use sthread on a process running in valgrind or gdb.
+
+Unfortunately, conditionals cannot be verified so far by the model checker, because our implementation of condition variables is
+still synchronous. Our reduction algorithms are optimized because we know that all transitions of our computation model are
+persistent: once a transition gets enabled, it remains so until it's actually fired. This enables to build upon previous
+computations, while everything must be recomputed in each state when previously enabled transitions can get disabled by an
+external event. Unfortunately, this requires that every activity is written in an asynchronous way. You first declare your
+intent to lock that mutex in an asynchronous manner, and then wait for the ongoing_acquisition object. Once a given acquisition
+is granted, it will always remain so even if another actor creates another acquisition on the same mutex. This is the equivalent
+of asynchronous communications that are common in MPI, but for mutex locks, barriers and semaphores. The thing that is missing
+to verify pthread_cond in sthread is that I didn't manage to write an asynchronous version of the condition variables. We have an
+almost working code lying around, but it fails for timed waits on condition variables. This will probably be part of the next
+release.
 
 .. |br| raw:: html
 
