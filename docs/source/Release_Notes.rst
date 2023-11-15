@@ -710,7 +710,7 @@ relied on tricks and heuristics to detect such state equality by leveraging debu
 kinda worked, but was very fragile because neither this information nor the compilation process are meant for state equality
 evaluation. Not zeroing the memory induces many crufty bits, for example in the padding bytes of the data structures or on the
 stack. This can be solved by only comparing the relevant bits (as instructed by the debug information), but this process was
-rather slow. Detecting equality in the stack was even more hackish, as we usually don't have any debug information about the
+rather slow. Detecting equality in the heap was even more hackish, as we usually don't have any debug information about the
 memory blocks retrieved from malloc(). This prevents any introspection into these blocks, which is problematic because the order
 of malloc calls will create states that are syntactically different (the blocks are not in the same location in memory) but
 semantically equivalent (the data meaning rarely depends on the block location itself). The heuristics we used here were so
