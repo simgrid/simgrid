@@ -49,15 +49,29 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
       return raw_main(argc, argv, envp);
     }
 
-  /* Do not intercept valgrind step 1 */
-  if (not strcmp(argv[0], "/usr/bin/valgrind.bin") || not strcmp(argv[0], "/bin/sh")|| not strcmp(argv[0], "/bin/bash")|| not strcmp(argv[0], "gdb")) {
-    printf("sthread refuses to intercept the execution of %s. Running the application unmodified.\n", argv[0]);
-    fflush(stdout);
-    return raw_main(argc, argv, envp);
+  /* Do not intercept system binaries such as valgrind step 1 */
+  std::vector<std::string> binaries = {"/usr/bin/valgrind.bin", "/bin/sh", "/bin/bash", "gdb", "addr2line"};
+  for (int i = 0; envp[i] != nullptr; i++) {
+    auto view = std::string_view(envp[i]);
+    /* If you want to ignore more than one binary, export STHREAD_IGNORE_BINARY1=toto STHREAD_IGNORE_BINARY2=tutu */
+    /* Note that this cannot be configured with --cfg because we are before the main() */
+    if (view.rfind("STHREAD_IGNORE_BINARY", 0) == 0) {
+      view.remove_prefix(std::min(view.rfind("=") + 1, view.size()));
+      binaries.push_back(std::string(view));
+    }
+  }
+  auto binary_view = std::string_view(argv[0]);
+  for (auto binary : binaries) {
+    if (binary_view.rfind(binary) != std::string_view::npos) {
+      printf("sthread refuses to intercept the execution of %s. Running the application unmodified.\n", argv[0]);
+      fflush(stdout);
+      return raw_main(argc, argv, envp);
+    }
   }
 
   /* If not in SMPI, the old main becomes an actor in a newly created simulation */
-  printf("sthread is intercepting the execution of %s\n", argv[0]);
+  printf("sthread is intercepting the execution of %s. If it's not what you want, export STHREAD_IGNORE_BINARY=%s\n",
+         argv[0], argv[0]);
   fflush(stdout);
 
   sg4::Engine e(&argc, argv);
