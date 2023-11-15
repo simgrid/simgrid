@@ -79,14 +79,24 @@ def fatal_error(msg):
     print("[Tesh/CRITICAL] " + str(msg))
     tesh_exit(1)
 
+# retrocompatibility: support ${aaa:=.} variable format
+def replace_perl_variables(arg):
+    vname = arg.group(1)
+    vdefault = arg.group(2)
+    if vname in os.environ:
+        return "$" + vname
+    return vdefault
 
 def setenv(arg):
     """
     Set an environment variable.
     arg must be a string with the format "variable=value"
     """
-    print("[Tesh/INFO] setenv " + arg)
+    if '$' in arg:
+        arg = re.sub(r"\${(\w+):=([^}]*)}", replace_perl_variables, arg)
+        arg = expandvars2(arg)
     (var, val) = arg.split("=", 1)
+    print("[Tesh/INFO] setenv " + var + "=" + val)
     os.environ[var] = val
     # os.putenv(var, val) does not work
     # see http://stackoverflow.com/questions/17705419/python-os-environ-os-putenv-usr-bin-env
@@ -314,17 +324,10 @@ class Cmd:
                 self._run()
         return True
 
+
     def _run(self, lock=None):
         # Python threads loose the cwd
         os.chdir(self.cwd)
-
-        # retrocompatibility: support ${aaa:=.} variable format
-        def replace_perl_variables(arg):
-            vname = arg.group(1)
-            vdefault = arg.group(2)
-            if vname in os.environ:
-                return "$" + vname
-            return vdefault
 
         self.args = re.sub(r"\${(\w+):=([^}]*)}", replace_perl_variables, self.args)
 
@@ -683,7 +686,10 @@ def main():
             cmd.output_display = True
             cmd.ignore_output = True
         elif line[0:15] == "! expect return":
-            cmd.expect_return = [int(line[16:])]
+            try:
+                cmd.expect_return = [int(line[16:])]
+            except ValueError as err:
+                fatal_error("Invalid expect return value: \""+(line[16:])+"\"")
             #print("expect return "+str(int(line[16:])))
         elif line[0:15] == "! expect signal":
             cmd.expect_return = []
@@ -698,11 +704,17 @@ def main():
             if "no" in line[len("! timeout "):]:
                 cmd.timeout = None
             else:
-                cmd.timeout = int(line[len("! timeout "):])
+                try:
+                    cmd.timeout = [int(line[len("! timeout "):])]
+                except ValueError as err:
+                    fatal_error("Invalid timeout value: \""+(line[len("! timeout "):])+"\"")
 
         elif line[0:len("! output sort")] == "! output sort":
             if len(line) >= len("! output sort "):
-                sort = int(line[len("! output sort "):])
+                try:
+                    sort = int(line[len("! output sort "):])
+                except ValueError as err:
+                    fatal_error("Invalid sort value: \""+(line[len("! output sort "):])+"\"")
             else:
                 sort = 0
             cmd.sort = sort
