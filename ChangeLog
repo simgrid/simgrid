@@ -16,14 +16,15 @@ S4U:
    - Each Task now consists of a dispatcher, a collector and one or more instances.
    - The parallelism degree of each of these can be set.
    - Several examples have been added or modified accordingly.
+   - Update s4u::create_DAG_from_json() to support wfformat 1.4.
  - Introduce a new MessageQueue abstraction and associated Mess simulated object.
    The behavior of a MessageQueue is similar to that of a Mailbox, but intended for
    control messages that do not incur any simulated cost. Information is automagically
    transported over thin air between producer and consumer. See examples/cpp/mess-wait
  - New function: Mutex::get_owner()
 
-New S4U plugins:
- - Add a JBOD (just a bunch of disks) concept. It's a sort of host with many disks.
+S4U plugins:
+ - New: Add a JBOD (just a bunch of disks) concept. It's a sort of host with many disks.
  - Revamp the battery plugin: rewrite completely the API, for a better usability.
    The examples were updated accordingly.
    The battery can now act as a simple connector (see battery-connector example).

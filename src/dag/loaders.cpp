@@ -92,7 +92,7 @@ static ExecPtr current_job;
 
 /** @brief loads a JSON file describing a DAG
  *
- * See https://github.com/wfcommons/wfformat for more details.
+ * See https://github.com/wfcommons/wfformat for more details. We support wfformat 1.4.
  */
 std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename)
 {
