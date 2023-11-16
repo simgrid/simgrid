@@ -87,6 +87,7 @@ public:
    */
   void add_route(const NetZone* src, const NetZone* dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
 
+#ifndef DOXYGEN
   /**
    * @brief Add a route between 2 netpoints
    *
@@ -121,6 +122,7 @@ public:
   XBT_ATTRIB_DEPRECATED_v339("Please call add_route either from Host to Host or NetZone to NetZone") void add_route(
       kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
       kernel::routing::NetPoint* gw_dst, const std::vector<const Link*>& links);
+#endif
 
   /**
    * @brief Add a route between 2 hosts
@@ -136,7 +138,7 @@ public:
    *
    * @param src Source host
    * @param dst Destination host
-   * @param link_list List of links. The UP direction will be used on src->dst and DOWN direction on dst->src
+   * @param links List of links. The UP direction will be used on src->dst and DOWN direction on dst->src
    */
   void add_route(const Host* src, const Host* dst, const std::vector<const Link*>& links);
 
