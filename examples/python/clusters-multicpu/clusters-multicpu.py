@@ -106,8 +106,7 @@ def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], ident: int) 
         link = host_zone.create_split_duplex_link("link-" + cpu_name, link_bw)
         link.set_latency(link_lat).seal()
         # connecting CPU to outer world
-        host_zone.add_route(host.netpoint, None, None, None,
-                            [simgrid.LinkInRoute(link, simgrid.LinkInRoute.Direction.UP)], True)
+        host_zone.add_route(host, None, [simgrid.LinkInRoute(link, simgrid.LinkInRoute.Direction.UP)], True)
 
     # seal newly created netzone
     host_zone.seal()
