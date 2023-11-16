@@ -471,6 +471,8 @@ See also :ref:`the relevant example <s4u_ex_actors_create>`.
 
    .. group-tab:: C
 
+      .. doxygentypedef:: xbt_main_func_t
+
       .. doxygenfunction:: sg_actor_create(const char *name, sg_host_t host, xbt_main_func_t code, int argc, char *const *argv)
       .. doxygenfunction:: sg_actor_init(const char *name, sg_host_t host)
       .. doxygenfunction:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char *const *argv)
@@ -2158,7 +2160,6 @@ Activities life cycle
       .. doxygenfunction:: simgrid::s4u::Activity::wait
       .. doxygenfunction:: simgrid::s4u::Activity::wait_for
       .. doxygenfunction:: simgrid::s4u::Activity::wait_until(double time_limit)
-      .. doxygenfunction:: simgrid::s4u::Activity::vetoable_start()
 
 Suspending and resuming an activity
 -----------------------------------
@@ -2327,6 +2328,7 @@ Signals
       .. doxygenfunction:: simgrid::s4u::Comm::on_suspended_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_resumed_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_veto_cb
 
 .. _API_s4u_Exec:
 
@@ -2465,6 +2467,7 @@ Signals
       .. doxygenfunction:: simgrid::s4u::Exec::on_suspended_cb
       .. doxygenfunction:: simgrid::s4u::Exec::on_resumed_cb
       .. doxygenfunction:: simgrid::s4u::Exec::on_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_this_veto_cb
 
 .. _API_s4u_Io:
 
@@ -2537,6 +2540,7 @@ Signals
       .. doxygenfunction:: simgrid::s4u::Io::on_suspended_cb
       .. doxygenfunction:: simgrid::s4u::Io::on_resumed_cb
       .. doxygenfunction:: simgrid::s4u::Io::on_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_this_veto_cb
 
 .. _API_s4u_ActivitySet:
 

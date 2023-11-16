@@ -144,18 +144,18 @@ Existing signals
     :cpp:func:`Comm::on_this_start <simgrid::s4u::Comm::on_this_start_cb>`
     :cpp:func:`Comm::on_completion <simgrid::s4u::Comm::on_completion_cb>`
     :cpp:func:`Comm::on_this_completion <simgrid::s4u::Comm::on_this_completion_cb>`
-    :cpp:func:`Comm::on_suspend <simgrid::s4u::Comm::on_suspend_cb>`
-    :cpp:func:`Comm::on_this_suspend <simgrid::s4u::Comm::on_this_suspend_cb>`
+    :cpp:func:`Comm::on_suspended <simgrid::s4u::Comm::on_suspended_cb>`
+    :cpp:func:`Comm::on_this_suspended <simgrid::s4u::Comm::on_this_suspended_cb>`
     :cpp:func:`Comm::on_resume <simgrid::s4u::Comm::on_resume_cb>`
-    :cpp:func:`Comm::on_this_resume <simgrid::s4u::Comm::on_this_resume_cb>`
+    :cpp:func:`Comm::on_this_resumed <simgrid::s4u::Comm::on_this_resumed_cb>`
     :cpp:func:`Comm::on_veto <simgrid::s4u::Comm::on_veto_cb>`
     :cpp:func:`Comm::on_this_veto <simgrid::s4u::Comm::on_this_veto_cb>`
   - :cpp:func:`Exec::on_start <simgrid::s4u::Exec::on_start_cb>`
     :cpp:func:`Exec::on_this_start <simgrid::s4u::Exec::on_this_start_cb>`
     :cpp:func:`Exec::on_completion <simgrid::s4u::Exec::on_completion_cb>`
     :cpp:func:`Exec::on_this_completion <simgrid::s4u::Exec::on_this_completion_cb>`
-    :cpp:func:`Exec::on_suspend <simgrid::s4u::Exec::on_suspend_cb>`
-    :cpp:func:`Exec::on_this_suspend <simgrid::s4u::Exec::on_this_suspend_cb>`
+    :cpp:func:`Exec::on_suspended <simgrid::s4u::Exec::on_suspended_cb>`
+    :cpp:func:`Exec::on_this_suspended <simgrid::s4u::Exec::on_this_suspended_cb>`
     :cpp:func:`Exec::on_resume <simgrid::s4u::Exec::on_resume_cb>`
     :cpp:func:`Exec::on_this_resume <simgrid::s4u::Exec::on_this_resume_cb>`
     :cpp:func:`Exec::on_veto <simgrid::s4u::Exec::on_veto_cb>`
@@ -164,10 +164,10 @@ Existing signals
     :cpp:func:`Io::on_this_start <simgrid::s4u::Io::on_this_start_cb>`
     :cpp:func:`Io::on_completion <simgrid::s4u::Io::on_completion_cb>`
     :cpp:func:`Io::on_this_completion <simgrid::s4u::Io::on_this_completion_cb>`
-    :cpp:func:`Io::on_suspend <simgrid::s4u::Io::on_suspend_cb>`
-    :cpp:func:`Io::on_this_suspend <simgrid::s4u::Io::on_this_suspend_cb>`
+    :cpp:func:`Io::on_suspended <simgrid::s4u::Io::on_suspended_cb>`
+    :cpp:func:`Io::on_this_suspended <simgrid::s4u::Io::on_this_suspended_cb>`
     :cpp:func:`Io::on_resume <simgrid::s4u::Io::on_resume_cb>`
-    :cpp:func:`Io::on_this_resume <simgrid::s4u::Io::on_this_resume_cb>`
+    :cpp:func:`Io::on_this_resumed <simgrid::s4u::Io::on_this_resumed_cb>`
     :cpp:func:`Io::on_veto <simgrid::s4u::Io::on_veto_cb>`
     :cpp:func:`Io::on_this_veto <simgrid::s4u::Io::on_this_veto_cb>`
 

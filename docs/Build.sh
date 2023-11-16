@@ -65,3 +65,5 @@ else
   echo "Install linkchecker to have it executed when you build the doc."
 fi
 
+echo "Undocumented symbols:"
+./find-missing.py

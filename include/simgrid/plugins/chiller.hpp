@@ -11,7 +11,9 @@
 
 namespace simgrid::plugins {
 
+/** @ingroup plugin_chiller */
 class Chiller;
+/** @ingroup plugin_chiller */
 using ChillerPtr = boost::intrusive_ptr<Chiller>;
 XBT_PUBLIC void intrusive_ptr_release(Chiller* o);
 XBT_PUBLIC void intrusive_ptr_add_ref(Chiller* o);
@@ -83,8 +85,8 @@ public:
   ChillerPtr set_goal_temp(double goal_temp_c);
   ChillerPtr set_max_power(double max_power_w);
   ChillerPtr set_active(bool active);
-  ChillerPtr add_host(s4u::Host* host);
-  ChillerPtr remove_host(s4u::Host* host);
+  ChillerPtr add_host(simgrid::s4u::Host* host);
+  ChillerPtr remove_host(simgrid::s4u::Host* host);
 
   std::string get_name() { return name_; }
   const char* get_cname() { return name_.c_str(); }
