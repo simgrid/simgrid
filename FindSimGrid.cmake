@@ -40,6 +40,18 @@
 #  Since SimGrid header files require C++17, so we set CMAKE_CXX_STANDARD to 17.
 #    Change this variable in your own file if you need a later standard.
 
+# DEVELOPPERS OF MPI PROGRAMS USING SIMGRID
+#   You should use smpi_c_target() on the targets that are intended to run in SMPI.
+#   ${SMPIRUN} is correctly set if it's installed.
+#
+#   Example:
+#     add_executable(roundtrip roundtrip.c)
+#     smpi_c_target(roundtrip)
+#
+#     enable_testing()
+#     add_test(NAME Roundtrip
+#              COMMAND ${SMPIRUN} -platform ${CMAKE_SOURCE_DIR}/../cluster_backbone.xml -np 2 ./roundtrip)
+
 #
 # IMPROVING THIS FILE
 # -------------------
@@ -48,7 +60,7 @@
 #    https://cmake.org/Wiki/CMake/Tutorials/How_to_create_a_ProjectConfig.cmake_file
 #    https://github.com/boostcon/cppnow_presentations_2017/blob/master/05-19-2017_friday/effective_cmake__daniel_pfeifer__cppnow_05-19-2017.pdf
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.5)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -103,6 +115,17 @@ find_package_handle_standard_args(SimGrid
 )
 
 if (SimGrid_FOUND)
+
+  find_program(SMPIRUN smpirun
+               HINTS ${SimGrid_PATH}/bin /opt/simgrid/bin)
+
+  MACRO(smpi_c_target NAME)
+    target_compile_options(${NAME} PUBLIC "-include;smpi/smpi_helpers.h;-fPIC;-shared;-Wl,-z,defs")
+    target_link_options(${NAME} PUBLIC "-fPIC;-shared;-Wl,-z,defs;-lm")
+    target_link_libraries(${NAME} PUBLIC ${SimGrid_LIBRARY})
+    target_include_directories(${NAME} PUBLIC "${SimGrid_INCLUDE_DIR};${SimGrid_INCLUDE_DIR}/smpi")
+  ENDMACRO()
+
   add_library(SimGrid::SimGrid SHARED IMPORTED)
   set_target_properties(SimGrid::SimGrid PROPERTIES
     INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${SimGrid_INCLUDE_DIR}

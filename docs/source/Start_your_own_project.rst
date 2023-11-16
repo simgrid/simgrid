@@ -58,16 +58,33 @@ manually but your project will produce relevant error messages when
 trying to compile on a machine where SimGrid is not installed. Please
 also refer to the file header for more information.
 
-MPI projects should include ``find_package (MPI)`` in CMakeLists.txt. Then, the
-variables ``MPI_C_COMPILER``, ``MPI_CXX_COMPILER``, and ``MPI_Fortran_COMPILER`` should
-point to the full path of smpicc, smpicxx, and smpiff respectively.
-It is however not advised to set these variables from the CMakeLists.txt file directly.
-In addition, you may need to set ``SMPI_PRETEND_CC=1`` to please cmake when it tests the compiler.
+MPI projects should NOT search for MPI as usual in cmake, but instead use the ``smpi_c_target()`` macro
+to declare that a given target is meant to be executed in ``smpirun`` (which path is set in ``${SMPIRUN}``).
+This macro should work for C and C++ programs. Here is a small example:
+
+.. code-block:: cmake
+
+   # Search FindSimgrid in my sources
+   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
+   find_package(SimGrid)
+
+   # Declare an executable, and specify that it's meant to run within smpirun
+   add_executable(roundtrip roundtrip.c)
+   smpi_c_target(roundtrip)
+
+   # Declare a test running our executable in ${SMPIRUN}
+   enable_testing()
+   add_test(NAME RoundTrip
+            COMMAND ${SMPIRUN} -platform ${CMAKE_SOURCE_DIR}/../cluster_backbone.xml -np 2 ./roundtrip)
+
+To compile Fortran code with cmake, you must override the ``MPI_Fortran_COMPILER`` variable as follows, but it will probably
+break some configuration checks, so you should export ``SMPI_PRETEND_CC=1`` during the configuration (not during the compilation
+nor the execution).
 
 .. code-block:: console
 
    $ SMPI_PRETEND_CC=1 cmake -DMPI_C_COMPILER=/opt/simgrid/bin/smpicc -DMPI_CXX_COMPILER=/opt/simgrid/bin/smpicxx -DMPI_Fortran_COMPILER=/opt/simgrid/bin/smpiff .
-
+   $ make
 
 Building your project with Makefile
 -----------------------------------
