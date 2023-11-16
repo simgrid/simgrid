@@ -3,6 +3,7 @@ INPUT                  = ../../include/simgrid/forward.h
 INPUT                 += ../../include/simgrid/plugins/
 INPUT                 += ../../include/simgrid/s4u/
 INPUT                 += ../../include/simgrid/actor.h
+INPUT                 += ../../include/simgrid/activity_set.h
 INPUT                 += ../../src/s4u/s4u_Actor.cpp
 INPUT                 += ../../include/simgrid/barrier.h
 INPUT                 += ../../include/simgrid/comm.h

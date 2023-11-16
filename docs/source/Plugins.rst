@@ -209,8 +209,6 @@ Host Load
 
 .. doxygengroup:: plugin_host_load
 
-
-
 .. _plugin_filesystem:
 
 File System
