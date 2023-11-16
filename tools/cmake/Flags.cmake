@@ -43,7 +43,7 @@ if(enable_compile_warnings)
     endif()
     if (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL "13.2.0")
       # workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=101361
-      set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-error=stringop-overread")
+      set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-error=stringop-overread -Wno-error=stringop-overflow")
     endif()
   endif()
 
