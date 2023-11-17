@@ -11,7 +11,7 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
           allred2 allred3 allred4 allred5 allred6 allredmany alltoall1
           alltoallv0 alltoallv alltoallw1 alltoallw2 alltoallw_zeros
           bcasttest bcastzerotype coll2 coll3 coll4 coll5 coll6 coll7 coll8
-          coll9 coll10 coll11 coll12 coll13 exscan exscan2 gather gather2
+          coll9 coll10 coll11 coll12 coll13 exscan exscan2 gather gather2 gatherv
           gather_big ibarrier longuser nonblocking nonblocking2 nonblocking3 iallred
         # icallgather icallgatherv icallreduce
         # icalltoall icalltoallv icalltoallw icbarrier icbcast
@@ -120,6 +120,7 @@ set(examples_src  ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/gather2.c
  ${CMAKE_CURRENT_SOURCE_DIR}/gather_big.c
  ${CMAKE_CURRENT_SOURCE_DIR}/gather.c
+ ${CMAKE_CURRENT_SOURCE_DIR}/gatherv.c
  ${CMAKE_CURRENT_SOURCE_DIR}/iallred.c
  ${CMAKE_CURRENT_SOURCE_DIR}/ibarrier.c
  ${CMAKE_CURRENT_SOURCE_DIR}/icallgather.c
