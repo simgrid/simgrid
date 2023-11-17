@@ -14,6 +14,7 @@ commname 4
 ctxalloc 2 timeLimit=300
 ctxsplit 4 timeLimit=300
 cmfree 4
+cmfree2 2
 cmsplit 4
 cmsplit2 12
 #probe-intercomm 2
@@ -35,3 +36,4 @@ dup_with_info 2 mpiversion=3.0
 dup_with_info 4 mpiversion=3.0
 dup_with_info 9 mpiversion=3.0
 comm_info 6 mpiversion=3.0
+comm_info2 1
