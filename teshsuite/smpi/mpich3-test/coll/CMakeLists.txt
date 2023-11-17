@@ -8,7 +8,7 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
   foreach(test allgather2 allgather3 allgather_struct allgatherv2 allgatherv3
-          allred2 allred3 allred4 allred5 allred6 allredmany alltoall1
+          allred2 allred3 allred4 allred5 allred6 allredmany allred_derived allred_float alltoall1
           alltoallv0 alltoallv alltoallw1 alltoallw2 alltoallw_zeros
           bcasttest bcastzerotype coll2 coll3 coll4 coll5 coll6 coll7 coll8
           coll9 coll10 coll11 coll12 coll13 exscan exscan2 gather gather2 gatherv
@@ -94,6 +94,8 @@ set(examples_src  ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/allred6.c
  ${CMAKE_CURRENT_SOURCE_DIR}/allred.c
  ${CMAKE_CURRENT_SOURCE_DIR}/allredmany.c
+ ${CMAKE_CURRENT_SOURCE_DIR}/allred_derived.c
+ ${CMAKE_CURRENT_SOURCE_DIR}/allred_float.c
  ${CMAKE_CURRENT_SOURCE_DIR}/alltoall1.c
  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv0.c
  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv.c

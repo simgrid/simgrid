@@ -9,6 +9,8 @@ allred5 5
 allred5 10
 allred6 4
 allred6 7
+allred_derived 4
+allred_float 10
 reduce_mpich 5
 reduce_mpich 10
 reduce_local 2 mpiversion=2.2
