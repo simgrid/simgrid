@@ -17,6 +17,8 @@ bsend4 1
 bsendalign 2
 bsendpending 2
 isendself 1
+isendrecv 4
+isendrecv_replace 4
 #issendselfcancel 1
 isendirecv 10
 bsendfrag 2
