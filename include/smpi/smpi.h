@@ -705,8 +705,13 @@ MPI_CALL(XBT_PUBLIC int, MPI_Irsend,
 MPI_CALL(XBT_PUBLIC int, MPI_Sendrecv,
          (const void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf, int recvcount,
           MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status* status));
+MPI_CALL(XBT_PUBLIC int, MPI_Isendrecv,
+         (const void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf, int recvcount,
+          MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Request* req));
 MPI_CALL(XBT_PUBLIC int, MPI_Sendrecv_replace, (void* buf, int count, MPI_Datatype datatype, int dst, int sendtag,
                                                 int src, int recvtag, MPI_Comm comm, MPI_Status* status));
+MPI_CALL(XBT_PUBLIC int, MPI_Isendrecv_replace, (void* buf, int count, MPI_Datatype datatype, int dst, int sendtag,
+                                                int src, int recvtag, MPI_Comm comm, MPI_Request* req));
 
 MPI_CALL(XBT_PUBLIC int, MPI_Test, (MPI_Request * request, int* flag, MPI_Status* status));
 MPI_CALL(XBT_PUBLIC int, MPI_Testany, (int count, MPI_Request requests[], int* index, int* flag, MPI_Status* status));

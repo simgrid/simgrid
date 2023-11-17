@@ -439,6 +439,29 @@ void Request::sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype
   }
 }
 
+void Request::isendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,int dst, int sendtag,
+                       void *recvbuf, int recvcount, MPI_Datatype recvtype, int src, int recvtag,
+                       MPI_Comm comm, MPI_Request* request)
+{
+  aid_t source = MPI_PROC_NULL;
+  if (src == MPI_ANY_SOURCE)
+    source = MPI_ANY_SOURCE;
+  else if (src != MPI_PROC_NULL)
+    source = comm->group()->actor(src);
+  aid_t destination = dst != MPI_PROC_NULL ? comm->group()->actor(dst) : MPI_PROC_NULL;
+  
+  (*request) = new Request( nullptr, 0, MPI_BYTE,
+                         src,dst, sendtag, comm, MPI_REQ_PERSISTENT|MPI_REQ_NBC);
+  std::vector<MPI_Request> requests;
+  if (aid_t myid = simgrid::s4u::this_actor::get_pid(); (destination == myid) && (source == myid)) {
+    Datatype::copy(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype);
+    return;
+  }
+  requests.push_back(isend_init(sendbuf, sendcount, sendtype, dst, sendtag, comm));
+  requests.push_back(irecv_init(recvbuf, recvcount, recvtype, src, recvtag, comm));
+  (*request)->start_nbc_requests(requests);
+}
+
 void Request::start()
 {
   s4u::Mailbox* mailbox;

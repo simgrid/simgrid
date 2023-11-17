@@ -102,6 +102,8 @@ public:
 
   static void sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf,
                        int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status* status);
+  static void isendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf,
+                       int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Request* request);
 
   static void startall(int count, MPI_Request* requests);
 
