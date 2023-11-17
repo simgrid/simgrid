@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 
             MPI_Allreduce(MPI_IN_PLACE, buf, N, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
 
-            float *check_buf;
+            float *check_buf=NULL;
             if (rank == 0) {
                 check_buf = malloc(N * size * sizeof(float));
             }
