@@ -35,6 +35,7 @@ scancel 2 xfail=ticket287
 scancel2 2
 #Needs MPI_Buffer_attach
 #pscancel 2 xfail=ticket287
+pssend 2
 rcancel 2
 #cancelrecv 2 xfail=ticket287
 isendselfprobe 1
