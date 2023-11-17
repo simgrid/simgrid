@@ -40,6 +40,7 @@ int StatusEmpty(MPI_Status * s)
     return errs ? 0 : 1;
 }
 
+int test_recv_init(int src_rank, const char *test_name);
 int test_recv_init(int src_rank, const char *test_name)
 {
     MPI_Request r;
