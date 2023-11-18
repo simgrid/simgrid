@@ -65,29 +65,9 @@ public:
   std::cv_status wait_until(const std::unique_lock<s4u::Mutex>& lock, double timeout_time);
   /// Wait for the given amount of seconds (specified as a plain double)
   std::cv_status wait_for(const std::unique_lock<s4u::Mutex>& lock, double duration);
-  /// Wait until predicate is true, or the given instant (specified as a plain double)
-  template <class P> bool wait_until(const std::unique_lock<s4u::Mutex>& lock, double timeout_time, P pred)
-  {
-    while (not pred())
-      if (this->wait_until(lock, timeout_time) == std::cv_status::timeout)
-        return pred();
-    return true;
-  }
-  /// As long as the predicate is false, wait for the given amount of seconds (specified as a plain double)
-  template <class P> bool wait_for(const std::unique_lock<s4u::Mutex>& lock, double duration, P pred)
-  {
-    return this->wait_until(lock, Engine::get_clock() + duration, std::move(pred));
-  }
 
   // Wait function taking a C++ style time:
 
-  /// As long as the predicate is false, wait for the given amount of seconds (specified in C++ style)
-  template <class Rep, class Period, class P>
-  bool wait_for(const std::unique_lock<s4u::Mutex>& lock, std::chrono::duration<Rep, Period> duration, P pred)
-  {
-    auto seconds = std::chrono::duration_cast<SimulationClockDuration>(duration);
-    return this->wait_for(lock, seconds.count(), pred);
-  }
   /// Wait for the given amount of seconds (specified in C++ style)
   template <class Rep, class Period>
   std::cv_status wait_for(const std::unique_lock<s4u::Mutex>& lock, std::chrono::duration<Rep, Period> duration)
@@ -101,13 +81,6 @@ public:
   {
     auto timeout_native = std::chrono::time_point_cast<SimulationClockDuration>(timeout_time);
     return this->wait_until(lock, timeout_native.time_since_epoch().count());
-  }
-  /** Wait until predicate is true, or the given instant (specified in C++ style) */
-  template <class Duration, class P>
-  bool wait_until(const std::unique_lock<s4u::Mutex>& lock, const SimulationTimePoint<Duration>& timeout_time, P pred)
-  {
-    auto timeout_native = std::chrono::time_point_cast<SimulationClockDuration>(timeout_time);
-    return this->wait_until(lock, timeout_native.time_since_epoch().count(), std::move(pred));
   }
 
   /** Unblock one actor blocked on that condition variable. If none was blocked, nothing happens. */
