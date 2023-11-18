@@ -21,6 +21,7 @@ INPUT                 += ../../include/simgrid/semaphore.h
 INPUT                 += ../../include/simgrid/vm.h
 INPUT                 += ../../include/simgrid/zone.h
 INPUT                 += ../../include/smpi/smpi.h
+INPUT                 += ../../include/xbt/function_types.h
 INPUT                 += ../../include/xbt/dynar.h
 INPUT                 += ../../src/xbt/dynar.cpp
 INPUT                 += ../../include/xbt/signal.hpp

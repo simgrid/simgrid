@@ -687,7 +687,7 @@ The ``wait_all()`` function is useful when you want to block until all activitie
 
    .. example-tab:: examples/c/activityset-waitall/activityset-waitall.c
 
-      See also :cpp:func:`sg_activityset_wait_all()`.
+      See also :cpp:func:`sg_activity_set_wait_all()`.
 
 Waiting for all activities in a set (with timeout)
 --------------------------------------------------
@@ -706,7 +706,7 @@ The ``wait_all_for()`` function is very similar to ``wait_all()`` but allows to 
 
    .. example-tab:: examples/c/activityset-waitallfor/activityset-waitallfor.c
 
-      See also :cpp:func:`sg_activityset_wait_all_for()`.
+      See also :cpp:func:`sg_activity_set_wait_all_for()`.
 
 Waiting for the first completed activity in a set
 -------------------------------------------------
@@ -725,7 +725,7 @@ The ``wait_any()`` blocks until one activity of the set completes, no matter whi
 
    .. example-tab:: examples/c/activityset-waitany/activityset-waitany.c
 
-      See also :cpp:func:`sg_activityset_wait_any`.
+      See also :cpp:func:`sg_activity_set_wait_any`.
 
 Testing whether at least one activity completed
 -----------------------------------------------
@@ -744,7 +744,7 @@ The ``test_any()`` returns whether at least one activity of the set has complete
 
    .. example-tab:: examples/c/activityset-testany/activityset-testany.c
 
-      See also :cpp:func:`sg_activityset_test_any`.
+      See also :cpp:func:`sg_activity_set_test_any`.
 
 .. _s4u_ex_dag:
 

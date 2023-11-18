@@ -828,7 +828,6 @@ Engin initialization
 
       .. doxygenfunction:: simgrid::s4u::Engine::Engine(int *argc, char **argv)
       .. doxygenfunction:: simgrid::s4u::Engine::is_initialized()
-      .. doxygenfunction:: simgrid::s4u::Engine::shutdown()
       .. doxygenfunction:: simgrid::s4u::Engine::get_instance()
 
    .. group-tab:: Python
@@ -1578,9 +1577,7 @@ Basic management
          #include <simgrid/link.h>
 
       .. doxygentypedef:: sg_link_t
-      .. cpp:type:: const s4u_Link* const_sg_link_t
-
-         Pointer to a constant link object.
+      .. doxygentypedef:: const_sg_link_t
 
 Retrieving links
 ----------------
@@ -1620,7 +1617,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Link::get_name() const
       .. doxygenfunction:: simgrid::s4u::Link::get_sharing_policy() const
       .. doxygenfunction:: simgrid::s4u::Link::get_concurrency_limit() const
-      .. doxygenfunction:: simgrid::s4u::Link::get_usage() const
+      .. doxygenfunction:: simgrid::s4u::Link::get_load() const
       .. doxygenfunction:: simgrid::s4u::Link::is_used() const
 
    .. group-tab:: Python
@@ -1821,7 +1818,7 @@ Querying info
 
       .. doxygenfunction:: simgrid::s4u::NetZone::get_cname() const
       .. doxygenfunction:: simgrid::s4u::NetZone::get_name() const
-      .. doxygenfunction:: simgrid::s4u::NetZone::get_netpoint()
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_netpoint
 
    .. group-tab:: Python
 
@@ -1874,8 +1871,10 @@ Routing data
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::NetZone::add_component(kernel::routing::NetPoint *elm)
-      .. doxygenfunction:: simgrid::s4u::NetZone::add_route
-      .. doxygenfunction:: simgrid::s4u::NetZone::add_bypass_route
+      .. doxygenfunction:: simgrid::s4u::NetZone::add_route(const Host *src, const Host *dst, const std::vector< LinkInRoute > &link_list, bool symmetrical=true)
+      .. doxygenfunction:: simgrid::s4u::NetZone::add_route(const Host *src, const Host *dst, const std::vector< const Link * > &links)
+      .. doxygenfunction:: simgrid::s4u::NetZone::add_route(const NetZone *src, const NetZone *dst, const std::vector< LinkInRoute > &link_list, bool symmetrical=true)
+      .. doxygenfunction:: simgrid::s4u::NetZone::add_route(const NetZone *src, const NetZone *dst, const std::vector< const Link * > &links)
       .. doxygenfunction:: simgrid::s4u::NetZone::get_children() const
       .. doxygenfunction:: simgrid::s4u::NetZone::get_parent() const
       .. doxygenfunction:: simgrid::s4u::NetZone::set_parent(const NetZone* parent)
@@ -1943,6 +1942,10 @@ Hosts
      .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, double speed)
      .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate)
      .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::string& speed)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string &name, const std::string &speed)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string &name, const std::vector< double > &speed_per_pstate)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string &name, const std::vector< std::string > &speed_per_pstate)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string &name, double speed)
 
   .. group-tab:: Python
 
@@ -1955,12 +1958,12 @@ Links
 
   .. group-tab:: C++
 
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string& name, const std::vector<double>& bandwidths)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string& name, double bandwidth)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string& name, const std::vector<std::string>& bandwidthds)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string& name, const std::string& bandwidth)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_split_duplex_link(const std::string& name, const std::string& bandwidth)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_split_duplex_link(const std::string& name, double bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string &name, const std::vector< double > &bandwidths)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string &name, double bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string &name, const std::vector< std::string > &bandwidths)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string &name, const std::string &bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_split_duplex_link(const std::string &name, const std::string &bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_split_duplex_link(const std::string &name, double bandwidth)
 
   .. group-tab:: Python
 
@@ -2131,6 +2134,11 @@ Basic management
          #include <simgrid/s4u/Activity.hpp>
 
       .. doxygentypedef:: ActivityPtr
+
+   .. group-tab:: C
+
+      .. doxygentypedef:: sg_activity_t
+      .. doxygentypedef:: const_sg_activity_t
 
 Querying info
 -------------
@@ -2319,15 +2327,21 @@ Signals
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::Comm::on_start_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_this_start_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_completion_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_this_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_start_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_recv_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_send_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_suspended_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_resume_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_resumed_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_recv_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_resume_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_send_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_start_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_suspended_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_this_veto_cb
 
 .. _API_s4u_Exec:
@@ -2560,8 +2574,8 @@ Signals
 
    .. group-tab:: C
 
-      .. doxygentypedef:: sg_activityset_t
-      .. doxygentypedef:: const_sg_activityset_t
+      .. doxygentypedef:: sg_activity_set_t
+      .. doxygentypedef:: const_sg_activity_set_t
 
 Basic management
 ----------------
@@ -2973,6 +2987,7 @@ Locking
 
       .. doxygenfunction:: simgrid::s4u::Barrier::create(unsigned int expected_actors)
       .. doxygenfunction:: simgrid::s4u::Barrier::wait()
+      .. doxygenfunction:: simgrid::s4u::Barrier::to_string()   
 
    .. group-tab:: Python
 

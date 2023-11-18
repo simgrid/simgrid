@@ -66,4 +66,4 @@ else
 fi
 
 echo "Undocumented symbols:"
-./find-missing.py
+./find-missing.py 2>&1
