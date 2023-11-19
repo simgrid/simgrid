@@ -6,6 +6,7 @@
 #ifndef SIMGRID_S4U_NETZONE_HPP
 #define SIMGRID_S4U_NETZONE_HPP
 
+#include "simgrid/s4u/Host.hpp"
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Link.hpp>
 #include <xbt/graph.h>
@@ -61,6 +62,7 @@ public:
   /** @brief Get the gateway associated to this netzone */
   kernel::routing::NetPoint* get_gateway() const;
   kernel::routing::NetPoint* get_gateway(const std::string& name) const;
+  void set_gateway(s4u::Host* router) { set_gateway(router->get_netpoint()); }
   void set_gateway(kernel::routing::NetPoint* router);
   void set_gateway(const std::string& name, kernel::routing::NetPoint* router);
 

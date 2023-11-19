@@ -250,11 +250,19 @@ PYBIND11_MODULE(simgrid, m)
       .def("add_route",
            py::overload_cast<const simgrid::s4u::Host*, const simgrid::s4u::Host*,
                              const std::vector<simgrid::s4u::LinkInRoute>&, bool>(&simgrid::s4u::NetZone::add_route),
-           "Add a route between 2 netpoints")
+           "Add a route between 2 hosts")
       .def("add_route",
            py::overload_cast<const simgrid::s4u::Host*, const simgrid::s4u::Host*,
                              const std::vector<const simgrid::s4u::Link*>&>(&simgrid::s4u::NetZone::add_route),
-           "Add a route between 2 netpoints")
+           "Add a route between 2 hosts")
+      .def("add_route",
+           py::overload_cast<const simgrid::s4u::NetZone*, const simgrid::s4u::NetZone*,
+                             const std::vector<simgrid::s4u::LinkInRoute>&, bool>(&simgrid::s4u::NetZone::add_route),
+           "Add a route between 2 netzones. The gateway of each zone gets used.")
+      .def("add_route",
+           py::overload_cast<const simgrid::s4u::NetZone*, const simgrid::s4u::NetZone*,
+                             const std::vector<const simgrid::s4u::Link*>&>(&simgrid::s4u::NetZone::add_route),
+           "Add a route between 2 netzones. The gateway of each zone gets used.")
       .def("create_host", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_host),
            "Creates a host")
       .def("create_host",
@@ -286,6 +294,10 @@ PYBIND11_MODULE(simgrid, m)
       .def("create_router", &simgrid::s4u::NetZone::create_router, "Create a router")
       .def("set_parent", &simgrid::s4u::NetZone::set_parent, "Set the parent of this zone")
       .def("set_property", &simgrid::s4u::NetZone::set_property, "Add a property to this zone")
+      .def("set_gateway", py::overload_cast<simgrid::s4u::Host*>(&simgrid::s4u::NetZone::set_gateway),
+           "Specify the gateway of this zone, to be used for inter-zone routes")
+      .def("set_gateway", py::overload_cast<simgrid::kernel::routing::NetPoint*>(&simgrid::s4u::NetZone::set_gateway),
+           "Specify the gateway of this zone, to be used for inter-zone routes")
       .def_property_readonly("netpoint", &simgrid::s4u::NetZone::get_netpoint,
                              "Retrieve the netpoint associated to this zone")
       .def("seal", &simgrid::s4u::NetZone::seal, "Seal this NetZone")
