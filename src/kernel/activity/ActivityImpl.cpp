@@ -108,6 +108,10 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   if (state_ != State::WAITING && state_ != State::RUNNING) {
     finish();
   } else {
+    /* As Messages in Message Queues are virtually instantaneous, we do not need a timeout */
+    /* Or maybe we do, and will have to implement a specific way to handle them is need arises */
+    if (dynamic_cast<MessImpl*>(this) != nullptr)
+      return;
     /* we need a sleep action (even when the timeout is infinite) to be notified of host failures */
     /* Comms handle that a bit differently of the other activities */
     if (auto* comm = dynamic_cast<CommImpl*>(this)) {
