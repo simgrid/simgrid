@@ -30,7 +30,7 @@ JbodPtr Jbod::create_jbod(s4u::NetZone* zone, const std::string& name, double sp
   for (unsigned int i = 0; i < num_disks; i++)
     jbod->get_controller()->create_disk(name + "_disk_" + std::to_string(i), read_bandwidth, write_bandwidth);
 
-  return JbodPtr(jbod);
+  return JbodPtr(jbod, false);
 }
 
 JbodIoPtr Jbod::read_async(sg_size_t size)
