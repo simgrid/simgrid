@@ -105,6 +105,19 @@ XBT_PUBLIC void intrusive_ptr_release(const Semaphore* m);
 XBT_PUBLIC void intrusive_ptr_add_ref(const Semaphore* m);
 
 class Disk;
+
+class Task;
+/** Smart pointer to a simgrid::s4u::Task */
+using TaskPtr = boost::intrusive_ptr<Task>;
+XBT_PUBLIC void intrusive_ptr_release(Task* o);
+XBT_PUBLIC void intrusive_ptr_add_ref(Task* o);
+class ExecTask;
+using ExecTaskPtr = boost::intrusive_ptr<ExecTask>;
+class CommTask;
+using CommTaskPtr = boost::intrusive_ptr<CommTask>;
+class IoTask;
+using IoTaskPtr = boost::intrusive_ptr<IoTask>;
+
 /**
  * @brief Callback to dynamically change the resource's capacity
  *
