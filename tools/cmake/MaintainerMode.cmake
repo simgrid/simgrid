@@ -11,6 +11,13 @@ set(FLEX_MIN_PATCH 39)
 # Let's generate header files required by SMPI when the call location tracing
 # has been activated.
 if(enable_maintainer_mode)
+  if (enable_ns3)
+    message(STATUS "Maintainer mode activated with ns-3, not enabling GLIBCXX_DEBUG (diable ns-3 to get it).")
+  else()
+    message(STATUS "Maintainer mode activated, enabling GLIBCXX_DEBUG.")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_DEBUG")
+  endif()
+
   add_custom_command(OUTPUT ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces.h
                             ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces_fortran.h
     DEPENDS
@@ -173,9 +180,9 @@ if(enable_maintainer_mode)
 
 endif()
 
-    add_custom_target(maintainer_files
-      DEPENDS ${CMAKE_HOME_DIRECTORY}/src/kernel/xml/simgrid_dtd.h
-              ${CMAKE_HOME_DIRECTORY}/src/kernel/xml/simgrid_dtd.c
-              ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.h
-              ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.c
-      )
+add_custom_target(maintainer_files
+  DEPENDS ${CMAKE_HOME_DIRECTORY}/src/kernel/xml/simgrid_dtd.h
+          ${CMAKE_HOME_DIRECTORY}/src/kernel/xml/simgrid_dtd.c
+          ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.h
+          ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.c
+  )
