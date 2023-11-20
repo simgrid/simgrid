@@ -100,8 +100,11 @@ def handle_python_module(fullname, englobing, elm):
                 continue
 #            print("Recurse on {}.{}".format(fullname, name))
             handle_python_module("{}.{}".format(fullname, name), elm, data)
+    elif inspect.isclass(type(elm)):
+        found_decl("enumvalue", fullname)
+        print('.. autoenumvalue:: {}'.format(fullname))
     else:
-        print('UNHANDLED TYPE {} : {!r} Type: {}'.format(fullname, elm, type(elm)))
+        print('UNHANDLED TYPE {} : {!r} Type: {} Englobing: {} str: {} Members: \n{}\n'.format(fullname, elm, type(elm), englobing, str(elm), inspect.getmembers(elm)))
 
 # Start the recursion on the provided Python modules
 for name in python_modules:
