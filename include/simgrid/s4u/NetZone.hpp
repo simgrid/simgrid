@@ -6,6 +6,7 @@
 #ifndef SIMGRID_S4U_NETZONE_HPP
 #define SIMGRID_S4U_NETZONE_HPP
 
+#include "simgrid/s4u/Host.hpp"
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Link.hpp>
 #include <xbt/graph.h>
@@ -61,6 +62,7 @@ public:
   /** @brief Get the gateway associated to this netzone */
   kernel::routing::NetPoint* get_gateway() const;
   kernel::routing::NetPoint* get_gateway(const std::string& name) const;
+  void set_gateway(s4u::Host* router) { set_gateway(router->get_netpoint()); }
   void set_gateway(kernel::routing::NetPoint* router);
   void set_gateway(const std::string& name, kernel::routing::NetPoint* router);
 
@@ -70,12 +72,11 @@ public:
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
   unsigned long add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
 
-
-/**
+  /**
    * @brief Add a route between 2 netzones, and same in other direction
    * @param src Source netzone
    * @param dst Destination netzone
-   * @param link_list List of links
+   * @param links List of links
    */
   void add_route(const NetZone* src, const NetZone* dst, const std::vector<const Link*>& links);
 
@@ -88,6 +89,7 @@ public:
    */
   void add_route(const NetZone* src, const NetZone* dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
 
+#ifndef DOXYGEN
   /**
    * @brief Add a route between 2 netpoints
    *
@@ -102,7 +104,8 @@ public:
    * @param link_list List of links and their direction used in this communication
    * @param symmetrical Bi-directional communication
    */
-  //XBT_ATTRIB_DEPRECATED_v339("Please call add_route either from Host to Host or NetZone to NetZone")
+  //(we should first remove the Python binding in v3.35) XBT_ATTRIB_DEPRECATED_v339("Please call add_route either from
+  // Host to Host or NetZone to NetZone")
   void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
                  kernel::routing::NetPoint* gw_dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
   /**
@@ -118,9 +121,10 @@ public:
    * @param gw_dst Netpoint of the gateway in the destination netzone
    * @param link_list List of links
    */
- //XBT_ATTRIB_DEPRECATED_v339("Please call add_route either from Host to Host or NetZone to NetZone")
- void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
-                 kernel::routing::NetPoint* gw_dst, const std::vector<const Link*>& links);
+  XBT_ATTRIB_DEPRECATED_v339("Please call add_route either from Host to Host or NetZone to NetZone") void add_route(
+      kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
+      kernel::routing::NetPoint* gw_dst, const std::vector<const Link*>& links);
+#endif
 
   /**
    * @brief Add a route between 2 hosts
@@ -136,7 +140,7 @@ public:
    *
    * @param src Source host
    * @param dst Destination host
-   * @param link_list List of links. The UP direction will be used on src->dst and DOWN direction on dst->src
+   * @param links List of links. The UP direction will be used on src->dst and DOWN direction on dst->src
    */
   void add_route(const Host* src, const Host* dst, const std::vector<const Link*>& links);
 

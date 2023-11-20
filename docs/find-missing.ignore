@@ -33,3 +33,6 @@ It is only used by find-missing, that will not report any definition linked here
 .. doxygentypedef:: s4u_NetZone
 .. doxygentypedef:: s4u_Semaphore
 .. doxygentypedef:: s4u_VM
+.. doxygentypedef:: s4u_Activity
+.. doxygentypedef:: s4u_ActivitySet
+.. doxygentypedef:: s4u_MessageQueue

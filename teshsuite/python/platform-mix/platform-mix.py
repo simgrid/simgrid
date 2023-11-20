@@ -59,6 +59,7 @@ def load_platform():
     host1.create_disk("disk1", 1e5, 1e4).seal()
     host1.create_disk("disk2", "1MBps", "1Mbps").seal()
     host1.seal()
+    dijkstra.set_gateway(host1)
     host2 = dijkstra.create_host("host2", ["1Gf", "1Mf"]).seal()
     hosts.append(host2)
     link1 = dijkstra.create_link("link1_up", [1e9]).set_latency(1e-3).set_concurrency_limit(10).seal()
@@ -72,6 +73,7 @@ def load_platform():
     this_actor.info(msg_base + vivaldi.name)
     vivaldi.set_parent(root)
     host3 = vivaldi.create_host("host3", 1e9).set_coordinates("1 1 1").seal()
+    vivaldi.set_gateway(host3)
     host4 = vivaldi.create_host("host4", "1Gf").set_coordinates("2 2 2").seal()
     hosts.append(host3)
     hosts.append(host4)
@@ -81,6 +83,7 @@ def load_platform():
     this_actor.info(msg_base + empty.name)
     empty.set_parent(root)
     host5 = empty.create_host("host5", 1e9)
+    empty.set_gateway(host5)
     hosts.append(host5)
     empty.seal()
 
@@ -89,6 +92,7 @@ def load_platform():
     this_actor.info(msg_base + wifi.name)
     wifi.set_parent(root)
     router = wifi.create_router("wifi_router")
+    wifi.set_gateway(router)
     wifi.set_property("access_point", "wifi_router")
     host6 = wifi.create_host(
         "host6", ["100.0Mf", "50.0Mf", "20.0Mf"]).seal()
@@ -101,9 +105,9 @@ def load_platform():
     link_a = vivaldi.create_link("linkA", 1e9).seal()
     link_b = vivaldi.create_link("linkB", "1GBps").seal()
     link_c = vivaldi.create_link("linkC", "1GBps").seal()
-    root.add_route(dijkstra.netpoint, vivaldi.netpoint, host1.netpoint, host3.netpoint, [LinkInRoute(link_a)], True)
-    root.add_route(vivaldi.netpoint, empty.netpoint, host3.netpoint, host5.netpoint, [LinkInRoute(link_b)], True)
-    root.add_route(empty.netpoint, wifi.netpoint, host5.netpoint, router, [LinkInRoute(link_c)], True)
+    root.add_route(dijkstra, vivaldi, [link_a])
+    root.add_route(vivaldi, empty, [link_b])
+    root.add_route(empty, wifi, [link_c])
 
     # create actors Sender/Receiver
     Actor.create("sender", hosts[0], Sender(hosts))

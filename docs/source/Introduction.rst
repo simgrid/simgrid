@@ -34,8 +34,8 @@ Here are some objectives for which SimGrid is particularly relevant and has been
    quantify an application's performance behavior, but that instead explores all causally possible outcomes of the application so as to evaluate application correctness. This exhaustive
    search is ideal for finding bugs that are difficult to trigger experimentally. But because it is exhaustive, there is a limit to the scale of the applications for which it can be used. 
 
- Anatomy of a project that uses SimGrid
----------------------------------------
+Anatomy of a project that uses SimGrid
+--------------------------------------
 
 Any project that uses SimGrid as its simulation framework comprises the following components:
 
@@ -46,10 +46,8 @@ Any project that uses SimGrid as its simulation framework comprises the followin
    disks, clusters, etc). SimGrid makes it straightforward to augment the simulated platform with dynamic behaviors where, for example, the
    links are slowed down (because of external usage) or the machines fail :ref:`(more info) <platform>`.
 
- - An application's **deployment description**. To simulate the execution
- of the application on the platform, they way in which the application is
- deployed on the platform must be described.  This is done by specifying
- which process is mapped onto which machine :ref:`(more
+ - An application's **deployment description**. To simulate the execution of the application on the platform, they way in which the application is
+   deployed on the platform must be described.  This is done by specifying which process is mapped onto which machine :ref:`(more
    info) <scenario>`.
 
  - **Platform models**. SimGrid implements models that describe how the simulated platform reacts to the simulated activities performed my

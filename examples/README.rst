@@ -398,59 +398,6 @@ The ``suspend()`` and ``resume()`` functions block the progression of a given co
       See also :py:func:`simgrid.Comm.suspend()` and
       :py:func:`simgrid.Comm.resume()`.
 
-Waiting for all communications in a set
----------------------------------------
-
-The ``wait_all()`` function is useful when you want to block until all activities in a given set have been completed.
-
-.. tabs::
-
-   .. example-tab:: examples/cpp/comm-waitall/s4u-comm-waitall.cpp
-
-      See also :cpp:func:`simgrid::s4u::Comm::wait_all()`.
-
-   .. example-tab:: examples/python/comm-waitall/comm-waitall.py
-
-      See also :py:func:`simgrid.Comm.wait_all()`.
-
-   .. example-tab:: examples/c/comm-waitall/comm-waitall.c
-
-      See also :cpp:func:`sg_comm_wait_all()`.
-
-Waiting for the first completed communication in a set
-------------------------------------------------------
-
-The ``wait_any()`` blocks until one activity of the set completes, no matter which terminates first.
-
-.. tabs::
-
-   .. example-tab:: examples/cpp/comm-waitany/s4u-comm-waitany.cpp
-
-      See also :cpp:func:`simgrid::s4u::Comm::wait_any()`.
-
-   .. example-tab:: examples/python/comm-waitany/comm-waitany.py
-
-      See also :py:func:`simgrid.Comm.wait_any()`.
-
-   .. example-tab:: examples/c/comm-waitany/comm-waitany.c
-
-      See also :cpp:func:`sg_comm_wait_any`.
-
-Testing whether at least one communication completed
-----------------------------------------------------
-
-The ``test_any()`` returns whether at least one activity of the set has completed, or -1.
-
-.. tabs::
-
-   .. example-tab:: examples/cpp/comm-testany/s4u-comm-testany.cpp
-
-      See also :cpp:func:`simgrid::s4u::Comm::test_any()`.
-
-   .. example-tab:: examples/python/comm-testany/comm-testany.py
-
-      See also :py:func:`simgrid.Comm.test_any()`.
-
 .. _s4u_ex_comm_failure:
 
 Dealing with network failures
@@ -714,6 +661,90 @@ result in short reads and short writes, as in reality.
        .. example-tab:: examples/cpp/io-file-remote/s4u-io-file-remote.cpp
 
        .. example-tab:: examples/c/io-file-remote/io-file-remote.c
+
+.. _s4u_ex_activityset:
+
+Bags of activities
+==================
+
+Sometimes, you want to block on a set of activities, getting unblocked when any activity of the set unblocks, or waiting for the
+completion of all activities in the set. This is where the ActivitySet become useful.
+
+Waiting for all activities in a set
+-----------------------------------
+
+The ``wait_all()`` function is useful when you want to block until all activities in a given set have been completed.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/activityset-waitall/s4u-activityset-waitall.cpp
+
+      See also :cpp:func:`simgrid::s4u::ActivitySet::wait_all()`.
+
+   .. example-tab:: examples/python/activityset-waitall/activityset-waitall.py
+
+      See also :py:func:`simgrid.ActivitySet.wait_all()`.
+
+   .. example-tab:: examples/c/activityset-waitall/activityset-waitall.c
+
+      See also :cpp:func:`sg_activity_set_wait_all()`.
+
+Waiting for all activities in a set (with timeout)
+--------------------------------------------------
+
+The ``wait_all_for()`` function is very similar to ``wait_all()`` but allows to specify a timeout.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/activityset-waitallfor/s4u-activityset-waitallfor.cpp
+
+      See also :cpp:func:`simgrid::s4u::ActivitySet::wait_all_for()`.
+
+   .. example-tab:: examples/python/activityset-waitallfor/activityset-waitallfor.py
+
+      See also :py:func:`simgrid.ActivitySet.wait_all_for()`.
+
+   .. example-tab:: examples/c/activityset-waitallfor/activityset-waitallfor.c
+
+      See also :cpp:func:`sg_activity_set_wait_all_for()`.
+
+Waiting for the first completed activity in a set
+-------------------------------------------------
+
+The ``wait_any()`` blocks until one activity of the set completes, no matter which terminates first.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/activityset-waitany/s4u-activityset-waitany.cpp
+
+      See also :cpp:func:`simgrid::s4u::ActivitySet::wait_any()`.
+
+   .. example-tab:: examples/python/activityset-waitany/activityset-waitany.py
+
+      See also :py:func:`simgrid.ActivitySet.wait_any()`.
+
+   .. example-tab:: examples/c/activityset-waitany/activityset-waitany.c
+
+      See also :cpp:func:`sg_activity_set_wait_any`.
+
+Testing whether at least one activity completed
+-----------------------------------------------
+
+The ``test_any()`` returns whether at least one activity of the set has completed.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/activityset-testany/s4u-activityset-testany.cpp
+
+      See also :cpp:func:`simgrid::s4u::ActivitySet::test_any()`.
+
+   .. example-tab:: examples/python/activityset-testany/activityset-testany.py
+
+      See also :py:func:`simgrid.ActivitySet.test_any()`.
+
+   .. example-tab:: examples/c/activityset-testany/activityset-testany.c
+
+      See also :cpp:func:`sg_activity_set_test_any`.
 
 .. _s4u_ex_dag:
 

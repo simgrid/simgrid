@@ -47,7 +47,7 @@ class Request : public F2C {
   bool detached_;
   MPI_Request detached_sender_;
   int refcount_;
-  unsigned int message_id_;
+  std::vector<unsigned int> message_id_;
   MPI_Op op_;
   std::unique_ptr<smpi_mpi_generalized_request_funcs_t> generalized_funcs;
   std::vector<MPI_Request> nbc_requests_;
@@ -102,6 +102,9 @@ public:
 
   static void sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf,
                        int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status* status);
+  static void isendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf,
+                        int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm,
+                        MPI_Request* request);
 
   static void startall(int count, MPI_Request* requests);
 

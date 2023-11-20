@@ -4,11 +4,11 @@ $ ${bindir:=.}/s4u-battery-energy ${platfdir}/energy_platform.xml
 > [MyHost1:manager:(1) 0.000000] [battery_energy/INFO] Battery state: SoC: 0.800000 SoH: 1.000000 Energy stored: 28800.000000J Energy provided: 0.000000J Energy consumed 0.000000J
 > [MyHost1:manager:(1) 0.000000] [battery_energy/INFO] Connecting hosts MyHost1 and MyHost2 to the battery
 > [MyHost1:manager:(1) 0.000000] [battery_energy/INFO] Host MyHost1 will now execute 1000000000.000000 flops
-> [96.209721] [battery_energy/INFO] Handler -> Battery low: SoC: 0.200000 SoH: 0.999700 Energy stored: 7197.839784J Energy provided: 19441.944194J Energy consumed 0.000000J
-> [96.209721] [battery_energy/INFO] Disconnecting hosts MyHost1 and MyHost2
-> [96.209721] [battery_energy/INFO] Energy consumed this far by: MyHost1: 9820.972097J, MyHost2: 9620.972097J, MyHost3: 9620.972097J
+> [93.709721] [battery_energy/INFO] Handler -> Battery low: SoC: 0.200000 SoH: 0.999700 Energy stored: 7197.839784J Energy provided: 19441.944194J Energy consumed 0.000000J
+> [93.709721] [battery_energy/INFO] Disconnecting hosts MyHost1 and MyHost2
+> [93.709721] [battery_energy/INFO] Energy consumed this far by: MyHost1: 9370.972097J, MyHost2: 10370.972097J, MyHost3: 9370.972097J
 > [MyHost1:manager:(1) 200.000000] [battery_energy/INFO] Battery state: SoC: 0.200000 SoH: 0.999700 Energy stored: 7197.839784J Energy provided: 19441.944194J Energy consumed 0.000000J
-> [200.000000] [host_energy/INFO] Total energy consumption: 60200.000000 Joules (used hosts: 20200.000000 Joules; unused/idle hosts: 40000.000000)
-> [200.000000] [host_energy/INFO] Energy consumption of host MyHost1: 20200.000000 Joules
-> [200.000000] [host_energy/INFO] Energy consumption of host MyHost2: 20000.000000 Joules
+> [200.000000] [host_energy/INFO] Total energy consumption: 61000.000000 Joules (used hosts: 21000.000000 Joules; unused/idle hosts: 40000.000000)
+> [200.000000] [host_energy/INFO] Energy consumption of host MyHost1: 20000.000000 Joules
+> [200.000000] [host_energy/INFO] Energy consumption of host MyHost2: 21000.000000 Joules
 > [200.000000] [host_energy/INFO] Energy consumption of host MyHost3: 20000.000000 Joules

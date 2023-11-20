@@ -420,7 +420,7 @@ void Host::execute(double flops) const
 
 void Host::execute(double flops, double priority) const
 {
-  this_actor::exec_init(flops)->set_priority(1 / priority)->start()->wait();
+  Exec::init()->set_flops_amount(flops)->set_host(const_cast<Host*>(this))->set_priority(1 / priority)->wait();
 }
 
 Host* Host::seal()

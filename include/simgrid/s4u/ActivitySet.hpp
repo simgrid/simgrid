@@ -78,7 +78,10 @@ public:
    */
   ActivityPtr wait_any() { return wait_any_for(-1); }
 
+  /** Return one of the failed activity of the set that was revealed during the previous wait operation, or
+   * ActivityPtr() if no failed activity exist in the set. */
   ActivityPtr get_failed_activity();
+  /** Return whether the set contains any failed activity. */
   bool has_failed_activities() { return not failed_activities_.empty(); }
 
   // boost::intrusive_ptr<ActivitySet> support:

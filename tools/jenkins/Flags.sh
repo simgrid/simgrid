@@ -76,7 +76,16 @@ else
     runtests="OFF"
 fi
 
-cmake -Denable_documentation=OFF \
+GENERATOR="Unix Makefiles"
+BUILDER=make
+VERBOSE_BUILD="VERBOSE=1"
+if which ninja 2>/dev/null >/dev/null ; then
+  GENERATOR=Ninja
+  BUILDER=ninja
+  VERBOSE_BUILD="-v"
+fi
+
+cmake -G"$GENERATOR" -Denable_documentation=OFF \
       -Denable_compile_optimizations=${runtests} -Denable_compile_warnings=ON \
       -Denable_mallocators=ON -Denable_debug=${builddebug} \
       -Denable_smpi=${buildsmpi} -Denable_testsuite_smpi_MPICH3=${buildsmpi} -Denable_model-checking=${buildmc} \
@@ -85,7 +94,7 @@ cmake -Denable_documentation=OFF \
       -Denable_coverage=OFF -DLTO_EXTRA_FLAG="auto" -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
       "$WORKSPACE"
 
-make -j$NUMPROC tests
+${BUILDER} -j$NUMPROC tests ${VERBOSE_BUILD}
 
 if [ "$runtests" = "ON" ]; then
     # exclude tests known to fail with _GLIBCXX_DEBUG

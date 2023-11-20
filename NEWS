@@ -5,6 +5,11 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ / ___|
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/____/
                (not released yet)
 
+ * Maint: liveness checking is gone. It was fragile and buggy.
+ * API: ActivitySet make it easier to manage sets of activities.
+ * Plugins chiller, photovoltaic and battery revamped and improved.
+ * Performance improvements, both in time and memory.
+ * (+ internal refactoring, usability improvements and bug fixes)
                     _               _____  _____ _  _
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ /| || |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \| || |_

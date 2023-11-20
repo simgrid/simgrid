@@ -758,14 +758,11 @@ memory (see :ref:`contexts/guard-size <cfg=contexts/guard-size>`).
 Replaying buggy execution paths from the model checker
 ......................................................
 
-Debugging the problems reported by the model checker is challenging:
-First, the application under verification cannot be debugged with gdb
-because the model checker already traces it. Then, the model checker may
-explore several execution paths before encountering the issue, making it
-very difficult to understand the output. Fortunately, SimGrid provides
+Debugging the problems reported by the model checker is challenging because
+the model checker may explore several execution paths before encountering the issue,
+the output very difficult to understand. Fortunately, SimGrid provides
 the execution path leading to any reported issue so that you can replay
-this path reported by the model checker, enabling the usage of classical
-debugging tools.
+this path reported by the model checker, restoring a classical experience of debugging.
 
 When the model checker finds an interesting path in the application
 execution graph (where a safety property is violated), it
@@ -789,9 +786,83 @@ The interesting line is ``Path = 1/3;1/4``, which means that you should use
 ``--cfg=model-check/replay:1/3;1/4`` to replay your application on the buggy
 execution path. All options (but the model checker related ones) must
 remain the same. In particular, if you ran your application with
-``smpirun -wrapper simgrid-mc``, then do it again. Remove all
+``smpirun -wrapper simgrid-mc``, then remove the ``-wrapper simgrid-mc`` part 
+(you may want to use valgrind or gdb as wrappers instead). Also remove all
 MC-related options, keep non-MC-related ones and add
 ``--cfg=model-check/replay:???``.
+
+Things are very similar if you are using sthread. Simply drop ``simgrid-mc`` from your command line, as follows:
+
+.. code-block:: console
+
+   $ LD_PRELOAD=../../lib/libsthread.so ./pthread-mutex-simpledeadlock --cfg=model-check/replay:'2;2;3;2;3;3'
+   sthread is intercepting the execution of ./pthread-mutex-simpledeadlock
+   [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/replay' to '2;2;3;2;3;3'
+   [0.000000] [mc_record/INFO] path=2;2;3;2;3;3
+   All threads are started.
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #1 '2/0' Actor thread 1(pid:2): MUTEX_ASYNC_LOCK(mutex_id:0 owner:none)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 1):
+     ->  #0 simgrid::s4u::Mutex::lock() at ../../src/s4u/s4u_Mutex.cpp:26
+     ->  #1 sthread_mutex_lock at ../../src/sthread/sthread_impl.cpp:188
+     ->  #2 pthread_mutex_lock at ../../src/sthread/sthread.c:141
+     ->  #3 thread_fun1 at ../../examples/sthread/pthread-mutex-simpledeadlock.c:21
+   
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #2 '2/0' Actor thread 1(pid:2): MUTEX_WAIT(mutex_id:0 owner:2)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 1):
+     ->  #0 simgrid::s4u::Mutex::lock() at ../../src/s4u/s4u_Mutex.cpp:29
+     ->  #1 sthread_mutex_lock at ../../src/sthread/sthread_impl.cpp:188
+     ->  #2 pthread_mutex_lock at ../../src/sthread/sthread.c:141
+     ->  #3 thread_fun1 at ../../examples/sthread/pthread-mutex-simpledeadlock.c:21
+   
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #3 '3/0' Actor thread 2(pid:3): MUTEX_ASYNC_LOCK(mutex_id:1 owner:none)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 2):
+     ->  #0 simgrid::s4u::Mutex::lock() at ../../src/s4u/s4u_Mutex.cpp:26
+     ->  #1 sthread_mutex_lock at ../../src/sthread/sthread_impl.cpp:188
+     ->  #2 pthread_mutex_lock at ../../src/sthread/sthread.c:141
+     ->  #3 thread_fun2 at ../../examples/sthread/pthread-mutex-simpledeadlock.c:31
+   
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #4 '2/0' Actor thread 1(pid:2): MUTEX_ASYNC_LOCK(mutex_id:1 owner:3)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 1):
+     ->  #0 simgrid::s4u::Mutex::lock() at ../../src/s4u/s4u_Mutex.cpp:26
+     ->  #1 sthread_mutex_lock at ../../src/sthread/sthread_impl.cpp:188
+     ->  #2 pthread_mutex_lock at ../../src/sthread/sthread.c:141
+     ->  #3 thread_fun1 at ../../examples/sthread/pthread-mutex-simpledeadlock.c:22
+   
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #5 '3/0' Actor thread 2(pid:3): MUTEX_WAIT(mutex_id:1 owner:3)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 2):
+     ->  #0 simgrid::s4u::Mutex::lock() at ../../src/s4u/s4u_Mutex.cpp:29
+     ->  #1 sthread_mutex_lock at ../../src/sthread/sthread_impl.cpp:188
+     ->  #2 pthread_mutex_lock at ../../src/sthread/sthread.c:141
+     ->  #3 thread_fun2 at ../../examples/sthread/pthread-mutex-simpledeadlock.c:31
+   
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #6 '3/0' Actor thread 2(pid:3): MUTEX_ASYNC_LOCK(mutex_id:0 owner:2)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 2):
+     ->  #0 simgrid::s4u::Mutex::lock() at ../../src/s4u/s4u_Mutex.cpp:26
+     ->  #1 sthread_mutex_lock at ../../src/sthread/sthread_impl.cpp:188
+     ->  #2 pthread_mutex_lock at ../../src/sthread/sthread.c:141
+     ->  #3 thread_fun2 at ../../examples/sthread/pthread-mutex-simpledeadlock.c:32
+   
+   [0.000000] [mc_record/INFO] The replay of the trace is complete. DEADLOCK detected.
+   [0.000000] [ker_engine/INFO] 3 actors are still running, waiting for something.
+   [0.000000] [ker_engine/INFO] Legend of the following listing: "Actor <pid> (<name>@<host>): <status>"
+   [0.000000] [ker_engine/INFO] Actor 1 (main thread@Lilibeth) simcall ActorJoin(pid:2)
+   [0.000000] [ker_engine/INFO] Actor 2 (thread 1@Lilibeth) simcall MUTEX_WAIT(mutex_id:1 owner:3)
+   [0.000000] [ker_engine/INFO] Actor 3 (thread 2@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+   [0.000000] [sthread/INFO] All threads exited. Terminating the simulation.
+   [0.000000] ../../src/kernel/EngineImpl.cpp:265: [ker_engine/WARNING] Process called exit when leaving - Skipping cleanups
+   [0.000000] ../../src/kernel/EngineImpl.cpp:265: [ker_engine/WARNING] Process called exit when leaving - Skipping cleanups
 
 Currently, if the path is of the form ``X;Y;Z``, each number denotes
 the actor's pid that is selected at each indecision point. If it's of

@@ -82,6 +82,7 @@ provides many helper functions to simplify the code of actors.
       - :ref:`class Comm <API_s4u_Comm>`: Communication activity, started on Mailboxes and consuming links.
       - :ref:`class Exec <API_s4u_Exec>`: Computation activity, started on Host and consuming CPU resources.
       - :ref:`class Io <API_s4u_Io>`: I/O activity, started on and consuming disks.
+      - :ref:`class ActivtySet <API_s4u_ActivitySet>`: Bag of activities, to wait for any of the set, or all of them.
 
    - **Synchronization Objects**: Classical IPC that actors can use
 
@@ -165,29 +166,11 @@ Every kind of activity can be asynchronous.
 :cpp:func:`s4u::Disk::write_async() <simgrid::s4u::Disk::write_async>`; and
 :ref:`s4u::ExecPtr <API_s4u_Exec>` are created with
 :cpp:func:`s4u::Host::exec_async() <simgrid::s4u::Host::exec_async>`.
-In the future, it will become possible to have asynchronous IPC such as asynchronous mutex lock requests.
+In the future, it will become possible to have asynchronous IPC such as asynchronous mutex lock requests (it is already possible
+internally, but the interface is not exposed in S4U yet).
 
-The following example shows how to have several concurrent
-communications ongoing.  First, you have to declare a vector in which
-we will store the ongoing communications. It is also useful to have a
-vector of mailboxes.
-
-.. literalinclude:: ../../examples/cpp/comm-waitall/s4u-comm-waitall.cpp
-   :language: c++
-   :start-after: init-begin
-   :end-before: init-end
-   :dedent: 2
-
-Then, you start all the communications that should occur concurrently with
-:cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>`.
-Finally, the actor waits for the completion of all of them at once
-with :cpp:func:`s4u::Comm::wait_all() <simgrid::s4u::Comm::wait_all>`.
-
-.. literalinclude:: ../../examples/cpp/comm-waitall/s4u-comm-waitall.cpp
-   :language: c++
-   :start-after: put-begin
-   :end-before: put-end
-   :dedent: 2
+If you want for the completion of any activity in a given set, to react to the earlier occuring completion, then you need an
+:ref:`activity set <API_s4u_ActivitySet>`. Please refer to the :ref:`relevant examples <s4u_ex_activityset>` for more information.
 
 =====================
 Activities Life Cycle
@@ -279,8 +262,8 @@ on the data you want to get from the mailbox. To model such settings
 in SimGrid, you'd have one mailbox per potential topic, and subscribe
 to each topic individually with a
 :cpp:func:`get_async() <simgrid::s4u::Mailbox::get_async>` on each mailbox.
-Then, use :cpp:func:`Comm::wait_any() <simgrid::s4u::Comm::wait_any>`
-to get the first message on any of the mailboxes you are subscribed to.
+Then, use an :ref:`class ActivtySet <API_s4u_ActivitySet>` to get the first
+message on any of the mailboxes you are subscribed to.
 
 The mailboxes are not located on the network, and you can access
 them without any latency. The network delays are only related to the
@@ -487,6 +470,8 @@ See also :ref:`the relevant example <s4u_ex_actors_create>`.
       .. automethod:: simgrid.Actor.create
 
    .. group-tab:: C
+
+      .. doxygentypedef:: xbt_main_func_t
 
       .. doxygenfunction:: sg_actor_create(const char *name, sg_host_t host, xbt_main_func_t code, int argc, char *const *argv)
       .. doxygenfunction:: sg_actor_init(const char *name, sg_host_t host)
@@ -843,7 +828,6 @@ Engin initialization
 
       .. doxygenfunction:: simgrid::s4u::Engine::Engine(int *argc, char **argv)
       .. doxygenfunction:: simgrid::s4u::Engine::is_initialized()
-      .. doxygenfunction:: simgrid::s4u::Engine::shutdown()
       .. doxygenfunction:: simgrid::s4u::Engine::get_instance()
 
    .. group-tab:: Python
@@ -1593,9 +1577,7 @@ Basic management
          #include <simgrid/link.h>
 
       .. doxygentypedef:: sg_link_t
-      .. cpp:type:: const s4u_Link* const_sg_link_t
-
-         Pointer to a constant link object.
+      .. doxygentypedef:: const_sg_link_t
 
 Retrieving links
 ----------------
@@ -1635,7 +1617,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Link::get_name() const
       .. doxygenfunction:: simgrid::s4u::Link::get_sharing_policy() const
       .. doxygenfunction:: simgrid::s4u::Link::get_concurrency_limit() const
-      .. doxygenfunction:: simgrid::s4u::Link::get_usage() const
+      .. doxygenfunction:: simgrid::s4u::Link::get_load() const
       .. doxygenfunction:: simgrid::s4u::Link::is_used() const
 
    .. group-tab:: Python
@@ -1836,7 +1818,7 @@ Querying info
 
       .. doxygenfunction:: simgrid::s4u::NetZone::get_cname() const
       .. doxygenfunction:: simgrid::s4u::NetZone::get_name() const
-      .. doxygenfunction:: simgrid::s4u::NetZone::get_netpoint()
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_netpoint
 
    .. group-tab:: Python
 
@@ -1889,8 +1871,10 @@ Routing data
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::NetZone::add_component(kernel::routing::NetPoint *elm)
-      .. doxygenfunction:: simgrid::s4u::NetZone::add_route
-      .. doxygenfunction:: simgrid::s4u::NetZone::add_bypass_route
+      .. doxygenfunction:: simgrid::s4u::NetZone::add_route(const Host *src, const Host *dst, const std::vector< LinkInRoute > &link_list, bool symmetrical=true)
+      .. doxygenfunction:: simgrid::s4u::NetZone::add_route(const Host *src, const Host *dst, const std::vector< const Link * > &links)
+      .. doxygenfunction:: simgrid::s4u::NetZone::add_route(const NetZone *src, const NetZone *dst, const std::vector< LinkInRoute > &link_list, bool symmetrical=true)
+      .. doxygenfunction:: simgrid::s4u::NetZone::add_route(const NetZone *src, const NetZone *dst, const std::vector< const Link * > &links)
       .. doxygenfunction:: simgrid::s4u::NetZone::get_children() const
       .. doxygenfunction:: simgrid::s4u::NetZone::get_parent() const
       .. doxygenfunction:: simgrid::s4u::NetZone::set_parent(const NetZone* parent)
@@ -1958,6 +1942,10 @@ Hosts
      .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, double speed)
      .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate)
      .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::string& speed)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string &name, const std::string &speed)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string &name, const std::vector< double > &speed_per_pstate)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string &name, const std::vector< std::string > &speed_per_pstate)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string &name, double speed)
 
   .. group-tab:: Python
 
@@ -1970,12 +1958,12 @@ Links
 
   .. group-tab:: C++
 
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string& name, const std::vector<double>& bandwidths)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string& name, double bandwidth)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string& name, const std::vector<std::string>& bandwidthds)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string& name, const std::string& bandwidth)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_split_duplex_link(const std::string& name, const std::string& bandwidth)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_split_duplex_link(const std::string& name, double bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string &name, const std::vector< double > &bandwidths)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string &name, double bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string &name, const std::vector< std::string > &bandwidths)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string &name, const std::string &bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_split_duplex_link(const std::string &name, const std::string &bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_split_duplex_link(const std::string &name, double bandwidth)
 
   .. group-tab:: Python
 
@@ -2147,6 +2135,11 @@ Basic management
 
       .. doxygentypedef:: ActivityPtr
 
+   .. group-tab:: C
+
+      .. doxygentypedef:: sg_activity_t
+      .. doxygentypedef:: const_sg_activity_t
+
 Querying info
 -------------
 
@@ -2175,7 +2168,6 @@ Activities life cycle
       .. doxygenfunction:: simgrid::s4u::Activity::wait
       .. doxygenfunction:: simgrid::s4u::Activity::wait_for
       .. doxygenfunction:: simgrid::s4u::Activity::wait_until(double time_limit)
-      .. doxygenfunction:: simgrid::s4u::Activity::vetoable_start()
 
 Suspending and resuming an activity
 -----------------------------------
@@ -2293,12 +2285,7 @@ Life cycle
       .. doxygenfunction:: simgrid::s4u::Comm::cancel
       .. doxygenfunction:: simgrid::s4u::Comm::start
       .. doxygenfunction:: simgrid::s4u::Comm::test
-      .. doxygenfunction:: simgrid::s4u::Comm::test_any(const std::vector< CommPtr >& comms)
       .. doxygenfunction:: simgrid::s4u::Comm::wait
-      .. doxygenfunction:: simgrid::s4u::Comm::wait_all(const std::vector< CommPtr >& comms)
-      .. doxygenfunction:: simgrid::s4u::Comm::wait_all_for(const std::vector< CommPtr >& comms, double timeout)
-      .. doxygenfunction:: simgrid::s4u::Comm::wait_any(const std::vector< CommPtr >& comms)
-      .. doxygenfunction:: simgrid::s4u::Comm::wait_any_for(const std::vector< CommPtr >& comms, double timeout)
       .. doxygenfunction:: simgrid::s4u::Comm::wait_for
       .. doxygenfunction:: simgrid::s4u::Comm::wait_until
 
@@ -2307,21 +2294,14 @@ Life cycle
       .. automethod:: simgrid.Comm.cancel
       .. automethod:: simgrid.Comm.start
       .. automethod:: simgrid.Comm.test
-      .. automethod:: simgrid.Comm.test_any
       .. automethod:: simgrid.Comm.wait
       .. automethod:: simgrid.Comm.wait_for
-      .. automethod:: simgrid.Comm.wait_all
-      .. automethod:: simgrid.Comm.wait_all_for
-      .. automethod:: simgrid.Comm.wait_any
-      .. automethod:: simgrid.Comm.wait_any_for
       .. automethod:: simgrid.Comm.wait_until
 
    .. group-tab:: C
 
       .. doxygenfunction:: sg_comm_test
       .. doxygenfunction:: sg_comm_wait
-      .. doxygenfunction:: sg_comm_wait_all
-      .. doxygenfunction:: sg_comm_wait_any
 
 Suspending and resuming a communication
 ---------------------------------------
@@ -2347,15 +2327,22 @@ Signals
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::Comm::on_start_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_this_start_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_completion_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_this_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_start_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_recv_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_send_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_suspended_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_resume_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_resumed_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_recv_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_resume_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_send_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_start_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_suspended_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_veto_cb
 
 .. _API_s4u_Exec:
 
@@ -2372,6 +2359,11 @@ Signals
    .. group-tab:: Python
 
       .. autoclass:: simgrid.Exec
+
+   .. group-tab:: C
+
+      .. doxygentypedef:: sg_exec_t
+      .. doxygentypedef:: const_sg_exec_t
 
 Basic management
 ----------------
@@ -2397,9 +2389,6 @@ Basic management
       .. code-block:: C
 
          #include <simgrid/exec.h>
-
-      .. doxygentypedef:: sg_exec_t
-      .. doxygentypedef:: const_sg_exec_t
 
 Querying info
 -------------
@@ -2445,9 +2434,6 @@ Life cycle
       .. doxygenfunction:: simgrid::s4u::Exec::start
       .. doxygenfunction:: simgrid::s4u::Exec::test
       .. doxygenfunction:: simgrid::s4u::Exec::wait
-      .. doxygenfunction:: simgrid::s4u::Exec::wait_any(const std::vector< ExecPtr >& execs)
-      .. doxygenfunction:: simgrid::s4u::Exec::wait_any_for(const std::vector< ExecPtr >& execs, double timeout)
-      .. doxygenfunction:: simgrid::s4u::Exec::wait_for
 
    .. group-tab:: Python
 
@@ -2462,9 +2448,6 @@ Life cycle
        .. doxygenfunction:: sg_exec_cancel(sg_exec_t exec);
        .. doxygenfunction:: sg_exec_test(sg_exec_t exec);
        .. doxygenfunction:: sg_exec_wait(sg_exec_t exec);
-       .. doxygenfunction:: sg_exec_wait_for(sg_exec_t exec, double timeout);
-       .. doxygenfunction:: sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout);
-       .. doxygenfunction:: sg_exec_wait_any(sg_exec_t* execs, size_t count);
 
 Suspending and resuming an execution
 ------------------------------------
@@ -2498,6 +2481,7 @@ Signals
       .. doxygenfunction:: simgrid::s4u::Exec::on_suspended_cb
       .. doxygenfunction:: simgrid::s4u::Exec::on_resumed_cb
       .. doxygenfunction:: simgrid::s4u::Exec::on_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_this_veto_cb
 
 .. _API_s4u_Io:
 
@@ -2549,16 +2533,11 @@ Life cycle
       .. doxygenfunction:: simgrid::s4u::Io::start
       .. doxygenfunction:: simgrid::s4u::Io::test
       .. doxygenfunction:: simgrid::s4u::Io::wait
-      .. doxygenfunction:: simgrid::s4u::Io::wait_for
-      .. doxygenfunction:: simgrid::s4u::Io::wait_any(const std::vector<IoPtr> &ios)
-      .. doxygenfunction:: simgrid::s4u::Io::wait_any_for(const std::vector<IoPtr> &ios, double timeout)
 
    .. group-tab:: Python
 
       .. automethod:: simgrid.Io.test
       .. automethod:: simgrid.Io.wait
-      .. automethod:: simgrid.Io.wait_any_for
-      .. automethod:: simgrid.Io.wait_any
 
 Signals
 -------
@@ -2575,7 +2554,122 @@ Signals
       .. doxygenfunction:: simgrid::s4u::Io::on_suspended_cb
       .. doxygenfunction:: simgrid::s4u::Io::on_resumed_cb
       .. doxygenfunction:: simgrid::s4u::Io::on_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_this_veto_cb
 
+.. _API_s4u_ActivitySet:
+
+====================
+⁣  class ActivitySet
+====================
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::ActivitySet
+
+   .. group-tab:: Python
+
+      .. autoclass:: simgrid.ActivitySet
+
+   .. group-tab:: C
+
+      .. doxygentypedef:: sg_activity_set_t
+      .. doxygentypedef:: const_sg_activity_set_t
+
+Basic management
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/ActivitySet.hpp>
+
+      .. doxygentypedef:: ActivitySetPtr
+
+   .. group-tab:: Python
+
+      .. code:: Python
+
+         from simgrid import ActivitySet
+
+   .. group-tab:: C
+
+      .. code-block:: C
+
+         #include <simgrid/activity_set.h>
+
+      .. doxygenfunction:: sg_activity_set_init
+      .. doxygenfunction:: sg_activity_set_delete
+
+Managing activities
+-------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::push
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::erase
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::empty
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::size
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.ActivitySet.push()
+      .. automethod:: simgrid.ActivitySet.erase()
+      .. automethod:: simgrid.ActivitySet.empty()
+      .. automethod:: simgrid.ActivitySet.size()
+
+   .. group-tab:: c
+
+      .. doxygenfunction:: sg_activity_set_push
+      .. doxygenfunction:: sg_activity_set_erase
+      .. doxygenfunction:: sg_activity_set_empty
+      .. doxygenfunction:: sg_activity_set_size
+
+Interacting with the set
+------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::test_any
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::wait_all
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::wait_all_for
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::wait_any
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::wait_any_for
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.ActivitySet.test_any()
+      .. automethod:: simgrid.ActivitySet.wait_all()
+      .. automethod:: simgrid.ActivitySet.wait_all_for()
+      .. automethod:: simgrid.ActivitySet.wait_any()
+      .. automethod:: simgrid.ActivitySet.wait_any_for()
+
+   .. group-tab:: c
+
+      .. doxygenfunction:: sg_activity_set_test_any
+      .. doxygenfunction:: sg_activity_set_wait_all
+      .. doxygenfunction:: sg_activity_set_wait_all_for
+      .. doxygenfunction:: sg_activity_set_wait_any
+      .. doxygenfunction:: sg_activity_set_wait_any_for
+      .. doxygenfunction:: sg_activity_unref
+
+Dealing with failed activities
+------------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::get_failed_activity()
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::has_failed_activities()
 
 .. _API_s4u_Tasks:
 
@@ -2811,7 +2905,7 @@ Basic management
 
          .. doxygentypedef:: MutexPtr
 
-         .. doxygenfunction:: simgrid::s4u::Mutex::create()
+         .. doxygenfunction:: simgrid::s4u::Mutex::create
 
       .. group-tab:: Python
 
@@ -2893,6 +2987,7 @@ Locking
 
       .. doxygenfunction:: simgrid::s4u::Barrier::create(unsigned int expected_actors)
       .. doxygenfunction:: simgrid::s4u::Barrier::wait()
+      .. doxygenfunction:: simgrid::s4u::Barrier::to_string()   
 
    .. group-tab:: Python
 

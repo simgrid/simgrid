@@ -49,7 +49,8 @@ public:
       const std::string frame_name = frame.name();
       if (print) {
         if (frame_name.rfind("simgrid::xbt::MainFunction", 0) == 0 ||
-            frame_name.rfind("simgrid::kernel::context::Context::operator()()", 0) == 0)
+            frame_name.rfind("simgrid::kernel::context::Context::operator()()", 0) == 0 ||
+            frame_name.rfind("auto sthread_create::{lambda") == 0)
           break;
         ss << "  ->  #" << frame_count++ << " ";
         if (xbt_log_no_loc) // Don't display file source and line if so

@@ -236,18 +236,33 @@ PYBIND11_MODULE(simgrid, m)
       .def_static("create_empty_zone", &simgrid::s4u::create_empty_zone, "Creates a zone of type Empty")
       .def_static("create_wifi_zone", &simgrid::s4u::create_wifi_zone, "Creates a zone of type Wi-Fi")
       .def("add_route",
-           py::overload_cast<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*,
-                             simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*,
-                             const std::vector<simgrid::s4u::LinkInRoute>&, bool>(&simgrid::s4u::NetZone::add_route),
-           "Add a route between 2 netpoints")
+           [](simgrid::s4u::NetZone* self, simgrid::kernel::routing::NetPoint* src,
+              simgrid::kernel::routing::NetPoint* dst, simgrid::kernel::routing::NetPoint* gw_src,
+              simgrid::kernel::routing::NetPoint* gw_dst, const std::vector<simgrid::s4u::LinkInRoute>& links,
+              bool symmetrical) {
+             PyErr_WarnEx(PyExc_DeprecationWarning, // XBT_ATTRIB_DEPRECATED_v335. Once removed, uncomment the
+                                                    // deprecation of the AddRoute function in C++
+                          "Please call add_route either from Host to Host or NetZone to NetZone. This call will be "
+                          "removed after SimGrid v3.35.",
+                          1);
+             self->add_route(src, dst, gw_src, gw_dst, links, symmetrical);
+           })
       .def("add_route",
            py::overload_cast<const simgrid::s4u::Host*, const simgrid::s4u::Host*,
                              const std::vector<simgrid::s4u::LinkInRoute>&, bool>(&simgrid::s4u::NetZone::add_route),
-           "Add a route between 2 netpoints")
+           "Add a route between 2 hosts")
       .def("add_route",
            py::overload_cast<const simgrid::s4u::Host*, const simgrid::s4u::Host*,
                              const std::vector<const simgrid::s4u::Link*>&>(&simgrid::s4u::NetZone::add_route),
-           "Add a route between 2 netpoints")
+           "Add a route between 2 hosts")
+      .def("add_route",
+           py::overload_cast<const simgrid::s4u::NetZone*, const simgrid::s4u::NetZone*,
+                             const std::vector<simgrid::s4u::LinkInRoute>&, bool>(&simgrid::s4u::NetZone::add_route),
+           "Add a route between 2 netzones. The gateway of each zone gets used.")
+      .def("add_route",
+           py::overload_cast<const simgrid::s4u::NetZone*, const simgrid::s4u::NetZone*,
+                             const std::vector<const simgrid::s4u::Link*>&>(&simgrid::s4u::NetZone::add_route),
+           "Add a route between 2 netzones. The gateway of each zone gets used.")
       .def("create_host", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_host),
            "Creates a host")
       .def("create_host",
@@ -279,6 +294,10 @@ PYBIND11_MODULE(simgrid, m)
       .def("create_router", &simgrid::s4u::NetZone::create_router, "Create a router")
       .def("set_parent", &simgrid::s4u::NetZone::set_parent, "Set the parent of this zone")
       .def("set_property", &simgrid::s4u::NetZone::set_property, "Add a property to this zone")
+      .def("set_gateway", py::overload_cast<simgrid::s4u::Host*>(&simgrid::s4u::NetZone::set_gateway),
+           "Specify the gateway of this zone, to be used for inter-zone routes")
+      .def("set_gateway", py::overload_cast<simgrid::kernel::routing::NetPoint*>(&simgrid::s4u::NetZone::set_gateway),
+           "Specify the gateway of this zone, to be used for inter-zone routes")
       .def_property_readonly("netpoint", &simgrid::s4u::NetZone::get_netpoint,
                              "Retrieve the netpoint associated to this zone")
       .def("seal", &simgrid::s4u::NetZone::seal, "Seal this NetZone")

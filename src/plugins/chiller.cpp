@@ -57,6 +57,7 @@ chiller is not active, the temperature of the room increases.
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(Chiller, kernel, "Logging specific to the solar panel plugin");
 
 namespace simgrid::plugins {
+xbt::signal<void(Chiller*)> Chiller::on_power_change; // initialisation of static field
 
 /* ChillerModel */
 

@@ -22,6 +22,9 @@ typedef int (*int_f_int_pvoid_t)(int, void*);
 typedef int (*int_f_pvoid_pvoid_t) (void *, void *);
 typedef int (*int_f_cpvoid_cpvoid_t) (const void *, const void *);
 
+/** Prototype of an actor's main function
+ *
+ * The only difference with a classical main() in C is that the return type is void */
 typedef void (*xbt_main_func_t)(int argc, char* argv[]);
 
 SG_END_DECL
