@@ -60,6 +60,9 @@ Python:
  - Comm::waitall/waitany/testany() are gone. Please use ActivitySet() instead.
  - Comm::waitallfor() is gone too. Its semantic was unclear on timeout anyway.
  - Io::waitany() and waitanyfor() are gone. Please use ActivitySet() instead.
+ - Do not export the values of enums. So you need to write e.g. SharingPolicy.LINEAR
+   while it should have been possible to write LINEAR alone before. This is the advised
+   behavior for modern C++ code.
 
 C API:
  - Introduce sg_activity_set_t and deprecate wait_all/wait_any/test_any for

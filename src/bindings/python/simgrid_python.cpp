@@ -452,8 +452,7 @@ PYBIND11_MODULE(simgrid, m)
 
   py::enum_<simgrid::s4u::Host::SharingPolicy>(host, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Host::SharingPolicy::NONLINEAR)
-      .value("LINEAR", simgrid::s4u::Host::SharingPolicy::LINEAR)
-      .export_values();
+      .value("LINEAR", simgrid::s4u::Host::SharingPolicy::LINEAR);
 
   /* Class Disk */
   py::class_<simgrid::s4u::Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(
@@ -476,13 +475,11 @@ PYBIND11_MODULE(simgrid, m)
           "Textual representation of the Disk");
   py::enum_<simgrid::s4u::Disk::SharingPolicy>(disk, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Disk::SharingPolicy::NONLINEAR)
-      .value("LINEAR", simgrid::s4u::Disk::SharingPolicy::LINEAR)
-      .export_values();
+      .value("LINEAR", simgrid::s4u::Disk::SharingPolicy::LINEAR);
   py::enum_<simgrid::s4u::Disk::Operation>(disk, "Operation")
       .value("READ", simgrid::s4u::Disk::Operation::READ)
       .value("WRITE", simgrid::s4u::Disk::Operation::WRITE)
-      .value("READWRITE", simgrid::s4u::Disk::Operation::READWRITE)
-      .export_values();
+      .value("READWRITE", simgrid::s4u::Disk::Operation::READWRITE);
 
   /* Class NetPoint */
   py::class_<simgrid::kernel::routing::NetPoint, std::unique_ptr<simgrid::kernel::routing::NetPoint, py::nodelete>>
@@ -578,8 +575,7 @@ PYBIND11_MODULE(simgrid, m)
       .value("WIFI", Link::SharingPolicy::WIFI)
       .value("SPLITDUPLEX", Link::SharingPolicy::SPLITDUPLEX)
       .value("SHARED", Link::SharingPolicy::SHARED)
-      .value("FATPIPE", Link::SharingPolicy::FATPIPE)
-      .export_values();
+      .value("FATPIPE", Link::SharingPolicy::FATPIPE);
 
   /* Class LinkInRoute */
   py::class_<simgrid::s4u::LinkInRoute> linkinroute(m, "LinkInRoute", "Abstraction to add link in routes");
@@ -588,8 +584,7 @@ PYBIND11_MODULE(simgrid, m)
   py::enum_<simgrid::s4u::LinkInRoute::Direction>(linkinroute, "Direction")
       .value("UP", simgrid::s4u::LinkInRoute::Direction::UP)
       .value("DOWN", simgrid::s4u::LinkInRoute::Direction::DOWN)
-      .value("NONE", simgrid::s4u::LinkInRoute::Direction::NONE)
-      .export_values();
+      .value("NONE", simgrid::s4u::LinkInRoute::Direction::NONE);
 
   /* Class Split-Duplex Link */
   py::class_<simgrid::s4u::SplitDuplexLink, Link, std::unique_ptr<simgrid::s4u::SplitDuplexLink, py::nodelete>>(
