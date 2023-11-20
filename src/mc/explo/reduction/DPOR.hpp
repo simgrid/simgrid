@@ -19,6 +19,8 @@ class DPOR : public Reduction {
 
   using stack_t = std::vector<std::shared_ptr<State>>;
 
+  /** Compute the eventual i of Godefroid algorithm, line 4
+   *  Note that with persistency, we do not consider every p in "advance" but only the lastly taken p */
   std::optional<EventHandle> max_dependent_dpor(const odpor::Execution S, const State* s, aid_t p)
   {
 
@@ -27,8 +29,7 @@ class DPOR : public Reduction {
 
     for (EventHandle i = S.size(); i > 0; i--) {
       auto past_transition      = S.get_transition_for_handle(i - 1);
-      auto next_transition_of_p = s->get_actors_list().at(p).get_transition(
-          0); // For now, let's do like multi time considered transition do not exist FIXME
+      auto next_transition_of_p = s->get_transition_in();
 
       if (past_transition->depends(next_transition_of_p.get()) &&
           past_transition->can_be_co_enabled(next_transition_of_p.get()) && not S.happens_before_process(i - 1, p))
@@ -74,12 +75,13 @@ public:
 
     // With persistency, we only need to test the race detection for the lastly taken proc
     aid_t proc = s->get_transition_in()->aid_;
+    odpor::Execution E_before_last = E.get_prefix_before(E.size() - 1);
 
-    if (std::optional<EventHandle> opt_i = max_dependent_dpor(E, s, proc); opt_i.has_value()) {
+    if (std::optional<EventHandle> opt_i = max_dependent_dpor(E_before_last, s, proc); opt_i.has_value()) {
       EventHandle i                       = opt_i.value();
-      std::unordered_set<aid_t> ancestors = compute_ancestors(E, S, proc, i);
+      std::unordered_set<aid_t> ancestors = compute_ancestors(E_before_last, S, proc, i);
       // note: computing the whole set is necessary with guiding strategy
-      if (not E.empty()) {
+      if (not ancestors.empty()) {
         (*S)[i]->ensure_one_considered_among_set(ancestors);
       } else {
         (*S)[i]->consider_all();

@@ -35,14 +35,14 @@ public:
 
   // Eventually changes values in the stack S so that the races discovered while
   // visiting E will be taken care of at some point
-  virtual void races_computation(odpor::Execution E, stack_t* S);
+  virtual void races_computation(odpor::Execution E, stack_t* S) = 0;
   // Determine wheter the current sequence E has to be explored further. The decision
   // can be based on any information saved inside the states of S. Furthermore, the
   // reduction may do some adjustments on S to be ready to extent the exploration.
-  virtual bool has_to_be_explored(odpor::Execution E, stack_t* S);
+  virtual bool has_to_be_explored(odpor::Execution E, stack_t* S) = 0;
   // Return the next aid to be explored from the E. If -1 is returned, then the
   // reduction assumes no more traces need to be explored from E.
-  virtual aid_t next_to_explore(odpor::Execution E, stack_t* S);
+  virtual aid_t next_to_explore(odpor::Execution E, stack_t* S) = 0;
 };
 
 } // namespace simgrid::mc

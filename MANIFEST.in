@@ -2234,10 +2234,10 @@ include src/mc/datatypes.h
 include src/mc/explo/CommunicationDeterminismChecker.cpp
 include src/mc/explo/DFSExplorer.cpp
 include src/mc/explo/DFSExplorer.hpp
-include src/mc/explo/DPORExplorer.cpp
-include src/mc/explo/DPORExplorer.hpp
 include src/mc/explo/Exploration.cpp
 include src/mc/explo/Exploration.hpp
+include src/mc/explo/OutOfOrderExplorer.cpp
+include src/mc/explo/OutOfOrderExplorer.hpp
 include src/mc/explo/UdporChecker.cpp
 include src/mc/explo/UdporChecker.hpp
 include src/mc/explo/odpor/ClockVector_test.cpp

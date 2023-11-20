@@ -16,7 +16,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/
 > [0.000000] [mc_explo/INFO]   Actor 3 in Isend ==> simcall: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   Actor 1 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;1;3;3;1'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 98 unique states visited; 21 backtracks (153 transition replays, 272 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 98 unique states visited; 21 backtracks (153 transition replays, 251 states visited overall)
 
 ! expect return 1
 ! timeout 20
@@ -35,7 +35,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [0.000000] [mc_explo/INFO]   Actor 2 in Isend ==> simcall: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   Actor 1 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;1;3;3;2;1'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 83 unique states visited; 12 backtracks (65 transition replays, 160 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 104 unique states visited; 15 backtracks (89 transition replays, 193 states visited overall)
 
 ! expect return 1
 ! timeout 20
@@ -53,4 +53,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [0.000000] [mc_explo/INFO]   Actor 3 in Isend ==> simcall: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   Actor 1 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;3;1;3;1'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 44 unique states visited; 3 backtracks (11 transition replays, 58 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 76 unique states visited; 17 backtracks (137 transition replays, 213 states visited overall)

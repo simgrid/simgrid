@@ -10,6 +10,7 @@
 #include "src/mc/api/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/mc_config.hpp"
 
 #include <deque>
@@ -22,10 +23,12 @@
 
 namespace simgrid::mc {
 
-using stack_t = std::deque<std::shared_ptr<State>>;
+using stack_t     = std::vector<std::shared_ptr<State>>;
+using EventHandle = uint32_t;
 
 class XBT_PRIVATE DFSExplorer : public Exploration {
 private:
+  std::unique_ptr<Reduction> reduction_algo_;
   ReductionMode reduction_mode_;
   unsigned long backtrack_count_      = 0; // for statistics
   unsigned long visited_states_count_ = 0; // for statistics
@@ -41,6 +44,8 @@ private:
   static xbt::signal<void(Transition*, RemoteApp&)> on_transition_execute_signal;
 
   static xbt::signal<void(RemoteApp&)> on_log_state_signal;
+
+  stack_t stack_;
 
 public:
   explicit DFSExplorer(const std::vector<char*>& args, ReductionMode mode);
@@ -88,36 +93,10 @@ public:
   static void on_log_state(std::function<void(RemoteApp&)> const& f) { on_log_state_signal.connect(f); }
 
 private:
-  void backtrack();
+  bool is_execution_descending = true;
 
-  /** Stack representing the position in the exploration graph */
-  stack_t stack_;
-
-  /**
-   * Provides additional metadata about the position in the exploration graph
-   * which is used by SDPOR and ODPOR
-   */
-  odpor::Execution execution_seq_;
-
-  /** Per-actor clock vectors used to compute the "happens-before" relation */
-  std::unordered_map<aid_t, ClockVector> per_actor_clocks_;
-
-  /** Opened states are states that still contains todo actors.
-   *  When backtracking, we pick a state from it*/
-  std::vector<std::shared_ptr<State>> opened_states_;
-  std::shared_ptr<State> best_opened_state();
-
-  /** If we're running ODPOR, picks the corresponding state in the stack
-   * (opened_states_ are ignored)
-   */
-  std::shared_ptr<State> next_odpor_state();
-
-  /** Change current stack_ value to correspond to the one we would have
-   *  had if we executed transition to get to state. This is required when
-   *  backtracking, and achieved thanks to the fact states save their parent.*/
-  void restore_stack(std::shared_ptr<State> state);
-
-  RecordTrace get_record_trace_of_stack(stack_t stack);
+  void explore(odpor::Execution S, stack_t state_stack);
+  void simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, stack_t state_stack);
 };
 
 } // namespace simgrid::mc
