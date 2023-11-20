@@ -94,15 +94,15 @@ def handle_python_module(fullname, englobing, elm):
     elif isinstance(elm, (int, str)): # We do have such a data, directly in the SimGrid top module
         found_decl("data", fullname)
 #        print('.. autodata:: {}'.format(fullname))
+    elif inspect.isclass(type(elm)): # Enum classes are of that kind
+        found_decl("data", fullname)
+        #print('.. autodata:: {}'.format(fullname))
     elif inspect.ismodule(elm) or inspect.isclass(elm):
         for name, data in inspect.getmembers(elm):
             if name.startswith('__'):
                 continue
 #            print("Recurse on {}.{}".format(fullname, name))
             handle_python_module("{}.{}".format(fullname, name), elm, data)
-    elif inspect.isclass(type(elm)):
-        found_decl("enumvalue", fullname)
-        print('.. autoenumvalue:: {}'.format(fullname))
     else:
         print('UNHANDLED TYPE {} : {!r} Type: {} Englobing: {} str: {} Members: \n{}\n'.format(fullname, elm, type(elm), englobing, str(elm), inspect.getmembers(elm)))
 
