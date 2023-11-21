@@ -571,11 +571,17 @@ PYBIND11_MODULE(simgrid, m)
           "__repr__", [](const Link* l) { return "Link(" + l->get_name() + ")"; },
           "Textual representation of the Link");
   py::enum_<Link::SharingPolicy>(link, "SharingPolicy")
-      .value("NONLINEAR", Link::SharingPolicy::NONLINEAR)
-      .value("WIFI", Link::SharingPolicy::WIFI)
-      .value("SPLITDUPLEX", Link::SharingPolicy::SPLITDUPLEX)
-      .value("SHARED", Link::SharingPolicy::SHARED)
-      .value("FATPIPE", Link::SharingPolicy::FATPIPE);
+      .value("NONLINEAR", Link::SharingPolicy::NONLINEAR,
+             "This policy takes a callback that specifies the maximal capacity as a function of the number of usage. "
+             "See the examples with 'degradation' in their name.")
+      .value("WIFI", Link::SharingPolicy::WIFI, "Pseudo-sharing policy requesting wifi-specific sharing.")
+      .value("SPLITDUPLEX", Link::SharingPolicy::SPLITDUPLEX,
+             "Each link is split in 2, UP and DOWN, one per direction. These links are SHARED.")
+      .value("SHARED", Link::SharingPolicy::SHARED,
+             "The bandwidth is shared between all comms using that link, regardless of their direction.")
+      .value("FATPIPE", Link::SharingPolicy::FATPIPE,
+             "Each comm can use the link fully, with no sharing (only a maximum). This is intended to represent the "
+             "backbone links that cannot be saturated by concurrent links, but have a maximal bandwidth.");
 
   /* Class LinkInRoute */
   py::class_<simgrid::s4u::LinkInRoute> linkinroute(m, "LinkInRoute", "Abstraction to add link in routes");

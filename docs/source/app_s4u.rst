@@ -1200,10 +1200,16 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Disk::set_property(const std::string &, const std::string &value)
       .. doxygenfunction:: simgrid::s4u::Disk::set_sharing_policy
 
+      .. doxygenenum:: simgrid::s4u::Disk::Operation
+      .. doxygenenum:: simgrid::s4u::Disk::SharingPolicy
+
    .. group-tab:: Python
 
       .. autoattribute:: simgrid.Disk.name
       .. automethod:: simgrid.Disk.set_sharing_policy
+
+      .. autoclass:: simgrid.Disk.Operation
+      .. autoclass:: simgrid.Disk.SharingPolicy
 
 I/O operations
 --------------
@@ -1611,51 +1617,69 @@ Querying info
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::Link::get_bandwidth() const
       .. doxygenfunction:: simgrid::s4u::Link::get_cname() const
-      .. doxygenfunction:: simgrid::s4u::Link::get_latency() const
       .. doxygenfunction:: simgrid::s4u::Link::get_name() const
-      .. doxygenfunction:: simgrid::s4u::Link::get_sharing_policy() const
-      .. doxygenfunction:: simgrid::s4u::Link::get_concurrency_limit() const
       .. doxygenfunction:: simgrid::s4u::Link::get_load() const
       .. doxygenfunction:: simgrid::s4u::Link::is_used() const
 
    .. group-tab:: Python
 
-      .. autoattribute:: simgrid.Link.bandwidth
-      .. autoattribute:: simgrid.Link.latency
+      .. autoattribute:: simgrid.Link.name
 
    .. group-tab:: C
 
-      .. doxygenfunction:: sg_link_get_bandwidth(const_sg_link_t link)
-      .. doxygenfunction:: sg_link_get_latency(const_sg_link_t link)
       .. doxygenfunction:: sg_link_get_name(const_sg_link_t link)
       .. doxygenfunction:: sg_link_is_shared(const_sg_link_t link)
 
-Modifying characteristics
--------------------------
+Performance
+-----------
 
 .. tabs::
 
    .. group-tab:: C++
 
+      .. doxygenfunction:: simgrid::s4u::Link::get_bandwidth() const
+      .. doxygenfunction:: simgrid::s4u::Link::get_latency() const
       .. doxygenfunction:: simgrid::s4u::Link::set_bandwidth(double value)
       .. doxygenfunction:: simgrid::s4u::Link::set_latency(double value)
       .. doxygenfunction:: simgrid::s4u::Link::set_latency(const std::string& value)
-      .. doxygenfunction:: simgrid::s4u::Link::set_concurrency_limit(int limit)
-      .. doxygenfunction:: simgrid::s4u::Link::set_sharing_policy
 
    .. group-tab:: Python
 
+      .. autoattribute:: simgrid.Link.bandwidth
+      .. autoattribute:: simgrid.Link.latency
       .. automethod:: simgrid.Link.set_bandwidth
       .. automethod:: simgrid.Link.set_latency
+
+   .. group-tab:: C
+
+      .. doxygenfunction:: sg_link_get_bandwidth(const_sg_link_t link)
+      .. doxygenfunction:: sg_link_get_latency(const_sg_link_t link)
+      .. doxygenfunction:: sg_link_set_bandwidth(sg_link_t link, double value)
+      .. doxygenfunction:: sg_link_set_latency(sg_link_t link, double value)
+
+Model policy
+------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenenum:: simgrid::s4u::Link::SharingPolicy
+
+      .. doxygenfunction:: simgrid::s4u::Link::get_sharing_policy() const
+      .. doxygenfunction:: simgrid::s4u::Link::set_sharing_policy
+         
+      .. doxygenfunction:: simgrid::s4u::Link::get_concurrency_limit() const
+      .. doxygenfunction:: simgrid::s4u::Link::set_concurrency_limit(int limit)
+
+   .. group-tab:: Python
+
       .. automethod:: simgrid.Link.set_concurrency_limit
       .. automethod:: simgrid.Link.set_sharing_policy
 
    .. group-tab:: C
 
-      .. doxygenfunction:: sg_link_set_bandwidth(sg_link_t link, double value)
-      .. doxygenfunction:: sg_link_set_latency(sg_link_t link, double value)
 
 User data and properties
 ------------------------
