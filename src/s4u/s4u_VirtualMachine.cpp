@@ -32,7 +32,8 @@ void VmHostExt::ensureVmExtInstalled()
     EXTENSION_ID = Host::extension_create<VmHostExt>();
 }
 
-VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount, size_t ramsize)
+VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount,
+                               size_t ramsize) // XBT_ATTRIB_DEPRECATED_v336
     : Host(new kernel::resource::VirtualMachineImpl(name, this, physical_host, core_amount, ramsize))
     , pimpl_vm_(dynamic_cast<kernel::resource::VirtualMachineImpl*>(Host::get_impl()))
 {

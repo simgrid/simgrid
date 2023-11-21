@@ -240,7 +240,7 @@ PYBIND11_MODULE(simgrid, m)
               simgrid::kernel::routing::NetPoint* dst, simgrid::kernel::routing::NetPoint* gw_src,
               simgrid::kernel::routing::NetPoint* gw_dst, const std::vector<simgrid::s4u::LinkInRoute>& links,
               bool symmetrical) {
-             PyErr_WarnEx(PyExc_DeprecationWarning, // XBT_ATTRIB_DEPRECATED_v335. Once removed, uncomment the
+             PyErr_WarnEx(PyExc_DeprecationWarning, // XBT_ATTRIB_DEPRECATED_v336. Once removed, uncomment the
                                                     // deprecation of the AddRoute function in C++
                           "Please call add_route either from Host to Host or NetZone to NetZone. This call will be "
                           "removed after SimGrid v3.35.",
