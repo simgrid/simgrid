@@ -41,7 +41,8 @@ int main(int argc, char** argv)
   else if (_sg_mc_unfolding_checker)
     explo = std::unique_ptr<Exploration>(create_udpor_checker(argv_copy));
   else if (get_model_checking_reduction() == ReductionMode::dpor or
-           get_model_checking_reduction() == ReductionMode::none)
+           get_model_checking_reduction() == ReductionMode::none or
+           get_model_checking_reduction() == ReductionMode::sdpor)
     explo = std::unique_ptr<Exploration>(create_dfs_exploration(argv_copy, get_model_checking_reduction()));
   else
     explo = std::unique_ptr<Exploration>(create_out_of_order_exploration(argv_copy, get_model_checking_reduction()));

@@ -587,6 +587,7 @@ set(MC_SRC_STATELESS
   src/mc/explo/reduction/Reduction.hpp
   src/mc/explo/reduction/NoReduction.hpp
   src/mc/explo/reduction/DPOR.hpp
+  src/mc/explo/reduction/SDPOR.hpp  
   )
 
 set(MC_SIMGRID_MC_SRC  src/mc/explo/simgrid_mc.cpp)

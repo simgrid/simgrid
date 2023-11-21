@@ -8,6 +8,7 @@
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
+#include "src/mc/explo/reduction/SDPOR.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
@@ -214,6 +215,8 @@ void DFSExplorer::run()
 
   if (reduction_mode_ == ReductionMode::dpor)
     reduction_algo_ = std::make_unique<DPOR>();
+  else if (reduction_mode_ == ReductionMode::sdpor)
+    reduction_algo_ = std::make_unique<SDPOR>();
   else {
     xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
                to_c_str(reduction_mode_));

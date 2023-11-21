@@ -2255,6 +2255,7 @@ include src/mc/explo/simgrid_mc.cpp
 include src/mc/explo/reduction/DPOR.hpp  
 include src/mc/explo/reduction/NoReduction.hpp 
 include src/mc/explo/reduction/Reduction.hpp
+include src/mc/explo/reduction/SDPOR.hpp
 include src/mc/explo/udpor/Comb.hpp
 include src/mc/explo/udpor/Configuration.cpp
 include src/mc/explo/udpor/Configuration.hpp
