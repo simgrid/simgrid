@@ -2735,12 +2735,12 @@ Querying info
 
       .. doxygenfunction:: simgrid::s4u::Task::get_cname() const
       .. doxygenfunction:: simgrid::s4u::Task::get_name() const
-      .. doxygenfunction:: simgrid::s4u::Task::get_count() const
-      .. doxygenfunction:: simgrid::s4u::Task::get_amount() const
-      .. doxygenfunction:: simgrid::s4u::Task::get_parallelism_degree() const
+      .. doxygenfunction:: simgrid::s4u::Task::get_count(std::string instance) const
+      .. doxygenfunction:: simgrid::s4u::Task::get_amount(std::string instance) const
+      .. doxygenfunction:: simgrid::s4u::Task::get_queued_firings(std::string instance) const
+      .. doxygenfunction:: simgrid::s4u::Task::get_running_count(std::string instance) const
+      .. doxygenfunction:: simgrid::s4u::Task::get_parallelism_degree(std::string instance) const
       .. doxygenfunction:: simgrid::s4u::Task::set_name(std::string name)
-      .. doxygenfunction:: simgrid::s4u::Task::set_amount(double amount)
-      .. doxygenfunction:: simgrid::s4u::Task::set_parallelism_degree(int n)
 
 Life cycle
 ----------
@@ -2749,9 +2749,12 @@ Life cycle
 
    .. group-tab:: C++
       .. doxygenfunction:: simgrid::s4u::Task::enqueue_firings(int n)
+      .. doxygenfunction:: simgrid::s4u::Task::set_amount(double amount, std::string instance)
+      .. doxygenfunction:: simgrid::s4u::Task::set_parallelism_degree(int n, std::string instance)
 
 Managing Dependencies
 ---------------------
+
 .. tabs::
 
    .. group-tab:: C++
@@ -2762,12 +2765,15 @@ Managing Dependencies
 
 Managing Tokens
 ---------------
+
 .. doxygenclass:: simgrid::s4u::Token
 
 .. tabs::
 
    .. group-tab:: C++
-      .. doxygenfunction:: simgrid::s4u::Task::get_next_token_from(TaskPtr t)
+      .. doxygenfunction:: simgrid::s4u::Task::get_token_from(TaskPtr t) const
+      .. doxygenfunction:: simgrid::s4u::Task::get_tokens_from(TaskPtr t) const
+      .. doxygenfunction:: simgrid::s4u::Task::deque_token_from(TaskPtr t)
       .. doxygenfunction:: simgrid::s4u::Task::set_token(std::shared_ptr<Token> token)
 
 Signals
@@ -2851,10 +2857,12 @@ Querying info
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::ExecTask::get_host() const
-      .. doxygenfunction:: simgrid::s4u::ExecTask::get_flops() const
-      .. doxygenfunction:: simgrid::s4u::ExecTask::set_host(Host* host);
-      .. doxygenfunction:: simgrid::s4u::ExecTask::set_flops(double flops);
+      .. doxygenfunction:: simgrid::s4u::ExecTask::get_host(std::string instance) const
+      .. doxygenfunction:: simgrid::s4u::ExecTask::get_flops(std::string instance) const
+      .. doxygenfunction:: simgrid::s4u::ExecTask::set_host(Host* host, std::string instance);
+      .. doxygenfunction:: simgrid::s4u::ExecTask::set_flops(double flops, std::string instance);
+      .. doxygenfunction:: simgrid::s4u::ExecTask::add_instances(int n);
+      .. doxygenfunction:: simgrid::s4u::ExecTask::remove_instances(int n);
 
 .. _API_s4u_IoTask:
 

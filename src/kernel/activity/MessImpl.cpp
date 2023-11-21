@@ -130,9 +130,18 @@ void MessImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   ActivityImpl::wait_for(issuer, timeout);
 }
 
+void MessImpl::cancel()
+{
+  /* if the synchro is a waiting state means that it is still in a mbox so remove from it and delete it */
+  if (get_state() == State::WAITING) {
+      queue_->remove(this);
+      set_state(State::CANCELED);
+  }
+}
+
 void MessImpl::finish()
 {
-  XBT_DEBUG("MessImpl::finish() comm %p, state %s, src_proc %p, dst_proc %p", this, get_state_str(),
+  XBT_DEBUG("MessImpl::finish() mess %p, state %s, src_proc %p, dst_proc %p", this, get_state_str(),
             src_actor_.get(), dst_actor_.get());
 
   if (get_iface()) {

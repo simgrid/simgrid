@@ -13,6 +13,29 @@ namespace simgrid::kernel::activity {
 
 unsigned MessageQueueImpl::next_id_ = 0;
 
+MessageQueueImpl::~MessageQueueImpl()
+{
+  try {
+    clear();
+  } catch (const std::bad_alloc& ba) {
+    XBT_ERROR("MessageQueueImpl::clear() failure: %s", ba.what());
+  }
+}
+
+/** @brief Removes all message activities from a message queue */
+void MessageQueueImpl::clear()
+{
+  while (not queue_.empty()) {
+    auto mess = queue_.back();
+    if (mess->get_state() == State::WAITING) {
+      mess->cancel();
+      mess->set_state(State::FAILED);
+    } else
+      queue_.pop_back();
+  }
+  xbt_assert(queue_.empty());
+}
+
 void MessageQueueImpl::push(const MessImplPtr& mess)
 {
   mess->set_queue(this);
