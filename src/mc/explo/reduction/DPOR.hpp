@@ -17,8 +17,6 @@ namespace simgrid::mc {
 
 class DPOR : public Reduction {
 
-  using stack_t = std::vector<std::shared_ptr<State>>;
-
   /** Compute the eventual i of Godefroid algorithm, line 4
    *  Note that with persistency, we do not consider every p in "advance" but only the lastly taken p */
   std::optional<EventHandle> max_dependent_dpor(const odpor::Execution S, const State* s, aid_t p)

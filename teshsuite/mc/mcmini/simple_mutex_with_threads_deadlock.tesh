@@ -4,7 +4,7 @@
 ! expect return 3
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-simple_mutex_with_threads_deadlock
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
-> [0.000000] [mc_ooo/INFO] Start an Out-of-Order exploration. Reduction is: odpor.
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
 > [0.000000] [mc_global/INFO] **************************
 > [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
 > [0.000000] [mc_global/INFO] **************************
@@ -21,4 +21,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_WAIT(mutex: 0, owner: 3)
 > [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 2)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;3;2;3;3'
-> [0.000000] [mc_ooo/INFO] Out-of-Order exploration ended. 19 unique states visited; 1 backtracks (2 transition replays, 22 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 19 unique states visited; 1 backtracks (2 transition replays, 21 states visited overall)

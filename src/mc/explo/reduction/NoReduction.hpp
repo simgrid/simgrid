@@ -28,6 +28,8 @@ public:
     return S->back()->count_todo_multiples() > 0;
   }
   aid_t next_to_explore(odpor::Execution E, stack_t* S) override { return S->back()->next_transition_guided().first; }
+  void on_state_creation(State* s) override{};
+  void on_backtrack(State* s) override{};
 };
 
 } // namespace simgrid::mc

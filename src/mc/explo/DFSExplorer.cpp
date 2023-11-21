@@ -8,6 +8,7 @@
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
+#include "src/mc/explo/reduction/ODPOR.hpp"
 #include "src/mc/explo/reduction/SDPOR.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -34,8 +35,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dfs, mc, "DFS exploration algorithm of the model-checker");
 
 namespace simgrid::mc {
-using std::make_unique;
-using std::unique_ptr;
 
 xbt::signal<void(RemoteApp&)> DFSExplorer::on_exploration_start_signal;
 xbt::signal<void(RemoteApp&)> DFSExplorer::on_backtracking_signal;
@@ -159,6 +158,7 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, 
 
   auto next_state = std::make_shared<State>(get_remote_app(), state);
   on_state_creation_signal(next_state.get(), get_remote_app());
+  reduction_algo_->on_state_creation(next_state.get());
 
   state_stack.emplace_back(std::move(next_state));
   stack_ = state_stack;
@@ -174,9 +174,10 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, 
   state_stack.pop_back();
   stack_ = state_stack;
 
-  state_stack.back()->add_sleep_set(executed_transition);
+  reduction_algo_->on_backtrack(state_stack.back().get());
 
   S = S.get_prefix_before(S.size() - 1);
+  XBT_DEBUG("End of explore_wrapper at depth %ld", S.size());
 }
 
 void DFSExplorer::explore(odpor::Execution S, stack_t state_stack)
@@ -207,6 +208,7 @@ void DFSExplorer::explore(odpor::Execution S, stack_t state_stack)
                s->get_num(), state_stack.size());
     }
   }
+  XBT_DEBUG("End of call Explore at depth %ld", S.size());
 }
 
 void DFSExplorer::run()
@@ -217,6 +219,8 @@ void DFSExplorer::run()
     reduction_algo_ = std::make_unique<DPOR>();
   else if (reduction_mode_ == ReductionMode::sdpor)
     reduction_algo_ = std::make_unique<SDPOR>();
+  else if (reduction_mode_ == ReductionMode::odpor)
+    reduction_algo_ = std::make_unique<ODPOR>();
   else {
     xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
                to_c_str(reduction_mode_));
@@ -227,7 +231,7 @@ void DFSExplorer::run()
 
   XBT_DEBUG("**************************************************");
 
-  stack_t state_stack = std::vector<std::shared_ptr<State>>();
+  stack_t state_stack = std::deque<std::shared_ptr<State>>();
   state_stack.emplace_back(std::move(initial_state));
 
   odpor::Execution empty_seq = odpor::Execution();

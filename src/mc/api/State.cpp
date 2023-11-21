@@ -304,6 +304,7 @@ odpor::WakeupTree::InsertionResult State::insert_into_wakeup_tree(const odpor::P
 
 void State::do_odpor_unwind()
 {
+  XBT_DEBUG("Unwinding ODPOR from state %ld", get_expanded_states());
   if (auto out_transition = get_transition_out(); out_transition != nullptr) {
     remove_subtree_using_current_out_transition();
 

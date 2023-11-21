@@ -12,5 +12,5 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/pthread-producer-consumer -q  -C 1 -P 1
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
-> [0.000000] [mc_ooo/INFO] Start an Out-of-Order exploration. Reduction is: odpor.
-> [0.000000] [mc_ooo/INFO] Out-of-Order exploration ended. 133 unique states visited; 4 backtracks (58 transition replays, 195 states visited overall)
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 133 unique states visited; 4 backtracks (58 transition replays, 191 states visited overall)

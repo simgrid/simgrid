@@ -23,7 +23,7 @@
 
 namespace simgrid::mc {
 
-using stack_t     = std::vector<std::shared_ptr<State>>;
+using stack_t     = std::deque<std::shared_ptr<State>>;
 using EventHandle = uint32_t;
 
 class XBT_PRIVATE DFSExplorer : public Exploration {

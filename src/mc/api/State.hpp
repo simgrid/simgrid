@@ -11,6 +11,8 @@
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/strategy/Strategy.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
+#include "src/mc/explo/reduction/ODPOR.hpp"
+#include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/transition/Transition.hpp"
 
 namespace simgrid::mc {
@@ -46,6 +48,9 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
    */
   odpor::WakeupTree wakeup_tree_;
   bool has_initialized_wakeup_tree = false;
+
+  friend void Reduction::on_state_creation(State* new_state);
+  friend void ODPOR::on_state_creation(State* new_state);
 
 public:
   explicit State(RemoteApp& remote_app);
