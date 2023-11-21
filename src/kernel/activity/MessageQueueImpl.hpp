@@ -31,6 +31,8 @@ class MessageQueueImpl {
   MessageQueueImpl& operator=(const MailboxImpl&) = delete;
 
 public:
+  ~MessageQueueImpl();
+
   /** @brief Public interface */
   unsigned get_id() const { return id_; }
 
@@ -41,6 +43,7 @@ public:
   const char* get_cname() const { return name_.c_str(); }
   void push(const MessImplPtr& mess);
   void remove(const MessImplPtr& mess);
+  void clear();
   bool empty() const { return queue_.empty(); }
   size_t size() const { return queue_.size(); }
   const MessImplPtr& front() const { return queue_.front(); }
