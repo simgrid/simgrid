@@ -105,7 +105,7 @@ private:
   double energy_consumed_j_ = 0;
   double last_updated_      = 0;
 
-  explicit Battery();
+  explicit Battery() = default;
   explicit Battery(const std::string& name, double state_of_charge, double nominal_charge_power_w,
                    double nominal_discharge_power_w, double charge_efficiency, double discharge_efficiency,
                    double initial_capacity_wh, int cycles);
@@ -133,7 +133,7 @@ public:
   void set_load(const std::string& name, double power_w);
   void set_load(const std::string& name, bool active);
   void connect_host(s4u::Host* host, bool active = true);
-  std::string get_name() {return name_;}
+  std::string get_name() const { return name_; }
   double get_state_of_charge();
   double get_state_of_health();
   double get_capacity();

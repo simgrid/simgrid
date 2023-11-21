@@ -30,7 +30,7 @@ static int (*raw_pthread_mutex_destroy)(pthread_mutex_t*);
 
 static int (*raw_pthread_mutexattr_init)(pthread_mutexattr_t*);
 static int (*raw_pthread_mutexattr_settype)(pthread_mutexattr_t*, int);
-static int (*raw_pthread_mutexattr_gettype)(const pthread_mutexattr_t* restrict, int* restrict);
+static int (*raw_pthread_mutexattr_gettype)(const pthread_mutexattr_t*, int*);
 static int (*raw_pthread_mutexattr_getrobust)(const pthread_mutexattr_t*, int*);
 static int (*raw_pthread_mutexattr_setrobust)(pthread_mutexattr_t*, int);
 
@@ -125,12 +125,12 @@ void sthread_disable(void)
 intercepted_pthcall(mutexattr_init, (pthread_mutexattr_t * attr), (attr), ((sthread_mutexattr_t*)attr));
 intercepted_pthcall(mutexattr_settype, (pthread_mutexattr_t * attr, int type), (attr, type),
                     ((sthread_mutexattr_t*)attr, type));
-intercepted_pthcall(mutexattr_gettype, (const pthread_mutexattr_t* restrict attr, int* type), (attr, type),
+intercepted_pthcall(mutexattr_gettype, (const pthread_mutexattr_t* attr, int* type), (attr, type),
                     ((sthread_mutexattr_t*)attr, type));
-intercepted_pthcall(mutexattr_setrobust, (pthread_mutexattr_t* restrict attr, int robustness), (attr, robustness),
+intercepted_pthcall(mutexattr_setrobust, (pthread_mutexattr_t * attr, int robustness), (attr, robustness),
                     ((sthread_mutexattr_t*)attr, robustness));
-intercepted_pthcall(mutexattr_getrobust, (const pthread_mutexattr_t* restrict attr, int* restrict robustness),
-                    (attr, robustness), ((sthread_mutexattr_t*)attr, robustness));
+intercepted_pthcall(mutexattr_getrobust, (const pthread_mutexattr_t* attr, int* robustness), (attr, robustness),
+                    ((sthread_mutexattr_t*)attr, robustness));
 
 intercepted_pthcall(create, (pthread_t * thread, const pthread_attr_t* attr, void* (*start_routine)(void*), void* arg),
                     (thread, attr, start_routine, arg), ((sthread_t*)thread, attr, start_routine, arg));

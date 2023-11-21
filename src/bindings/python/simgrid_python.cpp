@@ -294,7 +294,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("create_router", &simgrid::s4u::NetZone::create_router, "Create a router")
       .def("set_parent", &simgrid::s4u::NetZone::set_parent, "Set the parent of this zone")
       .def("set_property", &simgrid::s4u::NetZone::set_property, "Add a property to this zone")
-      .def("set_gateway", py::overload_cast<simgrid::s4u::Host*>(&simgrid::s4u::NetZone::set_gateway),
+      .def("set_gateway", py::overload_cast<const simgrid::s4u::Host*>(&simgrid::s4u::NetZone::set_gateway),
            "Specify the gateway of this zone, to be used for inter-zone routes")
       .def("set_gateway", py::overload_cast<simgrid::kernel::routing::NetPoint*>(&simgrid::s4u::NetZone::set_gateway),
            "Specify the gateway of this zone, to be used for inter-zone routes")

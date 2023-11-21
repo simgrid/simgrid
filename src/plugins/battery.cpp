@@ -270,8 +270,6 @@ double Battery::next_occurring_handler()
   return time_delta;
 }
 
-Battery::Battery() {}
-
 Battery::Battery(const std::string& name, double state_of_charge, double nominal_charge_power_w,
                  double nominal_discharge_power_w, double charge_efficiency, double discharge_efficiency,
                  double initial_capacity_wh, int cycles)

@@ -59,13 +59,10 @@ bool CommWaitTransition::depends(const Transition* other) const
 
 bool CommWaitTransition::reversible_race(const Transition* other) const
 {
-  switch (type_) {
-    case Type::COMM_WAIT:
-      // If the other event is a communication event, then we are not reversible; otherwise we are reversible.
-      return other->type_ != Transition::Type::COMM_ASYNC_SEND && other->type_ != Transition::Type::COMM_ASYNC_RECV;
-    default:
-      xbt_die("Unexpected transition type %s", to_c_str(type_));
-  }
+  xbt_assert(type_ == Type::COMM_WAIT, "Unexpected transition type %s", to_c_str(type_));
+
+  // If the other event is a communication event, then we are not reversible; otherwise we are reversible.
+  return other->type_ != Transition::Type::COMM_ASYNC_SEND && other->type_ != Transition::Type::COMM_ASYNC_RECV;
 }
 
 CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, unsigned comm_, aid_t sender_,
@@ -114,12 +111,8 @@ bool CommTestTransition::depends(const Transition* other) const
 
 bool CommTestTransition::reversible_race(const Transition* other) const
 {
-  switch (type_) {
-    case Type::COMM_TEST:
-      return true; // CommTest is always enabled
-    default:
-      xbt_die("Unexpected transition type %s", to_c_str(type_));
-  }
+  xbt_assert(type_ == Type::COMM_TEST, "Unexpected transition type %s", to_c_str(type_));
+  return true; // CommTest is always enabled
 }
 
 CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_)
@@ -189,12 +182,9 @@ bool CommRecvTransition::depends(const Transition* other) const
 
 bool CommRecvTransition::reversible_race(const Transition* other) const
 {
-  switch (type_) {
-    case Type::COMM_ASYNC_RECV:
-      return true; // CommRecv is always enabled
-    default:
-      xbt_die("Unexpected transition type %s", to_c_str(type_));
-  }
+  xbt_assert(type_ == Type::COMM_ASYNC_RECV, "Unexpected transition type %s", to_c_str(type_));
+
+  return true; // CommRecv is always enabled
 }
 
 CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_)
@@ -265,12 +255,9 @@ bool CommSendTransition::depends(const Transition* other) const
 
 bool CommSendTransition::reversible_race(const Transition* other) const
 {
-  switch (type_) {
-    case Type::COMM_ASYNC_SEND:
-      return true; // CommSend is always enabled
-    default:
-      xbt_die("Unexpected transition type %s", to_c_str(type_));
-  }
+  xbt_assert(type_ == Type::COMM_ASYNC_SEND, "Unexpected transition type %s", to_c_str(type_));
+
+  return true; // CommSend is always enabled
 }
 
 } // namespace simgrid::mc

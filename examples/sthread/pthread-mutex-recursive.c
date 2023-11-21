@@ -40,7 +40,8 @@ static void* thread_function(void* arg)
 
 int main()
 {
-  pthread_t thread1, thread2;
+  pthread_t thread1;
+  pthread_t thread2;
   pthread_mutex_t mutex_dflt = PTHREAD_MUTEX_INITIALIZER; // Non-recursive mutex
 
   pthread_mutexattr_t attr;

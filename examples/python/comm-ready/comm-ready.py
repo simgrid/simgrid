@@ -58,7 +58,7 @@ def peer(my_id: int, message_count: int, payload_size: int, peers_count: int):
             start = Engine.clock
             received: str = my_mailbox.get()
             waiting_time = Engine.clock - start
-            if waiting_time != 0.0:
+            if waiting_time > 0.0:
                 raise AssertionError(f"Expecting the waiting time to be 0.0 because the communication was supposedly "
                                      f"ready, but got {waiting_time} instead")
             this_actor.info(f"I got a '{received}'.")

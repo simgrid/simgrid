@@ -245,7 +245,7 @@ void State::sprout_tree_from_parent_state()
               "to schedule from the wakeup tree? Trace so far:",
               get_transition_in()->to_string(false).c_str(), get_transition_in()->aid_,
               min_process_node.value()->get_action()->to_string(false).c_str(), min_process_node.value()->get_actor());
-    for (auto elm : Exploration::get_instance()->get_textual_trace())
+    for (auto const& elm : Exploration::get_instance()->get_textual_trace())
       XBT_ERROR("%s", elm.c_str());
     xbt_abort();
   }

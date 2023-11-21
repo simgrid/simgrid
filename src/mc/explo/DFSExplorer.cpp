@@ -433,7 +433,7 @@ void DFSExplorer::backtrack()
 
   // Search how to restore the backtracking point
   std::deque<Transition*> replay_recipe;
-  for (auto* s = backtracking_point.get(); s != nullptr; s = s->get_parent_state().get()) {
+  for (const auto* s = backtracking_point.get(); s != nullptr; s = s->get_parent_state().get()) {
     if (s->get_transition_in() != nullptr) // The root has no transition_in
       replay_recipe.push_front(s->get_transition_in().get());
   }

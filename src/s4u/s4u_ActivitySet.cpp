@@ -103,13 +103,13 @@ ActivityPtr ActivitySet::wait_any_for(double timeout)
     return ret;
   } catch (const HostFailureException& e) {
     handle_failed_activities();
-    throw e;
+    throw;
   } catch (const NetworkFailureException& e) {
     handle_failed_activities();
-    throw e;
+    throw;
   } catch (const StorageFailureException& e) {
     handle_failed_activities();
-    throw e;
+    throw;
   }
 }
 

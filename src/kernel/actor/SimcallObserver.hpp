@@ -111,7 +111,7 @@ public:
 class ActorSleepSimcall final : public SimcallObserver {
 
 public:
-  ActorSleepSimcall(ActorImpl* actor) : SimcallObserver(actor) {}
+  explicit ActorSleepSimcall(ActorImpl* actor) : SimcallObserver(actor) {}
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
 };

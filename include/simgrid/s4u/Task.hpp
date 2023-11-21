@@ -64,7 +64,7 @@ protected:
   virtual void fire(std::string instance);
   void complete(std::string instance);
 
-  void store_activity(ActivityPtr a, std::string instance) { current_activities_[instance].push_back(a); }
+  void store_activity(ActivityPtr a, const std::string& instance) { current_activities_[instance].push_back(a); }
 
   virtual void add_instances(int n);
   virtual void remove_instances(int n);

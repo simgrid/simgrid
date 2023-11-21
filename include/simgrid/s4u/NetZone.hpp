@@ -62,7 +62,7 @@ public:
   /** @brief Get the gateway associated to this netzone */
   kernel::routing::NetPoint* get_gateway() const;
   kernel::routing::NetPoint* get_gateway(const std::string& name) const;
-  void set_gateway(s4u::Host* router) { set_gateway(router->get_netpoint()); }
+  void set_gateway(const s4u::Host* router) { set_gateway(router->get_netpoint()); }
   void set_gateway(kernel::routing::NetPoint* router);
   void set_gateway(const std::string& name, kernel::routing::NetPoint* router);
 
