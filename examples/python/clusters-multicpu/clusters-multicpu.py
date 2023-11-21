@@ -58,8 +58,7 @@ class Receiver:
 #####################################################################################################
 
 
-def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], ident: int) -> typing.Tuple[simgrid.NetPoint,
-                                                                                                simgrid.NetPoint]:
+def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], ident: int) -> simgrid.NetZone:
     r"""
     Callback to set a cluster leaf/element
 
@@ -94,14 +93,13 @@ def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], ident: int) 
     # setting my Torus parent zone
     host_zone.set_parent(zone)
 
-    gateway = None
     # create CPUs
     for i in range(num_cpus):
         cpu_name = hostname + "-cpu" + str(i)
         host = host_zone.create_host(cpu_name, speed).seal()
         # the first CPU is the gateway
         if i == 0:
-            gateway = host.netpoint
+            host_zone.set_gateway(host.netpoint)
         # create split-duplex link
         link = host_zone.create_split_duplex_link("link-" + cpu_name, link_bw)
         link.set_latency(link_lat).seal()
@@ -110,7 +108,7 @@ def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], ident: int) 
 
     # seal newly created netzone
     host_zone.seal()
-    return host_zone.netpoint, gateway
+    return host_zone
 
 #####################################################################################################
 

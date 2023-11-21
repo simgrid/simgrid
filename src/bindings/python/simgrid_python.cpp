@@ -309,7 +309,7 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class ClusterCallbacks */
   py::class_<simgrid::s4u::ClusterCallbacks>(m, "ClusterCallbacks", "Callbacks used to create cluster zones")
-      .def(py::init<const std::function<simgrid::s4u::ClusterCallbacks::ClusterNetPointCb>&,
+      .def(py::init<const std::function<simgrid::s4u::ClusterCallbacks::ClusterNetZoneCb>&,
                     const std::function<simgrid::s4u::ClusterCallbacks::ClusterLinkCb>&,
                     const std::function<simgrid::s4u::ClusterCallbacks::ClusterLinkCb>&>());
 
