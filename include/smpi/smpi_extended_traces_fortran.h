@@ -261,8 +261,20 @@
 #define MPI_IRSEND smpi_trace_set_call_location(__FILE__,__LINE__,"MPI_IRSEND"); call MPI_Irsend
 #define mpi_sendrecv smpi_trace_set_call_location(__FILE__,__LINE__,"mpi_sendrecv"); call MPI_Sendrecv
 #define MPI_SENDRECV smpi_trace_set_call_location(__FILE__,__LINE__,"MPI_SENDRECV"); call MPI_Sendrecv
+#define mpi_isendrecv                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_isendrecv");                                                   \
+  call MPI_Isendrecv
+#define MPI_ISENDRECV                                                                                                  \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ISENDRECV");                                                   \
+  call MPI_Isendrecv
 #define mpi_sendrecv_replace smpi_trace_set_call_location(__FILE__,__LINE__,"mpi_sendrecv_replace"); call MPI_Sendrecv_replace
 #define MPI_SENDRECV_REPLACE smpi_trace_set_call_location(__FILE__,__LINE__,"MPI_SENDRECV_REPLACE"); call MPI_Sendrecv_replace
+#define mpi_isendrecv_replace                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "mpi_isendrecv_replace");                                           \
+  call MPI_Isendrecv_replace
+#define MPI_ISENDRECV_REPLACE                                                                                          \
+  smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_ISENDRECV_REPLACE");                                           \
+  call MPI_Isendrecv_replace
 #define mpi_test smpi_trace_set_call_location(__FILE__,__LINE__,"mpi_test"); call MPI_Test
 #define MPI_TEST smpi_trace_set_call_location(__FILE__,__LINE__,"MPI_TEST"); call MPI_Test
 #define mpi_testany smpi_trace_set_call_location(__FILE__,__LINE__,"mpi_testany"); call MPI_Testany

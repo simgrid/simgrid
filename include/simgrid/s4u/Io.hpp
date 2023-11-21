@@ -28,7 +28,7 @@ protected:
   explicit Io(kernel::activity::IoImplPtr pimpl);
   Io* do_start() override;
 
-  static ssize_t deprecated_wait_any_for(const std::vector<IoPtr>& ios, double timeout);
+  static ssize_t deprecated_wait_any_for(const std::vector<IoPtr>& ios, double timeout); // XBT_ATTRIB_DEPRECATED_v339
 
 public:
   enum class OpType { READ, WRITE };

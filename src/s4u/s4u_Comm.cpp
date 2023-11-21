@@ -563,7 +563,7 @@ sg_error_t sg_comm_wait_for(sg_comm_t comm, double timeout)
   return status;
 }
 
-void sg_comm_wait_all(sg_comm_t* comms, size_t count)
+void sg_comm_wait_all(sg_comm_t* comms, size_t count) // XBT_ATTRIB_DEPRECATED_v339
 {
   simgrid::s4u::ActivitySet as;
   for (size_t i = 0; i < count; i++)
@@ -572,7 +572,7 @@ void sg_comm_wait_all(sg_comm_t* comms, size_t count)
   as.wait_all();
 }
 
-ssize_t sg_comm_wait_any(sg_comm_t* comms, size_t count)
+ssize_t sg_comm_wait_any(sg_comm_t* comms, size_t count) // XBT_ATTRIB_DEPRECATED_v339
 {
   std::vector<simgrid::s4u::CommPtr> s4u_comms;
   for (size_t i = 0; i < count; i++)
@@ -586,7 +586,7 @@ ssize_t sg_comm_wait_any(sg_comm_t* comms, size_t count)
   return pos;
 }
 
-ssize_t sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout)
+ssize_t sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout) // XBT_ATTRIB_DEPRECATED_v339
 {
   std::vector<simgrid::s4u::CommPtr> s4u_comms;
   for (size_t i = 0; i < count; i++)

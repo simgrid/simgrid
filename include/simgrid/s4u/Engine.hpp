@@ -93,8 +93,8 @@ public:
   /** @verbatim embed:rst:inline Bind an actor name that could be found in :ref:`pf_tag_actor` tag to a class name passed as a template parameter. See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   template <class F> void register_actor(const std::string& name)
   {
-    kernel::actor::ActorCodeFactory code_factory = [](std::vector<std::string> args) {
-      return kernel::actor::ActorCode([args = std::move(args)]() mutable {
+    kernel::actor::ActorCodeFactory code_factory = [](std::vector<std::string> args_factory) {
+      return kernel::actor::ActorCode([args = std::move(args_factory)]() mutable {
         F code(std::move(args));
         code();
       });
@@ -104,8 +104,8 @@ public:
   /** @verbatim embed:rst:inline Bind an actor name that could be found in :ref:`pf_tag_actor` tag to a function name passed as a parameter. See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   template <class F> void register_actor(const std::string& name, F code)
   {
-    kernel::actor::ActorCodeFactory code_factory = [code](std::vector<std::string> args) {
-      return kernel::actor::ActorCode([code, args = std::move(args)]() mutable { code(std::move(args)); });
+    kernel::actor::ActorCodeFactory code_factory = [code](std::vector<std::string> args_factory) {
+      return kernel::actor::ActorCode([code, args = std::move(args_factory)]() mutable { code(std::move(args)); });
     };
     register_function(name, code_factory);
   }

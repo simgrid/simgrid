@@ -52,10 +52,10 @@ class XBT_PUBLIC MutexAcquisitionImpl : public ActivityImpl_T<MutexAcquisitionIm
 
 public:
   MutexAcquisitionImpl(actor::ActorImpl* issuer, MutexImpl* mutex) : issuer_(issuer), mutex_(mutex) {}
-  MutexImplPtr get_mutex() { return mutex_; }
-  actor::ActorImpl* get_issuer() { return issuer_; }
+  MutexImplPtr get_mutex() const { return mutex_; }
+  actor::ActorImpl* get_issuer() const { return issuer_; }
   void grant() { granted_ = true; }
-  bool is_granted() { return granted_; }
+  bool is_granted() const { return granted_; }
 
   bool test(actor::ActorImpl* issuer = nullptr) override;
   void wait_for(actor::ActorImpl* issuer, double timeout) override;
@@ -78,7 +78,7 @@ class XBT_PUBLIC MutexImpl {
   friend MutexAcquisitionImpl;
 
 public:
-  MutexImpl(bool recursive = false) : piface_(this), is_recursive_(recursive) {}
+  explicit MutexImpl(bool recursive = false) : piface_(this), is_recursive_(recursive) {}
   MutexImpl(MutexImpl const&) = delete;
   MutexImpl& operator=(MutexImpl const&) = delete;
 

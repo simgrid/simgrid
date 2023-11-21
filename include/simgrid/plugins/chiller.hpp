@@ -100,7 +100,7 @@ public:
   double get_temp_in() { return temp_in_c_; }
   double get_power() { return power_w_; }
   double get_energy_consumed() { return energy_consumed_j_; }
-  double get_time_to_goal_temp();
+  double get_time_to_goal_temp() const;
 };
 
 } // namespace simgrid::plugins

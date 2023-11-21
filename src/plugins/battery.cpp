@@ -208,18 +208,16 @@ void Battery::update()
     energy_stored_j_ = std::min(energy_stored_j_, 3600 * capacity_wh_);
     last_updated_    = now;
 
-    std::vector<std::shared_ptr<Handler>> to_delete = {};
-    for (auto handler : handlers_) {
+    auto handlers_2 = handlers_;
+    for (auto handler : handlers_2) {
       if (abs(handler->time_delta_ - time_delta_s) < 0.000000001) {
         handler->callback_();
         if (handler->persistancy_ == Handler::Persistancy::PERSISTANT)
           handler->time_delta_ = -1;
         else
-          to_delete.push_back(handler);
+          delete_handler(handler);
       }
     }
-    for (auto handler : to_delete)
-      delete_handler(handler);
   });
 }
 
@@ -271,8 +269,6 @@ double Battery::next_occurring_handler()
   }
   return time_delta;
 }
-
-Battery::Battery() {}
 
 Battery::Battery(const std::string& name, double state_of_charge, double nominal_charge_power_w,
                  double nominal_discharge_power_w, double charge_efficiency, double discharge_efficiency,

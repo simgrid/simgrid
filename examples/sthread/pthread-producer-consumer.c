@@ -45,9 +45,10 @@ static void* consumer(void* id)
   for (int i = 0; i < AmountConsumed; i++) {
     sem_wait(&full);
     pthread_mutex_lock(&mutex);
-    int item = buffer[out];
-    if (do_output)
+    if (do_output) {
+      int item = buffer[out];
       fprintf(stderr, "Consumer %d: Remove Item %d from %d\n", *((int*)id), item, out);
+    }
     out = (out + 1) % BufferSize;
     pthread_mutex_unlock(&mutex);
     sem_post(&empty);

@@ -92,7 +92,7 @@ bool Activity::test()
   return false;
 }
 
-ssize_t Activity::test_any(const std::vector<ActivityPtr>& activities)
+ssize_t Activity::test_any(const std::vector<ActivityPtr>& activities) // XBT_ATTRIB_DEPRECATED_v339
 {
   std::vector<kernel::activity::ActivityImpl*> ractivities(activities.size());
   std::transform(begin(activities), end(activities), begin(ractivities),

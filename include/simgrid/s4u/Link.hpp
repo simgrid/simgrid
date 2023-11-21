@@ -45,7 +45,21 @@ protected:
 #endif
 
 public:
-  enum class SharingPolicy { NONLINEAR = 4, WIFI = 3, SPLITDUPLEX = 2, SHARED = 1, FATPIPE = 0 };
+  /** Specifies how a given link is shared between concurrent communications */
+  enum class SharingPolicy {
+    /// This policy takes a callback that specifies the maximal capacity as a function of the number of usage. See the
+    /// examples with 'degradation' in their name.
+    NONLINEAR = 4,
+    /// Pseudo-sharing policy requesting wifi-specific sharing.
+    WIFI = 3,
+    /// Each link is split in 2, UP and DOWN, one per direction. These links are SHARED.
+    SPLITDUPLEX = 2,
+    /// The bandwidth is shared between all comms using that link, regardless of their direction.
+    SHARED = 1,
+    /// Each comm can use the link fully, with no sharing (only a maximum). This is intended to represent the backbone
+    /// links that cannot be saturated by concurrent links, but have a maximal bandwidth.
+    FATPIPE = 0
+  };
 
   kernel::resource::StandardLinkImpl* get_impl() const;
 

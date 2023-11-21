@@ -283,7 +283,7 @@ ChillerPtr Chiller::remove_host(s4u::Host* host)
 /** @ingroup plugin_chiller
  *  @return The time to reach to goal temp, assuming that the system remain in the same state.
  */
-double Chiller::get_time_to_goal_temp()
+double Chiller::get_time_to_goal_temp() const
 {
   if (goal_temp_c_ == temp_in_c_)
     return 0;

@@ -48,12 +48,9 @@ bool ObjectAccessTransition::depends(const Transition* o) const
 
 bool ObjectAccessTransition::reversible_race(const Transition* other) const
 {
-  switch (type_) {
-    case Type::OBJECT_ACCESS:
-      return true; // Object access is always enabled
-    default:
-      xbt_die("Unexpected transition type %s", to_c_str(type_));
-  }
+  xbt_assert(type_ == Type::OBJECT_ACCESS, "Unexpected transition type %s", to_c_str(type_));
+
+  return true; // Object access is always enabled
 }
 
 } // namespace simgrid::mc

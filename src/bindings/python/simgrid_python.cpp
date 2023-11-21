@@ -240,7 +240,7 @@ PYBIND11_MODULE(simgrid, m)
               simgrid::kernel::routing::NetPoint* dst, simgrid::kernel::routing::NetPoint* gw_src,
               simgrid::kernel::routing::NetPoint* gw_dst, const std::vector<simgrid::s4u::LinkInRoute>& links,
               bool symmetrical) {
-             PyErr_WarnEx(PyExc_DeprecationWarning, // XBT_ATTRIB_DEPRECATED_v335. Once removed, uncomment the
+             PyErr_WarnEx(PyExc_DeprecationWarning, // XBT_ATTRIB_DEPRECATED_v336. Once removed, uncomment the
                                                     // deprecation of the AddRoute function in C++
                           "Please call add_route either from Host to Host or NetZone to NetZone. This call will be "
                           "removed after SimGrid v3.35.",
@@ -294,7 +294,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("create_router", &simgrid::s4u::NetZone::create_router, "Create a router")
       .def("set_parent", &simgrid::s4u::NetZone::set_parent, "Set the parent of this zone")
       .def("set_property", &simgrid::s4u::NetZone::set_property, "Add a property to this zone")
-      .def("set_gateway", py::overload_cast<simgrid::s4u::Host*>(&simgrid::s4u::NetZone::set_gateway),
+      .def("set_gateway", py::overload_cast<const simgrid::s4u::Host*>(&simgrid::s4u::NetZone::set_gateway),
            "Specify the gateway of this zone, to be used for inter-zone routes")
       .def("set_gateway", py::overload_cast<simgrid::kernel::routing::NetPoint*>(&simgrid::s4u::NetZone::set_gateway),
            "Specify the gateway of this zone, to be used for inter-zone routes")
@@ -309,7 +309,7 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class ClusterCallbacks */
   py::class_<simgrid::s4u::ClusterCallbacks>(m, "ClusterCallbacks", "Callbacks used to create cluster zones")
-      .def(py::init<const std::function<simgrid::s4u::ClusterCallbacks::ClusterNetPointCb>&,
+      .def(py::init<const std::function<simgrid::s4u::ClusterCallbacks::ClusterNetZoneCb>&,
                     const std::function<simgrid::s4u::ClusterCallbacks::ClusterLinkCb>&,
                     const std::function<simgrid::s4u::ClusterCallbacks::ClusterLinkCb>&>());
 
@@ -452,8 +452,7 @@ PYBIND11_MODULE(simgrid, m)
 
   py::enum_<simgrid::s4u::Host::SharingPolicy>(host, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Host::SharingPolicy::NONLINEAR)
-      .value("LINEAR", simgrid::s4u::Host::SharingPolicy::LINEAR)
-      .export_values();
+      .value("LINEAR", simgrid::s4u::Host::SharingPolicy::LINEAR);
 
   /* Class Disk */
   py::class_<simgrid::s4u::Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(
@@ -476,13 +475,11 @@ PYBIND11_MODULE(simgrid, m)
           "Textual representation of the Disk");
   py::enum_<simgrid::s4u::Disk::SharingPolicy>(disk, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Disk::SharingPolicy::NONLINEAR)
-      .value("LINEAR", simgrid::s4u::Disk::SharingPolicy::LINEAR)
-      .export_values();
+      .value("LINEAR", simgrid::s4u::Disk::SharingPolicy::LINEAR);
   py::enum_<simgrid::s4u::Disk::Operation>(disk, "Operation")
       .value("READ", simgrid::s4u::Disk::Operation::READ)
       .value("WRITE", simgrid::s4u::Disk::Operation::WRITE)
-      .value("READWRITE", simgrid::s4u::Disk::Operation::READWRITE)
-      .export_values();
+      .value("READWRITE", simgrid::s4u::Disk::Operation::READWRITE);
 
   /* Class NetPoint */
   py::class_<simgrid::kernel::routing::NetPoint, std::unique_ptr<simgrid::kernel::routing::NetPoint, py::nodelete>>
@@ -574,12 +571,17 @@ PYBIND11_MODULE(simgrid, m)
           "__repr__", [](const Link* l) { return "Link(" + l->get_name() + ")"; },
           "Textual representation of the Link");
   py::enum_<Link::SharingPolicy>(link, "SharingPolicy")
-      .value("NONLINEAR", Link::SharingPolicy::NONLINEAR)
-      .value("WIFI", Link::SharingPolicy::WIFI)
-      .value("SPLITDUPLEX", Link::SharingPolicy::SPLITDUPLEX)
-      .value("SHARED", Link::SharingPolicy::SHARED)
-      .value("FATPIPE", Link::SharingPolicy::FATPIPE)
-      .export_values();
+      .value("NONLINEAR", Link::SharingPolicy::NONLINEAR,
+             "This policy takes a callback that specifies the maximal capacity as a function of the number of usage. "
+             "See the examples with 'degradation' in their name.")
+      .value("WIFI", Link::SharingPolicy::WIFI, "Pseudo-sharing policy requesting wifi-specific sharing.")
+      .value("SPLITDUPLEX", Link::SharingPolicy::SPLITDUPLEX,
+             "Each link is split in 2, UP and DOWN, one per direction. These links are SHARED.")
+      .value("SHARED", Link::SharingPolicy::SHARED,
+             "The bandwidth is shared between all comms using that link, regardless of their direction.")
+      .value("FATPIPE", Link::SharingPolicy::FATPIPE,
+             "Each comm can use the link fully, with no sharing (only a maximum). This is intended to represent the "
+             "backbone links that cannot be saturated by concurrent links, but have a maximal bandwidth.");
 
   /* Class LinkInRoute */
   py::class_<simgrid::s4u::LinkInRoute> linkinroute(m, "LinkInRoute", "Abstraction to add link in routes");
@@ -588,8 +590,7 @@ PYBIND11_MODULE(simgrid, m)
   py::enum_<simgrid::s4u::LinkInRoute::Direction>(linkinroute, "Direction")
       .value("UP", simgrid::s4u::LinkInRoute::Direction::UP)
       .value("DOWN", simgrid::s4u::LinkInRoute::Direction::DOWN)
-      .value("NONE", simgrid::s4u::LinkInRoute::Direction::NONE)
-      .export_values();
+      .value("NONE", simgrid::s4u::LinkInRoute::Direction::NONE);
 
   /* Class Split-Duplex Link */
   py::class_<simgrid::s4u::SplitDuplexLink, Link, std::unique_ptr<simgrid::s4u::SplitDuplexLink, py::nodelete>>(

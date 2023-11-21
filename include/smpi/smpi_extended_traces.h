@@ -134,7 +134,11 @@
 #define MPI_Rsend_init(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Rsend_init"), MPI_Rsend_init(__VA_ARGS__))
 #define MPI_Irsend(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Irsend"), MPI_Irsend(__VA_ARGS__))
 #define MPI_Sendrecv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Sendrecv"), MPI_Sendrecv(__VA_ARGS__))
+#define MPI_Isendrecv(...)                                                                                             \
+  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Isendrecv"), MPI_Isendrecv(__VA_ARGS__))
 #define MPI_Sendrecv_replace(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Sendrecv_replace"), MPI_Sendrecv_replace(__VA_ARGS__))
+#define MPI_Isendrecv_replace(...)                                                                                     \
+  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Isendrecv_replace"), MPI_Isendrecv_replace(__VA_ARGS__))
 #define MPI_Test(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Test"), MPI_Test(__VA_ARGS__))
 #define MPI_Testany(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Testany"), MPI_Testany(__VA_ARGS__))
 #define MPI_Testall(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Testall"), MPI_Testall(__VA_ARGS__))

@@ -31,7 +31,7 @@ public:
                  "--cfg=model-check/max-depth. Here are the 100 first trace elements",
                  _sg_mc_max_depth.get());
       auto trace = Exploration::get_instance()->get_textual_trace(100);
-      for (auto elm : trace)
+      for (auto const& elm : trace)
         XBT_CERROR(mc_dfs, "  %s", elm.c_str());
       xbt_die("Aborting now.");
     }

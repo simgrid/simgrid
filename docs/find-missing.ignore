@@ -20,6 +20,7 @@ It is only used by find-missing, that will not report any definition linked here
 
 # These are used to make the C++ objects visible from the C world
 .. doxygentypedef:: s4u_Actor
+.. doxygentypedef:: s4u_ActivitySet
 .. doxygentypedef:: s4u_Barrier
 .. doxygentypedef:: s4u_Comm
 .. doxygentypedef:: s4u_ConditionVariable

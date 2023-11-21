@@ -95,7 +95,7 @@ Io* Io::do_start()
   return this;
 }
 
-ssize_t Io::deprecated_wait_any_for(const std::vector<IoPtr>& ios, double timeout)
+ssize_t Io::deprecated_wait_any_for(const std::vector<IoPtr>& ios, double timeout) // XBT_ATTRIB_DEPRECATED_v339
 {
   ActivitySet set;
   for (const auto& io : ios)
