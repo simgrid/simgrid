@@ -39,6 +39,7 @@ SMPI:
  - New SMPI_app_instance_join(): wait for the completion of a started MPI instance
  - MPI_UNIVERSE_SIZE now initialized to the total amount of hosts in the platform
  - Memory usage due to SMPI for non-MPI actors greatly reduced.
+ - New implemented calls: MPI_Isendrecv, MPI_Isendrecv_replace
 
 sthread:
  - Allow to use on valgrind-observed or gdb-observed processes.
