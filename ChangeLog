@@ -1,4 +1,6 @@
-SimGrid (3.34.1) not released (Target: fall 2023)
+SimGrid (3.35) November 23. 2023
+
+The "Thanks Giving up stateful model-checking" release. Stateless model checking remains.
 
 S4U:
  - New class ActivitySet to ease wait_any()/test_any()/wait_all()

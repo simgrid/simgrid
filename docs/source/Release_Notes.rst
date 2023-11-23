@@ -666,8 +666,8 @@ sthread can now also check concurrent accesses to a given collection, loosely in
 <https://www.microsoft.com/en-us/research/publication/efficient-and-scalable-thread-safety-violation-detection-finding-thousands-of-concurrency-bugs-during-testing>`_.
 This feature is not very usable yet, as you have to manually annotate your code, but we hope to improve it in the future.
 
-Version 3.35 (TBD)
-------------------
+Version 3.35 (November 23. 2023)
+--------------------------------
 
 **On the performance front**, we did some profiling and optimisation for this release. We saved some memory in simulation
 mixing MPI applications and S4U actors, and we greatly improved the performance of simulation exchanging many messages. We even

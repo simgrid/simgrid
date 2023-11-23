@@ -3,7 +3,9 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ / ___|
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \___ \
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) |__) |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/____/
-               (not released yet)
+               November 23. 2023
+
+The "Thanks Giving up stateful model-checking" release. Stateless model checking remains.
 
  * Maint: liveness checking is gone. It was fragile and buggy.
  * API: ActivitySet make it easier to manage sets of activities.
