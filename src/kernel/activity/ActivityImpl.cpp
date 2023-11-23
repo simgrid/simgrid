@@ -146,7 +146,7 @@ void ActivityImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<Acti
     xbt_assert(timeout <= 0.0, "Timeout not implemented for waitany in the model-checker");
     if (int idx = observer->get_value(); idx != -1) {
       auto* act = activities.at(idx);
-      act->simcalls_.push_back(&issuer->simcall_);
+      act->register_simcall(&issuer->simcall_);
       observer->set_result(idx);
       act->set_state(State::DONE);
       act->finish();
@@ -168,7 +168,7 @@ void ActivityImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<Acti
 
   for (auto* act : activities) {
     /* associate this simcall to the the synchro */
-    act->simcalls_.push_back(&issuer->simcall_);
+    act->register_simcall(&issuer->simcall_);
     /* see if the synchro is already finished */
     if (act->get_state() != State::WAITING && act->get_state() != State::RUNNING) {
       act->finish();
