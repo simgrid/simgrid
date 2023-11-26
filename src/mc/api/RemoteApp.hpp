@@ -26,7 +26,7 @@ namespace simgrid::mc {
 class XBT_PUBLIC RemoteApp {
 private:
   std::unique_ptr<CheckerSide> checker_side_;
-  std::unique_ptr<CheckerSide> application_factory_; // when no meminfo, create checker_side_ by cloning this one
+  std::unique_ptr<CheckerSide> application_factory_; // create checker_side_ by cloning this one
   int master_socket_ = -1;
 
   const std::vector<char*> app_args_;

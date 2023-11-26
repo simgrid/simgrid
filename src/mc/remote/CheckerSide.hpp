@@ -25,7 +25,7 @@ class CheckerSide {
   Channel channel_;
   bool running_ = false;
   pid_t pid_;
-  // When forking (no meminfo), the real app is our grandchild. In this case,
+  // Because of the way we fork, the real app is our grandchild.
   // child_checker_ is a CheckerSide to our child that can waitpid our grandchild on our behalf
   CheckerSide* child_checker_ = nullptr;
 
