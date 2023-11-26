@@ -52,7 +52,7 @@ Please apply the following checklist before releasing.
 - Document the tag on framagit and ghub
   - Upload the files simgrid-3.XX.tar.gz and simgrid-doc-3_XX.zip
   - Add a link to the version of the ChangeLog that comes with this tag.
-    https://framagit.org/simgrid/simgrid/-/blob/v3.29/ChangeLog
+    https://framagit.org/simgrid/simgrid/-/blob/v3.35/ChangeLog
 - Update the website
   - emacs org/org-templates/level-0.org to change the release version and the tgz link.
   - jed .gitlab-ci.yml
@@ -67,7 +67,7 @@ Please apply the following checklist before releasing.
     rm -rf /tmp/pysimgrid && mkdir /tmp/pysimgrid && cp dist/simgrid-*.tar.gz /tmp/pysimgrid
     (cd /tmp/pysimgrid && tar xfz simgrid*.tar.gz && cd simgrid-*/ && python3 setup.py build)
   - Upload it to pypi (WARNING: you cannot modify uploaded files, ever)
-    twine upload dist/simgrid-*.tar.gz
+    twine upload dist/simgrid-*.tar.gz # User and password should be located in ~/.pypirc
 
 @subsection inside_release_c_publishing Publishing the release if it's a stable one (3.XX not 3.XX.Y)
 
@@ -79,18 +79,17 @@ Please apply the following checklist before releasing.
     - Link to the ChangeLog on framagit (the version of that tag)
  - Also mail some other lists (G5K users)
 - Release the debian package
-  - rm -f ../simgrid_3.*+dfsg.orig.tar.xz
+  - rm -f ../simgrid_3.*.orig.tar.xz
   - uscan # download the new version
-  - gbp import-orig ../simgrid_3.*+dfsg.orig.tar.xz
+  - gbp import-orig ../simgrid_3.*.orig.tar.xz
   - dch -i "New upstream release" # + copy the NEWS into debian/changelog
   - git mv debian/libsimgrid3.XX.install debian/libsimgrid3.XY.install
   - edit debian/control: s/simgrid3.XX/simgrid3.XY/
 - Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
 - Push the stable branch to github to rebuild and push the stable Docker images
-  - It downloads the latest tag on framagit
-  - If it was done automatically at some point, make sure that it's really the latest stable, 
-    as things get sometimes out of synch to the point that the github action re-build the previous release. 
-    If this happens, just rerun the docker-stable action. Nothing should have been broken.
+  - It downloads the latest tag on framagit, but sometimes gets out of synch.
+    Make sure that it's really the latest stable, as it sometimes rebuilds the previous release.
+    If this happens, just rerun the docker-stable action. Nothing should get hurt by the rebuild.
   - Doing the same manually: cd tools/docker && make stable && make tuto-s4u tuto-smpi
     (tuto-mc is not based on simgrid/stable but rebuilds from the git)
   - Once the new images are built, trigger a rebuild of the simgrid-template-{s4u,smpi} repositories on framagit
