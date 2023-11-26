@@ -2064,7 +2064,6 @@ include include/xbt/virtu.h
 include include/xbt/xbt_os_time.h
 include setup.py
 include src/3rd-party/catch.hpp
-include src/3rd-party/xxhash.hpp
 include src/bindings/python/simgrid_python.cpp
 include src/dag/dax.dtd
 include src/dag/dax_dtd.c

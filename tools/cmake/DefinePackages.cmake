@@ -2,7 +2,6 @@
 
 set(EXTRA_DIST
   src/3rd-party/catch.hpp
-  src/3rd-party/xxhash.hpp
   src/bindings/python/simgrid_python.cpp
   src/dag/dax.dtd
   src/dag/dax_dtd.c
