@@ -747,6 +747,10 @@ to verify pthread_cond in sthread is that I didn't manage to write an asynchrono
 almost working code lying around, but it fails for timed waits on condition variables. This will probably be part of the next
 release.
 
+Version 3.36 (TBD)
+------------------
+
+
 .. |br| raw:: html
 
    <br />
