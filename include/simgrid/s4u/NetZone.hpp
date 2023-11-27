@@ -104,10 +104,9 @@ public:
    * @param link_list List of links and their direction used in this communication
    * @param symmetrical Bi-directional communication
    */
-  //(we should first remove the Python binding in v3.35) XBT_ATTRIB_DEPRECATED_v339("Please call add_route either from
-  // Host to Host or NetZone to NetZone")
-  void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
-                 kernel::routing::NetPoint* gw_dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
+  XBT_ATTRIB_DEPRECATED_v339("Please call add_route either from Host to Host or NetZone to NetZone") void add_route(
+      kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
+      kernel::routing::NetPoint* gw_dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
   /**
    * @brief Add a route between 2 netpoints, and same in other direction
    *
