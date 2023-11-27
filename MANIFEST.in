@@ -2236,8 +2236,8 @@ include src/mc/api/ClockVector.cpp
 include src/mc/api/ClockVector.hpp
 include src/mc/api/RemoteApp.cpp
 include src/mc/api/RemoteApp.hpp
-include src/mc/api/State.cpp
-include src/mc/api/State.hpp
+include src/mc/api/states/State.cpp
+include src/mc/api/states/State.hpp
 include src/mc/api/strategy/BasicStrategy.hpp
 include src/mc/api/strategy/MaxMatchComm.hpp
 include src/mc/api/strategy/MinMatchComm.hpp

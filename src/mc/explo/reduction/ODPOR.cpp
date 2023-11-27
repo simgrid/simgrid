@@ -4,8 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/reduction/ODPOR.hpp"
-#include "src/mc/api/State.hpp"
 #include "xbt/log.h"
+
+#include "src/mc/api/states/State.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor, mc_reduction, "Logging specific to the odpor reduction");
 

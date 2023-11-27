@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/odpor/Execution.hpp"
-#include "src/mc/api/State.hpp"
+#include "src/mc/api/states/State.hpp"
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
 #include <algorithm>

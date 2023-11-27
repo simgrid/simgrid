@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/UdporChecker.hpp"
-#include "src/mc/api/State.hpp"
 #include "src/mc/explo/udpor/Comb.hpp"
 #include "src/mc/explo/udpor/ExtensionSetCalculator.hpp"
 #include "src/mc/explo/udpor/History.hpp"

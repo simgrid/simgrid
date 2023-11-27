@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/reduction/Reduction.hpp"
-#include "src/mc/api/State.hpp"
+#include "src/mc/api/states/State.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_reduction, mc, "Logging specific to the reduction algorithms");
 

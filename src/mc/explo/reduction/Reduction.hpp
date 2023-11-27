@@ -6,7 +6,6 @@
 #ifndef SIMGRID_MC_REDUCTION_HPP
 #define SIMGRID_MC_REDUCTION_HPP
 
-#include "simgrid/forward.h"
 #include "src/mc/explo/odpor/Execution.hpp"
 
 namespace simgrid::mc {

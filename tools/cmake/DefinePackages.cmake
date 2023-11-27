@@ -506,11 +506,9 @@ set(MC_SRC_STATELESS
   src/mc/api/ActorState.hpp
   src/mc/api/ClockVector.cpp
   src/mc/api/ClockVector.hpp
-  src/mc/api/State.cpp
-  src/mc/api/State.hpp
   src/mc/api/RemoteApp.cpp
   src/mc/api/RemoteApp.hpp
-
+ 
   src/mc/explo/DFSExplorer.cpp
   src/mc/explo/DFSExplorer.hpp
   src/mc/explo/Exploration.cpp
@@ -558,6 +556,9 @@ set(MC_SRC_STATELESS
   src/mc/remote/RemotePtr.hpp
   src/mc/remote/mc_protocol.h
 
+  src/mc/api/states/State.cpp
+  src/mc/api/states/State.hpp
+  
   src/mc/transition/Transition.hpp
   src/mc/transition/TransitionActor.cpp
   src/mc/transition/TransitionActor.hpp

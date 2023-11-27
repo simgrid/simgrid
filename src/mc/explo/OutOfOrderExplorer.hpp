@@ -7,7 +7,7 @@
 #define SIMGRID_MC_SAFETY_CHECKER_HPP
 
 #include "src/mc/api/ClockVector.hpp"
-#include "src/mc/api/State.hpp"
+#include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
