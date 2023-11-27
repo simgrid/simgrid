@@ -71,49 +71,6 @@ void DFSExplorer::log_state() // override
   Exploration::log_state();
 }
 
-std::optional<EventHandle> max_dependent_dpor(const odpor::Execution S, const State* s, aid_t p)
-{
-
-  if (S.size() == 0)
-    return {};
-
-  for (EventHandle i = S.size(); i > 0; i--) {
-    XBT_DEBUG("Asking the execution of size %lu for the event %d", S.size(), i - 1);
-    auto past_transition      = S.get_transition_for_handle(i - 1);
-    auto next_transition_of_p = s->get_actors_list().at(p).get_transition(
-        0); // For now, let's do like multi time considered transition do not exist FIXME
-
-    if (past_transition->depends(next_transition_of_p.get()) &&
-        past_transition->can_be_co_enabled(next_transition_of_p.get()) && not S.happens_before_process(i - 1, p))
-      return i - 1;
-  }
-
-  return {};
-}
-
-std::unordered_set<aid_t> compute_E_dpor_algorithm(const odpor::Execution S, stack_t state_stack, aid_t p,
-                                                   EventHandle i)
-{
-
-  std::unordered_set<aid_t> E = std::unordered_set<aid_t>();
-  for (aid_t q : state_stack[i]->get_enabled_actors()) {
-
-    if (q == p) {
-      E.insert(q);
-      continue;
-    }
-
-    for (EventHandle j = i + 1; j < S.size() - 1; j++) {
-      if (q == S.get_actor_with_handle(j) && S.happens_before_process(j, p)) {
-        E.insert(q);
-        break;
-      }
-    }
-  }
-
-  return E;
-}
-
 void DFSExplorer::simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, stack_t state_stack)
 {
 
