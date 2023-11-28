@@ -21,7 +21,7 @@ public:
   void races_computation(odpor::Execution E, stack_t* S) override;
   bool has_to_be_explored(odpor::Execution E, stack_t* S) override;
   aid_t next_to_explore(odpor::Execution E, stack_t* S) override;
-  void on_state_creation(State* s) override;
+  std::shared_ptr<State> state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state) override;
   void on_backtrack(State* s) override;
 };
 

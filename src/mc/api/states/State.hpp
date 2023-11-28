@@ -49,8 +49,8 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   odpor::WakeupTree wakeup_tree_;
   bool has_initialized_wakeup_tree = false;
 
-  friend void Reduction::on_state_creation(State* new_state);
-  friend void ODPOR::on_state_creation(State* new_state);
+  friend std::shared_ptr<State> Reduction::state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state);
+  friend std::shared_ptr<State> ODPOR::state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state);
 
 public:
   explicit State(RemoteApp& remote_app);

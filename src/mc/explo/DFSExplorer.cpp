@@ -113,9 +113,8 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, 
   XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition_out()->aid_,
            state->get_transition_out()->to_string().c_str(), state_stack.size(), state->get_num(), state->count_todo());
 
-  auto next_state = std::make_shared<State>(get_remote_app(), state);
+  auto next_state = reduction_algo_->state_create(get_remote_app(), state);
   on_state_creation_signal(next_state.get(), get_remote_app());
-  reduction_algo_->on_state_creation(next_state.get());
 
   state_stack.emplace_back(std::move(next_state));
   stack_ = state_stack;

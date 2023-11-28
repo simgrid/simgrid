@@ -43,7 +43,7 @@ public:
   // Update the state s field according to the reduction.
   // The base case is to only do the Sleep-Set procedure since most of the
   // algorithm are based on sleep sets anyway.
-  virtual void on_state_creation(State* s);
+  virtual std::shared_ptr<State> state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state = nullptr);
 
   // Update the state s fields assuming we just ended the exploration of the subtree
   // rooted in s, taking the transition s->out_transition_

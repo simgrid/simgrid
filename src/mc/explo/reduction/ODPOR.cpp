@@ -68,32 +68,35 @@ aid_t ODPOR::next_to_explore(odpor::Execution E, stack_t* S)
   }
   return next;
 }
-
-void ODPOR::on_state_creation(State* s)
+std::shared_ptr<State> ODPOR::state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
 {
-  Reduction::on_state_creation(s);
+  auto s = Reduction::state_create(remote_app, parent_state);
 
-  XBT_DEBUG("Initializing Wut with parent one:");
-  XBT_DEBUG("\n%s", s->parent_state_->wakeup_tree_.string_of_whole_tree().c_str());
+  if (parent_state != nullptr) {
+    XBT_DEBUG("Initializing Wut with parent one:");
+    XBT_DEBUG("\n%s", s->parent_state_->wakeup_tree_.string_of_whole_tree().c_str());
 
-  xbt_assert(s->parent_state_ != nullptr, "Attempting to construct a wakeup tree for the root state "
-                                          "(or what appears to be, rather for state without a parent defined)");
-  const auto min_process_node = s->parent_state_->wakeup_tree_.get_min_single_process_node();
-  xbt_assert(min_process_node.has_value(), "Attempting to construct a subtree for a substate from a "
-                                           "parent with an empty wakeup tree. This indicates either that ODPOR "
-                                           "actor selection in State.cpp is incorrect, or that the code "
-                                           "deciding when to make subtrees in ODPOR is incorrect");
-  if (not(s->get_transition_in()->aid_ == min_process_node.value()->get_actor() &&
-          s->get_transition_in()->type_ == min_process_node.value()->get_action()->type_)) {
-    XBT_ERROR("We tried to make a subtree from a parent state who claimed to have executed `%s` on actor %ld "
-              "but whose wakeup tree indicates it should have executed `%s` on actor %ld. This indicates "
-              "that exploration is not following ODPOR. Are you sure you're choosing actors "
-              "to schedule from the wakeup tree? Trace so far:",
-              s->get_transition_in()->to_string(false).c_str(), s->get_transition_in()->aid_,
-              min_process_node.value()->get_action()->to_string(false).c_str(), min_process_node.value()->get_actor());
-    xbt_abort();
+    xbt_assert(s->parent_state_ != nullptr, "Attempting to construct a wakeup tree for the root state "
+                                            "(or what appears to be, rather for state without a parent defined)");
+    const auto min_process_node = s->parent_state_->wakeup_tree_.get_min_single_process_node();
+    xbt_assert(min_process_node.has_value(), "Attempting to construct a subtree for a substate from a "
+                                             "parent with an empty wakeup tree. This indicates either that ODPOR "
+                                             "actor selection in State.cpp is incorrect, or that the code "
+                                             "deciding when to make subtrees in ODPOR is incorrect");
+    if (not(s->get_transition_in()->aid_ == min_process_node.value()->get_actor() &&
+            s->get_transition_in()->type_ == min_process_node.value()->get_action()->type_)) {
+      XBT_ERROR("We tried to make a subtree from a parent state who claimed to have executed `%s` on actor %ld "
+                "but whose wakeup tree indicates it should have executed `%s` on actor %ld. This indicates "
+                "that exploration is not following ODPOR. Are you sure you're choosing actors "
+                "to schedule from the wakeup tree? Trace so far:",
+                s->get_transition_in()->to_string(false).c_str(), s->get_transition_in()->aid_,
+                min_process_node.value()->get_action()->to_string(false).c_str(),
+                min_process_node.value()->get_actor());
+      xbt_abort();
+    }
+    s->wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(min_process_node.value());
   }
-  s->wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(min_process_node.value());
+  return s;
 }
 
 void ODPOR::on_backtrack(State* s)
