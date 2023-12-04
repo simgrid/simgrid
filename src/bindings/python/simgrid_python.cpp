@@ -236,18 +236,6 @@ PYBIND11_MODULE(simgrid, m)
       .def_static("create_empty_zone", &simgrid::s4u::create_empty_zone, "Creates a zone of type Empty")
       .def_static("create_wifi_zone", &simgrid::s4u::create_wifi_zone, "Creates a zone of type Wi-Fi")
       .def("add_route",
-           [](simgrid::s4u::NetZone* self, simgrid::kernel::routing::NetPoint* src,
-              simgrid::kernel::routing::NetPoint* dst, simgrid::kernel::routing::NetPoint* gw_src,
-              simgrid::kernel::routing::NetPoint* gw_dst, const std::vector<simgrid::s4u::LinkInRoute>& links,
-              bool symmetrical) {
-             PyErr_WarnEx(PyExc_DeprecationWarning, // XBT_ATTRIB_DEPRECATED_v336. Once removed, uncomment the
-                                                    // deprecation of the AddRoute function in C++
-                          "Please call add_route either from Host to Host or NetZone to NetZone. This call will be "
-                          "removed after SimGrid v3.35.",
-                          1);
-             self->add_route(src, dst, gw_src, gw_dst, links, symmetrical);
-           })
-      .def("add_route",
            py::overload_cast<const simgrid::s4u::Host*, const simgrid::s4u::Host*,
                              const std::vector<simgrid::s4u::LinkInRoute>&, bool>(&simgrid::s4u::NetZone::add_route),
            "Add a route between 2 hosts")

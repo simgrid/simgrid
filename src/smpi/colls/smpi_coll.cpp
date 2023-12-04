@@ -284,7 +284,8 @@ static s_mpi_coll_description_t* find_coll_description(const std::string& collec
   std::string name_list = table->at(0).name;
   for (unsigned long i = 1; i < table->size(); i++)
     name_list = name_list + ", " + table->at(i).name;
-  xbt_die("Collective '%s' has no algorithm '%s'! Valid algorithms: %s.", collective.c_str(), algo.c_str(), name_list.c_str());
+  xbt_die("Collective '%s' has no algorithm '%s'! Valid algorithms: %s. Please use --help-coll for details.",
+          collective.c_str(), algo.c_str(), name_list.c_str());
 }
 
 int (*colls::gather)(const void* send_buff, int send_count, MPI_Datatype send_type, void* recv_buff, int recv_count,

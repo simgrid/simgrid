@@ -618,7 +618,9 @@ Mixing S4U and MPI simulation
 
 Mixing both interfaces is very easy. This can be useful to easily implement a service in S4U that is provided by your
 infrastructure in some way, and test how your MPI application interacts with this service. Or you can use it to start more than
-one MPI application in your simulation, and study their interactions.
+one MPI application in your simulation, and study their interactions. For that, you just need to use
+:cpp:ref:`SMPI_app_instance_register` in a regular S4U program, as shown in the example below. Compile it as usual (with gcc or
+g++, **not** smpicc) and execute it directly (**not** with smpirun).
 
 .. doxygenfunction:: SMPI_app_instance_start
 

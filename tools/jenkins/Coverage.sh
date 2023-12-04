@@ -96,7 +96,7 @@ if [ -f Testing/TAG ] ; then
   sloccount --duplicates --wide --details "$WORKSPACE" | grep -v -e '.git' -e 'mpich3-test' -e 'sloccount.sc' -e 'build/' -e 'xml_coverage.xml' -e 'CTestResults_memcheck.xml' -e 'DynamicAnalysis.xml' > "$WORKSPACE"/sloccount.sc
 
   #generate PVS-studio report
-  EXCLUDEDPATH="-e $WORKSPACE/src/3rd-party/catch.hpp -e $WORKSPACE/src/3rd-party/xxhash.hpp -e $WORKSPACE/teshsuite/smpi/mpich3-test/ -e *_dtd.c -e *_dtd.h -e *.yy.c -e *.tab.cacc -e *.tab.hacc -e $WORKSPACE/src/smpi/colls/ -e $WORKSPACE/examples/smpi/NAS/ -e $WORKSPACE/examples/smpi/gemm/gemm.cq"
+  EXCLUDEDPATH="-e $WORKSPACE/src/3rd-party/catch.hpp -e $WORKSPACE/teshsuite/smpi/mpich3-test/ -e *_dtd.c -e *_dtd.h -e *.yy.c -e *.tab.cacc -e *.tab.hacc -e $WORKSPACE/src/smpi/colls/ -e $WORKSPACE/examples/smpi/NAS/ -e $WORKSPACE/examples/smpi/gemm/gemm.cq"
   pvs-studio-analyzer analyze -f "$BUILDFOLDER"/compile_commands.json -o "$WORKSPACE"/pvs.log $EXCLUDEDPATH -j$NUMPROC
   # Disable:
   # V521 Such expressions using the ',' operator are dangerous. (-> commas in catch.hpp),

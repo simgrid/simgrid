@@ -59,11 +59,6 @@ class XBT_PUBLIC VirtualMachine : public s4u::Host {
 #endif
 
 public:
-  XBT_ATTRIB_DEPRECATED_v336("Please use s4u::Host::create_vm") explicit VirtualMachine(const std::string& name,
-                                                                                        Host* physical_host,
-                                                                                        int core_amount,
-                                                                                        size_t ramsize = 1024);
-
 #ifndef DOXYGEN
   // No copy/move
   VirtualMachine(VirtualMachine const&) = delete;
