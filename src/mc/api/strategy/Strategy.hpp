@@ -91,6 +91,7 @@ public:
   }
 
   friend class State;
+  friend class SleepSetState;
   friend class Reduction;
 };
 

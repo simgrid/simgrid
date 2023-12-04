@@ -556,6 +556,8 @@ set(MC_SRC_STATELESS
   src/mc/remote/RemotePtr.hpp
   src/mc/remote/mc_protocol.h
 
+  src/mc/api/states/SleepSetState.cpp
+  src/mc/api/states/SleepSetState.hpp
   src/mc/api/states/State.cpp
   src/mc/api/states/State.hpp
   

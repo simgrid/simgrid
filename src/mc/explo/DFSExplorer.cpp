@@ -99,10 +99,15 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, 
 
   auto state = state_stack.back();
 
+  // If we use a state containing a sleep state, display it during debug
   if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose)) {
-    XBT_VERB("Sleep set actually containing:");
-    for (const auto& [aid, transition] : state->get_sleep_set())
-      XBT_VERB("  <%ld,%s>", aid, transition->to_string().c_str());
+    std::shared_ptr<SleepSetState> sleep_state = std::static_pointer_cast<SleepSetState>(state);
+    if (sleep_state != nullptr) {
+      XBT_VERB("Sleep set actually containing:");
+
+      for (const auto& [aid, transition] : sleep_state->get_sleep_set())
+        XBT_VERB("  <%ld,%s>", aid, transition->to_string().c_str());
+    }
   }
 
   auto transition_to_be_executed = state->get_actors_list().at(next_actor).get_transition();
@@ -183,7 +188,7 @@ void DFSExplorer::run()
     reduction_algo_ = std::make_unique<NoReduction>();
   }
 
-  auto initial_state = std::make_shared<State>(get_remote_app());
+  auto initial_state = reduction_algo_->state_create(get_remote_app());
 
   XBT_DEBUG("**************************************************");
 

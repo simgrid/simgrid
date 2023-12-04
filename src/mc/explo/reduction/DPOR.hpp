@@ -7,6 +7,7 @@
 #define SIMGRID_MC_DPOR_HPP
 
 #include "simgrid/forward.h"
+#include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
@@ -88,8 +89,10 @@ public:
 
   bool has_to_be_explored(odpor::Execution E, stack_t* S) override
   {
-    if (not S->back()->get_enabled_minus_sleep().empty()) {
-      S->back()->consider_best();
+    auto sleep_set_state = static_cast<SleepSetState*>(S->back().get());
+    xbt_assert(sleep_set_state != nullptr, "DPOR should use SleepSetState. Fix me");
+    if (not sleep_set_state->get_enabled_minus_sleep().empty()) {
+      sleep_set_state->consider_best();
       return true;
     }
     return false;

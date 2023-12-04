@@ -4,32 +4,26 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/reduction/Reduction.hpp"
-#include "src/mc/api/states/State.hpp"
-
+#include "src/mc/api/states/SleepSetState.hpp"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_reduction, mc, "Logging specific to the reduction algorithms");
 
 namespace simgrid::mc {
 
 std::shared_ptr<State> Reduction::state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
 {
-
-  auto s = std::make_shared<State>(remote_app, parent_state);
-  if (parent_state != nullptr) {
-
-    for (const auto& [aid, transition] : s->parent_state_->get_sleep_set()) {
-      if (not s->incoming_transition_->depends(transition.get())) {
-        s->sleep_set_.try_emplace(aid, transition);
-        if (s->strategy_->actors_to_run_.count(aid) != 0)
-          s->strategy_->actors_to_run_.at(aid).mark_done();
-      }
-    }
+  if (parent_state == nullptr)
+    return std::make_shared<SleepSetState>(remote_app);
+  else {
+    std::shared_ptr<SleepSetState> sleep_state = std::static_pointer_cast<SleepSetState>(parent_state);
+    xbt_assert(sleep_state != nullptr, "Wrong kind of state for this reduction. This shouldn't happen, fix me");
+    return std::make_shared<SleepSetState>(remote_app, sleep_state);
   }
-
-  return s;
 }
 
 void Reduction::on_backtrack(State* s)
 {
-  s->add_sleep_set(s->get_transition_out());
+  SleepSetState* sleep_state = static_cast<SleepSetState*>(s);
+  xbt_assert(sleep_state != nullptr, "Wrong kind of state for this reduction. This shouldn't happen, fix me");
+  sleep_state->add_sleep_set(sleep_state->get_transition_out());
 }
 } // namespace simgrid::mc

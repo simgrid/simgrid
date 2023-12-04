@@ -34,8 +34,6 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
       and for guided model-checking */
   std::shared_ptr<State> parent_state_ = nullptr;
 
-  std::shared_ptr<Strategy> strategy_;
-
   /* Sleep sets are composed of the actor and the corresponding transition that made it being added to the sleep
    * set. With this information, it is check whether it should be removed from it or not when exploring a new
    * transition */
@@ -49,8 +47,10 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   odpor::WakeupTree wakeup_tree_;
   bool has_initialized_wakeup_tree = false;
 
-  friend std::shared_ptr<State> Reduction::state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state);
   friend std::shared_ptr<State> ODPOR::state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state);
+
+protected:
+  std::shared_ptr<Strategy> strategy_;
 
 public:
   explicit State(RemoteApp& remote_app);
