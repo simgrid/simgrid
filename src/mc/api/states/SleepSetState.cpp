@@ -55,4 +55,21 @@ bool SleepSetState::is_actor_sleeping(aid_t actor) const
          sleep_set_.end();
 }
 
+void SleepSetState::do_odpor_unwind()
+{
+  XBT_DEBUG("Unwinding ODPOR from state %ld", get_expanded_states());
+  if (auto out_transition = get_transition_out(); out_transition != nullptr) {
+    remove_subtree_using_current_out_transition();
+
+    // Only when we've exhausted all variants of the transition which
+    // can be chosen from this state do we finally add the actor to the
+    // sleep set. This ensures that the current logic handling sleep sets
+    // works with ODPOR in the way we intend it to work. There is not a
+    // good way to perform transition equality in SimGrid; instead, we
+    // effectively simply check for the presence of an actor in the sleep set.
+    if (not get_actors_list().at(out_transition->aid_).has_more_to_consider())
+      add_sleep_set(std::move(out_transition));
+  }
+}
+
 } // namespace simgrid::mc

@@ -130,19 +130,8 @@ void OutOfOrderExplorer::run()
     // in case we want to consider multiple states (eg. during backtrack)
     const aid_t next = reduction_algo_->next_to_explore(execution_seq_, &stack_);
 
-    if (next < 0 || not state->is_actor_enabled(next)) {
-      if (next >= 0) { // Actor is not enabled, then
-        XBT_DEBUG(
-            "Reduction %s wants to execute a disabled transition %s. If it's ODPOR, ReversibleRace is suboptimal.",
-            to_c_str(reduction_mode_), state->get_actors_list().at(next).get_transition()->to_string(true).c_str());
-        if (reduction_mode_ == ReductionMode::odpor) {
-          // Remove the disabled transition from the wakeup tree so that ODPOR doesn't try it again
-          state->remove_subtree_at_aid(next);
-          state->add_sleep_set(state->get_actors_list().at(next).get_transition());
-        } else {
-          xbt_assert(false, "Only ODPOR should be confident enought in itself to try executing a disabled transition");
-        }
-      }
+    if (next < 0) {
+
       // If there is no more transition in the current state (or if ODPOR picked an actor that is not enabled --
       // ReversibleRace is an overapproximation), backtrace
       XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
@@ -157,6 +146,8 @@ void OutOfOrderExplorer::run()
       this->backtrack();
       continue;
     }
+
+    xbt_assert(state->is_actor_enabled(next));
 
     // If we use a state containing a sleep state, display it during debug
     if (XBT_LOG_ISENABLED(mc_ooo, xbt_log_priority_verbose)) {

@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/api/states/State.hpp"
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
@@ -227,7 +228,7 @@ Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordere
 }
 
 std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle e, EventHandle e_prime,
-                                                                    const State& state_at_e) const
+                                                                    const SleepSetState& state_at_e) const
 {
   // `e` is assumed to be in a reversible race with `e_prime`.
   // If `e > e_prime`, then `e` occurs-after `e_prime` which means

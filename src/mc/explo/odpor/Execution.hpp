@@ -173,7 +173,7 @@ public:
    * `std::nullopt` otherwise
    */
   std::optional<PartialExecution> get_odpor_extension_from(EventHandle e, EventHandle e_prime,
-                                                           const State& state_at_e) const;
+                                                           const SleepSetState& state_at_e) const;
 
   /**
    * @brief For a given sequence of actors `v` and a sequence of transitions `w`,

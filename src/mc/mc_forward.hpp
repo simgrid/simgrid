@@ -27,6 +27,7 @@ class Frame;
 
 class Session;
 class Exploration;
+class SleepSetState;
 } // namespace simgrid::mc
 
 #endif

@@ -111,18 +111,8 @@ public:
    * backtrack set still contains processes added to the done set.
    */
   std::unordered_set<aid_t> get_backtrack_set() const;
-  std::unordered_set<aid_t> get_sleeping_actors() const;
   std::unordered_set<aid_t> get_enabled_actors() const;
   std::vector<aid_t> get_batrack_minus_done() const;
-  std::vector<aid_t> get_enabled_minus_sleep() const;
-
-  std::map<aid_t, std::shared_ptr<Transition>> const& get_sleep_set() const { return sleep_set_; }
-  void add_sleep_set(std::shared_ptr<Transition> t) { sleep_set_.insert_or_assign(t->aid_, std::move(t)); }
-  bool is_actor_sleeping(aid_t actor) const
-  {
-    return std::find_if(sleep_set_.begin(), sleep_set_.end(), [=](const auto& pair) { return pair.first == actor; }) !=
-           sleep_set_.end();
-  }
 
   /**
    * @brief Inserts an arbitrary enabled actor into the wakeup tree
@@ -160,17 +150,6 @@ public:
    * @brief
    */
   odpor::WakeupTree::InsertionResult insert_into_wakeup_tree(const odpor::PartialExecution&, const odpor::Execution&);
-
-  /** @brief Prepares the state for re-exploration following
-   * another after having followed ODPOR from this state with
-   * the current out transition
-   *
-   * After ODPOR has completed searching a maximal trace, it
-   * finds the first point in the execution with a nonempty wakeup
-   * tree. This method corresponds to lines 20 and 21 in the ODPOR
-   * pseudocode
-   */
-  void do_odpor_unwind();
 
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }

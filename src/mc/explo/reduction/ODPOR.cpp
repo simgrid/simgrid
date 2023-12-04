@@ -6,6 +6,7 @@
 #include "src/mc/explo/reduction/ODPOR.hpp"
 #include "xbt/log.h"
 
+#include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/api/states/State.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor, mc_reduction, "Logging specific to the odpor reduction");
@@ -31,9 +32,11 @@ void ODPOR::races_computation(odpor::Execution E, stack_t* S, std::vector<std::s
    */
   for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
     for (const auto e : E.get_reversible_races_of(e_prime)) {
-      State& prev_state = *(*S)[e];
-      if (const auto v = E.get_odpor_extension_from(e, e_prime, prev_state); v.has_value())
-        prev_state.insert_into_wakeup_tree(v.value(), E.get_prefix_before(e));
+
+      SleepSetState* prev_state = static_cast<SleepSetState*>((*S)[e].get());
+
+      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value())
+        prev_state->insert_into_wakeup_tree(v.value(), E.get_prefix_before(e));
     }
   }
 }
@@ -53,7 +56,8 @@ bool ODPOR::has_to_be_explored(odpor::Execution E, stack_t* S)
 
 aid_t ODPOR::next_to_explore(odpor::Execution E, stack_t* S)
 {
-  State* s         = S->back().get();
+  auto s = static_cast<SleepSetState*>(S->back().get());
+  xbt_assert(s != nullptr, "ODPOR should use SleepSetState. Fix me");
   const aid_t next = s->next_odpor_transition();
 
   if (next == -1)
@@ -101,7 +105,9 @@ std::shared_ptr<State> ODPOR::state_create(RemoteApp& remote_app, std::shared_pt
 
 void ODPOR::on_backtrack(State* s)
 {
-  s->do_odpor_unwind();
+  auto sleep_set_state = static_cast<SleepSetState*>(s);
+  xbt_assert(sleep_set_state != nullptr, "ODPOR should use SleepSetState. Fix me");
+  sleep_set_state->do_odpor_unwind();
 }
 
 } // namespace simgrid::mc
