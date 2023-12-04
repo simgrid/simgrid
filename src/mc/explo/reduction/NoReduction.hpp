@@ -20,7 +20,7 @@ public:
   NoReduction()           = default;
   ~NoReduction() override = default;
 
-  void races_computation(odpor::Execution E, stack_t* S) override{};
+  void races_computation(odpor::Execution E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states) override{};
   bool has_to_be_explored(odpor::Execution E, stack_t* S) override
   {
     S->back()->consider_all();

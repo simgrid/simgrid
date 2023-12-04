@@ -27,6 +27,7 @@ using stack_t = std::deque<std::shared_ptr<State>>;
 class XBT_PRIVATE OutOfOrderExplorer : public Exploration {
 private:
   ReductionMode reduction_mode_;
+  std::unique_ptr<Reduction> reduction_algo_;
   unsigned long backtrack_count_      = 0; // for statistics
   unsigned long visited_states_count_ = 0; // for statistics
 

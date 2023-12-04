@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor, mc_reduction, "Logging specific to the
 
 namespace simgrid::mc {
 
-void ODPOR::races_computation(odpor::Execution E, stack_t* S)
+void ODPOR::races_computation(odpor::Execution E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states)
 {
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions

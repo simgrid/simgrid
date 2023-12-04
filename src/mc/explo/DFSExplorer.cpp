@@ -176,18 +176,6 @@ void DFSExplorer::run()
 {
   XBT_INFO("Start a DFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
 
-  if (reduction_mode_ == ReductionMode::dpor)
-    reduction_algo_ = std::make_unique<DPOR>();
-  else if (reduction_mode_ == ReductionMode::sdpor)
-    reduction_algo_ = std::make_unique<SDPOR>();
-  else if (reduction_mode_ == ReductionMode::odpor)
-    reduction_algo_ = std::make_unique<ODPOR>();
-  else {
-    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
-               to_c_str(reduction_mode_));
-    reduction_algo_ = std::make_unique<NoReduction>();
-  }
-
   auto initial_state = reduction_algo_->state_create(get_remote_app());
 
   XBT_DEBUG("**************************************************");
@@ -206,6 +194,18 @@ void DFSExplorer::run()
 
 DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration(args), reduction_mode_(mode)
 {
+
+  if (reduction_mode_ == ReductionMode::dpor)
+    reduction_algo_ = std::make_unique<DPOR>();
+  else if (reduction_mode_ == ReductionMode::sdpor)
+    reduction_algo_ = std::make_unique<SDPOR>();
+  else if (reduction_mode_ == ReductionMode::odpor)
+    reduction_algo_ = std::make_unique<ODPOR>();
+  else {
+    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
+               to_c_str(reduction_mode_));
+    reduction_algo_ = std::make_unique<NoReduction>();
+  }
 }
 
 Exploration* create_dfs_exploration(const std::vector<char*>& args, ReductionMode mode)

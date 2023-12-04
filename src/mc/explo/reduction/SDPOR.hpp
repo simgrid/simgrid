@@ -20,7 +20,7 @@ public:
   SDPOR()           = default;
   ~SDPOR() override = default;
 
-  void races_computation(odpor::Execution E, stack_t* S) override
+  void races_computation(odpor::Execution E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states) override
   {
     // If there are less then 2 events, there is no possible race yet
     if (E.size() <= 1)
@@ -33,6 +33,8 @@ public:
       const auto choices = E.get_missing_source_set_actors_from(e_race, prev_state->get_backtrack_set());
       if (not choices.empty()) {
         prev_state->ensure_one_considered_among_set(choices);
+        if (opened_states != nullptr)
+          opened_states->emplace_back(prev_state);
       }
     }
   }

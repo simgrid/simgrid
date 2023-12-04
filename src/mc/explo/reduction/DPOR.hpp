@@ -63,7 +63,7 @@ public:
   DPOR()           = default;
   ~DPOR() override = default;
 
-  void races_computation(odpor::Execution E, stack_t* S) override
+  void races_computation(odpor::Execution E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states) override
   {
     // If there are less then 2 events, there is no possible race yet
     if (E.size() <= 1)
@@ -84,6 +84,8 @@ public:
       } else {
         (*S)[i]->consider_all();
       }
+      if (opened_states != nullptr)
+        opened_states->emplace_back((*S)[i]);
     }
   }
 

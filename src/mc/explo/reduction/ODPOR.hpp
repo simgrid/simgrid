@@ -18,7 +18,7 @@ public:
   ODPOR()           = default;
   ~ODPOR() override = default;
 
-  void races_computation(odpor::Execution E, stack_t* S) override;
+  void races_computation(odpor::Execution E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states) override;
   bool has_to_be_explored(odpor::Execution E, stack_t* S) override;
   aid_t next_to_explore(odpor::Execution E, stack_t* S) override;
   std::shared_ptr<State> state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state) override;

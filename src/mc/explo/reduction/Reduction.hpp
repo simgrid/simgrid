@@ -32,7 +32,8 @@ public:
 
   // Eventually changes values in the stack S so that the races discovered while
   // visiting E will be taken care of at some point
-  virtual void races_computation(odpor::Execution E, stack_t* S) = 0;
+  virtual void races_computation(odpor::Execution E, stack_t* S,
+                                 std::vector<std::shared_ptr<State>>* opened_states = nullptr) = 0;
   // Determine wheter the current sequence E has to be explored further. The decision
   // can be based on any information saved inside the states of S. Furthermore, the
   // reduction may do some adjustments on S to be ready to extent the exploration.
