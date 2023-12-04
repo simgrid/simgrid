@@ -13,7 +13,7 @@
 namespace simgrid::mc {
 
 class XBT_PRIVATE SleepSetState : public State {
-
+protected:
   /* Sleep sets are composed of the actor and the corresponding transition that made it being added to the sleep
    * set. With this information, it is check whether it should be removed from it or not when exploring a new
    * transition */
@@ -29,19 +29,6 @@ public:
   std::map<aid_t, std::shared_ptr<Transition>> const& get_sleep_set() const { return sleep_set_; }
   void add_sleep_set(std::shared_ptr<Transition> t) { sleep_set_.insert_or_assign(t->aid_, std::move(t)); }
   bool is_actor_sleeping(aid_t actor) const;
-
-  /** @brief Prepares the state for re-exploration following
-   * another after having followed ODPOR from this state with
-   * the current out transition
-   *
-   * After ODPOR has completed searching a maximal trace, it
-   * finds the first point in the execution with a nonempty wakeup
-   * tree. This method corresponds to lines 20 and 21 in the ODPOR
-   * pseudocode
-   */
-  void do_odpor_unwind();
-
-  friend class DPOR;
 };
 
 } // namespace simgrid::mc

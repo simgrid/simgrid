@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/reduction/ODPOR.hpp"
+#include "src/mc/api/states/WutState.hpp"
 #include "xbt/log.h"
 
 #include "src/mc/api/states/SleepSetState.hpp"
@@ -33,7 +34,8 @@ void ODPOR::races_computation(odpor::Execution E, stack_t* S, std::vector<std::s
   for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
     for (const auto e : E.get_reversible_races_of(e_prime)) {
 
-      SleepSetState* prev_state = static_cast<SleepSetState*>((*S)[e].get());
+      WutState* prev_state = static_cast<WutState*>((*S)[e].get());
+      xbt_assert(prev_state != nullptr, "ODPOR should use WutState. Fix me");
 
       if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value())
         prev_state->insert_into_wakeup_tree(v.value(), E.get_prefix_before(e));
@@ -44,7 +46,8 @@ void ODPOR::races_computation(odpor::Execution E, stack_t* S, std::vector<std::s
 bool ODPOR::has_to_be_explored(odpor::Execution E, stack_t* S)
 {
 
-  State* s = S->back().get();
+  WutState* s = static_cast<WutState*>(S->back().get());
+  xbt_assert(s != nullptr, "ODPOR should use WutState. Fix me");
 
   // if no actor can be executed, then return
   if (s->get_enabled_actors().empty())
@@ -56,8 +59,8 @@ bool ODPOR::has_to_be_explored(odpor::Execution E, stack_t* S)
 
 aid_t ODPOR::next_to_explore(odpor::Execution E, stack_t* S)
 {
-  auto s = static_cast<SleepSetState*>(S->back().get());
-  xbt_assert(s != nullptr, "ODPOR should use SleepSetState. Fix me");
+  auto s = static_cast<WutState*>(S->back().get());
+  xbt_assert(s != nullptr, "ODPOR should use WutState. Fix me");
   const aid_t next = s->next_odpor_transition();
 
   if (next == -1)
@@ -74,40 +77,20 @@ aid_t ODPOR::next_to_explore(odpor::Execution E, stack_t* S)
 }
 std::shared_ptr<State> ODPOR::state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
 {
-  auto s = Reduction::state_create(remote_app, parent_state);
-
-  if (parent_state != nullptr) {
-    XBT_DEBUG("Initializing Wut with parent one:");
-    XBT_DEBUG("\n%s", s->parent_state_->wakeup_tree_.string_of_whole_tree().c_str());
-
-    xbt_assert(s->parent_state_ != nullptr, "Attempting to construct a wakeup tree for the root state "
-                                            "(or what appears to be, rather for state without a parent defined)");
-    const auto min_process_node = s->parent_state_->wakeup_tree_.get_min_single_process_node();
-    xbt_assert(min_process_node.has_value(), "Attempting to construct a subtree for a substate from a "
-                                             "parent with an empty wakeup tree. This indicates either that ODPOR "
-                                             "actor selection in State.cpp is incorrect, or that the code "
-                                             "deciding when to make subtrees in ODPOR is incorrect");
-    if (not(s->get_transition_in()->aid_ == min_process_node.value()->get_actor() &&
-            s->get_transition_in()->type_ == min_process_node.value()->get_action()->type_)) {
-      XBT_ERROR("We tried to make a subtree from a parent state who claimed to have executed `%s` on actor %ld "
-                "but whose wakeup tree indicates it should have executed `%s` on actor %ld. This indicates "
-                "that exploration is not following ODPOR. Are you sure you're choosing actors "
-                "to schedule from the wakeup tree? Trace so far:",
-                s->get_transition_in()->to_string(false).c_str(), s->get_transition_in()->aid_,
-                min_process_node.value()->get_action()->to_string(false).c_str(),
-                min_process_node.value()->get_actor());
-      xbt_abort();
-    }
-    s->wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(min_process_node.value());
+  if (parent_state == nullptr)
+    return std::make_shared<WutState>(remote_app);
+  else {
+    std::shared_ptr<WutState> wut_state = std::static_pointer_cast<WutState>(parent_state);
+    xbt_assert(wut_state != nullptr, "Wrong kind of state for this reduction. This shouldn't happen, fix me");
+    return std::make_shared<WutState>(remote_app, wut_state);
   }
-  return s;
 }
 
 void ODPOR::on_backtrack(State* s)
 {
-  auto sleep_set_state = static_cast<SleepSetState*>(s);
-  xbt_assert(sleep_set_state != nullptr, "ODPOR should use SleepSetState. Fix me");
-  sleep_set_state->do_odpor_unwind();
+  auto wut_state = static_cast<WutState*>(s);
+  xbt_assert(wut_state != nullptr, "ODPOR should use SleepSetState. Fix me");
+  wut_state->do_odpor_unwind();
 }
 
 } // namespace simgrid::mc

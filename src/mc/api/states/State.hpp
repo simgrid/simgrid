@@ -10,9 +10,6 @@
 #include "src/mc/api/ClockVector.hpp"
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/strategy/Strategy.hpp"
-#include "src/mc/explo/odpor/WakeupTree.hpp"
-#include "src/mc/explo/reduction/ODPOR.hpp"
-#include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/transition/Transition.hpp"
 
 namespace simgrid::mc {
@@ -34,21 +31,6 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
       and for guided model-checking */
   std::shared_ptr<State> parent_state_ = nullptr;
 
-  /* Sleep sets are composed of the actor and the corresponding transition that made it being added to the sleep
-   * set. With this information, it is check whether it should be removed from it or not when exploring a new
-   * transition */
-  std::map<aid_t, std::shared_ptr<Transition>> sleep_set_;
-
-  /**
-   * The wakeup tree with respect to the execution represented
-   * by the totality of all states before and including this one
-   * and with respect to this state's sleep set
-   */
-  odpor::WakeupTree wakeup_tree_;
-  bool has_initialized_wakeup_tree = false;
-
-  friend std::shared_ptr<State> ODPOR::state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state);
-
 protected:
   std::shared_ptr<Strategy> strategy_;
 
@@ -61,12 +43,6 @@ public:
   /* Same as next_transition(), but choice is now guided, and an integer corresponding to the
    internal cost of the transition is returned */
   std::pair<aid_t, int> next_transition_guided() const;
-
-  /**
-   * Same as next_transition(), but the choice is not based off the ODPOR
-   * wakeup tree associated with this state
-   */
-  aid_t next_odpor_transition() const;
 
   /**
    * @brief Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
@@ -113,43 +89,6 @@ public:
   std::unordered_set<aid_t> get_backtrack_set() const;
   std::unordered_set<aid_t> get_enabled_actors() const;
   std::vector<aid_t> get_batrack_minus_done() const;
-
-  /**
-   * @brief Inserts an arbitrary enabled actor into the wakeup tree
-   * associated with this state, if such an actor exists and if
-   * the wakeup tree is already not empty
-   *
-   * @param prior The sequence of steps leading up to this state
-   * with respec to which the tree associated with this state should be
-   * a wakeup tree (wakeup trees are defined relative to an execution)
-   *
-   * @invariant: You should not manipulate a wakeup tree with respect
-   * to more than one execution; doing so will almost certainly lead to
-   * unexpected results as wakeup trees are defined relative to a single
-   * execution
-   */
-  void seed_wakeup_tree_if_needed(const odpor::Execution& prior);
-
-  /**
-   * @brief Initializes the wakeup_tree_ instance by taking the subtree rooted at the
-   * single-process node `N` running actor `p := "actor taken by parent to form this state"`
-   * of the *parent's* wakeup tree
-   */
-  void sprout_tree_from_parent_state();
-
-  /**
-   * @brief Removes the subtree rooted at the single-process node
-   * `N` running actor `p` of this state's wakeup tree
-   */
-  void remove_subtree_using_current_out_transition();
-  void remove_subtree_at_aid(aid_t proc);
-  bool has_empty_tree() const { return this->wakeup_tree_.empty(); }
-  std::string string_of_wut() const { return this->wakeup_tree_.string_of_whole_tree(); }
-
-  /**
-   * @brief
-   */
-  odpor::WakeupTree::InsertionResult insert_into_wakeup_tree(const odpor::PartialExecution&, const odpor::Execution&);
 
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }

@@ -10,6 +10,7 @@
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
 
 #include <deque>

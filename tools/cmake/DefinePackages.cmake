@@ -559,6 +559,8 @@ set(MC_SRC_STATELESS
   src/mc/api/states/SleepSetState.hpp
   src/mc/api/states/State.cpp
   src/mc/api/states/State.hpp
+  src/mc/api/states/WutState.cpp
+  src/mc/api/states/WutState.hpp
   
   src/mc/transition/Transition.hpp
   src/mc/transition/TransitionActor.cpp
