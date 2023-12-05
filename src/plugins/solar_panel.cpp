@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 #include <simgrid/Exception.hpp>
 #include <simgrid/plugins/solar_panel.hpp>
-#include <simgrid/simix.hpp>
+#include <simgrid/simcall.hpp>
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 

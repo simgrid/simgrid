@@ -8,7 +8,7 @@
 #include <simgrid/s4u/Disk.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
-#include <simgrid/simix.hpp>
+#include <simgrid/simcall.hpp>
 #include <xbt/asserts.h>
 #include <xbt/config.hpp>
 #include <xbt/file.hpp>

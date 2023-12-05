@@ -9,7 +9,7 @@
 #include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Host.hpp>
 #include <simgrid/s4u/VirtualMachine.hpp>
-#include <simgrid/simix.hpp>
+#include <simgrid/simcall.hpp>
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"

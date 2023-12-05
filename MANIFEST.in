@@ -2014,6 +2014,7 @@ include include/simgrid/s4u/Semaphore.hpp
 include include/simgrid/s4u/Task.hpp
 include include/simgrid/s4u/VirtualMachine.hpp
 include include/simgrid/semaphore.h
+include include/simgrid/simcall.hpp
 include include/simgrid/simix.hpp
 include include/simgrid/version.h.in
 include include/simgrid/vm.h

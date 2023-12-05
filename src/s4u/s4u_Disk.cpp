@@ -5,7 +5,7 @@
 
 #include <simgrid/s4u/Disk.hpp>
 #include <simgrid/s4u/Io.hpp>
-#include <simgrid/simix.hpp>
+#include <simgrid/simcall.hpp>
 
 #include "src/kernel/resource/DiskImpl.hpp"
 

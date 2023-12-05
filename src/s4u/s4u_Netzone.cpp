@@ -8,7 +8,7 @@
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/NetZone.hpp>
-#include <simgrid/simix.hpp>
+#include <simgrid/simcall.hpp>
 #include <simgrid/zone.h>
 #include <xbt/parse_units.hpp>
 

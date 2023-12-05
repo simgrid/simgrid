@@ -9,7 +9,7 @@
 #include <simgrid/kernel/resource/Model.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/NetZone.hpp>
-#include <simgrid/simix.hpp>
+#include <simgrid/simcall.hpp>
 #include <xbt/dynar.h>
 #include <xbt/functional.hpp>
 

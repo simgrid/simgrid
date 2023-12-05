@@ -6,7 +6,7 @@
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Link.hpp>
-#include <simgrid/simix.hpp>
+#include <simgrid/simcall.hpp>
 #include <xbt/config.hpp>
 #include <xbt/parse_units.hpp>
 

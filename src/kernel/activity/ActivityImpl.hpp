@@ -8,7 +8,7 @@
 
 #include "simgrid/forward.h"
 #include "simgrid/kernel/resource/Action.hpp"
-#include "simgrid/simix.hpp"
+#include "simgrid/simcall.hpp"
 #include "src/kernel/actor/Simcall.hpp"
 #include "xbt/utility.hpp"
 

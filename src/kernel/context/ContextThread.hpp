@@ -8,7 +8,7 @@
 #ifndef SIMGRID_KERNEL_CONTEXT_THREAD_CONTEXT_HPP
 #define SIMGRID_KERNEL_CONTEXT_THREAD_CONTEXT_HPP
 
-#include "simgrid/simix.hpp"
+#include "simgrid/simcall.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/xbt/OsSemaphore.hpp"
 

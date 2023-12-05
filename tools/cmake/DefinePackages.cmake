@@ -607,6 +607,7 @@ set(headers_to_install
   include/simgrid/mailbox.h
   include/simgrid/modelchecker.h
   include/simgrid/forward.h
+  include/simgrid/simcall.hpp
   include/simgrid/simix.hpp
   include/simgrid/kernel/ProfileBuilder.hpp
   include/simgrid/kernel/Timer.hpp

@@ -7,7 +7,7 @@
 #include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Io.hpp>
 #include <simgrid/s4u/Task.hpp>
-#include <simgrid/simix.hpp>
+#include <simgrid/simcall.hpp>
 #include <string>
 #include <xbt/asserts.h>
 

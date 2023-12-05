@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/simix.hpp"
+#include "simgrid/simcall.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/vm.h>

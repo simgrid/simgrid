@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "src/xbt/parmap.hpp"
-#include <simgrid/simix.hpp>
+#include <simgrid/simcall.hpp>
 
 #include "src/internal_config.h"
 #include "src/kernel/context/ContextSwapped.hpp"

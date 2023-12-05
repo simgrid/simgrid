@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_SIMCALL_HPP
-#define SIMGRID_SIMCALL_HPP
+#ifndef SIMGRID_KERNEL_ACTOR_SIMCALL_HPP
+#define SIMGRID_KERNEL_ACTOR_SIMCALL_HPP
 
 #include "simgrid/forward.h"
 #include "xbt/utility.hpp"

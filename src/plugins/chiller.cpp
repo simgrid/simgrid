@@ -5,7 +5,7 @@
 #include <simgrid/Exception.hpp>
 #include <simgrid/plugins/chiller.hpp>
 #include <simgrid/plugins/energy.h>
-#include <simgrid/simix.hpp>
+#include <simgrid/simcall.hpp>
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 

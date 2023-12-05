@@ -7,7 +7,7 @@
 
 #include "simgrid/modelchecker.h"
 #include "simgrid/s4u/Actor.hpp"
-#include "simgrid/simix.hpp"
+#include "simgrid/simcall.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/sthread/sthread.h"

@@ -6,7 +6,7 @@
 #include <simgrid/plugins/battery.hpp>
 #include <simgrid/plugins/energy.h>
 #include <simgrid/s4u/Engine.hpp>
-#include <simgrid/simix.hpp>
+#include <simgrid/simcall.hpp>
 
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/simgrid/module.hpp"

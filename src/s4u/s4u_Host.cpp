@@ -13,7 +13,7 @@
 #include <simgrid/s4u/VirtualMachine.hpp>
 #include <xbt/parse_units.hpp>
 
-#include "simgrid/simix.hpp"
+#include "simgrid/simcall.hpp"
 #include "src/kernel/resource/HostImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
