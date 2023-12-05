@@ -59,38 +59,30 @@ public:
   T& get() { return SimcallResult<std::reference_wrapper<T>>::get(); }
 };
 
-/** Execute some code and set a promise or result accordingly
+/** Execute some code and set a result accordingly. Takes care of exceptions and works with `void` result.
  *
- *  Roughly this does:
- *
- *  <pre>
- *  promise.set_value(code());
- *  </pre>
- *
- *  but it takes care of exceptions and works with `void`.
- *
- *  We might need this when working with generic code because
- *  the trivial implementation does not work with `void` (before C++1z).
+ *  We might need this when working with generic code because the trivial implementation does not work with `void`
+ * (before C++1z).
  *
  *  @param    code  What we want to do
- *  @param  promise Where to want to store the result
+ *  @param  result Where to want to store the result
  */
-template <class R, class F> auto fulfill_promise(R& promise, F&& code) -> decltype(promise.set_value(code()))
+template <class R, class F> auto exec_simcall(R& result, F&& code) -> decltype(result.set_value(code()))
 {
   try {
-    promise.set_value(std::forward<F>(code)());
+    result.set_value(std::forward<F>(code)());
   } catch (...) {
-    promise.set_exception(std::current_exception());
+    result.set_exception(std::current_exception());
   }
 }
 
-template <class R, class F> auto fulfill_promise(R& promise, F&& code) -> decltype(promise.set_value())
+template <class R, class F> auto exec_simcall(R& result, F&& code) -> decltype(result.set_value())
 {
   try {
     std::forward<F>(code)();
-    promise.set_value();
+    result.set_value();
   } catch (...) {
-    promise.set_exception(std::current_exception());
+    result.set_exception(std::current_exception());
   }
 }
 } // namespace simgrid::kernel::actor

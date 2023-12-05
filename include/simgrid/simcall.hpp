@@ -48,12 +48,11 @@ template <class F> typename std::result_of_t<F()> simcall_answered(F&& code, Sim
   if (s4u::Actor::is_maestro())
     return std::forward<F>(code)();
 
-  // If we are in the application, pass the code to the maestro which
-  // executes it for us and reports the result. We use a std::future which
-  // conveniently handles the success/failure value for us.
+  // If we are in the application, pass the code to the maestro which executes it for us and reports the result.
+  // We use a SimcallResult which conveniently handles the success/failure value for us.
   using R = typename std::result_of_t<F()>;
   SimcallResult<R> result;
-  simcall_run_answered([&result, &code] { fulfill_promise(result, std::forward<F>(code)); }, observer);
+  simcall_run_answered([&result, &code] { exec_simcall(result, std::forward<F>(code)); }, observer);
   return result.get();
 }
 
@@ -75,7 +74,7 @@ template <class F> typename std::result_of_t<F()> simcall_object_access(ObjectAc
   // If called from another thread, do a real simcall. It will be short-cut on need
   using R = typename std::result_of_t<F()>;
   SimcallResult<R> result;
-  simcall_run_object_access([&result, &code] { fulfill_promise(result, std::forward<F>(code)); }, item);
+  simcall_run_object_access([&result, &code] { exec_simcall(result, std::forward<F>(code)); }, item);
 
   return result.get();
 }
@@ -103,7 +102,7 @@ template <class F> void simcall_blocking(F&& code, SimcallObserver* observer = n
   // Pass the code to the maestro which executes it for us and reports the result. We use a std::future which
   // conveniently handles the success/failure value for us.
   SimcallResult<void> result;
-  simcall_run_blocking([&result, &code] { fulfill_promise(result, std::forward<F>(code)); }, observer);
+  simcall_run_blocking([&result, &code] { exec_simcall(result, std::forward<F>(code)); }, observer);
   result.get(); // rethrow stored exception if any
 }
 
