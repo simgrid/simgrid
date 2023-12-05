@@ -17,7 +17,6 @@ class XBT_PUBLIC SleepImpl : public ActivityImpl_T<SleepImpl> {
 public:
   SleepImpl& set_host(s4u::Host* host);
   SleepImpl& set_duration(double duration);
-  void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
   SleepImpl* start();
 };

@@ -9,6 +9,7 @@
 #include "simgrid/s4u/Semaphore.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SynchroObserver.hpp"
+#include "xbt/ex.h"
 
 #include <atomic>
 #include <boost/intrusive/list.hpp>
@@ -37,9 +38,6 @@ public:
   void wait_for(actor::ActorImpl* issuer, double timeout) override;
   void finish() override;
   void cancel() override;
-  void set_exception(actor::ActorImpl* issuer) override
-  { /* nothing to do */
-  }
 };
 
 class XBT_PUBLIC SemaphoreImpl {

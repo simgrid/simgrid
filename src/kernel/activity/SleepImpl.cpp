@@ -33,10 +33,6 @@ SleepImpl* SleepImpl::start()
   return this;
 }
 
-void SleepImpl::set_exception(actor::ActorImpl* issuer)
-{
-  /* FIXME: Really, nothing bad can happen while we sleep? */
-}
 void SleepImpl::finish()
 {
   if (model_action_->get_state() == resource::Action::State::FAILED) {

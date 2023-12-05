@@ -10,6 +10,7 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/context/Context.hpp"
+#include "xbt/ex.h"
 
 namespace simgrid::kernel::activity {
 
@@ -43,7 +44,6 @@ public:
   virtual ActivityImpl* migrate(s4u::Host* to);
 
   ExecImpl* start();
-  void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
 
   void reset();

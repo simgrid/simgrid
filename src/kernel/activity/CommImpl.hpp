@@ -74,7 +74,6 @@ public:
   void suspend() override;
   void resume() override;
   void cancel() override;
-  void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
 
   std::function<void(void*)> clean_fun; /* Function to clean the detached src_buf if something goes wrong */

@@ -40,7 +40,6 @@ public:
   resource::DiskImpl* get_disk() const { return disk_; }
 
   IoImpl* start();
-  void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
 };
 } // namespace simgrid::kernel::activity

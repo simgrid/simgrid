@@ -183,7 +183,6 @@ void MessImpl::finish()
     } else {
       // Do not answer to dying actors
       if (not simcall->issuer_->wannadie()) {
-        set_exception(simcall->issuer_);
         simcall->issuer_->simcall_answer();
       }
     }

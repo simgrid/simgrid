@@ -42,7 +42,6 @@ public:
   void suspend() override { /* no action to suspend for Mess */ }
   void resume() override { /* no action to resume for Mess */ }
   void cancel() override;
-  void set_exception(actor::ActorImpl* issuer) override {};
   void finish() override;
 
   actor::ActorImplPtr src_actor_ = nullptr;
