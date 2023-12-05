@@ -690,7 +690,6 @@ set(headers_to_install
   include/xbt/PropertyHolder.hpp
   include/xbt/parmap.h
   include/xbt/parse_units.hpp
-  include/xbt/promise.hpp
   include/xbt/range.hpp
   include/xbt/random.hpp
   include/xbt/replay.hpp

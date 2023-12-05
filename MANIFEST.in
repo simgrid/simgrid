@@ -2051,7 +2051,6 @@ include include/xbt/misc.h
 include include/xbt/module.h
 include include/xbt/parmap.h
 include include/xbt/parse_units.hpp
-include include/xbt/promise.hpp
 include include/xbt/random.hpp
 include include/xbt/range.hpp
 include include/xbt/replay.hpp

@@ -1,5 +1,6 @@
 SimGrid (3.35.1) not released (target: Feb 24)
 
+- Remove the include/xbt/promise.hpp header, that was kinda internal.
 
 ----------------------------------------------------------------------------
 
