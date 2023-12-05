@@ -814,7 +814,7 @@ public:
   void set_value(T const& value);
   T get();
 private:
-  boost::variant<boost::blank, T, std::exception_ptr> value_;
+  std::variant<std::monostate, T, std::exception_ptr> value_;
 };
 @endcode~
 

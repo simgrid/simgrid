@@ -3,7 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cmath>
 #include <simgrid/Exception.hpp>
 #include <simgrid/comm.h>
 #include <simgrid/s4u/ActivitySet.hpp>
@@ -16,6 +15,9 @@
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
+
+#include <boost/core/demangle.hpp>
+#include <cmath>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm, s4u_activity, "S4U asynchronous communications");
 

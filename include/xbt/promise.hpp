@@ -6,15 +6,13 @@
 #ifndef XBT_PROMISE_HPP
 #define XBT_PROMISE_HPP
 
-#include <cstddef>
-
-#include <boost/variant.hpp>
 #include <exception>
 #include <functional>
 #include <future> // std::future_error
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
+#include <variant>
 #include <xbt/ex.h>
 
 namespace simgrid::kernel::actor {
@@ -36,15 +34,15 @@ public:
    **/
   T get()
   {
-    switch (value_.which()) {
+    switch (value_.index()) {
       case 1: {
-        T value = std::move(boost::get<T>(value_));
-        value_  = boost::blank();
+        T value = std::move(std::get<T>(value_));
+        value_  = std::monostate();
         return value;
       }
       case 2: {
-        std::exception_ptr exception = std::move(boost::get<std::exception_ptr>(value_));
-        value_                       = boost::blank();
+        std::exception_ptr exception = std::move(std::get<std::exception_ptr>(value_));
+        value_                       = std::monostate();
         std::rethrow_exception(std::move(exception));
         break;
       }
@@ -54,7 +52,7 @@ public:
   }
 
 private:
-  boost::variant<boost::blank, T, std::exception_ptr> value_;
+  std::variant<std::monostate, T, std::exception_ptr> value_;
 };
 
 template <> class SimcallResult<void> : public SimcallResult<std::nullptr_t> {

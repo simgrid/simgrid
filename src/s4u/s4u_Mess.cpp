@@ -14,6 +14,8 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 
+#include <boost/core/demangle.hpp>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_mess, s4u_activity, "S4U asynchronous messaging");
 
 namespace simgrid::s4u {
