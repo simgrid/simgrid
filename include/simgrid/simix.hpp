@@ -52,8 +52,8 @@ template <class F> typename std::result_of_t<F()> simcall_answered(F&& code, Sim
   // executes it for us and reports the result. We use a std::future which
   // conveniently handles the success/failure value for us.
   using R = typename std::result_of_t<F()>;
-  simgrid::xbt::Result<R> result;
-  simcall_run_answered([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, observer);
+  SimcallResult<R> result;
+  simcall_run_answered([&result, &code] { fulfill_promise(result, std::forward<F>(code)); }, observer);
   return result.get();
 }
 
@@ -74,8 +74,8 @@ template <class F> typename std::result_of_t<F()> simcall_object_access(ObjectAc
 
   // If called from another thread, do a real simcall. It will be short-cut on need
   using R = typename std::result_of_t<F()>;
-  simgrid::xbt::Result<R> result;
-  simcall_run_object_access([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, item);
+  SimcallResult<R> result;
+  simcall_run_object_access([&result, &code] { fulfill_promise(result, std::forward<F>(code)); }, item);
 
   return result.get();
 }
@@ -102,8 +102,8 @@ template <class F> void simcall_blocking(F&& code, SimcallObserver* observer = n
 
   // Pass the code to the maestro which executes it for us and reports the result. We use a std::future which
   // conveniently handles the success/failure value for us.
-  simgrid::xbt::Result<void> result;
-  simcall_run_blocking([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, observer);
+  SimcallResult<void> result;
+  simcall_run_blocking([&result, &code] { fulfill_promise(result, std::forward<F>(code)); }, observer);
   result.get(); // rethrow stored exception if any
 }
 
