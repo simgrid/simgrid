@@ -6,12 +6,8 @@
 #ifndef XBT_PROMISE_HPP
 #define XBT_PROMISE_HPP
 
-#include <exception>
 #include <functional>
-#include <future> // std::future_error
 #include <stdexcept>
-#include <type_traits>
-#include <utility>
 #include <variant>
 #include <xbt/ex.h>
 
@@ -22,16 +18,15 @@ namespace simgrid::kernel::actor {
  *  This is similar to `optional<expected<T>>`` but it with a Future/Promise like API.
  **/
 template <class T> class SimcallResult {
+  std::variant<std::monostate, T, std::exception_ptr> value_;
+
 public:
-  bool is_valid() const { return value_.which() > 0; }
+  bool is_valid() const { return value_.index() > 0; }
   void set_exception(std::exception_ptr e) { value_ = std::move(e); }
   void set_value(T&& value) { value_ = std::move(value); }
   void set_value(T const& value) { value_ = value; }
 
-  /** Extract the value from the future
-   *
-   *  After this, the value is invalid.
-   **/
+  /** Extract the value from the future. After this, the value is invalid. */
   T get()
   {
     switch (value_.index()) {
@@ -47,12 +42,9 @@ public:
         break;
       }
       default:
-        throw std::future_error(std::future_errc::no_state);
+        THROW_IMPOSSIBLE;
     }
   }
-
-private:
-  std::variant<std::monostate, T, std::exception_ptr> value_;
 };
 
 template <> class SimcallResult<void> : public SimcallResult<std::nullptr_t> {
@@ -100,25 +92,6 @@ template <class R, class F> auto fulfill_promise(R& promise, F&& code) -> declty
   } catch (...) {
     promise.set_exception(std::current_exception());
   }
-}
-
-/** Set a promise/result from a future/result
- *
- *  Roughly this does:
- *
- *  <pre>promise.set_value(future);</pre>
- *
- *  but it takes care of exceptions and works with `void`.
- *
- *  We might need this when working with generic code because
- *  the trivial implementation does not work with `void` (before C++1z).
- *
- *  @param promise output (a valid future or a result)
- *  @param future  input (a ready/waitable future or a valid result)
- */
-template <class P, class F> inline void set_promise(P& promise, F&& future)
-{
-  fulfill_promise(promise, [&future] { return std::forward<F>(future).get(); });
 }
 } // namespace simgrid::kernel::actor
 

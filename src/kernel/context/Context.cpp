@@ -11,6 +11,7 @@
 #include "src/kernel/context/Context.hpp"
 #include "src/sthread/sthread.h"
 
+#include <thread>
 #include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_context, kernel, "Context switching mechanism");
