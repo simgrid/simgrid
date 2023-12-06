@@ -13,6 +13,7 @@
 #include <functional>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 #include <variant>
 
 XBT_PUBLIC void simcall_run_answered(std::function<void()> const& code,
@@ -26,7 +27,7 @@ namespace simgrid::kernel::actor {
 
 /** This class is used to convey a result out of a simcall. It can be a value or an exception (or invalid yet) */
 /* Variant for codes returning a value */
-template <class F, typename ReturnType = std::result_of_t<F()>> class SimcallResult {
+template <class F, typename ReturnType = std::invoke_result_t<F>> class SimcallResult {
   std::variant<std::monostate, ReturnType, std::exception_ptr> value_;
 
 public:
@@ -115,7 +116,7 @@ public:
  * you may need to wait for that mutex to be unlocked by its current owner.
  * Potentially blocking simcall must be issued using simcall_blocking(), right below in this file.
  */
-template <class F> typename std::result_of_t<F()> simcall_answered(F&& code, SimcallObserver* observer = nullptr)
+template <class F> typename std::invoke_result_t<F> simcall_answered(F&& code, SimcallObserver* observer = nullptr)
 {
   // If we are in the maestro, we take the fast path and execute the
   // code directly without simcall marshalling/unmarshalling/dispatch:
@@ -124,7 +125,7 @@ template <class F> typename std::result_of_t<F()> simcall_answered(F&& code, Sim
 
   // If we are in the application, pass the code to the maestro which executes it for us and reports the result.
   // We use a SimcallResult which conveniently handles the success/failure value for us.
-  using R = typename std::result_of_t<F()>;
+  using R = typename std::invoke_result_t<F>;
   SimcallResult<F> result;
   simcall_run_answered([&result, &code] { result.exec(std::forward<F>(code)); }, observer);
   return result.get();
@@ -139,7 +140,7 @@ template <class F> typename std::result_of_t<F()> simcall_answered(F&& code, Sim
  * When running in MC, you want to make this access visible to the checker. Actually in this case, it's not visible from
  * the checker (and thus still use a fast track) if the setter is called from the actor that created the object.
  */
-template <class F> typename std::result_of_t<F()> simcall_object_access(ObjectAccessSimcallItem* item, F&& code)
+template <class F> typename std::invoke_result_t<F> simcall_object_access(ObjectAccessSimcallItem* item, F&& code)
 {
   // If we are in the maestro, we take the fast path and execute the code directly
   if (simgrid::s4u::Actor::is_maestro())
