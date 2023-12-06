@@ -31,14 +31,14 @@ template <class F, typename ReturnType = std::invoke_result_t<F>> class SimcallR
   std::variant<std::monostate, ReturnType, std::exception_ptr> value_;
 
 public:
-  void set_exception(std::exception_ptr e) {}
+  void set_exception(std::exception_ptr e) { value_ = std::move(e); }
   void set_value(ReturnType&& value) { value_ = std::move(value); }
   void set_value(ReturnType const& value) { value_ = value; }
 
   void exec(F&& code)
   {
     try {
-      set_value(std::forward<F>(code)());
+      set_value(code());
     } catch (...) {
       value_ = std::move(std::current_exception());
     }
@@ -70,12 +70,12 @@ template <class F> class SimcallResult<F, void> {
   std::variant<std::monostate, std::exception_ptr> value_;
 
 public:
-  void set_exception(std::exception_ptr e) {}
+  void set_exception(std::exception_ptr e) { value_ = std::move(e); }
 
   void exec(F&& code)
   {
     try {
-      std::forward<F>(code)();
+      code();
     } catch (...) {
       value_ = std::current_exception();
     }
