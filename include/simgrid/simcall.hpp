@@ -76,7 +76,7 @@ public:
     try {
       std::forward<F>(code)();
     } catch (...) {
-      value_ = std::move(std::current_exception());
+      value_ = std::current_exception();
     }
   }
 
