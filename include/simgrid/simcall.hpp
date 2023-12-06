@@ -25,70 +25,76 @@ XBT_PUBLIC void simcall_run_object_access(std::function<void()> const& code,
 namespace simgrid::kernel::actor {
 
 /** This class is used to convey a result out of a simcall. It can be a value or an exception (or invalid yet) */
-template <class T> class SimcallResult {
-  std::variant<std::monostate, T, std::exception_ptr> value_;
+/* Variant for codes returning a value */
+template <class F, typename ReturnType = std::result_of_t<F()>> class SimcallResult {
+  std::variant<std::monostate, ReturnType, std::exception_ptr> value_;
 
 public:
-  bool is_valid() const { return value_.index() > 0; }
-  void set_exception(std::exception_ptr e) { value_ = std::move(e); }
-  void set_value(T&& value) { value_ = std::move(value); }
-  void set_value(T const& value) { value_ = value; }
+  void set_exception(std::exception_ptr e) {}
+  void set_value(ReturnType&& value) { value_ = std::move(value); }
+  void set_value(ReturnType const& value) { value_ = value; }
+
+  void exec(F&& code)
+  {
+    try {
+      set_value(std::forward<F>(code)());
+    } catch (...) {
+      value_ = std::move(std::current_exception());
+    }
+  }
 
   /** Extract the value from the future. This invalidates the value, as it's moved away. */
-  T get()
+  ReturnType get()
   {
     switch (value_.index()) {
-      case 1: {
-        T value = std::move(std::get<T>(value_));
-        value_  = std::monostate();
-        return value;
+      case 1: { /* Valid value */
+        auto val = std::move(std::get<ReturnType>(value_));
+        value_   = std::monostate();
+        return val;
+        break;
       }
-      case 2: {
+      case 2: { /* Exception */
         std::exception_ptr exception = std::move(std::get<std::exception_ptr>(value_));
         value_                       = std::monostate();
         std::rethrow_exception(std::move(exception));
         break;
       }
-      default:
-        THROW_IMPOSSIBLE;
+    }
+    THROW_IMPOSSIBLE;
+  }
+};
+
+/* Variant for void-returning codes*/
+template <class F> class SimcallResult<F, void> {
+  std::variant<std::monostate, std::exception_ptr> value_;
+
+public:
+  void set_exception(std::exception_ptr e) {}
+
+  void exec(F&& code)
+  {
+    try {
+      std::forward<F>(code)();
+    } catch (...) {
+      value_ = std::move(std::current_exception());
+    }
+  }
+
+  /** Extract the value from the future. This invalidates the value, as it's moved away. */
+  void get()
+  {
+    switch (value_.index()) {
+      case 0: /* No exception */
+        break;
+      case 1: {
+        std::exception_ptr exception = std::move(std::get<std::exception_ptr>(value_));
+        value_                       = std::monostate();
+        std::rethrow_exception(std::move(exception));
+        break;
+      }
     }
   }
 };
-
-template <> class SimcallResult<void> : public SimcallResult<std::nullptr_t> {
-public:
-  void set_value() { SimcallResult<std::nullptr_t>::set_value(nullptr); }
-  void get() { SimcallResult<std::nullptr_t>::get(); }
-};
-
-template <class T> class SimcallResult<T&> : public SimcallResult<std::reference_wrapper<T>> {
-public:
-  void set_value(T& value) { SimcallResult<std::reference_wrapper<T>>::set_value(std::ref(value)); }
-  T& get() { return SimcallResult<std::reference_wrapper<T>>::get(); }
-};
-
-/** Execute some code and set a result accordingly. Takes care of exceptions, and works with `void` results.
- *
- *  C++1z may aleviate the need for this by allowing generic code returning void.
- */
-template <class R, class F> auto exec_simcall(R& result, F&& code) -> decltype(result.set_value(code()))
-{
-  try {
-    result.set_value(std::forward<F>(code)());
-  } catch (...) {
-    result.set_exception(std::current_exception());
-  }
-}
-
-template <class R, class F> auto exec_simcall(R& result, F&& code) -> decltype(result.set_value())
-{
-  try {
-    std::forward<F>(code)();
-    result.set_value();
-  } catch (...) {
-    result.set_exception(std::current_exception());
-  }
-}
 
 /** Execute some code in kernel context on behalf of the user code.
  *
@@ -119,8 +125,8 @@ template <class F> typename std::result_of_t<F()> simcall_answered(F&& code, Sim
   // If we are in the application, pass the code to the maestro which executes it for us and reports the result.
   // We use a SimcallResult which conveniently handles the success/failure value for us.
   using R = typename std::result_of_t<F()>;
-  SimcallResult<R> result;
-  simcall_run_answered([&result, &code] { exec_simcall(result, std::forward<F>(code)); }, observer);
+  SimcallResult<F> result;
+  simcall_run_answered([&result, &code] { result.exec(std::forward<F>(code)); }, observer);
   return result.get();
 }
 
@@ -140,9 +146,8 @@ template <class F> typename std::result_of_t<F()> simcall_object_access(ObjectAc
     return std::forward<F>(code)();
 
   // If called from another thread, do a real simcall. It will be short-cut on need
-  using R = typename std::result_of_t<F()>;
-  SimcallResult<R> result;
-  simcall_run_object_access([&result, &code] { exec_simcall(result, std::forward<F>(code)); }, item);
+  SimcallResult<F> result;
+  simcall_run_object_access([&result, &code] { result.exec(std::forward<F>(code)); }, item);
 
   return result.get();
 }
@@ -169,8 +174,8 @@ template <class F> void simcall_blocking(F&& code, SimcallObserver* observer = n
 
   // Pass the code to the maestro which executes it for us and reports the result. We use a std::future which
   // conveniently handles the success/failure value for us.
-  SimcallResult<void> result;
-  simcall_run_blocking([&result, &code] { exec_simcall(result, std::forward<F>(code)); }, observer);
+  SimcallResult<F> result;
+  simcall_run_blocking([&result, &code] { result.exec(std::forward<F>(code)); }, observer);
   result.get(); // rethrow stored exception if any
 }
 
