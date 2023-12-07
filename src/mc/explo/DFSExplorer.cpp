@@ -166,7 +166,7 @@ void DFSExplorer::explore(odpor::Execution S, stack_t state_stack)
              s->get_num(), state_stack.size());
   }
 
-  XBT_DEBUG("End of call Explore at depth %ld", S.size());
+  XBT_DEBUG("End of call Explore at depth %lu", S.size());
 }
 
 void DFSExplorer::run()
