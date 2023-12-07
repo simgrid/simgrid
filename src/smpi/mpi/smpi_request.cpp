@@ -185,8 +185,9 @@ bool Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
   bool match = match_common(req, req, ref);
   if (not match || ref->comm_ == MPI_COMM_UNINITIALIZED || ref->comm_->is_smp_comm())
     return match;
-  auto it = std::find(req->message_id_.begin(), req->message_id_.end(), ref->comm_->get_received_messages_count(ref->comm_->group()->rank(req->src_),
-                                              ref->comm_->group()->rank(req->dst_), req->tag_));
+  auto it = std::find(req->message_id_.begin(), req->message_id_.end(),
+                      ref->comm_->get_received_messages_count(ref->comm_->group()->rank(req->src_),
+                                                              ref->comm_->group()->rank(req->dst_), req->tag_));
   if (it != req->message_id_.end()) {
     if (((ref->flags_ & MPI_REQ_PROBE) == 0) && ((req->flags_ & MPI_REQ_PROBE) == 0)) {
       req->message_id_.erase(it);
@@ -439,9 +440,8 @@ void Request::sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype
   }
 }
 
-void Request::isendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,int dst, int sendtag,
-                       void *recvbuf, int recvcount, MPI_Datatype recvtype, int src, int recvtag,
-                       MPI_Comm comm, MPI_Request* request)
+void Request::isendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf,
+                        int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Request* request)
 {
   aid_t source = MPI_PROC_NULL;
   if (src == MPI_ANY_SOURCE)
@@ -449,9 +449,8 @@ void Request::isendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtyp
   else if (src != MPI_PROC_NULL)
     source = comm->group()->actor(src);
   aid_t destination = dst != MPI_PROC_NULL ? comm->group()->actor(dst) : MPI_PROC_NULL;
-  
-  (*request) = new Request( nullptr, 0, MPI_BYTE,
-                         src,dst, sendtag, comm, MPI_REQ_PERSISTENT|MPI_REQ_NBC);
+
+  (*request) = new Request(nullptr, 0, MPI_BYTE, src, dst, sendtag, comm, MPI_REQ_PERSISTENT | MPI_REQ_NBC);
   std::vector<MPI_Request> requests;
   if (aid_t myid = simgrid::s4u::this_actor::get_pid(); (destination == myid) && (source == myid)) {
     Datatype::copy(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype);

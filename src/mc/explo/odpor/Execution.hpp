@@ -173,7 +173,7 @@ public:
    * `std::nullopt` otherwise
    */
   std::optional<PartialExecution> get_odpor_extension_from(EventHandle e, EventHandle e_prime,
-                                                           const State& state_at_e) const;
+                                                           const SleepSetState& state_at_e) const;
 
   /**
    * @brief For a given sequence of actors `v` and a sequence of transitions `w`,
@@ -340,6 +340,20 @@ public:
    * the happens-before procedure, which is nontrivial...
    */
   bool happens_before(EventHandle e1, EventHandle e2) const;
+
+  /**
+   * @brief Whether the event represented by `e`
+   * "happens-before" the process p
+   * in the context of this execution
+   *
+   * In the terminology of the DPOR paper,
+   * this function computes
+   *
+   * `e --->_E p`
+   *
+   * where `E` is this execution
+   */
+  bool happens_before_process(EventHandle e, aid_t p) const;
 
   /**
    * @brief Extends the execution by one more step

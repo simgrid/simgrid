@@ -52,6 +52,10 @@ public:
 	actors_to_run_.at(best_aid).mark_todo();
   }
 
+  /** Ensure at least one transition is marked as todo among the enabled ones not done in E.
+   *  If required, it marks as todo the best transition according to the strategy. */
+  virtual void consider_best_among_set(std::unordered_set<aid_t> E) = 0;
+
   // Mark aid as todo. If it makes no sense, ie. if it is already done or not enabled,
   // else raise an error
   void consider_one(aid_t aid)
@@ -72,8 +76,23 @@ public:
         }
     return count;
   }
+  /** After the call to this function, at least one transition from set of process E will
+   *  be explored at some point, ie. one transition must be marked todo, already been marked
+   *  todo, or already been done */
+  void ensure_one_considered_among_set(std::unordered_set<aid_t> E)
+  {
+    for (auto& [p, actor] : actors_to_run_) {
+        // If we find an actor already satisfying condition E, we return
+        if (E.count(p) > 0 && (actor.is_done() or actor.is_todo()))
+          return;
+    }
+
+    consider_best_among_set(E);
+  }
 
   friend class State;
+  friend class SleepSetState;
+  friend class Reduction;
 };
 
 } // namespace simgrid::mc

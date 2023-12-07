@@ -85,6 +85,16 @@ public:
 
   virtual bool depends(const Transition* other) const { return true; }
 
+  /* Transitions can be co-enabled if there can exist a state in which one actor wants to do one of them
+     and an other actor wants to do the other one */
+  virtual bool can_be_co_enabled(const Transition* other) const
+  {
+    if (other->type_ < type_)
+      return other->can_be_co_enabled(this);
+    else
+      return other->aid_ != aid_;
+  }
+
   /**
    The reversible race detector should only be used if we already have the assumption
    this <* other (see Source set: a foundation for ODPOR). In particular this means that :

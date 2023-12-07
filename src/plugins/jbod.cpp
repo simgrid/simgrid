@@ -42,7 +42,7 @@ JbodIoPtr Jbod::read_async(sg_size_t size)
   switch(raid_level_) {
     case RAID::RAID0:
       read_size = size / num_disks_;
-      targets = controller_->get_disks();
+      targets   = controller_->get_disks();
       break;
     case RAID::RAID1:
       read_size = size;
@@ -50,17 +50,17 @@ JbodIoPtr Jbod::read_async(sg_size_t size)
       break;
     case RAID::RAID4:
       read_size = size / (num_disks_ - 1);
-      targets = controller_->get_disks();
+      targets   = controller_->get_disks();
       targets.pop_back();
       break;
     case RAID::RAID5:
       read_size = size / (num_disks_ - 1);
-      targets = controller_->get_disks();
+      targets   = controller_->get_disks();
       targets.erase(targets.begin() + (get_parity_disk_idx() + 1 % num_disks_));
       break;
     case RAID::RAID6:
       read_size = size / (num_disks_ - 2);
-      targets = controller_->get_disks();
+      targets   = controller_->get_disks();
       if ( (get_parity_disk_idx() + 2 % num_disks_) == 0 ) {
         targets.pop_back();
         targets.erase(targets.begin());

@@ -127,24 +127,52 @@ bool MutexTransition::depends(const Transition* o) const
   return false; // mutexes are INDEP with non-mutex transitions
 }
 
-bool SemaphoreTransition::reversible_race(const Transition* other) const
+bool MutexTransition::can_be_co_enabled(const Transition* o) const
 {
-  switch (type_) {
-    case Type::SEM_ASYNC_LOCK:
-      return true; // SemAsyncLock is always enabled
-    case Type::SEM_UNLOCK:
-      return true; // SemUnlock is always enabled
-    case Type::SEM_WAIT:
-      if (other->type_ == Transition::Type::SEM_UNLOCK &&
-          static_cast<const SemaphoreTransition*>(other)->get_capacity() <= 1) {
-        return false;
-      }
-      xbt_die("SEM_WAIT that is dependent with a SEM_UNLOCK should not be reversible. FixMe");
+  if (o->type_ < type_)
+    return o->depends(this);
+
+  // Transition executed by the same actor can never be co-enabled
+  if (o->aid_ == aid_)
+    return false;
+
+  // type_ <= other->type_ in  MUTEX_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT,
+
+  if (const auto* other = dynamic_cast<const MutexTransition*>(o)) {
+    // No interaction between two different mutexes
+    if (mutex_ != other->mutex_)
       return true;
-    default:
-      xbt_die("Unexpected transition type %s", to_c_str(type_));
+
+    // If someone can unlock, that someon has the mutex. Hence, nobody can wait on it
+    if (type_ == Type::MUTEX_UNLOCK && other->type_ == Type::MUTEX_WAIT)
+      return false;
+
+    // If someone can wait, that someon has the mutex. Hence, nobody else can wait on it
+    if (type_ == Type::MUTEX_WAIT && other->type_ == Type::MUTEX_WAIT)
+      return false;
   }
+
+  return true; // mutexes are INDEP with non-mutex transitions
 }
+
+  bool SemaphoreTransition::reversible_race(const Transition* other) const
+  {
+    switch (type_) {
+      case Type::SEM_ASYNC_LOCK:
+        return true; // SemAsyncLock is always enabled
+      case Type::SEM_UNLOCK:
+        return true; // SemUnlock is always enabled
+      case Type::SEM_WAIT:
+        if (other->type_ == Transition::Type::SEM_UNLOCK &&
+            static_cast<const SemaphoreTransition*>(other)->get_capacity() <= 1) {
+          return false;
+        }
+        xbt_die("SEM_WAIT that is dependent with a SEM_UNLOCK should not be reversible. FixMe");
+        return true;
+      default:
+        xbt_die("Unexpected transition type %s", to_c_str(type_));
+    }
+  }
 
 std::string SemaphoreTransition::to_string(bool verbose) const
 {

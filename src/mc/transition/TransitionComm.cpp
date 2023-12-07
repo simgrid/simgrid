@@ -6,7 +6,6 @@
 #include "src/mc/transition/TransitionComm.hpp"
 #include "simgrid/config.h"
 #include "src/mc/api/RemoteApp.hpp"
-#include "src/mc/api/State.hpp"
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
 

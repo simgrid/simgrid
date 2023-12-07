@@ -4,7 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/odpor/Execution.hpp"
-#include "src/mc/api/State.hpp"
+#include "src/mc/api/states/SleepSetState.hpp"
+#include "src/mc/api/states/State.hpp"
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
 #include <algorithm>
@@ -227,7 +228,7 @@ Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordere
 }
 
 std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle e, EventHandle e_prime,
-                                                                    const State& state_at_e) const
+                                                                    const SleepSetState& state_at_e) const
 {
   // `e` is assumed to be in a reversible race with `e_prime`.
   // If `e > e_prime`, then `e` occurs-after `e_prime` which means
@@ -473,6 +474,19 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
     E_v.push_transition(next_E_p);
   }
   return std::optional<PartialExecution>{std::move(w_now)};
+}
+
+bool Execution::happens_before_process(Execution::EventHandle e, aid_t p) const
+{
+
+  if (get_actor_with_handle(e) == p)
+    return true;
+
+  for (EventHandle k = e + 1; k < contents_.size(); k++) {
+    if (happens_before(e, k) && get_actor_with_handle(k) == p)
+      return true;
+  }
+  return false;
 }
 
 bool Execution::happens_before(Execution::EventHandle e1_handle, Execution::EventHandle e2_handle) const

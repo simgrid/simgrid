@@ -36,10 +36,11 @@ public:
       xbt_die("Aborting now.");
     }
   }
-  BasicStrategy()                     = default;
-  ~BasicStrategy() override           = default;
+  BasicStrategy()           = default;
+  ~BasicStrategy() override = default;
 
-  std::pair<aid_t, int> best_transition(bool must_be_todo) const override {
+  std::pair<aid_t, int> best_transition(bool must_be_todo) const override
+  {
     for (auto const& [aid, actor] : actors_to_run_) {
       /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
       if ((not actor.is_todo() && must_be_todo) || not actor.is_enabled() || actor.is_done())
@@ -48,6 +49,20 @@ public:
       return std::make_pair(aid, depth_);
     }
     return std::make_pair(-1, depth_);
+  }
+
+  void consider_best_among_set(std::unordered_set<aid_t> E) override
+  {
+    if (std::any_of(begin(E), end(E), [this](const auto& aid) { return actors_to_run_.at(aid).is_todo(); }))
+      return;
+    for (auto& [aid, actor] : actors_to_run_) {
+      /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
+      if (E.count(aid) > 0) {
+        xbt_assert(actor.is_enabled(), "Asked to consider one among a set containing the disabled actor %ld", aid);
+        actor.mark_todo();
+        return;
+      }
+    }
   }
 
   void execute_next(aid_t aid, RemoteApp& app) override { return; }

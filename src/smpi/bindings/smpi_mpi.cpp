@@ -258,9 +258,17 @@ WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int,MPI_Scatter,(const void *sendbuf, int send
 WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int,MPI_Scatterv,(const void *sendbuf, const int *sendcounts, const int *displs, MPI_Datatype sendtype, void *recvbuf, int recvcount,MPI_Datatype recvtype, int root, MPI_Comm comm),(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm))
 WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int,MPI_Send_init,(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request * request),(buf, count, datatype, dst, tag, comm, request))
 WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int,MPI_Sendrecv_replace,(void *buf, int count, MPI_Datatype datatype, int dst, int sendtag, int src, int recvtag,MPI_Comm comm, MPI_Status * status),(buf, count, datatype, dst, sendtag, src, recvtag, comm, status))
-WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int,MPI_Isendrecv_replace,(void *buf, int count, MPI_Datatype datatype, int dst, int sendtag, int src, int recvtag,MPI_Comm comm, MPI_Request* req),(buf, count, datatype, dst, sendtag, src, recvtag, comm, req))
+WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int, MPI_Isendrecv_replace,
+                                  (void* buf, int count, MPI_Datatype datatype, int dst, int sendtag, int src,
+                                   int recvtag, MPI_Comm comm, MPI_Request* req),
+                                  (buf, count, datatype, dst, sendtag, src, recvtag, comm, req))
 WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int,MPI_Sendrecv,(const void *sendbuf, int sendcount, MPI_Datatype sendtype,int dst, int sendtag, void *recvbuf, int recvcount,MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status * status),(sendbuf, sendcount, sendtype, dst, sendtag, recvbuf, recvcount, recvtype, src, recvtag,comm, status))
-WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int,MPI_Isendrecv,(const void *sendbuf, int sendcount, MPI_Datatype sendtype,int dst, int sendtag, void *recvbuf, int recvcount,MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Request* req),(sendbuf, sendcount, sendtype, dst, sendtag, recvbuf, recvcount, recvtype, src, recvtag,comm, req))
+WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int, MPI_Isendrecv,
+                                  (const void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag,
+                                   void* recvbuf, int recvcount, MPI_Datatype recvtype, int src, int recvtag,
+                                   MPI_Comm comm, MPI_Request* req),
+                                  (sendbuf, sendcount, sendtype, dst, sendtag, recvbuf, recvcount, recvtype, src,
+                                   recvtag, comm, req))
 WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int,MPI_Send,(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm),(buf, count, datatype, dst, tag, comm))
 WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int,MPI_Ssend_init,(const void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request),(buf, count, datatype, dest, tag, comm, request))
 WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int,MPI_Ssend,(const void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm) ,(buf, count, datatype, dest, tag, comm))

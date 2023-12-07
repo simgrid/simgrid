@@ -23,6 +23,7 @@ public:
   ActorJoinTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+  bool can_be_co_enabled(const Transition* other) const override;
   bool reversible_race(const Transition* other) const override;
 
   bool get_timeout() const { return timeout_; }

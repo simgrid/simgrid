@@ -82,7 +82,7 @@ public:
 };
 
 class ConditionVariableObserver final : public ResultingSimcall<bool> {
-  //mc::Transition::Type type_; Will be used when we implement CV on the MC side
+  // mc::Transition::Type type_; Will be used when we implement CV on the MC side
   activity::ConditionVariableImpl* const cond_;
   activity::MutexImpl* const mutex_;
   const double timeout_;

@@ -2235,8 +2235,12 @@ include src/mc/api/ClockVector.cpp
 include src/mc/api/ClockVector.hpp
 include src/mc/api/RemoteApp.cpp
 include src/mc/api/RemoteApp.hpp
-include src/mc/api/State.cpp
-include src/mc/api/State.hpp
+include src/mc/api/states/SleepSetState.cpp
+include src/mc/api/states/SleepSetState.hpp
+include src/mc/api/states/State.cpp
+include src/mc/api/states/State.hpp
+include src/mc/api/states/WutState.cpp
+include src/mc/api/states/WutState.hpp
 include src/mc/api/strategy/BasicStrategy.hpp
 include src/mc/api/strategy/MaxMatchComm.hpp
 include src/mc/api/strategy/MinMatchComm.hpp
@@ -2248,6 +2252,8 @@ include src/mc/explo/DFSExplorer.cpp
 include src/mc/explo/DFSExplorer.hpp
 include src/mc/explo/Exploration.cpp
 include src/mc/explo/Exploration.hpp
+include src/mc/explo/OutOfOrderExplorer.cpp
+include src/mc/explo/OutOfOrderExplorer.hpp
 include src/mc/explo/UdporChecker.cpp
 include src/mc/explo/UdporChecker.hpp
 include src/mc/explo/odpor/ClockVector_test.cpp
@@ -2261,6 +2267,13 @@ include src/mc/explo/odpor/WakeupTreeIterator.hpp
 include src/mc/explo/odpor/WakeupTree_test.cpp
 include src/mc/explo/odpor/odpor_forward.hpp
 include src/mc/explo/odpor/odpor_tests_private.hpp
+include src/mc/explo/reduction/DPOR.hpp
+include src/mc/explo/reduction/NoReduction.hpp
+include src/mc/explo/reduction/ODPOR.cpp
+include src/mc/explo/reduction/ODPOR.hpp
+include src/mc/explo/reduction/Reduction.cpp
+include src/mc/explo/reduction/Reduction.hpp
+include src/mc/explo/reduction/SDPOR.hpp
 include src/mc/explo/simgrid_mc.cpp
 include src/mc/explo/udpor/Comb.hpp
 include src/mc/explo/udpor/Configuration.cpp

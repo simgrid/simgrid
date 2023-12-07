@@ -207,6 +207,8 @@ public:
    */
   std::optional<WakeupTreeNode*> get_min_single_process_node() const;
 
+  void insert_at_root(std::shared_ptr<Transition> u);
+
   /** @brief Describes how a tree insertion was carried out */
   enum class InsertionResult { leaf, interior_node, root };
 

@@ -47,20 +47,47 @@ bool ActorJoinTransition::depends(const Transition* other) const
   return false;
 }
 
-bool ActorJoinTransition::reversible_race(const Transition* other) const
+bool ActorJoinTransition::can_be_co_enabled(const Transition* other) const
 {
-  xbt_assert(type_ == Type::ACTOR_JOIN, "Unexpected transition type %s", to_c_str(type_));
+  if (other->type_ < type_)
+    return other->can_be_co_enabled(this);
 
-  // ActorJoin races with another event iff its target `T` is the same as  the actor executing the other transition.
-  // Clearly, then, we could not join on that actor `T` and then run a transition by `T`, so no race is reversible
-  return false;
+  // Tansitions of a same actor have no chance at being co-enabled
+  if (other->aid_ == aid_)
+    return false;
+
+  // An actor join isn't enabled if the target can still act
+  if (other->aid_ == target_)
+    return false;
+
+  return true;
 }
 
-ActorSleepTransition::ActorSleepTransition(aid_t issuer, int times_considered, std::stringstream&)
-    : Transition(Type::ACTOR_SLEEP, issuer, times_considered)
-{
-  XBT_DEBUG("ActorSleepTransition()");
-}
+  bool ActorJoinTransition::reversible_race(const Transition* other) const
+  {
+    switch (type_) {
+      case Type::ACTOR_JOIN:
+        // ActorJoin races with another event iff its target `T` is the same as
+        // the actor executing the other transition. Clearly, then, we could not join
+        // on that actor `T` and then run a transition by `T`, so no race is reversible
+        return false;
+      default:
+        xbt_die("Unexpected transition type %s", to_c_str(type_));
+    }
+
+    xbt_assert(type_ == Type::ACTOR_JOIN, "Unexpected transition type %s", to_c_str(type_));
+
+    // ActorJoin races with another event iff its target `T` is the same as  the actor executing the other transition.
+    // Clearly, then, we could not join on that actor `T` and then run a transition by `T`, so no race is reversible
+    return false;
+  }
+
+  ActorSleepTransition::ActorSleepTransition(aid_t issuer, int times_considered, std::stringstream&)
+
+      : Transition(Type::ACTOR_SLEEP, issuer, times_considered)
+  {
+    XBT_DEBUG("ActorSleepTransition()");
+  }
 std::string ActorSleepTransition::to_string(bool verbose) const
 {
   return xbt::string_printf("ActorSleep()");

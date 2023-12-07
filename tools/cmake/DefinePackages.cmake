@@ -505,20 +505,20 @@ set(MC_SRC_STATELESS
   src/mc/api/ActorState.hpp
   src/mc/api/ClockVector.cpp
   src/mc/api/ClockVector.hpp
-  src/mc/api/State.cpp
-  src/mc/api/State.hpp
   src/mc/api/RemoteApp.cpp
   src/mc/api/RemoteApp.hpp
-
+ 
   src/mc/explo/DFSExplorer.cpp
   src/mc/explo/DFSExplorer.hpp
   src/mc/explo/Exploration.cpp
   src/mc/explo/Exploration.hpp
   src/mc/explo/CommunicationDeterminismChecker.cpp
+  src/mc/explo/OutOfOrderExplorer.cpp
+  src/mc/explo/OutOfOrderExplorer.hpp
 
   src/mc/explo/UdporChecker.cpp
   src/mc/explo/UdporChecker.hpp
-
+  
   src/mc/explo/udpor/Comb.hpp
   src/mc/explo/udpor/Configuration.hpp
   src/mc/explo/udpor/Configuration.cpp
@@ -555,6 +555,13 @@ set(MC_SRC_STATELESS
   src/mc/remote/RemotePtr.hpp
   src/mc/remote/mc_protocol.h
 
+  src/mc/api/states/SleepSetState.cpp
+  src/mc/api/states/SleepSetState.hpp
+  src/mc/api/states/State.cpp
+  src/mc/api/states/State.hpp
+  src/mc/api/states/WutState.cpp
+  src/mc/api/states/WutState.hpp
+  
   src/mc/transition/Transition.hpp
   src/mc/transition/TransitionActor.cpp
   src/mc/transition/TransitionActor.hpp
@@ -580,6 +587,14 @@ set(MC_SRC_STATELESS
   src/mc/api/strategy/MinMatchComm.hpp
   src/mc/api/strategy/Strategy.hpp
   src/mc/api/strategy/UniformStrategy.hpp
+  
+  src/mc/explo/reduction/Reduction.hpp
+  src/mc/explo/reduction/Reduction.cpp
+  src/mc/explo/reduction/NoReduction.hpp
+  src/mc/explo/reduction/DPOR.hpp
+  src/mc/explo/reduction/SDPOR.hpp
+  src/mc/explo/reduction/ODPOR.hpp
+  src/mc/explo/reduction/ODPOR.cpp
   )
 
 set(MC_SIMGRID_MC_SRC  src/mc/explo/simgrid_mc.cpp)

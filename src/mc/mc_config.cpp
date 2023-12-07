@@ -56,9 +56,18 @@ static simgrid::config::Flag<std::string> cfg_mc_reduction{
                 " 'none', 'dpor', 'sdpor', 'odpor', or 'udpor'");
     }};
 
+simgrid::config::Flag<std::string> _sg_mc_explore_algo{
+    "model-check/exploration-algo",
+    "Specify the type of search politic to use in MC algorithm",
+    "DFS",
+    {{"DFS",
+      "Depth First Search order: this search politic is the one following the best the classical reduction algorithm."},
+     {"OOO", "Out-Of-Order: this search politic allows for a better use of the strategy by augmenting the number of "
+             "state choices available at runtime."}}};
+
 simgrid::config::Flag<std::string> _sg_mc_strategy{
     "model-check/strategy",
-    "Specify the the kind of heuristic to use for guided model-checking",
+    "Specify the kind of heuristic to use for guided model-checking",
     "none",
     {{"none", "No specific strategy: simply pick the first available transition and act as a DFS."},
      {"max_match_comm", "Try to minimize the number of in-fly communication by appairing matching send and receive."},

@@ -1,7 +1,18 @@
 # We ignore the LD_PRELOAD lines from the expected output because they contain the build path
 ! ignore .*LD_PRELOAD.*
 
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:dpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-simple_mutex_with_threads_ok 4
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'dpor'
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 623 unique states visited; 40 backtracks (279 transition replays, 902 states visited overall)
+
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:dpor --cfg=model-check/exploration-algo:OOO --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-simple_mutex_with_threads_ok 4
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'dpor'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'OOO'
+> [0.000000] [mc_ooo/INFO] Start an Out-of-Order exploration. Reduction is: dpor.
+> [0.000000] [mc_ooo/INFO] Out-of-Order exploration ended. 623 unique states visited; 40 backtracks (279 transition replays, 902 states visited overall)
+
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-simple_mutex_with_threads_ok 4
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 548 unique states visited; 23 backtracks (125 transition replays, 696 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 548 unique states visited; 23 backtracks (125 transition replays, 673 states visited overall)

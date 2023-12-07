@@ -106,8 +106,9 @@ std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename)
   
   for (auto const& task: data["workflow"]["tasks"]) {
     if (task["type"] == "compute") {
-      current =
-          Exec::init()->set_name(task["name"].get<std::string>())->set_flops_amount(task["runtimeInSeconds"].get<double>());
+      current = Exec::init()
+                    ->set_name(task["name"].get<std::string>())
+                    ->set_flops_amount(task["runtimeInSeconds"].get<double>());
       if (task.contains("machine"))
         dynamic_cast<Exec*>(current.get())
             ->set_host(simgrid::s4u::Engine::get_instance()->host_by_name(task["machine"].get<std::string>()));

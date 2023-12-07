@@ -30,6 +30,7 @@ public:
   std::string to_string(bool verbose) const override;
   MutexTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream);
   bool depends(const Transition* other) const override;
+  bool can_be_co_enabled(const Transition* other) const override;
   bool reversible_race(const Transition* other) const override;
 
   uintptr_t get_mutex() const { return this->mutex_; }
