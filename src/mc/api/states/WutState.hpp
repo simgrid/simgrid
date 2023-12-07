@@ -8,6 +8,7 @@
 
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/states/SleepSetState.hpp"
+#include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "xbt/log.h"
 
 namespace simgrid::mc {
@@ -25,6 +26,8 @@ class XBT_PRIVATE WutState : public SleepSetState {
   /** Unique parent of this state. Required both for sleep set computation
       and for guided model-checking */
   std::shared_ptr<WutState> parent_state_ = nullptr;
+
+  void initialize_if_empty_wut();
 
 public:
   explicit WutState(RemoteApp& remote_app);

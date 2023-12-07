@@ -72,7 +72,7 @@ public:
     State* s = S->back().get();
 
     // With persistency, we only need to test the race detection for the lastly taken proc
-    aid_t proc = s->get_transition_in()->aid_;
+    aid_t proc                     = s->get_transition_in()->aid_;
     odpor::Execution E_before_last = E.get_prefix_before(E.size() - 1);
 
     if (std::optional<EventHandle> opt_i = max_dependent_dpor(E_before_last, s, proc); opt_i.has_value()) {
@@ -89,16 +89,19 @@ public:
     }
   }
 
-  bool has_to_be_explored(odpor::Execution E, stack_t* S) override
+  std::shared_ptr<State> state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state) override
   {
-    auto sleep_set_state = static_cast<SleepSetState*>(S->back().get());
-    xbt_assert(sleep_set_state != nullptr, "DPOR should use SleepSetState. Fix me");
+
+    std::shared_ptr<SleepSetState> sleep_set_state =
+        std::static_pointer_cast<SleepSetState>(Reduction::state_create(remote_app, parent_state));
+
     if (not sleep_set_state->get_enabled_minus_sleep().empty()) {
       sleep_set_state->consider_best();
-      return true;
     }
-    return false;
+
+    return sleep_set_state;
   }
+
   aid_t next_to_explore(odpor::Execution E, stack_t* S) override
   {
     if (S->back()->get_batrack_minus_done().empty())

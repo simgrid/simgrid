@@ -105,8 +105,6 @@ void OutOfOrderExplorer::run()
     XBT_DEBUG("Exploration depth=%zu (state:#%ld; %zu interleaves todo)", stack_.size(), state->get_num(),
               state->count_todo());
 
-    visited_states_count_++;
-
     // Backtrack if we reached the maximum depth
     if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
       if (reduction_mode_ == ReductionMode::dpor) {
@@ -176,6 +174,8 @@ void OutOfOrderExplorer::run()
     auto next_state = reduction_algo_->state_create(get_remote_app(), state);
     on_state_creation_signal(next_state.get(), get_remote_app());
 
+    visited_states_count_++;
+
     // Before leaving that state, if the transition we just took can be taken multiple times, we
     // need to give it to the opened states
     if (stack_.back()->count_todo_multiples() > 0)
@@ -187,11 +187,6 @@ void OutOfOrderExplorer::run()
     reduction_algo_->on_backtrack(state.get());
 
     reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
-
-    if (!reduction_algo_->has_to_be_explored(execution_seq_, &stack_)) {
-      this->backtrack();
-      continue;
-    }
 
     dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
                state->get_transition_out()->dot_string().c_str());
@@ -298,10 +293,10 @@ OutOfOrderExplorer::OutOfOrderExplorer(const std::vector<char*>& args, Reduction
   XBT_DEBUG("**************************************************");
 
   stack_.emplace_back(std::move(initial_state));
+  visited_states_count_++;
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   XBT_DEBUG("Initial state. %lu actors to consider", stack_.back()->get_actor_count());
-  reduction_algo_->has_to_be_explored(execution_seq_, &stack_);
   if (stack_.back()->count_todo_multiples() > 1)
     opened_states_.emplace_back(stack_.back());
 }

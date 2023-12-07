@@ -17,7 +17,6 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Executed 2: MUTEX_WAIT(mutex: 0, owner: 2) (stack depth: 5, state: 5, 0 interleaves)
 > [Checker] Sleep set actually containing:
 > [Checker] Executed 2: MUTEX_UNLOCK(mutex: 0, owner: -1) (stack depth: 6, state: 6, 0 interleaves)
-> [Checker] 0 actors remain, but none of them need to be interleaved (depth 8).
 > [Checker] Execution came to an end at 1;1;1;2;2;2 (state: 7, depth: 7)
 > [Checker] Sleep set actually containing:
 > [Checker]   <1,MUTEX_ASYNC_LOCK(mutex: 0, owner: 1)>
@@ -32,7 +31,6 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Executed 1: MUTEX_WAIT(mutex: 0, owner: 1) (stack depth: 5, state: 11, 0 interleaves)
 > [Checker] Sleep set actually containing:
 > [Checker] Executed 1: MUTEX_UNLOCK(mutex: 0, owner: -1) (stack depth: 6, state: 12, 0 interleaves)
-> [Checker] 0 actors remain, but none of them need to be interleaved (depth 8).
 > [Checker] Execution came to an end at 2;1;2;2;1;1 (state: 13, depth: 7)
 > [Checker] DFS exploration ended. 13 unique states visited; 1 backtracks (0 transition replays, 13 states visited overall)
 

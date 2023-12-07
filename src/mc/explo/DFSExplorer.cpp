@@ -150,25 +150,22 @@ void DFSExplorer::explore(odpor::Execution S, stack_t state_stack)
 
   reduction_algo_->races_computation(S, &state_stack);
 
-  if (reduction_algo_->has_to_be_explored(S, &state_stack)) {
+  aid_t next_to_explore;
 
-    aid_t next_to_explore;
+  while ((next_to_explore = reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
 
-    while ((next_to_explore = reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
-
-      simgrid_wrapper_explore(S, next_to_explore, state_stack);
-    }
-
-  } else {
-    XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", s->get_actor_count(),
-             state_stack.size() + 1);
-    get_remote_app().check_deadlock();
-    if (s->get_actor_count() == 0) {
-      get_remote_app().finalize_app();
-      XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
-               s->get_num(), state_stack.size());
-    }
+    simgrid_wrapper_explore(S, next_to_explore, state_stack);
   }
+
+  XBT_DEBUG("%lu actors remain, but none of them need to be interleaved (depth %zu).", s->get_actor_count(),
+            state_stack.size() + 1);
+  get_remote_app().check_deadlock();
+  if (s->get_actor_count() == 0) {
+    get_remote_app().finalize_app();
+    XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
+             s->get_num(), state_stack.size());
+  }
+
   XBT_DEBUG("End of call Explore at depth %ld", S.size());
 }
 

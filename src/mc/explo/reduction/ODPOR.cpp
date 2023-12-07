@@ -43,20 +43,6 @@ void ODPOR::races_computation(odpor::Execution E, stack_t* S, std::vector<std::s
   }
 }
 
-bool ODPOR::has_to_be_explored(odpor::Execution E, stack_t* S)
-{
-
-  WutState* s = static_cast<WutState*>(S->back().get());
-  xbt_assert(s != nullptr, "ODPOR should use WutState. Fix me");
-
-  // if no actor can be executed, then return
-  if (s->get_enabled_actors().empty())
-    return false;
-
-  s->seed_wakeup_tree_if_needed(E);
-  return true;
-}
-
 aid_t ODPOR::next_to_explore(odpor::Execution E, stack_t* S)
 {
   auto s = static_cast<WutState*>(S->back().get());

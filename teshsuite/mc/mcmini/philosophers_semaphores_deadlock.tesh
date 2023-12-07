@@ -62,4 +62,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_WAIT(mutex: 2, owner: 4)
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;2;2;3;3;3;2;3;4;4;4;3;4;4'
-> [0.000000] [mc_ooo/INFO] Out-of-Order exploration ended. 185 unique states visited; 16 backtracks (211 transition replays, 395 states visited overall)
+> [0.000000] [mc_ooo/INFO] Out-of-Order exploration ended. 185 unique states visited; 16 backtracks (211 transition replays, 396 states visited overall)

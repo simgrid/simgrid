@@ -10,7 +10,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'dpor'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'OOO'
 > [0.000000] [mc_ooo/INFO] Start an Out-of-Order exploration. Reduction is: dpor.
-> [0.000000] [mc_ooo/INFO] Out-of-Order exploration ended. 24 unique states visited; 1 backtracks (1 transition replays, 24 states visited overall)
+> [0.000000] [mc_ooo/INFO] Out-of-Order exploration ended. 24 unique states visited; 1 backtracks (1 transition replays, 25 states visited overall)
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-simple_semaphores_with_threads_ok 3
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'

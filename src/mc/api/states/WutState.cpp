@@ -14,7 +14,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wutstate, mc_state, "DFS exploration algorith
 
 namespace simgrid::mc {
 
-WutState::WutState(RemoteApp& remote_app) : SleepSetState(remote_app) {}
+WutState::WutState(RemoteApp& remote_app) : SleepSetState(remote_app)
+{
+  initialize_if_empty_wut();
+}
 
 WutState::WutState(RemoteApp& remote_app, std::shared_ptr<WutState> parent_state)
     : SleepSetState(remote_app, parent_state)
@@ -42,11 +45,32 @@ WutState::WutState(RemoteApp& remote_app, std::shared_ptr<WutState> parent_state
     xbt_abort();
   }
   wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(min_process_node.value());
+  initialize_if_empty_wut();
 }
 
 aid_t WutState::next_odpor_transition() const
 {
   return wakeup_tree_.get_min_single_process_actor().value_or(-1);
+}
+
+void WutState::initialize_if_empty_wut()
+{
+  xbt_assert(!has_initialized_wakeup_tree);
+  has_initialized_wakeup_tree = true;
+
+  if (wakeup_tree_.empty()) {
+    // Find an enabled transition to pick
+    for (const auto& [aid, actor] : get_actors_list()) {
+      if (actor.is_enabled() && !is_actor_sleeping(aid)) {
+        // For each variant of the transition that is enabled, we want to insert the action into the tree.
+        // This ensures that all variants are searched
+        for (unsigned times = 0; times < actor.get_max_considered(); ++times) {
+          wakeup_tree_.insert_at_root(actor.get_transition(times));
+        }
+        break; // Only one actor gets inserted (see pseudocode)
+      }
+    }
+  }
 }
 
 void WutState::seed_wakeup_tree_if_needed(const odpor::Execution& prior)

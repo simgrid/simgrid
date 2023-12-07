@@ -39,15 +39,17 @@ public:
     }
   }
 
-  bool has_to_be_explored(odpor::Execution E, stack_t* S) override
+  std::shared_ptr<State> state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state) override
   {
-    auto sleep_set_state = static_cast<SleepSetState*>(S->back().get());
-    xbt_assert(sleep_set_state != nullptr, "SDPOR should use SleepSetState. Fix me");
+
+    std::shared_ptr<SleepSetState> sleep_set_state =
+        std::static_pointer_cast<SleepSetState>(Reduction::state_create(remote_app, parent_state));
+
     if (not sleep_set_state->get_enabled_minus_sleep().empty()) {
       sleep_set_state->consider_best();
-      return true;
     }
-    return false;
+
+    return sleep_set_state;
   }
 
   aid_t next_to_explore(odpor::Execution E, stack_t* S) override

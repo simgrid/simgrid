@@ -7,6 +7,7 @@
 #define SIMGRID_MC_NOREDUCTION_HPP
 
 #include "simgrid/forward.h"
+#include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
@@ -21,11 +22,20 @@ public:
   ~NoReduction() override = default;
 
   void races_computation(odpor::Execution E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states) override{};
-  bool has_to_be_explored(odpor::Execution E, stack_t* S) override
+
+  std::shared_ptr<State> state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state) override
   {
-    S->back()->consider_all();
-    return S->back()->count_todo_multiples() > 0;
+    std::shared_ptr<State> state;
+    if (parent_state == nullptr)
+      state = std::make_shared<State>(remote_app);
+    else
+      state = std::make_shared<State>(remote_app, parent_state);
+
+    state->consider_all();
+
+    return state;
   }
+
   aid_t next_to_explore(odpor::Execution E, stack_t* S) override { return S->back()->next_transition_guided().first; }
   void on_backtrack(State* s) override{};
 };

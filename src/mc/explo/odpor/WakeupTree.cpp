@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
 
@@ -198,6 +199,12 @@ void WakeupTree::insert_node(std::unique_ptr<WakeupTreeNode> node)
 void WakeupTree::remove_node(WakeupTreeNode* node)
 {
   this->nodes_.erase(node);
+}
+
+void WakeupTree::insert_at_root(std::shared_ptr<Transition> u)
+{
+  WakeupTreeNode* new_node = this->make_node(u);
+  this->root_->add_child(new_node);
 }
 
 WakeupTree::InsertionResult WakeupTree::insert(const Execution& E, const PartialExecution& w)
