@@ -138,7 +138,7 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, 
   reduction_algo_->on_backtrack(state_stack.back().get());
 
   S = S.get_prefix_before(S.size() - 1);
-  XBT_DEBUG("End of explore_wrapper at depth %ld", S.size());
+  XBT_DEBUG("End of explore_wrapper at depth %lu", S.size());
 }
 
 void DFSExplorer::explore(odpor::Execution S, stack_t state_stack)
