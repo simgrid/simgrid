@@ -8,6 +8,7 @@
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
+#include "src/mc/transition/Transition.hpp"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wutstate, mc_state, "DFS exploration algorithm of the model-checker");
@@ -130,23 +131,6 @@ void WutState::sprout_tree_from_parent_state()
   this->wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(min_process_node.value());
 }
 
-void WutState::remove_subtree_using_current_out_transition()
-{
-  if (auto out_transition = get_transition_out(); out_transition != nullptr) {
-    if (const auto min_process_node = wakeup_tree_.get_min_single_process_node(); min_process_node.has_value()) {
-      xbt_assert((out_transition->aid_ == min_process_node.value()->get_actor()) &&
-                     (out_transition->type_ == min_process_node.value()->get_action()->type_),
-                 "We tried to make a subtree from a parent state who claimed to have executed `%s` "
-                 "but whose wakeup tree indicates it should have executed `%s`. This indicates "
-                 "that exploration is not following ODPOR. Are you sure you're choosing actors "
-                 "to schedule from the wakeup tree?",
-                 out_transition->to_string(false).c_str(),
-                 min_process_node.value()->get_action()->to_string(false).c_str());
-    }
-  }
-  wakeup_tree_.remove_min_single_process_subtree();
-}
-
 void WutState::remove_subtree_at_aid(const aid_t proc)
 {
   wakeup_tree_.remove_subtree_at_aid(proc);
@@ -158,21 +142,36 @@ odpor::WakeupTree::InsertionResult WutState::insert_into_wakeup_tree(const odpor
   return this->wakeup_tree_.insert(E, pe);
 }
 
+void WutState::remove_subtree_using_children_in_transition(const std::shared_ptr<Transition> transition)
+{
+  xbt_assert(transition != nullptr, "Children state should always have an in_transition");
+  if (const auto min_process_node = wakeup_tree_.get_min_single_process_node(); min_process_node.has_value()) {
+    xbt_assert((transition->aid_ == min_process_node.value()->get_actor()) &&
+                   (transition->type_ == min_process_node.value()->get_action()->type_),
+               "We tried to make a subtree from a parent state who claimed to have executed `%s` "
+               "but whose wakeup tree indicates it should have executed `%s`. This indicates "
+               "that exploration is not following ODPOR. Are you sure you're choosing actors "
+               "to schedule from the wakeup tree?",
+               transition->to_string(false).c_str(), min_process_node.value()->get_action()->to_string(false).c_str());
+  }
+
+  wakeup_tree_.remove_min_single_process_subtree();
+}
+
 void WutState::do_odpor_unwind()
 {
   XBT_DEBUG("Unwinding ODPOR from state %ld", get_expanded_states());
-  if (auto out_transition = get_transition_out(); out_transition != nullptr) {
-    remove_subtree_using_current_out_transition();
+  xbt_assert(parent_state_ != nullptr, "ODPOR shouldn't try to unwind from root state");
+  parent_state_->remove_subtree_using_children_in_transition(get_transition_in());
 
-    // Only when we've exhausted all variants of the transition which
-    // can be chosen from this state do we finally add the actor to the
-    // sleep set. This ensures that the current logic handling sleep sets
-    // works with ODPOR in the way we intend it to work. There is not a
-    // good way to perform transition equality in SimGrid; instead, we
-    // effectively simply check for the presence of an actor in the sleep set.
-    if (not get_actors_list().at(out_transition->aid_).has_more_to_consider())
-      add_sleep_set(std::move(out_transition));
-  }
+  // Only when we've exhausted all variants of the transition which
+  // can be chosen from this state do we finally add the actor to the
+  // sleep set. This ensures that the current logic handling sleep sets
+  // works with ODPOR in the way we intend it to work. There is not a
+  // good way to perform transition equality in SimGrid; instead, we
+  // effectively simply check for the presence of an actor in the sleep set.
+  if (not parent_state_->get_actors_list().at(get_transition_in()->aid_).has_more_to_consider())
+    parent_state_->add_sleep_set((get_transition_in()));
 }
 
 } // namespace simgrid::mc

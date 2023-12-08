@@ -181,10 +181,10 @@ void OutOfOrderExplorer::run()
     if (stack_.back()->count_todo_multiples() > 0)
       opened_states_.emplace_back(stack_.back());
 
+    reduction_algo_->on_backtrack(state.get());
+
     stack_.emplace_back(std::move(next_state));
     execution_seq_.push_transition(std::move(executed_transition));
-
-    reduction_algo_->on_backtrack(state.get());
 
     reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
 

@@ -22,8 +22,12 @@ std::shared_ptr<State> Reduction::state_create(RemoteApp& remote_app, std::share
 
 void Reduction::on_backtrack(State* s)
 {
-  SleepSetState* sleep_state = static_cast<SleepSetState*>(s);
-  xbt_assert(sleep_state != nullptr, "Wrong kind of state for this reduction. This shouldn't happen, fix me");
-  sleep_state->add_sleep_set(sleep_state->get_transition_out());
+  std::shared_ptr<State> parent = s->get_parent_state();
+  if (parent == nullptr) // this is the root
+    return;              // Backtracking from the root means we end exploration, nothing to do
+
+  std::shared_ptr<SleepSetState> sleep_parent = std::static_pointer_cast<SleepSetState>(parent);
+  xbt_assert(sleep_parent != nullptr, "Wrong kind of state for this reduction. This shouldn't happen, fix me");
+  sleep_parent->add_sleep_set(s->get_transition_in());
 }
 } // namespace simgrid::mc

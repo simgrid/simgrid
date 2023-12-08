@@ -21,7 +21,7 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, std::shared_ptr<SleepSetStat
    * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
    * it is not explored*/
   for (const auto& [aid, transition] : parent_state->get_sleep_set()) {
-    if (not parent_state->get_transition_out()->depends(transition.get())) {
+    if (not get_transition_in()->depends(transition.get())) {
       sleep_set_.try_emplace(aid, transition);
       if (strategy_->actors_to_run_.count(aid) != 0) {
         strategy_->actors_to_run_.at(aid).mark_done();

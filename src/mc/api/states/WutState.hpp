@@ -66,7 +66,7 @@ public:
    * @brief Removes the subtree rooted at the single-process node
    * `N` running actor `p` of this state's wakeup tree
    */
-  void remove_subtree_using_current_out_transition();
+  void remove_subtree_using_children_in_transition(const std::shared_ptr<Transition> transition);
   void remove_subtree_at_aid(aid_t proc);
   bool has_empty_tree() const { return this->wakeup_tree_.empty(); }
   std::string string_of_wut() const { return this->wakeup_tree_.string_of_whole_tree(); }
@@ -76,9 +76,9 @@ public:
    */
   odpor::WakeupTree::InsertionResult insert_into_wakeup_tree(const odpor::PartialExecution&, const odpor::Execution&);
 
-  /** @brief Prepares the state for re-exploration following
+  /** @brief Prepares the parent state for re-exploration following
    * another after having followed ODPOR from this state with
-   * the current out transition
+   * the current in transition
    *
    * After ODPOR has completed searching a maximal trace, it
    * finds the first point in the execution with a nonempty wakeup

@@ -43,8 +43,8 @@ public:
   virtual std::shared_ptr<State> state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state = nullptr);
 
   // Update the state s fields assuming we just ended the exploration of the subtree
-  // rooted in s, taking the transition s->out_transition_
-  // base case simply add to the sleep set the corresponding transition
+  // rooted in s.
+  // base case simply add the incoming transition to the sleep set of the parent
   virtual void on_backtrack(State* s);
 };
 

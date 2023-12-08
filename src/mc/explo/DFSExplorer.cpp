@@ -113,10 +113,10 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, 
   auto transition_to_be_executed = state->get_actors_list().at(next_actor).get_transition();
 
   auto executed_transition = state->execute_next(next_actor, get_remote_app());
-  on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
+  on_transition_execute_signal(executed_transition.get(), get_remote_app());
 
-  XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition_out()->aid_,
-           state->get_transition_out()->to_string().c_str(), state_stack.size(), state->get_num(), state->count_todo());
+  XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", executed_transition->aid_,
+           executed_transition->to_string().c_str(), state_stack.size(), state->get_num(), state->count_todo());
 
   auto next_state = reduction_algo_->state_create(get_remote_app(), state);
   on_state_creation_signal(next_state.get(), get_remote_app());
@@ -130,12 +130,12 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, 
 
   XBT_DEBUG("Backtracking from the exploration by one step");
 
+  reduction_algo_->on_backtrack(state_stack.back().get());
+
   is_execution_descending = false;
 
   state_stack.pop_back();
   stack_ = state_stack;
-
-  reduction_algo_->on_backtrack(state_stack.back().get());
 
   S = S.get_prefix_before(S.size() - 1);
   XBT_DEBUG("End of explore_wrapper at depth %lu", S.size());

@@ -74,6 +74,10 @@ std::shared_ptr<State> ODPOR::state_create(RemoteApp& remote_app, std::shared_pt
 
 void ODPOR::on_backtrack(State* s)
 {
+  std::shared_ptr<State> parent = s->get_parent_state();
+  if (parent == nullptr) // this is the root
+    return;              // Backtracking from the root means we end exploration, nothing to do
+
   auto wut_state = static_cast<WutState*>(s);
   xbt_assert(wut_state != nullptr, "ODPOR should use SleepSetState. Fix me");
   wut_state->do_odpor_unwind();
