@@ -18,46 +18,48 @@
 
 #include "mpitest.h"
 
-#define COUNT (4 * 1024 * 1024)
+#define COUNT (4*1024*1024)
 #define NCOMMS 4
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-  int* buff;
-  int size, rank;
-  int i;
-  MPI_Comm comms[NCOMMS];
-  MPI_Request reqs[NCOMMS];
+    int *buff;
+    int size, rank;
+    int i;
+    MPI_Comm comms[NCOMMS];
+    MPI_Request reqs[NCOMMS];
 
-  MTest_Init(&argc, &argv);
+    MTest_Init(&argc, &argv);
 
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  if (size != 2) {
-    fprintf(stderr, "Launch with two processes\n");
-    MPI_Abort(MPI_COMM_WORLD, 1);
-  }
+    if (size != 2) {
+        fprintf(stderr, "Launch with two processes\n");
+        MPI_Abort(MPI_COMM_WORLD, 1);
+    }
 
-  buff = malloc(COUNT * NCOMMS * sizeof(int));
+    buff = malloc(COUNT * NCOMMS * sizeof(int));
 
-  for (i = 0; i < NCOMMS; i++)
-    MPI_Comm_dup(MPI_COMM_WORLD, &comms[i]);
+    for (i = 0; i < NCOMMS; i++)
+        MPI_Comm_dup(MPI_COMM_WORLD, &comms[i]);
 
-  for (i = 0; i < NCOMMS; i++) {
-    if (rank == 0)
-      MPI_Isend(buff + COUNT * i, COUNT, MPI_INT, 1 /* dest */, 0 /* tag */, comms[i], &reqs[i]);
-    else
-      MPI_Irecv(buff + COUNT * i, COUNT, MPI_INT, 0 /* src */, 0 /* tag */, comms[i], &reqs[i]);
-  }
-  MPI_Waitall(NCOMMS, reqs, MPI_STATUSES_IGNORE);
+    for (i = 0; i < NCOMMS; i++) {
+        if (rank == 0)
+            MPI_Isend(buff + COUNT * i, COUNT, MPI_INT, 1 /* dest */ , 0 /* tag */ , comms[i],
+                      &reqs[i]);
+        else
+            MPI_Irecv(buff + COUNT * i, COUNT, MPI_INT, 0 /* src */ , 0 /* tag */ , comms[i],
+                      &reqs[i]);
+    }
+    MPI_Waitall(NCOMMS, reqs, MPI_STATUSES_IGNORE);
 
-  for (i = 0; i < NCOMMS; i++)
-    MPI_Comm_free(&comms[i]);
+    for (i = 0; i < NCOMMS; i++)
+        MPI_Comm_free(&comms[i]);
 
-  free(buff);
+    free(buff);
 
-  MTest_Finalize(0);
+    MTest_Finalize(0);
 
-  return 0;
+    return 0;
 }

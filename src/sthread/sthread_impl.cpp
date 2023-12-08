@@ -235,22 +235,19 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
   return 0;
 }
 
-int sthread_barrier_init(sthread_barrier_t* barrier, const sthread_barrierattr_t* attr, unsigned count)
-{
+int sthread_barrier_init(sthread_barrier_t* barrier, const sthread_barrierattr_t* attr, unsigned count){
   auto b = sg4::Barrier::create(count);
   intrusive_ptr_add_ref(b.get());
 
   barrier->barrier = b.get();
   return 0;
 }
-int sthread_barrier_wait(sthread_barrier_t* barrier)
-{
+int sthread_barrier_wait(sthread_barrier_t* barrier){
   XBT_DEBUG("%s(%p)", __func__, barrier);
   static_cast<sg4::Barrier*>(barrier->barrier)->wait();
   return 0;
 }
-int sthread_barrier_destroy(sthread_barrier_t* barrier)
-{
+int sthread_barrier_destroy(sthread_barrier_t* barrier){
   XBT_DEBUG("%s(%p)", __func__, barrier);
   intrusive_ptr_release(static_cast<sg4::Barrier*>(barrier->barrier));
   return 0;
@@ -261,7 +258,7 @@ int sthread_cond_init(sthread_cond_t* cond, sthread_condattr_t* attr)
   auto cv = sg4::ConditionVariable::create();
   intrusive_ptr_add_ref(cv.get());
 
-  cond->cond  = cv.get();
+  cond->cond = cv.get();
   cond->mutex = nullptr;
   return 0;
 }

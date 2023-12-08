@@ -134,11 +134,9 @@
 #define MPI_Rsend_init(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Rsend_init"), MPI_Rsend_init(__VA_ARGS__))
 #define MPI_Irsend(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Irsend"), MPI_Irsend(__VA_ARGS__))
 #define MPI_Sendrecv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Sendrecv"), MPI_Sendrecv(__VA_ARGS__))
-#define MPI_Isendrecv(...)                                                                                             \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Isendrecv"), MPI_Isendrecv(__VA_ARGS__))
+#define MPI_Isendrecv(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Isendrecv"), MPI_Isendrecv(__VA_ARGS__))
 #define MPI_Sendrecv_replace(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Sendrecv_replace"), MPI_Sendrecv_replace(__VA_ARGS__))
-#define MPI_Isendrecv_replace(...)                                                                                     \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Isendrecv_replace"), MPI_Isendrecv_replace(__VA_ARGS__))
+#define MPI_Isendrecv_replace(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Isendrecv_replace"), MPI_Isendrecv_replace(__VA_ARGS__))
 #define MPI_Test(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Test"), MPI_Test(__VA_ARGS__))
 #define MPI_Testany(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Testany"), MPI_Testany(__VA_ARGS__))
 #define MPI_Testall(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Testall"), MPI_Testall(__VA_ARGS__))
@@ -400,11 +398,7 @@
 #define MPI_Status_c2f(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Status_c2f"), MPI_Status_c2f(__VA_ARGS__))
 #define MPI_Parrived(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Parrived"), MPI_Parrived(__VA_ARGS__))
 #define MPI_Pready(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pready"), MPI_Pready(__VA_ARGS__))
-#define MPI_Pready_range(...)                                                                                          \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pready_range"), MPI_Pready_range(__VA_ARGS__))
-#define MPI_Pready_list(...)                                                                                           \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pready_list"), MPI_Pready_list(__VA_ARGS__))
-#define MPI_Precv_init(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Precv_init"), MPI_Precv_init(__VA_ARGS__))
-#define MPI_Psend_init(...)                                                                                            \
-  (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Psend_init"), MPI_Psend_init(__VA_ARGS__))
+#define MPI_Pready_range(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pready_range"), MPI_Pready_range(__VA_ARGS__))
+#define MPI_Pready_list(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Pready_list"), MPI_Pready_list(__VA_ARGS__))
+#define MPI_Precv_init(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Precv_init"), MPI_Precv_init(__VA_ARGS__))
+#define MPI_Psend_init(...) (smpi_trace_set_call_location(__FILE__, __LINE__, "MPI_Psend_init"), MPI_Psend_init(__VA_ARGS__))

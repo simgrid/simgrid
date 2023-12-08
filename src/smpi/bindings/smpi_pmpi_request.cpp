@@ -430,7 +430,7 @@ int PMPI_Sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int
 }
 
 int PMPI_Isendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf,
-                   int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Request* request)
+                  int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Request* request)
 {
   int retval = 0;
   SET_BUF1(sendbuf)
@@ -450,14 +450,14 @@ int PMPI_Isendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, in
   *request = MPI_REQUEST_NULL;
   const SmpiBenchGuard suspend_bench;
 
-  if (src == MPI_PROC_NULL && dst != MPI_PROC_NULL) {
-    *request = simgrid::smpi::Request::isend(sendbuf, sendcount, sendtype, dst, sendtag, comm);
-    retval   = MPI_SUCCESS;
-  } else if (dst == MPI_PROC_NULL) {
+  if (src == MPI_PROC_NULL && dst != MPI_PROC_NULL){
+    *request=simgrid::smpi::Request::isend(sendbuf, sendcount, sendtype, dst, sendtag, comm);
+    retval = MPI_SUCCESS;
+  } else if (dst == MPI_PROC_NULL){
     *request = simgrid::smpi::Request::irecv(recvbuf, recvcount, recvtype, src, recvtag, comm);
-    retval   = MPI_SUCCESS;
-  } else if (dst >= comm->group()->size() || dst < 0 ||
-             (src != MPI_ANY_SOURCE && (src >= comm->group()->size() || src < 0))) {
+    retval = MPI_SUCCESS;
+  } else if (dst >= comm->group()->size() || dst <0 ||
+      (src!=MPI_ANY_SOURCE && (src >= comm->group()->size() || src <0))){
     retval = MPI_ERR_RANK;
   } else {
     aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
@@ -470,14 +470,15 @@ int PMPI_Isendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, in
     dst_hack->push_back(dst_traced);
     src_hack->push_back(src_traced);
     TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::VarCollTIData("isendRecv", -1, sendcount, dst_hack, recvcount, src_hack,
-                                                         simgrid::smpi::Datatype::encode(sendtype),
-                                                         simgrid::smpi::Datatype::encode(recvtype)));
+                       new simgrid::instr::VarCollTIData(
+                           "isendRecv", -1, sendcount,
+                           dst_hack, recvcount, src_hack,
+                           simgrid::smpi::Datatype::encode(sendtype), simgrid::smpi::Datatype::encode(recvtype)));
 
     TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, sendtag, sendcount * sendtype->size());
 
     simgrid::smpi::Request::isendrecv(sendbuf, sendcount, sendtype, dst, sendtag, recvbuf, recvcount, recvtype, src,
-                                      recvtag, comm, request);
+                                     recvtag, comm, request);
     retval = MPI_SUCCESS;
 
     TRACE_smpi_recv(src_traced, my_proc_id, recvtag);
@@ -486,6 +487,7 @@ int PMPI_Isendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, in
 
   return retval;
 }
+
 
 int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, int sendtag, int src, int recvtag,
                           MPI_Comm comm, MPI_Status* status)
@@ -511,7 +513,7 @@ int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, 
 }
 
 int PMPI_Isendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, int sendtag, int src, int recvtag,
-                           MPI_Comm comm, MPI_Request* request)
+                          MPI_Comm comm, MPI_Request* request)
 {
   int retval = 0;
   SET_BUF1(buf)
@@ -524,7 +526,7 @@ int PMPI_Isendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst,
   int size = datatype->get_extent() * count;
   if (size == 0)
     return MPI_SUCCESS;
-  else if (size < 0)
+  else if (size <0)
     return MPI_ERR_ARG;
   std::vector<char> sendbuf(size);
   simgrid::smpi::Datatype::copy(buf, count, datatype, sendbuf.data(), count, datatype);

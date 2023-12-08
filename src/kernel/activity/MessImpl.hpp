@@ -39,12 +39,8 @@ public:
   void wait_for(actor::ActorImpl* issuer, double timeout) override;
 
   MessImpl* start();
-  void suspend() override
-  { /* no action to suspend for Mess */
-  }
-  void resume() override
-  { /* no action to resume for Mess */
-  }
+  void suspend() override { /* no action to suspend for Mess */ }
+  void resume() override { /* no action to resume for Mess */ }
   void cancel() override;
   void finish() override;
 

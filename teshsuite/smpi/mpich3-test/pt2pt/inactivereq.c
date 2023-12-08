@@ -40,8 +40,8 @@ int StatusEmpty(MPI_Status * s)
     return errs ? 0 : 1;
 }
 
-int test_recv_init(int src_rank, const char* test_name);
-int test_recv_init(int src_rank, const char* test_name)
+int test_recv_init(int src_rank, const char *test_name);
+int test_recv_init(int src_rank, const char *test_name)
 {
     MPI_Request r;
     MPI_Status s;
@@ -52,8 +52,8 @@ int test_recv_init(int src_rank, const char* test_name)
 
     MPI_Recv_init(buf, 10, MPI_INT, src_rank, tag, MPI_COMM_WORLD, &r);
 
-    flag         = 0;
-    s.MPI_TAG    = 10;
+    flag = 0;
+    s.MPI_TAG = 10;
     s.MPI_SOURCE = 10;
     MPI_Test(&r, &flag, &s);
     if (!flag) {
@@ -67,7 +67,7 @@ int test_recv_init(int src_rank, const char* test_name)
         printf("Status not empty after MPI_Test (%s)\n", test_name);
     }
 
-    s.MPI_TAG    = 10;
+    s.MPI_TAG = 10;
     s.MPI_SOURCE = 10;
     MPI_Wait(&r, &s);
     if (!StatusEmpty(&s)) {
@@ -80,7 +80,7 @@ int test_recv_init(int src_rank, const char* test_name)
     return errs;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     MPI_Request r;
     MPI_Status s;
@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
 
     errs += test_recv_init(MPI_ANY_SOURCE, "recv-anysource");
 
-fn_exit:
+  fn_exit:
     MTest_Finalize(errs);
     return MTestReturnValue(errs);
 }

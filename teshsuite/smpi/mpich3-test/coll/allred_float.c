@@ -27,72 +27,72 @@ float buf[N];
 
 static void init_buf(int rank, int pos1, int pos2)
 {
-  /* Mix a pair of (BIG, -BIG) and TINY, the sum of array will be the sum of
-   * all TINYs if we add (BIG, -BIG) first, but different results following
-   * different associativity. A valid algorithm need to produce consistent
-   * results on all ranks.
-   */
-  for (int i = 0; i < N; i++) {
-    if (rank == pos1) {
-      buf[i] = BIG;
-    } else if (rank == pos2) {
-      buf[i] = -BIG;
-    } else {
-      buf[i] = TINY;
+    /* Mix a pair of (BIG, -BIG) and TINY, the sum of array will be the sum of
+     * all TINYs if we add (BIG, -BIG) first, but different results following
+     * different associativity. A valid algorithm need to produce consistent
+     * results on all ranks.
+     */
+    for (int i = 0; i < N; i++) {
+        if (rank == pos1) {
+            buf[i] = BIG;
+        } else if (rank == pos2) {
+            buf[i] = -BIG;
+        } else {
+            buf[i] = TINY;
+        }
     }
-  }
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-  int errs = 0;
+    int errs = 0;
 
-  MTest_Init(&argc, &argv);
+    MTest_Init(&argc, &argv);
 
-  int rank, size;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  if (size < 3) {
-    printf("At least 3 processes required. More (e.g. 10) is recommended.\n");
-    MPI_Abort(MPI_COMM_WORLD, 1);
-  }
-
-  for (int pos1 = 0; pos1 < size; pos1++) {
-    for (int pos2 = pos1 + 1; pos2 < size; pos2++) {
-      init_buf(rank, pos1, pos2);
-
-      MPI_Allreduce(MPI_IN_PLACE, buf, N, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
-
-      float* check_buf = NULL;
-      if (rank == 0) {
-        check_buf = malloc(N * size * sizeof(float));
-      }
-      MPI_Gather(buf, N, MPI_FLOAT, check_buf, N, MPI_FLOAT, 0, MPI_COMM_WORLD);
-
-      if (rank == 0) {
-        MTestPrintfMsg(1, "BIG positions = (%d, %d), result = [", pos1, pos2);
-        for (int j = 0; j < N; j++) {
-          MTestPrintfMsg(1, "%f ", buf[j]);
-        }
-        MTestPrintfMsg(1, "]\n");
-
-        for (int i = 0; i < size; i++) {
-          for (int j = 0; j < N; j++) {
-            if (memcmp(&check_buf[i * N + j], &buf[j], sizeof(float)) != 0) {
-              if (errs < 10) {
-                printf("(%d - %d) Result [%d] from rank %d mismatch: %f != %f\n", pos1, pos2, j, i,
-                       check_buf[i * N + j], buf[j]);
-              }
-              errs++;
-            }
-          }
-        }
-        free(check_buf);
-      }
+    if (size < 3) {
+        printf("At least 3 processes required. More (e.g. 10) is recommended.\n");
+        MPI_Abort(MPI_COMM_WORLD, 1);
     }
-  }
 
-  MTest_Finalize(errs);
-  return MTestReturnValue(errs);
+    for (int pos1 = 0; pos1 < size; pos1++) {
+        for (int pos2 = pos1 + 1; pos2 < size; pos2++) {
+            init_buf(rank, pos1, pos2);
+
+            MPI_Allreduce(MPI_IN_PLACE, buf, N, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
+
+            float *check_buf=NULL;
+            if (rank == 0) {
+                check_buf = malloc(N * size * sizeof(float));
+            }
+            MPI_Gather(buf, N, MPI_FLOAT, check_buf, N, MPI_FLOAT, 0, MPI_COMM_WORLD);
+
+            if (rank == 0) {
+                MTestPrintfMsg(1, "BIG positions = (%d, %d), result = [", pos1, pos2);
+                for (int j = 0; j < N; j++) {
+                    MTestPrintfMsg(1, "%f ", buf[j]);
+                }
+                MTestPrintfMsg(1, "]\n");
+
+                for (int i = 0; i < size; i++) {
+                    for (int j = 0; j < N; j++) {
+                        if (memcmp(&check_buf[i * N + j], &buf[j], sizeof(float)) != 0) {
+                            if (errs < 10) {
+                                printf("(%d - %d) Result [%d] from rank %d mismatch: %f != %f\n",
+                                       pos1, pos2, j, i, check_buf[i * N + j], buf[j]);
+                            }
+                            errs++;
+                        }
+                    }
+                }
+                free(check_buf);
+            }
+        }
+    }
+
+    MTest_Finalize(errs);
+    return MTestReturnValue(errs);
 }
