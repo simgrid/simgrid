@@ -22,7 +22,6 @@
 #include "xbt/string.hpp"
 #include "xbt/sysdep.h"
 
-#include <bits/types/stack_t.h>
 #include <cassert>
 #include <cstdio>
 
