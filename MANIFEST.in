@@ -2244,7 +2244,7 @@ include src/mc/api/states/WutState.hpp
 include src/mc/api/strategy/BasicStrategy.hpp
 include src/mc/api/strategy/MaxMatchComm.hpp
 include src/mc/api/strategy/MinMatchComm.hpp
-include src/mc/api/strategy/Strategy.hpp
+include src/mc/api/strategy/StratLocalInfo.hpp
 include src/mc/api/strategy/UniformStrategy.hpp
 include src/mc/datatypes.h
 include src/mc/explo/CommunicationDeterminismChecker.cpp

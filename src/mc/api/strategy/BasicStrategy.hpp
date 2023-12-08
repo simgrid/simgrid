@@ -6,7 +6,8 @@
 #ifndef SIMGRID_MC_BASICSTRATEGY_HPP
 #define SIMGRID_MC_BASICSTRATEGY_HPP
 
-#include "Strategy.hpp"
+#include "StratLocalInfo.hpp"
+#include "src/mc/api/strategy/StratLocalInfo.hpp"
 #include "src/mc/explo/Exploration.hpp"
 
 XBT_LOG_EXTERNAL_CATEGORY(mc_dfs);
@@ -15,12 +16,12 @@ namespace simgrid::mc {
 
 /** Basic MC guiding class which corresponds to no guide. When asked for different states
  *  it will follow a depth first search politics to minize the number of opened states. */
-class BasicStrategy : public Strategy {
+class BasicStrategy : public StratLocalInfo {
   int depth_ = _sg_mc_max_depth; // Arbitrary starting point. next_transition must return a positive value to work with
                                  // threshold in DFSExplorer
 
 public:
-  void copy_from(const Strategy* strategy) override
+  void copy_from(const StratLocalInfo* strategy) override
   {
     const auto* cast_strategy = dynamic_cast<BasicStrategy const*>(strategy);
     xbt_assert(cast_strategy != nullptr);

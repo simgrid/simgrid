@@ -6,13 +6,12 @@
 #ifndef SIMGRID_MC_UNIFORMSTRATEGY_HPP
 #define SIMGRID_MC_UNIFORMSTRATEGY_HPP
 
-#include "src/mc/transition/Transition.hpp"
 #include "xbt/random.hpp"
 
 namespace simgrid::mc {
 
 /** Guiding strategy that valuate states randomly */
-class UniformStrategy : public Strategy {
+class UniformStrategy : public StratLocalInfo {
   static constexpr int MAX_RAND = 100000;
 
   std::map<aid_t, int> valuation;
@@ -23,7 +22,7 @@ public:
     for (long aid = 0; aid < 10; aid++)
       valuation[aid] = xbt::random::uniform_int(0, MAX_RAND);
   }
-  void copy_from(const Strategy* strategy) override
+  void copy_from(const StratLocalInfo* strategy) override
   {
     for (auto const& [aid, _] : actors_to_run_)
       valuation[aid] = xbt::random::uniform_int(0, MAX_RAND);

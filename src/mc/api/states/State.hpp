@@ -9,7 +9,7 @@
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/api/ClockVector.hpp"
 #include "src/mc/api/RemoteApp.hpp"
-#include "src/mc/api/strategy/Strategy.hpp"
+#include "src/mc/api/strategy/StratLocalInfo.hpp"
 #include "src/mc/transition/Transition.hpp"
 
 namespace simgrid::mc {
@@ -32,7 +32,7 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   std::shared_ptr<State> parent_state_ = nullptr;
 
 protected:
-  std::shared_ptr<Strategy> strategy_;
+  std::shared_ptr<StratLocalInfo> strategy_;
 
 public:
   explicit State(RemoteApp& remote_app);

@@ -12,7 +12,7 @@ namespace simgrid::mc {
 
 /** Wait MC guiding class that aims at minimizing the number of in-fly communication.
  *  When possible, it will try to match corresponding in-fly communications. */
-class MaxMatchComm : public Strategy {
+class MaxMatchComm : public StratLocalInfo {
   /** Stores for each mailbox what kind of transition is waiting on it.
    *  Negative number means that much recv are waiting on that mailbox, while
    *  a positiv number means that much send are waiting there. */
@@ -23,7 +23,7 @@ class MaxMatchComm : public Strategy {
   unsigned last_mailbox_ = 0;
 
 public:
-  void copy_from(const Strategy* strategy) override
+  void copy_from(const StratLocalInfo* strategy) override
   {
     const auto* cast_strategy = dynamic_cast<MaxMatchComm const*>(strategy);
     xbt_assert(cast_strategy != nullptr);
