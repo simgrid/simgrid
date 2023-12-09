@@ -9,6 +9,7 @@
 #include "src/kernel/activity/TimeoutDetector.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
+#include "xbt/asserts.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_timeout, kernel, "Kernel internal activity to detect timeouts");
 
@@ -21,6 +22,7 @@ TimeoutDetector& TimeoutDetector::set_host(s4u::Host* host)
 }
 TimeoutDetector& TimeoutDetector::set_timeout(double timeout)
 {
+  xbt_assert(timeout >= 0, "Timeout cannot be %f", timeout);
   timeout_ = timeout;
   return *this;
 }
@@ -55,13 +57,8 @@ void TimeoutDetector::finish()
   actor::Simcall* simcall = simcalls_.front();
   simcalls_.pop_front();
 
-  if (model_action_->get_state() == resource::Action::State::FAILED) {
-    simcall->issuer_->set_wannadie();
-    simcall->issuer_->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
-  } else if (model_action_->get_state() == resource::Action::State::FINISHED) {
-    set_state(State::SRC_TIMEOUT);
-  }
-
+  xbt_assert(model_action_->get_state() == resource::Action::State::FINISHED);
+  set_state(State::SRC_TIMEOUT);
   clean_action();
 
   finish_callback_();

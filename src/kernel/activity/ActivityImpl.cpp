@@ -107,7 +107,7 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   /* If the synchro is already finished then perform the error handling */
   if (state_ != State::WAITING && state_ != State::RUNNING) {
     finish();
-  } else {
+  } else if (timeout >= 0.) {
     /* As Messages in Message Queues are virtually instantaneous, we do not need a timeout */
     /* Or maybe we do, and will have to implement a specific way to handle them is need arises */
     if (dynamic_cast<MessImpl*>(this) != nullptr)

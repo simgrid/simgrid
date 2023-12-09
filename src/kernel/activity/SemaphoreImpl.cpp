@@ -7,7 +7,6 @@
 #include <simgrid/s4u/Host.hpp>
 
 #include "src/kernel/activity/SemaphoreImpl.hpp"
-#include "src/kernel/activity/TimeoutDetector.hpp"
 #include "src/kernel/actor/SynchroObserver.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 

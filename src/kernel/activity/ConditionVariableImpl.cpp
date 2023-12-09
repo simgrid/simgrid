@@ -71,15 +71,17 @@ void ConditionVariableImpl::wait(MutexImpl* mutex, double timeout, actor::ActorI
   mutex_ = mutex;
   mutex->unlock(issuer);
 
-  TimeoutDetectorPtr detector(new TimeoutDetector([this, issuer]() {
-    this->remove_sleeping_actor(*issuer);
-    auto* observer = dynamic_cast<kernel::actor::ConditionVariableObserver*>(issuer->simcall_.observer_);
-    xbt_assert(observer != nullptr);
-    observer->set_result(true);
-  }));
-  detector->set_host(issuer->get_host()).set_timeout(timeout).start();
-  detector->register_simcall(&issuer->simcall_);
   sleeping_.push_back(*issuer);
+  if (timeout > 0) {
+    TimeoutDetectorPtr detector(new TimeoutDetector([this, issuer]() {
+      this->remove_sleeping_actor(*issuer);
+      auto* observer = dynamic_cast<kernel::actor::ConditionVariableObserver*>(issuer->simcall_.observer_);
+      xbt_assert(observer != nullptr);
+      observer->set_result(true);
+    }));
+    detector->set_host(issuer->get_host()).set_timeout(timeout).start();
+    detector->register_simcall(&issuer->simcall_);
+  }
 }
 
 // boost::intrusive_ptr<ConditionVariableImpl> support:
