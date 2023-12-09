@@ -168,33 +168,32 @@ void ExecImpl::finish()
      * simcall */
     handle_activity_waitany(&issuer->simcall_);
 
-    switch (get_state()) {
-      case State::FAILED:
-        static_cast<s4u::Exec*>(get_iface())->complete(s4u::Activity::State::FAILED);
-        if (issuer->get_host()->is_on())
-          issuer->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
-        else /* else, the actor will be killed with no possibility to survive */
-          issuer->set_wannadie();
-        break;
-
-      case State::CANCELED:
-        issuer->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Execution Canceled"));
-        break;
-
-      case State::TIMEOUT:
-        issuer->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
-        break;
-
-      default:
-        xbt_assert(get_state() == State::DONE, "Internal error in ExecImpl::finish(): unexpected synchro state %s",
-                   get_state_str());
-    }
-
-    /* Fail the process if the host is down */
-    if (issuer->get_host()->is_on())
-      issuer->simcall_answer();
-    else
+    if (not issuer->get_host()->is_on())
       issuer->set_wannadie();
+    else if (not issuer->wannadie()) { // Do not answer to dying actors
+      switch (get_state()) {
+        case State::FAILED:
+          static_cast<s4u::Exec*>(get_iface())->complete(s4u::Activity::State::FAILED);
+          if (issuer->get_host()->is_on())
+            issuer->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
+          else /* else, the actor will be killed with no possibility to survive */
+            issuer->set_wannadie();
+          break;
+
+        case State::CANCELED:
+          issuer->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Execution Canceled"));
+          break;
+
+        case State::TIMEOUT:
+          issuer->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
+          break;
+
+        default:
+          xbt_assert(get_state() == State::DONE, "Internal error in ExecImpl::finish(): unexpected synchro state %s",
+                     get_state_str());
+      }
+      issuer->simcall_answer();
+    }
   }
 }
 

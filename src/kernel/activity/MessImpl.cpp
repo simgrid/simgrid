@@ -179,11 +179,8 @@ void MessImpl::finish()
 
     if (not issuer->get_host()->is_on()) {
       issuer->set_wannadie();
-    } else {
-      // Do not answer to dying actors
-      if (not issuer->wannadie()) {
-        issuer->simcall_answer();
-      }
+    } else if (not issuer->wannadie()) { // Do not answer to dying actors
+      issuer->simcall_answer();
     }
 
     issuer->activities_.erase(this);
