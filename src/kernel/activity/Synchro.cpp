@@ -52,24 +52,18 @@ void SynchroImpl::cancel()
 void SynchroImpl::finish()
 {
   XBT_DEBUG("SynchroImpl::finish() in state %s", get_state_str());
-  if (model_action_->get_state() == resource::Action::State::FAILED)
-    set_state(State::FAILED);
-  else if (model_action_->get_state() == resource::Action::State::FINISHED)
-    set_state(State::SRC_TIMEOUT);
-
-  clean_action();
-
   xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
   actor::Simcall* simcall = simcalls_.front();
   simcalls_.pop_front();
 
-  if (get_state() == State::FAILED) {
+  if (model_action_->get_state() == resource::Action::State::FAILED) {
     simcall->issuer_->set_wannadie();
     simcall->issuer_->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
-  } else {
-    xbt_assert(get_state() == State::SRC_TIMEOUT, "Internal error in SynchroImpl::finish() unexpected synchro state %s",
-               get_state_str());
+  } else if (model_action_->get_state() == resource::Action::State::FINISHED) {
+    set_state(State::SRC_TIMEOUT);
   }
+
+  clean_action();
 
   finish_callback_();
   simcall->issuer_->waiting_synchro_ = nullptr;
