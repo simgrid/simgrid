@@ -50,6 +50,27 @@ actor::ActorImpl* ActivityImpl::unregister_first_simcall()
   simcalls_.pop_front();
 
   simcall->issuer_->waiting_synchro_ = nullptr;
+
+  /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
+   * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
+   * simcall */
+  if (auto* observer = dynamic_cast<actor::ActivityWaitanySimcall*>(simcall->observer_)) {
+    if (simcall->timeout_cb_) {
+      simcall->timeout_cb_->remove();
+      simcall->timeout_cb_ = nullptr;
+    }
+
+    auto activities = observer->get_activities();
+    for (auto* act : activities)
+      act->unregister_simcall(simcall);
+
+    if (not MC_is_active() && not MC_record_replay_is_active()) {
+      auto element = std::find(activities.begin(), activities.end(), this);
+      int rank     = element != activities.end() ? static_cast<int>(std::distance(activities.begin(), element)) : -1;
+      observer->set_result(rank);
+    }
+  }
+
   return simcall->issuer_;
 }
 
@@ -212,29 +233,6 @@ void ActivityImpl::cancel()
   if (model_action_ != nullptr)
     model_action_->cancel();
   state_ = State::CANCELED;
-}
-
-void ActivityImpl::handle_activity_waitany(actor::Simcall* simcall)
-{
-  /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
-   * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
-   * simcall */
-  if (auto* observer = dynamic_cast<actor::ActivityWaitanySimcall*>(simcall->observer_)) {
-    if (simcall->timeout_cb_) {
-      simcall->timeout_cb_->remove();
-      simcall->timeout_cb_ = nullptr;
-    }
-
-    auto activities = observer->get_activities();
-    for (auto* act : activities)
-      act->unregister_simcall(simcall);
-
-    if (not MC_is_active() && not MC_record_replay_is_active()) {
-      auto element   = std::find(activities.begin(), activities.end(), this);
-      int rank       = element != activities.end() ? static_cast<int>(std::distance(activities.begin(), element)) : -1;
-      observer->set_result(rank);
-    }
-  }
 }
 
 // boost::intrusive_ptr<Activity> support:

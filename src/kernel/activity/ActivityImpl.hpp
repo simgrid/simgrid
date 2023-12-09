@@ -88,7 +88,6 @@ public:
   void register_simcall(actor::Simcall* simcall);   // Connect this activity to that actor
   void unregister_simcall(actor::Simcall* simcall); // Disconnect this activity from that given actor
   actor::ActorImpl* unregister_first_simcall();     // Disconnect this activity from the first actor waiting on it
-  void handle_activity_waitany(actor::Simcall* simcall);
   void clean_action();
   virtual double get_remaining() const;
   // Support for the boost::intrusive_ptr<ActivityImpl> datatype

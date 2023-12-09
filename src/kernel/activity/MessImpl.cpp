@@ -170,13 +170,7 @@ void MessImpl::finish()
     if (issuer->simcall_.call_ == actor::Simcall::Type::NONE)
       continue;
 
-    /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
-     * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
-     * simcall */
-    handle_activity_waitany(&issuer->simcall_);
-
     /* Check out for errors */
-
     if (not issuer->get_host()->is_on()) {
       issuer->set_wannadie();
     } else if (not issuer->wannadie()) { // Do not answer to dying actors
