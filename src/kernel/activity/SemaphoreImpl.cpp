@@ -59,7 +59,8 @@ void SemAcquisitionImpl::finish()
 
   xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
   auto issuer = unregister_first_simcall();
-  issuer->simcall_answer();
+  if (issuer != nullptr) /* don't answer exiting and dying actors */
+    issuer->simcall_answer();
 }
 void SemAcquisitionImpl::cancel()
 {

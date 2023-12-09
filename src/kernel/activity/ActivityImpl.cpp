@@ -71,7 +71,17 @@ actor::ActorImpl* ActivityImpl::unregister_first_simcall()
     }
   }
 
-  return simcall->issuer_;
+  /* The actor is not blocked in a simcall. It's probably exiting and called finish() itself. Don't notify it. */
+  if (simcall->call_ == actor::Simcall::Type::NONE)
+    return nullptr;
+
+  auto issuer = simcall->issuer_;
+  if (not issuer->get_host()->is_on())
+    issuer->set_wannadie();
+  if (issuer->wannadie()) // Do not answer to dying actors
+    return nullptr;
+
+  return issuer;
 }
 
 void ActivityImpl::clean_action()

@@ -48,6 +48,8 @@ void SleepImpl::finish()
   XBT_DEBUG("SleepImpl::finish() in state %s", get_state_str());
   while (not simcalls_.empty()) {
     auto issuer = unregister_first_simcall();
+    if (issuer == nullptr) /* don't answer exiting and dying actors */
+      continue;
 
     if (issuer->is_suspended()) {
       XBT_DEBUG("Wait! This actor is suspended and can't wake up now.");

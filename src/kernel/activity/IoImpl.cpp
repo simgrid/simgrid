@@ -119,39 +119,34 @@ void IoImpl::finish()
 
   while (not simcalls_.empty()) {
     auto issuer = unregister_first_simcall();
-    issuer->activities_.erase(this);
-
-    /* The actor is not blocked in a simcall. It's probably exiting and called finish() itself. Don't notify it. */
-    if (issuer->simcall_.call_ == actor::Simcall::Type::NONE)
+    if (issuer == nullptr) /* don't answer exiting and dying actors */
       continue;
 
-    if (not issuer->get_host()->is_on()) {
-      issuer->set_wannadie();
-    } else if (not issuer->wannadie()) { // Do not answer to dying actors
-      switch (get_state()) {
-        case State::FAILED:
-          issuer->set_wannadie();
-          static_cast<s4u::Io*>(get_iface())->complete(s4u::Activity::State::FAILED);
-          issuer->exception_ = std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Storage failed"));
-          break;
-        case State::CANCELED:
-          issuer->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "I/O Canceled"));
-          break;
-        case State::SRC_HOST_FAILURE:
-        case State::DST_HOST_FAILURE:
-          issuer->set_wannadie();
-          static_cast<s4u::Io*>(get_iface())->complete(s4u::Activity::State::FAILED);
-          issuer->exception_ = std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Host failed"));
-          break;
-        case State::TIMEOUT:
-          issuer->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
-          break;
-        default:
-          xbt_assert(get_state() == State::DONE, "Internal error in IoImpl::finish(): unexpected synchro state %s",
-                     get_state_str());
-      }
-      issuer->simcall_answer();
+    issuer->activities_.erase(this);
+
+    switch (get_state()) {
+      case State::FAILED:
+        issuer->set_wannadie();
+        static_cast<s4u::Io*>(get_iface())->complete(s4u::Activity::State::FAILED);
+        issuer->exception_ = std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Storage failed"));
+        break;
+      case State::CANCELED:
+        issuer->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "I/O Canceled"));
+        break;
+      case State::SRC_HOST_FAILURE:
+      case State::DST_HOST_FAILURE:
+        issuer->set_wannadie();
+        static_cast<s4u::Io*>(get_iface())->complete(s4u::Activity::State::FAILED);
+        issuer->exception_ = std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Host failed"));
+        break;
+      case State::TIMEOUT:
+        issuer->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
+        break;
+      default:
+        xbt_assert(get_state() == State::DONE, "Internal error in IoImpl::finish(): unexpected synchro state %s",
+                   get_state_str());
     }
+    issuer->simcall_answer();
   }
 }
 
