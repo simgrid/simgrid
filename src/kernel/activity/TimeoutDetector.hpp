@@ -12,18 +12,18 @@
 
 namespace simgrid::kernel::activity {
 
-/** Used to implement mutexes, semaphores and conditions */
-class XBT_PUBLIC SynchroImpl : public ActivityImpl_T<SynchroImpl> {
+/** Used to detect timeouts in wait actions */
+class XBT_PUBLIC TimeoutDetector : public ActivityImpl_T<TimeoutDetector> {
   sg_host_t host_ = nullptr;
   double timeout_ = -1;
   std::function<void()> finish_callback_;
 
 public:
-  explicit SynchroImpl(const std::function<void()>& finish_callback) : finish_callback_(finish_callback) {}
-  SynchroImpl& set_host(s4u::Host* host);
-  SynchroImpl& set_timeout(double timeout) override;
+  explicit TimeoutDetector(const std::function<void()>& finish_callback) : finish_callback_(finish_callback) {}
+  TimeoutDetector& set_host(s4u::Host* host);
+  TimeoutDetector& set_timeout(double timeout) override;
 
-  SynchroImpl* start();
+  TimeoutDetector* start();
   void suspend() override;
   void resume() override;
   void cancel() override;

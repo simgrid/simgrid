@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/BarrierImpl.hpp"
-#include "src/kernel/activity/Synchro.hpp"
+#include "src/kernel/activity/TimeoutDetector.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_barrier, ker_synchro, "Barrier kernel-space implementation");
 

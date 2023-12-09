@@ -9,7 +9,7 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
-#include "src/kernel/activity/Synchro.hpp"
+#include "src/kernel/activity/TimeoutDetector.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
@@ -123,7 +123,7 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
       else
         comm->dst_timeout_.reset(sleep_action);
     } else {
-      SynchroImplPtr synchro(new SynchroImpl([this, issuer]() {
+      TimeoutDetectorPtr detector(new TimeoutDetector([this, issuer]() {
         this->unregister_simcall(&issuer->simcall_);
         issuer->waiting_synchro_ = nullptr;
         issuer->exception_       = nullptr;
@@ -131,8 +131,8 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
         xbt_assert(observer != nullptr);
         observer->set_result(true); // Returns that the wait_for timeouted
       }));
-      synchro->set_host(issuer->get_host()).set_timeout(timeout).start();
-      synchro->register_simcall(&issuer->simcall_);
+      detector->set_host(issuer->get_host()).set_timeout(timeout).start();
+      detector->register_simcall(&issuer->simcall_);
     }
   }
 }

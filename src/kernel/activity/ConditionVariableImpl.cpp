@@ -5,7 +5,7 @@
 
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
-#include "src/kernel/activity/Synchro.hpp"
+#include "src/kernel/activity/TimeoutDetector.hpp"
 #include "src/kernel/actor/SynchroObserver.hpp"
 #include <cmath> // std::isfinite
 
@@ -71,14 +71,14 @@ void ConditionVariableImpl::wait(MutexImpl* mutex, double timeout, actor::ActorI
   mutex_ = mutex;
   mutex->unlock(issuer);
 
-  SynchroImplPtr synchro(new SynchroImpl([this, issuer]() {
+  TimeoutDetectorPtr detector(new TimeoutDetector([this, issuer]() {
     this->remove_sleeping_actor(*issuer);
     auto* observer = dynamic_cast<kernel::actor::ConditionVariableObserver*>(issuer->simcall_.observer_);
     xbt_assert(observer != nullptr);
     observer->set_result(true);
   }));
-  synchro->set_host(issuer->get_host()).set_timeout(timeout).start();
-  synchro->register_simcall(&issuer->simcall_);
+  detector->set_host(issuer->get_host()).set_timeout(timeout).start();
+  detector->register_simcall(&issuer->simcall_);
   sleeping_.push_back(*issuer);
 }
 

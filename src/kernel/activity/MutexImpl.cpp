@@ -4,8 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/MutexImpl.hpp"
-#include "src/kernel/activity/Synchro.hpp"
+#include "src/kernel/activity/TimeoutDetector.hpp"
 
+XBT_LOG_NEW_SUBCATEGORY(ker_synchro, kernel,
+                        "Kernel synchronization activities (lock/acquire on a mutex, semaphore or condition)");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_mutex, ker_synchro, "Mutex kernel-space implementation");
 
 namespace simgrid::kernel::activity {

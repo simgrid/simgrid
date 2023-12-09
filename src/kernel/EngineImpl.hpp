@@ -18,7 +18,7 @@
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/MessageQueueImpl.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
-#include "src/kernel/activity/Synchro.hpp"
+#include "src/kernel/activity/TimeoutDetector.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 
 #include <boost/intrusive/list.hpp>
