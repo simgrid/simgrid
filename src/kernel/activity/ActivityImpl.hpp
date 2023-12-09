@@ -85,9 +85,13 @@ public:
   s4u::Host* get_host() const { return hosts_.front(); }
   const std::vector<s4u::Host*>& get_hosts() const { return hosts_; };
 
-  void register_simcall(actor::Simcall* simcall);   // Connect this activity to that actor
-  void unregister_simcall(actor::Simcall* simcall); // Disconnect this activity from that given actor
-  actor::ActorImpl* unregister_first_simcall();     // Disconnect this activity from the first actor waiting on it
+  // Connect this activity to that actor
+  void register_simcall(actor::Simcall* simcall);
+  // Disconnect this activity from that given actor
+  void unregister_simcall(actor::Simcall* simcall);
+  // Disconnect this activity from the first actor waiting on it.
+  // Returns the actor to be notified of the activity state.
+  actor::ActorImpl* unregister_first_simcall();
   void clean_action();
   virtual double get_remaining() const;
   // Support for the boost::intrusive_ptr<ActivityImpl> datatype

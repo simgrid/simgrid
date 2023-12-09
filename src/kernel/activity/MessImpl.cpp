@@ -165,6 +165,7 @@ void MessImpl::finish()
 
   while (not simcalls_.empty()) {
     auto issuer = unregister_first_simcall();
+    issuer->activities_.erase(this);
 
     /* The actor is not blocked in a simcall. It's probably exiting and called finish() itself. Don't notify it. */
     if (issuer->simcall_.call_ == actor::Simcall::Type::NONE)
@@ -176,8 +177,6 @@ void MessImpl::finish()
     } else if (not issuer->wannadie()) { // Do not answer to dying actors
       issuer->simcall_answer();
     }
-
-    issuer->activities_.erase(this);
   }
 }
 

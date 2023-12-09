@@ -105,7 +105,8 @@ public:
   bool suspended_ = false;
 
   activity::ActivityImplPtr waiting_synchro_ = nullptr; /* the current blocking synchro if any */
-  std::set<activity::ActivityImplPtr> activities_;     /* the current non-blocking synchros */
+  std::set<activity::ActivityImplPtr>
+      activities_; /* the activities linked to that actor. They are canceled when it dies, suspend/resumed when it is */
   Simcall simcall_;
   /* list of functions executed when the actor dies */
   std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit =
