@@ -39,10 +39,6 @@ void SemAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 }
 void SemAcquisitionImpl::finish()
 {
-  xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
-  actor::Simcall* simcall = simcalls_.front();
-  simcalls_.pop_front();
-
   if (model_action_ != nullptr) {                                          // A timeout was declared
     if (model_action_->get_state() == resource::Action::State::FINISHED) { // The timeout elapsed
       if (granted_) { // but we got the semaphore, just in time!
@@ -61,8 +57,9 @@ void SemAcquisitionImpl::finish()
     model_action_ = nullptr;
   }
 
-  simcall->issuer_->waiting_synchro_ = nullptr;
-  simcall->issuer_->simcall_answer();
+  xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
+  auto issuer = unregister_first_simcall();
+  issuer->simcall_answer();
 }
 void SemAcquisitionImpl::cancel()
 {

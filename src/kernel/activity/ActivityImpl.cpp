@@ -40,6 +40,17 @@ void ActivityImpl::unregister_simcall(actor::Simcall* simcall)
   auto j = boost::range::find(simcalls_, simcall);
   if (j != simcalls_.end())
     simcalls_.erase(j);
+
+  simcall->issuer_->waiting_synchro_ = nullptr;
+}
+
+actor::ActorImpl* ActivityImpl::unregister_first_simcall()
+{
+  actor::Simcall* simcall = simcalls_.front();
+  simcalls_.pop_front();
+
+  simcall->issuer_->waiting_synchro_ = nullptr;
+  return simcall->issuer_;
 }
 
 void ActivityImpl::clean_action()
@@ -125,7 +136,6 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
     } else {
       TimeoutDetectorPtr detector(new TimeoutDetector([this, issuer]() {
         this->unregister_simcall(&issuer->simcall_);
-        issuer->waiting_synchro_ = nullptr;
         issuer->exception_       = nullptr;
         auto* observer           = dynamic_cast<kernel::actor::ActivityWaitSimcall*>(issuer->simcall_.observer_);
         xbt_assert(observer != nullptr);

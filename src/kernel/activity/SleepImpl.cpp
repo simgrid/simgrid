@@ -47,16 +47,14 @@ void SleepImpl::finish()
   clean_action();
   XBT_DEBUG("SleepImpl::finish() in state %s", get_state_str());
   while (not simcalls_.empty()) {
-    const actor::Simcall* simcall = simcalls_.front();
-    simcalls_.pop_front();
+    auto issuer = unregister_first_simcall();
 
-    simcall->issuer_->waiting_synchro_ = nullptr;
-    if (simcall->issuer_->is_suspended()) {
+    if (issuer->is_suspended()) {
       XBT_DEBUG("Wait! This actor is suspended and can't wake up now.");
-      simcall->issuer_->suspended_ = false;
-      simcall->issuer_->suspend();
+      issuer->suspended_ = false;
+      issuer->suspend();
     } else {
-      simcall->issuer_->simcall_answer();
+      issuer->simcall_answer();
     }
   }
 }
