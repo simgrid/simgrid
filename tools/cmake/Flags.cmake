@@ -90,7 +90,9 @@ endif()
 # NOTE, we should CMAKE_BUILD_TYPE for this
 if(enable_compile_optimizations)
   set(optCFLAGS "-O3 -funroll-loops -fno-strict-aliasing ")
-else()
+elseif(enable_compile_warnings)
+  set(optCFLAGS "-Og ")
+else()  
   set(optCFLAGS "-O0 ")
 endif()
 
