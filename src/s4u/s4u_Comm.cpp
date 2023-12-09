@@ -142,7 +142,7 @@ void Comm::recv(kernel::actor::ActorImpl* receiver, const Mailbox* mbox, void* d
       throw simgrid::TimeoutException(XBT_THROW_POINT, "Timeouted");
     }
     comm = nullptr;
-  } else {
+  } else { // Non-MC path
     simgrid::kernel::actor::CommIrecvSimcall observer(receiver, mbox->get_impl(), static_cast<unsigned char*>(dst_buff),
                                                       dst_buff_size, match_fun, copy_data_fun, data, rate, "Irecv");
     simgrid::kernel::actor::simcall_blocking<void>(

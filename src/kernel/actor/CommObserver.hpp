@@ -86,6 +86,8 @@ public:
   int get_value() const { return next_value_; }
 };
 
+// This is a DelayedSimcallObserver even if its name denotes an async_comm, because in non-MC mode, the recv is not
+// split in irecv+wait but executed in one simcall only, with such an observer that then needs to be delayed
 class CommIsendSimcall final : public DelayedSimcallObserver<void> {
   activity::MailboxImpl* mbox_;
   double payload_size_;
@@ -142,6 +144,8 @@ public:
   auto const& get_copy_data_fun() const { return copy_data_fun_; }
 };
 
+// This is a DelayedSimcallObserver even if its name denotes an async_comm, because in non-MC mode, the send is not
+// split in isend+wait but executed in one simcall only, with such an observer that then needs to be delayed
 class CommIrecvSimcall final : public DelayedSimcallObserver<void> {
   activity::MailboxImpl* mbox_;
   unsigned char* dst_buff_;
