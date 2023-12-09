@@ -88,7 +88,7 @@ ActivityPtr ActivitySet::wait_any_for(double timeout)
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::ActivityWaitanySimcall observer{issuer, act_impls, timeout, "wait_any_for"};
   try {
-    ssize_t changed_pos = kernel::actor::simcall_blocking(
+    ssize_t changed_pos = kernel::actor::simcall_blocking<ssize_t>(
         [&observer] {
           kernel::activity::ActivityImpl::wait_any_for(observer.get_issuer(), observer.get_activities(),
                                                        observer.get_timeout());

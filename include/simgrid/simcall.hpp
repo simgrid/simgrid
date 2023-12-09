@@ -169,7 +169,8 @@ template <class F> typename std::invoke_result_t<F> simcall_object_access(Object
  *
  * The return value is obtained from observer->get_result() if it exists. Otherwise void is returned.
  */
-template <class F> void simcall_blocking(F&& code, SimcallObserver* observer = nullptr)
+template <typename ReturnType, class F>
+ReturnType simcall_blocking(F&& code, DelayedSimcallObserver<ReturnType>* observer)
 {
   xbt_assert(not s4u::Actor::is_maestro(), "Cannot execute blocking call in kernel mode");
 
@@ -178,12 +179,6 @@ template <class F> void simcall_blocking(F&& code, SimcallObserver* observer = n
   SimcallResult<F> result;
   simcall_run_blocking([&result, &code] { result.exec(std::forward<F>(code)); }, observer);
   result.get(); // rethrow stored exception if any
-}
-
-template <class F, class Observer>
-auto simcall_blocking(F&& code, Observer* observer) -> decltype(observer->get_result())
-{
-  simcall_blocking(std::forward<F>(code), static_cast<SimcallObserver*>(observer));
   return observer->get_result();
 }
 } // namespace simgrid::kernel::actor

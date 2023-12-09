@@ -112,7 +112,7 @@ void Actor::join(double timeout) const
   const kernel::actor::ActorImpl* target = pimpl_;
   kernel::actor::ActorJoinSimcall observer{issuer, get_impl(), timeout};
 
-  kernel::actor::simcall_blocking(
+  kernel::actor::simcall_blocking<void>(
       [issuer, target, timeout] {
         if (target->wannadie()) {
           // The joined actor is already finished, just wake up the issuer right away
@@ -215,13 +215,16 @@ void Actor::suspend()
   kernel::actor::ActorImpl* target = pimpl_;
   s4u::Actor::on_suspend(*this);
   s4u::Actor::on_this_suspend(*this);
-  kernel::actor::simcall_blocking([issuer, target]() {
-    target->suspend();
-    if (target != issuer) {
-      /* If we are suspending ourselves, then just do not finish the simcall now */
-      issuer->simcall_answer();
-    }
-  });
+  kernel::actor::ActorSuspendSimcall observer(issuer);
+  kernel::actor::simcall_blocking<void>(
+      [issuer, target]() {
+        target->suspend();
+        if (target != issuer) {
+          /* If we are suspending ourselves, then just do not finish the simcall now */
+          issuer->simcall_answer();
+        }
+      },
+      &observer);
 }
 
 void Actor::resume()
@@ -333,7 +336,7 @@ void sleep_for(double duration)
   Actor::on_sleep(*issuer->get_ciface());
   issuer->get_ciface()->on_this_sleep(*issuer->get_ciface());
 
-  kernel::actor::simcall_blocking(
+  kernel::actor::simcall_blocking<void>(
       [issuer, duration]() {
         if (MC_is_active() || MC_record_replay_is_active()) {
           // MC_process_clock_add(issuer, duration); // BUG: Makes the exploration loop
@@ -450,9 +453,7 @@ Host* get_host()
 void suspend()
 {
   kernel::actor::ActorImpl* self = simgrid::kernel::actor::ActorImpl::self();
-  s4u::Actor::on_suspend(*self->get_ciface());
-  self->get_ciface()->on_this_suspend(*self->get_ciface());
-  kernel::actor::simcall_blocking([self] { self->suspend(); });
+  self->get_iface()->suspend();
 }
 
 void exit()

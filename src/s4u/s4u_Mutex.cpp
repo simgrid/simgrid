@@ -24,10 +24,15 @@ void Mutex::lock()
         kernel::actor::simcall_answered([issuer, this] { return pimpl_->lock_async(issuer); }, &lock_observer);
 
     kernel::actor::MutexObserver wait_observer{issuer, mc::Transition::Type::MUTEX_WAIT, pimpl_};
-    kernel::actor::simcall_blocking([issuer, &acquisition] { acquisition->wait_for(issuer, -1); }, &wait_observer);
+    kernel::actor::simcall_blocking<void>([issuer, &acquisition] { acquisition->wait_for(issuer, -1); },
+                                          &wait_observer);
 
   } else { // Do it in one simcall only
-    kernel::actor::simcall_blocking([issuer, this] { pimpl_->lock_async(issuer)->wait_for(issuer, -1); });
+    // We don't need no observer on this non-MC path, but simcall_blocking() requires it.
+    // Use an invalid type in the hope to get a loud error if it gets used despite our expectations.
+    kernel::actor::MutexObserver useless_observer{issuer, mc::Transition::Type::UNKNOWN, pimpl_};
+    kernel::actor::simcall_blocking<void>([issuer, this] { pimpl_->lock_async(issuer)->wait_for(issuer, -1); },
+                                          &useless_observer);
   }
 }
 

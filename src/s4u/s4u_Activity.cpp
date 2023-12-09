@@ -64,7 +64,7 @@ Activity* Activity::wait_for(double timeout)
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::ActivityWaitSimcall observer{issuer, pimpl_.get(), timeout, "wait_for"};
-  if (kernel::actor::simcall_blocking(
+  if (kernel::actor::simcall_blocking<bool>(
           [&observer] { observer.get_activity()->wait_for(observer.get_issuer(), observer.get_timeout()); }, &observer))
     throw TimeoutException(XBT_THROW_POINT, "Timeouted");
   complete(State::FINISHED);
@@ -118,7 +118,7 @@ ssize_t Activity::deprecated_wait_any_for(const std::vector<ActivityPtr>& activi
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::ActivityWaitanySimcall observer{issuer, ractivities, timeout, "wait_any_for"};
-  ssize_t changed_pos = kernel::actor::simcall_blocking(
+  ssize_t changed_pos = kernel::actor::simcall_blocking<ssize_t>(
       [&observer] {
         kernel::activity::ActivityImpl::wait_any_for(observer.get_issuer(), observer.get_activities(),
                                                      observer.get_timeout());

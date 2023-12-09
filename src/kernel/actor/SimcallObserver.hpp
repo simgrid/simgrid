@@ -9,6 +9,7 @@
 #include "simgrid/forward.h"
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/asserts.h"
+#include "xbt/ex.h"
 
 #include <string>
 #include <unordered_map>
@@ -65,16 +66,29 @@ public:
   virtual bool is_visible() const { return true; }
 };
 
-template <class T> class ResultingSimcall : public SimcallObserver {
+/** This is the ancestor class of all observers for simcalls that do not answer immediately but only through
+ * simcall_blocking */
+template <class T> class DelayedSimcallObserver : public SimcallObserver {
   T result_;
 
 protected:
-  ~ResultingSimcall() = default;
+  ~DelayedSimcallObserver() = default;
 
 public:
-  ResultingSimcall(ActorImpl* actor, T default_result) : SimcallObserver(actor), result_(default_result) {}
+  DelayedSimcallObserver(ActorImpl* actor, T default_result) : SimcallObserver(actor), result_(default_result) {}
   void set_result(T res) { result_ = res; }
   T get_result() const { return result_; }
+};
+/* Specialization of the above template for the void return type, that is used for pure synchro simcalls */
+template <> class DelayedSimcallObserver<void> : public SimcallObserver {
+protected:
+  ~DelayedSimcallObserver() = default;
+
+public:
+  DelayedSimcallObserver(ActorImpl* actor) : SimcallObserver(actor) {}
+  void get_result()
+  { /* Nothing to do */
+  }
 };
 
 class RandomSimcall final : public SimcallObserver {
@@ -94,7 +108,7 @@ public:
   int get_value() const { return next_value_; }
 };
 
-class ActorJoinSimcall final : public SimcallObserver {
+class ActorJoinSimcall final : public DelayedSimcallObserver<void> {
   s4u::ActorPtr const other_; // We need a Ptr to ensure access to the actor after its end, but Ptr requires s4u
   const double timeout_;
 
@@ -107,11 +121,19 @@ public:
   s4u::ActorPtr get_other_actor() const { return other_; }
   double get_timeout() const { return timeout_; }
 };
+/* Dummy observer, not visible by the checker but needed for the template to compile */
+class ActorSuspendSimcall final : public DelayedSimcallObserver<void> {
+public:
+  ActorSuspendSimcall(ActorImpl* actor) : DelayedSimcallObserver<void>(actor) {}
+  void serialize(std::stringstream& stream) const override { THROW_UNIMPLEMENTED; }
+  std::string to_string() const override { THROW_UNIMPLEMENTED; }
+  bool is_visible() const override { return false; }
+};
 
-class ActorSleepSimcall final : public SimcallObserver {
+class ActorSleepSimcall final : public DelayedSimcallObserver<void> {
 
 public:
-  explicit ActorSleepSimcall(ActorImpl* actor) : SimcallObserver(actor) {}
+  explicit ActorSleepSimcall(ActorImpl* actor) : DelayedSimcallObserver<void>(actor) {}
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
 };

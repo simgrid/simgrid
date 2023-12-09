@@ -19,7 +19,7 @@ namespace simgrid::kernel::actor {
 
 ActivityTestanySimcall::ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities,
                                                std::string_view fun_call)
-    : ResultingSimcall(actor, -1), activities_(activities), fun_call_(fun_call)
+    : DelayedSimcallObserver(actor, -1), activities_(activities), fun_call_(fun_call)
 {
   indexes_.clear();
   // list all the activities that are ready
@@ -163,7 +163,7 @@ std::string ActivityWaitanySimcall::to_string() const
 }
 ActivityWaitanySimcall::ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities,
                                                double timeout, std::string_view fun_call)
-    : ResultingSimcall(actor, -1), activities_(activities), timeout_(timeout), fun_call_(fun_call)
+    : DelayedSimcallObserver(actor, -1), activities_(activities), timeout_(timeout), fun_call_(fun_call)
 {
   // list all the activities that are ready
   indexes_.clear();
