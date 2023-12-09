@@ -16,6 +16,7 @@
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "xbt/asserts.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_network, kernel, "Kernel network-related synchronization");
 
@@ -481,23 +482,15 @@ void CommImpl::finish()
           break;
 
         case State::SRC_HOST_FAILURE:
-          if (issuer == src_actor_)
-            issuer->set_wannadie();
-          else {
-            set_state(State::FAILED);
-            issuer->exception_ =
-                std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
-          }
+          xbt_assert(issuer != src_actor_);
+          set_state(State::FAILED);
+          issuer->exception_ = std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
           break;
 
         case State::DST_HOST_FAILURE:
-          if (issuer == dst_actor_)
-            issuer->set_wannadie();
-          else {
-            set_state(State::FAILED);
-            issuer->exception_ =
-                std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
-          }
+          xbt_assert(issuer != dst_actor_);
+          set_state(State::FAILED);
+          issuer->exception_ = std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
           break;
 
         case State::LINK_FAILURE:
