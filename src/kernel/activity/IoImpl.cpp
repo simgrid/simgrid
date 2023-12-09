@@ -118,24 +118,22 @@ void IoImpl::finish()
   }
 
   while (not simcalls_.empty()) {
-    actor::Simcall* simcall = simcalls_.front();
-    simcalls_.pop_front();
+    auto issuer = unregister_first_simcall();
+
+    /* The actor is not blocked in a simcall. It's probably exiting and called finish() itself. Don't notify it. */
+    if (issuer->simcall_.call_ == actor::Simcall::Type::NONE)
+      continue;
 
     /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
      * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
      * simcall */
+    handle_activity_waitany(&issuer->simcall_);
 
-    if (simcall->call_ == actor::Simcall::Type::NONE) // FIXME: maybe a better way to handle this case
-      continue;                                       // if process handling comm is killed
-
-    handle_activity_waitany(simcall);
-
-    if (not simcall->issuer_->get_host()->is_on()) {
-      simcall->issuer_->set_wannadie();
+    if (not issuer->get_host()->is_on()) {
+      issuer->set_wannadie();
     } else {
       // Do not answer to dying actors
-      if (not simcall->issuer_->wannadie()) {
-        auto* issuer = simcall->issuer_;
+      if (not issuer->wannadie()) {
         switch (get_state()) {
           case State::FAILED:
             issuer->set_wannadie();
@@ -158,8 +156,7 @@ void IoImpl::finish()
             xbt_assert(get_state() == State::DONE, "Internal error in IoImpl::finish(): unexpected synchro state %s",
                        get_state_str());
         }
-        simcall->issuer_->waiting_synchro_ = nullptr;
-        simcall->issuer_->simcall_answer();
+        issuer->simcall_answer();
       }
     }
   }

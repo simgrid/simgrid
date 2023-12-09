@@ -157,15 +157,17 @@ void ExecImpl::finish()
     get_actor()->activities_.erase(this);
 
   while (not simcalls_.empty()) {
-    actor::Simcall* simcall = simcalls_.front();
-    simcalls_.pop_front();
+    auto issuer = unregister_first_simcall();
 
-    if (simcall->call_ == actor::Simcall::Type::NONE) // FIXME: maybe a better way to handle this case
-      continue;                                       // if process handling comm is killed
+    /* The actor is not blocked in a simcall. It's probably exiting and called finish() itself. Don't notify it. */
+    if (issuer->simcall_.call_ == actor::Simcall::Type::NONE)
+      continue;
 
-    handle_activity_waitany(simcall);
+    /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
+     * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
+     * simcall */
+    handle_activity_waitany(&issuer->simcall_);
 
-    auto issuer = simcall->issuer_;
     switch (get_state()) {
       case State::FAILED:
         static_cast<s4u::Exec*>(get_iface())->complete(s4u::Activity::State::FAILED);
@@ -188,7 +190,6 @@ void ExecImpl::finish()
                    get_state_str());
     }
 
-    issuer->waiting_synchro_ = nullptr;
     /* Fail the process if the host is down */
     if (issuer->get_host()->is_on())
       issuer->simcall_answer();
