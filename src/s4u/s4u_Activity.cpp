@@ -73,15 +73,13 @@ Activity* Activity::wait_for(double timeout)
 
 bool Activity::test()
 {
-  xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::STARTING ||
-             state_ == State::CANCELED || state_ == State::FINISHED);
-
-  if (state_ == State::CANCELED || state_ == State::FINISHED)
+  if (state_ == State::CANCELED || state_ == State::FINISHED || state_ == State::FAILED)
     return true;
 
   if (state_ == State::INITED || state_ == State::STARTING)
     this->start();
 
+  // The activity is now RUNNING
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::ActivityTestSimcall observer{issuer, pimpl_.get(), "test"};
   if (kernel::actor::simcall_answered([&observer] { return observer.get_activity()->test(observer.get_issuer()); },
