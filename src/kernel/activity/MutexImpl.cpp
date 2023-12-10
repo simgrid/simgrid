@@ -128,7 +128,10 @@ void MutexImpl::unlock(actor::ActorImpl* issuer)
     owner_ = acq->get_issuer();
     acq->grant();
     recursive_depth = acq->recursive_depth_;
-    if (acq == owner_->waiting_synchro_)
+
+    // Finish the acquisition if the owner is already blocked on its completion
+    auto& synchros = owner_->waiting_synchros_;
+    if (std::find(synchros.begin(), synchros.end(), acq) != synchros.end())
       acq->finish();
     // else, the issuer is not blocked on this acquisition so no need to release it
 

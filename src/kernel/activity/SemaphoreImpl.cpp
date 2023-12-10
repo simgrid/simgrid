@@ -100,7 +100,10 @@ void SemaphoreImpl::release()
     ongoing_acquisitions_.pop_front();
 
     acqui->granted_ = true;
-    if (acqui == acqui->get_issuer()->waiting_synchro_)
+
+    // Finish the acquisition if the owner is already blocked on its completion
+    auto& synchros = acqui->get_issuer()->waiting_synchros_;
+    if (std::find(synchros.begin(), synchros.end(), acqui) != synchros.end())
       acqui->finish();
     // else, the issuer is not blocked on this acquisition so no need to release it
 

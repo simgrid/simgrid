@@ -31,7 +31,12 @@ void ConditionVariableImpl::signal()
     sleeping_.pop_front();
 
     /* Destroy waiter's synchronization */
-    proc.waiting_synchro_ = nullptr;
+    // There is no CondVarAcquisition yet, so the only activity that could be there is probably a TimeoutDetector
+    // Be brutal for now, it will get cleaned and unified with the rest of SimGrid when adding Acquisitions.
+    xbt_assert(proc.waiting_synchros_.size() <= 1, 
+               "Unexpected amount of activities in this actor: %zu. Are you using condvar in waitany?",
+               proc.waiting_synchros_.size());
+    proc.waiting_synchros_.clear();
 
     /* Now transform the cond wait simcall into a mutex lock one */
     actor::Simcall* simcall = &proc.simcall_;
