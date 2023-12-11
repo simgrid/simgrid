@@ -169,10 +169,6 @@ void ExecImpl::finish()
         issuer->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Execution Canceled"));
         break;
 
-      case State::TIMEOUT:
-        issuer->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
-        break;
-
       default:
         xbt_assert(get_state() == State::DONE, "Unexpected activity state %s", get_state_str());
     }

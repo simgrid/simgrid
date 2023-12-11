@@ -139,9 +139,6 @@ void IoImpl::finish()
         static_cast<s4u::Io*>(get_iface())->complete(s4u::Activity::State::FAILED);
         issuer->exception_ = std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Host failed"));
         break;
-      case State::TIMEOUT:
-        issuer->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
-        break;
       default:
         xbt_assert(get_state() == State::DONE, "Internal error in IoImpl::finish(): unexpected synchro state %s",
                    get_state_str());

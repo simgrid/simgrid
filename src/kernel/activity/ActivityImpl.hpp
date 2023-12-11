@@ -20,7 +20,7 @@
 namespace simgrid::kernel::activity {
 
 XBT_DECLARE_ENUM_CLASS(State, WAITING, READY, RUNNING, DONE, CANCELED, FAILED, SRC_HOST_FAILURE, DST_HOST_FAILURE,
-                       TIMEOUT, SRC_TIMEOUT, DST_TIMEOUT, LINK_FAILURE);
+                       SRC_TIMEOUT, DST_TIMEOUT, LINK_FAILURE);
 
 class XBT_PUBLIC ActivityImpl : public kernel::actor::ObjectAccessSimcallItem {
   std::atomic_int_fast32_t refcount_{0};
