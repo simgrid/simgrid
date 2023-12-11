@@ -146,10 +146,7 @@ void IoImpl::finish()
         xbt_assert(get_state() == State::DONE, "Internal error in IoImpl::finish(): unexpected synchro state %s",
                    get_state_str());
     }
-    if (issuer->simcall_.timeout_cb_ != nullptr){
-      issuer->simcall_.timeout_cb_->remove();
-      issuer->simcall_.timeout_cb_ = nullptr;
-    }
+
     issuer->simcall_answer();
   }
 }

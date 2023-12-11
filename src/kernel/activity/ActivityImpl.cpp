@@ -55,15 +55,15 @@ actor::ActorImpl* ActivityImpl::unregister_first_simcall()
   if (s != simcall->issuer_->waiting_synchros_.end())
     simcall->issuer_->waiting_synchros_.erase(s);
 
+  if (simcall->timeout_cb_) { // The timeout, if any, is now useless as the activity finished
+    simcall->timeout_cb_->remove();
+    simcall->timeout_cb_ = nullptr;
+  }
+
   /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
    * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
    * simcall */
   if (auto* observer = dynamic_cast<actor::ActivityWaitanySimcall*>(simcall->observer_)) {
-    if (simcall->timeout_cb_) {
-      simcall->timeout_cb_->remove();
-      simcall->timeout_cb_ = nullptr;
-    }
-
     auto activities = observer->get_activities();
     for (auto* act : activities)
       act->unregister_simcall(simcall);
