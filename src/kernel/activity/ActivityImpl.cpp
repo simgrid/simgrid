@@ -31,7 +31,7 @@ ActivityImpl::~ActivityImpl()
 void ActivityImpl::register_simcall(actor::Simcall* simcall)
 {
   simcalls_.push_back(simcall);
-  simcall->issuer_->waiting_synchro_ = this;
+  simcall->issuer_->waiting_synchros_.push_back(this);
 }
 
 void ActivityImpl::unregister_simcall(actor::Simcall* simcall)
@@ -41,7 +41,9 @@ void ActivityImpl::unregister_simcall(actor::Simcall* simcall)
   if (j != simcalls_.end())
     simcalls_.erase(j);
 
-  simcall->issuer_->waiting_synchro_ = nullptr;
+  auto s = boost::range::find(simcall->issuer_->waiting_synchros_, this);
+  if (s != simcall->issuer_->waiting_synchros_.end())
+    simcall->issuer_->waiting_synchros_.erase(s);
 }
 
 actor::ActorImpl* ActivityImpl::unregister_first_simcall()
@@ -49,7 +51,9 @@ actor::ActorImpl* ActivityImpl::unregister_first_simcall()
   actor::Simcall* simcall = simcalls_.front();
   simcalls_.pop_front();
 
-  simcall->issuer_->waiting_synchro_ = nullptr;
+  auto s = boost::range::find(simcall->issuer_->waiting_synchros_, this);
+  if (s != simcall->issuer_->waiting_synchros_.end())
+    simcall->issuer_->waiting_synchros_.erase(s);
 
   /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
    * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
@@ -165,15 +169,16 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
       else
         comm->dst_timeout_.reset(sleep_action);
     } else {
-      TimeoutDetectorPtr detector(new TimeoutDetector([this, issuer]() {
+      issuer->simcall_.timeout_cb_ = timer::Timer::set(s4u::Engine::get_clock() + timeout,
+        [this, issuer]() {
+        issuer->simcall_.timeout_cb_ = nullptr;
         this->unregister_simcall(&issuer->simcall_);
         issuer->exception_       = nullptr;
         auto* observer           = dynamic_cast<kernel::actor::ActivityWaitSimcall*>(issuer->simcall_.observer_);
         xbt_assert(observer != nullptr);
         observer->set_result(true); // Returns that the wait_for timeouted
-      }));
-      detector->set_host(issuer->get_host()).set_timeout(timeout).start();
-      detector->register_simcall(&issuer->simcall_);
+        issuer->simcall_answer();
+      });
     }
   }
 }

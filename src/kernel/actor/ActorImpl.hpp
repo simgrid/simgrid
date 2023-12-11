@@ -104,9 +104,10 @@ public:
   std::exception_ptr exception_;
   bool suspended_ = false;
 
-  activity::ActivityImplPtr waiting_synchro_ = nullptr; /* the current blocking synchro if any */
-  std::set<activity::ActivityImplPtr>
-      activities_; /* the activities linked to that actor. They are canceled when it dies, suspend/resumed when it is */
+  /* the activities on which the actor is currently blocked with a wait(). There is more than one e.g. in a wait_any() */
+  std::vector<activity::ActivityImplPtr> waiting_synchros_; 
+  /* the activities linked to that actor. They are canceled when it dies, suspend/resumed when it is */
+  std::set<activity::ActivityImplPtr> activities_; 
   Simcall simcall_;
   /* list of functions executed when the actor dies */
   std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit =

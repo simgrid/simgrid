@@ -62,7 +62,9 @@ void TimeoutDetector::finish()
   clean_action();
 
   finish_callback_();
-  simcall->issuer_->waiting_synchro_ = nullptr;
+  simcall->issuer_->waiting_synchros_.erase(std::remove(simcall->issuer_->waiting_synchros_.begin(),
+                                                        simcall->issuer_->waiting_synchros_.end(), this),
+                                            simcall->issuer_->waiting_synchros_.end());
   simcall->issuer_->simcall_answer();
 }
 
