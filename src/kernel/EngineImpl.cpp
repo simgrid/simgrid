@@ -473,9 +473,6 @@ void EngineImpl::display_all_actor_status() const
         if (boost::dynamic_pointer_cast<kernel::activity::SleepImpl>(synchro) != nullptr)
           synchro_description = "a sleeping";
 
-        if (boost::dynamic_pointer_cast<kernel::activity::TimeoutDetector>(synchro) != nullptr)
-          synchro_description = "a timeout detector";
-
         if (boost::dynamic_pointer_cast<kernel::activity::IoImpl>(synchro) != nullptr)
           synchro_description = "an I/O";
 

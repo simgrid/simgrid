@@ -2111,8 +2111,6 @@ include src/kernel/activity/SemaphoreImpl.cpp
 include src/kernel/activity/SemaphoreImpl.hpp
 include src/kernel/activity/SleepImpl.cpp
 include src/kernel/activity/SleepImpl.hpp
-include src/kernel/activity/TimeoutDetector.cpp
-include src/kernel/activity/TimeoutDetector.hpp
 include src/kernel/actor/ActorImpl.cpp
 include src/kernel/actor/ActorImpl.hpp
 include src/kernel/actor/CommObserver.cpp

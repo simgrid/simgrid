@@ -9,7 +9,6 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
-#include "src/kernel/activity/TimeoutDetector.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"

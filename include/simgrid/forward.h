@@ -186,8 +186,6 @@ namespace activity {
   using MutexAcquisitionImplPtr = boost::intrusive_ptr<MutexAcquisitionImpl>;
   XBT_PUBLIC void intrusive_ptr_add_ref(MutexImpl* mutex);
   XBT_PUBLIC void intrusive_ptr_release(MutexImpl* mutex);
-  class TimeoutDetector;
-  using TimeoutDetectorPtr = boost::intrusive_ptr<TimeoutDetector>;
   class SemaphoreImpl;
   using SemaphoreImplPtr = boost::intrusive_ptr<SemaphoreImpl>;
   class SemAcquisitionImpl;

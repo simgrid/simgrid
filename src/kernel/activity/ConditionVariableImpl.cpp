@@ -5,7 +5,6 @@
 
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
-#include "src/kernel/activity/TimeoutDetector.hpp"
 #include "src/kernel/actor/SynchroObserver.hpp"
 #include <cmath> // std::isfinite
 
@@ -37,6 +36,10 @@ void ConditionVariableImpl::signal()
                "Unexpected amount of activities in this actor: %zu. Are you using condvar in waitany?",
                proc.waiting_synchros_.size());
     proc.waiting_synchros_.clear();
+    if (proc.simcall_.timeout_cb_) {
+      proc.simcall_.timeout_cb_->remove();
+      proc.simcall_.timeout_cb_ = nullptr;
+    }
 
     /* Now transform the cond wait simcall into a mutex lock one */
     actor::Simcall* simcall = &proc.simcall_;
@@ -77,15 +80,16 @@ void ConditionVariableImpl::wait(MutexImpl* mutex, double timeout, actor::ActorI
   mutex->unlock(issuer);
 
   sleeping_.push_back(*issuer);
-  if (timeout > 0) {
-    TimeoutDetectorPtr detector(new TimeoutDetector([this, issuer]() {
+  if (timeout >= 0) {
+    issuer->simcall_.timeout_cb_ = timer::Timer::set(s4u::Engine::get_clock() + timeout, [this, issuer]() {
+      issuer->simcall_.timeout_cb_ = nullptr;
       this->remove_sleeping_actor(*issuer);
       auto* observer = dynamic_cast<kernel::actor::ConditionVariableObserver*>(issuer->simcall_.observer_);
       xbt_assert(observer != nullptr);
       observer->set_result(true);
-    }));
-    detector->set_host(issuer->get_host()).set_timeout(timeout).start();
-    detector->register_simcall(&issuer->simcall_);
+
+      issuer->simcall_answer();
+    });
   }
 }
 
