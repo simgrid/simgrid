@@ -420,10 +420,9 @@ void CommImpl::finish()
     set_state(State::SRC_TIMEOUT);
   else if (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FINISHED)
     set_state(State::DST_TIMEOUT);
-  else if ((from_ && not from_->is_on()) ||
-           (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FAILED))
+  else if (from_ && not from_->is_on())
     set_state(State::SRC_HOST_FAILURE);
-  else if ((to_ && not to_->is_on()) || (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FAILED))
+  else if (to_ && not to_->is_on())
     set_state(State::DST_HOST_FAILURE);
   else if (model_action_ && model_action_->get_state() == resource::Action::State::FAILED) {
     set_state(State::LINK_FAILURE);
