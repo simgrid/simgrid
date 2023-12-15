@@ -16,13 +16,13 @@
 
 namespace simgrid::kernel::actor {
 
-class ActivityTestSimcall final : public ResultingSimcall<bool> {
+class ActivityTestSimcall final : public DelayedSimcallObserver<bool> {
   activity::ActivityImpl* const activity_;
   std::string fun_call_;
 
 public:
   ActivityTestSimcall(ActorImpl* actor, activity::ActivityImpl* activity, std::string_view fun_call)
-      : ResultingSimcall(actor, true), activity_(activity), fun_call_(fun_call)
+      : DelayedSimcallObserver(actor, true), activity_(activity), fun_call_(fun_call)
   {
   }
   activity::ActivityImpl* get_activity() const { return activity_; }
@@ -30,7 +30,7 @@ public:
   std::string to_string() const override;
 };
 
-class ActivityTestanySimcall final : public ResultingSimcall<ssize_t> {
+class ActivityTestanySimcall final : public DelayedSimcallObserver<ssize_t> {
   const std::vector<activity::ActivityImpl*>& activities_;
   std::vector<int> indexes_; // indexes in activities_ pointing to ready activities (=whose test() is positive)
   int next_value_ = 0;
@@ -48,14 +48,14 @@ public:
   int get_value() const { return next_value_; }
 };
 
-class ActivityWaitSimcall final : public ResultingSimcall<bool> {
+class ActivityWaitSimcall final : public DelayedSimcallObserver<bool> {
   activity::ActivityImpl* activity_;
   const double timeout_;
   std::string fun_call_;
 
 public:
   ActivityWaitSimcall(ActorImpl* actor, activity::ActivityImpl* activity, double timeout, std::string_view fun_call)
-      : ResultingSimcall(actor, false), activity_(activity), timeout_(timeout), fun_call_(fun_call)
+      : DelayedSimcallObserver(actor, false), activity_(activity), timeout_(timeout), fun_call_(fun_call)
   {
   }
   void serialize(std::stringstream& stream) const override;
@@ -66,7 +66,7 @@ public:
   double get_timeout() const { return timeout_; }
 };
 
-class ActivityWaitanySimcall final : public ResultingSimcall<ssize_t> {
+class ActivityWaitanySimcall final : public DelayedSimcallObserver<ssize_t> {
   const std::vector<activity::ActivityImpl*>& activities_;
   std::vector<int> indexes_; // indexes in activities_ pointing to ready activities (=whose test() is positive)
   const double timeout_;
@@ -86,7 +86,9 @@ public:
   int get_value() const { return next_value_; }
 };
 
-class CommIsendSimcall final : public SimcallObserver {
+// This is a DelayedSimcallObserver even if its name denotes an async_comm, because in non-MC mode, the recv is not
+// split in irecv+wait but executed in one simcall only, with such an observer that then needs to be delayed
+class CommIsendSimcall final : public DelayedSimcallObserver<void> {
   activity::MailboxImpl* mbox_;
   double payload_size_;
   double rate_;
@@ -111,7 +113,7 @@ public:
       const std::function<void(activity::CommImpl*, void*, size_t)>&
           copy_data_fun, // used to copy data if not default one
       void* payload, bool detached, std::string_view fun_call)
-      : SimcallObserver(actor)
+      : DelayedSimcallObserver<void>(actor)
       , mbox_(mbox)
       , payload_size_(payload_size)
       , rate_(rate)
@@ -142,7 +144,9 @@ public:
   auto const& get_copy_data_fun() const { return copy_data_fun_; }
 };
 
-class CommIrecvSimcall final : public SimcallObserver {
+// This is a DelayedSimcallObserver even if its name denotes an async_comm, because in non-MC mode, the send is not
+// split in isend+wait but executed in one simcall only, with such an observer that then needs to be delayed
+class CommIrecvSimcall final : public DelayedSimcallObserver<void> {
   activity::MailboxImpl* mbox_;
   unsigned char* dst_buff_;
   size_t* dst_buff_size_;
@@ -161,7 +165,7 @@ public:
                    const std::function<bool(void*, void*, activity::CommImpl*)>& match_fun,
                    const std::function<void(activity::CommImpl*, void*, size_t)>& copy_data_fun, void* payload,
                    double rate, std::string_view fun_call)
-      : SimcallObserver(actor)
+      : DelayedSimcallObserver<void>(actor)
       , mbox_(mbox)
       , dst_buff_(dst_buff)
       , dst_buff_size_(dst_buff_size)

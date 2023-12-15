@@ -144,6 +144,7 @@ using ActorCodeFactory = std::function<ActorCode(std::vector<std::string> args)>
 
 class Simcall;
 class SimcallObserver;
+template <typename ReturnType> class DelayedSimcallObserver;
 class MutexObserver;
 class ConditionVariableObserver;
 class ObjectAccessSimcallObserver;
@@ -185,8 +186,6 @@ namespace activity {
   using MutexAcquisitionImplPtr = boost::intrusive_ptr<MutexAcquisitionImpl>;
   XBT_PUBLIC void intrusive_ptr_add_ref(MutexImpl* mutex);
   XBT_PUBLIC void intrusive_ptr_release(MutexImpl* mutex);
-  class SynchroImpl;
-  using SynchroImplPtr = boost::intrusive_ptr<SynchroImpl>;
   class SemaphoreImpl;
   using SemaphoreImplPtr = boost::intrusive_ptr<SemaphoreImpl>;
   class SemAcquisitionImpl;

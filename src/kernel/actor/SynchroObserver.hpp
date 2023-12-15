@@ -17,7 +17,7 @@
 namespace simgrid::kernel::actor {
 
 /* All the observers of Mutex transitions are very similar, so implement them all together in this class */
-class MutexObserver final : public SimcallObserver {
+class MutexObserver final : public DelayedSimcallObserver<void> {
   mc::Transition::Type type_;
   activity::MutexImpl* const mutex_;
 
@@ -46,7 +46,7 @@ public:
 };
 
 /* This observer is ued for SEM_WAIT, that is returning and needs the acquisition (in MC mode) */
-class SemaphoreAcquisitionObserver final : public ResultingSimcall<bool> {
+class SemaphoreAcquisitionObserver final : public DelayedSimcallObserver<bool> {
   mc::Transition::Type type_;
   activity::SemAcquisitionImpl* const acquisition_;
   const double timeout_;
@@ -63,7 +63,7 @@ public:
 };
 
 /* This observer is used for BARRIER_LOCK and BARRIER_WAIT. WAIT is returning and needs the acquisition */
-class BarrierObserver final : public ResultingSimcall<bool> {
+class BarrierObserver final : public DelayedSimcallObserver<bool> {
   mc::Transition::Type type_;
   activity::BarrierImpl* const barrier_                = nullptr;
   activity::BarrierAcquisitionImpl* const acquisition_ = nullptr;
@@ -81,7 +81,7 @@ public:
   double get_timeout() const { return timeout_; }
 };
 
-class ConditionVariableObserver final : public ResultingSimcall<bool> {
+class ConditionVariableObserver final : public DelayedSimcallObserver<bool> {
   //mc::Transition::Type type_; Will be used when we implement CV on the MC side
   activity::ConditionVariableImpl* const cond_;
   activity::MutexImpl* const mutex_;
@@ -90,7 +90,7 @@ class ConditionVariableObserver final : public ResultingSimcall<bool> {
 public:
   ConditionVariableObserver(ActorImpl* actor, activity::ConditionVariableImpl* cond, activity::MutexImpl* mutex,
                             double timeout = -1.0)
-      : ResultingSimcall(actor, false), cond_(cond), mutex_(mutex), timeout_(timeout)
+      : DelayedSimcallObserver(actor, false), cond_(cond), mutex_(mutex), timeout_(timeout)
   {
     xbt_assert(mutex != nullptr, "Cannot wait on a condition variable without a valid mutex");
   }

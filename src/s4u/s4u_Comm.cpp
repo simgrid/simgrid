@@ -100,10 +100,12 @@ void Comm::send(kernel::actor::ActorImpl* sender, const Mailbox* mbox, double ta
     simgrid::kernel::actor::CommIsendSimcall observer(sender, mbox->get_impl(), task_size, rate,
                                                       static_cast<unsigned char*>(src_buff), src_buff_size, match_fun,
                                                       nullptr, copy_data_fun, data, false, "Isend");
-    simgrid::kernel::actor::simcall_blocking([&observer, timeout] {
-      simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::isend(&observer);
-      comm->wait_for(observer.get_issuer(), timeout);
-    });
+    simgrid::kernel::actor::simcall_blocking<void>(
+        [&observer, timeout] {
+          simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::isend(&observer);
+          comm->wait_for(observer.get_issuer(), timeout);
+        },
+        &observer);
   }
 }
 
@@ -140,13 +142,15 @@ void Comm::recv(kernel::actor::ActorImpl* receiver, const Mailbox* mbox, void* d
       throw simgrid::TimeoutException(XBT_THROW_POINT, "Timeouted");
     }
     comm = nullptr;
-  } else {
+  } else { // Non-MC path
     simgrid::kernel::actor::CommIrecvSimcall observer(receiver, mbox->get_impl(), static_cast<unsigned char*>(dst_buff),
                                                       dst_buff_size, match_fun, copy_data_fun, data, rate, "Irecv");
-    simgrid::kernel::actor::simcall_blocking([&observer, timeout] {
-      simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::irecv(&observer);
-      comm->wait_for(observer.get_issuer(), timeout);
-    });
+    simgrid::kernel::actor::simcall_blocking<void>(
+        [&observer, timeout] {
+          simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::irecv(&observer);
+          comm->wait_for(observer.get_issuer(), timeout);
+        },
+        &observer);
   }
 }
 

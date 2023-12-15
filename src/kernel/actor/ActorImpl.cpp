@@ -181,15 +181,16 @@ void ActorImpl::exit()
   suspended_ = false;
   exception_ = nullptr;
 
-  if (waiting_synchro_ != nullptr) {
+  while (not waiting_synchros_.empty()) {
     /* Take an extra reference on the activity object that may be unref by Comm::finish() or friends */
-    activity::ActivityImplPtr activity = waiting_synchro_;
+    activity::ActivityImplPtr activity = waiting_synchros_.back();
+    waiting_synchros_.pop_back();
+    
     activity->cancel();
     activity->set_state(activity::State::FAILED);
     activity->finish();
 
-    activities_.erase(waiting_synchro_);
-    waiting_synchro_ = nullptr;
+    activities_.erase(activity);
   }
   for (auto const& activity : activities_)
     activity->cancel();
@@ -345,7 +346,7 @@ void ActorImpl::resume()
   /* resume the activities that were blocked when suspending the actor. */
   for (auto const& activity : activities_)
     activity->resume();
-  if (not waiting_synchro_) // Reschedule the actor if it was forcefully unscheduled in yield()
+  if (waiting_synchros_.empty()) // Reschedule the actor if it was forcefully unscheduled in yield()
     EngineImpl::get_instance()->add_actor_to_run_list_no_check(this);
 
   XBT_OUT();
@@ -384,11 +385,11 @@ void ActorImpl::throw_exception(std::exception_ptr e)
   if (suspended_)
     resume();
 
-  /* cancel the blocking synchro if any */
-  if (waiting_synchro_) {
-    waiting_synchro_->cancel();
-    activities_.erase(waiting_synchro_);
-    waiting_synchro_ = nullptr;
+  /* cancel the blocking synchros if any */
+  while (not waiting_synchros_.empty()) {
+    waiting_synchros_.back()->cancel();
+    activities_.erase(waiting_synchros_.back());
+    waiting_synchros_.pop_back();
   }
 }
 

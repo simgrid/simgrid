@@ -16,6 +16,7 @@
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "xbt/asserts.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_network, kernel, "Kernel network-related synchronization");
 
@@ -419,10 +420,9 @@ void CommImpl::finish()
     set_state(State::SRC_TIMEOUT);
   else if (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FINISHED)
     set_state(State::DST_TIMEOUT);
-  else if ((from_ && not from_->is_on()) ||
-           (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FAILED))
+  else if (from_ && not from_->is_on())
     set_state(State::SRC_HOST_FAILURE);
-  else if ((to_ && not to_->is_on()) || (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FAILED))
+  else if (to_ && not to_->is_on())
     set_state(State::DST_HOST_FAILURE);
   else if (model_action_ && model_action_->get_state() == resource::Action::State::FAILED) {
     set_state(State::LINK_FAILURE);
@@ -448,101 +448,75 @@ void CommImpl::finish()
     EngineImpl::get_instance()->get_maestro()->activities_.erase(this);
 
   while (not simcalls_.empty()) {
-    actor::Simcall* simcall = simcalls_.front();
-    simcalls_.pop_front();
 
-    /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
-     * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
-     * simcall */
+    auto issuer = unregister_first_simcall();
+    if (issuer == nullptr) /* don't answer exiting and dying actors */
+      continue;
 
-    if (simcall->call_ == actor::Simcall::Type::NONE) // FIXME: maybe a better way to handle this case
-      continue;                                       // if actor handling comm is killed
+    issuer->activities_.erase(this);
 
-    handle_activity_waitany(simcall);
+    /* Check out for errors, and answer the simcall */
+    switch (get_state()) {
+      case State::FAILED:
+        issuer->exception_ = std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
+        break;
+      case State::SRC_TIMEOUT:
+        issuer->exception_ =
+            std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the sender"));
+        break;
 
-    /* Check out for errors */
+      case State::DST_TIMEOUT:
+        issuer->exception_ = std::make_exception_ptr(
+            TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the receiver"));
+        break;
 
-    if (not simcall->issuer_->get_host()->is_on()) {
-      simcall->issuer_->set_wannadie();
-    } else {
-      // Do not answer to dying actors
-      if (not simcall->issuer_->wannadie()) {
-        auto* issuer = simcall->issuer_;
-        switch (get_state()) {
-          case State::FAILED:
-            issuer->exception_ =
-                std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
-            break;
-          case State::SRC_TIMEOUT:
-            issuer->exception_ = std::make_exception_ptr(
-                TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the sender"));
-            break;
+      case State::SRC_HOST_FAILURE:
+        xbt_assert(issuer != src_actor_);
+        set_state(State::FAILED);
+        issuer->exception_ = std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
+        break;
 
-          case State::DST_TIMEOUT:
-            issuer->exception_ = std::make_exception_ptr(
-                TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the receiver"));
-            break;
+      case State::DST_HOST_FAILURE:
+        xbt_assert(issuer != dst_actor_);
+        set_state(State::FAILED);
+        issuer->exception_ = std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
+        break;
 
-          case State::SRC_HOST_FAILURE:
-            if (issuer == src_actor_)
-              issuer->set_wannadie();
-            else {
-              set_state(State::FAILED);
-              issuer->exception_ =
-                  std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
-            }
-            break;
-
-          case State::DST_HOST_FAILURE:
-            if (issuer == dst_actor_)
-              issuer->set_wannadie();
-            else {
-              set_state(State::FAILED);
-              issuer->exception_ =
-                  std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
-            }
-            break;
-
-          case State::LINK_FAILURE:
-            XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) "
-                      "detached:%d",
-                      this, src_actor_ ? src_actor_->get_host()->get_cname() : nullptr,
-                      dst_actor_ ? dst_actor_->get_host()->get_cname() : nullptr, issuer->get_cname(), issuer,
-                      detached_);
-            if (src_actor_ == issuer) {
-              XBT_DEBUG("I'm source");
-            } else if (dst_actor_ == issuer) {
-              XBT_DEBUG("I'm dest");
-            } else {
-              XBT_DEBUG("I'm neither source nor dest");
-            }
-            set_state(State::FAILED);
-            issuer->throw_exception(std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Link failure")));
-            break;
-
-          case State::CANCELED:
-            if (issuer == dst_actor_)
-              issuer->exception_ =
-                  std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Communication canceled by the sender"));
-            else
-              issuer->exception_ =
-                  std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Communication canceled by the receiver"));
-            break;
-
-          default:
-            xbt_assert(get_state() == State::DONE, "Internal error in CommImpl::finish(): unexpected synchro state %s",
-                       get_state_str());
+      case State::LINK_FAILURE:
+        XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) "
+                  "detached:%d",
+                  this, src_actor_ ? src_actor_->get_host()->get_cname() : nullptr,
+                  dst_actor_ ? dst_actor_->get_host()->get_cname() : nullptr, issuer->get_cname(), issuer, detached_);
+        if (src_actor_ == issuer) {
+          XBT_DEBUG("I'm source");
+        } else if (dst_actor_ == issuer) {
+          XBT_DEBUG("I'm dest");
+        } else {
+          XBT_DEBUG("I'm neither source nor dest");
         }
-        issuer->simcall_answer();
-      }
-    }
+        set_state(State::FAILED);
+        issuer->throw_exception(std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Link failure")));
+        break;
 
-    simcall->issuer_->waiting_synchro_ = nullptr;
-    simcall->issuer_->activities_.erase(this);
+      case State::CANCELED:
+        if (issuer == dst_actor_)
+          issuer->exception_ =
+              std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Communication canceled by the sender"));
+        else
+          issuer->exception_ =
+              std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Communication canceled by the receiver"));
+        break;
+
+      default:
+        xbt_assert(get_state() == State::DONE, "Internal error in CommImpl::finish(): unexpected synchro state %s",
+                   get_state_str());
+    }
+    issuer->simcall_answer();
+
     if (detached_) {
-      if (simcall->issuer_ != dst_actor_ && dst_actor_ != nullptr)
+      if (issuer != dst_actor_ && dst_actor_ != nullptr)
         dst_actor_->activities_.erase(this);
-      if (simcall->issuer_ != src_actor_ && src_actor_ != nullptr)
+      if (issuer != src_actor_ && src_actor_ != nullptr)
         src_actor_->activities_.erase(this);
     }
   }

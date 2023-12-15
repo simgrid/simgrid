@@ -39,7 +39,7 @@ int RandomSimcall::get_max_consider() const
 }
 
 ActorJoinSimcall::ActorJoinSimcall(ActorImpl* actor, ActorImpl* other, double timeout)
-    : SimcallObserver(actor), other_(s4u::ActorPtr(other->get_iface())), timeout_(timeout)
+    : DelayedSimcallObserver(actor), other_(s4u::ActorPtr(other->get_iface())), timeout_(timeout)
 {
 }
 bool ActorJoinSimcall::is_enabled()

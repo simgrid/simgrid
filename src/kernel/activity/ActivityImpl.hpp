@@ -20,7 +20,7 @@
 namespace simgrid::kernel::activity {
 
 XBT_DECLARE_ENUM_CLASS(State, WAITING, READY, RUNNING, DONE, CANCELED, FAILED, SRC_HOST_FAILURE, DST_HOST_FAILURE,
-                       TIMEOUT, SRC_TIMEOUT, DST_TIMEOUT, LINK_FAILURE);
+                       SRC_TIMEOUT, DST_TIMEOUT, LINK_FAILURE);
 
 class XBT_PUBLIC ActivityImpl : public kernel::actor::ObjectAccessSimcallItem {
   std::atomic_int_fast32_t refcount_{0};
@@ -85,9 +85,13 @@ public:
   s4u::Host* get_host() const { return hosts_.front(); }
   const std::vector<s4u::Host*>& get_hosts() const { return hosts_; };
 
+  // Connect this activity to that actor
   void register_simcall(actor::Simcall* simcall);
+  // Disconnect this activity from that given actor
   void unregister_simcall(actor::Simcall* simcall);
-  void handle_activity_waitany(actor::Simcall* simcall);
+  // Disconnect this activity from the first actor waiting on it.
+  // Returns the actor to be notified of the activity state.
+  actor::ActorImpl* unregister_first_simcall();
   void clean_action();
   virtual double get_remaining() const;
   // Support for the boost::intrusive_ptr<ActivityImpl> datatype

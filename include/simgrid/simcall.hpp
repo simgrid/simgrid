@@ -155,21 +155,23 @@ template <class F> typename std::invoke_result_t<F> simcall_object_access(Object
 
 /** Execute some code (that does not return immediately) in kernel context
  *
- * This is very similar to simcall_answered() above, but the calling actor will not get rescheduled until
- * actor->simcall_answer() is called explicitly.
+ * This is very similar to simcall_answered() above, but the calling actor will not get rescheduled automatically.
  *
- * This is meant for blocking actions. For example, locking a mutex is a blocking simcall.
- * First it's a simcall because that's obviously a modification of the world. Then, that's a blocking simcall because if
- * the mutex happens not to be free, the actor is added to a queue of actors in the mutex. Every mutex->unlock() takes
- * the first actor from the queue, mark it as current owner of the mutex and call actor->simcall_answer() to mark that
- * this mutex is now unblocked and ready to run again. If the mutex is initially free, the calling actor is unblocked
- * right away with actor->simcall_answer() once the mutex is marked as locked.
+ * This is meant for blocking actions. For example, locking a mutex is a blocking simcall. First it's a simcall because
+ * that's obviously a modification of the world. Then, that's a blocking simcall because if the mutex happens not to be
+ * free, the actor is added to a queue of actors in the mutex. Every mutex->unlock() takes the first actor from the
+ * queue, mark it as current owner of the mutex and call actor->simcall_answer() on it to mark that this actor is now
+ * unblocked and ready to run again. If the mutex is initially free, the calling actor is unblocked right away with
+ * actor->simcall_answer() once the mutex is marked as locked.
  *
- * If your code never calls actor->simcall_answer() itself, the actor will never return from its simcall.
+ * If your simcall handler (the F parameter) never calls actor->simcall_answer() by itself, the actor will never return
+ * from this simcall.
  *
- * The return value is obtained from observer->get_result() if it exists. Otherwise void is returned.
+ * The return value is obtained from observer->get_result(), so your code should call observer->set_value() before
+ * simcall_answer(), unless this is a synchronization-only simcall with no return value (i.e if ReturnType=void)
  */
-template <class F> void simcall_blocking(F&& code, SimcallObserver* observer = nullptr)
+template <typename ReturnType, class F, typename = std::enable_if_t<std::is_void_v<std::invoke_result_t<F>>>>
+ReturnType simcall_blocking(F&& code, DelayedSimcallObserver<ReturnType>* observer)
 {
   xbt_assert(not s4u::Actor::is_maestro(), "Cannot execute blocking call in kernel mode");
 
@@ -178,12 +180,6 @@ template <class F> void simcall_blocking(F&& code, SimcallObserver* observer = n
   SimcallResult<F> result;
   simcall_run_blocking([&result, &code] { result.exec(std::forward<F>(code)); }, observer);
   result.get(); // rethrow stored exception if any
-}
-
-template <class F, class Observer>
-auto simcall_blocking(F&& code, Observer* observer) -> decltype(observer->get_result())
-{
-  simcall_blocking(std::forward<F>(code), static_cast<SimcallObserver*>(observer));
   return observer->get_result();
 }
 } // namespace simgrid::kernel::actor

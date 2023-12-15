@@ -14,7 +14,7 @@ namespace simgrid::kernel::actor {
 /** Contains what's needed to run some code in kernel mode on behalf of an actor */
 class Simcall {
 public:
-  /** All possible simcalls. */
+  /** All possible simcall kinds. */
   XBT_DECLARE_ENUM_CLASS(Type, NONE, RUN_ANSWERED, RUN_BLOCKING);
 
   Type call_                                         = Type::NONE;

@@ -9,6 +9,7 @@
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_config.hpp"
 
 #include <sstream>
@@ -18,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(obs_mutex, mc_observer, "Logging specific to mut
 namespace simgrid::kernel::actor {
 
 MutexObserver::MutexObserver(ActorImpl* actor, mc::Transition::Type type, activity::MutexImpl* mutex)
-    : SimcallObserver(actor), type_(type), mutex_(mutex)
+    : DelayedSimcallObserver<void>(actor), type_(type), mutex_(mutex)
 {
   xbt_assert(mutex_);
 }
@@ -59,7 +60,7 @@ std::string SemaphoreObserver::to_string() const
 
 SemaphoreAcquisitionObserver::SemaphoreAcquisitionObserver(ActorImpl* actor, mc::Transition::Type type,
                                                            activity::SemAcquisitionImpl* acqui, double timeout)
-    : ResultingSimcall(actor, false), type_(type), acquisition_(acqui), timeout_(timeout)
+    : DelayedSimcallObserver(actor, false), type_(type), acquisition_(acqui), timeout_(timeout)
 {
 }
 bool SemaphoreAcquisitionObserver::is_enabled()
@@ -79,13 +80,13 @@ std::string SemaphoreAcquisitionObserver::to_string() const
 }
 
 BarrierObserver::BarrierObserver(ActorImpl* actor, mc::Transition::Type type, activity::BarrierImpl* bar)
-    : ResultingSimcall(actor, false), type_(type), barrier_(bar), timeout_(-1)
+    : DelayedSimcallObserver(actor, false), type_(type), barrier_(bar), timeout_(-1)
 {
   xbt_assert(type_ == mc::Transition::Type::BARRIER_ASYNC_LOCK);
 }
 BarrierObserver::BarrierObserver(ActorImpl* actor, mc::Transition::Type type, activity::BarrierAcquisitionImpl* acqui,
                                  double timeout)
-    : ResultingSimcall(actor, false), type_(type), acquisition_(acqui), timeout_(timeout)
+    : DelayedSimcallObserver(actor, false), type_(type), acquisition_(acqui), timeout_(timeout)
 {
   xbt_assert(type_ == mc::Transition::Type::BARRIER_WAIT);
 }

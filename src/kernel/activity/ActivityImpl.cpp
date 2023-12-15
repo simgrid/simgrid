@@ -9,7 +9,6 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
-#include "src/kernel/activity/Synchro.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
@@ -31,7 +30,7 @@ ActivityImpl::~ActivityImpl()
 void ActivityImpl::register_simcall(actor::Simcall* simcall)
 {
   simcalls_.push_back(simcall);
-  simcall->issuer_->waiting_synchro_ = this;
+  simcall->issuer_->waiting_synchros_.push_back(this);
 }
 
 void ActivityImpl::unregister_simcall(actor::Simcall* simcall)
@@ -40,6 +39,52 @@ void ActivityImpl::unregister_simcall(actor::Simcall* simcall)
   auto j = boost::range::find(simcalls_, simcall);
   if (j != simcalls_.end())
     simcalls_.erase(j);
+
+  auto s = boost::range::find(simcall->issuer_->waiting_synchros_, this);
+  if (s != simcall->issuer_->waiting_synchros_.end())
+    simcall->issuer_->waiting_synchros_.erase(s);
+}
+
+actor::ActorImpl* ActivityImpl::unregister_first_simcall()
+{
+  actor::Simcall* simcall = simcalls_.front();
+  simcalls_.pop_front();
+
+  auto s = boost::range::find(simcall->issuer_->waiting_synchros_, this);
+  if (s != simcall->issuer_->waiting_synchros_.end())
+    simcall->issuer_->waiting_synchros_.erase(s);
+
+  if (simcall->timeout_cb_) { // The timeout, if any, is now useless as the activity finished
+    simcall->timeout_cb_->remove();
+    simcall->timeout_cb_ = nullptr;
+  }
+
+  /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
+   * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
+   * simcall */
+  if (auto* observer = dynamic_cast<actor::ActivityWaitanySimcall*>(simcall->observer_)) {
+    auto activities = observer->get_activities();
+    for (auto* act : activities)
+      act->unregister_simcall(simcall);
+
+    if (not MC_is_active() && not MC_record_replay_is_active()) {
+      auto element = std::find(activities.begin(), activities.end(), this);
+      int rank     = element != activities.end() ? static_cast<int>(std::distance(activities.begin(), element)) : -1;
+      observer->set_result(rank);
+    }
+  }
+
+  /* The actor is not blocked in a simcall. It's probably exiting and called finish() itself. Don't notify it. */
+  if (simcall->call_ == actor::Simcall::Type::NONE)
+    return nullptr;
+
+  auto issuer = simcall->issuer_;
+  if (not issuer->get_host()->is_on())
+    issuer->set_wannadie();
+  if (issuer->wannadie()) // Do not answer to dying actors
+    return nullptr;
+
+  return issuer;
 }
 
 void ActivityImpl::clean_action()
@@ -107,12 +152,11 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   /* If the synchro is already finished then perform the error handling */
   if (state_ != State::WAITING && state_ != State::RUNNING) {
     finish();
-  } else {
+  } else if (timeout >= 0.) {
     /* As Messages in Message Queues are virtually instantaneous, we do not need a timeout */
     /* Or maybe we do, and will have to implement a specific way to handle them is need arises */
     if (dynamic_cast<MessImpl*>(this) != nullptr)
       return;
-    /* we need a sleep action (even when the timeout is infinite) to be notified of host failures */
     /* Comms handle that a bit differently of the other activities */
     if (auto* comm = dynamic_cast<CommImpl*>(this)) {
       resource::Action* sleep_action = issuer->get_host()->get_cpu()->sleep(timeout);
@@ -123,16 +167,16 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
       else
         comm->dst_timeout_.reset(sleep_action);
     } else {
-      SynchroImplPtr synchro(new SynchroImpl([this, issuer]() {
+      issuer->simcall_.timeout_cb_ = timer::Timer::set(s4u::Engine::get_clock() + timeout,
+        [this, issuer]() {
+        issuer->simcall_.timeout_cb_ = nullptr;
         this->unregister_simcall(&issuer->simcall_);
-        issuer->waiting_synchro_ = nullptr;
         issuer->exception_       = nullptr;
         auto* observer           = dynamic_cast<kernel::actor::ActivityWaitSimcall*>(issuer->simcall_.observer_);
         xbt_assert(observer != nullptr);
         observer->set_result(true); // Returns that the wait_for timeouted
-      }));
-      synchro->set_host(issuer->get_host()).set_timeout(timeout).start();
-      synchro->register_simcall(&issuer->simcall_);
+        issuer->simcall_answer();
+      });
     }
   }
 }
@@ -202,29 +246,6 @@ void ActivityImpl::cancel()
   if (model_action_ != nullptr)
     model_action_->cancel();
   state_ = State::CANCELED;
-}
-
-void ActivityImpl::handle_activity_waitany(actor::Simcall* simcall)
-{
-  /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
-   * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
-   * simcall */
-  if (auto* observer = dynamic_cast<actor::ActivityWaitanySimcall*>(simcall->observer_)) {
-    if (simcall->timeout_cb_) {
-      simcall->timeout_cb_->remove();
-      simcall->timeout_cb_ = nullptr;
-    }
-
-    auto activities = observer->get_activities();
-    for (auto* act : activities)
-      act->unregister_simcall(simcall);
-
-    if (not MC_is_active() && not MC_record_replay_is_active()) {
-      auto element   = std::find(activities.begin(), activities.end(), this);
-      int rank       = element != activities.end() ? static_cast<int>(std::distance(activities.begin(), element)) : -1;
-      observer->set_result(rank);
-    }
-  }
 }
 
 // boost::intrusive_ptr<Activity> support:

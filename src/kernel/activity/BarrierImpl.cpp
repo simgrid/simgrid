@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/BarrierImpl.hpp"
-#include "src/kernel/activity/Synchro.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_barrier, ker_synchro, "Barrier kernel-space implementation");
 
@@ -32,11 +31,8 @@ void BarrierAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 void BarrierAcquisitionImpl::finish()
 {
   xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
-  actor::Simcall* simcall = simcalls_.front();
-  simcalls_.pop_front();
-
-  simcall->issuer_->waiting_synchro_ = nullptr;
-  simcall->issuer_->simcall_answer();
+  auto issuer = unregister_first_simcall();
+  issuer->simcall_answer();
 }
 /* -------- Barrier -------- */
 
@@ -55,7 +51,10 @@ BarrierAcquisitionImplPtr BarrierImpl::acquire_async(actor::ActorImpl* issuer)
   } else {
     for (auto const& acqui : ongoing_acquisitions_) {
       acqui->granted_ = true;
-      if (acqui == acqui->get_issuer()->waiting_synchro_)
+      
+      // Finish the acquisition if the owner is already blocked on its completion
+      auto& synchros = acqui->get_issuer()->waiting_synchros_;
+      if (std::find(synchros.begin(), synchros.end(), acqui) != synchros.end())
         acqui->finish();
       // else, the issuer is not blocked on this acquisition so no need to release it
     }

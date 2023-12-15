@@ -140,11 +140,10 @@ void ExecImpl::finish()
   if (model_action_ != nullptr) {
     if (auto const& hosts = get_hosts();
         std::any_of(hosts.begin(), hosts.end(), [](const s4u::Host* host) { return not host->is_on(); })) {
-      /* If one of the hosts running the synchro failed, notice it. This way, the asking
-       * process can be killed if it runs on that host itself */
+      /* If one of the hosts running the synchro failed, so did the activity */
       set_state(State::FAILED);
     } else if (model_action_->get_state() == resource::Action::State::FAILED) {
-      /* If all the hosts are running the synchro didn't fail, then the synchro was canceled */
+      /* The action failed, but none of the hosts running the activity did. I blame the cancel culture. */
       set_state(State::CANCELED);
     } else {
       set_state(State::DONE);
@@ -153,47 +152,28 @@ void ExecImpl::finish()
     clean_action();
   }
 
-  if (get_actor() != nullptr)
-    get_actor()->activities_.erase(this);
-
   while (not simcalls_.empty()) {
-    actor::Simcall* simcall = simcalls_.front();
-    simcalls_.pop_front();
+    auto issuer = unregister_first_simcall();
+    if (issuer == nullptr) /* don't answer exiting and dying actors */
+      continue;
 
-    if (simcall->call_ == actor::Simcall::Type::NONE) // FIXME: maybe a better way to handle this case
-      continue;                                       // if process handling comm is killed
+    issuer->activities_.erase(this);
 
-    handle_activity_waitany(simcall);
-
-    auto issuer = simcall->issuer_;
     switch (get_state()) {
       case State::FAILED:
-        static_cast<s4u::Exec*>(get_iface())->complete(s4u::Activity::State::FAILED);
-        if (issuer->get_host()->is_on())
-          issuer->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
-        else /* else, the actor will be killed with no possibility to survive */
-          issuer->set_wannadie();
+        static_cast<s4u::Exec*>(get_iface())->complete(s4u::Activity::State::FAILED); // Raise the relevant signals
+        issuer->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
         break;
 
       case State::CANCELED:
         issuer->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Execution Canceled"));
         break;
 
-      case State::TIMEOUT:
-        issuer->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
-        break;
-
       default:
-        xbt_assert(get_state() == State::DONE, "Internal error in ExecImpl::finish(): unexpected synchro state %s",
-                   get_state_str());
+        xbt_assert(get_state() == State::DONE, "Unexpected activity state %s", get_state_str());
     }
 
-    issuer->waiting_synchro_ = nullptr;
-    /* Fail the process if the host is down */
-    if (issuer->get_host()->is_on())
-      issuer->simcall_answer();
-    else
-      issuer->set_wannadie();
+    issuer->simcall_answer();
   }
 }
 

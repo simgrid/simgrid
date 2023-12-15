@@ -41,15 +41,13 @@ class XBT_PUBLIC Host : public xbt::Extendable<Host> {
   friend kernel::resource::VirtualMachineImpl; // creates the the pimpl_cpu
   friend kernel::routing::NetZoneImpl;
   friend kernel::resource::HostImpl; // call destructor from private implementation
+  friend kernel::resource::CpuAction; // signal exec_state_changed
 
   // The private implementation, that never changes
   kernel::resource::HostImpl* const pimpl_;
 
   kernel::resource::CpuImpl* pimpl_cpu_      = nullptr;
   kernel::routing::NetPoint* pimpl_netpoint_ = nullptr;
-#ifndef DOXYGEN
-  friend kernel::resource::CpuAction; // signal exec_state_changed
-#endif
 
   static xbt::signal<void(Host&)> on_creation;
   static xbt::signal<void(Host const&)> on_destruction;
