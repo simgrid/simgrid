@@ -79,7 +79,7 @@ void ODPOR::on_backtrack(State* s)
     return;              // Backtracking from the root means we end exploration, nothing to do
 
   auto wut_state = static_cast<WutState*>(s);
-  xbt_assert(wut_state != nullptr, "ODPOR should use SleepSetState. Fix me");
+  xbt_assert(wut_state != nullptr, "ODPOR should use WutState. Fix me");
   wut_state->do_odpor_unwind();
 }
 

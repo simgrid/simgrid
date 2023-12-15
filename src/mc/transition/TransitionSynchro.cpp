@@ -120,6 +120,11 @@ bool MutexTransition::depends(const Transition* o) const
     if (type_ == Type::MUTEX_TRYLOCK && other->type_ == Type::MUTEX_WAIT)
       return false;
 
+    // two unlock can never occur in the same state, or after one another. Hence, the independency is true by
+    // verifying a forall on an empty set.
+    if (type_ == Type::MUTEX_UNLOCK && other->type_ == Type::MUTEX_UNLOCK)
+      return false;
+
     // FIXME: UNLOCK indep WAIT/TEST iff wait/test are not first in the waiting queue
     return true;
   }

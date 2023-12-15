@@ -48,6 +48,8 @@ private:
   // visited in order to reach the current configuration
   std::list<std::unique_ptr<State>> state_stack;
 
+  Configuration current_configuration_;
+
   /**
    * @brief Explores the unfolding of the concurrent system
    * represented by the ModelChecker instance "mcmodel_checker"

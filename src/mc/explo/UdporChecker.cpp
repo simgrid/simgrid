@@ -25,6 +25,7 @@ void UdporChecker::run()
   XBT_INFO("Starting a UDPOR exploration");
   state_stack.clear();
   state_stack.push_back(get_current_state());
+  current_configuration_ = Configuration();
   explore(Configuration(), EventSet(), EventSet(), EventSet());
   XBT_INFO("UDPOR exploration terminated -- model checking completed");
 }
@@ -94,6 +95,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
   // Move the application into stateCe (i.e. `state(C + {e})`) and make note of that state
   move_to_stateCe(&stateC, e);
   state_stack.push_back(record_current_state());
+  current_configuration_ = Ce;
 
   explore(Ce, D, std::move(A), std::move(exC));
 
@@ -102,6 +104,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
   // another `Explore()` after computing an alternative, at that
   // point we'll actually create a fresh RemoteProcess
   state_stack.pop_back();
+  current_configuration_ = C;
 
   // D <-- D + {e}
   D.insert(e);
@@ -196,6 +199,8 @@ void UdporChecker::move_to_stateCe(State* state, UnfoldingEvent* e)
                               "one transition of the state of an visited event is enabled, yet no\n"
                               "state was actually enabled. Please report this as a bug.\n"
                               "*********************************\n\n");
+  XBT_DEBUG("UDPOR going to execute actor %zu with transition <%s>", next_actor,
+            e->get_transition()->to_string().c_str());
   auto latest_transition_by_next_actor = state->execute_next(next_actor, get_remote_app());
 
   // The transition that is associated with the event was just
@@ -342,8 +347,8 @@ void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration
 RecordTrace UdporChecker::get_record_trace()
 {
   RecordTrace res;
-  for (auto const& state : state_stack)
-    res.push_back(state->get_transition_out().get());
+  for (auto const& event : current_configuration_)
+    res.push_back(event->get_transition());
   return res;
 }
 
