@@ -92,12 +92,6 @@ simgrid::config::Flag<bool> _sg_mc_send_determinism{
       _mc_cfg_cb_check("value to enable/disable the detection of send-determinism in the communications schemes");
     }};
 
-simgrid::config::Flag<bool> _sg_mc_unfolding_checker{
-    "model-check/unfolding-checker",
-    "Whether to enable the unfolding-based dynamic partial order reduction to MPI programs", false, [](bool) {
-      _mc_cfg_cb_check("value to to enable/disable the unfolding-based dynamic partial order reduction to MPI programs");
-    }};
-
 simgrid::config::Flag<std::string> _sg_mc_buffering{
     "smpi/buffering",
     "Buffering semantic to use for MPI (only used in MC)",
@@ -122,10 +116,7 @@ simgrid::mc::ReductionMode simgrid::mc::get_model_checking_reduction()
   } else if (cfg_mc_reduction.get() == "odpor") {
     return ReductionMode::odpor;
   } else if (cfg_mc_reduction.get() == "udpor") {
-    XBT_INFO("No reduction will be used: "
-             "UDPOR has a dedicated invocation 'model-check/unfolding-checker' "
-             "but is not yet fully supported in SimGrid");
-    return ReductionMode::none;
+    return ReductionMode::udpor;
   } else {
     XBT_INFO("Unknown reduction mode: defaulting to no reduction");
     return ReductionMode::none;

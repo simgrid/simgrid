@@ -188,7 +188,7 @@ std::optional<Configuration> Configuration::compute_k_partial_alternative_to(con
   // A later performance improvement would be to incorporate the work of Nguyen et al.
   // into SimGrid which associated additonal data structures with each unfolding event.
   // Since that is a rather complicated addition, we defer it to a later time...
-  Comb comb(k);
+  Comb comb(k_alt_size);
 
   for (const auto* e : U) {
     for (size_t i = 0; i < k_alt_size; i++) {

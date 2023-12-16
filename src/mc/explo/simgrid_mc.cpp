@@ -38,7 +38,7 @@ int main(int argc, char** argv)
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
     explo = std::unique_ptr<Exploration>(
         create_communication_determinism_checker(argv_copy, get_model_checking_reduction()));
-  else if (_sg_mc_unfolding_checker)
+  else if (get_model_checking_reduction() == ReductionMode::udpor)
     explo = std::unique_ptr<Exploration>(create_udpor_checker(argv_copy));
   else if (_sg_mc_explore_algo == "DFS")
     explo = std::unique_ptr<Exploration>(create_dfs_exploration(argv_copy, get_model_checking_reduction()));

@@ -5,8 +5,12 @@
 
 #include "src/mc/explo/udpor/ExtensionSetCalculator.hpp"
 #include "src/mc/explo/udpor/Configuration.hpp"
+#include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/History.hpp"
 #include "src/mc/explo/udpor/Unfolding.hpp"
+#include "src/mc/explo/udpor/UnfoldingEvent.hpp"
+#include "src/mc/transition/Transition.hpp"
+#include "src/mc/transition/TransitionSynchro.hpp"
 
 #include <functional>
 #include <unordered_map>
@@ -14,6 +18,8 @@
 #include <xbt/ex.h>
 
 using namespace simgrid::mc;
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_extension, mc_udpor, "Logging specific to the extension computation in UDPOR");
 
 namespace simgrid::mc::udpor {
 
@@ -248,7 +254,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
         continue;
       }
 
-      const auto issuer_mailbox        = e_issuer_send->get_mailbox();
+      const auto issuer_mailbox = e_issuer_send->get_mailbox();
       if (const auto* e_recv = dynamic_cast<const CommRecvTransition*>(e->get_transition());
           e_recv->get_mailbox() != issuer_mailbox) {
         continue;
@@ -292,7 +298,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
         continue;
       }
 
-      const auto issuer_mailbox        = e_issuer_recv->get_mailbox();
+      const auto issuer_mailbox = e_issuer_recv->get_mailbox();
       if (const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
           e_send->get_mailbox() != issuer_mailbox) {
         continue;
@@ -434,7 +440,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration& 
         continue;
       }
 
-      const auto issuer_mailbox        = e_issuer_recv->get_mailbox();
+      const auto issuer_mailbox = e_issuer_recv->get_mailbox();
       if (const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
           e_send->get_mailbox() != issuer_mailbox) {
         continue;
@@ -498,14 +504,37 @@ EventSet ExtensionSetCalculator::partially_extend_MutexAsyncLock(const Configura
 
   // for each event e in C
   for (const auto e : C) {
-    // Check for other locks on the same mutex
+    // Check for other locks on the same mutex, but not in the same aid history
     if (const auto* e_mutex = dynamic_cast<const MutexTransition*>(e->get_transition());
-        e_mutex->type_ == Transition::Type::MUTEX_ASYNC_LOCK && mutex_lock->get_mutex() == e_mutex->get_mutex()) {
-      auto K = EventSet({e, pre_event_a_C.value_or(e)});
-      exC.insert(U->discover_event(std::move(K), mutex_lock));
+        e_mutex != nullptr && e_mutex->type_ == Transition::Type::MUTEX_ASYNC_LOCK &&
+        mutex_lock->get_mutex() == e_mutex->get_mutex() && mutex_lock->aid_ != e_mutex->aid_) {
+
+      auto K = EventSet();
+      if (!pre_event_a_C.has_value() or not e->in_history_of(pre_event_a_C.value()))
+        K.insert(e);
+      if (pre_event_a_C.has_value() and not pre_event_a_C.value()->in_history_of(e))
+        K.insert(pre_event_a_C.value());
+      if (!K.empty())
+        exC.insert(U->discover_event(std::move(K), mutex_lock));
     }
   }
   return exC;
+}
+
+std::pair<aid_t, aid_t> firstTwoOwners(uintptr_t mutex_id, EventSet history)
+{
+  std::pair<aid_t, aid_t> two_owners(-1, -1);
+  for (const auto e : history) {
+    if (e->get_transition()->type_ == Transition::Type::MUTEX_ASYNC_LOCK) {
+      if (two_owners.first == -1)
+        two_owners.first = e->get_transition()->aid_;
+      else if (two_owners.second == -1) {
+        two_owners.second = e->get_transition()->aid_;
+        return two_owners;
+      }
+    }
+  }
+  return two_owners;
 }
 
 EventSet ExtensionSetCalculator::partially_extend_MutexUnlock(const Configuration& C, Unfolding* U,
@@ -531,16 +560,55 @@ EventSet ExtensionSetCalculator::partially_extend_MutexUnlock(const Configuratio
   for (const auto e : C) {
     // Check for MutexTest
     if (const auto* e_mutex = dynamic_cast<const MutexTransition*>(e->get_transition());
-        e_mutex->type_ == Transition::Type::MUTEX_TEST || e_mutex->type_ == Transition::Type::MUTEX_WAIT) {
-      // TODO: Check if dependent or not
-      // This entails getting information about
-      // the relative position of the mutex in the queue, which
-      // again means we need more context...
-      auto K = EventSet({e, pre_event_a_C.value_or(e)});
-      exC.insert(U->discover_event(std::move(K), mutex_unlock));
+        e_mutex != nullptr &&
+        (e_mutex->type_ == Transition::Type::MUTEX_TEST || e_mutex->type_ == Transition::Type::MUTEX_WAIT) &&
+        e_mutex->get_mutex() == mutex_unlock->get_mutex() && mutex_unlock->aid_ != e_mutex->aid_) {
+
+      auto first_owners = firstTwoOwners(e_mutex->get_mutex(), pre_event_a_C.value()->get_history());
+      if (first_owners == std::pair(mutex_unlock->aid_, e_mutex->aid_) or
+          first_owners == std::pair(e_mutex->aid_, mutex_unlock->aid_)) {
+
+        auto K = EventSet();
+        if (!pre_event_a_C.has_value() or not e->in_history_of(pre_event_a_C.value()))
+          K.insert(e);
+        if (pre_event_a_C.has_value() and not pre_event_a_C.value()->in_history_of(e))
+          K.insert(pre_event_a_C.value());
+        if (!K.empty())
+          exC.insert(U->discover_event(std::move(K), mutex_unlock));
+      }
     }
   }
   return exC;
+}
+
+bool is_mutex_available_before(const UnfoldingEvent* e, std::shared_ptr<MutexTransition> mutex)
+{
+  XBT_DEBUG("Wondering if the mutex is available just after %s history", e->to_string().c_str());
+  unsigned long requests_over_mutex = 0;
+
+  auto* previous_mutex = dynamic_cast<MutexTransition*>(e->get_transition());
+  if (previous_mutex != nullptr && e->get_transition()->type_ == Transition::Type::MUTEX_ASYNC_LOCK &&
+      mutex->depends(e->get_transition()))
+    requests_over_mutex++;
+
+  for (const auto previous_event : e->get_history()) {
+    XBT_DEBUG("  Considering event %s in the history", previous_event->to_string().c_str());
+    auto* previous_mutex = dynamic_cast<MutexTransition*>(previous_event->get_transition());
+    if (previous_mutex == nullptr)
+      continue;
+
+    if (previous_event->get_transition()->type_ == Transition::Type::MUTEX_ASYNC_LOCK &&
+        mutex->get_mutex() == previous_mutex->get_mutex())
+      requests_over_mutex++;
+
+    if (previous_event->get_transition()->type_ == Transition::Type::MUTEX_UNLOCK &&
+        mutex->get_mutex() == previous_mutex->get_mutex())
+      requests_over_mutex--;
+  }
+  XBT_DEBUG("  Mutex requests : %lu", requests_over_mutex);
+  // There will always be the AsyncLock by this actor
+  // mutex is owned if it is the only "unmatched" request
+  return requests_over_mutex == 1;
 }
 
 EventSet ExtensionSetCalculator::partially_extend_MutexWait(const Configuration& C, Unfolding* U,
@@ -549,15 +617,13 @@ EventSet ExtensionSetCalculator::partially_extend_MutexWait(const Configuration&
   EventSet exC;
   const auto mutex_wait    = std::static_pointer_cast<MutexTransition>(action);
   const auto pre_event_a_C = C.pre_event(mutex_wait->aid_);
+  xbt_assert(pre_event_a_C.has_value());
 
   // for each event e in C
   // 1. If lambda(e) := pre(a) -> add it. In the case of MutexWait, we also check that the
   // actor which is executing the MutexWait is the owner of the mutex
-  if (pre_event_a_C.has_value() && mutex_wait->get_owner() == mutex_wait->aid_) {
+  if (is_mutex_available_before(pre_event_a_C.value(), mutex_wait)) {
     const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), mutex_wait);
-    exC.insert(e_prime);
-  } else {
-    const auto e_prime = U->discover_event(EventSet(), mutex_wait);
     exC.insert(e_prime);
   }
 
@@ -565,13 +631,21 @@ EventSet ExtensionSetCalculator::partially_extend_MutexWait(const Configuration&
   for (const auto e : C) {
     // Check for any unlocks
     if (const auto* e_mutex = dynamic_cast<const MutexTransition*>(e->get_transition());
-        e_mutex != nullptr && e_mutex->type_ == Transition::Type::MUTEX_UNLOCK) {
-      // TODO: Check if dependent or not
-      // This entails getting information about
-      // the relative position of the mutex in the queue, which
-      // again means we need more context...
-      auto K = EventSet({e, pre_event_a_C.value_or(e)});
-      exC.insert(U->discover_event(std::move(K), mutex_wait));
+        e_mutex != nullptr && e_mutex->type_ == Transition::Type::MUTEX_UNLOCK &&
+        mutex_wait->get_mutex() == e_mutex->get_mutex() && mutex_wait->aid_ != e_mutex->aid_) {
+
+      auto first_owners = firstTwoOwners(e_mutex->get_mutex(), pre_event_a_C.value()->get_history());
+      if (first_owners == std::pair(mutex_wait->aid_, e_mutex->aid_) or
+          first_owners == std::pair(e_mutex->aid_, mutex_wait->aid_)) {
+
+        auto K = EventSet();
+        if (!pre_event_a_C.has_value() or not e->in_history_of(pre_event_a_C.value()))
+          K.insert(e);
+        if (pre_event_a_C.has_value() and not pre_event_a_C.value()->in_history_of(e))
+          K.insert(pre_event_a_C.value());
+        if (!K.empty())
+          exC.insert(U->discover_event(std::move(K), mutex_wait));
+      }
     }
   }
   return exC;
@@ -619,14 +693,17 @@ EventSet ExtensionSetCalculator::partially_extend_ActorJoin(const Configuration&
 
   const auto join_action = std::static_pointer_cast<ActorJoinTransition>(action);
 
-  // Handling ActorJoin is very simple: it is independent with all
-  // other transitions. Thus the only event it could possibly depend
-  // on is pre(a, C) or the root
+  const auto last_event_waited = C.pre_event(join_action->get_target());
+  xbt_assert(last_event_waited.has_value(), "We considered the extension of an ActorJoin waiting for a process"
+                                            "that has not yet been executed. Fix me");
+
+  // Handling ActorJoin is very simple: it is dependent only with previous actions
+  // of the same actor, and actions of the actor it is waiting for.
   if (const auto pre_event_a_C = C.pre_event(join_action->aid_); pre_event_a_C.has_value()) {
-    const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), join_action);
+    const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value(), last_event_waited.value()}), join_action);
     exC.insert(e_prime);
   } else {
-    const auto e_prime = U->discover_event(EventSet(), join_action);
+    const auto e_prime = U->discover_event(EventSet({last_event_waited.value()}), join_action);
     exC.insert(e_prime);
   }
 

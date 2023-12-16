@@ -18,7 +18,17 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to verification 
 
 namespace simgrid::mc::udpor {
 
+xbt::signal<void(RemoteApp&)> UdporChecker::on_log_state_signal;
+
 UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration(args) {}
+
+void UdporChecker::log_state()
+{
+  on_log_state_signal(get_remote_app());
+  XBT_INFO("UDPOR exploration ended. %ld unique states visited; %lu backtracks (%lu transition replays)",
+           State::get_expanded_states(), backtrack_count_, Transition::get_replayed_transitions());
+  Exploration::log_state();
+}
 
 void UdporChecker::run()
 {
@@ -27,7 +37,7 @@ void UdporChecker::run()
   state_stack.push_back(get_current_state());
   current_configuration_ = Configuration();
   explore(Configuration(), EventSet(), EventSet(), EventSet());
-  XBT_INFO("UDPOR exploration terminated -- model checking completed");
+  log_state();
 }
 
 void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, EventSet prev_exC)
@@ -128,6 +138,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
               "J / C := %s\n"
               "UDPOR is going to explore it...",
               J.value().to_string().c_str(), J_minus_C.to_string().c_str());
+
     explore(C, D, std::move(J_minus_C), std::move(prev_exC));
   } else {
     XBT_DEBUG("No alternative detected with:\n"
@@ -229,6 +240,7 @@ void UdporChecker::restore_program_state_with_current_stack()
 {
   XBT_DEBUG("Restoring state using the current stack");
   get_remote_app().restore_initial_state();
+  backtrack_count_++;
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (const std::unique_ptr<State>& state : state_stack) {
@@ -269,8 +281,10 @@ UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, con
     return const_cast<UnfoldingEvent*>(*min_event);
   } else {
     const auto intersection = A.make_intersection(enC);
-    const auto min_event    = std::min_element(intersection.begin(), intersection.end(),
-                                               [](const auto e1, const auto e2) { return e1->get_id() < e2->get_id(); });
+    xbt_assert(not intersection.empty(), "There should be at least one event in the alternatives that is enbaled."
+                                         " The alternatives computation may require to be fixed.");
+    const auto min_event = std::min_element(intersection.begin(), intersection.end(),
+                                            [](const auto e1, const auto e2) { return e1->get_id() < e2->get_id(); });
     return const_cast<UnfoldingEvent*>(*min_event);
   }
 }

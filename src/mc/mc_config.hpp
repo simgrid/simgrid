@@ -10,7 +10,7 @@
 
 /********************************** Configuration of MC **************************************/
 namespace simgrid::mc {
-XBT_DECLARE_ENUM_CLASS(ReductionMode, none, dpor, sdpor, odpor);
+XBT_DECLARE_ENUM_CLASS(ReductionMode, none, dpor, sdpor, odpor, udpor);
 XBT_DECLARE_ENUM_CLASS(ModelCheckingMode, NONE, APP_SIDE, CHECKER_SIDE, REPLAY);
 ReductionMode get_model_checking_reduction(); // "model-check/reduction" == "DPOR"
 XBT_PUBLIC ModelCheckingMode get_model_checking_mode();
@@ -22,7 +22,6 @@ extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_checkpoint;
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_property_file;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_comms_determinism;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_send_determinism;
-extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_unfolding_checker;
 extern XBT_PRIVATE simgrid::config::Flag<bool> _sg_mc_timeout;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_max_depth;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_random_seed;
