@@ -25,6 +25,7 @@ extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_send_determinism;
 extern XBT_PRIVATE simgrid::config::Flag<bool> _sg_mc_timeout;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_max_depth;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_random_seed;
+extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_k_alternatives;
 extern XBT_PRIVATE simgrid::config::Flag<std::string> _sg_mc_dot_output_file;
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_strategy;
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_explore_algo;

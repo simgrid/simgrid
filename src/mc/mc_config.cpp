@@ -79,6 +79,10 @@ simgrid::config::Flag<int> _sg_mc_random_seed{"model-check/rand-seed",
                                               "give a specific random seed to initialize the uniform distribution", 0,
                                               [](int) { _mc_cfg_cb_check("Random seed"); }};
 
+simgrid::config::Flag<int> _sg_mc_k_alternatives{"model-check/k-alternatives",
+                                                 "value of k to be used for k-alternatives UDPOR algorithm", -1,
+                                                 [](int) { _mc_cfg_cb_check("k-Alternatives"); }};
+
 simgrid::config::Flag<bool> _sg_mc_comms_determinism{
     "model-check/communications-determinism", "Whether to enable the detection of communication determinism", false,
     [](bool) {

@@ -85,7 +85,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
 
     return;
   }
-  UnfoldingEvent* e = select_next_unfolding_event(A, enC);
+  UnfoldingEvent* e = select_next_unfolding_event(A, enC.subtracting(D));
   xbt_assert(e != nullptr, "\n\n****** INVARIANT VIOLATION ******\n"
                            "UDPOR guarantees that an event will be chosen at each point in\n"
                            "the search, yet no events were actually chosen\n"
