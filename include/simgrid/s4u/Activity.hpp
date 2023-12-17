@@ -165,6 +165,8 @@ public:
   /** Blocks the current actor until the activity is terminated, or until the timeout is elapsed\n
    *  Raises: timeout exception.*/
   Activity* wait_for(double timeout);
+  /** Just like wait_for(), but the activity is first canceled if a timeout exception is raised.*/
+  Activity* wait_for_or_cancel(double timeout);
   /** Blocks the current actor until the activity is terminated, or until the time limit is reached\n
    * Raises: timeout exception. */
   void wait_until(double time_limit);
@@ -173,8 +175,12 @@ public:
   Activity* cancel();
   /** Retrieve the current state of the activity */
   Activity::State get_state() const { return state_; }
-  /** Return a string representation of the activity's state (one of INITED, STARTING, STARTED, CANCELED, FINISHED) */
+  /** Return a string representation of the activity's state (one of INITED, STARTING, STARTED, CANCELED, FINISHED,
+   * DONE) */
   const char* get_state_str() const;
+  bool is_canceled() const { return state_ == State::CANCELED; }
+  bool is_failed() const { return state_ == State::FAILED; }
+  bool is_done() const { return state_ == State::FINISHED; }
   void set_state(Activity::State state) { state_ = state; }
 
   /** Blocks the progression of this activity until it gets resumed */

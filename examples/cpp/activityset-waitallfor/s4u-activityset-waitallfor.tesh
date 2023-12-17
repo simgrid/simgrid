@@ -11,7 +11,6 @@ $ ${bindir:=.}/s4u-activityset-waitallfor ${platfdir}/hosts_with_disks.xml "--lo
 > [3.000000] [  bob] Not all activities are terminated yet.
 > [3.000000] [  bob] Completed an I/O
 > [4.000000] [  bob] Not all activities are terminated yet.
-> [5.000000] [  bob] Not all activities are terminated yet.
 > [5.000000] [  bob] Completed an Exec
 > [5.197828] [  bob] Completed a Comm
 > [5.197828] [  bob] Last activity is complete

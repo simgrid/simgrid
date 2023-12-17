@@ -129,6 +129,7 @@ $ ${bindir:=.}/s4u-dht-chord -nb_bits=3 ${platfdir}/cluster_backbone.xml s4u-dht
 > [ 375.09017] (node@node-4.simgrid.org) Well Guys! I Think it's time for me to leave ;)
 > [ 400.06625] (node@node-2.simgrid.org) My new predecessor is 42
 > [ 420.06585] (node@node-2.simgrid.org) Well Guys! I Think it's time for me to leave ;)
-> [ 875.08137] (node@node-6.simgrid.org) Well Guys! I Think it's time for me to leave ;)
+> [ 860.08167] (node@node-6.simgrid.org) Well Guys! I Think it's time for me to leave ;)
+> [ 950.07406] (node@node-0.simgrid.org) My new predecessor is -1
 > [1000.07406] (node@node-0.simgrid.org) Well Guys! I Think it's time for me to leave ;)
-> [1100.07406] (maestro@) Simulated time: 1100.07
+> [1050.07406] (maestro@) Simulated time: 1050.07
