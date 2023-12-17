@@ -352,27 +352,6 @@ bool CommImpl::test(actor::ActorImpl* issuer)
   return ActivityImpl::test(issuer);
 }
 
-void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
-{
-  XBT_DEBUG("CommImpl::wait_for(%g), %p, state %s", timeout, this, get_state_str());
-
-  /* Associate this simcall to the wait synchro */
-  register_simcall(&issuer->simcall_);
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    // FIXME: what about timeouts?
-    set_state(State::DONE);
-    finish();
-    return;
-  }
-  ActivityImpl::wait_for(issuer, timeout);
-}
-
-void CommImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms, double timeout)
-{
-  std::vector<ActivityImpl*> activities(comms.begin(), comms.end());
-  ActivityImpl::wait_any_for(issuer, activities, timeout);
-}
-
 void CommImpl::suspend()
 {
   /* FIXME: shall we suspend also the timeout synchro? */
@@ -416,11 +395,7 @@ void CommImpl::finish()
   }
 
   /* Update synchro state */
-  if (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FINISHED)
-    set_state(State::SRC_TIMEOUT);
-  else if (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FINISHED)
-    set_state(State::DST_TIMEOUT);
-  else if (from_ && not from_->is_on())
+  if (from_ && not from_->is_on())
     set_state(State::SRC_HOST_FAILURE);
   else if (to_ && not to_->is_on())
     set_state(State::DST_HOST_FAILURE);
@@ -431,8 +406,6 @@ void CommImpl::finish()
     xbt_assert(to_ && to_->is_on());
     set_state(State::DONE);
   }
-  src_timeout_ = nullptr;
-  dst_timeout_ = nullptr;
 
   /* destroy the model actions associated with the communication activity */
   clean_action();
@@ -457,17 +430,8 @@ void CommImpl::finish()
 
     /* Check out for errors, and answer the simcall */
     switch (get_state()) {
-      case State::FAILED:
+      case State::FAILED: // FIXME: probably useless nowadays
         issuer->exception_ = std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
-        break;
-      case State::SRC_TIMEOUT:
-        issuer->exception_ =
-            std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the sender"));
-        break;
-
-      case State::DST_TIMEOUT:
-        issuer->exception_ = std::make_exception_ptr(
-            TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the receiver"));
         break;
 
       case State::SRC_HOST_FAILURE:
@@ -499,6 +463,7 @@ void CommImpl::finish()
         break;
 
       case State::CANCELED:
+        THROW_IMPOSSIBLE; // FIXME KILLME? Not sure that any test tries to cancel an ongoing comm
         if (issuer == dst_actor_)
           issuer->exception_ =
               std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Communication canceled by the sender"));

@@ -14,8 +14,6 @@ namespace simgrid::kernel::activity {
 
 enum class CommImplType { SEND, RECEIVE };
 
-using timeout_action_type = std::unique_ptr<resource::Action, std::function<void(resource::Action*)>>;
-
 class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   ~CommImpl() override;
 
@@ -67,8 +65,6 @@ public:
   static ActivityImplPtr irecv(actor::CommIrecvSimcall* observer);
 
   bool test(actor::ActorImpl* issuer) override;
-  void wait_for(actor::ActorImpl* issuer, double timeout) override;
-  static void wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms, double timeout);
 
   CommImpl* start();
   void suspend() override;
@@ -81,10 +77,6 @@ public:
 looking if a given communication matches my needs. For that, myself must match the
 expectations of the other side, too. See  */
   std::function<void(CommImpl*, void*, size_t)> copy_data_fun;
-
-  /* Model actions */
-  timeout_action_type src_timeout_{nullptr, [](resource::Action* a) { a->unref(); }}; /* timeout set by the sender */
-  timeout_action_type dst_timeout_{nullptr, [](resource::Action* a) { a->unref(); }}; /* timeout set by the receiver */
 
   actor::ActorImplPtr src_actor_ = nullptr;
   actor::ActorImplPtr dst_actor_ = nullptr;

@@ -71,6 +71,17 @@ Activity* Activity::wait_for(double timeout)
   return this;
 }
 
+Activity* Activity::wait_for_or_cancel(double timeout)
+{
+  try {
+    wait_for(timeout);
+  } catch (const TimeoutException&) {
+    cancel();
+    throw;
+  }
+  return this;
+}
+
 bool Activity::test()
 {
   if (state_ == State::CANCELED || state_ == State::FINISHED || state_ == State::FAILED)

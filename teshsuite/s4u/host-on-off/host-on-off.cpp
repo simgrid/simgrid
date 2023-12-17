@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2023. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2023. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -39,7 +38,7 @@ static void master()
   auto* payload = new std::string("task on");
 
   XBT_INFO("Sending \"task on\"");
-  mailbox->put_async(payload, 1E6)->wait_for(1);
+  mailbox->put_async(payload, 1E6)->wait_for_or_cancel(1);
 
   simgrid::s4u::this_actor::sleep_for(1);
   jupiter->turn_off();
@@ -47,7 +46,7 @@ static void master()
   XBT_INFO("Sending \"task off\"");
   payload = new std::string("task off");
   try {
-    mailbox->put_async(payload, 1E6)->wait_for(1);
+    mailbox->put_async(payload, 1E6)->wait_for_or_cancel(1);
   } catch (const simgrid::TimeoutException&) {
     delete payload;
   }
@@ -61,7 +60,7 @@ static void master()
   XBT_INFO("Sending \"task on without actor\"");
   payload = new std::string("task on without actor");
   try {
-    mailbox->put_async(payload, 1E6)->wait_for(1);
+    mailbox->put_async(payload, 1E6)->wait_for_or_cancel(1);
   } catch (const simgrid::TimeoutException&) {
     delete payload;
   }
@@ -71,7 +70,7 @@ static void master()
   XBT_INFO("Sending \"task on with actor\"");
   payload = new std::string("task on with actor");
   try {
-    mailbox->put_async(payload, 1E6)->wait_for(1);
+    mailbox->put_async(payload, 1E6)->wait_for_or_cancel(1);
   } catch (const simgrid::TimeoutException&) {
     delete payload;
   }
@@ -79,7 +78,7 @@ static void master()
   XBT_INFO("Sending \"finalize\"");
   payload = new std::string("finalize");
   try {
-    mailbox->put_async(payload, 0)->wait_for(1);
+    mailbox->put_async(payload, 0)->wait_for_or_cancel(1);
   } catch (const simgrid::TimeoutException&) {
     delete payload;
   }

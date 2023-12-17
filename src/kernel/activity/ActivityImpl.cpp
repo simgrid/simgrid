@@ -147,37 +147,25 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   /* Associate this simcall to the synchro */
   register_simcall(&issuer->simcall_);
 
-  xbt_assert(not MC_is_active() && not MC_record_replay_is_active(), "MC is currently not supported here.");
-
   /* If the synchro is already finished then perform the error handling */
   if (state_ != State::WAITING && state_ != State::RUNNING) {
     finish();
   } else if (timeout >= 0.) {
-    /* As Messages in Message Queues are virtually instantaneous, we do not need a timeout */
-    /* Or maybe we do, and will have to implement a specific way to handle them is need arises */
-    if (dynamic_cast<MessImpl*>(this) != nullptr)
-      return;
-    /* Comms handle that a bit differently of the other activities */
-    if (auto* comm = dynamic_cast<CommImpl*>(this)) {
-      resource::Action* sleep_action = issuer->get_host()->get_cpu()->sleep(timeout);
-      sleep_action->set_activity(comm);
+    xbt_assert(not MC_is_active() && not MC_record_replay_is_active(), "MC does currently not support timeouts.");
 
-      if (issuer == comm->src_actor_)
-        comm->src_timeout_.reset(sleep_action);
-      else
-        comm->dst_timeout_.reset(sleep_action);
-    } else {
-      issuer->simcall_.timeout_cb_ = timer::Timer::set(s4u::Engine::get_clock() + timeout,
-        [this, issuer]() {
-        issuer->simcall_.timeout_cb_ = nullptr;
-        this->unregister_simcall(&issuer->simcall_);
-        issuer->exception_       = nullptr;
-        auto* observer           = dynamic_cast<kernel::actor::ActivityWaitSimcall*>(issuer->simcall_.observer_);
-        xbt_assert(observer != nullptr);
-        observer->set_result(true); // Returns that the wait_for timeouted
-        issuer->simcall_answer();
-      });
-    }
+    issuer->simcall_.timeout_cb_ = timer::Timer::set(s4u::Engine::get_clock() + timeout, [this, issuer]() {
+      issuer->simcall_.timeout_cb_ = nullptr;
+      if (model_action_ && (model_action_->get_state() == resource::Action::State::FINISHED ||
+                            model_action_->get_state() == resource::Action::State::FAILED))
+        return; // The activity terminated or failed right on time; do not timeout
+
+      this->unregister_simcall(&issuer->simcall_);
+      issuer->exception_ = nullptr;
+      auto* observer     = dynamic_cast<kernel::actor::ActivityWaitSimcall*>(issuer->simcall_.observer_);
+      xbt_assert(observer != nullptr);
+      observer->set_result(true); // Returns that the wait_for timeouted
+      issuer->simcall_answer();
+    });
   }
 }
 
@@ -245,7 +233,7 @@ void ActivityImpl::cancel()
   XBT_VERB("Activity %p is canceled", this);
   if (model_action_ != nullptr)
     model_action_->cancel();
-  state_ = State::CANCELED;
+  set_state(State::CANCELED);
 }
 
 // boost::intrusive_ptr<Activity> support:

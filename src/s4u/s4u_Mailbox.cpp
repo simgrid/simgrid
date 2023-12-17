@@ -117,7 +117,7 @@ void Mailbox::put(void* payload, uint64_t simulated_size_in_bytes, double timeou
 {
   xbt_assert(payload != nullptr, "You cannot send nullptr");
 
-  put_init()->set_payload_size(simulated_size_in_bytes)->set_src_data(payload)->start()->wait_for(timeout);
+  put_init()->set_payload_size(simulated_size_in_bytes)->set_src_data(payload)->start()->wait_for_or_cancel(timeout);
 }
 
 CommPtr Mailbox::get_init()
