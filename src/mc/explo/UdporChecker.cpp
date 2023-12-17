@@ -361,7 +361,7 @@ void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration
 RecordTrace UdporChecker::get_record_trace()
 {
   RecordTrace res;
-  for (auto const& event : current_configuration_)
+  for (auto const& event : current_configuration_.get_topologically_sorted_events())
     res.push_back(event->get_transition());
   return res;
 }

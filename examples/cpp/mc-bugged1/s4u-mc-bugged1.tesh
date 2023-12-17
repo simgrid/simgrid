@@ -27,3 +27,30 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/
 > [  0.000000] (0:maestro@)   Actor 1 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [  0.000000] (0:maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;2;1;1;2;4;1;1;3;1'
 > [  0.000000] (0:maestro@) DFS exploration ended. 19 unique states visited; 2 backtracks (12 transition replays, 31 states visited overall)
+
+! expect return 1
+! timeout 20
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-bugged1 ${platfdir:=.}/model_checker_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning --cfg=contexts/stack-size:256 --cfg=model-check/reduction:udpor
+> [  0.000000] (0:maestro@) Starting a UDPOR exploration
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (0:maestro@) **************************
+> [  0.000000] (0:maestro@) *** PROPERTY NOT VALID ***
+> [  0.000000] (0:maestro@) **************************
+> [  0.000000] (0:maestro@) Counter-example execution trace:
+> [  0.000000] (0:maestro@)   Actor 2 in Isend ==> simcall: iSend(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 4 in Isend ==> simcall: iSend(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 1 in Wait ==> simcall: WaitComm(from 2 to 1, mbox=0, no timeout)
+> [  0.000000] (0:maestro@)   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 1 in Wait ==> simcall: WaitComm(from 4 to 1, mbox=0, no timeout)
+> [  0.000000] (0:maestro@)   Actor 3 in Isend ==> simcall: iSend(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
+> [  0.000000] (0:maestro@)   Actor 2 in Wait ==> simcall: WaitComm(from 2 to 1, mbox=0, no timeout)
+> [  0.000000] (0:maestro@)   Actor 4 in Wait ==> simcall: WaitComm(from 4 to 1, mbox=0, no timeout)
+> [  0.000000] (0:maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;4;1;1;1;1;3;1;2;4'
+> [  0.000000] (0:maestro@) UDPOR exploration ended. 19 unique states visited; 1 backtracks (4 transition replays)
