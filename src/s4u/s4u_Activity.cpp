@@ -77,7 +77,8 @@ Activity* Activity::wait_for_or_cancel(double timeout)
     wait_for(timeout);
   } catch (const TimeoutException&) {
     cancel();
-    throw;
+    /* Rethrowing the original exception segfaults in parallel tests */
+    throw TimeoutException(XBT_THROW_POINT, "Timeouted");
   }
   return this;
 }
