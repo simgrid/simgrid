@@ -97,8 +97,9 @@ void BarrierObserver::serialize(std::stringstream& stream) const
 }
 std::string BarrierObserver::to_string() const
 {
-  return std::string(mc::Transition::to_c_str(type_)) +
-         "(barrier_id:" + std::to_string(barrier_ != nullptr ? barrier_->get_id() : acquisition_->barrier_->get_id()) +
+  return std::string(mc::Transition::to_c_str(type_)) + "(barrier_id:" +
+         (barrier_ != nullptr ? std::to_string(barrier_->get_id())
+                              : (acquisition_ != nullptr ? std::to_string(acquisition_->barrier_->get_id()) : "null")) +
          ")";
 }
 bool BarrierObserver::is_enabled()
