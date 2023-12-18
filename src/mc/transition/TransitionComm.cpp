@@ -36,8 +36,12 @@ CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, std::
 }
 std::string CommWaitTransition::to_string(bool verbose) const
 {
-  return xbt::string_printf("WaitComm(from %ld to %ld, mbox=%u, %s)", sender_, receiver_, mbox_,
-                            (timeout_ ? "timeout" : "no timeout"));
+  if (not verbose)
+    return xbt::string_printf("WaitComm(from %ld to %ld, mbox=%u, %s)", sender_, receiver_, mbox_,
+                              (timeout_ ? "timeout" : "no timeout"));
+  else
+    return xbt::string_printf("WaitComm(from %ld to %ld, mbox=%u, %s, comm=%u)", sender_, receiver_, mbox_,
+                              (timeout_ ? "timeout" : "no timeout"), comm_);
 }
 bool CommWaitTransition::depends(const Transition* other) const
 {
@@ -126,7 +130,10 @@ CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::
 }
 std::string CommRecvTransition::to_string(bool verbose) const
 {
-  return xbt::string_printf("iRecv(mbox=%u)", mbox_);
+  if (not verbose)
+    return xbt::string_printf("iRecv(mbox=%u)", mbox_);
+  else
+    return xbt::string_printf("iRecv(mbox=%u, comm=%u, tag=%u))", mbox_, comm_, tag_);
 }
 bool CommRecvTransition::depends(const Transition* other) const
 {
@@ -196,9 +203,12 @@ CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::
   xbt_assert(stream >> comm_ >> mbox_ >> tag_ >> call_location_);
   XBT_DEBUG("SendTransition comm:%u mbox:%u tag:%d call_loc:%s", comm_, mbox_, tag_, call_location_.c_str());
 }
-std::string CommSendTransition::to_string(bool verbose = false) const
+std::string CommSendTransition::to_string(bool verbose) const
 {
-  return xbt::string_printf("iSend(mbox=%u)", mbox_);
+  if (not verbose)
+    return xbt::string_printf("iSend(mbox=%u)", mbox_);
+  else
+    return xbt::string_printf("iSend(mbox=%u, comm=%u, tag=%u)", mbox_, comm_, tag_);
 }
 
 bool CommSendTransition::depends(const Transition* other) const
