@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/udpor/Unfolding.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"
 
 #include <stdexcept>
@@ -71,15 +72,22 @@ const UnfoldingEvent* Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
       this->immediate_conflicts_.insert({eprime, EventSet({handle})});
   }
   immediate_conflicts_.insert({handle, immediate_conflicts_of_e});
+  Exploration::get_instance()->dot_output("%u [tooltip=\"Actor %zu : %s\"]\n", handle->get_id(), handle->get_actor(),
+                                          handle->get_transition()->to_string(true).c_str());
+  Exploration::get_instance()->dot_output("%s", handle->to_dot_string().c_str());
   return handle;
 }
 
 EventSet Unfolding::compute_immediate_conflicts_of(const UnfoldingEvent* e) const
 {
   EventSet immediate_conflicts;
+  EventSet skippable{};
   for (const auto* event : U) {
+    if (skippable.contains(event))
+      continue;
     if (event->immediately_conflicts_with(e)) {
       immediate_conflicts.insert(event);
+      skippable.form_union(event->get_history());
     }
   }
   return immediate_conflicts;
@@ -91,13 +99,6 @@ EventSet Unfolding::get_immediate_conflicts_of(const UnfoldingEvent* e) const
     return immediate_conflicts_.at(e);
   else
     return EventSet();
-  // EventSet immediate_conflicts;
-  // for (const auto* event : U) {
-  //   if (event->immediately_conflicts_with(e)) {
-  //     immediate_conflicts.insert(event);
-  //   }
-  // }
-  // return immediate_conflicts;
 }
 
 } // namespace simgrid::mc::udpor

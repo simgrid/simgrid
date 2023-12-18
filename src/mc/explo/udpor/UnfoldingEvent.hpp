@@ -57,6 +57,7 @@ public:
   void set_transition(std::shared_ptr<Transition> t) { this->associated_transition = std::move(t); }
 
   std::string to_string() const;
+  std::string to_dot_string() const;
 
   bool operator==(const UnfoldingEvent&) const;
   bool operator!=(const UnfoldingEvent& other) const { return not(*this == other); }
