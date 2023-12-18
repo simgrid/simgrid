@@ -58,6 +58,28 @@ std::string SemaphoreObserver::to_string() const
   return std::string(mc::Transition::to_c_str(type_)) + "(sem_id:" + std::to_string(get_sem()->get_id()) + ")";
 }
 
+MutexAcquisitionObserver::MutexAcquisitionObserver(ActorImpl* actor, mc::Transition::Type type,
+                                                   activity::MutexAcquisitionImpl* acqui, double timeout)
+    : DelayedSimcallObserver(actor, false), type_(type), acquisition_(acqui), timeout_(timeout)
+{
+}
+bool MutexAcquisitionObserver::is_enabled()
+{
+  return acquisition_->is_granted();
+}
+std::string MutexAcquisitionObserver::to_string() const
+{
+  const auto* owner = acquisition_->get_mutex()->get_owner();
+  return std::string(mc::Transition::to_c_str(type_)) +
+         "(mutex_id:" + std::to_string(acquisition_->get_mutex()->get_id()) +
+         " owner:" + (owner == nullptr ? "none" : std::to_string(owner->get_pid())) + ")";
+}
+void MutexAcquisitionObserver::serialize(std::stringstream& stream) const
+{
+  const auto* owner = acquisition_->get_mutex()->get_owner();
+  stream << (short)type_ << ' ' << acquisition_->get_mutex()->get_id() << ' '
+         << (owner != nullptr ? owner->get_pid() : -1);
+}
 SemaphoreAcquisitionObserver::SemaphoreAcquisitionObserver(ActorImpl* actor, mc::Transition::Type type,
                                                            activity::SemAcquisitionImpl* acqui, double timeout)
     : DelayedSimcallObserver(actor, false), type_(type), acquisition_(acqui), timeout_(timeout)
