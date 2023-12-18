@@ -256,7 +256,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
 
       const auto issuer_mailbox = e_issuer_send->get_mailbox();
       if (const auto* e_recv = dynamic_cast<const CommRecvTransition*>(e->get_transition());
-          e_recv->get_mailbox() != issuer_mailbox) {
+          e_recv->get_mailbox() != issuer_mailbox or e_recv->get_comm() != wait_action->get_comm()) {
         continue;
       }
 
@@ -300,7 +300,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
 
       const auto issuer_mailbox = e_issuer_recv->get_mailbox();
       if (const auto* e_send = dynamic_cast<const CommSendTransition*>(e->get_transition());
-          e_send->get_mailbox() != issuer_mailbox) {
+          e_send->get_mailbox() != issuer_mailbox or e_send->get_comm() != wait_action->get_comm()) {
         continue;
       }
 

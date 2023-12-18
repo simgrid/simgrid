@@ -215,6 +215,8 @@ void UdporChecker::move_to_stateCe(State* state, UnfoldingEvent* e)
   XBT_DEBUG("UDPOR going to execute actor %zu with transition <%s>", next_actor,
             e->get_transition()->to_string().c_str());
   auto latest_transition_by_next_actor = state->execute_next(next_actor, get_remote_app());
+  XBT_DEBUG("UDPOR successfully executed actor %zu with transition <%s>", next_actor,
+            latest_transition_by_next_actor->to_string().c_str());
 
   // The transition that is associated with the event was just
   // executed, so it's possible that the new version of the transition
@@ -283,11 +285,14 @@ UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, con
     return const_cast<UnfoldingEvent*>(*min_event);
   } else {
     const auto intersection = A.make_intersection(enC);
-    xbt_assert(not intersection.empty(),
-               "There should be at least one event in the alternatives that is enbaled."
-               " The alternatives computation may require to be fixed. Current stack "
-               "trace: %s",
-               get_record_trace().to_string().c_str());
+    if (intersection.empty()) {
+      for (const auto& s : get_textual_trace())
+        XBT_CRITICAL("  %s", s.c_str());
+      xbt_die("There should be at least one event in the alternatives that is enbaled."
+              " The alternatives computation may require to be fixed. Current stack "
+              "trace: %s",
+              get_record_trace().to_string().c_str());
+    }
     const auto min_event = std::min_element(intersection.begin(), intersection.end(),
                                             [](const auto e1, const auto e2) { return e1->get_id() < e2->get_id(); });
     return const_cast<UnfoldingEvent*>(*min_event);
@@ -369,6 +374,23 @@ RecordTrace UdporChecker::get_record_trace()
   for (auto const& event : current_configuration_.get_topologically_sorted_events())
     res.push_back(event->get_transition());
   return res;
+}
+
+std::vector<std::string> UdporChecker::get_textual_trace(int max_elements)
+{
+  std::vector<std::string> trace;
+  for (auto const& event : current_configuration_.get_topologically_sorted_events()) {
+    auto const& transition    = event->get_transition();
+    auto const& call_location = transition->get_call_location();
+    if (not call_location.empty())
+      trace.push_back(xbt::string_printf("%s in %s", event->to_string().c_str(), call_location.c_str()));
+    else
+      trace.push_back(xbt::string_printf("%s", event->to_string().c_str()));
+    max_elements--;
+    if (max_elements == 0)
+      break;
+  }
+  return trace;
 }
 
 } // namespace simgrid::mc::udpor
