@@ -152,7 +152,9 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
   D.remove(e);
 
   // Remove(e, C, D)
+  XBT_DEBUG("Cleaning the exploration ...");
   clean_up_explore(e, C, D);
+  XBT_DEBUG("... cleaning done");
 }
 
 EventSet UdporChecker::compute_exC(const Configuration& C, const State& stateC, const EventSet& prev_exC)
@@ -281,8 +283,11 @@ UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, con
     return const_cast<UnfoldingEvent*>(*min_event);
   } else {
     const auto intersection = A.make_intersection(enC);
-    xbt_assert(not intersection.empty(), "There should be at least one event in the alternatives that is enbaled."
-                                         " The alternatives computation may require to be fixed.");
+    xbt_assert(not intersection.empty(),
+               "There should be at least one event in the alternatives that is enbaled."
+               " The alternatives computation may require to be fixed. Current stack "
+               "trace: %s",
+               get_record_trace().to_string().c_str());
     const auto min_event = std::min_element(intersection.begin(), intersection.end(),
                                             [](const auto e1, const auto e2) { return e1->get_id() < e2->get_id(); });
     return const_cast<UnfoldingEvent*>(*min_event);

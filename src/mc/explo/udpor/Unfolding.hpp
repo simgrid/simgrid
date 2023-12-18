@@ -117,6 +117,10 @@ private:
    * is used to keep track of all events which used to be important to UDPOR.
    */
   EventSet G;
+
+  std::unordered_map<const UnfoldingEvent*, EventSet> immediate_conflicts_;
+
+  EventSet compute_immediate_conflicts_of(const UnfoldingEvent*) const;
 };
 
 } // namespace simgrid::mc::udpor
