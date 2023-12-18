@@ -4,6 +4,7 @@ SimGrid (3.35.1) not released (target: Feb 24)
   the other activity kinds, which already had this behavior enabling polling activities.
   The previous behavior is still available with Activity::wait_for_or_cancel()
 - Remove the include/xbt/promise.hpp header, that was kinda internal.
+- Bugfix: non-recursive locks must deadlock when relocking by same actor.
 
 ----------------------------------------------------------------------------
 

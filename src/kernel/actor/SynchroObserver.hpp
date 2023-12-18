@@ -45,7 +45,24 @@ public:
   activity::SemaphoreImpl* get_sem() const { return sem_; }
 };
 
-/* This observer is ued for SEM_WAIT, that is returning and needs the acquisition (in MC mode) */
+/* This observer is used for MUTEX_WAIT, that is returning and needs the acquisition (in MC mode) */
+class MutexAcquisitionObserver final : public DelayedSimcallObserver<bool> {
+  mc::Transition::Type type_;
+  activity::MutexAcquisitionImpl* const acquisition_;
+  const double timeout_;
+
+public:
+  MutexAcquisitionObserver(ActorImpl* actor, mc::Transition::Type type, activity::MutexAcquisitionImpl* acqui,
+                           double timeout = -1.0);
+
+  void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
+  bool is_enabled() override;
+
+  double get_timeout() const { return timeout_; }
+};
+
+/* This observer is used for SEM_WAIT, that is returning and needs the acquisition (in MC mode) */
 class SemaphoreAcquisitionObserver final : public DelayedSimcallObserver<bool> {
   mc::Transition::Type type_;
   activity::SemAcquisitionImpl* const acquisition_;
