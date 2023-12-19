@@ -31,7 +31,7 @@ Exploration::Exploration(const std::vector<char*>& args) : remote_app_(std::make
     xbt_assert(dot_output_ != nullptr, "Error open dot output file: %s", strerror(errno));
 
     fprintf(dot_output_, "digraph graphname{\n fixedsize=true; rankdir=TB; ranksep=.25; edge [fontsize=12]; node "
-                         "[fontsize=10, shape=circle,width=.5 ]; graph [resolution=20, fontsize=10];\n");
+                         "[fontsize=10, shape=circle,width=.5 ]; graph [fontsize=10];\n");
   }
 }
 
