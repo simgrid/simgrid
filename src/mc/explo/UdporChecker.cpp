@@ -212,10 +212,10 @@ void UdporChecker::move_to_stateCe(State* state, UnfoldingEvent* e)
                               "one transition of the state of an visited event is enabled, yet no\n"
                               "state was actually enabled. Please report this as a bug.\n"
                               "*********************************\n\n");
-  XBT_DEBUG("UDPOR going to execute actor %zu with transition <%s>", next_actor,
+  XBT_DEBUG("UDPOR going to execute actor %ld with transition <%s>", next_actor,
             e->get_transition()->to_string().c_str());
   auto latest_transition_by_next_actor = state->execute_next(next_actor, get_remote_app());
-  XBT_DEBUG("UDPOR successfully executed actor %zu with transition <%s>", next_actor,
+  XBT_DEBUG("UDPOR successfully executed actor %ld with transition <%s>", next_actor,
             latest_transition_by_next_actor->to_string().c_str());
 
   // The transition that is associated with the event was just

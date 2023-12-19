@@ -37,6 +37,9 @@ private:
 
   static EventSet partially_extend_ActorJoin(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
 
+  static std::pair<aid_t, aid_t> firstTwoOwners(uintptr_t mutex_id, EventSet history);
+  static bool is_mutex_available_before(const UnfoldingEvent* e, std::shared_ptr<MutexTransition> mutex);
+
 public:
   static EventSet partially_extend(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
 };

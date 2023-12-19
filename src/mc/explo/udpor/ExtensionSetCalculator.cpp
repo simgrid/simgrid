@@ -521,7 +521,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexAsyncLock(const Configura
   return exC;
 }
 
-std::pair<aid_t, aid_t> firstTwoOwners(uintptr_t mutex_id, EventSet history)
+std::pair<aid_t, aid_t> ExtensionSetCalculator::firstTwoOwners(uintptr_t mutex_id, EventSet history)
 {
   std::pair<aid_t, aid_t> two_owners(-1, -1);
   for (const auto e : history) {
@@ -581,7 +581,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexUnlock(const Configuratio
   return exC;
 }
 
-bool is_mutex_available_before(const UnfoldingEvent* e, std::shared_ptr<MutexTransition> mutex)
+bool ExtensionSetCalculator::is_mutex_available_before(const UnfoldingEvent* e, std::shared_ptr<MutexTransition> mutex)
 {
   XBT_DEBUG("Wondering if the mutex is available just after %s history", e->to_string().c_str());
   unsigned long requests_over_mutex = 0;

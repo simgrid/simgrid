@@ -56,7 +56,7 @@ void Execution::push_partial_execution(const PartialExecution& w)
 std::vector<std::string> Execution::get_textual_trace() const
 {
   std::vector<std::string> trace;
-  for (auto e_i = 0; e_i != this->contents_.size(); e_i++) {
+  for (EventHandle e_i = 0; e_i != this->contents_.size(); e_i++) {
     auto a = xbt::string_printf("Actor %ld: %s (Is racy = %s)", contents_[e_i].get_transition()->aid_,
                                 contents_[e_i].get_transition()->to_string(true).c_str(),
                                 get_racing_events_of(e_i).empty() ? "Yes" : "No");
