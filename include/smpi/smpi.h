@@ -1249,6 +1249,25 @@ SG_END_DECL
 #ifdef __cplusplus
 XBT_PUBLIC void SMPI_app_instance_start(const char* name, std::function<void()> const& code,
                                         std::vector<simgrid::s4u::Host*> const& hosts);
+
+template <class F>
+XBT_PUBLIC void SMPI_app_instance_start(const char* name, F code, std::vector<simgrid::s4u::Host*> const& hosts)
+{
+  SMPI_app_instance_start(name, std::function<void()>(std::move(code)), hosts);
+}
+
+template <class F, class... Args,
+            // This constructor is enabled only if the call code(args...) is valid:
+#ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
+            typename = typename std::result_of_t<F(Args...)>
+#endif
+            >
+XBT_PUBLIC void SMPI_app_instance_start(const char* name, F code, std::vector<simgrid::s4u::Host*> const& hosts,
+                                        Args... args)
+{
+  SMPI_app_instance_start(name, std::bind(std::move(code), std::move(args)...), hosts);
+}
+
 XBT_PUBLIC void SMPI_app_instance_join(const std::string& instance_id);
 
 /* This version without parameter is nice to use with SMPI_app_instance_start() */
