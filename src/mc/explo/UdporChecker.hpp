@@ -43,6 +43,7 @@ public:
   void run() override;
   RecordTrace get_record_trace() override;
   std::unique_ptr<State> get_current_state() { return std::make_unique<State>(get_remote_app()); }
+  std::vector<std::string> get_textual_trace(int max_elements);
 
 private:
   Unfolding unfolding = Unfolding();
