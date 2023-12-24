@@ -194,13 +194,19 @@ class MessIputSimcall final : public SimcallObserver {
   activity::MessageQueueImpl* queue_;
   void* payload_;
   activity::MessImpl* mess_ = {};
+  bool detached_;
+  std::function<void(void*)> clean_fun_; // used to free the synchro in case of problem after a detached send
 
 public:
   MessIputSimcall(
-      ActorImpl* actor, activity::MessageQueueImpl* queue, void* payload)
+      ActorImpl* actor, activity::MessageQueueImpl* queue,
+      const std::function<void(void*)>& clean_fun, // used to free the synchro in case of problem after a detached send
+      void* payload, bool detached)
       : SimcallObserver(actor)
       , queue_(queue)
       , payload_(payload)
+      , detached_(detached)
+      , clean_fun_(clean_fun)
   {
   }
   void serialize(std::stringstream& stream) const override;
@@ -208,6 +214,8 @@ public:
   activity::MessageQueueImpl* get_queue() const { return queue_; }
   void* get_payload() const { return payload_; }
   void set_message(activity::MessImpl* mess) { mess_ = mess; }
+  bool is_detached() const { return detached_; }
+  auto const& get_clean_fun() const { return clean_fun_; }
 };
 
 class MessIgetSimcall final : public SimcallObserver {

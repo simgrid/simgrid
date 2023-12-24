@@ -16,7 +16,13 @@ namespace simgrid::kernel::activity {
 
 MessImpl::~MessImpl()
 {
-  if (queue_)
+  if (detached_ && get_state() != State::DONE) {
+    /* the message has failed and was detached:
+     * we have to free the buffer */
+    if (clean_fun)
+      clean_fun(payload_);
+    payload_ = nullptr;
+  } else if (queue_)
     queue_->remove(this);
 }
 
@@ -42,6 +48,13 @@ MessImpl& MessImpl::set_dst_buff(unsigned char* buff, size_t* size)
 {
   dst_buff_      = buff;
   dst_buff_size_ = size;
+  return *this;
+}
+
+MessImpl& MessImpl::detach()
+{
+  detached_ = true;
+  EngineImpl::get_instance()->get_maestro()->activities_.insert(this);
   return *this;
 }
 
@@ -79,6 +92,15 @@ ActivityImplPtr MessImpl::iput(actor::MessIputSimcall* observer)
   }
 
   observer->set_message(other_mess.get());
+
+  if (observer->is_detached()) {
+    other_mess->detach();
+    other_mess->clean_fun = observer->get_clean_fun();
+  } else {
+    other_mess->clean_fun = nullptr;
+    observer->get_issuer()->activities_.insert(other_mess);
+  }
+
   observer->get_issuer()->activities_.insert(other_mess);
 
   /* Setup synchro */
@@ -86,7 +108,7 @@ ActivityImplPtr MessImpl::iput(actor::MessIputSimcall* observer)
   other_mess->payload_ = observer->get_payload();
   other_mess->start();
 
-  return other_mess;
+  return (observer->is_detached() ? nullptr : other_mess);
 }
 
 ActivityImplPtr MessImpl::iget(actor::MessIgetSimcall* observer)
