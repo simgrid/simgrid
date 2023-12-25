@@ -1256,6 +1256,7 @@ XBT_PUBLIC void SMPI_app_instance_start(const char* name, F code, std::vector<si
   SMPI_app_instance_start(name, std::function<void()>(std::move(code)), hosts);
 }
 
+#if __cplusplus >= 201703L
 template <class F, class... Args,
             // This constructor is enabled only if the call code(args...) is valid:
 #ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
@@ -1267,6 +1268,7 @@ XBT_PUBLIC void SMPI_app_instance_start(const char* name, F code, std::vector<si
 {
   SMPI_app_instance_start(name, std::bind(std::move(code), std::move(args)...), hosts);
 }
+#endif
 
 XBT_PUBLIC void SMPI_app_instance_join(const std::string& instance_id);
 
