@@ -16,6 +16,7 @@ namespace simgrid::kernel::activity {
 
 MessImpl::~MessImpl()
 {
+  XBT_DEBUG("Really free message %p in state %s (detached = %d)", this, get_state_str(), detached_);
   if (detached_ && get_state() != State::DONE) {
     /* the message has failed and was detached:
      * we have to free the buffer */
@@ -84,6 +85,7 @@ ActivityImplPtr MessImpl::iput(actor::MessIputSimcall* observer)
   MessImplPtr other_mess = queue->find_matching_message(MessImplType::GET);
 
   if (not other_mess) {
+    XBT_DEBUG("Put pushed first (%zu mess enqueued so far)", queue->size());
     other_mess = std::move(this_mess);
     queue->push(other_mess);
   } else {
@@ -100,8 +102,6 @@ ActivityImplPtr MessImpl::iput(actor::MessIputSimcall* observer)
     other_mess->clean_fun = nullptr;
     observer->get_issuer()->activities_.insert(other_mess);
   }
-
-  observer->get_issuer()->activities_.insert(other_mess);
 
   /* Setup synchro */
   other_mess->src_actor_ = observer->get_issuer();
