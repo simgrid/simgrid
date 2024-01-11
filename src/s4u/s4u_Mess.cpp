@@ -69,7 +69,7 @@ Mess* Mess::do_start()
   if (myself == sender_) {
     on_send(*this);
     on_this_send(*this);
-    kernel::actor::MessIputSimcall observer{sender_, queue_->get_impl(), get_payload()};
+    kernel::actor::MessIputSimcall observer{sender_, queue_->get_impl(), clean_fun_, get_payload(), detached_};
     pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::MessImpl::iput(&observer); },
                                              &observer);
   } else if (myself == receiver_) {
@@ -86,14 +86,25 @@ Mess* Mess::do_start()
     xbt_die("Cannot start a message exchange before specifying whether we are the sender or the receiver");
   }
 
-  pimpl_->set_iface(this);
-  pimpl_->set_actor(sender_);
-  // Only throw the signal when both sides are here and the status is READY
-  if (pimpl_->get_state() != kernel::activity::State::WAITING) {
-    fire_on_start();
-    fire_on_this_start();
+  if (not detached_) {
+    pimpl_->set_iface(this);
+    pimpl_->set_actor(sender_);
+    // Only throw the signal when both sides are here and the status is READY
+    if (pimpl_->get_state() != kernel::activity::State::WAITING) {
+      fire_on_start();
+      fire_on_this_start();
+    }
   }
   state_ = State::STARTED;
+  return this;
+}
+
+Mess* Mess::detach()
+{
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+             "You cannot use %s() once your message is %s (not implemented)", __func__, get_state_str());
+  detached_ = true;
+  start();
   return this;
 }
 
@@ -111,7 +122,7 @@ Mess* Mess::wait_for(double timeout)
       if (get_payload() != nullptr) {
         on_send(*this);
         on_this_send(*this);
-        kernel::actor::MessIputSimcall observer{sender_, queue_->get_impl(), get_payload()};
+        kernel::actor::MessIputSimcall observer{sender_, queue_->get_impl(), clean_fun_, get_payload(), detached_};
         pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::MessImpl::iput(&observer); },
                                                  &observer);
       } else { // Receiver

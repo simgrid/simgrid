@@ -27,7 +27,7 @@ void MessageQueueImpl::clear()
 {
   while (not queue_.empty()) {
     auto mess = queue_.back();
-    if (mess->get_state() == State::WAITING) {
+    if (mess->get_state() == State::WAITING && not mess->is_detached()) {
       mess->cancel();
       mess->set_state(State::FAILED);
     } else

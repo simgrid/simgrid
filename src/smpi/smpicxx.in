@@ -16,7 +16,7 @@ CXX=@CMAKE_CXX_COMPILER@
 list_set INCLUDEARGS @includeflag@
 list_set CMAKE_LINKARGS "-L@libdir@"
 
-list_set CXXFLAGS "-std=gnu++11" @SMPI_CXX_FLAGS@
+list_set CXXFLAGS "-std=gnu++17" @SMPI_CXX_FLAGS@
 list_set LINKARGS
 
 if [ "@CMAKE_C_COMPILER_ID@" = "Clang" ] && [ "@HAVE_SANITIZER_ADDRESS@" = "TRUE" ]; then
