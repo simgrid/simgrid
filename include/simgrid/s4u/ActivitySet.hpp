@@ -44,6 +44,9 @@ public:
   /** Return whether the set is empty. Failed activities (if any) are not counted */
   int empty() { return activities_.empty(); }
 
+  /** Access to one specific activity in the set */
+  ActivityPtr at(unsigned int index) { return activities_.at(index); }
+
   /** Wait for the completion of all activities in the set, but not longer than the provided timeout
    *
    * On timeout, an exception is raised.
