@@ -49,6 +49,7 @@ public:
   bool reversible_race(const Transition* other) const override;
 
   int get_capacity() const { return capacity_; }
+  unsigned int get_sem() const { return sem_; }
 };
 
 } // namespace simgrid::mc

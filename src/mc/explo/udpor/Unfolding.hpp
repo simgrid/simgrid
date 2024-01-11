@@ -83,6 +83,8 @@ public:
   /// of the events in this unfolding
   EventSet get_immediate_conflicts_of(const UnfoldingEvent*) const;
 
+  static long get_expanded_events() { return expanded_events_; };
+
 private:
   /**
    * @brief All of the events that are currently are a part of the unfolding
@@ -121,6 +123,8 @@ private:
   std::unordered_map<const UnfoldingEvent*, EventSet> immediate_conflicts_;
 
   EventSet compute_immediate_conflicts_of(const UnfoldingEvent*) const;
+
+  static long expanded_events_; /* Count total amount of events, for stats */
 };
 
 } // namespace simgrid::mc::udpor

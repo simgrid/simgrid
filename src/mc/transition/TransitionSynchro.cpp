@@ -172,7 +172,6 @@ bool MutexTransition::can_be_co_enabled(const Transition* o) const
             static_cast<const SemaphoreTransition*>(other)->get_capacity() <= 1) {
           return false;
         }
-        xbt_die("SEM_WAIT that is dependent with a SEM_UNLOCK should not be reversible. FixMe");
         return true;
       default:
         xbt_die("Unexpected transition type %s", to_c_str(type_));
@@ -217,10 +216,6 @@ bool SemaphoreTransition::depends(const Transition* o) const
 
     // UNLOCK indep UNLOCK: ordering of two pop_front has no impact
     if (type_ == Type::SEM_UNLOCK && other->type_ == Type::SEM_UNLOCK)
-      return false;
-
-    // UNLOCK indep with a WAIT if the semaphore had enought capacity anyway
-    if (type_ == Type::SEM_UNLOCK && capacity_ > 1 && other->type_ == Type::SEM_WAIT)
       return false;
 
     // WAIT indep WAIT:

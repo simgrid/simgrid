@@ -7,6 +7,7 @@
 #include "src/mc/explo/udpor/Comb.hpp"
 #include "src/mc/explo/udpor/ExtensionSetCalculator.hpp"
 #include "src/mc/explo/udpor/History.hpp"
+#include "src/mc/explo/udpor/Unfolding.hpp"
 #include "src/mc/explo/udpor/maximal_subsets_iterator.hpp"
 
 #include <numeric>
@@ -25,8 +26,8 @@ UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration(args) {
 void UdporChecker::log_state()
 {
   on_log_state_signal(get_remote_app());
-  XBT_INFO("UDPOR exploration ended. %ld unique states visited; %lu backtracks (%lu transition replays)",
-           State::get_expanded_states(), backtrack_count_, Transition::get_replayed_transitions());
+  XBT_INFO("UDPOR exploration ended. %ld unique events considered; %lu backtracks", Unfolding::get_expanded_events(),
+           backtrack_count_);
   Exploration::log_state();
 }
 

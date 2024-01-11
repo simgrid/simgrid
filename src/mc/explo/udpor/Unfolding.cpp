@@ -11,6 +11,8 @@
 
 namespace simgrid::mc::udpor {
 
+long Unfolding::expanded_events_ = 0;
+
 void Unfolding::mark_finished(const EventSet& events)
 {
   for (const auto* e : events) {
@@ -75,6 +77,7 @@ const UnfoldingEvent* Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
   Exploration::get_instance()->dot_output("%u [tooltip=\"Actor %ld : %s\"]\n", handle->get_id(), handle->get_actor(),
                                           handle->get_transition()->to_string(true).c_str());
   Exploration::get_instance()->dot_output("%s", handle->to_dot_string().c_str());
+  expanded_events_++;
   return handle;
 }
 

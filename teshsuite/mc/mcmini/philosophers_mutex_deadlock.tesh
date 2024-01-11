@@ -128,4 +128,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;6;6;3;5;4;5;5;2;6;4;4;3;3;2'
-> [0.000000] [mc_udpor/INFO] UDPOR exploration ended. 16 unique states visited; 0 backtracks (0 transition replays)
+> [0.000000] [mc_udpor/INFO] UDPOR exploration ended. 20 unique events considered; 0 backtracks
