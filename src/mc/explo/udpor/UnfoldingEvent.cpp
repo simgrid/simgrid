@@ -11,6 +11,8 @@
 #include <xbt/log.h>
 #include <xbt/string.hpp>
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_event, mc_udpor, "Logging specific to the unfolding events used in UDPOR");
+
 namespace simgrid::mc::udpor {
 
 UnfoldingEvent::UnfoldingEvent(std::initializer_list<const UnfoldingEvent*> init_list)

@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/udpor/ExtensionSetCalculator.hpp"
+#include "simgrid/forward.h"
 #include "src/mc/explo/udpor/Configuration.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/History.hpp"
@@ -12,6 +13,7 @@
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/transition/TransitionSynchro.hpp"
 
+#include <deque>
 #include <functional>
 #include <unordered_map>
 #include <xbt/asserts.h>
@@ -39,7 +41,13 @@ EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, Unfold
       {Action::MUTEX_UNLOCK, &ExtensionSetCalculator::partially_extend_MutexUnlock},
       {Action::MUTEX_WAIT, &ExtensionSetCalculator::partially_extend_MutexWait},
       {Action::MUTEX_TEST, &ExtensionSetCalculator::partially_extend_MutexTest},
-      {Action::ACTOR_JOIN, &ExtensionSetCalculator::partially_extend_ActorJoin}};
+      {Action::ACTOR_JOIN, &ExtensionSetCalculator::partially_extend_ActorJoin},
+      {Action::ACTOR_SLEEP, &ExtensionSetCalculator::partially_extend_ActorSleep},
+
+      {Action::SEM_ASYNC_LOCK, &ExtensionSetCalculator::partially_extend_SemAsyncLock},
+
+      {Action::SEM_WAIT, &ExtensionSetCalculator::partially_extend_SemWait},
+      {Action::SEM_UNLOCK, &ExtensionSetCalculator::partially_extend_SemUnlock}};
 
   if (const auto handler = handlers.find(action->type_); handler != handlers.end()) {
     return handler->second(C, U, std::move(action));
@@ -705,6 +713,251 @@ EventSet ExtensionSetCalculator::partially_extend_ActorJoin(const Configuration&
   } else {
     const auto e_prime = U->discover_event(EventSet({last_event_waited.value()}), join_action);
     exC.insert(e_prime);
+  }
+
+  return exC;
+}
+
+EventSet ExtensionSetCalculator::partially_extend_ActorSleep(const Configuration& C, Unfolding* U,
+                                                             std::shared_ptr<Transition> action)
+{
+  EventSet exC;
+
+  const auto sleep_action = std::static_pointer_cast<ActorSleepTransition>(action);
+
+  // Handling ActorSleep is very simple: it corresponds to a no action.
+  if (const auto pre_event_a_C = C.pre_event(sleep_action->aid_); pre_event_a_C.has_value()) {
+    const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), sleep_action);
+    exC.insert(e_prime);
+  } else {
+    const auto e_prime = U->discover_event(EventSet({}), sleep_action);
+    exC.insert(e_prime);
+  }
+
+  return exC;
+}
+
+// Compute the number of token available for semaphore sem_id after in the configuration [e]
+int ExtensionSetCalculator::available_token_after(const UnfoldingEvent* e, unsigned sem_id)
+{
+  XBT_DEBUG("\t\t Computing the number of available token after e:=%s ...", e->to_string().c_str());
+  EventSet history = e->get_history();
+  int max_capacity = -1;
+  int nb_lock      = 0;
+  int nb_unlock    = 0;
+
+  unsigned int min_event_num = -1;
+  for (auto history_event = history.begin(); history_event != history.end(); history_event++) {
+
+    if ((*history_event)->get_id() > min_event_num)
+      continue;
+
+    const SemaphoreTransition* sem_transition = dynamic_cast<SemaphoreTransition*>((*history_event)->get_transition());
+
+    if (sem_transition == nullptr or sem_transition->get_sem() != sem_id)
+      continue;
+    min_event_num = (*history_event)->get_id();
+    max_capacity  = sem_transition->get_capacity();
+    XBT_DEBUG("\t\t ... potential first event about this sem is %s ...", (*history_event)->to_string().c_str());
+    if (sem_transition->type_ == Transition::Type::SEM_ASYNC_LOCK)
+      max_capacity += (*history_event)->has_been_executed() ? 1 : 0;
+    if (sem_transition->type_ == Transition::Type::SEM_UNLOCK)
+      max_capacity += (*history_event)->has_been_executed() ? -1 : 0;
+  }
+
+  if (min_event_num == -1) { // The only event in relation with sem_id is the event e itself
+    const SemaphoreTransition* sem_transition = dynamic_cast<SemaphoreTransition*>(e->get_transition());
+    xbt_assert(sem_transition != nullptr and sem_transition->get_sem() == sem_id,
+               "It is impossible to compute the number of available token for the requested event %s after requested "
+               "semaphore %u",
+               e->to_string().c_str(), sem_id);
+    XBT_DEBUG("\t\t ... e is the first operation about this mutex: use it as a base calculator");
+    if (sem_transition->type_ == Transition::Type::SEM_ASYNC_LOCK)
+      return sem_transition->get_capacity() - (e->has_been_executed() ? 0 : 1);
+    if (sem_transition->type_ == Transition::Type::SEM_UNLOCK)
+      return sem_transition->get_capacity() + (e->has_been_executed() ? 0 : 1);
+  }
+
+  XBT_DEBUG("\t\t ... initial value is %d ...", max_capacity);
+  for (auto history_event = history.begin(); history_event != history.end(); history_event++) {
+    const SemaphoreTransition* sem_transition = dynamic_cast<SemaphoreTransition*>((*history_event)->get_transition());
+
+    if (sem_transition == nullptr or sem_transition->get_sem() != sem_id)
+      continue;
+
+    if (sem_transition->type_ == Transition::Type::SEM_ASYNC_LOCK)
+      nb_lock++;
+    if (sem_transition->type_ == Transition::Type::SEM_UNLOCK)
+      nb_unlock++;
+  }
+
+  const SemaphoreTransition* sem_transition = dynamic_cast<SemaphoreTransition*>(e->get_transition());
+
+  if (sem_transition != nullptr and sem_transition->get_sem() == sem_id) {
+    if (sem_transition->type_ == Transition::Type::SEM_ASYNC_LOCK)
+      nb_lock++;
+    if (sem_transition->type_ == Transition::Type::SEM_UNLOCK)
+      nb_unlock++;
+  }
+  XBT_DEBUG("\t\t ... %d locks ...", nb_lock);
+  XBT_DEBUG("\t\t ... %d unlocks ...", nb_unlock);
+  return max_capacity - nb_lock + nb_unlock;
+}
+
+aid_t ExtensionSetCalculator::first_waiting_before(const EventSet history, unsigned sem_id)
+{
+  auto history_event                  = history.begin();
+  int capacity                        = -1;
+  std::deque<aid_t> waiting_processes = {};
+  for (; history_event != history.end(); history_event++) {
+    const SemaphoreTransition* sem_transition = dynamic_cast<SemaphoreTransition*>((*history_event)->get_transition());
+
+    if (sem_transition == nullptr or sem_transition->get_sem() != sem_id)
+      continue;
+
+    xbt_assert(sem_transition->type_ != Transition::Type::SEM_UNLOCK,
+               "First action of the history can't be a wait, FixMe");
+    capacity = sem_transition->get_capacity();
+    capacity += (*history_event)->has_been_executed() ? 1 : 0;
+    break;
+  }
+
+  for (; history_event != history.end(); history_event++) {
+    const SemaphoreTransition* sem_transition = dynamic_cast<SemaphoreTransition*>((*history_event)->get_transition());
+
+    if (sem_transition == nullptr or sem_transition->get_sem() != sem_id)
+      continue;
+
+    if (sem_transition->type_ == Transition::Type::SEM_ASYNC_LOCK) {
+      capacity--;
+      if (capacity < 0)
+        waiting_processes.emplace_back(sem_transition->aid_);
+    }
+    if (sem_transition->type_ == Transition::Type::SEM_UNLOCK) {
+      capacity++;
+      if (capacity <= 0)
+        waiting_processes.pop_front();
+    }
+  }
+  if (waiting_processes.empty())
+    return -1;
+  else
+    return waiting_processes.front();
+}
+
+// Compute the aid of the first actor waiting on the queue of sem_id in the configuration history(e)
+aid_t ExtensionSetCalculator::first_waiting_before(const UnfoldingEvent* e, unsigned sem_id)
+{
+  return first_waiting_before(e->get_history(), sem_id);
+}
+
+EventSet ExtensionSetCalculator::partially_extend_SemAsyncLock(const Configuration& C, Unfolding* U,
+                                                               std::shared_ptr<Transition> action)
+{
+
+  EventSet exC;
+  const auto sem_lock      = std::static_pointer_cast<SemaphoreTransition>(action);
+  const auto pre_event_a_C = C.pre_event(sem_lock->aid_);
+
+  // for each event e in C
+  // 1. If lambda(e) := pre(a) -> add it. Note that if
+  // pre_event_a_C.has_value() == false, this implies `C` is
+  // empty or which we treat as implicitly containing the bottom event
+  if (pre_event_a_C.has_value()) {
+    const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), sem_lock);
+    exC.insert(e_prime);
+  } else {
+    const auto e_prime = U->discover_event(EventSet(), sem_lock);
+    exC.insert(e_prime);
+  }
+
+  // for each event e in C
+  for (const auto e : C) {
+    // Check for other locks on the same semaphore, but not in the same aid history
+    if (const auto* e_sem = dynamic_cast<const SemaphoreTransition*>(e->get_transition());
+        e_sem != nullptr && e_sem->type_ == Transition::Type::SEM_ASYNC_LOCK &&
+        sem_lock->get_sem() == e_sem->get_sem() && sem_lock->aid_ != e_sem->aid_) {
+
+      auto K = EventSet();
+      if (!pre_event_a_C.has_value() or not e->in_history_of(pre_event_a_C.value()))
+        K.insert(e);
+      if (pre_event_a_C.has_value() and not pre_event_a_C.value()->in_history_of(e))
+        K.insert(pre_event_a_C.value());
+      if (!K.empty())
+        exC.insert(U->discover_event(std::move(K), sem_lock));
+    }
+  }
+  return exC;
+}
+
+EventSet ExtensionSetCalculator::partially_extend_SemWait(const Configuration& C, Unfolding* U,
+                                                          std::shared_ptr<Transition> action)
+{
+
+  EventSet exC;
+  const auto sem_wait      = std::static_pointer_cast<SemaphoreTransition>(action);
+  const auto pre_event_a_C = C.pre_event(sem_wait->aid_);
+  xbt_assert(pre_event_a_C.has_value(), "A SemWait can't be the first action of an actor. FixMe");
+  const auto* unwrapped_pre_event = pre_event_a_C.value();
+
+  // for each event e in C
+  // 1. If lambda(e) := pre(a) and Wait is enabled after [pre(a)] add it
+  XBT_DEBUG("\t number of token available after executing history of e : %d",
+            available_token_after(unwrapped_pre_event, sem_wait->get_sem()));
+  if (available_token_after(unwrapped_pre_event, sem_wait->get_sem()) >= 0) {
+    const auto e_prime = U->discover_event(EventSet({unwrapped_pre_event}), sem_wait);
+    exC.insert(e_prime);
+  }
+
+  // for each event e in C
+  for (const auto e : C) {
+    // Check for unlock of the same semaphore
+    if (const auto* e_sem = dynamic_cast<const SemaphoreTransition*>(e->get_transition());
+        e_sem != nullptr && e_sem->type_ == Transition::Type::SEM_UNLOCK && sem_wait->get_sem() == e_sem->get_sem() &&
+        sem_wait->aid_ != e_sem->aid_) {
+
+      auto K = EventSet();
+      if (!pre_event_a_C.has_value() or not e->in_history_of(pre_event_a_C.value()))
+        K.insert(e);
+      if (pre_event_a_C.has_value() and not pre_event_a_C.value()->in_history_of(e))
+        K.insert(pre_event_a_C.value());
+      if (!K.empty())
+        exC.insert(U->discover_event(std::move(K), sem_wait));
+    }
+  }
+  return exC;
+}
+EventSet ExtensionSetCalculator::partially_extend_SemUnlock(const Configuration& C, Unfolding* U,
+                                                            std::shared_ptr<Transition> action)
+{
+  EventSet exC;
+  const auto sem_unlock    = std::static_pointer_cast<SemaphoreTransition>(action);
+  const auto pre_event_a_C = C.pre_event(sem_unlock->aid_);
+
+  // 1. Create `e' := <a, config(preEvt(a, C))>` and add `e'` to `ex(C)`
+  if (pre_event_a_C.has_value()) {
+    const auto* e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), sem_unlock);
+    exC.insert(e_prime);
+  } else {
+    const auto* e_prime = U->discover_event(EventSet(), sem_unlock);
+    exC.insert(e_prime);
+  }
+
+  // for each event e in C
+  for (const auto e : C) {
+    // Check for unlock of the same semaphore
+    if (const auto* e_sem = dynamic_cast<const SemaphoreTransition*>(e->get_transition());
+        e_sem != nullptr && e_sem->type_ == Transition::Type::SEM_WAIT && sem_unlock->get_sem() == e_sem->get_sem() &&
+        sem_unlock->aid_ != e_sem->aid_) {
+
+      auto K = EventSet();
+      if (!pre_event_a_C.has_value() or not e->in_history_of(pre_event_a_C.value()))
+        K.insert(e);
+      if (pre_event_a_C.has_value() and not pre_event_a_C.value()->in_history_of(e))
+        K.insert(pre_event_a_C.value());
+      if (!K.empty())
+        exC.insert(U->discover_event(std::move(K), sem_unlock));
+    }
   }
 
   return exC;

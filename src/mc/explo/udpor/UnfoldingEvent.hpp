@@ -54,10 +54,16 @@ public:
   const EventSet& get_immediate_causes() const { return this->immediate_causes; }
   Transition* get_transition() const { return this->associated_transition.get(); }
 
-  void set_transition(std::shared_ptr<Transition> t) { this->associated_transition = std::move(t); }
+  void set_transition(std::shared_ptr<Transition> t)
+  {
+    has_been_executed_          = true;
+    this->associated_transition = std::move(t);
+  }
 
   std::string to_string() const;
   std::string to_dot_string() const;
+
+  bool has_been_executed() const { return has_been_executed_; }
 
   bool operator==(const UnfoldingEvent&) const;
   bool operator!=(const UnfoldingEvent& other) const { return not(*this == other); }
@@ -99,6 +105,14 @@ private:
    * deterministically
    */
   unsigned long id = 0;
+
+  /**
+   * @brief Store wether this event transition has been updated
+   * after it being executed.
+   *
+   * This is important for semaphore capacities for instance.
+   */
+  bool has_been_executed_ = false;
 };
 
 } // namespace simgrid::mc::udpor
