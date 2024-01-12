@@ -252,6 +252,8 @@ public:
   Host* set_coordinates(const std::string& coords);
 
   std::vector<Disk*> get_disks() const;
+  Disk* get_disk_by_name(const std::string& name) const;
+
   /**
    * @brief Create and add disk in the host
    *
