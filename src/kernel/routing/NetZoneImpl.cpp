@@ -597,6 +597,14 @@ void NetZoneImpl::get_global_route_with_netzones(const NetPoint* src, const NetP
   /* If src and dst are in the same netzone, life is good */
   if (src_ancestor == dst_ancestor) { /* ROUTING_BASE */
     route.link_list_ = std::move(links);
+
+    xbt_assert(src->get_englobing_zone() == common_ancestor,
+               "Source host %s is not part of the zone %s but of zone %s, please report that bug.", src->get_cname(),
+               common_ancestor->get_cname(), src->get_englobing_zone()->get_cname());
+    xbt_assert(dst->get_englobing_zone() == common_ancestor,
+               "Destination host %s is not part of the zone %s but of zone %s, please report that bug.",
+               dst->get_cname(), common_ancestor->get_cname(), dst->get_englobing_zone()->get_cname());
+
     common_ancestor->get_local_route(src, dst, &route, latency);
     links = std::move(route.link_list_);
     return;
