@@ -96,7 +96,7 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder, public xbt::Extendabl
 
 protected:
   explicit NetZoneImpl(const std::string& name);
-  NetZoneImpl(const NetZoneImpl&) = delete;
+  NetZoneImpl(const NetZoneImpl&)            = delete;
   NetZoneImpl& operator=(const NetZoneImpl&) = delete;
   virtual ~NetZoneImpl();
 
@@ -266,6 +266,15 @@ public:
   static void get_global_route(const NetPoint* src, const NetPoint* dst,
                                /* OUT */ std::vector<resource::StandardLinkImpl*>& links, double* latency);
 
+#ifdef HIGH_DEPTH_ROUTING_ALGORITHM
+  static void get_up_to_down_route(const NetPoint* down, NetPoint* up,
+                                   std::vector<kernel::resource::StandardLinkImpl*>& links, double* latency,
+                                   std::vector<NetZoneImpl*>* path_src);
+  static void get_down_to_up_route(const NetPoint* down, NetPoint* up,
+                                   std::vector<kernel::resource::StandardLinkImpl*>& links, double* latency,
+                                   std::vector<NetZoneImpl*>* path_src);
+#endif
+
   /** @brief Similar to get_global_route but get the NetZones traversed by route */
   static void get_global_route_with_netzones(const NetPoint* src, const NetPoint* dst,
                                              /* OUT */ std::vector<resource::StandardLinkImpl*>& links, double* latency,
@@ -288,9 +297,7 @@ private:
   std::shared_ptr<resource::DiskModel> disk_model_;
   std::shared_ptr<resource::HostModel> host_model_;
   /** @brief Perform sealing procedure for derived classes, if necessary */
-  virtual void do_seal()
-  { /* obviously nothing to do by default */
-  }
+  virtual void do_seal() { /* obviously nothing to do by default */ }
   /** @brief Allows subclasses (wi-fi) to have their own create link method, but keep links_ updated */
   virtual resource::StandardLinkImpl* do_create_link(const std::string& name, const std::vector<double>& bandwidths);
   void add_child(NetZoneImpl* new_zone);
