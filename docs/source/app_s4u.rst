@@ -1058,6 +1058,10 @@ Querying info
 
       .. autoattribute:: simgrid.Mailbox.name
 
+   .. group-tab:: C
+
+      .. doxygenfunction:: sg_mailbox_get_name(const_sg_mailbox_t mailbox)
+
 Sending data
 ------------
 
@@ -1111,7 +1115,6 @@ Receiving data
 
       .. doxygenfunction:: sg_mailbox_get(sg_mailbox_t mailbox)
       .. doxygenfunction:: sg_mailbox_get_async(sg_mailbox_t mailbox, void **data)
-      .. doxygenfunction:: sg_mailbox_get_name(const_sg_mailbox_t mailbox)
       .. doxygenfunction:: sg_mailbox_listen(const char *alias)
 
 Receiving actor
