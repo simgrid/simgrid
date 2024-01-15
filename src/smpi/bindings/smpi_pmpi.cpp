@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2023. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -93,7 +93,7 @@ int PMPI_Get_version (int *version,int *subversion){
 }
 
 int PMPI_Get_library_version (char *version,int *len){
-  snprintf(version, MPI_MAX_LIBRARY_VERSION_STRING, "SMPI Version %d.%d. Copyright The SimGrid Team 2007-2023",
+  snprintf(version, MPI_MAX_LIBRARY_VERSION_STRING, "SMPI Version %d.%d. Copyright The SimGrid Team 2007-2024",
            SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR);
   *len = std::min(static_cast<int>(strlen(version)), MPI_MAX_LIBRARY_VERSION_STRING);
   return MPI_SUCCESS;
