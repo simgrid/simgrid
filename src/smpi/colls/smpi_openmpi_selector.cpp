@@ -1,7 +1,7 @@
 /* selector for collective algorithms based on openmpi's default coll_tuned_decision_fixed selector
  * Updated 02/2022                                                          */
 
-/* Copyright (c) 2009-2023. The SimGrid Team.
+/* Copyright (c) 2009-2024. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
