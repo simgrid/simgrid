@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor, mc_reduction, "Logging specific to the
 
 namespace simgrid::mc {
 
-void ODPOR::races_computation(odpor::Execution E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states)
+void ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states)
 {
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
@@ -43,7 +43,7 @@ void ODPOR::races_computation(odpor::Execution E, stack_t* S, std::vector<std::s
   }
 }
 
-aid_t ODPOR::next_to_explore(odpor::Execution E, stack_t* S)
+aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 {
   auto s = static_cast<WutState*>(S->back().get());
   xbt_assert(s != nullptr, "ODPOR should use WutState. Fix me");

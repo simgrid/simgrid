@@ -20,7 +20,7 @@ public:
   SDPOR()           = default;
   ~SDPOR() override = default;
 
-  void races_computation(odpor::Execution E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states) override
+  void races_computation(odpor::Execution& E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states) override
   {
     // If there are less then 2 events, there is no possible race yet
     if (E.size() <= 1)
@@ -52,7 +52,7 @@ public:
     return sleep_set_state;
   }
 
-  aid_t next_to_explore(odpor::Execution E, stack_t* S) override
+  aid_t next_to_explore(odpor::Execution& E, stack_t* S) override
   {
     if (S->back()->get_batrack_minus_done().empty())
       return -1;

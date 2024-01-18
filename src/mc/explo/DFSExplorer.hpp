@@ -95,8 +95,8 @@ public:
 private:
   bool is_execution_descending = true;
 
-  void explore(odpor::Execution S, stack_t state_stack);
-  void simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, stack_t state_stack);
+  void explore(odpor::Execution& S, stack_t state_stack);
+  void simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor, stack_t state_stack);
 };
 
 } // namespace simgrid::mc

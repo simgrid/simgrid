@@ -746,7 +746,7 @@ int ExtensionSetCalculator::available_token_after(const UnfoldingEvent* e, unsig
   int nb_lock      = 0;
   int nb_unlock    = 0;
 
-  unsigned int min_event_num = -1;
+  unsigned long min_event_num = -1;
   for (auto history_event = history.begin(); history_event != history.end(); history_event++) {
 
     if ((*history_event)->get_id() > min_event_num)
@@ -765,7 +765,7 @@ int ExtensionSetCalculator::available_token_after(const UnfoldingEvent* e, unsig
       max_capacity += (*history_event)->has_been_executed() ? -1 : 0;
   }
 
-  if (min_event_num == -1) { // The only event in relation with sem_id is the event e itself
+  if (min_event_num == (unsigned long)-1) { // The only event in relation with sem_id is the event e itself
     const SemaphoreTransition* sem_transition = dynamic_cast<SemaphoreTransition*>(e->get_transition());
     xbt_assert(sem_transition != nullptr and sem_transition->get_sem() == sem_id,
                "It is impossible to compute the number of available token for the requested event %s after requested "

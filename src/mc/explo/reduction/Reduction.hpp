@@ -32,11 +32,11 @@ public:
 
   // Eventually changes values in the stack S so that the races discovered while
   // visiting E will be taken care of at some point
-  virtual void races_computation(odpor::Execution E, stack_t* S,
+  virtual void races_computation(odpor::Execution& E, stack_t* S,
                                  std::vector<std::shared_ptr<State>>* opened_states = nullptr) = 0;
   // Return the next aid to be explored from the E. If -1 is returned, then the
   // reduction assumes no more traces need to be explored from E.
-  virtual aid_t next_to_explore(odpor::Execution E, stack_t* S) = 0;
+  virtual aid_t next_to_explore(odpor::Execution& E, stack_t* S) = 0;
   // Update the state s field according to the reduction.
   // The base case is to only do the Sleep-Set procedure since most of the
   // algorithm are based on sleep sets anyway.

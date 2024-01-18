@@ -43,7 +43,7 @@ void Execution::push_transition(std::shared_ptr<Transition> t)
     }
   }
   max_clock_vector[t->aid_] = this->size();
-  contents_.push_back(Event({std::move(t), max_clock_vector}));
+  contents_.push_back(Event({std::move(t), std::move(max_clock_vector)}));
 }
 
 void Execution::push_partial_execution(const PartialExecution& w)

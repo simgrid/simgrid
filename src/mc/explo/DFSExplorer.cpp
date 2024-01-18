@@ -70,7 +70,7 @@ void DFSExplorer::log_state() // override
   Exploration::log_state();
 }
 
-void DFSExplorer::simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, stack_t state_stack)
+void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor, stack_t state_stack)
 {
 
   // This means the exploration asked us to visit a parallel history
@@ -140,7 +140,7 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, 
   XBT_DEBUG("End of explore_wrapper at depth %lu", S.size());
 }
 
-void DFSExplorer::explore(odpor::Execution S, stack_t state_stack)
+void DFSExplorer::explore(odpor::Execution& S, stack_t state_stack)
 {
 
   visited_states_count_++;
