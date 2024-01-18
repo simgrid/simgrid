@@ -61,15 +61,17 @@ void WutState::initialize_if_empty_wut()
 
   if (wakeup_tree_.empty()) {
     // Find an enabled transition to pick
-    for (const auto& [aid, actor] : get_actors_list()) {
-      if (actor.is_enabled() && !is_actor_sleeping(aid)) {
-        // For each variant of the transition that is enabled, we want to insert the action into the tree.
-        // This ensures that all variants are searched
-        for (unsigned times = 0; times < actor.get_max_considered(); ++times) {
-          wakeup_tree_.insert_at_root(actor.get_transition(times));
-        }
-        break; // Only one actor gets inserted (see pseudocode)
-      }
+    auto const [best_actor, _] = this->strategy_->best_transition(false);
+    if (best_actor == -1)
+      return; // This means that no transitions are enabled at this point
+
+    XBT_DEBUG("Best actor to consider to initialize an empty WuT is %ld", best_actor);
+    this->strategy_->consider_one(best_actor);
+    auto actor_state = get_actors_list().at(best_actor);
+    // For each variant of the transition that is enabled, we want to insert the action into the tree.
+    // This ensures that all variants are searched
+    for (unsigned times = 0; times < actor_state.get_max_considered(); ++times) {
+      wakeup_tree_.insert_at_root(actor_state.get_transition(times));
     }
   }
 }
