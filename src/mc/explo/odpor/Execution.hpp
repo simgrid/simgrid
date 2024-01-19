@@ -20,6 +20,7 @@
 namespace simgrid::mc::odpor {
 
 std::vector<std::string> get_textual_trace(const PartialExecution& w);
+std::string one_string_textual_trace(const PartialExecution& w);
 
 /**
  * @brief The occurrence of a transition in an execution

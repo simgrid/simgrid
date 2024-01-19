@@ -11,7 +11,7 @@ ClockVector ClockVector::max(const ClockVector& cv1, const ClockVector& cv2)
 {
   auto max_vector = ClockVector(cv1);
 
-  for (const auto& [aid, value] : cv2.contents)
+  for (const auto& [aid, value] : cv2.contents_)
     max_vector[aid] = std::max(value, max_vector.get(aid).value_or(0));
 
   return max_vector;
@@ -20,7 +20,7 @@ ClockVector ClockVector::max(const ClockVector& cv1, const ClockVector& cv2)
 void ClockVector::max_emplace_left(ClockVector& cv1, const ClockVector& cv2)
 {
 
-  for (const auto& [aid, value] : cv2.contents)
+  for (const auto& [aid, value] : cv2.contents_)
     cv1[aid] = std::max(value, cv1.get(aid).value_or(0));
 }
 

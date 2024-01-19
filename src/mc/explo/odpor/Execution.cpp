@@ -25,6 +25,16 @@ std::vector<std::string> get_textual_trace(const PartialExecution& w)
   }
   return trace;
 }
+std::string one_string_textual_trace(const PartialExecution& w)
+{
+  std::vector<std::string> trace = get_textual_trace(w);
+  std::string res;
+  for (const auto& one_actor : trace) {
+    res += one_actor;
+    res += "\n";
+  }
+  return res;
+}
 
 Execution::Execution(const PartialExecution& w)
 {
@@ -33,9 +43,8 @@ Execution::Execution(const PartialExecution& w)
 
 void Execution::push_transition(std::shared_ptr<Transition> t)
 {
-  if (t == nullptr) {
-    throw std::invalid_argument("Unexpectedly received `nullptr`");
-  }
+  xbt_assert(t != nullptr, "Unexpectedly received `nullptr`");
+
   ClockVector max_clock_vector;
   for (const Event& e : this->contents_) {
     if (e.get_transition()->depends(t.get())) {
@@ -75,56 +84,44 @@ std::vector<std::string> Execution::get_textual_trace() const
 std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execution::EventHandle target) const
 {
   std::unordered_set<Execution::EventHandle> racing_events;
-  // This keep tracks of events that happens-before the target
-  std::unordered_set<Execution::EventHandle> disqualified_events;
-  // This keep tracks of process for which a racing event has already been found
-  // Hence no need to look further down
-  std::unordered_set<aid_t> disqualified_process = {get_actor_with_handle(target)};
+  std::list<Execution::EventHandle> candidates;
+  for (auto const [aid, event_handle] : get_event_with_handle(target).get_clock_vector())
+    if (aid != get_actor_with_handle(target))
+      candidates.push_back(event_handle);
 
-  // For each event of the execution
-  for (auto e_i = target; e_i != std::numeric_limits<Execution::EventHandle>::max(); e_i--) {
+  candidates.sort(std::greater<EventHandle>());
+  candidates.unique();
 
-    // We need `e_i -->_E target` as a necessary condition
-    if (not happens_before(e_i, target)) {
-      XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` discarded because `%u` --\\-->_E `%u`", target, e_i, e_i, target);
+  // We need to determine previous action of actor proc(target) in order
+  // to fully determine if there exist a "event in the middle"
+  Execution::EventHandle prev_on_actor;
+  for (prev_on_actor = target - 1; prev_on_actor != std::numeric_limits<Execution::EventHandle>::max(); prev_on_actor--)
+    if (get_actor_with_handle(prev_on_actor) == get_actor_with_handle(target))
+      break;
+
+  bool disqualified;
+  // For each event in the vector clock that is not on the event itself
+  for (auto e_i : candidates) {
+    if (prev_on_actor != std::numeric_limits<Execution::EventHandle>::max() and happens_before(e_i, prev_on_actor))
       continue;
-    }
 
-    // Further, `proc(e_i) != proc(target)`
-    if (disqualified_process.count(get_actor_with_handle(e_i)) > 0) {
-      disqualified_events.insert(e_i);
-      XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` disqualified because proc(`%u`)=proc(`%u`)", target, e_i, e_i,
-                target);
-      continue;
-    }
+    disqualified = false;
+    // If there exist an event e_j such that e_i --> e_j --> target
+    // then e_j was found in the candidates already and we must drop e_i
+    for (auto e_j : racing_events) {
 
-    // There could an event that "happens-between" the two events which would discount `e_i` as a race
-    for (auto e_j = e_i; e_j < target; e_j++) {
-      // If both:
-      // 1. e_i --->_E e_j; and
-      // 2. disqualified_events.count(e_j) > 0
-      // then e_i --->_E target indirectly (either through
-      // e_j directly, or transitively through e_j)
-      if (disqualified_events.count(e_j) > 0 && happens_before(e_i, e_j)) {
-        XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` disqualified because `%u` happens-between `%u`-->`%u`-->`%u`)",
-                  target, e_i, e_j, e_i, e_j, target);
-        disqualified_process.insert(get_actor_with_handle(e_i));
-        disqualified_events.insert(e_i);
+      if (happens_before(e_i, e_j)) {
+        disqualified = true;
         break;
       }
     }
+    if (disqualified)
+      continue;
 
-    // If `e_i` wasn't disqualified in the last round,
-    // it's in a race with `target`. After marking it
-    // as such, we ensure no other event `e` can happen-before
-    // it (since this would transitively make it the event
-    // which "happens-between" `target` and `e`)
-    if (disqualified_events.count(e_i) == 0) {
-      XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` is a valid racing event", target, e_i);
-      racing_events.insert(e_i);
-      disqualified_process.insert(get_actor_with_handle(e_i));
-      disqualified_events.insert(e_i);
-    }
+    XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` (%s) : `%u` (%s) is a valid racing event", target,
+              get_transition_for_handle(target)->to_string().c_str(), e_i,
+              get_transition_for_handle(e_i)->to_string().c_str());
+    racing_events.insert(e_i);
   }
 
   return racing_events;
@@ -439,9 +436,11 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
   // where the [iterative] computation of `v ~_[E] w` is described)
   auto E_v   = *this;
   auto w_now = w;
-
+  XBT_DEBUG("Computing 'v~_[E]w' with v:=\n%s w:=\n%s", one_string_textual_trace(v).c_str(),
+            one_string_textual_trace(w).c_str());
   for (const auto& next_E_p : v) {
     // Is `p in `I_[E](w)`?
+
     if (const aid_t p = next_E_p->aid_; E_v.is_initial_after_execution_of(w_now, p)) {
       // Remove `p` from w and continue
 

@@ -44,14 +44,18 @@ namespace simgrid::mc {
  */
 struct ClockVector final {
 private:
-  std::unordered_map<aid_t, uint32_t> contents;
+  std::unordered_map<aid_t, uint32_t> contents_;
 
 public:
   ClockVector()                              = default;
   ClockVector(const ClockVector&)            = default;
   ClockVector& operator=(ClockVector const&) = default;
   ClockVector(ClockVector&&)                 = default;
-  ClockVector(std::initializer_list<std::pair<const aid_t, uint32_t>> init) : contents(std::move(init)) {}
+  ClockVector(std::initializer_list<std::pair<const aid_t, uint32_t>> init) : contents_(std::move(init)) {}
+
+  bool empty() const { return this->contents_.empty(); }
+  auto begin() const { return this->contents_.begin(); }
+  auto end() const { return this->contents_.end(); }
 
   /**
    * @brief The number of components in this
@@ -63,13 +67,13 @@ public:
    * that new actors are "automatically" mapped
    * without needing to be explicitly added the clock
    * vector when the actor is created. This means that
-   * comparison between clock vectors is possible
+   * comparison between clockO vectors is possible
    * even as actors become enabled and disabled
    *
    * @return uint32_t the number of elements in
    * the clock vector
    */
-  size_t size() const { return this->contents.size(); }
+  size_t size() const { return this->contents_.size(); }
 
   uint32_t& operator[](aid_t aid)
   {
@@ -78,7 +82,7 @@ public:
     // pair if `tid` does not exist and will use
     // a _default_ value for the value (0 in this case)
     // which is precisely what we want here
-    return this->contents[aid];
+    return this->contents_[aid];
   }
 
   /**
@@ -87,7 +91,7 @@ public:
    */
   std::optional<uint32_t> get(aid_t aid) const
   {
-    if (const auto iter = this->contents.find(aid); iter != this->contents.end())
+    if (const auto iter = this->contents_.find(aid); iter != this->contents_.end())
       return std::optional<uint32_t>{iter->second};
     return std::nullopt;
   }
