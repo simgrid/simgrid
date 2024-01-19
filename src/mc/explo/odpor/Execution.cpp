@@ -39,7 +39,7 @@ void Execution::push_transition(std::shared_ptr<Transition> t)
   ClockVector max_clock_vector;
   for (const Event& e : this->contents_) {
     if (e.get_transition()->depends(t.get())) {
-      max_clock_vector = ClockVector::max(max_clock_vector, e.get_clock_vector());
+      ClockVector::max_emplace_left(max_clock_vector, e.get_clock_vector());
     }
   }
   max_clock_vector[t->aid_] = this->size();
@@ -132,7 +132,6 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
 
 std::unordered_set<Execution::EventHandle> Execution::get_reversible_races_of(EventHandle handle) const
 {
-  XBT_VERB("Computing Reversible races for Event `%u`", handle);
   std::unordered_set<EventHandle> reversible_races;
   const auto* this_transition = get_transition_for_handle(handle);
   for (EventHandle race : get_racing_events_of(handle)) {

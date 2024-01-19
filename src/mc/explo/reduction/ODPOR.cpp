@@ -32,6 +32,7 @@ void ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<std::
    * ("eventually looks like C", viz. the `~_E` relation)
    */
   for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
+    XBT_VERB("Computing reversible races of Event `%u`", e_prime);
     for (const auto e : E.get_reversible_races_of(e_prime)) {
 
       WutState* prev_state = static_cast<WutState*>((*S)[e].get());

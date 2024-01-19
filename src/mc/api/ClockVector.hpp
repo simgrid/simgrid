@@ -123,6 +123,8 @@ public:
    * of components of each clock vector
    */
   static ClockVector max(const ClockVector& cv1, const ClockVector& cv2);
+
+  static void max_emplace_left(ClockVector& cv1, const ClockVector& cv2);
 };
 
 } // namespace simgrid::mc
