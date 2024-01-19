@@ -46,6 +46,12 @@ void Execution::push_transition(std::shared_ptr<Transition> t)
   contents_.push_back(Event({std::move(t), std::move(max_clock_vector)}));
 }
 
+void Execution::remove_last_event()
+{
+  xbt_assert(!contents_.empty(), "Tried to remove an element from an empty Execution");
+  contents_.pop_back();
+}
+
 void Execution::push_partial_execution(const PartialExecution& w)
 {
   for (const auto& t : w) {
@@ -71,9 +77,13 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
   std::unordered_set<Execution::EventHandle> racing_events;
   // This keep tracks of events that happens-before the target
   std::unordered_set<Execution::EventHandle> disqualified_events;
+  // This keep tracks of process for which a racing event has already been found
+  // Hence no need to look further down
+  std::unordered_set<aid_t> disqualified_process = {get_actor_with_handle(target)};
 
   // For each event of the execution
   for (auto e_i = target; e_i != std::numeric_limits<Execution::EventHandle>::max(); e_i--) {
+
     // We need `e_i -->_E target` as a necessary condition
     if (not happens_before(e_i, target)) {
       XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` discarded because `%u` --\\-->_E `%u`", target, e_i, e_i, target);
@@ -81,7 +91,7 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
     }
 
     // Further, `proc(e_i) != proc(target)`
-    if (get_actor_with_handle(e_i) == get_actor_with_handle(target)) {
+    if (disqualified_process.count(get_actor_with_handle(e_i)) > 0) {
       disqualified_events.insert(e_i);
       XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` disqualified because proc(`%u`)=proc(`%u`)", target, e_i, e_i,
                 target);
@@ -98,6 +108,7 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
       if (disqualified_events.count(e_j) > 0 && happens_before(e_i, e_j)) {
         XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` disqualified because `%u` happens-between `%u`-->`%u`-->`%u`)",
                   target, e_i, e_j, e_i, e_j, target);
+        disqualified_process.insert(get_actor_with_handle(e_i));
         disqualified_events.insert(e_i);
         break;
       }
@@ -111,6 +122,7 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
     if (disqualified_events.count(e_i) == 0) {
       XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` is a valid racing event", target, e_i);
       racing_events.insert(e_i);
+      disqualified_process.insert(get_actor_with_handle(e_i));
       disqualified_events.insert(e_i);
     }
   }
@@ -120,6 +132,7 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
 
 std::unordered_set<Execution::EventHandle> Execution::get_reversible_races_of(EventHandle handle) const
 {
+  XBT_VERB("Computing Reversible races for Event `%u`", handle);
   std::unordered_set<EventHandle> reversible_races;
   const auto* this_transition = get_transition_for_handle(handle);
   for (EventHandle race : get_racing_events_of(handle)) {

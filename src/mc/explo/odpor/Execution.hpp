@@ -366,6 +366,12 @@ public:
   void push_transition(std::shared_ptr<Transition>);
 
   /**
+   * @brief Shorten the execution by one step
+   *
+   */
+  void remove_last_event();
+
+  /**
    * @brief Extends the execution by a sequence of steps
    *
    * This method has the equivalent effect of pushing the
