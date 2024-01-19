@@ -150,7 +150,7 @@ void OutOfOrderExplorer::run()
     // If we use a state containing a sleep state, display it during debug
     if (XBT_LOG_ISENABLED(mc_ooo, xbt_log_priority_verbose)) {
       std::shared_ptr<SleepSetState> sleep_state = std::static_pointer_cast<SleepSetState>(state);
-      if (sleep_state != nullptr) {
+      if (sleep_state != nullptr and not sleep_state->get_sleep_set().empty()) {
         XBT_VERB("Sleep set actually containing:");
 
         for (const auto& [aid, transition] : sleep_state->get_sleep_set())

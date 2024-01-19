@@ -101,7 +101,7 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
   // If we use a state containing a sleep state, display it during debug
   if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose)) {
     std::shared_ptr<SleepSetState> sleep_state = std::static_pointer_cast<SleepSetState>(state);
-    if (sleep_state != nullptr) {
+    if (sleep_state != nullptr and not sleep_state->get_sleep_set().empty()) {
       XBT_VERB("Sleep set actually containing:");
 
       for (const auto& [aid, transition] : sleep_state->get_sleep_set())
@@ -136,7 +136,7 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
   state_stack.pop_back();
   stack_ = state_stack;
 
-  S = S.get_prefix_before(S.size() - 1);
+  S.remove_last_event();
   XBT_DEBUG("End of explore_wrapper at depth %lu", S.size());
 }
 
