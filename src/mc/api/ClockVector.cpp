@@ -17,11 +17,4 @@ ClockVector ClockVector::max(const ClockVector& cv1, const ClockVector& cv2)
   return max_vector;
 }
 
-void ClockVector::max_emplace_left(ClockVector& cv1, const ClockVector& cv2)
-{
-
-  for (const auto& [aid, value] : cv2.contents_)
-    cv1[aid] = std::max(value, cv1.get(aid).value_or(0));
-}
-
 } // namespace simgrid::mc

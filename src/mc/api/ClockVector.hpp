@@ -128,7 +128,11 @@ public:
    */
   static ClockVector max(const ClockVector& cv1, const ClockVector& cv2);
 
-  static void max_emplace_left(ClockVector& cv1, const ClockVector& cv2);
+  inline void static max_emplace_left(ClockVector& cv1, const ClockVector& cv2)
+  {
+    for (const auto& [aid, value] : cv2)
+      cv1[aid] = std::max(value, cv1.get(aid).value_or(0));
+  }
 };
 
 } // namespace simgrid::mc
