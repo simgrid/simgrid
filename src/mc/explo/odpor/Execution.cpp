@@ -382,50 +382,28 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
 
 bool Execution::is_initial_after_execution_of(const PartialExecution& w, aid_t p) const
 {
-  auto E_w = *this;
-  std::vector<EventHandle> w_handles;
-  for (const auto& w_i : w) {
-    // Take one step in the direction of `w`
-    E_w.push_transition(w_i);
 
-    // If that step happened to be executed by `p`,
-    // great: we know that `p` is contained in `w`.
-    // We now need to verify that it doens't "happen-after"
-    // any events which occur before it
-    if (w_i->aid_ == p) {
-      const auto p_handle = E_w.get_latest_event_handle().value();
-      return std::none_of(w_handles.begin(), w_handles.end(),
-                          [&](const auto handle) { return E_w.happens_before(handle, p_handle); });
-    } else {
-      w_handles.push_back(E_w.get_latest_event_handle().value());
+  for (auto w_i = w.begin(); w_i != w.end(); w_i++) {
+    if ((*w_i)->aid_ != p)
+      continue;
+
+    for (auto w_j = w.begin(); w_j != w_i; w_j++) {
+      if ((*w_j)->depends((*w_i).get()))
+        return false;
     }
+
+    return true;
   }
+
   return false;
 }
 
 bool Execution::is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const
 {
-  // INVARIANT: Here, we assume that for any process `p_i` of `w`,
-  // the events of this execution followed by the execution of all
-  // actors occurring before `p_i` in `v` (`p_j`, `0 <= j < i`)
-  // are sufficient to enable `p_i`. This is fortunately the case
-  // with what ODPOR requires of us, viz. to ask the question about
-  // `v := notdep(e, E)` for some execution `E` and event `e` of
-  // that execution.
-  auto E_p_w = *this;
-  E_p_w.push_transition(std::move(next_E_p));
-  const auto p_handle = E_p_w.get_latest_event_handle().value();
-
-  // As we add events to `w`, verify that none
-  // of them "happen-after" the event associated with
-  // the step `next_E_p` (viz. p_handle)
-  for (const auto& w_i : w) {
-    E_p_w.push_transition(w_i);
-    const auto w_i_handle = E_p_w.get_latest_event_handle().value();
-    if (E_p_w.happens_before(p_handle, w_i_handle)) {
+  for (const auto& transition : w)
+    if (transition->depends(next_E_p.get()))
       return false;
-    }
-  }
+
   return true;
 }
 
