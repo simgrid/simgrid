@@ -289,7 +289,7 @@ public:
    * @returns a set of event handles, each element of which is an
    * event in this execution which is in a *race* with event `handle`
    */
-  std::unordered_set<EventHandle> get_racing_events_of(EventHandle handle) const;
+  std::list<EventHandle> get_racing_events_of(EventHandle handle) const;
 
   /**
    * @brief Returns a set of events which are in a reversible
@@ -308,7 +308,7 @@ public:
    * @returns a set of event handles, each element of which is an event
    * in this execution which is in a *reversible race* with event `handle`
    */
-  std::unordered_set<EventHandle> get_reversible_races_of(EventHandle handle) const;
+  std::list<EventHandle> get_reversible_races_of(EventHandle handle) const;
 
   /**
    * @brief Computes `pre(e, E)` as described in ODPOR [1]

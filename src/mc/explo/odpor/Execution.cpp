@@ -81,9 +81,9 @@ std::vector<std::string> Execution::get_textual_trace() const
   return trace;
 }
 
-std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execution::EventHandle target) const
+std::list<Execution::EventHandle> Execution::get_racing_events_of(Execution::EventHandle target) const
 {
-  std::unordered_set<Execution::EventHandle> racing_events;
+  std::list<Execution::EventHandle> racing_events;
   std::list<Execution::EventHandle> candidates;
   for (auto const [aid, event_handle] : get_event_with_handle(target).get_clock_vector())
     if (aid != get_actor_with_handle(target))
@@ -121,21 +121,21 @@ std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execu
     XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` (%s) : `%u` (%s) is a valid racing event", target,
               get_transition_for_handle(target)->to_string().c_str(), e_i,
               get_transition_for_handle(e_i)->to_string().c_str());
-    racing_events.insert(e_i);
+    racing_events.push_back(e_i);
   }
 
   return racing_events;
 }
 
-std::unordered_set<Execution::EventHandle> Execution::get_reversible_races_of(EventHandle handle) const
+std::list<Execution::EventHandle> Execution::get_reversible_races_of(EventHandle handle) const
 {
-  std::unordered_set<EventHandle> reversible_races;
+  std::list<EventHandle> reversible_races;
   const auto* this_transition = get_transition_for_handle(handle);
   for (EventHandle race : get_racing_events_of(handle)) {
     const auto* other_transition = get_transition_for_handle(race);
 
     if (this_transition->reversible_race(other_transition)) {
-      reversible_races.insert(race);
+      reversible_races.push_back(race);
     }
   }
   return reversible_races;
