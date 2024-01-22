@@ -234,10 +234,14 @@ public:
    */
   bool is_initial_after_execution_of(const PartialExecution& w, aid_t p) const;
 
+  static bool static_is_initial_after_execution_of(const PartialExecution& w, aid_t p);
+
   /**
    * @brief Determines whether `E ⊢ p ◊ w` given the next action taken by `p`
    */
   bool is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const;
+
+  static bool static_is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p);
 
   /**
    * @brief Determines the event associated with the given handle `handle`

@@ -256,120 +256,49 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   }
 
   PartialExecution v;
-  std::vector<Execution::EventHandle> v_handles;
-  std::unordered_set<aid_t> WI_E_prime_v;
-  std::unordered_set<aid_t> disqualified_actors;
-  Execution E_prime_v                           = get_prefix_before(e);
+  std::unordered_set<aid_t> disqualified_actors = {get_actor_with_handle(e)};
   const std::unordered_set<aid_t> sleep_E_prime = state_at_e.get_sleeping_actors();
 
-  // Note `e + 1` here: `notdep(e, E)` is defined as the
-  // set of events that *occur-after* but don't *happen-after* `e`
-  //
-  // SUBTLE NOTE: ODPOR requires us to compute `notdep(e, E)` EVEN THOUGH
-  // the race is between `e` and `e'`; that is, events occurring in `E`
-  // that "occur-after" `e'` may end up in the partial execution `v`.
-  //
-  // Observe that `notdep(e, E).proc(e')` will contain all transitions
-  // that don't happen-after `e` in the order they appear FOLLOWED BY
-  // THE **TRANSITION** ASSOCIATED WITH **`e'`**!!
-  //
-  // SUBTLE NOTE: Observe that any event that "happens-after" `e'`
-  // must necessarily "happen-after" `e` as well, since `e` and
-  // `e'` are presumed to be in a reversible race. Hence, we know that
-  // all events `e_star` such that `e` "happens-before" `e_star` cannot affect
-  // the enabledness of `e'`; furthermore, `e'` cannot affect the enabledness
-  // of any event independent with `e` that "occurs-after" `e'`
   for (auto e_star = e + 1; e_star <= get_latest_event_handle().value(); ++e_star) {
-    // Any event `e*` which occurs after `e` but which does not
-    // happen after `e` is a member of `v`. In addition to marking
-    // the event in `v`, we also "simulate" running the action `v` from E'
-    // to be able to compute `--->[E'.v]`
-    if (not happens_before(e, e_star)) {
-      xbt_assert(e_star != e_prime,
-                 "Invariant Violation: We claimed events %u and %u were in a reversible race, yet we also "
-                 "claim that they do not happen-before one another. This is impossible: "
-                 "are you sure that the two events are in a reversible race?",
-                 e, e_prime);
-      E_prime_v.push_transition(get_event_with_handle(e_star).get_transition());
-      v.push_back(get_event_with_handle(e_star).get_transition());
 
-      XBT_DEBUG("Added Event `%u` (%ld:%s) to the construction of v", e_star, get_actor_with_handle(e_star),
-                get_event_with_handle(e_star).get_transition()->to_string().c_str());
+    if (disqualified_actors.count(get_actor_with_handle(e_star)) > 0)
+      continue;
 
-      const EventHandle e_star_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
-
-      // When checking whether any event in `dom_[E'](v)` happens before
-      // `next_[E'](q)` below for thread `q`, we must consider that the
-      // events relative to `E` (this execution) are different than those
-      // relative to `E'.v`. Thus e.g. event `7` in `E` may be event `4`
-      // in `E'.v`. Since we are asking about "happens-before"
-      // `-->_[E'.v]` about `E'.v`, we must build `v` relative to `E'`
-      v_handles.push_back(e_star_in_E_prime_v);
-
-      // Note that we add `q` to v regardless of whether `q` itself has been
-      // disqualified since `q` may itself disqualify other actors
-      // (i.e. even if `q` is disqualified from being an initial, it
-      // is still contained in the sequence `v`)
-      const aid_t q = E_prime_v.get_actor_with_handle(e_star_in_E_prime_v);
-      if (disqualified_actors.count(q) > 0) { // Did we already note that `q` is not an initial?
-        continue;
-      }
-      const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& handle) {
-        return E_prime_v.happens_before(handle, e_star_in_E_prime_v);
-      });
-      if (is_initial) {
-        // If the sleep set already contains `q`, we're done:
-        // we've found an initial contained in the sleep set and
-        // so the intersection is non-empty
-        if (sleep_E_prime.count(q) > 0) {
-          return std::nullopt;
-        } else {
-          WI_E_prime_v.insert(q);
-        }
-      } else {
-        // If `q` is disqualified as a candidate, clearly
-        // no event occurring after `e_prime` in `E` executed
-        // by actor `q` will qualify since any (valid) happens-before
-        // relation orders actions taken by each actor
-        disqualified_actors.insert(q);
-      }
-    } else {
-      XBT_DEBUG("Event `%u` (%ld:%s) dismissed from the construction of v", e_star, get_actor_with_handle(e_star),
-                get_event_with_handle(e_star).get_transition()->to_string().c_str());
+    if (happens_before(e, e_star)) {
+      disqualified_actors.emplace(get_actor_with_handle(e_star));
+      continue;
     }
+
+    xbt_assert(e_star != e_prime,
+               "Invariant Violation: We claimed events %u and %u were in a reversible race, yet we also "
+               "claim that they do not happen-before one another. This is impossible: "
+               "are you sure that the two events are in a reversible race?",
+               e, e_prime);
+
+    v.push_back(get_event_with_handle(e_star).get_transition());
   }
 
-  // Now we add `e_prime := <q, i>` to `E'.v` and repeat the same work
-  // It's possible `proc(e_prime)` is an initial
-  //
-  // Note the form of `v` in the pseudocode:
-  //  `v := notdep(e, E).e'^
-  E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
   v.push_back(get_event_with_handle(e_prime).get_transition());
 
-  const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
-  v_handles.push_back(e_prime_in_E_prime_v);
+  XBT_DEBUG("Potential v := \n%s", one_string_textual_trace(v).c_str());
 
-  const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& handle) {
-    return E_prime_v.happens_before(handle, e_prime_in_E_prime_v);
-  });
-  if (is_initial) {
-    if (const aid_t q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v); sleep_E_prime.count(q) > 0) {
-      return std::nullopt;
-    } else {
-      WI_E_prime_v.insert(q);
+  for (auto transition_it = v.begin(); transition_it != v.end(); ++transition_it) {
+    const bool is_initial = std::none_of(v.begin(), transition_it, [&](const auto& transition_it_prime) {
+      return (*transition_it)->depends(transition_it_prime.get());
+    });
+    if (is_initial) {
+      // If the sleep set already contains `q`, we're done:
+      // we've found an initial contained in the sleep set and
+      // so the intersection is non-empty
+      if (sleep_E_prime.count((*transition_it)->aid_) > 0) {
+        return std::nullopt;
+      }
     }
   }
 
-  const Execution pre_E_e    = get_prefix_before(e);
-  const auto sleeping_actors = state_at_e.get_sleeping_actors();
-
-  // Check if any enabled actor that is independent with
-  // this execution after `v` is contained in the sleep set
   for (const auto& [aid, astate] : state_at_e.get_actors_list()) {
-    const bool is_in_WI_E =
-        astate.is_enabled() and pre_E_e.is_independent_with_execution_of(v, astate.get_transition());
-    const bool is_in_sleep_set = sleeping_actors.count(aid) > 0;
+    const bool is_in_WI_E = astate.is_enabled() and static_is_independent_with_execution_of(v, astate.get_transition());
+    const bool is_in_sleep_set = sleep_E_prime.count(aid) > 0;
 
     // `action(aid)` is in `WI_[E](v)` but also is contained in the sleep set.
     // This implies that the intersection between the two is non-empty
@@ -378,6 +307,127 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   }
 
   return v;
+
+  // std::vector<Execution::EventHandle> v_handles;
+  // std::unordered_set<aid_t> WI_E_prime_v;
+  // Execution E_prime_v                           = get_prefix_before(e);
+
+  // // Note `e + 1` here: `notdep(e, E)` is defined as the
+  // // set of events that *occur-after* but don't *happen-after* `e`
+  // //
+  // // SUBTLE NOTE: ODPOR requires us to compute `notdep(e, E)` EVEN THOUGH
+  // // the race is between `e` and `e'`; that is, events occurring in `E`
+  // // that "occur-after" `e'` may end up in the partial execution `v`.
+  // //
+  // // Observe that `notdep(e, E).proc(e')` will contain all transitions
+  // // that don't happen-after `e` in the order they appear FOLLOWED BY
+  // // THE **TRANSITION** ASSOCIATED WITH **`e'`**!!
+  // //
+  // // SUBTLE NOTE: Observe that any event that "happens-after" `e'`
+  // // must necessarily "happen-after" `e` as well, since `e` and
+  // // `e'` are presumed to be in a reversible race. Hence, we know that
+  // // all events `e_star` such that `e` "happens-before" `e_star` cannot affect
+  // // the enabledness of `e'`; furthermore, `e'` cannot affect the enabledness
+  // // of any event independent with `e` that "occurs-after" `e'`
+  // for (auto e_star = e + 1; e_star <= get_latest_event_handle().value(); ++e_star) {
+  //   // Any event `e*` which occurs after `e` but which does not
+  //   // happen after `e` is a member of `v`. In addition to marking
+  //   // the event in `v`, we also "simulate" running the action `v` from E'
+  //   // to be able to compute `--->[E'.v]`
+  //   if (not happens_before(e, e_star)) {
+  //     xbt_assert(e_star != e_prime,
+  //                "Invariant Violation: We claimed events %u and %u were in a reversible race, yet we also "
+  //                "claim that they do not happen-before one another. This is impossible: "
+  //                "are you sure that the two events are in a reversible race?",
+  //                e, e_prime);
+  //     E_prime_v.push_transition(get_event_with_handle(e_star).get_transition());
+  //     v.push_back(get_event_with_handle(e_star).get_transition());
+
+  //     XBT_DEBUG("Added Event `%u` (%ld:%s) to the construction of v", e_star, get_actor_with_handle(e_star),
+  //               get_event_with_handle(e_star).get_transition()->to_string().c_str());
+
+  //     const EventHandle e_star_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
+
+  //     // When checking whether any event in `dom_[E'](v)` happens before
+  //     // `next_[E'](q)` below for thread `q`, we must consider that the
+  //     // events relative to `E` (this execution) are different than those
+  //     // relative to `E'.v`. Thus e.g. event `7` in `E` may be event `4`
+  //     // in `E'.v`. Since we are asking about "happens-before"
+  //     // `-->_[E'.v]` about `E'.v`, we must build `v` relative to `E'`
+  //     v_handles.push_back(e_star_in_E_prime_v);
+
+  //     // Note that we add `q` to v regardless of whether `q` itself has been
+  //     // disqualified since `q` may itself disqualify other actors
+  //     // (i.e. even if `q` is disqualified from being an initial, it
+  //     // is still contained in the sequence `v`)
+  //     const aid_t q = E_prime_v.get_actor_with_handle(e_star_in_E_prime_v);
+  //     if (disqualified_actors.count(q) > 0) { // Did we already note that `q` is not an initial?
+  //       continue;
+  //     }
+  //     const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& handle) {
+  //       return E_prime_v.happens_before(handle, e_star_in_E_prime_v);
+  //     });
+  //     if (is_initial) {
+  //       // If the sleep set already contains `q`, we're done:
+  //       // we've found an initial contained in the sleep set and
+  //       // so the intersection is non-empty
+  //       if (sleep_E_prime.count(q) > 0) {
+  //         return std::nullopt;
+  //       } else {
+  //         WI_E_prime_v.insert(q);
+  //       }
+  //     } else {
+  //       // If `q` is disqualified as a candidate, clearly
+  //       // no event occurring after `e_prime` in `E` executed
+  //       // by actor `q` will qualify since any (valid) happens-before
+  //       // relation orders actions taken by each actor
+  //       disqualified_actors.insert(q);
+  //     }
+  //   } else {
+  //     XBT_DEBUG("Event `%u` (%ld:%s) dismissed from the construction of v", e_star, get_actor_with_handle(e_star),
+  //               get_event_with_handle(e_star).get_transition()->to_string().c_str());
+  //   }
+  // }
+
+  // // Now we add `e_prime := <q, i>` to `E'.v` and repeat the same work
+  // // It's possible `proc(e_prime)` is an initial
+  // //
+  // // Note the form of `v` in the pseudocode:
+  // //  `v := notdep(e, E).e'^
+  // E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
+  // v.push_back(get_event_with_handle(e_prime).get_transition());
+
+  // const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
+  // v_handles.push_back(e_prime_in_E_prime_v);
+
+  // const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& handle) {
+  //   return E_prime_v.happens_before(handle, e_prime_in_E_prime_v);
+  // });
+  // if (is_initial) {
+  //   if (const aid_t q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v); sleep_E_prime.count(q) > 0) {
+  //     return std::nullopt;
+  //   } else {
+  //     WI_E_prime_v.insert(q);
+  //   }
+  // }
+
+  // const Execution pre_E_e    = get_prefix_before(e);
+  // const auto sleeping_actors = state_at_e.get_sleeping_actors();
+
+  // // Check if any enabled actor that is independent with
+  // // this execution after `v` is contained in the sleep set
+  // for (const auto& [aid, astate] : state_at_e.get_actors_list()) {
+  //   const bool is_in_WI_E =
+  //       astate.is_enabled() and pre_E_e.is_independent_with_execution_of(v, astate.get_transition());
+  //   const bool is_in_sleep_set = sleeping_actors.count(aid) > 0;
+
+  //   // `action(aid)` is in `WI_[E](v)` but also is contained in the sleep set.
+  //   // This implies that the intersection between the two is non-empty
+  //   if (is_in_WI_E && is_in_sleep_set)
+  //     return std::nullopt;
+  // }
+
+  // return v;
 }
 
 bool Execution::is_initial_after_execution_of(const PartialExecution& w, aid_t p) const
@@ -398,7 +448,34 @@ bool Execution::is_initial_after_execution_of(const PartialExecution& w, aid_t p
   return false;
 }
 
+bool Execution::static_is_initial_after_execution_of(const PartialExecution& w, aid_t p)
+{
+
+  for (auto w_i = w.begin(); w_i != w.end(); w_i++) {
+    if ((*w_i)->aid_ != p)
+      continue;
+
+    for (auto w_j = w.begin(); w_j != w_i; w_j++) {
+      if ((*w_j)->depends((*w_i).get()))
+        return false;
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
 bool Execution::is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const
+{
+  for (const auto& transition : w)
+    if (transition->depends(next_E_p.get()))
+      return false;
+
+  return true;
+}
+
+bool Execution::static_is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p)
 {
   for (const auto& transition : w)
     if (transition->depends(next_E_p.get()))
