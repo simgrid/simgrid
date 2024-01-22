@@ -228,7 +228,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
     REQUIRE(execution.get_racing_events_of(2) == std::list<Execution::EventHandle>{});
 
     // All events are dependent with event 3, but event 0 "happens-before" event 2
-    REQUIRE(execution.get_racing_events_of(3) == std::list<Execution::EventHandle>{1, 2});
+    REQUIRE(execution.get_racing_events_of(3) == std::list<Execution::EventHandle>{2, 1});
 
     SECTION("Check initials with respect to event 1")
     {
@@ -354,7 +354,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
 
     // Event 5 is independent with event 4. Since events 2 and 3 are dependent with event 5,
     // but are independent of each other, both events are in a race with event 5
-    CHECK(execution.get_racing_events_of(5) == std::list<Execution::EventHandle>{2, 3});
+    CHECK(execution.get_racing_events_of(5) == std::list<Execution::EventHandle>{3, 2});
 
     // Events 5 and 6 are dependent. Everyone before 5 who's dependent with 5
     // cannot be in a race with 6; everyone before 5 who's independent with 5
@@ -385,7 +385,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
     const auto e6 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 7);
 
     Execution execution(PartialExecution{e0, e1, e2, e3, e4, e5, e6});
-    REQUIRE(execution.get_racing_events_of(6) == std::list<Execution::EventHandle>{0, 1, 2, 3, 4, 5});
+    REQUIRE(execution.get_racing_events_of(6) == std::list<Execution::EventHandle>{5, 4, 3, 2, 1, 0});
   }
 }
 
@@ -646,7 +646,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: SDPOR Backtracking Simulation")
   // immediately after and so is evidently a source set actor; in the former race, only actor 2 can
   // be brought to the front of the queue
   execution.push_transition(e6);
-  REQUIRE(execution.get_racing_events_of(6) == std::list<Execution::EventHandle>{4, 5});
+  REQUIRE(execution.get_racing_events_of(6) == std::list<Execution::EventHandle>{5, 4});
   CHECK(execution.get_missing_source_set_actors_from(4, std::unordered_set<aid_t>{}) == std::unordered_set<aid_t>{2});
   CHECK(execution.get_missing_source_set_actors_from(4, std::unordered_set<aid_t>{6, 7}) ==
         std::unordered_set<aid_t>{2});

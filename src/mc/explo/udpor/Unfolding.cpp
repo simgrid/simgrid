@@ -74,9 +74,11 @@ const UnfoldingEvent* Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
       this->immediate_conflicts_.insert({eprime, EventSet({handle})});
   }
   immediate_conflicts_.insert({handle, immediate_conflicts_of_e});
-  Exploration::get_instance()->dot_output("%u [tooltip=\"Actor %ld : %s\"]\n", handle->get_id(), handle->get_actor(),
-                                          handle->get_transition()->to_string(true).c_str());
-  Exploration::get_instance()->dot_output("%s", handle->to_dot_string().c_str());
+  if (Exploration::get_instance() != nullptr) {
+    Exploration::get_instance()->dot_output("%u [tooltip=\"Actor %ld : %s\"]\n", handle->get_id(), handle->get_actor(),
+                                            handle->get_transition()->to_string(true).c_str());
+    Exploration::get_instance()->dot_output("%s", handle->to_dot_string().c_str());
+  }
   expanded_events_++;
   return handle;
 }

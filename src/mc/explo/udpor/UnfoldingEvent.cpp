@@ -145,8 +145,9 @@ bool UnfoldingEvent::immediately_conflicts_with(const UnfoldingEvent* other) con
     return false;
   combined_events.insert(other);
 
-  Exploration::get_instance()->dot_output("\"%lu\" -> \"%lu\"[color=\"red\", dir=none, style=\"dashed\"]\n", id,
-                                          other->id);
+  if (Exploration::get_instance() != nullptr)
+    Exploration::get_instance()->dot_output("\"%lu\" -> \"%lu\"[color=\"red\", dir=none, style=\"dashed\"]\n", id,
+                                            other->id);
 
   return true;
 }

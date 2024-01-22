@@ -34,6 +34,9 @@ struct IndependentAction : public Transition {
     }
     return false;
   }
+
+  std::string to_string(bool verbose = false) const override { return ""; }
+  std::string dot_string() const override { return ""; }
 };
 
 struct DependentAction : public Transition {
@@ -52,6 +55,8 @@ struct DependentAction : public Transition {
     }
     return dynamic_cast<const IndependentAction*>(other) == nullptr;
   }
+  std::string to_string(bool verbose = false) const override { return ""; }
+  std::string dot_string() const override { return ""; }
 };
 
 struct ConditionallyDependentAction : public Transition {
@@ -73,6 +78,9 @@ struct ConditionallyDependentAction : public Transition {
     }
     return dynamic_cast<const DependentAction*>(other) != nullptr;
   }
+
+  std::string to_string(bool verbose = false) const override { return ""; }
+  std::string dot_string() const override { return ""; }
 };
 
 } // namespace simgrid::mc::udpor
