@@ -196,7 +196,7 @@ routing computation. You can define a bypass between any hosts, even if they are
 When communicating through several zones, a recursive algorithm is used. As an illustration, we will apply this
 algorithm to a communication between `host1` in `AS1` and `host2` in `AS5-4`, in our previous topology. This section
 only gives an overview of the algorithm used. You should refer to the source code for the full details, in
-``NetZoneImpl::get_global_route()``.
+``NetZoneImpl::get_global_route()``, and to `this publication <https://inria.hal.science/hal-00650233/>`_.
 
 .. image:: ./img/zoom_comm.svg
    :scale: 70%
@@ -244,7 +244,7 @@ only gives an overview of the algorithm used. You should refer to the source cod
 
 In the end, our communication from *Host1@AS2* to *Host2@AS5-4* follows this path: ``{Link1, Link3, Link2}``
 
-It is possbile to use :ref:`pf_tag_bypassZoneRoute` to provide a path between two zones that are not necessarily sibilings.
+It is possible to use :ref:`pf_tag_bypassZoneRoute` to provide a path between two zones that are not necessarily sibilings.
 If such routes exist, SimGrid will try to match each of the ancestor zones of the source with each of the ancestor zone of
 the destination, looking for such a bypass to use intead of the common ancestor.
 

@@ -186,23 +186,23 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
     execution.push_transition(a5);
 
     // Nothing comes before event 0
-    REQUIRE(execution.get_racing_events_of(0) == std::unordered_set<Execution::EventHandle>{});
+    REQUIRE(execution.get_racing_events_of(0) == std::list<Execution::EventHandle>{});
 
     // Events 0 and 1 are independent
-    REQUIRE(execution.get_racing_events_of(1) == std::unordered_set<Execution::EventHandle>{});
+    REQUIRE(execution.get_racing_events_of(1) == std::list<Execution::EventHandle>{});
 
     // 2 and 1 are executed by different actors and happen right after each other
-    REQUIRE(execution.get_racing_events_of(2) == std::unordered_set<Execution::EventHandle>{1});
+    REQUIRE(execution.get_racing_events_of(2) == std::list<Execution::EventHandle>{1});
 
     // Although a3 and a4 are dependent, they are executed by the same actor
-    REQUIRE(execution.get_racing_events_of(3) == std::unordered_set<Execution::EventHandle>{});
+    REQUIRE(execution.get_racing_events_of(3) == std::list<Execution::EventHandle>{});
 
     // Event 4 is in a race with neither event 0 nor event 2 since those events
     // "happen-before" event 3 with which event 4 races
     //
     // Furthermore, event 1 is run by the same actor and thus also is not in a race.
     // Hence, only event 3 races with event 4
-    REQUIRE(execution.get_racing_events_of(4) == std::unordered_set<Execution::EventHandle>{3});
+    REQUIRE(execution.get_racing_events_of(4) == std::list<Execution::EventHandle>{3});
   }
 
   SECTION("Example 2: Events with multiple races")

@@ -30,12 +30,6 @@ void StarZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* 
   XBT_VERB("StarZone getLocalRoute from '%s'[%lu] to '%s'[%lu]", src->get_cname(), src->id(), dst->get_cname(),
            dst->id());
 
-  xbt_assert(src->get_englobing_zone() == this,
-             "Source host %s is not part of the zone %s but of zone %s, please report that bug.", src->get_cname(),
-             get_cname(), src->get_englobing_zone()->get_cname());
-  xbt_assert(dst->get_englobing_zone() == this,
-             "Destination host %s is not part of the zone %s but of zone %s, please report that bug.", dst->get_cname(),
-             get_cname(), dst->get_englobing_zone()->get_cname());
   const auto& src_route = routes_.at(src->id());
   const auto& dst_route = routes_.at(dst->id());
   std::unordered_set<resource::StandardLinkImpl*> added_links;

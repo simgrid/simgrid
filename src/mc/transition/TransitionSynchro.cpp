@@ -88,48 +88,49 @@ bool MutexTransition::depends(const Transition* o) const
 
   // type_ <= other->type_ in  MUTEX_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT,
 
-  if (const auto* other = dynamic_cast<const MutexTransition*>(o)) {
-    // Theorem 4.4.7: Any pair of synchronization actions of distinct actors concerning distinct mutexes are independent
-    if (mutex_ != other->mutex_)
-      return false;
+  // Theorem 4.4.11: LOCK indep TEST/WAIT.
+  //  If both enabled, the result does not depend on their order. If WAIT is not enabled, LOCK won't enable it.
+  if (type_ == Type::MUTEX_ASYNC_LOCK && (o->type_ == Type::MUTEX_TEST || o->type_ == Type::MUTEX_WAIT))
+    return false;
 
-    // Theorem 4.4.11: LOCK indep TEST/WAIT.
-    //  If both enabled, the result does not depend on their order. If WAIT is not enabled, LOCK won't enable it.
-    if (type_ == Type::MUTEX_ASYNC_LOCK && (other->type_ == Type::MUTEX_TEST || other->type_ == Type::MUTEX_WAIT))
-      return false;
+  // Theorem 4.4.8: LOCK indep UNLOCK.
+  //  pop_front and push_back are independent.
+  if (type_ == Type::MUTEX_ASYNC_LOCK && o->type_ == Type::MUTEX_UNLOCK)
+    return false;
 
-    // Theorem 4.4.8: LOCK indep UNLOCK.
-    //  pop_front and push_back are independent.
-    if (type_ == Type::MUTEX_ASYNC_LOCK && other->type_ == Type::MUTEX_UNLOCK)
-      return false;
+  // Theorem 4.4.9: LOCK indep UNLOCK.
+  //  any combination of wait and test is indenpendent.
+  if ((type_ == Type::MUTEX_WAIT || type_ == Type::MUTEX_TEST) &&
+      (o->type_ == Type::MUTEX_WAIT || o->type_ == Type::MUTEX_TEST))
+    return false;
 
-    // Theorem 4.4.9: LOCK indep UNLOCK.
-    //  any combination of wait and test is indenpendent.
-    if ((type_ == Type::MUTEX_WAIT || type_ == Type::MUTEX_TEST) &&
-        (other->type_ == Type::MUTEX_WAIT || other->type_ == Type::MUTEX_TEST))
-      return false;
+  // TEST is a pure function; TEST/WAIT won't change the owner; TRYLOCK will always fail if TEST is enabled (because a
+  // request is queued)
+  if (type_ == Type::MUTEX_TEST &&
+      (o->type_ == Type::MUTEX_TEST || o->type_ == Type::MUTEX_TRYLOCK || o->type_ == Type::MUTEX_WAIT))
+    return false;
 
-    // TEST is a pure function; TEST/WAIT won't change the owner; TRYLOCK will always fail if TEST is enabled (because a
-    // request is queued)
-    if (type_ == Type::MUTEX_TEST &&
-        (other->type_ == Type::MUTEX_TEST || other->type_ == Type::MUTEX_TRYLOCK || other->type_ == Type::MUTEX_WAIT))
-      return false;
+  // TRYLOCK will always fail if TEST is enabled (because a request is queued), and may not overpass the WAITed
+  // request in the queue
+  if (type_ == Type::MUTEX_TRYLOCK && o->type_ == Type::MUTEX_WAIT)
+    return false;
 
-    // TRYLOCK will always fail if TEST is enabled (because a request is queued), and may not overpass the WAITed
-    // request in the queue
-    if (type_ == Type::MUTEX_TRYLOCK && other->type_ == Type::MUTEX_WAIT)
-      return false;
+  // We are not considering the contextual dependency saying that UNLOCK is indep with WAIT/TEST
+  // iff wait/test are not first in the waiting queue, because the other WAIT are not enabled anyway so this optim is
+  // useless
 
-    // two unlock can never occur in the same state, or after one another. Hence, the independency is true by
-    // verifying a forall on an empty set.
-    if (type_ == Type::MUTEX_UNLOCK && other->type_ == Type::MUTEX_UNLOCK)
-      return false;
+  // two unlock can never occur in the same state, or after one another. Hence, the independency is true by
+  // verifying a forall on an empty set.
+  if (type_ == Type::MUTEX_UNLOCK && o->type_ == Type::MUTEX_UNLOCK)
+    return false;
 
-    // FIXME: UNLOCK indep WAIT/TEST iff wait/test are not first in the waiting queue
-    return true;
-  }
+  // Theorem 4.4.7: Any pair of synchronization actions of distinct actors concerning distinct mutexes are independent
+  // Since it's the last rule in this file, we can use the contrapositive version of the theorem
+  if (o->type_ == Type::MUTEX_ASYNC_LOCK || o->type_ == Type::MUTEX_TEST || o->type_ == Type::MUTEX_TRYLOCK ||
+      o->type_ == Type::MUTEX_UNLOCK || o->type_ == Type::MUTEX_WAIT)
+    return (mutex_ == static_cast<const MutexTransition*>(o)->mutex_);
 
-  return false; // mutexes are INDEP with non-mutex transitions
+  return false;
 }
 
 bool MutexTransition::can_be_co_enabled(const Transition* o) const
@@ -143,40 +144,43 @@ bool MutexTransition::can_be_co_enabled(const Transition* o) const
 
   // type_ <= other->type_ in  MUTEX_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT,
 
-  if (const auto* other = dynamic_cast<const MutexTransition*>(o)) {
+  if (o->type_ == Type::MUTEX_ASYNC_LOCK || o->type_ == Type::MUTEX_TEST || o->type_ == Type::MUTEX_TRYLOCK ||
+      o->type_ == Type::MUTEX_UNLOCK || o->type_ == Type::MUTEX_WAIT) {
+
     // No interaction between two different mutexes
-    if (mutex_ != other->mutex_)
+    if (mutex_ != static_cast<const MutexTransition*>(o)->mutex_)
       return true;
 
-    // If someone can unlock, that someon has the mutex. Hence, nobody can wait on it
-    if (type_ == Type::MUTEX_UNLOCK && other->type_ == Type::MUTEX_WAIT)
-      return false;
+  } // mutex transition
 
-    // If someone can wait, that someon has the mutex. Hence, nobody else can wait on it
-    if (type_ == Type::MUTEX_WAIT && other->type_ == Type::MUTEX_WAIT)
-      return false;
-  }
+    // If someone can unlock, that someon has the mutex. Hence, nobody can wait on it
+  if (type_ == Type::MUTEX_UNLOCK && o->type_ == Type::MUTEX_WAIT)
+    return false;
+
+  // If someone can wait, that someon has the mutex. Hence, nobody else can wait on it
+  if (type_ == Type::MUTEX_WAIT && o->type_ == Type::MUTEX_WAIT)
+    return false;
 
   return true; // mutexes are INDEP with non-mutex transitions
 }
 
-  bool SemaphoreTransition::reversible_race(const Transition* other) const
-  {
-    switch (type_) {
-      case Type::SEM_ASYNC_LOCK:
-        return true; // SemAsyncLock is always enabled
-      case Type::SEM_UNLOCK:
-        return true; // SemUnlock is always enabled
-      case Type::SEM_WAIT:
-        if (other->type_ == Transition::Type::SEM_UNLOCK &&
-            static_cast<const SemaphoreTransition*>(other)->get_capacity() <= 1) {
-          return false;
-        }
-        return true;
-      default:
-        xbt_die("Unexpected transition type %s", to_c_str(type_));
-    }
+bool SemaphoreTransition::reversible_race(const Transition* other) const
+{
+  switch (type_) {
+    case Type::SEM_ASYNC_LOCK:
+      return true; // SemAsyncLock is always enabled
+    case Type::SEM_UNLOCK:
+      return true; // SemUnlock is always enabled
+    case Type::SEM_WAIT:
+      if (other->type_ == Transition::Type::SEM_UNLOCK &&
+          static_cast<const SemaphoreTransition*>(other)->get_capacity() <= 1) {
+        return false;
+      }
+      return true;
+    default:
+      xbt_die("Unexpected transition type %s", to_c_str(type_));
   }
+}
 
 std::string SemaphoreTransition::to_string(bool verbose) const
 {
@@ -201,31 +205,28 @@ bool SemaphoreTransition::depends(const Transition* o) const
   if (o->aid_ == aid_)
     return true;
 
-  if (const auto* other = dynamic_cast<const SemaphoreTransition*>(o)) {
-    if (sem_ != other->sem_)
-      return false;
+  // LOCK indep UNLOCK: pop_front and push_back are independent.
+  if (type_ == Type::SEM_ASYNC_LOCK && o->type_ == Type::SEM_UNLOCK)
+    return false;
 
-    // LOCK indep UNLOCK: pop_front and push_back are independent.
-    if (type_ == Type::SEM_ASYNC_LOCK && other->type_ == Type::SEM_UNLOCK)
-      return false;
+  // LOCK indep WAIT: If both enabled, ordering has no impact on the result. If WAIT is not enabled, LOCK won't enable
+  // it.
+  if (type_ == Type::SEM_ASYNC_LOCK && o->type_ == Type::SEM_WAIT)
+    return false;
 
-    // LOCK indep WAIT: If both enabled, ordering has no impact on the result. If WAIT is not enabled, LOCK won't enable
-    // it.
-    if (type_ == Type::SEM_ASYNC_LOCK && other->type_ == Type::SEM_WAIT)
-      return false;
+  // UNLOCK indep UNLOCK: ordering of two pop_front has no impact
+  if (type_ == Type::SEM_UNLOCK && o->type_ == Type::SEM_UNLOCK)
+    return false;
 
-    // UNLOCK indep UNLOCK: ordering of two pop_front has no impact
-    if (type_ == Type::SEM_UNLOCK && other->type_ == Type::SEM_UNLOCK)
-      return false;
+  // WAIT indep WAIT:
+  // if both enabled (may happen in the initial value is sufficient), the ordering has no impact on the result.
+  // If only one enabled, the other won't be enabled by the first one.
+  // If none enabled, well, nothing will change.
+  if (type_ == Type::SEM_WAIT && o->type_ == Type::SEM_WAIT)
+    return false;
 
-    // WAIT indep WAIT:
-    // if both enabled (may happen in the initial value is sufficient), the ordering has no impact on the result.
-    // If only one enabled, the other won't be enabled by the first one.
-    // If none enabled, well, nothing will change.
-    if (type_ == Type::SEM_WAIT && other->type_ == Type::SEM_WAIT)
-      return false;
-
-    return true; // Other semaphore cases are dependent
+  if (o->type_ == Type::SEM_ASYNC_LOCK || o->type_ == Type::SEM_UNLOCK || o->type_ == Type::SEM_WAIT) {
+    return sem_ == static_cast<const SemaphoreTransition*>(o)->sem_;
   }
 
   return false; // semaphores are INDEP with non-semaphore transitions
