@@ -207,14 +207,15 @@ void WakeupTree::insert_at_root(std::shared_ptr<Transition> u)
   this->root_->add_child(new_node);
 }
 
-WakeupTree::InsertionResult WakeupTree::insert(const Execution& E, const PartialExecution& w)
+WakeupTree::InsertionResult WakeupTree::insert(const PartialExecution& w)
 {
   // See section 6.2 of Abdulla. et al.'s 2017 ODPOR paper for details
 
   // Find the first node `v` in the tree such that
   // `v ~_[E] w` and `v`  is not a leaf node
   for (WakeupTreeNode* node : *this) {
-    if (const auto shortest_sequence = E.get_shortest_odpor_sq_subset_insertion(node->get_sequence(), w);
+    if (const auto shortest_sequence =
+            Execution::static_get_shortest_odpor_sq_subset_insertion(node->get_sequence(), w);
         shortest_sequence.has_value()) {
       // Insert the sequence as a child of `node`, but only
       // if the node is not already a leaf

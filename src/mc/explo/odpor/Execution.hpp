@@ -221,6 +221,9 @@ public:
   std::optional<PartialExecution> get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,
                                                                          const PartialExecution& w) const;
 
+  static std::optional<PartialExecution> static_get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,
+                                                                                       const PartialExecution& w);
+
   /**
    * @brief For a given sequence `w`, determines whether p in I_[E](w)
    *

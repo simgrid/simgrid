@@ -96,7 +96,7 @@ void WutState::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
         // For each variant of the transition that is enabled, we want to insert the action into the tree.
         // This ensures that all variants are searched
         for (unsigned times = 0; times < actor.get_max_considered(); ++times) {
-          wakeup_tree_.insert(prior, odpor::PartialExecution{actor.get_transition(times)});
+          wakeup_tree_.insert(odpor::PartialExecution{actor.get_transition(times)});
         }
         break; // Only one actor gets inserted (see pseudocode)
       }
@@ -138,10 +138,9 @@ void WutState::remove_subtree_at_aid(const aid_t proc)
   wakeup_tree_.remove_subtree_at_aid(proc);
 }
 
-odpor::WakeupTree::InsertionResult WutState::insert_into_wakeup_tree(const odpor::PartialExecution& pe,
-                                                                     const odpor::Execution& E)
+odpor::WakeupTree::InsertionResult WutState::insert_into_wakeup_tree(const odpor::PartialExecution& pe)
 {
-  return this->wakeup_tree_.insert(E, pe);
+  return this->wakeup_tree_.insert(pe);
 }
 
 void WutState::remove_subtree_using_children_in_transition(const std::shared_ptr<Transition> transition)

@@ -39,7 +39,7 @@ void ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<std::
       xbt_assert(prev_state != nullptr, "ODPOR should use WutState. Fix me");
 
       if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value())
-        prev_state->insert_into_wakeup_tree(v.value(), E.get_prefix_before(e));
+        prev_state->insert_into_wakeup_tree(v.value());
     }
   }
 }

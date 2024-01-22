@@ -74,7 +74,7 @@ public:
   /**
    * @brief
    */
-  odpor::WakeupTree::InsertionResult insert_into_wakeup_tree(const odpor::PartialExecution&, const odpor::Execution&);
+  odpor::WakeupTree::InsertionResult insert_into_wakeup_tree(const odpor::PartialExecution&);
 
   /** @brief Prepares the parent state for re-exploration following
    * another after having followed ODPOR from this state with

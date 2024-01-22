@@ -240,7 +240,7 @@ public:
    * @return Whether a sequence equivalent to `seq` is already contained
    * as a leaf node in the tree
    */
-  InsertionResult insert(const Execution& E, const PartialExecution& seq);
+  InsertionResult insert(const PartialExecution& seq);
 };
 
 } // namespace simgrid::mc::odpor
