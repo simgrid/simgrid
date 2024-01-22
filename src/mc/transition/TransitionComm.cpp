@@ -48,7 +48,9 @@ bool CommWaitTransition::depends(const Transition* other) const
   if (other->aid_ == aid_)
     return true;
 
-  if (const auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
+  if (other->type_ == Type::COMM_WAIT) {
+    const auto* wait = static_cast<const CommWaitTransition*>(other);
+
     if (timeout_ || wait->timeout_)
       return true; // Timeouts are not considered by the independence theorem, thus assumed dependent
   }
@@ -94,10 +96,12 @@ bool CommTestTransition::depends(const Transition* other) const
   if (other->aid_ == aid_)
     return true;
 
-  if (dynamic_cast<const CommTestTransition*>(other) != nullptr)
+  if (other->type_ == Type::COMM_TEST)
     return false; // Test & Test are independent
 
-  if (const auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
+  if (other->type_ == Type::COMM_WAIT) {
+    const auto* wait = static_cast<const CommWaitTransition*>(other);
+
     if (wait->timeout_)
       return true; // Timeouts are not considered by the independence theorem, thus assumed dependent
 
@@ -137,13 +141,15 @@ bool CommRecvTransition::depends(const Transition* other) const
   if (other->aid_ == aid_)
     return true;
 
-  if (const auto* recv = dynamic_cast<const CommRecvTransition*>(other))
-    return mbox_ == recv->mbox_;
+  if (other->type_ == Type::COMM_ASYNC_RECV)
+    return mbox_ == static_cast<const CommRecvTransition*>(other)->mbox_;
 
-  if (dynamic_cast<const CommSendTransition*>(other) != nullptr)
+  if (other->type_ == Type::COMM_ASYNC_SEND)
     return false;
 
-  if (const auto* test = dynamic_cast<const CommTestTransition*>(other)) {
+  if (other->type_ == Type::COMM_TEST) {
+    const auto* test = static_cast<const CommTestTransition*>(other);
+
     if (mbox_ != test->mbox_)
       return false;
 
@@ -158,7 +164,9 @@ bool CommRecvTransition::depends(const Transition* other) const
     return true; // DEP with other send transitions
   }
 
-  if (const auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
+  if (other->type_ == Type::COMM_WAIT) {
+    const auto* wait = static_cast<const CommWaitTransition*>(other);
+
     if (wait->timeout_)
       return true;
 
@@ -210,13 +218,15 @@ bool CommSendTransition::depends(const Transition* other) const
   if (other->aid_ == aid_)
     return true;
 
-  if (const auto* other_isend = dynamic_cast<const CommSendTransition*>(other))
-    return mbox_ == other_isend->mbox_;
+  if (other->type_ == Type::COMM_ASYNC_SEND)
+    return mbox_ == static_cast<const CommSendTransition*>(other)->mbox_;
 
-  if (dynamic_cast<const CommRecvTransition*>(other) != nullptr)
+  if (other->type_ == Type::COMM_ASYNC_RECV)
     return false;
 
-  if (const auto* test = dynamic_cast<const CommTestTransition*>(other)) {
+  if (other->type_ == Type::COMM_TEST) {
+    const auto* test = static_cast<const CommTestTransition*>(other);
+
     if (mbox_ != test->mbox_)
       return false;
 
@@ -231,7 +241,9 @@ bool CommSendTransition::depends(const Transition* other) const
     return true; // DEP with other test transitions
   }
 
-  if (const auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
+  if (other->type_ == Type::COMM_WAIT) {
+    const auto* wait = static_cast<const CommWaitTransition*>(other);
+
     if (wait->timeout_)
       return true;
 
