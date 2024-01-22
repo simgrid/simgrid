@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2023. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -47,6 +47,7 @@ XBT_PUBLIC void sg_host_set_data(sg_host_t host, void* userdata);
 
 // ========= storage related functions ============
 XBT_PUBLIC void sg_host_get_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t** disks);
+XBT_PUBLIC sg_disk_t sg_host_get_disk_by_name(const_sg_host_t host, const char* name);
 
 // =========== user-level functions ===============
 /** @brief Return the speed of the processor (in flop/s), regardless of the current load on the machine. */

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2023. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -252,6 +252,8 @@ public:
   Host* set_coordinates(const std::string& coords);
 
   std::vector<Disk*> get_disks() const;
+  Disk* get_disk_by_name(const std::string& name) const;
+
   /**
    * @brief Create and add disk in the host
    *

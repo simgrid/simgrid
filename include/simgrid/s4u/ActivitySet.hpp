@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2023. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -43,6 +43,9 @@ public:
   int size() { return activities_.size(); }
   /** Return whether the set is empty. Failed activities (if any) are not counted */
   int empty() { return activities_.empty(); }
+
+  /** Access to one specific activity in the set */
+  ActivityPtr at(unsigned int index) { return activities_.at(index); }
 
   /** Wait for the completion of all activities in the set, but not longer than the provided timeout
    *

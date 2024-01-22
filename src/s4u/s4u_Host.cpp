@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2023. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -349,6 +349,10 @@ std::vector<Disk*> Host::get_disks() const
   return this->pimpl_->get_disks();
 }
 
+Disk* Host::get_disk_by_name(const std::string& name) const
+{
+  return this->pimpl_->get_disk_by_name(name);
+}
 Disk* Host::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
   return kernel::actor::simcall_answered([this, &name, read_bandwidth, write_bandwidth] {
@@ -498,7 +502,10 @@ void sg_host_get_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t
   *disks                      = xbt_new(sg_disk_t, list.size());
   std::copy(begin(list), end(list), *disks);
 }
-
+sg_disk_t sg_host_get_disk_by_name(const_sg_host_t host, const char* name)
+{
+  return host->get_disk_by_name(name);
+}
 // =========== user-level functions ===============
 // ================================================
 /** @brief Returns the total speed of a host */

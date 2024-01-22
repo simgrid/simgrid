@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2023. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2024. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,7 +11,7 @@ namespace sg4 = simgrid::s4u;
 
 static void host()
 {
-  const sg4::Disk* disk = sg4::this_actor::get_host()->get_disks().front(); // Disk1
+  const sg4::Disk* disk = sg4::this_actor::get_host()->get_disk_by_name("Disk1");
   aid_t id              = sg4::this_actor::get_pid();
   XBT_INFO("actor %ld is writing!", id);
   disk->write(4000000);

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2023. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2024. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -65,13 +65,14 @@ public:
   void destroy(); // Must be called instead of the destructor
 
   std::vector<s4u::Disk*> get_disks() const;
+  s4u::Disk* get_disk_by_name(const std::string& name);
   s4u::Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
-  s4u::VirtualMachine* create_vm(const std::string& name, int core_amount, size_t ramsize = 1024);
-  s4u::VirtualMachine* create_vm(const std::string& name, s4u::VirtualMachine* vm);
-  void destroy_vm(const std::string& name);
   void add_disk(const s4u::Disk* disk);
   void remove_disk(const std::string& name);
   /** @brief Moves VM from this host to destination. Only sets the vm_ accordingly */
+  s4u::VirtualMachine* create_vm(const std::string& name, int core_amount, size_t ramsize = 1024);
+  s4u::VirtualMachine* create_vm(const std::string& name, s4u::VirtualMachine* vm);
+  void destroy_vm(const std::string& name);
   void move_vm(VirtualMachineImpl* vm, HostImpl* destination);
   std::vector<s4u::VirtualMachine*> get_vms() const;
   VirtualMachineImpl* get_vm_by_name_or_null(const std::string& name) const;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2023. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -154,14 +154,6 @@ size_t HostImpl::get_actor_count() const
   return actor_list_.size();
 }
 
-std::vector<s4u::Disk*> HostImpl::get_disks() const
-{
-  std::vector<s4u::Disk*> disks;
-  for (auto const& [_, d] : disks_)
-    disks.push_back(d->get_iface());
-  return disks;
-}
-
 s4u::VirtualMachine* HostImpl::create_vm(const std::string& name, int core_amount, size_t ramsize)
 {
   auto* host_vm = new kernel::resource::VirtualMachineImpl(name, get_iface(), core_amount, ramsize);
@@ -224,6 +216,19 @@ std::vector<s4u::VirtualMachine*> HostImpl::get_vms() const
     vms.push_back(vm->get_iface());
   }
   return vms;
+}
+
+std::vector<s4u::Disk*> HostImpl::get_disks() const
+{
+  std::vector<s4u::Disk*> disks;
+  for (auto const& [_, d] : disks_)
+    disks.push_back(d->get_iface());
+  return disks;
+}
+
+s4u::Disk* HostImpl::get_disk_by_name(const std::string& name)
+{
+  return disks_[name]->get_iface();
 }
 
 s4u::Disk* HostImpl::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
