@@ -218,11 +218,8 @@ public:
    * if `v ~_[E] w`, or `std::nullopt` if that relation does not hold
    * between the two sequences `v` and `w`
    */
-  std::optional<PartialExecution> get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,
-                                                                         const PartialExecution& w) const;
-
-  static std::optional<PartialExecution> static_get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,
-                                                                                       const PartialExecution& w);
+  static std::optional<PartialExecution> get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,
+                                                                                const PartialExecution& w);
 
   /**
    * @brief For a given sequence `w`, determines whether p in I_[E](w)
@@ -235,16 +232,12 @@ public:
    * `N` actors, we can process them "in-parallel" as is done with the
    * computation of SDPOR initials)
    */
-  bool is_initial_after_execution_of(const PartialExecution& w, aid_t p) const;
-
-  static bool static_is_initial_after_execution_of(const PartialExecution& w, aid_t p);
+  static bool is_initial_after_execution_of(const PartialExecution& w, aid_t p);
 
   /**
    * @brief Determines whether `E ⊢ p ◊ w` given the next action taken by `p`
    */
-  bool is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const;
-
-  static bool static_is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p);
+  static bool is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p);
 
   /**
    * @brief Determines the event associated with the given handle `handle`
