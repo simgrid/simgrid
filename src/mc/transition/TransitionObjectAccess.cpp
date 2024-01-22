@@ -41,8 +41,8 @@ bool ObjectAccessTransition::depends(const Transition* o) const
   if (o->aid_ == aid_)
     return true;
 
-  if (const auto* other = dynamic_cast<const ObjectAccessTransition*>(o))
-    return objaddr_ == other->objaddr_; // dependent only if it's an access to the same object
+  if (o->type_ == Type::OBJECT_ACCESS) // dependent only if it's an access to the same object
+    return objaddr_ == static_cast<const ObjectAccessTransition*>(o)->objaddr_;
   return false;
 }
 
