@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_UNIFORMSTRATEGY_HPP
 #define SIMGRID_MC_UNIFORMSTRATEGY_HPP
 
+#include "src/mc/explo/Exploration.hpp"
 #include "xbt/random.hpp"
 
 namespace simgrid::mc {
@@ -19,7 +20,7 @@ class UniformStrategy : public StratLocalInfo {
 public:
   UniformStrategy()
   {
-    for (long aid = 0; aid < 10; aid++)
+    for (unsigned long aid = 0; aid < Exploration::get_instance()->get_remote_app().get_maxpid(); aid++)
       valuation[aid] = xbt::random::uniform_int(0, MAX_RAND);
   }
   void copy_from(const StratLocalInfo* strategy) override
