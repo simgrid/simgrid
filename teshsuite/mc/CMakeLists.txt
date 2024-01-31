@@ -90,3 +90,4 @@ endforeach()
 set(teshsuite_src  ${teshsuite_src}                                                                        PARENT_SCOPE)
 set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/random-bug/random-bug-replay.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/mutex-handling/without-mutex-handling.tesh PARENT_SCOPE)
+

@@ -3,7 +3,7 @@ set(_replay_sources    ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.cpp)
 set(_ampi_test_sources ${CMAKE_CURRENT_SOURCE_DIR}/ampi_test/ampi_test.cpp)
 
 # These tests are only used when MC is actived
-set(MC_tests bugged1 bugged2 only_send_deterministic mutual_exclusion sendsend)
+set(MC_tests bugged1 bugged2 only_send_deterministic mutual_exclusion sendsend mc-waitany-bugged  mc-waitany-ok)
 foreach(x ${MC_tests})
   if(NOT SIMGRID_HAVE_MC)
     set(_${x}_disable 1)
@@ -60,13 +60,17 @@ set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/energy/energy.tes
                                    ${CMAKE_CURRENT_SOURCE_DIR}/ampi_test/ampi_test.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/only_send_deterministic.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/sendsend.tesh
+				   ${CMAKE_CURRENT_SOURCE_DIR}/mc/mc-waitany-ok.tesh
+				   ${CMAKE_CURRENT_SOURCE_DIR}/mc/mc-waitany-bugged.tesh				   
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay-override-replayer.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.tesh                          PARENT_SCOPE)
 set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                    ${CMAKE_CURRENT_SOURCE_DIR}/energy/hostfile
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged1
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged2
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_only_send_deterministic
+				   ${CMAKE_CURRENT_SOURCE_DIR}/mc/mc-waitany-ok
+				   ${CMAKE_CURRENT_SOURCE_DIR}/mc/mc-waitany-bugged
+				   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_only_send_deterministic
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_mutual_exclusion
                                    ${CMAKE_CURRENT_SOURCE_DIR}/simple-execute/hostfile_griffon             PARENT_SCOPE)
 set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.txt
@@ -93,6 +97,10 @@ if(enable_smpi)
     ADD_TESH(smpi-mc-only-send-determinism --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/mc --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/mc ${CMAKE_HOME_DIRECTORY}/examples/smpi/mc/only_send_deterministic.tesh)
     add_dependencies(tests-mc smpi_sendsend)
     ADD_TESH_FACTORIES(smpi-mc-sendsend "^thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/mc --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/mc ${CMAKE_HOME_DIRECTORY}/examples/smpi/mc/sendsend.tesh)
+    add_dependencies(tests-mc smpi_mc-waitany-ok)
+    ADD_TESH(mc-waitany-ok --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/mc --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/mc ${CMAKE_HOME_DIRECTORY}/examples/smpi/mc/mc-waitany-ok.tesh)
+    add_dependencies(tests-mc smpi_mc-waitany-bugged)
+    ADD_TESH(mc-waitany-bugged --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/mc --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/mc ${CMAKE_HOME_DIRECTORY}/examples/smpi/mc/mc-waitany-bugged.tesh)
   endif()
 
   ADD_TESH(smpi-tracing        --setenv bindir=${CMAKE_BINARY_DIR}/examples/smpi/trace --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/trace --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/trace ${CMAKE_HOME_DIRECTORY}/examples/smpi/trace/trace.tesh)
