@@ -527,6 +527,10 @@ include examples/smpi/mc/hostfile_bugged1
 include examples/smpi/mc/hostfile_bugged2
 include examples/smpi/mc/hostfile_mutual_exclusion
 include examples/smpi/mc/hostfile_only_send_deterministic
+include examples/smpi/mc/mc-waitany-bugged.c
+include examples/smpi/mc/mc-waitany-bugged.tesh
+include examples/smpi/mc/mc-waitany-ok.c
+include examples/smpi/mc/mc-waitany-ok.tesh
 include examples/smpi/mc/mutual_exclusion.c
 include examples/smpi/mc/only_send_deterministic.c
 include examples/smpi/mc/only_send_deterministic.tesh
