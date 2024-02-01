@@ -226,7 +226,7 @@ examples of platforms in the archive under ``examples/platforms``.
 
 .. literalinclude:: ../../examples/platforms/small_platform.xml
    :language: xml
-   :lines: 1-10,12-20,56-62,192-
+   :lines: 1-10,13-21,56-62,192-
    :caption: (excerpts of the small_platform.xml file)
 
 Deployment File
