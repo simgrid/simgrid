@@ -85,7 +85,7 @@ std::list<Execution::EventHandle> Execution::get_racing_events_of(Execution::Eve
 {
   std::list<Execution::EventHandle> racing_events;
   std::list<Execution::EventHandle> candidates;
-  for (auto const [aid, event_handle] : get_event_with_handle(target).get_clock_vector())
+  for (auto const& [aid, event_handle] : get_event_with_handle(target).get_clock_vector())
     if (aid != get_actor_with_handle(target))
       candidates.push_back(event_handle);
 
