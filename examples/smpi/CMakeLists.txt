@@ -68,9 +68,7 @@ set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                    ${CMAKE_CURRENT_SOURCE_DIR}/energy/hostfile
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged1
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged2
-				   ${CMAKE_CURRENT_SOURCE_DIR}/mc/mc-waitany-ok
-				   ${CMAKE_CURRENT_SOURCE_DIR}/mc/mc-waitany-bugged
-				   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_only_send_deterministic
+                        				   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_only_send_deterministic
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_mutual_exclusion
                                    ${CMAKE_CURRENT_SOURCE_DIR}/simple-execute/hostfile_griffon             PARENT_SCOPE)
 set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.txt
