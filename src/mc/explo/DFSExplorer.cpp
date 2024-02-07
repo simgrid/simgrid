@@ -51,9 +51,9 @@ RecordTrace DFSExplorer::get_record_trace() // override
 {
   RecordTrace res;
 
-  if (const auto trans = stack_.back()->get_transition_out(); trans != nullptr)
+  if (const auto trans = stack_->back()->get_transition_out(); trans != nullptr)
     res.push_back(trans.get());
-  for (const auto* state = stack_.back().get(); state != nullptr; state = state->get_parent_state().get())
+  for (const auto* state = stack_->back().get(); state != nullptr; state = state->get_parent_state().get())
     if (state->get_transition_in() != nullptr)
       res.push_front(state->get_transition_in().get());
 
@@ -121,7 +121,7 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
   on_state_creation_signal(next_state.get(), get_remote_app());
 
   state_stack.emplace_back(std::move(next_state));
-  stack_ = state_stack;
+  stack_ = &state_stack;
 
   S.push_transition(executed_transition);
 
@@ -134,7 +134,7 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
   is_execution_descending = false;
 
   state_stack.pop_back();
-  stack_ = state_stack;
+  stack_ = &state_stack;
 
   S.remove_last_event();
   XBT_DEBUG("End of explore_wrapper at depth %lu", S.size());

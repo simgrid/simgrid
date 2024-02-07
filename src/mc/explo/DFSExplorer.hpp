@@ -45,7 +45,7 @@ private:
 
   static xbt::signal<void(RemoteApp&)> on_log_state_signal;
 
-  stack_t stack_;
+  stack_t* stack_;
 
 public:
   explicit DFSExplorer(const std::vector<char*>& args, ReductionMode mode);
