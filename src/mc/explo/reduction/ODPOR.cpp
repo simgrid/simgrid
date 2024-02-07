@@ -32,6 +32,8 @@ void ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<std::
    * ("eventually looks like C", viz. the `~_E` relation)
    */
   for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
+    if (E.get_event_with_handle(e_prime).has_race_been_computed())
+      continue;
     XBT_VERB("Computing reversible races of Event `%u`", e_prime);
     for (const auto e : E.get_reversible_races_of(e_prime)) {
       XBT_DEBUG("... racing event `%u``", e);
@@ -41,6 +43,7 @@ void ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<std::
       if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value())
         prev_state->insert_into_wakeup_tree(v.value());
     }
+    E.get_event_with_handle(e_prime).consider_races();
   }
 }
 
