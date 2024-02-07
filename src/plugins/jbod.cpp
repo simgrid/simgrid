@@ -30,7 +30,24 @@ JbodPtr Jbod::create_jbod(s4u::NetZone* zone, const std::string& name, double sp
   for (unsigned int i = 0; i < num_disks; i++)
     jbod->get_controller()->create_disk(name + "_disk_" + std::to_string(i), read_bandwidth, write_bandwidth);
 
-  return JbodPtr(jbod, false);
+  auto res = JbodPtr(jbod, false);
+  all_jbods_.insert({name,res});
+  return res;
+}
+
+JbodPtr Jbod::by_name(const std::string& name)
+{
+  auto jbod = Jbod::by_name_or_null(name);
+  if (not jbod)
+    throw std::invalid_argument("Host not found: '" + name + "'");
+  return jbod;
+}
+
+JbodPtr Jbod::by_name_or_null(const std::string& name)
+{
+  if (auto jbod_it = all_jbods_.find(name); jbod_it != all_jbods_.end())
+    return jbod_it->second;
+  return nullptr;
 }
 
 JbodIoPtr Jbod::read_async(sg_size_t size)

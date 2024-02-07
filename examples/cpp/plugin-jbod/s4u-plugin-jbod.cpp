@@ -61,6 +61,12 @@ int main(int argc, char** argv)
 
   zone->seal();
 
+  auto jbod_test = simgrid::plugin::Jbod::by_name("jbod_raid1");
+  XBT_INFO("'%s' is a valid JBOD", jbod_test->get_cname());
+  jbod_test = simgrid::plugin::Jbod::by_name_or_null("jbod_raid3");
+  if (not jbod_test)
+    XBT_INFO("'jbod_raid3' is not a valid JBOD");
+
   XBT_INFO("XXXXXXXXXXXXXXX RAID 0 XXXXXXXXXXXXXXXX");
   sg4::Actor::create("", host, write_then_read, jbod_raid0);
   e.run();
