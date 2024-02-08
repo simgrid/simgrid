@@ -28,9 +28,10 @@ static void master(int actor_count)
   }
 
   XBT_INFO("Waiting on the barrier");
-  barrier->wait();
-
-  XBT_INFO("Bye");
+  if (barrier->wait())
+    XBT_INFO("Bye from the last to enter");
+  else
+    XBT_INFO("Bye");
 }
 
 int main(int argc, char **argv)

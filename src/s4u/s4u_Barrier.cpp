@@ -47,8 +47,11 @@ int Barrier::wait()
   } else { // Do it in one simcall only
     kernel::activity::BarrierAcquisitionImpl* acqui = nullptr; // unused here, but must be typed to pick the right ctor
     kernel::actor::BarrierObserver observer{issuer, mc::Transition::Type::BARRIER_WAIT, acqui};
-    return kernel::actor::simcall_blocking([issuer, this] { pimpl_->acquire_async(issuer)->wait_for(issuer, -1); },
-                                           &observer);
+    return kernel::actor::simcall_blocking<bool>([issuer, &observer, this] {
+      auto p = pimpl_->acquire_async(issuer);
+      p->wait_for(issuer, -1);
+      observer.set_result(p->get_barrier()->was_last());
+    }, &observer);
   }
 }
 

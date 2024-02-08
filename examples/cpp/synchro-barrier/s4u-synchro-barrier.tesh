@@ -3,14 +3,14 @@
 $ ${bindir:=.}/s4u-synchro-barrier 1
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Spawning 0 workers
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Waiting on the barrier
-> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Bye
+> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Bye from the last to enter
 
 $ ${bindir:=.}/s4u-synchro-barrier 2
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Spawning 1 workers
 > [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Waiting on the barrier
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Waiting on the barrier
 > [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Bye
-> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Bye
+> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Bye from the last to enter
 
 $ ${bindir:=.}/s4u-synchro-barrier 3
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Spawning 2 workers
@@ -19,7 +19,7 @@ $ ${bindir:=.}/s4u-synchro-barrier 3
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Waiting on the barrier
 > [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Bye
 > [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Bye
-> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Bye
+> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Bye from the last to enter
 
 $ ${bindir:=.}/s4u-synchro-barrier 10
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Spawning 9 workers
@@ -42,4 +42,4 @@ $ ${bindir:=.}/s4u-synchro-barrier 10
 > [Jupiter:worker:(8) 0.000000] [s4u_test/INFO] Bye
 > [Jupiter:worker:(9) 0.000000] [s4u_test/INFO] Bye
 > [Jupiter:worker:(10) 0.000000] [s4u_test/INFO] Bye
-> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Bye
+> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Bye from the last to enter
