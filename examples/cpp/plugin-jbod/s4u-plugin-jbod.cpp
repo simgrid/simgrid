@@ -15,7 +15,7 @@ static void write_then_read(simgrid::plugin::JbodPtr jbod)
   XBT_INFO("asynchronous write posted, wait for it");
   io->wait();
   XBT_INFO("asynchronous write done");
-  jbod->read(1e7);
+  jbod->read_init(1e7)->wait();
   XBT_INFO("synchonous read done");
   jbod->write(1e7);
   XBT_INFO("synchonous write done");
@@ -23,7 +23,7 @@ static void write_then_read(simgrid::plugin::JbodPtr jbod)
   XBT_INFO("asynchronous read posted, wait for it");
   io->wait();
   XBT_INFO("asynchonous read done");
-  jbod->write(1e7);
+  jbod->write_init(1e7)->wait();
   XBT_INFO("synchonous write done");
   jbod->read(1e7);
   XBT_INFO("synchonous read done");

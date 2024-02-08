@@ -29,9 +29,11 @@ public:
 
   int get_next_read_disk_idx() { return (++read_disk_idx_) % num_disks_; }
 
+  JbodIoPtr read_init(sg_size_t size);
   JbodIoPtr read_async(sg_size_t size);
   sg_size_t read(sg_size_t size);
 
+  JbodIoPtr write_init(sg_size_t size);
   JbodIoPtr write_async(sg_size_t size);
   sg_size_t write(sg_size_t size);
 
@@ -83,6 +85,7 @@ public:
     : jbod_(jbod), transfer_(transfer), parity_block_comp_(parity_block_comp), pending_ios_(pending_ios), type_(type)
     {}
 
+  JbodIo* start();
   void wait();
 
 #ifndef DOXYGEN
