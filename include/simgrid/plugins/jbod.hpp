@@ -15,23 +15,34 @@ using JbodPtr = boost::intrusive_ptr<Jbod>;
 class JbodIo;
 using JbodIoPtr = boost::intrusive_ptr<JbodIo>;
 
+static std::map<std::string, JbodPtr> all_jbods_;
+
 class Jbod {
 public:
   enum class RAID {RAID0 = 0, RAID1 = 1, RAID4 = 4 , RAID5 = 5, RAID6 = 6};
+
   s4u::Host* get_controller() const { return controller_; }
+  const char* get_cname() const { return controller_->get_cname(); }
+  const std::string& get_name() const { return controller_->get_name(); }
   int get_parity_disk_idx() { return parity_disk_idx_; }
   void update_parity_disk_idx() { parity_disk_idx_ = (parity_disk_idx_- 1) % num_disks_; }
 
   int get_next_read_disk_idx() { return (++read_disk_idx_) % num_disks_; }
 
+  JbodIoPtr read_init(sg_size_t size);
   JbodIoPtr read_async(sg_size_t size);
   sg_size_t read(sg_size_t size);
 
+  JbodIoPtr write_init(sg_size_t size);
   JbodIoPtr write_async(sg_size_t size);
   sg_size_t write(sg_size_t size);
 
   static JbodPtr create_jbod(s4u::NetZone* zone, const std::string& name, double speed, unsigned int num_disks,
                              RAID raid_level, double read_bandwidth, double write_bandwidth);
+  /** \static Retrieve a jbod from its name, or return nullptr */
+  static JbodPtr by_name_or_null(const std::string& name);
+  /** \static Retrieve a jdbod from its name, or die */
+  static JbodPtr by_name(const std::string& name);
 
 protected:
   void set_controller(s4u::Host* host) { controller_ = host; }
@@ -47,6 +58,7 @@ private:
   unsigned int parity_disk_idx_;
   int read_disk_idx_;
   std::atomic_int_fast32_t refcount_{1};
+
 #ifndef DOXYGEN
   friend void intrusive_ptr_release(Jbod* jbod)
   {
@@ -73,6 +85,7 @@ public:
     : jbod_(jbod), transfer_(transfer), parity_block_comp_(parity_block_comp), pending_ios_(pending_ios), type_(type)
     {}
 
+  JbodIo* start();
   void wait();
 
 #ifndef DOXYGEN

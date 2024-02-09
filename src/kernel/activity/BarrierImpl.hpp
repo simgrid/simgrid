@@ -53,6 +53,7 @@ public:
 
   BarrierAcquisitionImplPtr acquire_async(actor::ActorImpl* issuer);
   unsigned get_id() const { return id_; }
+  bool was_last() const { return ongoing_acquisitions_.empty(); }
 
   friend void intrusive_ptr_add_ref(BarrierImpl* barrier)
   {

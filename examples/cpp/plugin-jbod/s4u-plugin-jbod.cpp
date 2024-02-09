@@ -15,7 +15,7 @@ static void write_then_read(simgrid::plugin::JbodPtr jbod)
   XBT_INFO("asynchronous write posted, wait for it");
   io->wait();
   XBT_INFO("asynchronous write done");
-  jbod->read(1e7);
+  jbod->read_init(1e7)->wait();
   XBT_INFO("synchonous read done");
   jbod->write(1e7);
   XBT_INFO("synchonous write done");
@@ -23,7 +23,7 @@ static void write_then_read(simgrid::plugin::JbodPtr jbod)
   XBT_INFO("asynchronous read posted, wait for it");
   io->wait();
   XBT_INFO("asynchonous read done");
-  jbod->write(1e7);
+  jbod->write_init(1e7)->wait();
   XBT_INFO("synchonous write done");
   jbod->read(1e7);
   XBT_INFO("synchonous read done");
@@ -60,6 +60,12 @@ int main(int argc, char** argv)
   zone->add_route(host, jbod_raid6->get_controller(), {link});
 
   zone->seal();
+
+  auto jbod_test = simgrid::plugin::Jbod::by_name("jbod_raid1");
+  XBT_INFO("'%s' is a valid JBOD", jbod_test->get_cname());
+  jbod_test = simgrid::plugin::Jbod::by_name_or_null("jbod_raid3");
+  if (not jbod_test)
+    XBT_INFO("'jbod_raid3' is not a valid JBOD");
 
   XBT_INFO("XXXXXXXXXXXXXXX RAID 0 XXXXXXXXXXXXXXXX");
   sg4::Actor::create("", host, write_then_read, jbod_raid0);
