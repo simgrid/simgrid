@@ -40,11 +40,10 @@ bool TestAnyTransition::depends(const Transition* other) const
   // Actions executed by the same actor are always dependent
   if (other->aid_ == aid_)
     return true;
-  xbt_assert((unsigned long)times_considered_ < transitions_.size(),
-             "Asked to resolve a dependency about a transition inside a TestAny (the number %d) that do no exist. "
-             "(this TestAny only have %zu way of being executed",
-             times_considered_, transitions_.size());
-  return transitions_[times_considered_]->depends(other);
+  for (auto const& transition : transitions_)
+    if (transition->depends(other))
+      return true;
+  return false;
 }
 bool TestAnyTransition::reversible_race(const Transition* other) const
 {
@@ -77,7 +76,10 @@ bool WaitAnyTransition::depends(const Transition* other) const
   // Actions executed by the same actor are always dependent
   if (other->aid_ == aid_)
     return true;
-  return transitions_[times_considered_]->depends(other);
+  for (auto const& transition : transitions_)
+    if (transition->depends(other))
+      return true;
+  return false;
 }
 bool WaitAnyTransition::reversible_race(const Transition* other) const
 {

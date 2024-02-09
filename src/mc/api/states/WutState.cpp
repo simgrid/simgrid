@@ -161,7 +161,7 @@ void WutState::remove_subtree_using_children_in_transition(const std::shared_ptr
 
 void WutState::do_odpor_unwind()
 {
-  XBT_DEBUG("Unwinding ODPOR from state %ld", get_expanded_states());
+  XBT_DEBUG("Unwinding ODPOR from state %ld", get_num());
   xbt_assert(parent_state_ != nullptr, "ODPOR shouldn't try to unwind from root state");
   parent_state_->remove_subtree_using_children_in_transition(get_transition_in());
 

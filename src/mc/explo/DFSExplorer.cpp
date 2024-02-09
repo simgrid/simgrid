@@ -137,7 +137,6 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
   stack_ = &state_stack;
 
   S.remove_last_event();
-  XBT_DEBUG("End of explore_wrapper at depth %lu", S.size());
 }
 
 void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
@@ -165,7 +164,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
              s->get_num(), state_stack.size());
   }
 
-  XBT_DEBUG("End of call Explore at depth %lu", S.size());
+  XBT_DEBUG("End of Exploration at depth %lu", S.size() + 1);
 }
 
 void DFSExplorer::run()
