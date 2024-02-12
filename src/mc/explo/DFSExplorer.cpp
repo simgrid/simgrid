@@ -160,8 +160,8 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
   get_remote_app().check_deadlock();
   if (s->get_actor_count() == 0) {
     get_remote_app().finalize_app();
-    XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
-             s->get_num(), state_stack.size());
+    XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu, %ld explored traces)",
+             get_record_trace().to_string().c_str(), s->get_num(), state_stack.size(), backtrack_count_ + 1);
   }
 
   XBT_DEBUG("End of Exploration at depth %lu", S.size() + 1);
