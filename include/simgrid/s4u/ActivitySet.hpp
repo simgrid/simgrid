@@ -43,6 +43,7 @@ public:
   int size() { return activities_.size(); }
   /** Return whether the set is empty. Failed activities (if any) are not counted */
   int empty() { return activities_.empty(); }
+  void clear() { activities_.clear(); }
 
   /** Access to one specific activity in the set */
   ActivityPtr at(unsigned int index) { return activities_.at(index); }
