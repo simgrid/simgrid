@@ -202,9 +202,7 @@ models for all existing resources.
   - **LV08 (default one):** Realistic network analytic model
     (slow-start modeled by multiplying latency by 13.01, bandwidth by
     .97; bottleneck sharing uses a payload of S=20537 for evaluating
-    RTT). Described in `Accuracy Study and Improvement of Network
-    Simulation in the SimGrid Framework
-    <http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf>`_.
+    RTT). Presented in :ref:`the relevant section<understanding_lv08>`.
   - **Constant:** Simplistic network model where all communication
     take a constant time (one second). This model provides the lowest
     realism, but is (marginally) faster.
@@ -219,9 +217,7 @@ models for all existing resources.
     This model can be :ref:`further configured <options_model_network>`.
   - **CM02:** Legacy network analytic model. Very similar to LV08, but
     without corrective factors. The timings of small messages are thus
-    poorly modeled. This model is described in `A Network Model for
-    Simulation of Grid Application
-    <https://hal.inria.fr/inria-00071989/document>`_.
+    poorly modeled. Presented in :ref:`the relevant section<understanding_cm02>`.
   - **ns-3** (only available if you compiled SimGrid accordingly):
     Use the packet-level network
     simulators as network models (see :ref:`models_ns3`).

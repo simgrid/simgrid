@@ -137,15 +137,19 @@ achieve very high accuracy is needed, while ns-3 is less demanding in this regar
 CM02
 ====
 
-This is a simple model of TCP performance, where the sender stops sending packets when its TCP window is full. If the
-acknowledgment packets are returned in time to the sender, the TCP window has no impact on the performance, which is then
-only limited by link bandwidths. Otherwise, late acknowledgments will reduce the data transfer rate.
+This is a simple model of TCP performance, with two main features. The first one comes from the TCP windowing algorithm
+requesting the sender to stop sending packets when its TCP window is full. If the acknowledgment packets are returned in time to
+the sender, the TCP window has no impact on the performance, which is then only limited by link bandwidths. Otherwise, late
+acknowledgments will reduce the data transfer rate. The second model feature is called cross-traffic. It represents the impact
+of ACKs on the performance of the reverse direction. Indeed, a TCP communication from A to B induces ACK packets going from B to
+A and competing with the user data going from B to A. The impact of cross-traffic is further discussed when presenting the LV08
+model below below.
 
-SimGrid models this mechanism as follows: :math:`real\_BW = min(physical\_BW, \frac{TCP\_GAMMA}{2\times latency})` The used
-bandwidth is either the physical bandwidth that is configured in the platform, or a value that represents a bandwidth
+SimGrid models the TCP windowing mechanism as follows: :math:`real\_BW = min(physical\_BW, \frac{TCP\_GAMMA}{2\times latency})`
+The used bandwidth is either the physical bandwidth that is configured in the platform, or a value that represents a bandwidth
 limit due to late acknowledgments. This value is the maximal TCP window size (noted TCP Gamma in SimGrid) divided by the
-round-trip time (i.e. twice the one-way latency). The default value of TCP Gamma is 4194304. This value can be changed with
-the :ref:`network/TCP-gamma <cfg=network/TCP-gamma>` configuration item.
+round-trip time (i.e. twice the one-way latency). The default value of TCP Gamma is 4194304. This value can be changed with the
+:ref:`network/TCP-gamma <cfg=network/TCP-gamma>` configuration item.
 
 If you want to disable this mechanism altogether (e.g.,to model UDP or memory operations), you should set TCP-gamma
 to 0. Otherwise, the time it takes to send 10 Gib of data over a 10 Gib/s link that is otherwise unused is computed as
