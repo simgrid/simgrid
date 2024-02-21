@@ -149,7 +149,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   }
 }
 
-void RemoteApp::check_deadlock() const
+bool RemoteApp::check_deadlock() const
 {
   xbt_assert(checker_side_->get_channel().send(MessageType::DEADLOCK_CHECK) == 0, "Could not check deadlock state");
   s_mc_message_int_t message;
@@ -169,8 +169,9 @@ void RemoteApp::check_deadlock() const
              "--cfg=model-check/replay:'%s'",
              explo->get_record_trace().to_string().c_str());
     explo->log_state();
-    throw McError(ExitStatus::DEADLOCK);
+    return true;
   }
+  return false;
 }
 
 void RemoteApp::wait_for_requests()

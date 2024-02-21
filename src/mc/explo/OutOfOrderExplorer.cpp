@@ -7,6 +7,7 @@
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/remote/mc_protocol.h"
@@ -236,7 +237,7 @@ void OutOfOrderExplorer::backtrack()
   XBT_DEBUG("%lu alternatives are yet to be explored:", opened_states_.size());
 
   on_backtracking_signal(get_remote_app());
-  get_remote_app().check_deadlock();
+  Exploration::check_deadlock();
 
   // Take the point with smallest distance
   auto backtracking_point = best_opened_state();

@@ -12,6 +12,7 @@
 #include "src/mc/explo/reduction/SDPOR.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/remote/mc_protocol.h"
@@ -157,7 +158,8 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 
   XBT_DEBUG("%lu actors remain, but none of them need to be interleaved (depth %zu).", s->get_actor_count(),
             state_stack.size() + 1);
-  get_remote_app().check_deadlock();
+  Exploration::check_deadlock();
+
   if (s->get_actor_count() == 0) {
     get_remote_app().finalize_app();
     XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());

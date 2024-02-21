@@ -110,6 +110,7 @@ Existing Configuration Items
 - **model-check:** :ref:`options_modelchecking`
 - **model-check/communications-determinism:** :ref:`cfg=model-check/communications-determinism`
 - **model-check/dot-output:** :ref:`cfg=model-check/dot-output`
+- **model-check/max-deadlocks:** :ref:`cfg=model-check/max-deadlocks`
 - **model-check/max-depth:** :ref:`cfg=model-check/max-depth`
 - **model-check/reduction:** :ref:`cfg=model-check/reduction`
 - **model-check/replay:** :ref:`cfg=model-check/replay`
@@ -702,6 +703,21 @@ exploration graph of the model checker. If this limit is reached, a
 logging message is sent and the results might not be exact.
 
 By default, the exploration is limited to the depth of 1000.
+
+.. _cfg=model-check/max-deadlocks:
+
+Maximal amount of deadlocks
+...........................
+
+The ``model-check/max-deadlocks`` can be used to find more than one deadlock in a given code. This may be useful if the trace of
+the first encountered deadlock is too long. In that case, increasing the value of this option may help to find another trace
+that could be smaller. Using a negative value ensures exhaustive exploration, with no maximal amount on the number of found
+deadlocks.
+
+It is currently not possible to survive assertion failures or application crashes, as the reduction cannot cope with what could
+be seen as a bounded exploration yet.
+
+By default, the exploration stops after the first deadlock (value = 0).
 
 .. _cfg=model-check/timeout:
 

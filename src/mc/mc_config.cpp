@@ -109,6 +109,10 @@ simgrid::config::Flag<int> _sg_mc_max_depth{"model-check/max-depth",
                                             1000,
                                             [](int) { _mc_cfg_cb_check("max depth value"); }};
 
+simgrid::config::Flag<int> _sg_mc_max_deadlocks{
+    "model-check/max-deadlocks",
+    "Maximal amount of deadlocks to accept before stopping the exploration (negative value for no maximum).", 0};
+
 simgrid::mc::ReductionMode simgrid::mc::get_model_checking_reduction()
 {
   if (cfg_mc_reduction.get() == "none") {
