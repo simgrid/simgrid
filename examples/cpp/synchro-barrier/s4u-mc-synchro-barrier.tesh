@@ -4,7 +4,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Start a DFS exploration. Reduction is: dpor.
 > [Checker] Executed 1: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
 > [Checker] Executed 1: BARRIER_WAIT(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
-> [Checker] Execution came to an end at 1;1 (state: 3, depth: 3, 1 explored traces)
+> [Checker] Execution came to an end at 1;1
+> [Checker] (state: 3, depth: 3, 1 explored traces)
 > [Checker] DFS exploration ended. 3 unique states visited; 0 backtracks (0 transition replays, 3 states visited overall)
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-barrier 2 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
@@ -13,7 +14,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Executed 2: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
 > [Checker] Executed 1: BARRIER_WAIT(barrier: 0) (stack depth: 3, state: 3, 0 interleaves)
 > [Checker] Executed 2: BARRIER_WAIT(barrier: 0) (stack depth: 4, state: 4, 0 interleaves)
-> [Checker] Execution came to an end at 1;2;1;2 (state: 5, depth: 5, 1 explored traces)
+> [Checker] Execution came to an end at 1;2;1;2
+> [Checker] (state: 5, depth: 5, 1 explored traces)
 > [Checker] Sleep set actually containing:
 > [Checker]   <1,BARRIER_ASYNC_LOCK(barrier: 0)>
 > [Checker] Executed 2: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
@@ -27,7 +29,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Executed 1: BARRIER_WAIT(barrier: 0) (stack depth: 4, state: 4, 0 interleaves)
 > [Checker] Executed 2: BARRIER_WAIT(barrier: 0) (stack depth: 5, state: 5, 0 interleaves)
 > [Checker] Executed 3: BARRIER_WAIT(barrier: 0) (stack depth: 6, state: 6, 0 interleaves)
-> [Checker] Execution came to an end at 1;2;3;1;2;3 (state: 7, depth: 7, 1 explored traces)
+> [Checker] Execution came to an end at 1;2;3;1;2;3
+> [Checker] (state: 7, depth: 7, 1 explored traces)
 > [Checker] Sleep set actually containing:
 > [Checker]   <2,BARRIER_ASYNC_LOCK(barrier: 0)>
 > [Checker] Executed 3: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)

@@ -34,6 +34,7 @@ class Exploration : public xbt::Extendable<Exploration> {
   static Exploration* instance_;
 
   FILE* dot_output_ = nullptr;
+  int deadlocks_    = 0; // Amount of deadlocks seen so far; tested against model-check/max-deadlocks
 
 public:
   explicit Exploration(const std::vector<char*>& args);
@@ -51,6 +52,11 @@ public:
   XBT_ATTRIB_NORETURN void report_crash(int status);
   /** Produce an error message indicating that a property was violated */
   XBT_ATTRIB_NORETURN void report_assertion_failure();
+  /** Check whether the application is deadlocked, and report it if so */
+  void check_deadlock();
+
+  /** Returns the amount of deadlocks seen so far (if model-checker/max-deadlocks is not 0) */
+  int deadlocks_seen() const { return deadlocks_; }
 
   /* These methods are callbacks called by the model-checking engine
    * to get and display information about the current state of the

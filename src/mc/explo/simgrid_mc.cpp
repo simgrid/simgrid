@@ -48,7 +48,11 @@ int main(int argc, char** argv)
   ExitStatus status;
   try {
     explo->run();
-    status = ExitStatus::SUCCESS;
+    if (explo->deadlocks_seen() > 0) {
+      status = ExitStatus::DEADLOCK;
+    } else {
+      status = ExitStatus::SUCCESS;
+    }
   } catch (const McError& e) {
     status = e.value;
   }

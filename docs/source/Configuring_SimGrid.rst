@@ -110,6 +110,7 @@ Existing Configuration Items
 - **model-check:** :ref:`options_modelchecking`
 - **model-check/communications-determinism:** :ref:`cfg=model-check/communications-determinism`
 - **model-check/dot-output:** :ref:`cfg=model-check/dot-output`
+- **model-check/max-deadlocks:** :ref:`cfg=model-check/max-deadlocks`
 - **model-check/max-depth:** :ref:`cfg=model-check/max-depth`
 - **model-check/reduction:** :ref:`cfg=model-check/reduction`
 - **model-check/replay:** :ref:`cfg=model-check/replay`
@@ -202,9 +203,7 @@ models for all existing resources.
   - **LV08 (default one):** Realistic network analytic model
     (slow-start modeled by multiplying latency by 13.01, bandwidth by
     .97; bottleneck sharing uses a payload of S=20537 for evaluating
-    RTT). Described in `Accuracy Study and Improvement of Network
-    Simulation in the SimGrid Framework
-    <http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf>`_.
+    RTT). Presented in :ref:`the relevant section<understanding_lv08>`.
   - **Constant:** Simplistic network model where all communication
     take a constant time (one second). This model provides the lowest
     realism, but is (marginally) faster.
@@ -219,9 +218,7 @@ models for all existing resources.
     This model can be :ref:`further configured <options_model_network>`.
   - **CM02:** Legacy network analytic model. Very similar to LV08, but
     without corrective factors. The timings of small messages are thus
-    poorly modeled. This model is described in `A Network Model for
-    Simulation of Grid Application
-    <https://hal.inria.fr/inria-00071989/document>`_.
+    poorly modeled. Presented in :ref:`the relevant section<understanding_cm02>`.
   - **ns-3** (only available if you compiled SimGrid accordingly):
     Use the packet-level network
     simulators as network models (see :ref:`models_ns3`).
@@ -706,6 +703,21 @@ exploration graph of the model checker. If this limit is reached, a
 logging message is sent and the results might not be exact.
 
 By default, the exploration is limited to the depth of 1000.
+
+.. _cfg=model-check/max-deadlocks:
+
+Maximal amount of deadlocks
+...........................
+
+The ``model-check/max-deadlocks`` can be used to find more than one deadlock in a given code. This may be useful if the trace of
+the first encountered deadlock is too long. In that case, increasing the value of this option may help to find another trace
+that could be smaller. Using a negative value ensures exhaustive exploration, with no maximal amount on the number of found
+deadlocks.
+
+It is currently not possible to survive assertion failures or application crashes, as the reduction cannot cope with what could
+be seen as a bounded exploration yet.
+
+By default, the exploration stops after the first deadlock (value = 0).
 
 .. _cfg=model-check/timeout:
 

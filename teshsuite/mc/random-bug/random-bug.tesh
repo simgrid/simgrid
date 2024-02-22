@@ -12,8 +12,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/
 > [  0.000000] (0:maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1/3;1/4'
 > [  0.000000] (0:maestro@) DFS exploration ended. 27 unique states visited; 22 backtracks (19 transition replays, 46 states visited overall)
 
-! expect return 6
-# because SIMGRID_MC_EXIT_PROGRAM_CRASH = 6
+! expect return 4
+# because simgrid::mc::ExitStatus::PROGRAM_CRASH = 4
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug abort ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning --log=no_loc
 > [  0.000000] (0:maestro@) Behavior: abort
 > [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: dpor.
@@ -33,8 +33,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/
 > [  0.000000] (1:app@Fafard) Error reached
 > [  0.000000] (0:maestro@) DFS exploration ended. 43 unique states visited; 35 backtracks (30 transition replays, 73 states visited overall)
 
-! expect return 6
-# because SIMGRID_MC_EXIT_PROGRAM_CRASH = 6
+! expect return 4
+# because simgrid::mc::ExitStatus::PROGRAM_CRASH = 4
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug segv ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning --log=no_loc
 > [  0.000000] (0:maestro@) Behavior: segv
 > [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: dpor.
@@ -63,8 +63,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/
 > [  0.000000] (0:maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1/3;1/4'
 > [  0.000000] (0:maestro@) DFS exploration ended. 27 unique states visited; 22 backtracks (19 transition replays, 46 states visited overall)
 
-! expect return 6
-# because SIMGRID_MC_EXIT_PROGRAM_CRASH = 6
+! expect return 4
+# because simgrid::mc::ExitStatus::PROGRAM_CRASH = 4
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug abort ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning --log=no_loc --cfg=model-check/reduction:odpor
 > [  0.000000] (0:maestro@) Behavior: abort
 > [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: odpor.
@@ -84,8 +84,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/
 > [  0.000000] (1:app@Fafard) Error reached
 > [  0.000000] (0:maestro@) DFS exploration ended. 43 unique states visited; 35 backtracks (30 transition replays, 73 states visited overall)
 
-! expect return 6
-# because SIMGRID_MC_EXIT_PROGRAM_CRASH = 6
+! expect return 4
+# because simgrid::mc::ExitStatus::PROGRAM_CRASH = 4
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug segv ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning --log=no_loc --cfg=model-check/reduction:odpor
 > [  0.000000] (0:maestro@) Behavior: segv
 > [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: odpor.
