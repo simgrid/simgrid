@@ -101,78 +101,86 @@ double Engine::get_clock()
     return kernel::EngineImpl::get_clock();
   }
 }
-    
-std::vector<long long> Engine::get_papi_counters(){    
-#if HAVE_PAPI    
-    if (not smpi_cfg_papi_events_file().empty()) {
-        papi_counter_t& counter_data        = smpi_process()->papi_counters();
-        int event_set                       = smpi_process()->papi_event_set();
 
-        if (PAPI_NULL != event_set){
-            std::vector<long long> event_values(counter_data.size());
-            auto ret = PAPI_read(event_set, &event_values[0]);
-            
-            const char* errname = "unknown";
-            switch( ret ){
-            case PAPI_EINVAL:
-                errname = "PAPI EINVAL";
-                break;
-            case PAPI_ESYS:
-                errname = "PAPI ESYS";
-                break;
-            case PAPI_ENOEVST:
-                errname = "PAPI ENOEVST";
-                break;
-            }
-            xbt_assert( ret == PAPI_OK, "Could not read PAPI counters. Got a %s error (%d).", errname, ret );
-                
-            for( auto i = 0 ; i < counter_data.size() ; i++ ){
-                event_values[i] += counter_data[i].second;
-            }
-            
-            return event_values;
-        }
-        return std::vector<long long>(0);    
-    } else {
-        return std::vector<long long>(0);    
+std::vector<long long> Engine::get_papi_counters()
+{
+#if HAVE_PAPI
+  if (not smpi_cfg_papi_events_file().empty()) {
+    papi_counter_t& counter_data = smpi_process()->papi_counters();
+    int event_set                = smpi_process()->papi_event_set();
+
+    if (PAPI_NULL != event_set) {
+      std::vector<long long> event_values(counter_data.size());
+      auto ret = PAPI_read(event_set, &event_values[0]);
+
+      const char* errname = "unknown";
+      switch (ret) {
+        case PAPI_EINVAL:
+          errname = "PAPI EINVAL";
+          break;
+        case PAPI_ESYS:
+          errname = "PAPI ESYS";
+          break;
+        case PAPI_ENOEVST:
+          errname = "PAPI ENOEVST";
+          break;
+      }
+      xbt_assert(ret == PAPI_OK, "Could not read PAPI counters. Got a %s error (%d).", errname, ret);
+
+      for (auto i = 0; i < counter_data.size(); i++) {
+        event_values[i] += counter_data[i].second;
+      }
+
+      return event_values;
     }
+    return std::vector<long long>(0);
+  } else {
+    return std::vector<long long>(0);
+  }
 #else
     return std::vector<long long>(0);    
 #endif
 }
 
-int Engine::papi_get_num_counters(){
-    papi_counter_t& counter_data  = smpi_process()->papi_counters();
-    return counter_data.size();
+int Engine::papi_get_num_counters()
+{
+#if HAVE_PAPI
+  papi_counter_t& counter_data = smpi_process()->papi_counters();
+  return counter_data.size();
+#else
+    xbt_die("papi_get_num_counters() cannot be used when PAPI is not compiled in.");
+#endif
 }
 
-void Engine::papi_start(){    
-#if HAVE_PAPI    
-    if (not smpi_cfg_papi_events_file().empty()) {
-        int event_set = smpi_process()->papi_event_set();
-        // PAPI_start sets everything to 0! See man(3) PAPI_start
-        if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized() && PAPI_NULL != event_set){
-            auto ret = PAPI_start(event_set);
+void Engine::papi_start()
+{
+#if HAVE_PAPI
+  if (not smpi_cfg_papi_events_file().empty()) {
+    int event_set = smpi_process()->papi_event_set();
+    // PAPI_start sets everything to 0! See man(3) PAPI_start
+    if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized() && PAPI_NULL != event_set) {
+      auto ret = PAPI_start(event_set);
 
-            const char* errname = "unknown";            
-            switch( ret ){
-            case PAPI_EINVAL:
-                errname = "PAPI EINVAL";
-                break;
-            case PAPI_ESYS:
-                errname = "PAPI ESYS";
-                break;
-            case PAPI_ENOEVST:
-                errname = "PAPI ENOEVST";
-                break;
-            case PAPI_ECNFLCT:
-                errname = "PAPI ECNFLCT";
-                break;
-                /* ignore PAPI_EISRUN */
-            }
-            xbt_assert( ret == PAPI_OK || ret == PAPI_EISRUN, "Could not start PAPI counters. Got a %s error (%d).", errname, ret );
-        }
+      const char* errname = "unknown";
+      switch (ret) {
+        case PAPI_EINVAL:
+          errname = "PAPI EINVAL";
+          break;
+        case PAPI_ESYS:
+          errname = "PAPI ESYS";
+          break;
+        case PAPI_ENOEVST:
+          errname = "PAPI ENOEVST";
+          break;
+        case PAPI_ECNFLCT:
+          errname = "PAPI ECNFLCT";
+          break;
+          /* ignore PAPI_EISRUN */
+      }
+      xbt_assert(ret == PAPI_OK || ret == PAPI_EISRUN, "Could not start PAPI counters. Got a %s error (%d).", errname,
+                 ret);
     }
+  }
 #endif
 }
 
