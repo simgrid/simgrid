@@ -131,5 +131,14 @@ XBT_ATTRIB_NORETURN void Exploration::report_assertion_failure()
   log_state();
   throw McError(ExitStatus::SAFETY);
 }
+void Exploration::check_deadlock()
+{
+  if (get_remote_app().check_deadlock()) {
+    deadlocks_++;
+    if (_sg_mc_max_deadlocks >= 0 && deadlocks_ > _sg_mc_max_deadlocks) {
+      throw McError(ExitStatus::DEADLOCK);
+    }
+  }
+}
 
 }; // namespace simgrid::mc

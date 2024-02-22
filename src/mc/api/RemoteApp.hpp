@@ -48,8 +48,8 @@ public:
   void restore_initial_state();
   void wait_for_requests();
 
-  /** Ask to the application to check for a deadlock. If so, do an error message and throw a McError(DEADLOCK). */
-  void check_deadlock() const;
+  /** Ask to the application to check for a deadlock. If so, returns true. */
+  bool check_deadlock() const;
 
   /** Ask the application to run post-mortem analysis, and maybe to stop ASAP */
   void finalize_app(bool terminate_asap = false);
