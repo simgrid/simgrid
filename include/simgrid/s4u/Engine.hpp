@@ -48,6 +48,10 @@ public:
 
   /** @brief Retrieve the simulation time (in seconds) */
   static double get_clock();
+  static void papi_start();
+  static void papi_stop();
+  static int papi_get_num_counters();
+  static std::vector<long long> get_papi_counters();
   /** @brief Retrieve the engine singleton */
   static s4u::Engine* get_instance();
   static s4u::Engine* get_instance(int* argc, char** argv);
