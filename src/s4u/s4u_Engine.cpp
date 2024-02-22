@@ -758,16 +758,12 @@ double simgrid_get_clock()
 {
   return simgrid::s4u::Engine::get_clock();
 }
-/*std::vector<long long> simgrid_get_papi_counters()
-  {
-  return simgrid::s4u::Engine::get_papi_counters();
-  }*/
-void simgrid_get_papi_counters( long long* tab )
+void simgrid_get_papi_counters(long long* tab)
 {
-    std::vector<long long> cnt = simgrid::s4u::Engine::get_papi_counters();
-    for( auto i = 0 ; i < cnt.size() ; i++ ){
-        tab[i] = cnt[i];
-    }
+  std::vector<long long> cnt = simgrid::s4u::Engine::get_papi_counters();
+  for (size_t i = 0; i < cnt.size(); i++) {
+    tab[i] = cnt[i];
+  }
 }
 int simgrid_papi_get_num_counters()
 {
