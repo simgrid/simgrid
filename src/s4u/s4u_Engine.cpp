@@ -111,21 +111,21 @@ std::vector<long long> Engine::get_papi_counters(){
         if (PAPI_NULL != event_set){
             std::vector<long long> event_values(counter_data.size());
             auto ret = PAPI_read(event_set, &event_values[0]);
-            if( ret != PAPI_OK ){
-                switch( ret ){
-                case PAPI_EINVAL:
-                    XBT_CRITICAL( "PAPI EINVAL" );
-                    break;
-                case PAPI_ESYS:
-                    XBT_CRITICAL( "PAPI ESYS" );
-                    break;
-                case PAPI_ENOEVST:
-                    XBT_CRITICAL( "PAPI ENOEVST" );
-                    break;
-                }
-                xbt_assert( ret == PAPI_OK, "Could not read PAPI counters.");
+            
+            const char* errname = "unknown";
+            switch( ret ){
+            case PAPI_EINVAL:
+                errname = "PAPI EINVAL";
+                break;
+            case PAPI_ESYS:
+                errname = "PAPI ESYS";
+                break;
+            case PAPI_ENOEVST:
+                errname = "PAPI ENOEVST";
+                break;
             }
-
+            xbt_assert( ret == PAPI_OK, "Could not read PAPI counters. Got a %s error (%d).", errname, ret );
+                
             for( auto i = 0 ; i < counter_data.size() ; i++ ){
                 event_values[i] += counter_data[i].second;
             }
@@ -153,27 +153,24 @@ void Engine::papi_start(){
         // PAPI_start sets everything to 0! See man(3) PAPI_start
         if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized() && PAPI_NULL != event_set){
             auto ret = PAPI_start(event_set);
-            if( ret != PAPI_OK && ret != PAPI_EISRUN ){
-                //xbt_assert( ret == PAPI_OK, 
-                //       "Could not start PAPI counters (TODO: this needs some proper handling).");
-                switch( ret ){
-                case PAPI_EINVAL:
-                    XBT_CRITICAL( "PAPI EINVAL" );
-                    break;
-                case PAPI_ESYS:
-                    XBT_CRITICAL( "PAPI ESYS" );
-                    break;
-                case PAPI_ENOEVST:
-                    XBT_CRITICAL( "PAPI ENOEVST" );
-                    break;
-                case PAPI_EISRUN:
-                    XBT_CRITICAL( "PAPI EISRUN" );
-                    break;
-                case PAPI_ECNFLCT:
-                    XBT_CRITICAL( "PAPI ECNFLCT" );
-                    break;
-                }
+
+            const char* errname = "unknown";            
+            switch( ret ){
+            case PAPI_EINVAL:
+                errname = "PAPI EINVAL";
+                break;
+            case PAPI_ESYS:
+                errname = "PAPI ESYS";
+                break;
+            case PAPI_ENOEVST:
+                errname = "PAPI ENOEVST";
+                break;
+            case PAPI_ECNFLCT:
+                errname = "PAPI ECNFLCT";
+                break;
+                /* ignore PAPI_EISRUN */
             }
+            xbt_assert( ret == PAPI_OK || ret == PAPI_EISRUN, "Could not start PAPI counters. Got a %s error (%d).", errname, ret );
         }
     }
 #endif
@@ -189,32 +186,28 @@ void Engine::papi_stop(){
         
         if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized() && PAPI_NULL != event_set){
             auto ret = PAPI_stop(event_set, &event_values[0]);
-            
-            if( ret == PAPI_OK ){            
+
+            const char* errname = "unknown";
+            switch( ret ){
+            case PAPI_EINVAL:
+                errname = "PAPI EINVAL";
+                break;
+            case PAPI_ESYS:
+                errname = "PAPI ESYS";
+                break;
+            case PAPI_ENOEVST:
+                errname = "PAPI ENOEVST";
+                break;
+            case PAPI_ECNFLCT:
+                errname = "PAPI ECNFLCT";
+                break;
+                /* ignore PAPI_ENOTRUN */
+            }
+            xbt_assert(ret == PAPI_OK || ret == PAPI_ENOTRUN, "Could not stop PAPI counters. Got a %s error (%d).", errname, ret );
+
+            if( ret != PAPI_ENOTRUN )
                 for (unsigned int i = 0; i < counter_data.size(); i++)
                     counter_data[i].second += event_values[i];
-            } else {
-                if( ret != PAPI_ENOTRUN ){
-                    switch( ret ){
-                    case PAPI_EINVAL:
-                        XBT_CRITICAL( "PAPI EINVAL" );
-                        break;
-                    case PAPI_ESYS:
-                        XBT_CRITICAL( "PAPI ESYS" );
-                        break;
-                    case PAPI_ENOEVST:
-                        XBT_CRITICAL( "PAPI ENOEVST" );
-                        break;
-                    case PAPI_ENOTRUN:
-                        XBT_CRITICAL( "PAPI ENOTRUN" );
-                        break;
-                    case PAPI_ECNFLCT:
-                        XBT_CRITICAL( "PAPI ECNFLCT" );
-                    break;
-                    }
-                    xbt_assert(ret == PAPI_OK, "Could not stop PAPI counters.");
-                }
-            }
         }
     }
 #endif
