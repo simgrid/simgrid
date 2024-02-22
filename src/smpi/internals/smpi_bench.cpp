@@ -84,11 +84,7 @@ void smpi_bench_begin()
 
 #if HAVE_PAPI
   if (not smpi_cfg_papi_events_file().empty()) {
-    int event_set = smpi_process()->papi_event_set();
-    // PAPI_start sets everything to 0! See man(3) PAPI_start
-    if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized() && event_set)
-      xbt_assert(PAPI_start(event_set) == PAPI_OK,
-                 "Could not start PAPI counters (TODO: this needs some proper handling).");
+      simgrid_papi_start();
   }
 #endif
   xbt_os_threadtimer_start(smpi_process()->timer());
@@ -121,14 +117,7 @@ void smpi_bench_end()
    * our PAPI counters for this process.
    */
   if (not smpi_cfg_papi_events_file().empty()) {
-    papi_counter_t& counter_data        = smpi_process()->papi_counters();
-    int event_set                       = smpi_process()->papi_event_set();
-    std::vector<long long> event_values(counter_data.size());
-
-    if (event_set)
-      xbt_assert(PAPI_stop(event_set, &event_values[0]) == PAPI_OK, "Could not stop PAPI counters.");
-    for (unsigned int i = 0; i < counter_data.size(); i++)
-      counter_data[i].second += event_values[i];
+      simgrid_papi_stop();
   }
 #endif
 

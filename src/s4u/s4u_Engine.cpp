@@ -5,6 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/modelchecker.h>
 #include <simgrid/s4u/Engine.hpp>
@@ -18,6 +19,12 @@
 #include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
 #include "xbt/config.hpp"
+
+#if HAVE_PAPI
+#include "src/simgrid/sg_config.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
+#include <papi.h>
+#endif
 
 #include <algorithm>
 #include <string>
@@ -93,6 +100,124 @@ double Engine::get_clock()
   } else {
     return kernel::EngineImpl::get_clock();
   }
+}
+    
+std::vector<long long> Engine::get_papi_counters(){    
+#if HAVE_PAPI    
+    if (not smpi_cfg_papi_events_file().empty()) {
+        papi_counter_t& counter_data        = smpi_process()->papi_counters();
+        int event_set                       = smpi_process()->papi_event_set();
+
+        if (PAPI_NULL != event_set){
+            std::vector<long long> event_values(counter_data.size());
+            auto ret = PAPI_read(event_set, &event_values[0]);
+            if( ret != PAPI_OK ){
+                switch( ret ){
+                case PAPI_EINVAL:
+                    XBT_CRITICAL( "PAPI EINVAL" );
+                    break;
+                case PAPI_ESYS:
+                    XBT_CRITICAL( "PAPI ESYS" );
+                    break;
+                case PAPI_ENOEVST:
+                    XBT_CRITICAL( "PAPI ENOEVST" );
+                    break;
+                }
+                xbt_assert( ret == PAPI_OK, "Could not read PAPI counters.");
+            }
+
+            for( auto i = 0 ; i < counter_data.size() ; i++ ){
+                event_values[i] += counter_data[i].second;
+            }
+            
+            return event_values;
+        }
+        return std::vector<long long>(0);    
+    } else {
+        return std::vector<long long>(0);    
+    }
+#else
+    return std::vector<long long>(0);    
+#endif
+}
+
+int Engine::papi_get_num_counters(){
+    papi_counter_t& counter_data  = smpi_process()->papi_counters();
+    return counter_data.size();
+}
+
+void Engine::papi_start(){    
+#if HAVE_PAPI    
+    if (not smpi_cfg_papi_events_file().empty()) {
+        int event_set = smpi_process()->papi_event_set();
+        // PAPI_start sets everything to 0! See man(3) PAPI_start
+        if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized() && PAPI_NULL != event_set){
+            auto ret = PAPI_start(event_set);
+            if( ret != PAPI_OK && ret != PAPI_EISRUN ){
+                //xbt_assert( ret == PAPI_OK, 
+                //       "Could not start PAPI counters (TODO: this needs some proper handling).");
+                switch( ret ){
+                case PAPI_EINVAL:
+                    XBT_CRITICAL( "PAPI EINVAL" );
+                    break;
+                case PAPI_ESYS:
+                    XBT_CRITICAL( "PAPI ESYS" );
+                    break;
+                case PAPI_ENOEVST:
+                    XBT_CRITICAL( "PAPI ENOEVST" );
+                    break;
+                case PAPI_EISRUN:
+                    XBT_CRITICAL( "PAPI EISRUN" );
+                    break;
+                case PAPI_ECNFLCT:
+                    XBT_CRITICAL( "PAPI ECNFLCT" );
+                    break;
+                }
+            }
+        }
+    }
+#endif
+}
+
+void Engine::papi_stop(){    
+#if HAVE_PAPI    
+    if (not smpi_cfg_papi_events_file().empty()) {
+
+        int event_set                       = smpi_process()->papi_event_set();
+        papi_counter_t& counter_data        = smpi_process()->papi_counters();
+        std::vector<long long> event_values = Engine::get_papi_counters();
+        
+        if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized() && PAPI_NULL != event_set){
+            auto ret = PAPI_stop(event_set, &event_values[0]);
+            
+            if( ret == PAPI_OK ){            
+                for (unsigned int i = 0; i < counter_data.size(); i++)
+                    counter_data[i].second += event_values[i];
+            } else {
+                if( ret != PAPI_ENOTRUN ){
+                    switch( ret ){
+                    case PAPI_EINVAL:
+                        XBT_CRITICAL( "PAPI EINVAL" );
+                        break;
+                    case PAPI_ESYS:
+                        XBT_CRITICAL( "PAPI ESYS" );
+                        break;
+                    case PAPI_ENOEVST:
+                        XBT_CRITICAL( "PAPI ENOEVST" );
+                        break;
+                    case PAPI_ENOTRUN:
+                        XBT_CRITICAL( "PAPI ENOTRUN" );
+                        break;
+                    case PAPI_ECNFLCT:
+                        XBT_CRITICAL( "PAPI ECNFLCT" );
+                    break;
+                    }
+                    xbt_assert(ret == PAPI_OK, "Could not stop PAPI counters.");
+                }
+            }
+        }
+    }
+#endif
 }
 
 void Engine::add_model(std::shared_ptr<kernel::resource::Model> model,
@@ -632,7 +757,29 @@ double simgrid_get_clock()
 {
   return simgrid::s4u::Engine::get_clock();
 }
-
+/*std::vector<long long> simgrid_get_papi_counters()
+  {
+  return simgrid::s4u::Engine::get_papi_counters();
+  }*/
+void simgrid_get_papi_counters( long long* tab )
+{
+    std::vector<long long> cnt = simgrid::s4u::Engine::get_papi_counters();
+    for( auto i = 0 ; i < cnt.size() ; i++ ){
+        tab[i] = cnt[i];
+    }
+}
+int simgrid_papi_get_num_counters()
+{
+  return simgrid::s4u::Engine::papi_get_num_counters();
+}
+void simgrid_papi_start()
+{
+  return simgrid::s4u::Engine::papi_start();
+}
+void simgrid_papi_stop()
+{
+  return simgrid::s4u::Engine::papi_stop();
+}
 void simgrid_set_maestro(void (*code)(void*), void* data)
 {
   maestro_code = std::bind(code, data);

@@ -43,6 +43,11 @@ XBT_PUBLIC void simgrid_register_function(const char* name, void (*code)(int, ch
 XBT_PUBLIC void simgrid_register_default(void (*code)(int, char**));
 /** Retrieve the simulation time (in seconds) */
 XBT_PUBLIC double simgrid_get_clock();
+/** PAPI */
+XBT_PUBLIC int simgrid_papi_get_num_counters();
+XBT_PUBLIC void simgrid_get_papi_counters( long long* );
+XBT_PUBLIC void simgrid_papi_start();
+XBT_PUBLIC void simgrid_papi_stop();
 /* Set some code to execute in the maestro (must be used before the engine creation)
  *
  * If no maestro code is registered (the default), the main thread
