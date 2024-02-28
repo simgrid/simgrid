@@ -127,7 +127,7 @@ std::vector<long long> Engine::get_papi_counters()
       }
       xbt_assert(ret == PAPI_OK, "Could not read PAPI counters. Got a %s error (%d).", errname, ret);
 
-      for (auto i = 0; i < counter_data.size(); i++) {
+      for (unsigned i = 0; i < counter_data.size(); i++) {
         event_values[i] += counter_data[i].second;
       }
 
