@@ -463,7 +463,6 @@ void CommImpl::finish()
         break;
 
       case State::CANCELED:
-        THROW_IMPOSSIBLE; // FIXME KILLME? Not sure that any test tries to cancel an ongoing comm
         if (issuer == dst_actor_)
           issuer->exception_ =
               std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Communication canceled by the sender"));
