@@ -69,10 +69,14 @@ bool MutexAcquisitionObserver::is_enabled()
 }
 std::string MutexAcquisitionObserver::to_string() const
 {
-  const auto* owner = acquisition_->get_mutex()->get_owner();
-  return std::string(mc::Transition::to_c_str(type_)) +
-         "(mutex_id:" + std::to_string(acquisition_->get_mutex()->get_id()) +
-         " owner:" + (owner == nullptr ? "none" : std::to_string(owner->get_pid())) + ")";
+  if (acquisition_) {
+    const auto* owner = acquisition_->get_mutex()->get_owner();
+    return std::string(mc::Transition::to_c_str(type_)) +
+           "(mutex_id:" + std::to_string(acquisition_->get_mutex()->get_id()) +
+           " owner:" + (owner == nullptr ? "none" : std::to_string(owner->get_pid())) + ")";
+  } else {
+    return std::string(mc::Transition::to_c_str(type_)) + "(mutex_id:null)";
+  }
 }
 void MutexAcquisitionObserver::serialize(std::stringstream& stream) const
 {
