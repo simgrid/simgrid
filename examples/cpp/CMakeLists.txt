@@ -181,25 +181,19 @@ foreach(variant fun class)
 endforeach()
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers.tesh)
 
-# The tests the parallel variant of of DHTs
+# The tests the parallel variant of of DHTs, but only on Linux since other platforms are fragile with that regard
 
-if(CMAKE_SYSTEM_NAME STREQUAL "SunOS" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "i386" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-  # Thread-local storage (TLS) is needed for parallel execution, but it doesn't
-  # play well with Ucontexts on 64bit SunOS (at least on x86_64).
-  set(parallel-factories "^ucontext")
-else()
-  set(parallel-factories "*")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  foreach(example app-bittorrent app-masterworkers
+                  dht-chord dht-kademlia
+                  )
+    ADD_TESH_FACTORIES(s4u-${example}-parallel "*" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
+                                               --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                                               --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                               --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
+                                               ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
+  endforeach()
 endif()
-
-foreach(example app-bittorrent app-masterworkers
-                dht-chord dht-kademlia
-                )
-  ADD_TESH_FACTORIES(s4u-${example}-parallel "${parallel-factories}" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
-                                             --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
-                                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                             --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                                             ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
-endforeach()
 
 # Test non-DPOR reductions on a given MC test
 foreach(example mc-failing-assert)

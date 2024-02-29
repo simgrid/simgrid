@@ -999,6 +999,8 @@ SimGrid v3.7 and higher, and mostly for S4U simulations. SMPI
 simulations may well fail in parallel mode. It is described in
 `INRIA RR-7653 <http://hal.inria.fr/inria-00602216/>`_.
 
+Note that this feature is only tested on Linux. It may or may not work on other systems.
+
 If you are using the **ucontext** or **raw** context factories, you can
 request to execute the user code in parallel. Several threads are
 launched, each of them handling the same number of user contexts at each
