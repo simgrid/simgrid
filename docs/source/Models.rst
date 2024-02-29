@@ -103,13 +103,15 @@ described in the next section.
 The TCP models
 **************
 
-SimGrid provides several network performance models that compute the time taken by each communication in isolation.
-**CM02** is the simplest one. It captures TCP windowing effects, but does not introduce any correction factors. This
-model should be used if you prefer human-understandable results over realistic ones. **LV08** (the default model) uses
-constant factors that are intended to capture common effects such as slow-start, the fact that TCP headers reduce the
-*effective* bandwidth, or TCP's ACK messages. **SMPI** uses more advanced factors that also capture the MPI-specific
-effects such as the switch between the eager vs. rendez-vous communication modes. You can :ref:`choose the
-model <options_model_select>` on via command-line arguments, and each model can be :ref:`further configured <options_model>`.
+SimGrid provides several network performance models that compute the time taken by each communication in isolation. **raw** is
+the simplest one. It does not capture any fancy effect, and uses overly simplified equations. It is mostly useful when you want
+to model non-TCP communications such as an intra-node PCI communication bus. **CM02** is the simplest model capturing some
+TCP-specific effects, such as windowing effects, but does not introduce any correction factors. This model should be used if you
+prefer human-understandable TCP predictions over realistic ones. **LV08** (the default model) uses constant factors that are
+intended to capture common effects such as slow-start, the fact that TCP headers reduce the *effective* bandwidth, or TCP's ACK
+messages. **SMPI** uses more advanced factors that also capture the MPI-specific effects such as the switch between the eager
+vs. rendez-vous communication modes. You can :ref:`choose the model <options_model_select>` on via command-line arguments, and
+each model can be :ref:`further configured <options_model>`.
 
 The LMM solver is then used as described above to compute the effect of contention on the communication time when using TCP. 
 For the sake of realism, the sharing on saturated links is not necessarily a fair sharing
@@ -131,6 +133,19 @@ Both simulators have time complexity that is linear in the size of their input, 
 because it considers individual network packets. 
 However, the above SimGrid models must be carefully :ref:`calibrated <models_calibration>` if
 achieve very high accuracy is needed, while ns-3 is less demanding in this regard.
+
+.. _understanding_raw_network_model:
+
+Raw network model
+=================
+
+This simplistic network model states that the bandwidth is fairly shared between competing communications (max-min sharing), and
+the time to send a message is equal to :math:`latency + \frac{size}{bandwidth}`. This model is not realistic for TCP
+communications, as the many effects captured by the other SimGrid models are ignored. It is also not really realistic for UDP
+communications as it does not incur any packet loss that a real UDP communication would experience when the amount of exchanged
+data overpass the links capacity. Instead, this model is mostly useful to model the intra-node communication buses such as PCI.
+This allows to model a :ref:`multi-CPU machine as a set of separate SimGrid hosts <howto_multicore_separate_hosts>`
+interconnected by such a raw network link. 
 
 .. _understanding_cm02:
 

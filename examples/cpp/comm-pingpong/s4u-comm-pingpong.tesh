@@ -39,6 +39,18 @@ $ ${bindir:=.}/s4u-comm-pingpong ${platfdir}/small_platform.xml --cfg=cpu/model:
 > [145.639041] (1:pinger@Tremblay) Pong time (bandwidth bound): 145.638
 > [145.639041] (0:maestro@) Total simulation time: 145.639
 
+p Testing the raw network model
+
+$ ${bindir:=.}/s4u-comm-pingpong ${platfdir}/small_platform.xml comm-pingpong_d.xml --cfg=network/model:raw "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'raw'
+> [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
+> [  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
+> [  0.001462] (2:ponger@Jupiter) Payload received : small communication (latency bound)
+> [  0.001462] (2:ponger@Jupiter) Ping time (latency bound) 0.001462
+> [  0.001462] (2:ponger@Jupiter) payload = 0.001
+> [138.703988] (1:pinger@Tremblay) Payload received : large communication (bandwidth bound)
+> [138.703988] (1:pinger@Tremblay) Pong time (bandwidth bound): 138.703
+> [138.703988] (0:maestro@) Total simulation time: 138.704
 p Testing the network constant model
 
 $ ${bindir:=.}/s4u-comm-pingpong ${platfdir}/small_platform_routing_none.xml "--cfg=cpu/model:Cas01 network/model:Constant" "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
