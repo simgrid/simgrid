@@ -105,7 +105,7 @@ public:
 
   /* Mailbox-based communications */
   CommPtr set_mailbox(Mailbox* mailbox);
-  /** Retrieve the mailbox on which this comm acts */
+  /** Retrieve the mailbox on which this comm acts. This is nullptr if the comm was created through sendto() */
   Mailbox* get_mailbox() const { return mailbox_; }
 
   /** Specify the data to send.
