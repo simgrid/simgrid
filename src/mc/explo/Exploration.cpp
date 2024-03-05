@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/api/states/State.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
 #include "src/mc/mc_exit.hpp"
@@ -20,6 +21,10 @@ static simgrid::config::Flag<std::string> cfg_dot_output_file{
     "model-check/dot-output", "Name of dot output file corresponding to graph state", ""};
 
 Exploration* Exploration::instance_ = nullptr; // singleton instance
+
+xbt::signal<void(RemoteApp&)> Exploration::on_restore_initial_state_signal;
+xbt::signal<void(Transition*, RemoteApp&)> Exploration::on_transition_replay_signal;
+xbt::signal<void(RemoteApp&)> Exploration::on_backtracking_signal;
 
 Exploration::Exploration(const std::vector<char*>& args) : remote_app_(std::make_unique<RemoteApp>(args))
 {
@@ -139,6 +144,29 @@ void Exploration::check_deadlock()
       throw McError(ExitStatus::DEADLOCK);
     }
   }
+}
+
+void Exploration::backtrack_to_state(State* target_state)
+{
+  on_backtracking_signal(get_remote_app());
+
+  std::deque<Transition*> replay_recipe;
+  auto* state = target_state;
+  for (; state != nullptr && not state->has_state_factory(); state = state->get_parent_state().get()) {
+    if (state->get_transition_in() != nullptr) // The root has no transition_in
+      replay_recipe.push_front(state->get_transition_in().get());
+  }
+
+  get_remote_app().restore_checker_side(state != nullptr ? state->get_state_factory() : nullptr);
+  on_restore_initial_state_signal(get_remote_app());
+
+  for (auto& transition : replay_recipe) {
+    transition->replay(get_remote_app());
+    on_transition_replay_signal(transition, get_remote_app());
+    visited_states_count_++;
+  }
+
+  backtrack_count_++;
 }
 
 }; // namespace simgrid::mc

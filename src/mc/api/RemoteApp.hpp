@@ -45,7 +45,8 @@ public:
    */
   explicit RemoteApp(const std::vector<char*>& args);
 
-  void restore_initial_state();
+  /** Rollback the application to the state passed as argument or to the beginning of history if from == nullptr */
+  void restore_checker_side(CheckerSide* from);
   void wait_for_requests();
 
   /** Ask to the application to check for a deadlock. If so, returns true. */

@@ -244,7 +244,7 @@ void UdporChecker::move_to_stateCe(State* state, UnfoldingEvent* e)
 void UdporChecker::restore_program_state_with_current_stack()
 {
   XBT_DEBUG("Restoring state using the current stack");
-  get_remote_app().restore_initial_state();
+  get_remote_app().restore_checker_side(nullptr);
   backtrack_count_++;
 
   /* Traverse the stack from the state at position start and re-execute the transitions */

@@ -9,6 +9,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
+#include "src/mc/remote/CheckerSide.hpp"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
@@ -70,9 +71,13 @@ RemoteApp::RemoteApp(const std::vector<char*>& args) : app_args_(args)
     checker_side_        = application_factory_->clone(master_socket_, master_socket_name);
 }
 
-void RemoteApp::restore_initial_state()
+void RemoteApp::restore_checker_side(CheckerSide* from)
 {
-    checker_side_ = application_factory_->clone(master_socket_, master_socket_name);
+    if (from == nullptr) {
+      checker_side_ = application_factory_->clone(master_socket_, master_socket_name);
+    } else {
+      checker_side_ = from->clone(master_socket_, master_socket_name);
+    }
 }
 
 unsigned long RemoteApp::get_maxpid() const

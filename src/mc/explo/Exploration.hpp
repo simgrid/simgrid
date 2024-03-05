@@ -36,6 +36,10 @@ class Exploration : public xbt::Extendable<Exploration> {
   FILE* dot_output_ = nullptr;
   int deadlocks_    = 0; // Amount of deadlocks seen so far; tested against model-check/max-deadlocks
 
+protected:
+  unsigned long backtrack_count_      = 0; // for statistics
+  unsigned long visited_states_count_ = 0; // for statistics
+
 public:
   explicit Exploration(const std::vector<char*>& args);
   virtual ~Exploration();
@@ -58,6 +62,10 @@ public:
   /** Returns the amount of deadlocks seen so far (if model-checker/max-deadlocks is not 0) */
   int deadlocks_seen() const { return deadlocks_; }
 
+  /** Restore the application to that state, by rollback of a previously saved fork and replay the transitions afterward
+   */
+  void backtrack_to_state(State* target_state);
+
   /* These methods are callbacks called by the model-checking engine
    * to get and display information about the current state of the
    * model-checking algorithm: */
@@ -72,6 +80,27 @@ public:
   virtual void log_state();
 
   RemoteApp& get_remote_app() { return *remote_app_.get(); }
+
+  static xbt::signal<void(RemoteApp&)> on_restore_initial_state_signal;
+  static xbt::signal<void(Transition*, RemoteApp&)> on_transition_replay_signal;
+  static xbt::signal<void(RemoteApp&)> on_backtracking_signal;
+
+  /** Called when the state to which we backtrack was not checkpointed state, forcing us to restore the initial state
+   * before replaying some transitions */
+  static void on_restore_initial_state(std::function<void(RemoteApp& remote_app)> const& f)
+  {
+    on_restore_initial_state_signal.connect(f);
+  }
+  /** Called when replaying a transition that was previously executed, to reach a backtracked state */
+  static void on_transition_replay(std::function<void(Transition*, RemoteApp& remote_app)> const& f)
+  {
+    on_transition_replay_signal.connect(f);
+  }
+  /** Called each time that the exploration backtracks from a exploration end */
+  static void on_backtracking(std::function<void(RemoteApp& remote_app)> const& f)
+  {
+    on_backtracking_signal.connect(f);
+  }
 
   /** Print something to the dot output file*/
   void dot_output(const char* fmt, ...) XBT_ATTRIB_PRINTF(2, 3);

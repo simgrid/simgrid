@@ -18,6 +18,10 @@ namespace simgrid::mc {
 class XBT_PRIVATE State : public xbt::Extendable<State> {
   static long expended_states_; /* Count total amount of states, for stats */
 
+  /** A forked application stationned in this state, to quickly recreate child states w/o replaying from the beginning
+   */
+  std::unique_ptr<CheckerSide> state_factory_ = nullptr;
+
   /** @brief The outgoing transition is the last transition that we took to leave this state.  */
   std::shared_ptr<Transition> outgoing_transition_ = nullptr;
 
@@ -73,9 +77,23 @@ public:
   unsigned long get_actor_count() const { return strategy_->actors_to_run_.size(); }
   bool is_actor_enabled(aid_t actor) const { return strategy_->actors_to_run_.at(actor).is_enabled(); }
 
+  /** Returns whether this state has a state factory.
+   *
+   *  The idea is to sometimes fork the application before taking a transition so that we can restore this state very
+   *  quickly in the future.
+   *
+   *  Of course, that's very memory hungry but this is meant to be a rare event, and it's subject to future
+   *  optimizations (to remove some forks when they become useless).
+   */
+  bool has_state_factory() { return state_factory_ != nullptr; }
+  void set_state_factory(std::unique_ptr<simgrid::mc::CheckerSide> checkerside)
+  {
+    state_factory_ = std::move(checkerside);
+  }
+  simgrid::mc::CheckerSide* get_state_factory() { return state_factory_.get(); }
+
   /**
-   * @brief Computes the backtrack set for this state
-   * according to its definition in SimGrid.
+   * @brief Computes the backtrack set for this state according to its definition in SimGrid.
    *
    * The backtrack set as it appears in DPOR, SDPOR, and ODPOR
    * in SimGrid consists of those actors marked as `todo`

@@ -37,13 +37,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ooo, mc, "Out-of-Order exploration algorithm 
 namespace simgrid::mc {
 
 xbt::signal<void(RemoteApp&)> OutOfOrderExplorer::on_exploration_start_signal;
-xbt::signal<void(RemoteApp&)> OutOfOrderExplorer::on_backtracking_signal;
 
 xbt::signal<void(State*, RemoteApp&)> OutOfOrderExplorer::on_state_creation_signal;
 
 xbt::signal<void(State*, RemoteApp&)> OutOfOrderExplorer::on_restore_system_state_signal;
-xbt::signal<void(RemoteApp&)> OutOfOrderExplorer::on_restore_initial_state_signal;
-xbt::signal<void(Transition*, RemoteApp&)> OutOfOrderExplorer::on_transition_replay_signal;
 xbt::signal<void(Transition*, RemoteApp&)> OutOfOrderExplorer::on_transition_execute_signal;
 
 xbt::signal<void(RemoteApp&)> OutOfOrderExplorer::on_log_state_signal;
@@ -232,11 +229,9 @@ std::shared_ptr<State> OutOfOrderExplorer::best_opened_state()
 
 void OutOfOrderExplorer::backtrack()
 {
-
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
   XBT_DEBUG("%lu alternatives are yet to be explored:", opened_states_.size());
 
-  on_backtracking_signal(get_remote_app());
   Exploration::check_deadlock();
 
   // Take the point with smallest distance
@@ -249,27 +244,7 @@ void OutOfOrderExplorer::backtrack()
     return;
   }
   // We found a backtracking point, let's go to it
-  backtrack_count_++;
-  XBT_DEBUG("Backtracking to state#%ld", backtracking_point->get_num());
-
-  // Search how to restore the backtracking point
-  std::deque<Transition*> replay_recipe;
-  for (auto* s = backtracking_point.get(); s != nullptr; s = s->get_parent_state().get()) {
-    if (s->get_transition_in() != nullptr) // The root has no transition_in
-      replay_recipe.push_front(s->get_transition_in().get());
-  }
-
-  // Restore the initial state if no intermediate state was found
-  get_remote_app().restore_initial_state();
-  on_restore_initial_state_signal(get_remote_app());
-
-  /* if no snapshot, we need to restore the initial state and replay the transitions */
-  /* Traverse the stack from the state at position start and re-execute the transitions */
-  for (auto& transition : replay_recipe) {
-    transition->replay(get_remote_app());
-    on_transition_replay_signal(transition, get_remote_app());
-    visited_states_count_++;
-  }
+  backtrack_to_state(backtracking_point.get());
   this->restore_stack(backtracking_point);
 }
 

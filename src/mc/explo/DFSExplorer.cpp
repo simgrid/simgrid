@@ -37,13 +37,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dfs, mc, "DFS exploration algorithm of the mo
 namespace simgrid::mc {
 
 xbt::signal<void(RemoteApp&)> DFSExplorer::on_exploration_start_signal;
-xbt::signal<void(RemoteApp&)> DFSExplorer::on_backtracking_signal;
 
 xbt::signal<void(State*, RemoteApp&)> DFSExplorer::on_state_creation_signal;
 
 xbt::signal<void(State*, RemoteApp&)> DFSExplorer::on_restore_system_state_signal;
-xbt::signal<void(RemoteApp&)> DFSExplorer::on_restore_initial_state_signal;
-xbt::signal<void(Transition*, RemoteApp&)> DFSExplorer::on_transition_replay_signal;
 xbt::signal<void(Transition*, RemoteApp&)> DFSExplorer::on_transition_execute_signal;
 
 xbt::signal<void(RemoteApp&)> DFSExplorer::on_log_state_signal;
@@ -75,25 +72,9 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
 {
 
   // This means the exploration asked us to visit a parallel history
-  // So firt, go to their in the application
+  // So first, go to there in the application
   if (not is_execution_descending) {
-    backtrack_count_++;
-    on_backtracking_signal(get_remote_app());
-
-    std::deque<Transition*> replay_recipe;
-    for (auto* s = state_stack.back().get(); s != nullptr; s = s->get_parent_state().get()) {
-      if (s->get_transition_in() != nullptr) // The root has no transition_in
-        replay_recipe.push_front(s->get_transition_in().get());
-    }
-
-    get_remote_app().restore_initial_state();
-    on_restore_initial_state_signal(get_remote_app());
-
-    for (auto& transition : replay_recipe) {
-      transition->replay(get_remote_app());
-      on_transition_replay_signal(transition, get_remote_app());
-      visited_states_count_++;
-    }
+    backtrack_to_state(state_stack.back().get());
     is_execution_descending = true;
   }
 
