@@ -310,17 +310,6 @@ void CommDetExtension::handle_comm_pattern(const Transition* transition)
   }
 }
 
-/* FIXME: CommDet probably don't play nicely with stateful exploration
-
-      bool all_communications_are_finished = true;
-      for (size_t current_actor = 1; all_communications_are_finished && current_actor < maxpid; current_actor++) {
-        if (not extension->incomplete_communications_pattern[current_actor].empty()) {
-          XBT_DEBUG("Some communications are not finished, cannot stop the exploration! State not visited.");
-          all_communications_are_finished = false;
-        }
-      }
- */
-
 Exploration* create_communication_determinism_checker(const std::vector<char*>& args, ReductionMode mode)
 {
   CommDetExtension::EXTENSION_ID = simgrid::mc::Exploration::extension_create<CommDetExtension>();
