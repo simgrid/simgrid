@@ -155,6 +155,7 @@ void DFSExplorer::run()
   XBT_INFO("Start a DFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
 
   auto initial_state = reduction_algo_->state_create(get_remote_app());
+  on_state_creation_signal(initial_state.get(), get_remote_app());
 
   XBT_DEBUG("**************************************************");
 
