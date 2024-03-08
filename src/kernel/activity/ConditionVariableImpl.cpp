@@ -71,7 +71,7 @@ void ConditionVariableImpl::wait(MutexImpl* mutex, double timeout, actor::ActorI
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
 
   /* Unlock the provided mutex (the simcall observer ensures that one is provided, no need to check) */
-  auto* owner = mutex->get_owner();
+  const auto* owner = mutex->get_owner();
   xbt_assert(owner == issuer,
              "Actor %s cannot wait on ConditionVariable %p since it does not own the provided mutex %p (which is "
              "owned by %s).",

@@ -86,7 +86,7 @@ static void master_fun(int argc, char* argv[])
     vms[i] = vm;
 
     XBT_INFO("put an actor (%s) on %s", pr_name, vm_name);
-    sg_actor_create(pr_name, (sg_host_t)vm, worker_fun, 0, NULL);
+    sg_actor_create(pr_name, (sg_host_t)vm, &worker_fun, 0, NULL);
 
     xbt_free(vm_name);
     xbt_free(pr_name);
@@ -119,7 +119,7 @@ static void master_fun(int argc, char* argv[])
     char* pr_name = bprintf("WRK%02d", i + 2);
 
     XBT_INFO("put an actor (%s) on %s", pr_name, vm_name);
-    sg_actor_create(pr_name, (sg_host_t)vms[i], worker_fun, 0, NULL);
+    sg_actor_create(pr_name, (sg_host_t)vms[i], &worker_fun, 0, NULL);
 
     free(vm_name);
     free(pr_name);

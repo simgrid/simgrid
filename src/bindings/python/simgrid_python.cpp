@@ -938,7 +938,7 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class ActivitySet */
   py::class_<ActivitySet, ActivitySetPtr>(m, "ActivitySet", "ActivitySet. See the C++ documentation for details.")
-      .def(py::init([](std::vector<simgrid::s4u::ActivityPtr> activities) {
+      .def(py::init([](const std::vector<simgrid::s4u::ActivityPtr>& activities) {
              auto* ret = new ActivitySet();
              for (auto a : activities)
                ret->push(a);
@@ -970,6 +970,6 @@ PYBIND11_MODULE(simgrid, m)
            "Wait for the completion of one activity in the set, endlessly")
 
       .def(
-          "__repr__", [](const ActivitySetPtr as) { return "ActivitySet([...])"; },
+          "__repr__", [](const ActivitySetPtr) { return "ActivitySet([...])"; },
           "Textual representation of the ActivitySet");
 }

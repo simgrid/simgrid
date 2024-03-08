@@ -87,7 +87,7 @@ int main(int argc, char** argv)
   simgrid_init(&argc, argv);
   sg_storage_file_system_init();
   simgrid_load_platform(argv[1]);
-  sg_actor_create("host", sg_host_by_name("bob"), host, 0, NULL);
+  sg_actor_create("host", sg_host_by_name("bob"), &host, 0, NULL);
   simgrid_run();
 
   return 0;

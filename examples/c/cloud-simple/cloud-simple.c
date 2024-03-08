@@ -29,7 +29,7 @@ static void computation_fun(int argc, char* argv[])
 
 static void launch_computation_worker(sg_host_t host)
 {
-  sg_actor_create("compute", host, computation_fun, 0, NULL);
+  sg_actor_create("compute", host, &computation_fun, 0, NULL);
 }
 
 struct task_priv {
@@ -72,10 +72,10 @@ static void launch_communication_worker(sg_host_t tx_host, sg_host_t rx_host)
   char* mbox = bprintf("MBOX:%s-%s", sg_host_get_name(tx_host), sg_host_get_name(rx_host));
 
   const char* tx_argv[] = {"comm_tx", mbox, NULL};
-  sg_actor_create_("comm_tx", tx_host, communication_tx_fun, 2, tx_argv);
+  sg_actor_create_("comm_tx", tx_host, &communication_tx_fun, 2, tx_argv);
 
   const char* rx_argv[] = {"comm_rx", mbox, NULL};
-  sg_actor_create_("comm_rx", rx_host, communication_rx_fun, 2, rx_argv);
+  sg_actor_create_("comm_rx", rx_host, &communication_rx_fun, 2, rx_argv);
 
   xbt_free(mbox);
 }
@@ -232,7 +232,7 @@ int main(int argc, char* argv[])
   /* load the platform file */
   simgrid_load_platform(argv[1]);
 
-  sg_actor_create("master_", sg_host_by_name("Fafard"), master_main, 0, NULL);
+  sg_actor_create("master_", sg_host_by_name("Fafard"), &master_main, 0, NULL);
 
   simgrid_run();
   XBT_INFO("Simulation time %g", simgrid_get_clock());

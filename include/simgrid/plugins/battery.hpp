@@ -59,19 +59,19 @@ public:
      *  @return The state of charge at which the Handler will happen.
      *  @note For Battery::Handler objects
      */
-    double get_state_of_charge() { return state_of_charge_; }
+    double get_state_of_charge() const { return state_of_charge_; }
     /** @ingroup plugin_battery
      *  @return The flow in which the Handler will happen, either when the Battery is charging or discharging.
      *  @note For Battery::Handler objects
      */
-    Flow get_flow() { return flow_; }
+    Flow get_flow() const { return flow_; }
     /** @ingroup plugin_battery
      *  @return The time delta until the Handler happen.
      -1 means that is will never happen with the current state the Battery,
      for instance when there is no load connected to the Battery.
      *  @note For Battery::Handler objects
     */
-    double get_time_delta() { return time_delta_; }
+    double get_time_delta() const { return time_delta_; }
     /** @ingroup plugin_battery
      *  @return The callback to trigger when the Handler happen.
      *  @note For Battery::Handler objects
@@ -81,7 +81,7 @@ public:
      *  @return true if its a recurrent Handler.
      *  @note For Battery::Handler objects
      */
-    Persistancy get_persistancy() { return persistancy_; }
+    Persistancy get_persistancy() const { return persistancy_; }
   };
 
 private:
@@ -132,14 +132,14 @@ public:
                          double initial_capacity_wh, int cycles);
   void set_load(const std::string& name, double power_w);
   void set_load(const std::string& name, bool active);
-  void connect_host(s4u::Host* host, bool active = true);
+  void connect_host(const s4u::Host* host, bool active = true);
   std::string get_name() const { return name_; }
-  double get_state_of_charge();
-  double get_state_of_health();
-  double get_capacity();
-  double get_energy_provided();
-  double get_energy_consumed();
-  double get_energy_stored(std::string unit = "J");
+  double get_state_of_charge() const;
+  double get_state_of_health() const;
+  double get_capacity() const;
+  double get_energy_provided() const;
+  double get_energy_consumed() const;
+  double get_energy_stored(const std::string& unit = "J") const;
   std::shared_ptr<Handler> schedule_handler(double state_of_charge, Flow flow, Handler::Persistancy p,
                                             std::function<void()> callback);
   std::vector<std::shared_ptr<Handler>> get_handlers();

@@ -85,21 +85,21 @@ public:
   ChillerPtr set_goal_temp(double goal_temp_c);
   ChillerPtr set_max_power(double max_power_w);
   ChillerPtr set_active(bool active);
-  ChillerPtr add_host(simgrid::s4u::Host* host);
-  ChillerPtr remove_host(simgrid::s4u::Host* host);
+  ChillerPtr add_host(const simgrid::s4u::Host* host);
+  ChillerPtr remove_host(const simgrid::s4u::Host* host);
 
-  std::string get_name() { return name_; }
-  const char* get_cname() { return name_.c_str(); }
-  double get_air_mass() { return air_mass_kg_; }
-  double get_specific_heat() { return specific_heat_j_per_kg_per_c_; }
-  double get_alpha() { return alpha_; }
-  double get_cooling_efficiency() { return cooling_efficiency_; }
-  double get_goal_temp() { return goal_temp_c_; }
-  double get_max_power() { return max_power_w_; }
-  bool is_active() { return active_; }
-  double get_temp_in() { return temp_in_c_; }
-  double get_power() { return power_w_; }
-  double get_energy_consumed() { return energy_consumed_j_; }
+  std::string get_name() const { return name_; }
+  const char* get_cname() const { return name_.c_str(); }
+  double get_air_mass() const { return air_mass_kg_; }
+  double get_specific_heat() const { return specific_heat_j_per_kg_per_c_; }
+  double get_alpha() const { return alpha_; }
+  double get_cooling_efficiency() const { return cooling_efficiency_; }
+  double get_goal_temp() const { return goal_temp_c_; }
+  double get_max_power() const { return max_power_w_; }
+  bool is_active() const { return active_; }
+  double get_temp_in() const { return temp_in_c_; }
+  double get_power() const { return power_w_; }
+  double get_energy_consumed() const { return energy_consumed_j_; }
   double get_time_to_goal_temp() const;
 };
 

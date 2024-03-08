@@ -42,7 +42,7 @@ static void monitor(int argc, char* argv[])
 
   int actor_argc           = 3;
   const char* actor_argv[] = {"worker", "Boivin", "Jacquelin", NULL};
-  sg_actor_t actor         = sg_actor_create_("worker", sg_host_by_name("Fafard"), worker, actor_argc, actor_argv);
+  sg_actor_t actor         = sg_actor_create_("worker", sg_host_by_name("Fafard"), &worker, actor_argc, actor_argv);
 
   sg_actor_sleep_for(5);
 
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s platform.xml\n", argv[0], argv[0]);
 
   simgrid_load_platform(argv[1]); /* - Load the platform description */
-  sg_actor_create("monitor", sg_host_by_name("Boivin"), monitor, 0, NULL);
+  sg_actor_create("monitor", sg_host_by_name("Boivin"), &monitor, 0, NULL);
 
   simgrid_run();
 

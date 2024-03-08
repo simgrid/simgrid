@@ -25,8 +25,8 @@ namespace simgrid::kernel::resource {
 /*********
  * Model *
  *********/
-Action* HostModel::io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk,
-                                double size)
+Action* HostModel::io_stream(s4u::Host* src_host, const DiskImpl* src_disk, s4u::Host* dst_host,
+                             const DiskImpl* dst_disk, double size)
 {
   auto* net_model = src_host->get_englobing_zone()->get_network_model();
   auto* system    = net_model->get_maxmin_system();

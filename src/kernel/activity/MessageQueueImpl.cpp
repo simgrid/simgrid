@@ -39,7 +39,7 @@ void MessageQueueImpl::clear()
 void MessageQueueImpl::push(const MessImplPtr& mess)
 {
   mess->set_queue(this);
-  this->queue_.push_back(std::move(mess));
+  this->queue_.push_back(mess);
 }
 
 void MessageQueueImpl::remove(const MessImplPtr& mess)

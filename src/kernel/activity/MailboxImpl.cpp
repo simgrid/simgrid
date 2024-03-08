@@ -49,7 +49,7 @@ void MailboxImpl::set_receiver(s4u::ActorPtr actor)
 void MailboxImpl::push(const CommImplPtr& comm)
 {
   comm->set_mailbox(this);
-  this->comm_queue_.push_back(std::move(comm));
+  this->comm_queue_.push_back(comm);
 }
 
 /** @brief Removes a communication activity from a mailbox

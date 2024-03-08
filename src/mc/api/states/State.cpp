@@ -21,7 +21,7 @@ namespace simgrid::mc {
 
 long State::expended_states_ = 0;
 
-State::State(RemoteApp& remote_app) : num_(++expended_states_)
+State::State(const RemoteApp& remote_app) : num_(++expended_states_)
 {
   XBT_VERB("Creating a guide for the state");
 
@@ -40,7 +40,7 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
   remote_app.get_actors_status(strategy_->actors_to_run_);
 }
 
-State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
+State::State(const RemoteApp& remote_app, std::shared_ptr<State> parent_state)
     : incoming_transition_(parent_state->get_transition_out()), num_(++expended_states_), parent_state_(parent_state)
 {
   if (_sg_mc_strategy == "none")

@@ -15,11 +15,11 @@ def bob():
   disk = Host.current().get_disks()[0]
 
   this_actor.info("Create my asynchronous activities")
-  exec = this_actor.exec_async(5e9)
+  exe  = this_actor.exec_async(5e9)
   comm = mbox.get_async()
   io   = disk.read_async(300000000)
 
-  pending_activities = ActivitySet([exec, comm])
+  pending_activities = ActivitySet([exe, comm])
   pending_activities.push(io) # Activities can be pushed after creation, too
  
   this_actor.info("Sleep_for a while")

@@ -24,7 +24,7 @@ public:
   s4u::Host* get_controller() const { return controller_; }
   const char* get_cname() const { return controller_->get_cname(); }
   const std::string& get_name() const { return controller_->get_name(); }
-  int get_parity_disk_idx() { return parity_disk_idx_; }
+  int get_parity_disk_idx() const { return parity_disk_idx_; }
   void update_parity_disk_idx() { parity_disk_idx_ = (parity_disk_idx_- 1) % num_disks_; }
 
   int get_next_read_disk_idx() { return (++read_disk_idx_) % num_disks_; }

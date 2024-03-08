@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
 
   free(hosts);
 
-  sg_actor_create("", sg_host_by_name("bob"), host, 0, NULL);
+  sg_actor_create("", sg_host_by_name("bob"), &host, 0, NULL);
 
   simgrid_run();
 

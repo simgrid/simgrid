@@ -31,7 +31,7 @@ static void bob()
   while (not pending_activities.empty()) {
     try {
       pending_activities.wait_all_for(1);
-    } catch (simgrid::TimeoutException& e) {
+    } catch (simgrid::TimeoutException&) {
       XBT_INFO("Not all activities are terminated yet.");
     }
     while (auto completed_one = pending_activities.test_any()) {

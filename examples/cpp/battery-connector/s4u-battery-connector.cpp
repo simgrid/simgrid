@@ -36,9 +36,8 @@ int main(int argc, char* argv[])
   connector->set_load("Solar Panel", solar_panel->get_power() * -1);
   connector->connect_host(myhost1);
 
-  solar_panel->on_this_power_change_cb([connector](sp::SolarPanel *s) {
-    connector->set_load("Solar Panel", s->get_power() * -1);
-  });
+  solar_panel->on_this_power_change_cb(
+      [connector](const sp::SolarPanel* s) { connector->set_load("Solar Panel", s->get_power() * -1); });
 
   sg4::Actor::create("manager", myhost1, [&myhost1, & solar_panel, &connector]{
     XBT_INFO("Solar Panel power = %.2fW, MyHost1 power = %.2fW. The Solar Panel provides more than needed.", solar_panel->get_power(), sg_host_get_current_consumption(myhost1));

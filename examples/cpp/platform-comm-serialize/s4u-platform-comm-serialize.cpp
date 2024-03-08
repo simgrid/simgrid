@@ -72,7 +72,7 @@ public:
 
     XBT_INFO("Wait for %d messages asynchronously", messages_count);
     for (int i = 0; i < messages_count; i++) {
-      std::shared_ptr<std::string*> msg =std::make_shared<std::string*>();
+      auto msg  = std::make_shared<std::string*>();
       auto comm = mbox->get_async<std::string>(msg.get());
       pending_comms.push(comm);
       pending_msgs.insert({comm, msg});

@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 {
   simgrid_init(&argc, argv);
   simgrid_load_platform(argv[1]);
-  sg_actor_create("test", sg_host_by_name("Fafard"), wizard, 0, NULL);
+  sg_actor_create("test", sg_host_by_name("Fafard"), &wizard, 0, NULL);
 
   simgrid_run();
 

@@ -39,8 +39,8 @@ protected:
   std::shared_ptr<StratLocalInfo> strategy_;
 
 public:
-  explicit State(RemoteApp& remote_app);
-  explicit State(RemoteApp& remote_app, std::shared_ptr<State> parent_state);
+  explicit State(const RemoteApp& remote_app);
+  explicit State(const RemoteApp& remote_app, std::shared_ptr<State> parent_state);
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const; // this function should disapear as it is redundant with the next one
 

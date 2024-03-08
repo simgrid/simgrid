@@ -372,7 +372,7 @@ void Battery::set_load(const std::string& name, bool active)
     @warning Do NOT connect the same Host to multiple Batteries with the status true at the same time.
     In this case all Batteries would have the full consumption from this Host.
  */
-void Battery::connect_host(s4u::Host* host, bool active)
+void Battery::connect_host(const s4u::Host* host, bool active)
 {
   kernel::actor::simcall_answered([this, &host, &active] { host_loads_[host] = active; });
 }
@@ -380,7 +380,7 @@ void Battery::connect_host(s4u::Host* host, bool active)
 /** @ingroup plugin_battery
  *  @return The state of charge of the battery.
  */
-double Battery::get_state_of_charge()
+double Battery::get_state_of_charge() const
 {
   return energy_stored_j_ / (3600 * capacity_wh_);
 }
@@ -388,7 +388,7 @@ double Battery::get_state_of_charge()
 /** @ingroup plugin_battery
  *  @return The state of health of the Battery.
  */
-double Battery::get_state_of_health()
+double Battery::get_state_of_health() const
 {
   return 1 -
          ((energy_provided_j_ / discharge_efficiency_ + energy_consumed_j_ * charge_efficiency_) / energy_budget_j_);
@@ -397,7 +397,7 @@ double Battery::get_state_of_health()
 /** @ingroup plugin_battery
  *  @return The current capacity of the Battery.
  */
-double Battery::get_capacity()
+double Battery::get_capacity() const
 {
   return capacity_wh_;
 }
@@ -407,7 +407,7 @@ double Battery::get_capacity()
  *  @note It is the energy provided from an external point of view, after application of the discharge efficiency.
           It means that the Battery lost more energy than it has provided.
  */
-double Battery::get_energy_provided()
+double Battery::get_energy_provided() const
 {
   return energy_provided_j_;
 }
@@ -417,7 +417,7 @@ double Battery::get_energy_provided()
  *  @note It is the energy consumed from an external point of view, before application of the charge efficiency.
           It means that the Battery consumed more energy than is has absorbed.
  */
-double Battery::get_energy_consumed()
+double Battery::get_energy_consumed() const
 {
   return energy_consumed_j_;
 }
@@ -426,7 +426,7 @@ double Battery::get_energy_consumed()
  *  @param unit Valid units are J (default) and Wh.
  *  @return Energy stored in the Battery.
  */
-double Battery::get_energy_stored(std::string unit)
+double Battery::get_energy_stored(const std::string& unit) const
 {
   if (unit == "J")
     return energy_stored_j_;

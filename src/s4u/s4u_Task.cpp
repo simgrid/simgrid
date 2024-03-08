@@ -58,7 +58,7 @@ void Task::receive(Task* source)
  *        The collector instance triggers the on_completion signals and sends tokens to successors.
  *        Others instances enqueue a firing of the collector instance.
  */
-void Task::complete(std::string instance)
+void Task::complete(const std::string& instance)
 {
   xbt_assert(Actor::is_maestro());
   running_instances_[instance]--;
@@ -90,7 +90,7 @@ void Task::complete(std::string instance)
  *        When increasing the degree new executions are started if there is queued firings.
  *        When decreasing the degree instances already running are NOT stopped.
  */
-void Task::set_parallelism_degree(int n, std::string instance)
+void Task::set_parallelism_degree(int n, const std::string& instance)
 {
   xbt_assert(n > 0, "Parallelism degree must be above 0.");
   simgrid::kernel::actor::simcall_answered([this, n, &instance] {
@@ -113,7 +113,7 @@ void Task::set_parallelism_degree(int n, std::string instance)
  *  @note Internal bytes are used for Comms between the dispatcher and instance_n,
  *        and between instance_n and the collector if they are not on the same host.
  */
-void Task::set_internal_bytes(int bytes, std::string instance)
+void Task::set_internal_bytes(int bytes, const std::string& instance)
 {
   simgrid::kernel::actor::simcall_answered([this, bytes, &instance] { internal_bytes_to_send_[instance] = bytes; });
 }
@@ -171,7 +171,7 @@ void Task::deque_token_from(TaskPtr t)
   simgrid::kernel::actor::simcall_answered([this, &t] { tokens_received_[t].pop_front(); });
 }
 
-void Task::fire(std::string instance)
+void Task::fire(const std::string& instance)
 {
   if ((int)current_activities_[instance].size() > parallelism_degree_[instance]) {
     current_activities_[instance].pop_front();
@@ -291,7 +291,7 @@ ExecTaskPtr ExecTask::init(const std::string& name, double flops, Host* host)
  *        Comms are created if hosts differ between dispatcher and the instance to fire,
  *        or between the instance and the collector.
  */
-void ExecTask::fire(std::string instance)
+void ExecTask::fire(const std::string& instance)
 {
   Task::fire(instance);
   if (instance == "dispatcher" or instance == "collector") {
@@ -407,7 +407,7 @@ CommTaskPtr CommTask::init(const std::string& name, double bytes, Host* source, 
 /** @param instance The Task instance to fire.
  *  @note Only the dispatcher instance triggers the on_start signal.
  */
-void CommTask::fire(std::string instance)
+void CommTask::fire(const std::string& instance)
 {
   Task::fire(instance);
   if (instance == "dispatcher" or instance == "collector") {
@@ -509,7 +509,7 @@ IoTaskPtr IoTask::set_op_type(Io::OpType type)
 /** @param instance The Task instance to fire.
  *  @note Only the dispatcher instance triggers the on_start signal.
  */
-void IoTask::fire(std::string instance)
+void IoTask::fire(const std::string& instance)
 {
   Task::fire(instance);
   if (instance == "dispatcher" or instance == "collector") {

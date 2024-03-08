@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
   chiller->add_host(myhost1);
   chiller->add_host(myhost2);
   solar_panel->on_this_power_change_cb(
-      [battery](sp::SolarPanel* s) { battery->set_load("Solar Panel", s->get_power() * -1); });
+      [battery](const sp::SolarPanel* s) { battery->set_load("Solar Panel", s->get_power() * -1); });
 
   // These handlers connect/disconnect the solar panel and the hosts depending on the state of charge of the battery
   battery->schedule_handler(0.8, sp::Battery::CHARGE, sp::Battery::Handler::PERSISTANT,

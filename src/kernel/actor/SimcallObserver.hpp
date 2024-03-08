@@ -85,8 +85,8 @@ protected:
   ~DelayedSimcallObserver() = default;
 
 public:
-  DelayedSimcallObserver(ActorImpl* actor) : SimcallObserver(actor) {}
-  void get_result()
+  explicit DelayedSimcallObserver(ActorImpl* actor) : SimcallObserver(actor) {}
+  void get_result() const
   { /* Nothing to do */
   }
 };
@@ -124,7 +124,7 @@ public:
 /* Dummy observer, not visible by the checker but needed for the template to compile */
 class ActorSuspendSimcall final : public DelayedSimcallObserver<void> {
 public:
-  ActorSuspendSimcall(ActorImpl* actor) : DelayedSimcallObserver<void>(actor) {}
+  explicit ActorSuspendSimcall(ActorImpl* actor) : DelayedSimcallObserver<void>(actor) {}
   void serialize(std::stringstream& stream) const override { THROW_UNIMPLEMENTED; }
   std::string to_string() const override { THROW_UNIMPLEMENTED; }
   bool is_visible() const override { return false; }

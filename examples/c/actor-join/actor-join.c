@@ -25,22 +25,22 @@ static void master(int argc, char* argv[])
   const_sg_actor_t actor;
 
   XBT_INFO("Start sleeper");
-  actor = sg_actor_create("sleeper from master", sg_host_self(), sleeper, 0, NULL);
+  actor = sg_actor_create("sleeper from master", sg_host_self(), &sleeper, 0, NULL);
   XBT_INFO("Join the sleeper (timeout 2)");
   sg_actor_join(actor, 2);
 
   XBT_INFO("Start sleeper");
-  actor = sg_actor_create("sleeper from master", sg_host_self(), sleeper, 0, NULL);
+  actor = sg_actor_create("sleeper from master", sg_host_self(), &sleeper, 0, NULL);
   XBT_INFO("Join the sleeper (timeout 4)");
   sg_actor_join(actor, 4);
 
   XBT_INFO("Start sleeper");
-  actor = sg_actor_create("sleeper from master", sg_host_self(), sleeper, 0, NULL);
+  actor = sg_actor_create("sleeper from master", sg_host_self(), &sleeper, 0, NULL);
   XBT_INFO("Join the sleeper (timeout 2)");
   sg_actor_join(actor, 2);
 
   XBT_INFO("Start sleeper");
-  actor = sg_actor_create("sleeper from master", sg_host_self(), sleeper, 0, NULL);
+  actor = sg_actor_create("sleeper from master", sg_host_self(), &sleeper, 0, NULL);
   sg_actor_ref(actor); // We have to take that ref because the actor will stop before we join it
   XBT_INFO("Waiting 4");
   sg_actor_sleep_for(4);
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
   simgrid_load_platform(argv[1]);
 
-  sg_actor_create("master", sg_host_by_name("Tremblay"), master, 0, NULL);
+  sg_actor_create("master", sg_host_by_name("Tremblay"), &master, 0, NULL);
 
   simgrid_run();
 

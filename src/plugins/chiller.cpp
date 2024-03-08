@@ -264,7 +264,7 @@ ChillerPtr Chiller::set_active(bool active)
  *  @param host The host to add to the room managed by the Chiller.
  *  @return A ChillerPtr pointing to the modified Chiller.
  */
-ChillerPtr Chiller::add_host(s4u::Host* host)
+ChillerPtr Chiller::add_host(const s4u::Host* host)
 {
   simgrid::kernel::actor::simcall_answered([this, host] { hosts_.insert(host); });
   return this;
@@ -274,7 +274,7 @@ ChillerPtr Chiller::add_host(s4u::Host* host)
  *  @param host The host to remove from the room managed by the Chiller.
  *  @return A ChillerPtr pointing to the modified Chiller.
  */
-ChillerPtr Chiller::remove_host(s4u::Host* host)
+ChillerPtr Chiller::remove_host(const s4u::Host* host)
 {
   simgrid::kernel::actor::simcall_answered([this, host] { hosts_.erase(host); });
   return this;

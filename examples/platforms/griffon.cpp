@@ -72,7 +72,6 @@ void load_platform(const sg4::Engine& /*e*/)
    */
 
   auto* root = sg4::create_star_zone("AS_griffon");
-  sg4::NetZone* cab_zone;
 
   /* create top link */
   const sg4::Link* l_bb = root->create_link("backbone", "1.25GBps")->set_latency("24us")->seal();
@@ -84,7 +83,7 @@ void load_platform(const sg4::Engine& /*e*/)
   rad[rad.size() - 1]  = 60;
   rad[rad.size() - 2]  = 59;
   rad[rad.size() - 3]  = 58;
-  cab_zone             = create_cabinet(root, "cabinet1", rad);
+  const sg4::NetZone* cab_zone = create_cabinet(root, "cabinet1", rad);
   root->add_route(cab_zone, nullptr, {backbone});
 
   /* create cabinet2 */
