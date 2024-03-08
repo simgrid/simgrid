@@ -79,9 +79,8 @@ public:
   int get_running_count(const std::string& instance = "instance_0") const { return running_instances_.at(instance); }
   /** @return Number of times this instance of this Task has been completed */
   int get_count(const std::string& instance = "collector") const { return count_.at(instance); }
-  /** @param n The parallelism degree to set
-   *  @brief The parallelism degree defines how many of this instance can run in parallel. */
-  void set_parallelism_degree(int n, const std::string& instance = "all");
+  /** @brief The parallelism degree defines how many of this instance can run in parallel. */
+  void set_parallelism_degree(int new_degree, const std::string& instance = "all");
   /** @return Parallelism degree of this instance of this Task */
   int get_parallelism_degree(const std::string& instance = "instance_0") const
   {

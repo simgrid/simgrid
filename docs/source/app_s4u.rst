@@ -97,8 +97,8 @@ provides many helper functions to simplify the code of actors.
 .. |API_s4u_Activities| replace:: **Activities**
 .. _API_s4u_Activities: #api-s4u-activity
 
-.. |API_s4u_Tasks| replace:: **Tasks**
-.. _API_s4u_Tasks: #api-s4u-task
+.. |API_s4u_Tasks_link| replace:: **Tasks**
+.. _API_s4u_Tasks_link: #api-s4u-task
 
 .. |API_s4u_Hosts| replace:: **Hosts**
 .. _API_s4u_Hosts: #api-s4u-host
@@ -185,13 +185,13 @@ Repeatable Activities
 =====================
 
 In order to simulate the execution of Dataflow applications, we introduced the
-concept of |API_s4u_Tasks|, that can be seen as repeatable activities. A Dataflow
-is defined as a graph of |API_s4u_Tasks|, where each |API_s4u_Tasks| has a set of
-successors and predecessors. When a |API_s4u_Tasks| ends it sends a token to each
-of its successors. Each |API_s4u_Tasks| has to receive a token from each of its
+concept of |API_s4u_Tasks_link|, that can be seen as repeatable activities. A Dataflow
+is defined as a graph of |API_s4u_Tasks_link|, where each |API_s4u_Tasks_link| has a set of
+successors and predecessors. When a |API_s4u_Tasks_link| ends it sends a token to each
+of its successors. Each |API_s4u_Tasks_link| has to receive a token from each of its
 predecessor to start. Tokens can carry any user-defined data.
 
-|API_s4u_Tasks| are composed of several instances: a dispatcher, a collector, and
+|API_s4u_Tasks_link| are composed of several instances: a dispatcher, a collector, and
 instance_0 to instance_n. The dispatcher rely on a load balancing function to select
 the next instance to fire. Once this instance finishes it fires the collector.
 
@@ -201,7 +201,7 @@ another instance on a different host. Each instance has its own parallelism degr
 to scale horizontally on several cores.
 
 To initiate the execution of a Dataflow, it is possible to some make
-|API_s4u_Tasks| fire one or more activities without waiting for any token with the
+|API_s4u_Tasks_link| fire one or more activities without waiting for any token with the
 :cpp:func:`s4u::Task::enqueue_firings() <simgrid::s4u::Task::enqueue_firings>`
 function.
 
@@ -2695,7 +2695,7 @@ Dealing with failed activities
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::ActivitySet::get_failed_activity()
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::get_failed_activity() const
       .. doxygenfunction:: simgrid::s4u::ActivitySet::has_failed_activities()
 
 .. _API_s4u_Tasks:
@@ -2738,11 +2738,11 @@ Querying info
 
       .. doxygenfunction:: simgrid::s4u::Task::get_cname() const
       .. doxygenfunction:: simgrid::s4u::Task::get_name() const
-      .. doxygenfunction:: simgrid::s4u::Task::get_count(std::string instance) const
-      .. doxygenfunction:: simgrid::s4u::Task::get_amount(std::string instance) const
-      .. doxygenfunction:: simgrid::s4u::Task::get_queued_firings(std::string instance) const
-      .. doxygenfunction:: simgrid::s4u::Task::get_running_count(std::string instance) const
-      .. doxygenfunction:: simgrid::s4u::Task::get_parallelism_degree(std::string instance) const
+      .. doxygenfunction:: simgrid::s4u::Task::get_count(const std::string& instance) const
+      .. doxygenfunction:: simgrid::s4u::Task::get_amount(const std::string& instance) const
+      .. doxygenfunction:: simgrid::s4u::Task::get_queued_firings(const std::string& instance) const
+      .. doxygenfunction:: simgrid::s4u::Task::get_running_count(const std::string& instance) const
+      .. doxygenfunction:: simgrid::s4u::Task::get_parallelism_degree(const std::string& instance) const
       .. doxygenfunction:: simgrid::s4u::Task::set_name(std::string name)
 
 Life cycle
@@ -3022,7 +3022,7 @@ Locking
 
       .. doxygenfunction:: simgrid::s4u::Barrier::create(unsigned int expected_actors)
       .. doxygenfunction:: simgrid::s4u::Barrier::wait()
-      .. doxygenfunction:: simgrid::s4u::Barrier::to_string()   
+      .. doxygenfunction:: simgrid::s4u::Barrier::to_string() const
 
    .. group-tab:: Python
 
@@ -3094,13 +3094,9 @@ Waiting and notifying
          .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait(const std::unique_lock< s4u::Mutex > &lock)
          .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait(const std::unique_lock< Mutex > &lock, P pred)
          .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, double duration)
-         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, double duration, P pred)
          .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, std::chrono::duration< Rep, Period > duration)
-         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, std::chrono::duration< Rep, Period > duration, P pred)
          .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, const SimulationTimePoint< Duration > &timeout_time)
-         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, const SimulationTimePoint< Duration > &timeout_time, P pred)
          .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, double timeout_time)
-         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, double timeout_time, P pred)
 
       .. group-tab:: C
 
