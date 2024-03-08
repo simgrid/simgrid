@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
 
   // Add a function to be called when tasks end for log purpose
   int requests_processed = 0;
-  sg4::Task::on_completion_cb([&e, &requests_processed](const sg4::Task* t) {
+  sg4::Task::on_completion_cb([&requests_processed](const sg4::Task* t) {
     auto timenow = sg4::Engine::get_clock();
     if (t->get_name() == "post_storage_service" and timenow < 7 and timenow > 2)
       requests_processed++;
