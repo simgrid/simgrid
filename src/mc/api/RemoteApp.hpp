@@ -47,6 +47,8 @@ public:
 
   /** Rollback the application to the state passed as argument or to the beginning of history if from == nullptr */
   void restore_checker_side(CheckerSide* from);
+  /** Make a clone of the checker side. The application is forked. */
+  std::unique_ptr<CheckerSide> clone_checker_side();
   void wait_for_requests();
 
   /** Ask to the application to check for a deadlock. If so, returns true. */

@@ -6,6 +6,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simgrid/sg_config.hpp"
+#include "xbt/config.hpp"
 #include <simgrid/modelchecker.h>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_cfg);
@@ -55,6 +56,12 @@ static simgrid::config::Flag<std::string> cfg_mc_reduction{
         xbt_die("configuration option 'model-check/reduction' must be one of the following: "
                 " 'none', 'dpor', 'sdpor', 'odpor', or 'udpor'");
     }};
+
+simgrid::config::Flag<int> _sg_mc_cached_states_interval{
+    "model-check/cached-states-interval",
+    "Specify how often a state factory shall be created. This enables fast state restore at the cost of wasted memory.",
+    1000,
+    [](int val) { xbt_assert(val >= 0, "The value of model-check/cached-states-interval must be positive or null"); }};
 
 simgrid::config::Flag<std::string> _sg_mc_explore_algo{
     "model-check/exploration-algo",

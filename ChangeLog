@@ -9,6 +9,10 @@ SimGrid (3.35.1) not released (target: Feb 24)
 Models:
 - Introduce a raw network model with overly simplistic equations, for non-TCP settings.
 
+Model-checker:
+- Introduce option 'model-check/cached-states-interval' to control how often the application state is cached using fork, to
+  speedup later restore when exploring other execution branches.
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.35) November 23. 2023

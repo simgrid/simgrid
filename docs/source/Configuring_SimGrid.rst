@@ -109,6 +109,7 @@ Existing Configuration Items
 
 - **model-check:** :ref:`options_modelchecking`
 - **model-check/communications-determinism:** :ref:`cfg=model-check/communications-determinism`
+- **model-check/cached-states-interval:** :ref:`cfg=model-check/cached-states-interval`
 - **model-check/dot-output:** :ref:`cfg=model-check/dot-output`
 - **model-check/max-deadlocks:** :ref:`cfg=model-check/max-deadlocks`
 - **model-check/max-depth:** :ref:`cfg=model-check/max-depth`
@@ -738,6 +739,24 @@ The ``model-check/communications-determinism`` and
 ``model-check/send-determinism`` items can be used to select the
 communication determinism mode of the model checker, which checks
 determinism properties of the communications of an application.
+
+.. _cfg=model-check/cached-states-interval:
+
+Caching states for Performance
+------------------------------
+
+To explore new execution branches, the verified application must be rollback to its original state, and some transitions must be
+replayed to bring the application to the desired decision point. If the application induces many computations, replaying the
+transition from the beginning of the application can be time-consuming.  To save time, one can use the
+``cached-states-interval`` configuration item to save intermediate states that can be used as a starting point while restoring
+an applicative state. This is implemented by forking the executing application to later restart from that fork instead of from
+the begining.
+
+By default, one in every 1000 states is cached this way. If the used value is 0, then no state gets cached. Caching too little
+states forces many useless transitions replays (consuming time) while caching too much states may exhaust the memory and other
+resources. Increasing the maximal amount of open file per process on your machine may allow to cache more states if your memory
+allows. States get removed from the memory once they become useless, so your resource consumption should plateau at some point
+during the exploration.
 
 .. _cfg=model-check/setenv:
 

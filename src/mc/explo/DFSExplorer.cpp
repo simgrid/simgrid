@@ -99,6 +99,9 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
            executed_transition->to_string().c_str(), state_stack.size(), state->get_num(), state->count_todo());
 
   auto next_state = reduction_algo_->state_create(get_remote_app(), state);
+  if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
+    next_state->set_state_factory(get_remote_app().clone_checker_side());
+  }
   on_state_creation_signal(next_state.get(), get_remote_app());
 
   state_stack.emplace_back(std::move(next_state));

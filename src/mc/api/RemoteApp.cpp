@@ -79,6 +79,10 @@ void RemoteApp::restore_checker_side(CheckerSide* from)
       checker_side_ = from->clone(master_socket_, master_socket_name);
     }
 }
+std::unique_ptr<CheckerSide> RemoteApp::clone_checker_side()
+{
+    return checker_side_->clone(master_socket_, master_socket_name);
+}
 
 unsigned long RemoteApp::get_maxpid() const
 {
