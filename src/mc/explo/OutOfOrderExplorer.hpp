@@ -34,7 +34,6 @@ private:
 
   static xbt::signal<void(State*, RemoteApp&)> on_state_creation_signal;
 
-  static xbt::signal<void(State*, RemoteApp&)> on_restore_system_state_signal;
   static xbt::signal<void(Transition*, RemoteApp&)> on_transition_execute_signal;
 
   static xbt::signal<void(RemoteApp&)> on_log_state_signal;
@@ -54,11 +53,6 @@ public:
   static void on_state_creation(std::function<void(State*, RemoteApp& remote_app)> const& f)
   {
     on_state_creation_signal.connect(f);
-  }
-  /** Called when rollbacking directly onto a previously checkpointed state */
-  static void on_restore_system_state(std::function<void(State*, RemoteApp& remote_app)> const& f)
-  {
-    on_restore_system_state_signal.connect(f);
   }
   /** Called when executing a new transition */
   static void on_transition_execute(std::function<void(Transition*, RemoteApp& remote_app)> const& f)

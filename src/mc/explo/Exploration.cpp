@@ -22,7 +22,7 @@ static simgrid::config::Flag<std::string> cfg_dot_output_file{
 
 Exploration* Exploration::instance_ = nullptr; // singleton instance
 
-xbt::signal<void(RemoteApp&)> Exploration::on_restore_initial_state_signal;
+xbt::signal<void(State&, RemoteApp&)> Exploration::on_restore_state_signal;
 xbt::signal<void(Transition*, RemoteApp&)> Exploration::on_transition_replay_signal;
 xbt::signal<void(RemoteApp&)> Exploration::on_backtracking_signal;
 
@@ -152,13 +152,21 @@ void Exploration::backtrack_to_state(State* target_state)
 
   std::deque<Transition*> replay_recipe;
   auto* state = target_state;
+  State* root_state = nullptr;
   for (; state != nullptr && not state->has_state_factory(); state = state->get_parent_state().get()) {
     if (state->get_transition_in() != nullptr) // The root has no transition_in
       replay_recipe.push_front(state->get_transition_in().get());
+    else
+      root_state = state;
   }
 
-  get_remote_app().restore_checker_side(state != nullptr ? state->get_state_factory() : nullptr);
-  on_restore_initial_state_signal(get_remote_app());
+  if (state == nullptr) { /* restart from the root */
+    get_remote_app().restore_checker_side(nullptr);
+    on_restore_state_signal(*root_state, get_remote_app());
+  } else { /* Found an intermediate restart point */
+    get_remote_app().restore_checker_side(state->get_state_factory());
+    on_restore_state_signal(*state, get_remote_app());
+  }
 
   for (auto& transition : replay_recipe) {
     transition->replay(get_remote_app());

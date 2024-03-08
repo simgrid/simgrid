@@ -81,15 +81,15 @@ public:
 
   RemoteApp& get_remote_app() { return *remote_app_.get(); }
 
-  static xbt::signal<void(RemoteApp&)> on_restore_initial_state_signal;
+  static xbt::signal<void(State&, RemoteApp&)> on_restore_state_signal;
   static xbt::signal<void(Transition*, RemoteApp&)> on_transition_replay_signal;
   static xbt::signal<void(RemoteApp&)> on_backtracking_signal;
 
   /** Called when the state to which we backtrack was not checkpointed state, forcing us to restore the initial state
    * before replaying some transitions */
-  static void on_restore_initial_state(std::function<void(RemoteApp& remote_app)> const& f)
+  static void on_restore_state(std::function<void(State& state, RemoteApp& remote_app)> const& f)
   {
-    on_restore_initial_state_signal.connect(f);
+    on_restore_state_signal.connect(f);
   }
   /** Called when replaying a transition that was previously executed, to reach a backtracked state */
   static void on_transition_replay(std::function<void(Transition*, RemoteApp& remote_app)> const& f)

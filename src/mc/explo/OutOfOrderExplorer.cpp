@@ -40,7 +40,6 @@ xbt::signal<void(RemoteApp&)> OutOfOrderExplorer::on_exploration_start_signal;
 
 xbt::signal<void(State*, RemoteApp&)> OutOfOrderExplorer::on_state_creation_signal;
 
-xbt::signal<void(State*, RemoteApp&)> OutOfOrderExplorer::on_restore_system_state_signal;
 xbt::signal<void(Transition*, RemoteApp&)> OutOfOrderExplorer::on_transition_execute_signal;
 
 xbt::signal<void(RemoteApp&)> OutOfOrderExplorer::on_log_state_signal;
