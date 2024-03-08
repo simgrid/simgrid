@@ -18,7 +18,7 @@ using namespace simgrid::mc;
 
 int main(int argc, char** argv)
 {
-  xbt_assert(argc >= 2, "Missing arguments");
+  xbt_assert(argc >= 2, "Missing arguments. Which executable shall we verify today?");
 
   // Currently, we need this before sg_config_init:
   simgrid::mc::set_model_checking_mode(simgrid::mc::ModelCheckingMode::CHECKER_SIDE);
