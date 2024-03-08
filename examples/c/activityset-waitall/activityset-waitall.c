@@ -36,6 +36,7 @@ static void bob()
   sg_activity_unref((sg_activity_t)comm);
 
   XBT_INFO("All activities are completed.");
+  sg_activity_set_delete(pending_activities);
   free(payload);
 }
 

@@ -48,6 +48,7 @@ static void bob()
   }
 
   XBT_INFO("Last activity is complete");
+  sg_activity_set_delete(pending_activities);
   free(payload);
 }
 
