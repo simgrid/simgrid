@@ -30,7 +30,7 @@ class XBT_PUBLIC SemAcquisitionImpl : public ActivityImpl_T<SemAcquisitionImpl> 
   friend actor::SemaphoreAcquisitionObserver;
 
 public:
-  SemAcquisitionImpl(actor::ActorImpl* issuer, SemaphoreImpl* sem) : issuer_(issuer), semaphore_(sem) {}
+  SemAcquisitionImpl(actor::ActorImpl* issuer, SemaphoreImpl* sem);
   SemaphoreImplPtr get_semaphore() { return semaphore_; }
   actor::ActorImpl* get_issuer() { return issuer_; }
 

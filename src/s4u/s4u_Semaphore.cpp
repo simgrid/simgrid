@@ -19,13 +19,13 @@ namespace simgrid::s4u {
 SemaphorePtr Semaphore::create(unsigned int initial_capacity)
 {
   auto* sem = new kernel::activity::SemaphoreImpl(initial_capacity);
-  XBT_VERB("Create semaphore %p of capacity %u", &sem, initial_capacity);
+  XBT_VERB("Create semaphore %u of capacity %u", sem->get_id(), initial_capacity);
   return SemaphorePtr(&sem->sem(), false);
 }
 
 void Semaphore::acquire()
 {
-  XBT_VERB("Acquire semaphore %p", pimpl_);
+  XBT_VERB("Acquire semaphore %u", pimpl_->get_id());
   acquire_timeout(-1);
 }
 
@@ -57,7 +57,7 @@ void Semaphore::release()
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::SemaphoreObserver observer{issuer, mc::Transition::Type::SEM_UNLOCK, pimpl_};
 
-  XBT_VERB("Release semaphore %p", pimpl_);
+  XBT_VERB("Release semaphore %u", pimpl_->get_id());
   kernel::actor::simcall_answered([this] { pimpl_->release(); }, &observer);
 }
 

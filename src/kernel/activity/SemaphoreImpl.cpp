@@ -11,12 +11,17 @@
 #include "src/kernel/resource/CpuImpl.hpp"
 
 #include <cmath> // std::isfinite
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_semaphore, ker_synchro, "Semaphore kernel-space implementation");
 
 namespace simgrid::kernel::activity {
 
 /* -------- Acquisition -------- */
+SemAcquisitionImpl::SemAcquisitionImpl(actor::ActorImpl* issuer, SemaphoreImpl* sem) : issuer_(issuer), semaphore_(sem)
+{
+  set_name(std::string("on semaphore ") + std::to_string(sem->get_id()));
+}
 
 void SemAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 {
