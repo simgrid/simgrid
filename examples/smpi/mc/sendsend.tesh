@@ -19,10 +19,9 @@ $ $VALGRIND_NO_LEAK_CHECK ../../../smpi_script/bin/smpirun -quiet -wrapper "${bi
 > [0.000000] [mc_global/INFO] **************************
 > [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
 > [0.000000] [mc_global/INFO] **************************
-> [0.000000] [ker_engine/INFO] 2 actors are still running, waiting for something.
-> [0.000000] [ker_engine/INFO] Legend of the following listing: "Actor <pid> (<name>@<host>): <status>"
-> [0.000000] [ker_engine/INFO] Actor 1 (0@node-0.simgrid.org) simcall CommWait(comm_id:1 src:1 dst:-1 mbox:SMPI-2(id:2))
-> [0.000000] [ker_engine/INFO] Actor 2 (1@node-1.simgrid.org) simcall CommWait(comm_id:2 src:2 dst:-1 mbox:SMPI-1(id:3))
+> [0.000000] [ker_engine/INFO] 2 actors are still active, awaiting something. Here is their status:
+> [0.000000] [ker_engine/INFO]  - pid 1 (0@node-0.simgrid.org) simcall CommWait(comm_id:1 src:1 dst:-1 mbox:SMPI-2(id:2))
+> [0.000000] [ker_engine/INFO]  - pid 2 (1@node-1.simgrid.org) simcall CommWait(comm_id:2 src:2 dst:-1 mbox:SMPI-1(id:3))
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
 > [0.000000] [mc_global/INFO]   Actor 1 in :0:() ==> simcall: iSend(mbox=2)
 > [0.000000] [mc_global/INFO]   Actor 2 in :0:() ==> simcall: iSend(mbox=3)

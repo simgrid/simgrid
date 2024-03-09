@@ -46,7 +46,7 @@ public:
                          /* alphabetical */
                          MUTEX_ASYNC_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT,
                          /* alphabetical ordering of SEM transitions */
-                         SEM_ASYNC_LOCK, SEM_UNLOCK, SEM_WAIT,
+                         SEM_ASYNC_LOCK, SEM_UNLOCK, SEM_WAIT, /* This one is only out of MC */ SEM_LOCK,
                          /* UNKNOWN must be last */
                          UNKNOWN);
   Type type_ = Type::UNKNOWN;

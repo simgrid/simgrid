@@ -11,6 +11,9 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_config.hpp"
+#include "src/mc/transition/Transition.hpp"
+#include "xbt/backtrace.hpp"
+#include "xbt/log.h"
 
 #include <sstream>
 
@@ -100,6 +103,9 @@ void SemaphoreAcquisitionObserver::serialize(std::stringstream& stream) const
 }
 std::string SemaphoreAcquisitionObserver::to_string() const
 {
+  if (type_ == mc::Transition::Type::SEM_LOCK) // Out of MC, synchronous lock in one simcall
+    return std::string(mc::Transition::to_c_str(type_)) + "()";
+
   return std::string(mc::Transition::to_c_str(type_)) +
          "(sem_id:" + std::to_string(acquisition_->semaphore_->get_id()) + ' ' +
          (acquisition_->granted_ ? "granted)" : "not granted)");

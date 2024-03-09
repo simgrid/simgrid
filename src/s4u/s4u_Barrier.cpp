@@ -11,7 +11,8 @@
 #include "src/kernel/actor/SynchroObserver.hpp"
 #include "src/mc/mc_replay.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_barrier, s4u, "S4U barrier");
+XBT_LOG_NEW_SUBCATEGORY(s4u_synchro, s4u, "S4U synchronization objects");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_barrier, s4u_synchro, "S4U barrier");
 
 namespace simgrid::s4u {
 
