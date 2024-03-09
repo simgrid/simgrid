@@ -8,9 +8,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO] **************************
 > [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
 > [0.000000] [mc_global/INFO] **************************
-> [0.000000] [ker_engine/INFO] 1 actors are still running, waiting for something.
-> [0.000000] [ker_engine/INFO] Legend of the following listing: "Actor <pid> (<name>@<host>): <status>"
-> [0.000000] [ker_engine/INFO] Actor 1 (main thread@Lilibeth) simcall BARRIER_WAIT(barrier_id:0)
+> [0.000000] [ker_engine/INFO] 1 actor is still active, awaiting something. Here is its status:
+> [0.000000] [ker_engine/INFO]  - pid 1 (main thread@Lilibeth) simcall BARRIER_WAIT(barrier_id:0)
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
 > [0.000000] [mc_global/INFO]   Actor 1 in simcall BARRIER_ASYNC_LOCK(barrier: 0)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1'

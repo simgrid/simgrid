@@ -8,19 +8,18 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO] **************************
 > [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
 > [0.000000] [mc_global/INFO] **************************
-> [0.000000] [ker_engine/INFO] 11 actors are still running, waiting for something.
-> [0.000000] [ker_engine/INFO] Legend of the following listing: "Actor <pid> (<name>@<host>): <status>"
-> [0.000000] [ker_engine/INFO] Actor 1 (main thread@Lilibeth) simcall ActorJoin(pid:2)
-> [0.000000] [ker_engine/INFO] Actor 2 (thread 1@Lilibeth) simcall SEM_WAIT(sem_id:0 not granted)
-> [0.000000] [ker_engine/INFO] Actor 3 (thread 2@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
-> [0.000000] [ker_engine/INFO] Actor 4 (thread 3@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
-> [0.000000] [ker_engine/INFO] Actor 5 (thread 4@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
-> [0.000000] [ker_engine/INFO] Actor 6 (thread 5@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
-> [0.000000] [ker_engine/INFO] Actor 7 (thread 6@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
-> [0.000000] [ker_engine/INFO] Actor 8 (thread 7@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
-> [0.000000] [ker_engine/INFO] Actor 9 (thread 8@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
-> [0.000000] [ker_engine/INFO] Actor 10 (thread 9@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
-> [0.000000] [ker_engine/INFO] Actor 11 (thread 10@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [ker_engine/INFO] 11 actors are still active, awaiting something. Here is their status:
+> [0.000000] [ker_engine/INFO]  - pid 1 (main thread@Lilibeth) simcall ActorJoin(pid:2)
+> [0.000000] [ker_engine/INFO]  - pid 2 (thread 1@Lilibeth) simcall SEM_WAIT(sem_id:0 not granted)
+> [0.000000] [ker_engine/INFO]  - pid 3 (thread 2@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [ker_engine/INFO]  - pid 4 (thread 3@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [ker_engine/INFO]  - pid 5 (thread 4@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [ker_engine/INFO]  - pid 6 (thread 5@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [ker_engine/INFO]  - pid 7 (thread 6@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [ker_engine/INFO]  - pid 8 (thread 7@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [ker_engine/INFO]  - pid 9 (thread 8@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [ker_engine/INFO]  - pid 10 (thread 9@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [ker_engine/INFO]  - pid 11 (thread 10@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
