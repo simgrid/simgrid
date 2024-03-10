@@ -33,6 +33,7 @@ private:
 
 class UContextFactory : public SwappedContextFactory {
 public:
+  const char* get_name() const override { return "ucontext"; }
   UContext* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
 };
 } // namespace simgrid::kernel::context

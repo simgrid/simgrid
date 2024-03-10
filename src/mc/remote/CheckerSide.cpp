@@ -225,6 +225,7 @@ CheckerSide::CheckerSide(int socket, CheckerSide* child_checker)
   xbt_assert(answer.type == MessageType::FORK_REPLY,
              "Received unexpected message %s (%i); expected MessageType::FORK_REPLY (%i)", to_c_str(answer.type),
              (int)answer.type, (int)MessageType::FORK_REPLY);
+  xbt_assert(answer.value != 0, "Error while forking the application.");
   pid_ = answer.value;
 
   wait_for_requests();

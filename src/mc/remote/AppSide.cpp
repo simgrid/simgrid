@@ -12,6 +12,7 @@
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
+#include "xbt/log.h"
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif
@@ -138,6 +139,18 @@ void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
 }
 void AppSide::handle_fork(const s_mc_message_fork_t* msg)
 {
+  static bool first_time = true;
+  if (first_time && std::strcmp(simgrid::s4u::Engine::get_instance()->get_context_factory_name(), "thread") == 0) {
+    s_mc_message_int_t answer = {.type = MessageType::FORK_REPLY, .value = 0};
+    xbt_assert(channel_.send(answer) == 0, "Could not send failure as a response to FORK: %s", strerror(errno));
+
+    xbt_die("The SimGrid model-checker cannot handle the threaded context factory because it relies on forking the "
+            "application, "
+            "which is not possible with multi-threaded applications. Please remove the --cfg=contexts/factory=thread "
+            "parameter.");
+  }
+  first_time = false;
+
   int status;
   int pid;
   /* Reap any zombie child, saving its status for later use in AppSide::handle_wait_child() */
@@ -168,7 +181,7 @@ void AppSide::handle_fork(const s_mc_message_fork_t* msg)
     s_mc_message_int_t answer = {};
     answer.type               = MessageType::FORK_REPLY;
     answer.value              = getpid();
-    xbt_assert(channel_.send(answer) == 0, "Could not send response to WAIT_CHILD_REPLY: %s", strerror(errno));
+    xbt_assert(channel_.send(answer) == 0, "Could not send response to FORK: %s", strerror(errno));
   } else {
     XBT_VERB("App %d forks subprocess %d.", getpid(), pid);
   }

@@ -102,6 +102,11 @@ double Engine::get_clock()
   }
 }
 
+const char* Engine::get_context_factory_name() const
+{
+  return pimpl_->context_factory_->get_name();
+}
+
 std::vector<long long> Engine::get_papi_counters()
 {
 #if HAVE_PAPI

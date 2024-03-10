@@ -24,6 +24,8 @@ public:
   virtual ~ContextFactory();
   virtual Context* create_context(std::function<void()>&& code, actor::ActorImpl* actor) = 0;
 
+  virtual const char* get_name() const = 0;
+
   /** Turn the current thread into a simulation context */
   virtual Context* attach(actor::ActorImpl* actor);
   /** Turn the current thread into maestro (the old maestro becomes a regular actor) */

@@ -57,6 +57,7 @@ public:
   static s4u::Engine* get_instance(int* argc, char** argv);
   static bool has_instance() { return instance_ != nullptr; }
   const std::vector<std::string>& get_cmdline() const;
+  const char* get_context_factory_name() const;
 
   /**
    * Creates a new platform, including hosts, links, and the routing table.

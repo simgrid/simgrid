@@ -35,6 +35,7 @@ private:
 
 class RawContextFactory : public SwappedContextFactory {
 public:
+  const char* get_name() const override { return "raw"; }
   RawContext* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
 };
 } // namespace simgrid::kernel::context
