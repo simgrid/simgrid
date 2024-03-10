@@ -478,6 +478,8 @@ include examples/python/exec-remote/exec-remote.py
 include examples/python/exec-remote/exec-remote.tesh
 include examples/python/io-degradation/io-degradation.py
 include examples/python/io-degradation/io-degradation.tesh
+include examples/python/mc-centralized-mutex/mc-centralized-mutex.py
+include examples/python/mc-centralized-mutex/mc-centralized-mutex.tesh
 include examples/python/mc-failing-assert/mc-failing-assert.py
 include examples/python/mc-failing-assert/mc-failing-assert.tesh
 include examples/python/network-nonlinear/network-nonlinear.py

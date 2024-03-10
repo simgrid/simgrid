@@ -1,0 +1,6 @@
+#!/usr/bin/env tesh
+
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/bin/simgrid-mc --cfg=model-check/no-fork:1 ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/mc-centralized-mutex.py ${platfdir:=.}/small_platform.xml --log=python.t:critical "--log=root.fmt:[%5.2r]%e[%11P]%e%m%n"
+> [ 0.00] [    maestro] Configuration change: Set 'model-check/no-fork' to '1'
+> [ 0.00] [    maestro] Start a DFS exploration. Reduction is: dpor.
+> [ 0.00] [    maestro] DFS exploration ended. 518 unique states visited; 93 backtracks (1912 transition replays, 2430 states visited overall)
