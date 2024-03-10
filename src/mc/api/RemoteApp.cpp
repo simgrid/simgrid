@@ -78,6 +78,10 @@ RemoteApp::RemoteApp(const std::vector<char*>& args) : app_args_(args)
 void RemoteApp::restore_checker_side(CheckerSide* from)
 {
     XBT_DEBUG("Restore the checker side");
+
+    if (checker_side_)
+      checker_side_->finalize(true);
+
     if (_sg_mc_nofork) {
       checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
     } else if (from == nullptr) {
