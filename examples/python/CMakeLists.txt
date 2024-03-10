@@ -14,6 +14,7 @@ foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate ac
 
   if(enable_python)
     ADD_TESH(python-${example}
+                               --setenv bindir=${CMAKE_BINARY_DIR}
                                --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
                                --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                --setenv pythoncmd=${PYTHON_EXECUTABLE}

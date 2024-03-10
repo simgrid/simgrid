@@ -73,6 +73,7 @@ RemoteApp::RemoteApp(const std::vector<char*>& args) : app_args_(args)
 
 void RemoteApp::restore_checker_side(CheckerSide* from)
 {
+    XBT_DEBUG("Restore the checker side");
     if (from == nullptr) {
       checker_side_ = application_factory_->clone(master_socket_, master_socket_name);
     } else {
@@ -81,6 +82,7 @@ void RemoteApp::restore_checker_side(CheckerSide* from)
 }
 std::unique_ptr<CheckerSide> RemoteApp::clone_checker_side()
 {
+    XBT_DEBUG("Clone the checker side, saving an intermediate state");
     return checker_side_->clone(master_socket_, master_socket_name);
 }
 
@@ -190,6 +192,9 @@ void RemoteApp::wait_for_requests()
 
 Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_transition)
 {
+  XBT_DEBUG("Handle simcall of pid %d (time considered: %d; new? %s)", (int)aid, times_considered,
+            (new_transition ? "yes" : "no"));
+
   s_mc_message_simcall_execute_t m = {};
   m.type                           = MessageType::SIMCALL_EXECUTE;
   m.aid_                           = aid;
@@ -216,6 +221,7 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
 
 void RemoteApp::finalize_app(bool terminate_asap)
 {
+  XBT_DEBUG("Finalise the application");
   checker_side_->finalize(terminate_asap);
 }
 

@@ -3,7 +3,7 @@
 p Testing a simple master/workers example application
 
 ! output sort 19
-$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/app-masterworkers.py ${platfdir}/small_platform.xml app-masterworkers_d.xml --trace "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/app-masterworkers.py ${platfdir}/small_platform.xml app-masterworkers_d.xml --trace "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
 > [  0.000000] (master@Tremblay) Got 5 workers and 20 tasks to process
 > [  0.000000] (master@Tremblay) Sending task 0 of 20 to mailbox 'Tremblay'
 > [  0.002265] (master@Tremblay) Sending task 1 of 20 to mailbox 'Jupiter'

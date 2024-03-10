@@ -28,7 +28,7 @@ void SemAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   xbt_assert(issuer == issuer_, "Cannot wait on acquisitions created by another actor (id %ld)", issuer_->get_pid());
 
-  XBT_DEBUG("Wait semaphore %p (timeout:%f)", this, timeout);
+  XBT_DEBUG("Wait semaphore %u (timeout:%f)", semaphore_->get_id(), timeout);
 
   this->register_simcall(&issuer_->simcall_); // Block on that acquisition
 
@@ -96,7 +96,7 @@ SemAcquisitionImplPtr SemaphoreImpl::acquire_async(actor::ActorImpl* issuer)
 }
 void SemaphoreImpl::release()
 {
-  XBT_DEBUG("Sem release semaphore %p", this);
+  XBT_DEBUG("Sem release semaphore %u", get_id());
 
   if (not ongoing_acquisitions_.empty()) {
     /* Release the first waiting actor */

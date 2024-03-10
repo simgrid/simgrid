@@ -25,7 +25,7 @@ SemaphorePtr Semaphore::create(unsigned int initial_capacity)
 
 void Semaphore::acquire()
 {
-  XBT_VERB("Acquire semaphore %u", pimpl_->get_id());
+  XBT_VERB("Acquire semaphore %u (capacity: %d)", pimpl_->get_id(), get_capacity());
   acquire_timeout(-1);
 }
 

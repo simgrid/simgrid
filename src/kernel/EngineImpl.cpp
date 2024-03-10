@@ -8,7 +8,6 @@
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Host.hpp>
-#include <string>
 
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/ActivityImpl.hpp"
@@ -35,6 +34,7 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <dlfcn.h>
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(ker_engine, "Logging specific to Engine (kernel)");
 

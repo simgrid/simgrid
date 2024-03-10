@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-waituntil.py --platform ${platfdir}/small_platform_fatpipe.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/comm-waituntil.py --platform ${platfdir}/small_platform_fatpipe.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 >[  0.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver'
 >[  0.000000] (2:receiver@Ruby) Wait for my first message
 >[  0.000000] (1:sender@Tremblay) Send 'Message 1' to 'receiver'
