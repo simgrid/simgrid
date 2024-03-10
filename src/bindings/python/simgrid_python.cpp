@@ -10,6 +10,7 @@
 
 #include "simgrid/kernel/ProfileBuilder.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/modelchecker.h"
 #include "simgrid/plugins/load.h"
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/ActivitySet.hpp>
@@ -85,6 +86,10 @@ PYBIND11_MODULE(simgrid, m)
   m.doc() = "SimGrid userspace API";
 
   m.attr("simgrid_version") = get_simgrid_version();
+
+  m.def("MC_assert", &MC_assert, "Assertion for the model-checker: Defines a safety property to verify");
+  m.def("MC_random", &MC_random,
+        "Explore every branches where that function returns a value between min and max (inclusive)");
 
   // Swapped contexts are broken, starting from pybind11 v2.8.0.  Use thread contexts by default.
   simgrid::s4u::Engine::set_config("contexts/factory:thread");

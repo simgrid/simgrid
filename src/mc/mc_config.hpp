@@ -31,5 +31,6 @@ extern XBT_PRIVATE simgrid::config::Flag<std::string> _sg_mc_dot_output_file;
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_strategy;
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_explore_algo;
 extern XBT_PUBLIC simgrid::config::Flag<int> _sg_mc_cached_states_interval;
+extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_nofork;
 
 #endif

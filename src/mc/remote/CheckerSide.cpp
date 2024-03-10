@@ -114,7 +114,7 @@ static void wait_application_process(pid_t pid)
   XBT_DEBUG("%d ptrace correctly setup.", getpid());
 }
 
-void CheckerSide::setup_events(bool socket_only)
+void CheckerSide::setup_events()
 {
   auto* base = event_base_new();
   base_.reset(base);
@@ -147,9 +147,9 @@ void CheckerSide::setup_events(bool socket_only)
       this);
   event_add(socket_event_, nullptr);
 
-  if (socket_only) {
-    signal_event_ = nullptr;
-  } else {
+  static bool first_time = true;
+  if (first_time) {
+    first_time    = false;
     signal_event_ = event_new(
         base, SIGCHLD, EV_SIGNAL | EV_PERSIST,
         [](evutil_socket_t sig, short events, void* arg) {
@@ -198,7 +198,7 @@ CheckerSide::CheckerSide(const std::vector<char*>& args) : running_(true)
   ::close(sockets[0]);
   channel_.reset_socket(sockets[1]);
 
-  setup_events(false); /* we need a signal handler too */
+  setup_events();
   wait_for_requests();
 }
 
@@ -216,7 +216,7 @@ CheckerSide::~CheckerSide()
 CheckerSide::CheckerSide(int socket, CheckerSide* child_checker)
     : channel_(socket, child_checker->channel_), running_(true), child_checker_(child_checker)
 {
-  setup_events(true); // We already have a signal handled in that case
+  setup_events();
 
   s_mc_message_int_t answer;
   ssize_t s = get_channel().receive(answer);

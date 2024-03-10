@@ -120,6 +120,14 @@ simgrid::config::Flag<int> _sg_mc_max_deadlocks{
     "model-check/max-deadlocks",
     "Maximal amount of deadlocks to accept before stopping the exploration (negative value for no maximum).", 0};
 
+simgrid::config::Flag<bool> _sg_mc_nofork{
+    "model-check/no-fork", "Forbids the use of forks to allow the verification of multithreaded applications.", false,
+    [](bool val) {
+      if (val) {
+        _sg_mc_cached_states_interval = 0;
+      }
+    }};
+
 simgrid::mc::ReductionMode simgrid::mc::get_model_checking_reduction()
 {
   if (cfg_mc_reduction.get() == "none") {

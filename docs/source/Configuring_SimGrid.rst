@@ -113,6 +113,7 @@ Existing Configuration Items
 - **model-check/dot-output:** :ref:`cfg=model-check/dot-output`
 - **model-check/max-deadlocks:** :ref:`cfg=model-check/max-deadlocks`
 - **model-check/max-depth:** :ref:`cfg=model-check/max-depth`
+- **model-check/no-fork:** :ref:`cfg=model-check/no-fork`
 - **model-check/reduction:** :ref:`cfg=model-check/reduction`
 - **model-check/replay:** :ref:`cfg=model-check/replay`
 - **model-check/send-determinism:** :ref:`cfg=model-check/send-determinism`
@@ -742,8 +743,8 @@ determinism properties of the communications of an application.
 
 .. _cfg=model-check/cached-states-interval:
 
-Caching states for Performance
-------------------------------
+Caching states for performance
+..............................
 
 To explore new execution branches, the verified application must be rollback to its original state, and some transitions must be
 replayed to bring the application to the desired decision point. If the application induces many computations, replaying the
@@ -757,6 +758,18 @@ states forces many useless transitions replays (consuming time) while caching to
 resources. Increasing the maximal amount of open file per process on your machine may allow to cache more states if your memory
 allows. States get removed from the memory once they become useless, so your resource consumption should plateau at some point
 during the exploration.
+
+.. _cfg=model-check/no-fork:
+
+Verifying Python or multitheaded codes
+......................................
+
+By default, the model checker relies on system forks to speed-up the exploration but POSIX forbids the use of this system call
+in multithreaded applications. So, you cannot verify an application with :ref:`cfg=contexts/factory` set to ``thread``. Since
+our Python bindings unfortunately require the threaded contexts, this makes it impossible to use forks to speed up the
+verification of Python programs. In this case, use ``--cfg=model-check/no-fork:1`` to go for the slow exploration without forks.
+With this option, a brand new python interpreter will be started when the model checker needs to rollback the application to
+explore another execution branch. This is slow, and will only work if your application is perfectly reproducible.
 
 .. _cfg=model-check/setenv:
 

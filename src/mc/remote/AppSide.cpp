@@ -145,9 +145,10 @@ void AppSide::handle_fork(const s_mc_message_fork_t* msg)
     xbt_assert(channel_.send(answer) == 0, "Could not send failure as a response to FORK: %s", strerror(errno));
 
     xbt_die("The SimGrid model-checker cannot handle the threaded context factory because it relies on forking the "
-            "application, "
-            "which is not possible with multi-threaded applications. Please remove the --cfg=contexts/factory=thread "
-            "parameter.");
+            "application, which is not possible with multi-threaded applications. Please remove the "
+            "--cfg=contexts/factory:thread parameter to the application, or add --cfg=model-check/no-fork:1 to "
+            "simgrid-mc. The second option results in slower explorations, but it is the only option when verifying "
+            "Python programs, as the SimGrid Python bindings mandate threads.");
   }
   first_time = false;
 

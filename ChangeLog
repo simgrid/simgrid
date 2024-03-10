@@ -10,8 +10,11 @@ Models:
 - Introduce a raw network model with overly simplistic equations, for non-TCP settings.
 
 Model-checker:
+- Enable the verification of SimGrid programs written in Python.
 - Introduce option 'model-check/cached-states-interval' to control how often the application state is cached using fork, to
   speedup later restore when exploring other execution branches.
+- Introduce option 'model-check/no-fork' to forbid the use of system forks to speed-up the exploration. This is mandated for
+  multithreaded applications, such as our Python bindings.
 
 ----------------------------------------------------------------------------
 

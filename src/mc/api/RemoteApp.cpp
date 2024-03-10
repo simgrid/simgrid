@@ -67,14 +67,20 @@ RemoteApp::RemoteApp(const std::vector<char*>& args) : app_args_(args)
 
     xbt_assert(listen(master_socket_, SOMAXCONN) >= 0, "Cannot listen to the master socket: %s.", strerror(errno));
 
-    application_factory_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
-    checker_side_        = application_factory_->clone(master_socket_, master_socket_name);
+    if (_sg_mc_nofork) {
+      checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
+    } else {
+      application_factory_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
+      checker_side_        = application_factory_->clone(master_socket_, master_socket_name);
+    }
 }
 
 void RemoteApp::restore_checker_side(CheckerSide* from)
 {
     XBT_DEBUG("Restore the checker side");
-    if (from == nullptr) {
+    if (_sg_mc_nofork) {
+      checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
+    } else if (from == nullptr) {
       checker_side_ = application_factory_->clone(master_socket_, master_socket_name);
     } else {
       checker_side_ = from->clone(master_socket_, master_socket_name);
@@ -82,6 +88,7 @@ void RemoteApp::restore_checker_side(CheckerSide* from)
 }
 std::unique_ptr<CheckerSide> RemoteApp::clone_checker_side()
 {
+    xbt_assert(not _sg_mc_nofork, "Cannot clone the checker_side in nofork mode");
     XBT_DEBUG("Clone the checker side, saving an intermediate state");
     return checker_side_->clone(master_socket_, master_socket_name);
 }
