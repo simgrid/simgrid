@@ -12,7 +12,7 @@
 
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/kernel/actor/WaitTestObserver.hpp"
 #include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
 

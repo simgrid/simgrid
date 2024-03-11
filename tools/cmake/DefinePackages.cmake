@@ -314,6 +314,8 @@ set(KERNEL_SRC
   src/kernel/actor/SimcallObserver.hpp
   src/kernel/actor/SynchroObserver.cpp
   src/kernel/actor/SynchroObserver.hpp
+  src/kernel/actor/WaitTestObserver.cpp
+  src/kernel/actor/WaitTestObserver.hpp
 
   src/kernel/context/Context.cpp
   src/kernel/context/Context.hpp

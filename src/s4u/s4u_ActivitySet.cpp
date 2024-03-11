@@ -5,7 +5,7 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/kernel/actor/CommObserver.hpp"
+#include "src/kernel/actor/WaitTestObserver.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/activity_set.h>
 #include <simgrid/s4u/ActivitySet.hpp>

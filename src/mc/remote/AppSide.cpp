@@ -149,6 +149,7 @@ void AppSide::handle_fork(const s_mc_message_fork_t* msg)
             "--cfg=contexts/factory:thread parameter to the application, or add --cfg=model-check/no-fork:1 to "
             "simgrid-mc. The second option results in slower explorations, but it is the only option when verifying "
             "Python programs, as the SimGrid Python bindings mandate threads.");
+    // See also commit c2c077dc7edb4a4217610dbaf675f414cbf6f09f for the reason why Python needs threads
   }
   first_time = false;
 

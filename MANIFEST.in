@@ -2129,6 +2129,8 @@ include src/kernel/actor/SimcallObserver.cpp
 include src/kernel/actor/SimcallObserver.hpp
 include src/kernel/actor/SynchroObserver.cpp
 include src/kernel/actor/SynchroObserver.hpp
+include src/kernel/actor/WaitTestObserver.cpp
+include src/kernel/actor/WaitTestObserver.hpp
 include src/kernel/context/Context.cpp
 include src/kernel/context/Context.hpp
 include src/kernel/context/ContextBoost.cpp
