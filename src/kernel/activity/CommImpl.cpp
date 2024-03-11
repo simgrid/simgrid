@@ -223,7 +223,7 @@ ActivityImplPtr CommImpl::isend(actor::CommIsendSimcall* observer)
    *
    * If it is not found then push our communication into the rendez-vous point */
   CommImplPtr other_comm =
-      mbox->find_matching_comm(CommImplType::RECEIVE, observer->get_match_fun(), observer->get_payload(), this_comm,
+      mbox->find_matching_comm(CommImplType::RECEIVE, observer->get_match_fun(), observer->get_match_data(), this_comm,
                                /*done*/ false, /*remove_matching*/ true);
 
   if (not other_comm) {
@@ -256,13 +256,13 @@ ActivityImplPtr CommImpl::isend(actor::CommIsendSimcall* observer)
 
   /* Setup the communication synchro */
   other_comm->src_actor_ = observer->get_issuer();
-  other_comm->src_data_  = observer->get_payload();
   (*other_comm)
       .set_src_buff(observer->get_src_buff(), observer->get_src_buff_size())
       .set_size(observer->get_payload_size())
       .set_rate(observer->get_rate());
 
-  other_comm->match_fun     = observer->get_match_fun();
+  other_comm->match_fun       = observer->get_match_fun();
+  other_comm->src_match_data_ = observer->get_match_data();
   other_comm->copy_data_fun = observer->get_copy_data_fun();
 
   if (MC_is_active() || MC_record_replay_is_active())
@@ -286,7 +286,7 @@ ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
   if (mbox->is_permanent() && mbox->has_some_done_comm()) {
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     // find a match in the list of already received comms
-    other_comm = mbox->find_matching_comm(CommImplType::SEND, observer->get_match_fun(), observer->get_payload(),
+    other_comm = mbox->find_matching_comm(CommImplType::SEND, observer->get_match_fun(), observer->get_match_data(),
                                           this_synchro, /*done*/ true, /*remove_matching*/ true);
     if (other_comm && other_comm->model_action_ && other_comm->get_remaining() < 1e-12) {
       XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
@@ -309,7 +309,7 @@ ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
      * ourself so that the other side also gets a chance of choosing if it wants to match with us.
      *
      * If it is not found then push our communication into the rendez-vous point */
-    other_comm = mbox->find_matching_comm(CommImplType::SEND, observer->get_match_fun(), observer->get_payload(),
+    other_comm = mbox->find_matching_comm(CommImplType::SEND, observer->get_match_fun(), observer->get_match_data(),
                                           this_synchro, /*done*/ false, /*remove_matching*/ true);
 
     if (other_comm == nullptr) {
@@ -327,14 +327,14 @@ ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
 
   /* Setup communication synchro */
   other_comm->dst_actor_ = observer->get_issuer();
-  other_comm->dst_data_  = observer->get_payload();
   other_comm->set_dst_buff(observer->get_dst_buff(), observer->get_dst_buff_size());
 
   if (observer->get_rate() > -1.0 && (other_comm->get_rate() < 0.0 || observer->get_rate() < other_comm->get_rate()))
     other_comm->set_rate(observer->get_rate());
 
-  other_comm->match_fun     = observer->get_match_fun();
-  other_comm->copy_data_fun = observer->get_copy_data_fun();
+  other_comm->match_fun       = observer->get_match_fun();
+  other_comm->dst_match_data_ = observer->get_match_data();
+  other_comm->copy_data_fun   = observer->get_copy_data_fun();
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     other_comm->set_state(State::RUNNING);

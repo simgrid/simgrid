@@ -24,7 +24,7 @@ class CommIsendSimcall final : public DelayedSimcallObserver<void> {
   double rate_;
   unsigned char* src_buff_;
   size_t src_buff_size_;
-  void* payload_;
+  void* match_data_;
   bool detached_;
   activity::CommImpl* comm_ = {};
   int tag_                  = {};
@@ -42,14 +42,14 @@ public:
       const std::function<void(void*)>& clean_fun, // used to free the synchro in case of problem after a detached send
       const std::function<void(activity::CommImpl*, void*, size_t)>&
           copy_data_fun, // used to copy data if not default one
-      void* payload, bool detached, std::string_view fun_call)
+      void* match_data, bool detached, std::string_view fun_call)
       : DelayedSimcallObserver<void>(actor)
       , mbox_(mbox)
       , payload_size_(payload_size)
       , rate_(rate)
       , src_buff_(src_buff)
       , src_buff_size_(src_buff_size)
-      , payload_(payload)
+      , match_data_(match_data)
       , detached_(detached)
       , match_fun_(match_fun)
       , clean_fun_(clean_fun)
@@ -64,7 +64,7 @@ public:
   double get_rate() const { return rate_; }
   unsigned char* get_src_buff() const { return src_buff_; }
   size_t get_src_buff_size() const { return src_buff_size_; }
-  void* get_payload() const { return payload_; }
+  void* get_match_data() const { return match_data_; }
   bool is_detached() const { return detached_; }
   void set_comm(activity::CommImpl* comm) { comm_ = comm; }
   void set_tag(int tag) { tag_ = tag; }
@@ -80,7 +80,7 @@ class CommIrecvSimcall final : public DelayedSimcallObserver<void> {
   activity::MailboxImpl* mbox_;
   unsigned char* dst_buff_;
   size_t* dst_buff_size_;
-  void* payload_;
+  void* match_data_;
   double rate_;
   activity::CommImpl* comm_ = {};
   int tag_                  = {};
@@ -93,13 +93,13 @@ class CommIrecvSimcall final : public DelayedSimcallObserver<void> {
 public:
   CommIrecvSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, unsigned char* dst_buff, size_t* dst_buff_size,
                    const std::function<bool(void*, void*, activity::CommImpl*)>& match_fun,
-                   const std::function<void(activity::CommImpl*, void*, size_t)>& copy_data_fun, void* payload,
+                   const std::function<void(activity::CommImpl*, void*, size_t)>& copy_data_fun, void* match_data,
                    double rate, std::string_view fun_call)
       : DelayedSimcallObserver<void>(actor)
       , mbox_(mbox)
       , dst_buff_(dst_buff)
       , dst_buff_size_(dst_buff_size)
-      , payload_(payload)
+      , match_data_(match_data)
       , rate_(rate)
       , match_fun_(match_fun)
       , copy_data_fun_(copy_data_fun)
@@ -112,7 +112,7 @@ public:
   double get_rate() const { return rate_; }
   unsigned char* get_dst_buff() const { return dst_buff_; }
   size_t* get_dst_buff_size() const { return dst_buff_size_; }
-  void* get_payload() const { return payload_; }
+  void* get_match_data() const { return match_data_; }
   void set_comm(activity::CommImpl* comm) { comm_ = comm; }
   void set_tag(int tag) { tag_ = tag; }
 

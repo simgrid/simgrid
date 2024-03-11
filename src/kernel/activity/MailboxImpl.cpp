@@ -131,16 +131,19 @@ CommImplPtr MailboxImpl::iprobe(int type, const std::function<bool(void*, void*,
  */
 CommImplPtr MailboxImpl::find_matching_comm(CommImplType type,
                                             const std::function<bool(void*, void*, CommImpl*)>& match_fun,
-                                            void* this_user_data, const CommImplPtr& my_synchro, bool done,
+                                            void* this_match_data, const CommImplPtr& my_synchro, bool done,
                                             bool remove_matching)
 {
   auto& comm_queue      = done ? done_comm_queue_ : comm_queue_;
 
   auto iter = std::find_if(
-      comm_queue.begin(), comm_queue.end(), [&type, &match_fun, &this_user_data, &my_synchro](const CommImplPtr& comm) {
-        void* other_user_data = (comm->get_type() == CommImplType::SEND ? comm->src_data_ : comm->dst_data_);
-        return (comm->get_type() == type && (not match_fun || match_fun(this_user_data, other_user_data, comm.get())) &&
-                (not comm->match_fun || comm->match_fun(other_user_data, this_user_data, my_synchro.get())));
+      comm_queue.begin(), comm_queue.end(),
+      [&type, &match_fun, &this_match_data, &my_synchro](const CommImplPtr& comm) {
+        void* other_match_data =
+            (comm->get_type() == CommImplType::SEND ? comm->src_match_data_ : comm->dst_match_data_);
+        return (comm->get_type() == type &&
+                (not match_fun || match_fun(this_match_data, other_match_data, comm.get())) &&
+                (not comm->match_fun || comm->match_fun(other_match_data, this_match_data, my_synchro.get())));
       });
   if (iter == comm_queue.end()) {
     XBT_DEBUG("No matching communication synchro found");

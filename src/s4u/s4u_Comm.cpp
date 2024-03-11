@@ -347,10 +347,10 @@ Comm* Comm::do_start()
                                              rate_,
                                              static_cast<unsigned char*>(src_buff_),
                                              src_buff_size_,
-                                             match_fun_,
+                                             nullptr,
                                              clean_fun_,
                                              copy_data_function_,
-                                             get_data<void>(),
+                                             nullptr,
                                              detached_,
                                              "Isend"};
     pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::CommImpl::isend(&observer); },
@@ -363,9 +363,9 @@ Comm* Comm::do_start()
                                              mailbox_->get_impl(),
                                              static_cast<unsigned char*>(dst_buff_),
                                              &dst_buff_size_,
-                                             match_fun_,
+                                             nullptr,
                                              copy_data_function_,
-                                             get_data<void>(),
+                                             nullptr,
                                              rate_,
                                              "Irecv"};
     pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::CommImpl::irecv(&observer); },
@@ -440,14 +440,14 @@ Comm* Comm::wait_for(double timeout)
       } else if (src_buff_ != nullptr) {
         on_send(*this);
         on_this_send(*this);
-        send(sender_, mailbox_, remains_, rate_, src_buff_, src_buff_size_, match_fun_, copy_data_function_,
+        send(sender_, mailbox_, remains_, rate_, src_buff_, src_buff_size_, nullptr, copy_data_function_,
              get_data<void>(), timeout);
 
       } else { // Receiver
         on_recv(*this);
         on_this_recv(*this);
-        recv(receiver_, mailbox_, dst_buff_, &dst_buff_size_, match_fun_, copy_data_function_, get_data<void>(),
-             timeout, rate_);
+        recv(receiver_, mailbox_, dst_buff_, &dst_buff_size_, nullptr, copy_data_function_, get_data<void>(), timeout,
+             rate_);
       }
       break;
     case State::STARTED:
