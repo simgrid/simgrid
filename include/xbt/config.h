@@ -55,8 +55,11 @@
  */
 /** @brief Configuration set's data type is opaque. */
 #ifdef __cplusplus
+extern "C++"
+{
 #include <xbt/config.hpp>
-using xbt_cfg_t = simgrid::config::Config*;
+  using xbt_cfg_t = simgrid::config::Config*;
+}
 #else
 typedef void* xbt_cfg_t;
 #endif
