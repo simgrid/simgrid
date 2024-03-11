@@ -11,7 +11,10 @@
 #include <simgrid/forward.h>
 
 #ifdef __cplusplus
-constexpr bool SG_BARRIER_SERIAL_THREAD = true;
+extern "C++"
+{
+  constexpr bool SG_BARRIER_SERIAL_THREAD = true;
+}
 #else
 #define SG_BARRIER_SERIAL_THREAD -1
 #endif
