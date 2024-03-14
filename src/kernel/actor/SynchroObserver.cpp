@@ -103,7 +103,7 @@ void SemaphoreAcquisitionObserver::serialize(std::stringstream& stream) const
 }
 std::string SemaphoreAcquisitionObserver::to_string() const
 {
-  if (type_ == mc::Transition::Type::SEM_LOCK) // Out of MC, synchronous lock in one simcall
+  if (type_ == mc::Transition::Type::SEM_LOCK_NOMC) // Out of MC, synchronous lock in one simcall
     return std::string(mc::Transition::to_c_str(type_)) + "()";
 
   return std::string(mc::Transition::to_c_str(type_)) +

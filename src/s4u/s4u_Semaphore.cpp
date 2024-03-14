@@ -46,7 +46,7 @@ bool Semaphore::acquire_timeout(double timeout)
   } else { // Do it in one simcall only
     // We don't need no observer on this non-MC path, but simcall_blocking() requires it.
     // Use an invalid type in the hope to get a loud error if it gets used despite our expectations.
-    kernel::actor::SemaphoreAcquisitionObserver observer{issuer, mc::Transition::Type::SEM_LOCK, nullptr, timeout};
+    kernel::actor::SemaphoreAcquisitionObserver observer{issuer, mc::Transition::Type::SEM_LOCK_NOMC, nullptr, timeout};
     return kernel::actor::simcall_blocking(
         [this, issuer, timeout] { pimpl_->acquire_async(issuer)->wait_for(issuer, timeout); }, &observer);
   }
