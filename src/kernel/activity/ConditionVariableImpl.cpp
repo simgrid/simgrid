@@ -5,49 +5,116 @@
 
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SynchroObserver.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 #include <cmath> // std::isfinite
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_condition, ker_synchro, "Condition variables kernel-space implementation");
 
-/********************************* Condition **********************************/
-
 namespace simgrid::kernel::activity {
 
-/**
- * @brief Signalizes a condition.
- *
- * Signalizes a condition and wakes up a sleeping actor.
- * If there are no actor sleeping, no action is done.
- */
-void ConditionVariableImpl::signal()
+/* -------- Acquisition -------- */
+ConditionVariableAcquisitionImpl::ConditionVariableAcquisitionImpl(actor::ActorImpl* issuer,
+                                                                   ConditionVariableImpl* condvar, MutexImpl* mutex)
+    : issuer_(issuer), mutex_(mutex), condvar_(condvar)
 {
-  XBT_DEBUG("Signal condition %p", this);
+  set_name(std::string("on condvar ") + std::to_string(condvar_->get_id()));
+}
 
-  /* If there are actors waiting for the condition choose one and try to make it acquire the mutex */
-  if (not sleeping_.empty()) {
-    auto& proc = sleeping_.front();
-    sleeping_.pop_front();
+void ConditionVariableAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
+{
+  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
+  xbt_assert(issuer == issuer_, "Cannot wait on acquisitions created by another actor (id %ld)", issuer_->get_pid());
 
-    /* Destroy waiter's synchronization */
-    // There is no CondVarAcquisition yet, so the only activity that could be there is probably a TimeoutDetector
-    // Be brutal for now, it will get cleaned and unified with the rest of SimGrid when adding Acquisitions.
-    xbt_assert(proc.waiting_synchros_.size() <= 1, 
-               "Unexpected amount of activities in this actor: %zu. Are you using condvar in waitany?",
-               proc.waiting_synchros_.size());
-    proc.waiting_synchros_.clear();
-    if (proc.simcall_.timeout_cb_) {
-      proc.simcall_.timeout_cb_->remove();
-      proc.simcall_.timeout_cb_ = nullptr;
+  XBT_DEBUG("Wait condition variable %u (timeout:%f)", condvar_->get_id(), timeout);
+
+  this->register_simcall(&issuer_->simcall_); // Block on that acquisition
+
+  if (granted_) {
+    finish();
+  } else if (timeout > 0) {
+    model_action_ = get_issuer()->get_host()->get_cpu()->sleep(timeout);
+    model_action_->set_activity(this);
+  }
+  // Already in the queue
+}
+void ConditionVariableAcquisitionImpl::finish()
+{
+  bool timouted = false;
+  if (model_action_ != nullptr) {                                          // A timeout was declared
+    if (model_action_->get_state() == resource::Action::State::FINISHED) { // The timeout elapsed
+      if (granted_) {                                                      // but we got signaled, just in time!
+        set_state(State::DONE);
+
+      } else { // we have to report that timeout
+        timouted = true;
+        cancel(); // Unregister the acquisition from the condvar
+
+        /* Return to the englobing simcall that the wait_for timeouted */
+        auto* observer = dynamic_cast<kernel::actor::ConditionVariableObserver*>(get_issuer()->simcall_.observer_);
+        xbt_assert(observer != nullptr);
+        observer->set_result(true);
+      }
     }
+    model_action_->unref();
+    model_action_ = nullptr;
+  }
 
+  xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
+  auto issuer = unregister_first_simcall();
+  if (issuer == nullptr) /* don't answer exiting and dying actors */
+    return;
+
+  if (timouted) {
+    issuer->simcall_answer();
+
+  } else {
     /* Now transform the cond wait simcall into a mutex lock one */
-    actor::Simcall* simcall = &proc.simcall_;
+    actor::Simcall* simcall = &issuer->simcall_;
     const auto* observer    = dynamic_cast<kernel::actor::ConditionVariableObserver*>(simcall->observer_);
     xbt_assert(observer != nullptr);
     observer->get_mutex()->lock_async(simcall->issuer_)->wait_for(simcall->issuer_, -1);
   }
-  XBT_OUT();
+}
+void ConditionVariableAcquisitionImpl::cancel()
+{
+  /* Remove myself from the list of interested parties */
+  const auto* issuer = get_issuer();
+  auto it            = std::find_if(condvar_->ongoing_acquisitions_.begin(), condvar_->ongoing_acquisitions_.end(),
+                                    [issuer](ConditionVariableAcquisitionImplPtr acqui) { return acqui->get_issuer() == issuer; });
+  xbt_assert(it != condvar_->ongoing_acquisitions_.end(),
+             "Cannot find myself in the waiting queue that I have to leave");
+  condvar_->ongoing_acquisitions_.erase(it);
+}
+
+/* -------- Condition -------- */
+unsigned ConditionVariableImpl::next_id_ = 0;
+
+/**
+ * @brief Signals a condition.
+ *
+ * Signals a condition and wakes up a sleeping actor.
+ * If there are no actor sleeping, no action is done.
+ */
+void ConditionVariableImpl::signal()
+{
+  XBT_DEBUG("Signal condition #%u", this->id_);
+  if (not ongoing_acquisitions_.empty()) {
+
+    /* Release the first waiting actor */
+    auto acqui = ongoing_acquisitions_.front();
+    ongoing_acquisitions_.pop_front();
+
+    acqui->granted_ = true;
+
+    // Finish the acquisition if the owner is already blocked on its completion
+    auto& synchros = acqui->get_issuer()->waiting_synchros_;
+    if (std::find(synchros.begin(), synchros.end(), acqui) != synchros.end())
+      acqui->finish();
+    // else, the issuer is not blocked on this acquisition so no need to release it
+  }
+  // else, nobody is waiting on the condition. The signal is lost.
 }
 
 /**
@@ -61,36 +128,28 @@ void ConditionVariableImpl::broadcast()
   XBT_DEBUG("Broadcast condition %p", this);
 
   /* Signal the condition until nobody is waiting on it */
-  while (not sleeping_.empty())
+  while (not ongoing_acquisitions_.empty())
     signal();
 }
 
-void ConditionVariableImpl::wait(MutexImpl* mutex, double timeout, actor::ActorImpl* issuer)
+ConditionVariableAcquisitionImplPtr ConditionVariableImpl::acquire_async(actor::ActorImpl* issuer, MutexImpl* mutex)
 {
-  XBT_DEBUG("Wait condition %p", this);
-  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
+  XBT_DEBUG("Wait_async condition #%u", this->get_id());
 
-  /* Unlock the provided mutex (the simcall observer ensures that one is provided, no need to check) */
+  /* Unlock the provided mutex (the simcall observer ensures that one mutex is provided, no need to check) */
   const auto* owner = mutex->get_owner();
   xbt_assert(owner == issuer,
-             "Actor %s cannot wait on ConditionVariable %p since it does not own the provided mutex %p (which is "
+             "Actor %s cannot wait on ConditionVariable #%u since it does not own the provided mutex #%u (which is "
              "owned by %s).",
-             issuer->get_cname(), this, mutex, (owner == nullptr ? "nobody" : owner->get_cname()));
+             issuer->get_cname(), this->get_id(), mutex->get_id(), (owner == nullptr ? "nobody" : owner->get_cname()));
   mutex_ = mutex;
   mutex->unlock(issuer);
 
-  sleeping_.push_back(*issuer);
-  if (timeout >= 0) {
-    issuer->simcall_.timeout_cb_ = timer::Timer::set(s4u::Engine::get_clock() + timeout, [this, issuer]() {
-      issuer->simcall_.timeout_cb_ = nullptr;
-      this->remove_sleeping_actor(*issuer);
-      auto* observer = dynamic_cast<kernel::actor::ConditionVariableObserver*>(issuer->simcall_.observer_);
-      xbt_assert(observer != nullptr);
-      observer->set_result(true);
-
-      issuer->simcall_answer();
-    });
-  }
+  auto res = ConditionVariableAcquisitionImplPtr(new ConditionVariableAcquisitionImpl(issuer, this, mutex), true);
+  // A condvar::wait is always blocking, it can never be created in a granted state (to the contrary to mutex or
+  // semaphore)
+  ongoing_acquisitions_.push_back(res);
+  return res;
 }
 
 // boost::intrusive_ptr<ConditionVariableImpl> support:
@@ -103,7 +162,7 @@ void intrusive_ptr_release(ConditionVariableImpl* cond)
 {
   if (cond->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
     std::atomic_thread_fence(std::memory_order_acquire);
-    xbt_assert(cond->sleeping_.empty(), "Cannot destroy conditional since someone is still using it");
+    xbt_assert(cond->ongoing_acquisitions_.empty(), "Cannot destroy conditional since someone is still using it");
     delete cond;
   }
 }

@@ -37,10 +37,9 @@ void SemAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   } else if (timeout > 0) {
     model_action_ = get_issuer()->get_host()->get_cpu()->sleep(timeout);
     model_action_->set_activity(this);
-
-  } else {
-    // Already in the queue
   }
+
+  // Already in the queue
 }
 void SemAcquisitionImpl::finish()
 {

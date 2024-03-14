@@ -30,7 +30,12 @@ void ConditionVariable::wait(MutexPtr lock)
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::ConditionVariableObserver observer{issuer, pimpl_, lock->pimpl_};
   kernel::actor::simcall_blocking(
-      [&observer] { observer.get_cond()->wait(observer.get_mutex(), -1.0, observer.get_issuer()); }, &observer);
+      [&observer] {
+        observer.get_cond()
+            ->acquire_async(observer.get_issuer(), observer.get_mutex())
+            ->wait_for(observer.get_issuer(), -1);
+      },
+      &observer);
 }
 
 void ConditionVariable::wait(const std::unique_lock<Mutex>& lock)
@@ -38,7 +43,12 @@ void ConditionVariable::wait(const std::unique_lock<Mutex>& lock)
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::ConditionVariableObserver observer{issuer, pimpl_, lock.mutex()->pimpl_};
   kernel::actor::simcall_blocking(
-      [&observer] { observer.get_cond()->wait(observer.get_mutex(), -1.0, observer.get_issuer()); }, &observer);
+      [&observer] {
+        observer.get_cond()
+            ->acquire_async(observer.get_issuer(), observer.get_mutex())
+            ->wait_for(observer.get_issuer(), -1);
+      },
+      &observer);
 }
 
 std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& lock, double timeout)
@@ -50,7 +60,11 @@ std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& l
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::ConditionVariableObserver observer{issuer, pimpl_, lock.mutex()->pimpl_, timeout};
   bool timed_out = kernel::actor::simcall_blocking(
-      [&observer] { observer.get_cond()->wait(observer.get_mutex(), observer.get_timeout(), observer.get_issuer()); },
+      [&observer] {
+        observer.get_cond()
+            ->acquire_async(observer.get_issuer(), observer.get_mutex())
+            ->wait_for(observer.get_issuer(), observer.get_timeout());
+      },
       &observer);
   if (timed_out) {
     // If we reached the timeout, we have to take the lock again:

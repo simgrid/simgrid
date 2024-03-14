@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/MutexImpl.hpp"
+#include "src/kernel/actor/SynchroObserver.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 
 XBT_LOG_NEW_SUBCATEGORY(ker_synchro, kernel,
                         "Kernel synchronization activities (lock/acquire on a mutex, semaphore or condition)");
@@ -27,16 +29,17 @@ void MutexAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 
   if (mutex_->get_owner() == issuer_) { // I'm the owner
     finish();
-  } else {
-    // Already in the queue
   }
+
+  // Already in the queue
 }
 
 void MutexAcquisitionImpl::finish()
 {
   xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
   auto issuer = unregister_first_simcall();
-  issuer->simcall_answer();
+  if (issuer != nullptr) /* don't answer exiting and dying actors */
+    issuer->simcall_answer();
 }
 
 /* -------- Mutex -------- */
