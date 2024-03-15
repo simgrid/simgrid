@@ -56,13 +56,7 @@ std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& l
 
   bool timed_out = do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock.mutex()->pimpl_, timeout);
 
-  if (timed_out) {
-    // If we reached the timeout, we have to take the lock again:
-    lock.mutex()->lock();
-    return std::cv_status::timeout;
-  } else {
-    return std::cv_status::no_timeout;
-  }
+  return timed_out ? std::cv_status::timeout : std::cv_status::no_timeout;
 }
 
 std::cv_status ConditionVariable::wait_until(const std::unique_lock<Mutex>& lock, double timeout_time)

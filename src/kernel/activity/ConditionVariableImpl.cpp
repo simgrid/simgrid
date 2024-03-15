@@ -41,19 +41,18 @@ void ConditionVariableAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double
 }
 void ConditionVariableAcquisitionImpl::finish()
 {
-  bool timouted = false;
+  auto* observer = dynamic_cast<kernel::actor::ConditionVariableObserver*>(get_issuer()->simcall_.observer_);
+  xbt_assert(observer != nullptr);
+
   if (model_action_ != nullptr) {                                          // A timeout was declared
     if (model_action_->get_state() == resource::Action::State::FINISHED) { // The timeout elapsed
       if (granted_) {                                                      // but we got signaled, just in time!
         set_state(State::DONE);
 
-      } else { // we have to report that timeout
-        timouted = true;
+      } else {    // we have to report that timeout
         cancel(); // Unregister the acquisition from the condvar
 
         /* Return to the englobing simcall that the wait_for timeouted */
-        auto* observer = dynamic_cast<kernel::actor::ConditionVariableObserver*>(get_issuer()->simcall_.observer_);
-        xbt_assert(observer != nullptr);
         observer->set_result(true);
       }
     }
@@ -66,16 +65,9 @@ void ConditionVariableAcquisitionImpl::finish()
   if (issuer == nullptr) /* don't answer exiting and dying actors */
     return;
 
-  if (timouted) {
-    issuer->simcall_answer();
-
-  } else {
-    /* Now transform the cond wait simcall into a mutex lock one */
-    actor::Simcall* simcall = &issuer->simcall_;
-    const auto* observer    = dynamic_cast<kernel::actor::ConditionVariableObserver*>(simcall->observer_);
-    xbt_assert(observer != nullptr);
-    observer->get_mutex()->lock_async(simcall->issuer_)->wait_for(simcall->issuer_, -1);
-  }
+  /* Now transform the cond wait simcall into a mutex lock one */
+  actor::Simcall* simcall = &issuer->simcall_;
+  observer->get_mutex()->lock_async(simcall->issuer_)->wait_for(simcall->issuer_, -1);
 }
 void ConditionVariableAcquisitionImpl::cancel()
 {
