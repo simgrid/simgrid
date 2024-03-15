@@ -25,30 +25,27 @@ ConditionVariablePtr ConditionVariable::create()
 /**
  * Wait functions
  */
-void ConditionVariable::wait(MutexPtr lock)
+static bool do_wait(kernel::actor::ActorImpl* issuer, kernel::activity::ConditionVariableImpl* pimpl,
+                    kernel::activity::MutexImpl* mutex, double timeout)
 {
-  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ConditionVariableObserver observer{issuer, pimpl_, lock->pimpl_};
-  kernel::actor::simcall_blocking(
-      [&observer] {
+  kernel::actor::ConditionVariableObserver observer{issuer, pimpl, mutex};
+  return kernel::actor::simcall_blocking(
+      [&observer, timeout] {
         observer.get_cond()
             ->acquire_async(observer.get_issuer(), observer.get_mutex())
-            ->wait_for(observer.get_issuer(), -1);
+            ->wait_for(observer.get_issuer(), timeout);
       },
       &observer);
 }
 
+void ConditionVariable::wait(MutexPtr lock)
+{
+  do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock->pimpl_, -1);
+}
+
 void ConditionVariable::wait(const std::unique_lock<Mutex>& lock)
 {
-  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ConditionVariableObserver observer{issuer, pimpl_, lock.mutex()->pimpl_};
-  kernel::actor::simcall_blocking(
-      [&observer] {
-        observer.get_cond()
-            ->acquire_async(observer.get_issuer(), observer.get_mutex())
-            ->wait_for(observer.get_issuer(), -1);
-      },
-      &observer);
+  do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock.mutex()->pimpl_, -1);
 }
 
 std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& lock, double timeout)
@@ -57,15 +54,8 @@ std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& l
   if (timeout < 0)
     timeout = 0.0;
 
-  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ConditionVariableObserver observer{issuer, pimpl_, lock.mutex()->pimpl_, timeout};
-  bool timed_out = kernel::actor::simcall_blocking(
-      [&observer] {
-        observer.get_cond()
-            ->acquire_async(observer.get_issuer(), observer.get_mutex())
-            ->wait_for(observer.get_issuer(), observer.get_timeout());
-      },
-      &observer);
+  bool timed_out = do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock.mutex()->pimpl_, timeout);
+
   if (timed_out) {
     // If we reached the timeout, we have to take the lock again:
     lock.mutex()->lock();
