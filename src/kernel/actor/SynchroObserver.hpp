@@ -11,6 +11,8 @@
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/mc/transition/Transition.hpp"
+#include "xbt/asserts.h"
 
 #include <string>
 
@@ -99,23 +101,41 @@ public:
 };
 
 class ConditionVariableObserver final : public DelayedSimcallObserver<bool> {
-  //mc::Transition::Type type_; Will be used when we implement CV on the MC side
-  activity::ConditionVariableImpl* const cond_;
-  activity::MutexImpl* const mutex_;
-  const double timeout_;
+  mc::Transition::Type type_;
+  activity::ConditionVariableImplPtr const cond_ = nullptr;
+  activity::MutexImplPtr const mutex_            = nullptr;
+
+  activity::ConditionVariableAcquisitionImpl* const acquisition_ = nullptr;
+  const double timeout_                                          = -1;
 
 public:
-  ConditionVariableObserver(ActorImpl* actor, activity::ConditionVariableImpl* cond, activity::MutexImpl* mutex,
-                            double timeout = -1.0)
-      : DelayedSimcallObserver(actor, false), cond_(cond), mutex_(mutex), timeout_(timeout)
+  ConditionVariableObserver(ActorImpl* actor, mc::Transition::Type type, activity::ConditionVariableImpl* cond,
+                            activity::MutexImpl* mutex, double timeout = -1.0)
+      : DelayedSimcallObserver(actor, false), type_(type), cond_(cond), mutex_(mutex), timeout_(timeout)
   {
-    xbt_assert(mutex != nullptr, "Cannot wait on a condition variable without a valid mutex");
+    xbt_assert(type == mc::Transition::Type::CONDVAR_ASYNC_LOCK || type == mc::Transition::Type::CONDVAR_NOMC);
+  }
+  ConditionVariableObserver(ActorImpl* actor, mc::Transition::Type type,
+                            activity::ConditionVariableAcquisitionImpl* acqui, double timeout = -1.0)
+      : DelayedSimcallObserver(actor, false)
+      , type_(type)
+      , cond_(acqui->get_cond())
+      , mutex_(acqui->get_mutex())
+      , acquisition_(acqui)
+      , timeout_(timeout)
+  {
+    xbt_assert(type == mc::Transition::Type::CONDVAR_WAIT);
+  }
+  ConditionVariableObserver(ActorImpl* actor, mc::Transition::Type type, activity::ConditionVariableImpl* cond)
+      : DelayedSimcallObserver(actor, false), type_(type), cond_(cond)
+  {
+    xbt_assert(type == mc::Transition::Type::CONDVAR_SIGNAL || type == mc::Transition::Type::CONDVAR_BROADCAST);
   }
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
   bool is_enabled() override;
-  activity::ConditionVariableImpl* get_cond() const { return cond_; }
-  activity::MutexImpl* get_mutex() const { return mutex_; }
+  activity::ConditionVariableImpl* get_cond() const { return cond_.get(); }
+  activity::MutexImpl* get_mutex() const { return mutex_.get(); }
   double get_timeout() const { return timeout_; }
 };
 

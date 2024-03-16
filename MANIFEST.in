@@ -686,6 +686,14 @@ include teshsuite/mc/mcmini/simple_barrier_with_threads_deadlock.c
 include teshsuite/mc/mcmini/simple_barrier_with_threads_deadlock.tesh
 include teshsuite/mc/mcmini/simple_barrier_with_threads_ok.c
 include teshsuite/mc/mcmini/simple_barrier_with_threads_ok.tesh
+include teshsuite/mc/mcmini/simple_cond_broadcast_deadlock.c
+include teshsuite/mc/mcmini/simple_cond_broadcast_deadlock.tesh
+include teshsuite/mc/mcmini/simple_cond_broadcast_ok.c
+include teshsuite/mc/mcmini/simple_cond_broadcast_ok.tesh
+include teshsuite/mc/mcmini/simple_cond_deadlock.c
+include teshsuite/mc/mcmini/simple_cond_deadlock.tesh
+include teshsuite/mc/mcmini/simple_cond_ok.c
+include teshsuite/mc/mcmini/simple_cond_ok.tesh
 include teshsuite/mc/mcmini/simple_mutex_deadlock.c
 include teshsuite/mc/mcmini/simple_mutex_deadlock.tesh
 include teshsuite/mc/mcmini/simple_mutex_ok.c

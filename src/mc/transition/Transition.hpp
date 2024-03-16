@@ -48,6 +48,8 @@ public:
       MUTEX_ASYNC_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT, MUTEX_LOCK_NOMC,
       /* alphabetical ordering of SEM transitions */
       SEM_ASYNC_LOCK, SEM_UNLOCK, SEM_WAIT, SEM_LOCK_NOMC,
+      /* alphabetical ordering of condition variable transitions */
+      CONDVAR_ASYNC_LOCK, CONDVAR_BROADCAST, CONDVAR_SIGNAL, CONDVAR_WAIT, CONDVAR_NOMC,
       /* UNKNOWN must be last */
       UNKNOWN);
   Type type_ = Type::UNKNOWN;

@@ -15,19 +15,20 @@
 namespace simgrid::kernel::activity {
 
 class XBT_PUBLIC ConditionVariableAcquisitionImpl : public ActivityImpl_T<ConditionVariableAcquisitionImpl> {
-  actor::ActorImpl* issuer_       = nullptr;
-  MutexImpl* mutex_               = nullptr;
-  ConditionVariableImpl* condvar_ = nullptr;
-  bool granted_                   = false;
+  actor::ActorImpl* issuer_    = nullptr;
+  MutexImpl* mutex_            = nullptr;
+  ConditionVariableImpl* cond_ = nullptr;
+  bool granted_                = false;
 
   friend ConditionVariableImpl;
 
 public:
   ConditionVariableAcquisitionImpl(actor::ActorImpl* issuer, ConditionVariableImpl* condvar, MutexImpl* mutex);
   MutexImplPtr get_mutex() const { return mutex_; }
-  ConditionVariableImplPtr get_condvar() const { return condvar_; }
+  ConditionVariableImplPtr get_cond() const { return cond_; }
   actor::ActorImpl* get_issuer() const { return issuer_; }
   void grant() { granted_ = true; }
+  bool is_granted() const { return granted_; }
 
   bool test(actor::ActorImpl* issuer = nullptr) override { return granted_; }
   void wait_for(actor::ActorImpl* issuer, double timeout) override;
@@ -36,7 +37,6 @@ public:
 };
 
 class XBT_PUBLIC ConditionVariableImpl {
-  MutexImpl* mutex_ = nullptr;
   s4u::ConditionVariable piface_;
   std::deque<ConditionVariableAcquisitionImplPtr> ongoing_acquisitions_;
 

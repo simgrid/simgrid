@@ -52,6 +52,23 @@ public:
   unsigned int get_sem() const { return sem_; }
 };
 
+class CondvarTransition : public Transition {
+  unsigned int condvar_;
+  unsigned int mutex_;
+  bool granted_;
+
+public:
+  std::string to_string(bool verbose) const override;
+  CondvarTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream);
+  bool depends(const Transition* other) const override;
+  bool can_be_co_enabled(const Transition* other) const override;
+  bool reversible_race(const Transition* other) const override;
+
+  unsigned int get_condvar() const { return this->condvar_; }
+  unsigned int get_mutex() const { return this->mutex_; }
+  bool is_granted() const { return this->granted_; }
+};
+
 } // namespace simgrid::mc
 
 #endif

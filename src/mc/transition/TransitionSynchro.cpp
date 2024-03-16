@@ -254,4 +254,41 @@ bool MutexTransition::reversible_race(const Transition* other) const
   }
 }
 
+CondvarTransition::CondvarTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream)
+    : Transition(type, issuer, times_considered)
+{
+  if (type == Type::CONDVAR_ASYNC_LOCK)
+    xbt_assert(stream >> condvar_ >> mutex_, "type: %d %s", (int)type, to_c_str(type));
+  else if (type == Type::CONDVAR_WAIT)
+    xbt_assert(stream >> condvar_ >> mutex_ >> granted_, "type: %d %s", (int)type, to_c_str(type));
+  else if (type == Type::CONDVAR_SIGNAL || type == Type::CONDVAR_BROADCAST)
+    xbt_assert(stream >> condvar_, "type: %d %s", (int)type, to_c_str(type));
+  else
+    xbt_die("type: %d %s", (int)type, to_c_str(type));
+}
+
+std::string CondvarTransition::to_string(bool verbose) const
+{
+  if (type_ == Type::CONDVAR_ASYNC_LOCK)
+    return xbt::string_printf("%s(cond: %u, mutex: %u)", Transition::to_c_str(type_), condvar_, mutex_);
+  if (type_ == Type::CONDVAR_SIGNAL || type_ == Type::CONDVAR_BROADCAST)
+    return xbt::string_printf("%s(cond: %u)", Transition::to_c_str(type_), condvar_);
+  if (type_ == Type::CONDVAR_WAIT)
+    return xbt::string_printf("%s(cond: %u, mutex: %u, granted: %s)", Transition::to_c_str(type_), condvar_, mutex_,
+                              granted_ ? "yes" : "no");
+  THROW_IMPOSSIBLE;
+}
+bool CondvarTransition::depends(const Transition* o) const
+{
+  return true; // FIXME: come up with a decent independence theorem
+}
+bool CondvarTransition::reversible_race(const Transition* other) const
+{
+  return true; // FIXME https://media1.tenor.com/m/eB4QsynicO0AAAAC/platypus-no-idea-what-im-doing.gif
+}
+bool CondvarTransition::can_be_co_enabled(const Transition* o) const
+{
+  return true; // FIXME: I don't know what I'm doin, please complete
+}
+
 } // namespace simgrid::mc

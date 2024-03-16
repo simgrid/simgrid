@@ -5,6 +5,7 @@
 
 #include "src/kernel/actor/SynchroObserver.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/BarrierImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SemaphoreImpl.hpp"
@@ -13,6 +14,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/backtrace.hpp"
+#include "xbt/ex.h"
 #include "xbt/log.h"
 
 #include <sstream>
@@ -142,20 +144,45 @@ bool BarrierObserver::is_enabled()
 
 bool ConditionVariableObserver::is_enabled()
 {
-  if (static bool warned = false; not warned) {
-    XBT_INFO("Using condition variables in model-checked code is still experimental. Use at your own risk");
-    warned = true;
-  }
-  return true;
+  return type_ != mc::Transition::Type::CONDVAR_WAIT || acquisition_->is_granted();
 }
 void ConditionVariableObserver::serialize(std::stringstream& stream) const
 {
-  THROW_UNIMPLEMENTED;
+  switch (type_) {
+    case mc::Transition::Type::CONDVAR_WAIT:
+      stream << (short)type_ << ' ' << acquisition_->get_cond()->get_id() << ' ' << acquisition_->get_mutex()->get_id()
+             << ' ' << acquisition_->is_granted();
+      break;
+    case mc::Transition::Type::CONDVAR_ASYNC_LOCK:
+      stream << (short)type_ << ' ' << cond_->get_id() << ' ' << mutex_;
+      break;
+    case mc::Transition::Type::CONDVAR_SIGNAL:
+    case mc::Transition::Type::CONDVAR_BROADCAST:
+      stream << (short)type_ << ' ' << cond_->get_id();
+      break;
+    default:
+      THROW_UNIMPLEMENTED;
+  }
 }
 std::string ConditionVariableObserver::to_string() const
 {
-  return "ConditionWait(cond_id:" + ptr_to_id<activity::ConditionVariableImpl const>(get_cond()) +
-         " mutex_id:" + std::to_string(get_mutex()->get_id()) + ")";
+  if (type_ == mc::Transition::Type::CONDVAR_WAIT) {
+    return std::string(mc::Transition::to_c_str(type_)) +
+           "(cond_id: " + std::to_string(acquisition_->get_cond()->get_id()) +
+           ", mutex_id:" + std::to_string(acquisition_->get_mutex()->get_id()) +
+           ", timeout: " + (timeout_ >= 0 ? "yes" : "no") + ")";
+  }
+  if (type_ == mc::Transition::Type::CONDVAR_ASYNC_LOCK) {
+    return std::string(mc::Transition::to_c_str(type_)) + "(cond_id: " + std::to_string(get_cond()->get_id()) +
+           ", mutex_id:" +
+           // mutex_ is only defined if acquisition_ is not (only if type != WAIT)
+           std::to_string(get_mutex()->get_id()) + "timeout: " + (timeout_ >= 0 ? "yes" : "no") + ")";
+  }
+
+  if (type_ == mc::Transition::Type::CONDVAR_BROADCAST || type_ == mc::Transition::Type::CONDVAR_SIGNAL)
+    return std::string(mc::Transition::to_c_str(type_)) + "(cond_id: " + std::to_string(get_cond()->get_id()) + ")";
+
+  THROW_UNIMPLEMENTED;
 }
 
 } // namespace simgrid::kernel::actor

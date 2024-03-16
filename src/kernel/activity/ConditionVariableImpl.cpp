@@ -16,10 +16,10 @@ namespace simgrid::kernel::activity {
 
 /* -------- Acquisition -------- */
 ConditionVariableAcquisitionImpl::ConditionVariableAcquisitionImpl(actor::ActorImpl* issuer,
-                                                                   ConditionVariableImpl* condvar, MutexImpl* mutex)
-    : issuer_(issuer), mutex_(mutex), condvar_(condvar)
+                                                                   ConditionVariableImpl* cond, MutexImpl* mutex)
+    : issuer_(issuer), mutex_(mutex), cond_(cond)
 {
-  set_name(std::string("on condvar ") + std::to_string(condvar_->get_id()));
+  set_name(std::string("on condvar ") + std::to_string(cond_->get_id()));
 }
 
 void ConditionVariableAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
@@ -27,7 +27,7 @@ void ConditionVariableAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   xbt_assert(issuer == issuer_, "Cannot wait on acquisitions created by another actor (id %ld)", issuer_->get_pid());
 
-  XBT_DEBUG("Wait condition variable %u (timeout:%f)", condvar_->get_id(), timeout);
+  XBT_DEBUG("Wait condition variable %u (timeout:%f)", cond_->get_id(), timeout);
 
   this->register_simcall(&issuer_->simcall_); // Block on that acquisition
 
@@ -73,11 +73,10 @@ void ConditionVariableAcquisitionImpl::cancel()
 {
   /* Remove myself from the list of interested parties */
   const auto* issuer = get_issuer();
-  auto it            = std::find_if(condvar_->ongoing_acquisitions_.begin(), condvar_->ongoing_acquisitions_.end(),
+  auto it            = std::find_if(cond_->ongoing_acquisitions_.begin(), cond_->ongoing_acquisitions_.end(),
                                     [issuer](ConditionVariableAcquisitionImplPtr acqui) { return acqui->get_issuer() == issuer; });
-  xbt_assert(it != condvar_->ongoing_acquisitions_.end(),
-             "Cannot find myself in the waiting queue that I have to leave");
-  condvar_->ongoing_acquisitions_.erase(it);
+  xbt_assert(it != cond_->ongoing_acquisitions_.end(), "Cannot find myself in the waiting queue that I have to leave");
+  cond_->ongoing_acquisitions_.erase(it);
 }
 
 /* -------- Condition -------- */
@@ -134,7 +133,6 @@ ConditionVariableAcquisitionImplPtr ConditionVariableImpl::acquire_async(actor::
              "Actor %s cannot wait on ConditionVariable #%u since it does not own the provided mutex #%u (which is "
              "owned by %s).",
              issuer->get_cname(), this->get_id(), mutex->get_id(), (owner == nullptr ? "nobody" : owner->get_cname()));
-  mutex_ = mutex;
   mutex->unlock(issuer);
 
   auto res = ConditionVariableAcquisitionImplPtr(new ConditionVariableAcquisitionImpl(issuer, this, mutex), true);

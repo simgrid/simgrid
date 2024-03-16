@@ -93,6 +93,12 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
     case Transition::Type::SEM_WAIT:
       return new SemaphoreTransition(issuer, times_considered, simcall, stream);
 
+    case Transition::Type::CONDVAR_ASYNC_LOCK:
+    case Transition::Type::CONDVAR_BROADCAST:
+    case Transition::Type::CONDVAR_SIGNAL:
+    case Transition::Type::CONDVAR_WAIT:
+      return new CondvarTransition(issuer, times_considered, simcall, stream);
+
     case Transition::Type::ACTOR_JOIN:
       return new ActorJoinTransition(issuer, times_considered, stream);
     case Transition::Type::ACTOR_SLEEP:
