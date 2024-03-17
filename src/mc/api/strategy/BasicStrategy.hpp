@@ -29,11 +29,14 @@ public:
     if (depth_ <= 0) {
       XBT_CERROR(mc_dfs,
                  "The exploration reached a depth greater than %d. Change the depth limit with "
-                 "--cfg=model-check/max-depth. Here are the 100 first trace elements",
+                 "--cfg=model-check/max-depth. Here are the 100 first and 100 last trace elements",
                  _sg_mc_max_depth.get());
-      auto trace = Exploration::get_instance()->get_textual_trace(100);
-      for (auto const& elm : trace)
-        XBT_CERROR(mc_dfs, "  %s", elm.c_str());
+      auto trace = Exploration::get_instance()->get_textual_trace();
+      for (unsigned i = 0; i < trace.size(); i++)
+        if (i < 100 || i > (trace.size() - 100))
+          XBT_CERROR(mc_dfs, "  %s", trace[i].c_str());
+        else if (i == 100)
+          XBT_CERROR(mc_dfs, " (800 omitted trace elements)");
       xbt_die("Aborting now.");
     }
   }
