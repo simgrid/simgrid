@@ -137,6 +137,7 @@ public:
   activity::ConditionVariableImpl* get_cond() const { return cond_.get(); }
   activity::MutexImpl* get_mutex() const { return mutex_.get(); }
   double get_timeout() const { return timeout_; }
+  mc::Transition::Type get_type() const { return type_; }
 };
 
 } // namespace simgrid::kernel::actor

@@ -62,6 +62,13 @@ void ConditionVariableAcquisitionImpl::finish()
 
   xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
   auto issuer = unregister_first_simcall();
+
+  /* Break the simcall in MC mode, as the lock is done in another simcall */
+  if (observer->get_type() != mc::Transition::Type::CONDVAR_NOMC) {
+    issuer->simcall_answer();
+    return;
+  }
+
   if (issuer == nullptr) /* don't answer exiting and dying actors */
     return;
 

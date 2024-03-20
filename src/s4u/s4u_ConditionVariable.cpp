@@ -36,6 +36,7 @@ static bool do_wait(kernel::actor::ActorImpl* issuer, kernel::activity::Conditio
              mutex->get_owner()->get_pid());
 
   if (MC_is_active() || MC_record_replay_is_active()) { // Split in 2 simcalls for transition persistency
+
     kernel::actor::ConditionVariableObserver lock_observer{issuer, mc::Transition::Type::CONDVAR_ASYNC_LOCK, pimpl,
                                                            mutex, timeout};
     auto acquisition = kernel::actor::simcall_answered(
@@ -43,19 +44,26 @@ static bool do_wait(kernel::actor::ActorImpl* issuer, kernel::activity::Conditio
 
     kernel::actor::ConditionVariableObserver wait_observer{issuer, mc::Transition::Type::CONDVAR_WAIT,
                                                            acquisition.get(), timeout};
-    return kernel::actor::simcall_blocking([issuer, &acquisition, timeout] { acquisition->wait_for(issuer, timeout); },
-                                           &wait_observer);
+    bool res = kernel::actor::simcall_blocking(
+        [issuer, &acquisition, timeout] { acquisition->wait_for(issuer, timeout); }, &wait_observer);
+
+    /* get back the mutex after the wait */
+    mutex->get_iface().lock();
+
+    return res;
 
   } else { // Do it in one simcall only
     // We don't need no observer on this non-MC path, but simcall_blocking() requires it.
     // Use a type clearly indicating it's NO-MC in the hope to get a loud error if it gets used despite our
     // expectations.
     kernel::actor::ConditionVariableObserver observer{issuer, mc::Transition::Type::CONDVAR_NOMC, pimpl, mutex};
+
     return kernel::actor::simcall_blocking(
         [&observer, timeout] {
-          observer.get_cond()
-              ->acquire_async(observer.get_issuer(), observer.get_mutex())
-              ->wait_for(observer.get_issuer(), timeout);
+          auto issuer = observer.get_issuer();
+          observer.get_cond()->acquire_async(issuer, observer.get_mutex())->wait_for(issuer, timeout);
+
+          // The mutex_lock is done within wait_for
         },
         &observer);
   }
