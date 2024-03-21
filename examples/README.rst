@@ -1537,13 +1537,15 @@ This is wrong, and the model-checker correctly finds a counter-example to that a
 Advanced examples
 *****************
 
+.. _s4u_ex_actor_attach:
+
 Changing maestro's thread
 =========================
 
 Usually, SimGrid's maestro executes in the main thread of your application, meaning that the main thread is in charge of
 initializing the simulation and then scheduling the activities. If you really need it, it is possible to move away maestro in
 another system thread, for example because another library absolutely wants to run as the system main thread. The following
-example shows how to do that, using  :cpp:func:`sg_actor_attach` at the begining and :cpp:func:`sg_actor_detatch` on
+example shows how to do that, using  :cpp:func:`sg_actor_attach` at the begining and :cpp:func:`sg_actor_detach` on
 termination.
 
 .. tabs::
