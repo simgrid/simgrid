@@ -230,6 +230,9 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
+  xbt_assert(static_cast<sg4::Mutex*>(mutex->mutex)->get_owner() == nullptr,
+             "Destroying a mutex that is still owned is UB. See https://cwe.mitre.org/data/definitions/667.html");
+
   XBT_DEBUG("%s(%p)", __func__, mutex);
   intrusive_ptr_release(static_cast<sg4::Mutex*>(mutex->mutex));
   return 0;
