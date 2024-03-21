@@ -17,6 +17,7 @@
  * Actor::create() is mostly useful to start an actor from another actor.
  */
 
+#include "simgrid/forward.h"
 #include <simgrid/actor.h>
 #include <simgrid/engine.h>
 #include <simgrid/host.h>
@@ -28,16 +29,15 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_create, "The logging channel used in this example");
 
 /* Our first class of actors is simply implemented with a function.
- * As every CSG actors, its parameters are in a vector of string (argc/argv), and it does not return anything.
+ * It follows a pthread-like prototype with a single void* parameter, and it does not return anything.
  *
  * One 'receiver' actor is instantiated within the simulation later in this file.
  */
-static void receiver(int argc, char** argv)
+static void receiver(void* mb)
 {
-  xbt_assert(argc == 2, "This actor expects a single argument: the mailbox on which to get messages");
-  sg_mailbox_t mailbox = sg_mailbox_by_name(argv[1]);
+  sg_mailbox_t mailbox = mb;
 
-  XBT_INFO("Hello, I'm ready to get any message you'd want on %s", argv[1]);
+  XBT_INFO("Hello, I'm ready to get any message you'd want on %s", sg_mailbox_get_name(mailbox));
 
   char* msg1 = sg_mailbox_get(mailbox);
   char* msg2 = sg_mailbox_get(mailbox);
@@ -49,7 +49,9 @@ static void receiver(int argc, char** argv)
   XBT_INFO("I'm done. See you.");
 }
 
-/* Our second class of actors, in charge of sending stuff */
+/* Our second class of actors, in charge of sending stuff.
+ * It follows a main-like prototype with argc/argv parameters, and it does not return anything.
+ */
 static void sender(int argc, char** argv)
 {
   xbt_assert(argc == 3, "Actor 'sender' requires 2 parameters (mailbox and data to send), but got only %d", argc - 1);
@@ -61,6 +63,7 @@ static void sender(int argc, char** argv)
   XBT_INFO("I'm done. See you.");
 }
 
+/* Our third class of actors, in charge of forwarding stuff. Also following a main-like prototype. */
 static void forwarder(int argc, char** argv)
 {
   xbt_assert(argc >= 3, "Actor forwarder requires 2 parameters, but got only %d", argc - 1);
@@ -82,13 +85,18 @@ int main(int argc, char** argv)
 
   /* And now you have to ask SimGrid to actually start your actors.
    *
-   * The easiest way to do so is to implement the behavior of your actor in a single function,
-   * as we do here for the receiver actors. This function can take any kind of parameters, as
-   * long as the last parameters of sg_actor_create() or sg_actor_start() match what your function expects.
+   * The easiest way to do so is to implement the behavior of your actor in a single function, as we do here for the
+   * receiver actors. In C, you can either use a main-like prototype with argc/argv, as the sender in this example, or a
+   * pthread-like prototype with void*, as the receiver in this example.
+   *
+   * If you go for the argc/argv prototype, you can either create your actor in one shot with sg_actor_create_() or
+   * sg_actor_create() (depending on the const-ness of your parameters), or split it into sg_actor_init() and then
+   * sg_actor_start().
+   *
+   * If you go for the void* prototype, you must call sg_actor_init() and then sg_actor_start_voidp().
    */
-  int recv_argc           = 2;
-  const char* recv_argv[] = {"receiver", "mb42", NULL};
-  sg_actor_create_("receiver", sg_host_by_name("Fafard"), &receiver, recv_argc, recv_argv);
+  sg_actor_t recv_actor = sg_actor_init("receiver", sg_host_by_name("Fafard"));
+  sg_actor_start_voidp(recv_actor, &receiver, sg_mailbox_by_name("mb42"));
 
   int sender1_argc           = 3;
   const char* sender1_argv[] = {"sender", "GaBuZoMeu", "mb42", NULL};

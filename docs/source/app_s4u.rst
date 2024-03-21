@@ -476,10 +476,13 @@ See also :ref:`the relevant example <s4u_ex_actors_create>`.
       .. doxygenfunction:: sg_actor_create(const char *name, sg_host_t host, xbt_main_func_t code, int argc, char *const *argv)
       .. doxygenfunction:: sg_actor_init(const char *name, sg_host_t host)
       .. doxygenfunction:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char *const *argv)
+      .. doxygenfunction:: sg_actor_start_voidp
       .. doxygenfunction:: sg_actor_set_stacksize
 
       .. doxygenfunction:: sg_actor_attach(const char *name, void *data, sg_host_t host, xbt_dict_t properties)
       .. doxygenfunction:: sg_actor_detach()
+
+      See also :ref:`s4u_ex_actor_attach` for an example of use of ``sg_actor_attach()`` and ``sg_actor_detach()``.
 
 Retrieving actors
 -----------------

@@ -31,14 +31,17 @@ static inline sg_actor_t sg_actor_create(const char* name, sg_host_t host, xbt_m
   return sg_actor_create_(name, host, code, argc, (const char* const*)argv);
 }
 XBT_PUBLIC sg_actor_t sg_actor_init(const char* name, sg_host_t host);
+XBT_PUBLIC void sg_actor_start_(sg_actor_t actor, xbt_main_func_t code, int argc, const char* const* argv);
 /** Start the previously initialized actor.
  *
  * Note that argv is copied over, so you should free your own copy once the actor is started. */
-XBT_PUBLIC void sg_actor_start_(sg_actor_t actor, xbt_main_func_t code, int argc, const char* const* argv);
 static inline void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char* const* argv)
 {
   sg_actor_start_(actor, code, argc, (const char* const*)argv);
 }
+/** Start the previously initialized actor using a pthread-like API. */
+void sg_actor_start_voidp(sg_actor_t actor, void_f_pvoid_t code, void* param);
+
 XBT_PUBLIC void sg_actor_set_stacksize(sg_actor_t actor, unsigned size);
 
 XBT_ATTRIB_NORETURN XBT_PUBLIC void sg_actor_exit();

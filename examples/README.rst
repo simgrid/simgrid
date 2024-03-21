@@ -1517,7 +1517,7 @@ Monitoring the link load
    .. example-tab:: examples/cpp/plugin-link-load/s4u-plugin-link-load.cpp
 
 ***********************
-Model-Checking Examples
+Model-Checking examples
 ***********************
 
 The model-checker can be used to exhaustively search for issues in the tested application. It must be activated at compile-time, but this
@@ -1532,6 +1532,25 @@ This is wrong, and the model-checker correctly finds a counter-example to that a
 .. tabs::
 
    .. example-tab:: examples/cpp/mc-failing-assert/s4u-mc-failing-assert.cpp
+
+*****************
+Advanced examples
+*****************
+
+.. _s4u_ex_actor_attach:
+
+Changing maestro's thread
+=========================
+
+Usually, SimGrid's maestro executes in the main thread of your application, meaning that the main thread is in charge of
+initializing the simulation and then scheduling the activities. If you really need it, it is possible to move away maestro in
+another system thread, for example because another library absolutely wants to run as the system main thread. The following
+example shows how to do that, using  :cpp:func:`sg_actor_attach` at the begining and :cpp:func:`sg_actor_detach` on
+termination.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/maestro-set/s4u-maestro-set.cpp
 
 .. |br| raw:: html
 

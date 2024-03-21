@@ -513,6 +513,12 @@ void sg_actor_start_(sg_actor_t actor, xbt_main_func_t code, int argc, const cha
   actor->start(function);
 }
 
+void sg_actor_start_voidp(sg_actor_t actor, void_f_pvoid_t code, void* param)
+{
+  simgrid::kernel::actor::ActorCode function;
+  actor->start(code, param);
+}
+
 sg_actor_t sg_actor_create_(const char* name, sg_host_t host, xbt_main_func_t code, int argc, const char* const* argv)
 {
   simgrid::kernel::actor::ActorCode function = simgrid::xbt::wrap_main(code, argc, argv);

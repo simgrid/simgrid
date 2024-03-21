@@ -20,6 +20,9 @@ Model-checker:
 - Introduce option 'model-check/no-fork' to forbid the use of system forks to speed-up the exploration. This is mandated for
   multithreaded applications, such as our Python bindings.
 
+C API:
+- Add sg_actor_start_voidp() to start actors using a pthread-like prototype, taking a void* as parameter.
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.35) November 23. 2023
