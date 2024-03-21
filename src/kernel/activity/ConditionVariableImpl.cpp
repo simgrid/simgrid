@@ -84,6 +84,7 @@ void ConditionVariableAcquisitionImpl::cancel()
                                     [issuer](ConditionVariableAcquisitionImplPtr acqui) { return acqui->get_issuer() == issuer; });
   xbt_assert(it != cond_->ongoing_acquisitions_.end(), "Cannot find myself in the waiting queue that I have to leave");
   cond_->ongoing_acquisitions_.erase(it);
+  get_issuer()->activities_.erase(this);
 }
 
 /* -------- Condition -------- */

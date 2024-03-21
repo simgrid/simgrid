@@ -234,6 +234,8 @@ void ActivityImpl::cancel()
   if (model_action_ != nullptr)
     model_action_->cancel();
   set_state(State::CANCELED);
+  if (actor_)
+    actor_->activities_.erase(this);
 }
 
 // boost::intrusive_ptr<Activity> support:

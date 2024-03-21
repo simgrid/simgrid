@@ -75,6 +75,7 @@ void SemAcquisitionImpl::cancel()
   xbt_assert(it != semaphore_->ongoing_acquisitions_.end(),
              "Cannot find myself in the waiting queue that I have to leave");
   semaphore_->ongoing_acquisitions_.erase(it);
+  get_issuer()->activities_.erase(this); // The actor does not need to cancel the activity when it dies
 }
 
 /* -------- Semaphore -------- */

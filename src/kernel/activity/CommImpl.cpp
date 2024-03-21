@@ -380,6 +380,11 @@ void CommImpl::cancel()
              && not MC_record_replay_is_active() && (get_state() == State::READY || get_state() == State::RUNNING)) {
     model_action_->cancel();
   }
+  CommImplPtr tmp = this; // Make sure the object does not disappear until after we check whether we need to remove it
+  if (tmp->src_actor_)
+    tmp->src_actor_->activities_.erase(this); // The actor does not need to cancel the activity when it dies
+  if (tmp->dst_actor_)
+    tmp->dst_actor_->activities_.erase(this); // The actor does not need to cancel the activity when it dies
 }
 
 void CommImpl::finish()

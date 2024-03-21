@@ -153,9 +153,8 @@ void ActorImpl::cleanup_from_self()
   }
 
   /* cancel non-blocking activities */
-  for (auto activity : activities_)
-    activity->cancel();
-  activities_.clear();
+  while (not activities_.empty())
+    activities_.begin()->get()->cancel();
 
   XBT_DEBUG("%s@%s(%ld) should not run anymore", get_cname(), get_host()->get_cname(), get_pid());
 
@@ -192,9 +191,8 @@ void ActorImpl::exit()
 
     activities_.erase(activity);
   }
-  for (auto const& activity : activities_)
-    activity->cancel();
-  activities_.clear();
+  while (not activities_.empty())
+    activities_.begin()->get()->cancel();
 
   // Forcefully kill the actor if its host is turned off. Not a HostFailureException because you should not survive that
   this->throw_exception(std::make_exception_ptr(ForcefulKillException(host_->is_on() ? "exited" : "host failed")));
