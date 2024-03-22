@@ -10,6 +10,7 @@
 
 #include "src/internal_config.h"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/sthread/sthread.h"
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif
@@ -18,6 +19,8 @@
 #include <boost/core/demangle.hpp>
 #include <typeinfo>
 #include <utility>
+
+#include <mutex> // To terminate the actors in a thread-safe manner
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_actor, kernel, "Logging specific to Actor's kernel side");
 
@@ -152,9 +155,19 @@ void ActorImpl::cleanup_from_self()
     on_exit.reset();
   }
 
-  /* cancel non-blocking activities */
+  /* cancel non-blocking activities, in a thread-safe way. We cannot protect this state modification in a simcall
+   * because the actor is dying, but we need to take care of sthread. */
+  static std::mutex destruction_mutex;
+  sthread_disable();
+  destruction_mutex.lock();
+  sthread_enable();
+
   while (not activities_.empty())
-    activities_.begin()->get()->cancel();
+    activities_.begin()->get()->cancel(); // cancel() removes the activity from this collection
+
+  sthread_disable();
+  destruction_mutex.unlock();
+  sthread_enable();
 
   XBT_DEBUG("%s@%s(%ld) should not run anymore", get_cname(), get_host()->get_cname(), get_pid());
 
