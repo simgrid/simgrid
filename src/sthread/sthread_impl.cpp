@@ -282,11 +282,7 @@ int sthread_cond_signal(sthread_cond_t* cond)
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
 
-  if (cond->mutex == nullptr) {
-    if (not sthread_quiet)
-      XBT_WARN("No mutex was associated so far with condition variable %p. Safety checks skipped.",
-               (xbt_log_no_loc ? (void*)0xDEADBEEF : cond));
-  } else {
+  if (cond->mutex != nullptr) {
     auto* owner = static_cast<sg4::Mutex*>(cond->mutex)->get_owner();
     if (owner == nullptr)
       XBT_WARN("The mutex associated to condition %p is not currently owned by anyone when calling "
@@ -305,11 +301,7 @@ int sthread_cond_broadcast(sthread_cond_t* cond)
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
 
-  if (cond->mutex == nullptr) {
-    if (not sthread_quiet)
-      XBT_WARN("No mutex was associated so far with condition variable %p. Safety checks skipped.",
-               (xbt_log_no_loc ? (void*)0xdeadbeef : cond));
-  } else {
+  if (cond->mutex != nullptr) {
     auto* owner = static_cast<sg4::Mutex*>(cond->mutex)->get_owner();
     if (owner == nullptr)
       XBT_WARN("The mutex associated to condition %p is not currently owned by anyone when calling "
