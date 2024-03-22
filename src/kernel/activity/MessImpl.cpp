@@ -196,6 +196,9 @@ void MessImpl::finish()
       continue;
 
     issuer->activities_.erase(this);
+    if(detached_)
+      EngineImpl::get_instance()->get_maestro()->activities_.erase(this);
+
     issuer->simcall_answer();
   }
 }
