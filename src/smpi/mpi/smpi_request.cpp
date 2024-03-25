@@ -9,6 +9,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/ConditionVariable.hpp"
 #include "simgrid/s4u/Exec.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
 #include "simgrid/s4u/Mutex.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
@@ -498,12 +499,13 @@ void Request::start()
       mailbox = process->mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted in the small mailbox %s (in case of SSEND)?",
                 mailbox->get_cname());
-      simgrid::kernel::activity::ActivityImplPtr action = mailbox->iprobe(0, &match_recv, static_cast<void*>(this));
+      simgrid::kernel::activity::ActivityImplPtr action =
+          mailbox->iprobe(s4u::Mailbox::IprobeKind::RECV, &match_recv, static_cast<void*>(this));
 
       if (action == nullptr) {
         mailbox = process->mailbox();
         XBT_DEBUG("No, nothing in the small mailbox test the other one : %s", mailbox->get_cname());
-        action = mailbox->iprobe(0, &match_recv, static_cast<void*>(this));
+        action = mailbox->iprobe(s4u::Mailbox::IprobeKind::RECV, &match_recv, static_cast<void*>(this));
         if (action == nullptr) {
           XBT_DEBUG("Still nothing, switch back to the small mailbox : %s", mailbox->get_cname());
           mailbox = process->mailbox_small();
@@ -514,7 +516,8 @@ void Request::start()
     } else {
       mailbox = process->mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted the small mailbox?");
-      simgrid::kernel::activity::ActivityImplPtr action = mailbox->iprobe(0, &match_recv, static_cast<void*>(this));
+      simgrid::kernel::activity::ActivityImplPtr action =
+          mailbox->iprobe(s4u::Mailbox::IprobeKind::RECV, &match_recv, static_cast<void*>(this));
 
       if (action == nullptr) {
         XBT_DEBUG("No, nothing in the permanent receive mailbox");
@@ -602,7 +605,7 @@ void Request::start()
 
       mailbox = process->mailbox();
       XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %s?", mailbox->get_cname());
-      if (not mailbox->iprobe(1, &match_send, static_cast<void*>(this))) {
+      if (not mailbox->iprobe(s4u::Mailbox::IprobeKind::SEND, &match_send, static_cast<void*>(this))) {
         if ((flags_ & MPI_REQ_SSEND) == 0) {
           mailbox = process->mailbox_small();
           XBT_DEBUG("No, nothing in the large mailbox, message is to be sent on the small one %s",
@@ -611,7 +614,7 @@ void Request::start()
           mailbox = process->mailbox_small();
           XBT_DEBUG("SSEND : Is there a corresponding recv already posted in the small mailbox %s?",
                     mailbox->get_cname());
-          if (not mailbox->iprobe(1, &match_send, static_cast<void*>(this))) {
+          if (not mailbox->iprobe(s4u::Mailbox::IprobeKind::SEND, &match_send, static_cast<void*>(this))) {
             XBT_DEBUG("No, we are first, send to large mailbox");
             mailbox = process->mailbox();
           }
@@ -909,13 +912,13 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   if (smpi_cfg_async_small_thresh() > 0) {
     mailbox = smpi_process()->mailbox_small();
     XBT_DEBUG("Trying to probe the perm recv mailbox");
-    request->action_ = mailbox->iprobe(0, &match_recv, static_cast<void*>(request));
+    request->action_ = mailbox->iprobe(s4u::Mailbox::IprobeKind::RECV, &match_recv, static_cast<void*>(request));
   }
 
   if (request->action_ == nullptr){
     mailbox = smpi_process()->mailbox();
     XBT_DEBUG("trying to probe the other mailbox");
-    request->action_ = mailbox->iprobe(0, &match_recv, static_cast<void*>(request));
+    request->action_ = mailbox->iprobe(s4u::Mailbox::IprobeKind::RECV, &match_recv, static_cast<void*>(request));
   }
 
   if (request->action_ != nullptr){

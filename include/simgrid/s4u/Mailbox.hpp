@@ -101,8 +101,9 @@ public:
    */
   CommPtr put_async(void* data, uint64_t simulated_size_in_bytes);
 
+  XBT_DECLARE_ENUM_CLASS(IprobeKind, SEND, RECV);
   kernel::activity::ActivityImplPtr
-  iprobe(int type, const std::function<bool(void*, void*, kernel::activity::CommImpl*)>& match_fun, void* data);
+  iprobe(IprobeKind kind, const std::function<bool(void*, void*, kernel::activity::CommImpl*)>& match_fun, void* data);
   /** Blocking data transmission.
    *
    * Please note that if you send a pointer to some data, you must ensure that your data remains live during the
