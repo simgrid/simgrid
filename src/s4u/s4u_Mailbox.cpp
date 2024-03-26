@@ -139,8 +139,10 @@ kernel::activity::ActivityImplPtr
 Mailbox::iprobe(IprobeKind kind, const std::function<bool(void*, void*, kernel::activity::CommImpl*)>& match_fun,
                 void* data)
 {
+  auto self = kernel::actor::ActorImpl::self();
+  kernel::actor::IprobeSimcall observer(self, pimpl_, kind, match_fun, data);
   return kernel::actor::simcall_answered(
-      [this, kind, &match_fun, data] { return pimpl_->iprobe(kind, match_fun, data); });
+      [this, kind, &match_fun, data] { return pimpl_->iprobe(kind, match_fun, data); }, &observer);
 }
 
 void Mailbox::clear()

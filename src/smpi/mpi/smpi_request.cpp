@@ -873,6 +873,7 @@ void Request::probe(int source, int tag, MPI_Comm comm, MPI_Status* status){
   int flag=0;
   //FIXME find another way to avoid busy waiting ?
   // the issue here is that we have to wait on a nonexistent comm
+  xbt_assert(not(MC_is_active() || MC_record_replay_is_active()), "MPI_Probe is not supported yet in MC mode.");
   while(flag==0){
     iprobe(source, tag, comm, &flag, status);
     XBT_DEBUG("Busy Waiting on probing : %d", flag);
@@ -890,7 +891,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   auto* request =
       new Request(nullptr, 0, MPI_CHAR, source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(source),
                   simgrid::s4u::this_actor::get_pid(), tag, comm, MPI_REQ_PERSISTENT | MPI_REQ_RECV | MPI_REQ_PROBE);
-  if (smpi_iprobe_sleep > 0) {
+  if (smpi_iprobe_sleep > 0 && not(MC_is_active() || MC_record_replay_is_active())) {
     /** Compute the number of flops we will sleep **/
     s4u::this_actor::exec_init(/*nsleeps: See comment above */ nsleeps *
                                /*(seconds * flop/s -> total flops)*/ smpi_iprobe_sleep * speed * maxrate)
@@ -915,13 +916,13 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
     request->action_ = mailbox->iprobe(s4u::Mailbox::IprobeKind::RECV, &match_recv, static_cast<void*>(request));
   }
 
-  if (request->action_ == nullptr){
+  if (request->action_ == nullptr) {
     mailbox = smpi_process()->mailbox();
     XBT_DEBUG("trying to probe the other mailbox");
     request->action_ = mailbox->iprobe(s4u::Mailbox::IprobeKind::RECV, &match_recv, static_cast<void*>(request));
   }
 
-  if (request->action_ != nullptr){
+  if (request->action_ != nullptr) {
     kernel::activity::CommImplPtr sync_comm = boost::static_pointer_cast<kernel::activity::CommImpl>(request->action_);
     const Request* req                      = static_cast<MPI_Request>(sync_comm->src_match_data_);
     *flag = 1;
@@ -932,8 +933,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
       status->count      = req->real_size_;
     }
     nsleeps = 1;//reset the number of sleeps we will do next time
-  }
-  else {
+  } else {
     *flag = 0;
     if (smpi_cfg_grow_injected_times())
       nsleeps++;

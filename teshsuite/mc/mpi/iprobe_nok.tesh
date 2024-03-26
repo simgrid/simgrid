@@ -1,0 +1,30 @@
+#!/usr/bin/env tesh
+
+! expect return 1
+$ $VALGRIND_NO_TRACE_CHILDREN "${bindir:=.}/../../smpi_script/bin/smpirun" -wrapper "${bindir:=.}/../../bin/simgrid-mc" --cfg=model-check/reduction:odpor -platform ${srcdir:=.}/../../examples/platforms/cluster_backbone.xml -np 3 "${bindir:=.}/mpi_iprobe_nok"
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/privatization' to 'ON'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/np' to '3'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/hostfile' to ''
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'precision/timing' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/privatization' to 'ON'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/np' to '3'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/hostfile' to ''
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'precision/timing' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> rank 0 is alive on node-0.simgrid.org
+> rank 1 is alive on node-1.simgrid.org
+> rank 2 is alive on node-10.simgrid.org
+> rank 2 Finished normally
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
+> [0.000000] [mc_explo/INFO] **************************
+> [0.000000] [mc_explo/INFO] *** PROPERTY NOT VALID ***
+> [0.000000] [mc_explo/INFO] **************************
+> [0.000000] [mc_explo/INFO] Counter-example execution trace:
+> [0.000000] [mc_explo/INFO]   Actor 1 in simcall iProbe(mbox=3, recv side)
+> [0.000000] [mc_explo/INFO]   Actor 1 in simcall iProbe(mbox=3, recv side)
+> [0.000000] [mc_explo/INFO]   Actor 1 in simcall iProbe(mbox=3, recv side)
+> [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 3 unique states visited; 0 backtracks (0 transition replays, 3 states visited overall)

@@ -43,7 +43,7 @@ public:
       /* BARRIER transitions sorted alphabetically */
       BARRIER_ASYNC_LOCK, BARRIER_WAIT,
       /* Alphabetical ordering of COMM_* */
-      COMM_ASYNC_RECV, COMM_ASYNC_SEND, COMM_TEST, COMM_WAIT,
+      COMM_ASYNC_RECV, COMM_ASYNC_SEND, COMM_IPROBE, COMM_TEST, COMM_WAIT,
       /* alphabetical, but the MUTEX_LOCK_NOMC that is not used in MC mode and thus only used for debug msg */
       MUTEX_ASYNC_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT, MUTEX_LOCK_NOMC,
       /* alphabetical ordering of SEM transitions */

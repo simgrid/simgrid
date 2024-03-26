@@ -7,6 +7,7 @@
 #define SIMGRID_MC_SIMCALL_COMM_OBSERVER_HPP
 
 #include "simgrid/forward.h"
+#include "simgrid/s4u/Mailbox.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/asserts.h"
@@ -118,6 +119,23 @@ public:
 
   auto const& get_match_fun() const { return match_fun_; };
   auto const& get_copy_data_fun() const { return copy_data_fun_; }
+};
+
+class IprobeSimcall final : public SimcallObserver {
+  activity::MailboxImpl* mbox_;
+  s4u::Mailbox::IprobeKind kind_;
+  int tag_ = {};
+  std::function<bool(void*, void*, activity::CommImpl*)> match_fun_;
+  void* match_data_; // Actually, that's the smpi request
+
+public:
+  IprobeSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, s4u::Mailbox::IprobeKind kind,
+                const std::function<bool(void*, void*, activity::CommImpl*)>& match_fun, void* match_data);
+
+  void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
+  auto const& get_match_fun() const { return match_fun_; }
+  void* get_match_data() const { return match_data_; }
 };
 
 class MessIputSimcall final : public SimcallObserver {
