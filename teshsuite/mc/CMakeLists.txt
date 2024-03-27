@@ -85,17 +85,22 @@ foreach(x
   endif()
 endforeach()
 
-set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
-include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
+# Borrowed from FindSimGrid. TODO: this should be moved to a better location
+MACRO(smpi_c_target NAME)
+  target_compile_options(${NAME} PUBLIC "-include;smpi/smpi_helpers.h;-fPIC;-shared;-Wl,-z,defs")
+  target_link_options(${NAME} PUBLIC "-fPIC;-shared;-Wl,-z,defs;-lm")
+  target_link_libraries(${NAME} PUBLIC ${SimGrid_LIBRARY})
+  target_include_directories(${NAME} PUBLIC "${SimGrid_INCLUDE_DIR};${SimGrid_INCLUDE_DIR}/smpi")
+ENDMACRO()
 
 set(probe_deadlock_disable 1)
 set(probe_ok_disable 1)
 foreach(x iprobe_ok iprobe_nok probe_deadlock probe_ok)
   if(enable_smpi AND NOT ${${x}_disable})
     add_executable       (mpi_${x}  EXCLUDE_FROM_ALL mpi/${x}.c)
-    target_link_libraries(mpi_${x}  simgrid)
+    smpi_c_target(mpi_${x})
     set_target_properties(mpi_${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-    add_dependencies(tests mpi_${x})
+    add_dependencies(tests-mc mpi_${x})
 
     ADD_TESH(mc-mpi-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mpi/${x}.tesh)
   endif()
