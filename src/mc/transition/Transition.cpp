@@ -68,6 +68,8 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
       return new CommRecvTransition(issuer, times_considered, stream);
     case Transition::Type::COMM_ASYNC_SEND:
       return new CommSendTransition(issuer, times_considered, stream);
+    case Transition::Type::COMM_IPROBE:
+      return new CommIprobeTransition(issuer, times_considered, stream);
     case Transition::Type::COMM_TEST:
       return new CommTestTransition(issuer, times_considered, stream);
     case Transition::Type::COMM_WAIT:

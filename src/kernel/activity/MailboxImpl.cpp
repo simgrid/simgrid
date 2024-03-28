@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/MailboxImpl.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 
 #include <unordered_map>
@@ -94,13 +95,14 @@ void MailboxImpl::clear(bool do_finish)
   xbt_assert(comm_queue_.empty() && done_comm_queue_.empty());
 }
 
-CommImplPtr MailboxImpl::iprobe(int type, const std::function<bool(void*, void*, CommImpl*)>& match_fun, void* data)
+CommImplPtr MailboxImpl::iprobe(s4u::Mailbox::IprobeKind kind,
+                                const std::function<bool(void*, void*, CommImpl*)>& match_fun, void* data)
 {
   XBT_DEBUG("iprobe from %p %p", this, &comm_queue_);
 
   CommImplPtr this_comm(new CommImpl);
   CommImplType other_type;
-  if (type == 1) {
+  if (kind == s4u::Mailbox::IprobeKind::SEND) {
     this_comm->set_type(CommImplType::SEND);
     other_type = CommImplType::RECEIVE;
   } else {

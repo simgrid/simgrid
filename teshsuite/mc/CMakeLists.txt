@@ -6,7 +6,7 @@ foreach(x random-bug mutex-handling)
   endif()
 
   if(NOT DEFINED ${x}_disable)
-    add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
+    add_executable       (${x}  EXCLUDE_FROM_ALL ${${x}_sources})
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
     set_property(TARGET ${x} APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
@@ -43,7 +43,6 @@ ENDIF()
 if(enable_coverage)
   ADD_TEST(cover-mc-mutex-handling ${CMAKE_CURRENT_BINARY_DIR}/mutex-handling/mutex-handling ${CMAKE_HOME_DIRECTORY}/examples/platforms/small_platform.xml)
 endif()
-
 
 foreach(x
             simple_barrier_ok              simple_barrier_deadlock
@@ -85,6 +84,33 @@ foreach(x
     ADD_TESH(mc-mini-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
   endif()
 endforeach()
+
+# Borrowed from FindSimGrid. TODO: this should be moved to a better location
+MACRO(smpi_c_target NAME)
+  target_compile_options(${NAME} PUBLIC "-include;smpi/smpi_helpers.h;-fPIC;-shared;-Wl,-z,defs")
+  target_link_options(${NAME} PUBLIC "-fPIC;-shared;-Wl,-z,defs;-lm")
+  target_link_libraries(${NAME} PUBLIC ${SimGrid_LIBRARY})
+  target_include_directories(${NAME} PUBLIC "${SimGrid_INCLUDE_DIR};${SimGrid_INCLUDE_DIR}/smpi")
+ENDMACRO()
+
+set(probe_deadlock_disable 1)
+set(probe_ok_disable 1)
+foreach(x iprobe_ok iprobe_nok probe_deadlock probe_ok)
+  if(enable_smpi AND NOT ${${x}_disable})
+    add_executable       (mpi_${x}  EXCLUDE_FROM_ALL mpi/${x}.c)
+    smpi_c_target(mpi_${x})
+    set_target_properties(mpi_${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    add_dependencies(tests-mc mpi_${x})
+
+    ADD_TESH(mc-mpi-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mpi/${x}.tesh)
+  endif()
+
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/mpi/${x}.tesh)
+  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/mpi/${x}.c)
+endforeach()
+
+
+
 
 set(teshsuite_src  ${teshsuite_src}                                                                        PARENT_SCOPE)
 set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/random-bug/random-bug-replay.tesh

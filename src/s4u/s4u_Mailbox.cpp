@@ -8,6 +8,7 @@
 #include <simgrid/s4u/Mailbox.hpp>
 
 #include "src/kernel/activity/MailboxImpl.hpp"
+#include "src/kernel/actor/CommObserver.hpp"
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel, s4u, "S4U Communication Mailboxes");
@@ -135,10 +136,13 @@ CommPtr Mailbox::get_async()
 }
 
 kernel::activity::ActivityImplPtr
-Mailbox::iprobe(int type, const std::function<bool(void*, void*, kernel::activity::CommImpl*)>& match_fun, void* data)
+Mailbox::iprobe(IprobeKind kind, const std::function<bool(void*, void*, kernel::activity::CommImpl*)>& match_fun,
+                void* data)
 {
+  auto self = kernel::actor::ActorImpl::self();
+  kernel::actor::IprobeSimcall observer(self, pimpl_, kind, match_fun, data);
   return kernel::actor::simcall_answered(
-      [this, type, &match_fun, data] { return pimpl_->iprobe(type, match_fun, data); });
+      [this, kind, &match_fun, data] { return pimpl_->iprobe(kind, match_fun, data); }, &observer);
 }
 
 void Mailbox::clear()

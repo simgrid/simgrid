@@ -281,4 +281,35 @@ bool CommSendTransition::reversible_race(const Transition* other) const
   return true; // CommSend is always enabled
 }
 
+CommIprobeTransition::CommIprobeTransition(aid_t issuer, int times_considered, bool is_sender, unsigned mbox, int tag)
+    : Transition(Type::COMM_IPROBE, issuer, times_considered), is_sender_(is_sender), mbox_(mbox), tag_(tag)
+{
+}
+CommIprobeTransition::CommIprobeTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+    : Transition(Type::COMM_IPROBE, issuer, times_considered)
+{
+  xbt_assert(stream >> mbox_ >> is_sender_ >> tag_);
+  XBT_DEBUG("SendTransition mbox:%u %s tag:%d", mbox_, (is_sender_ ? "sender side" : "recv side"), tag_);
+}
+
+std::string CommIprobeTransition::to_string(bool verbose) const
+{
+  if (not verbose)
+    return xbt::string_printf("iProbe(mbox=%u, %s)", mbox_, (is_sender_ ? "sender side" : "recv side"));
+  else
+    return xbt::string_printf("iProbe(mbox=%u, %s, tag=%d)", mbox_, (is_sender_ ? "sender side" : "recv side"), tag_);
+}
+bool CommIprobeTransition::depends(const Transition* other) const
+{
+  return true; // FIXME: come up with a decent independence theorem
+}
+bool CommIprobeTransition::reversible_race(const Transition* other) const
+{
+  return true; // FIXME https://media1.tenor.com/m/eB4QsynicO0AAAAC/platypus-no-idea-what-im-doing.gif
+}
+bool CommIprobeTransition::can_be_co_enabled(const Transition* o) const
+{
+  return true; // FIXME: I don't know what I'm doin, please complete
+}
+
 } // namespace simgrid::mc

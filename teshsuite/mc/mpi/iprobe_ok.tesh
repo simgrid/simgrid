@@ -1,0 +1,26 @@
+#!/usr/bin/env tesh
+
+$ $VALGRIND_NO_TRACE_CHILDREN ../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../bin/simgrid-mc" --cfg=model-check/reduction:odpor --cfg=model-check/strategy:uniform -platform ${srcdir:=.}/../../examples/platforms/cluster_backbone.xml -np 3 ./mpi_iprobe_ok
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/privatization' to 'ON'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/np' to '3'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/hostfile' to ''
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'precision/timing' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/strategy' to 'uniform'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/privatization' to 'ON'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/np' to '3'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/hostfile' to ''
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'precision/timing' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/strategy' to 'uniform'
+> rank 0 is alive on node-0.simgrid.org
+> rank 1 is alive on node-1.simgrid.org
+> rank 2 is alive on node-10.simgrid.org
+> rank 2 Finished normally
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
+> rank 1 Finished normally
+> rank 0 received 0
+> rank 0 Finished normally
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 4 unique states visited; 0 backtracks (0 transition replays, 4 states visited overall)
