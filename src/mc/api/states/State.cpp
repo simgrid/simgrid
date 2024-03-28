@@ -34,6 +34,9 @@ State::State(const RemoteApp& remote_app) : num_(++expended_states_)
   else if (_sg_mc_strategy == "uniform") {
     xbt::random::set_mersenne_seed(_sg_mc_random_seed);
     strategy_ = std::make_shared<UniformStrategy>();
+  } else if (_sg_mc_strategy == "min_context_switch") {
+    xbt::random::set_mersenne_seed(_sg_mc_random_seed);
+    strategy_ = std::make_shared<MinContextSwitch>();
   } else
     THROW_IMPOSSIBLE;
 
@@ -51,6 +54,8 @@ State::State(const RemoteApp& remote_app, std::shared_ptr<State> parent_state)
     strategy_ = std::make_shared<MinMatchComm>();
   else if (_sg_mc_strategy == "uniform")
     strategy_ = std::make_shared<UniformStrategy>();
+  else if (_sg_mc_strategy == "min_context_switch")
+    strategy_ = std::make_shared<MinContextSwitch>();
   else
     THROW_IMPOSSIBLE;
   strategy_->copy_from(parent_state_->strategy_.get());
