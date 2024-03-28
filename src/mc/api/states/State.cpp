@@ -6,6 +6,7 @@
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/api/strategy/BasicStrategy.hpp"
 #include "src/mc/api/strategy/MaxMatchComm.hpp"
+#include "src/mc/api/strategy/MinContextSwitch.hpp"
 #include "src/mc/api/strategy/MinMatchComm.hpp"
 #include "src/mc/api/strategy/UniformStrategy.hpp"
 #include "src/mc/explo/Exploration.hpp"

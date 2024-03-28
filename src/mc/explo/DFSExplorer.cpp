@@ -90,6 +90,7 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
     }
   }
 
+  XBT_DEBUG("Going to execut actor %ld", next_actor);
   auto transition_to_be_executed = state->get_actors_list().at(next_actor).get_transition();
 
   auto executed_transition = state->execute_next(next_actor, get_remote_app());
