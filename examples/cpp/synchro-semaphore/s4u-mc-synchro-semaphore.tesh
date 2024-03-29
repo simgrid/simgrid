@@ -2,4 +2,4 @@
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:info --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-semaphore --log=sem_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
 > [Checker] Start a DFS exploration. Reduction is: dpor.
-> [Checker] DFS exploration ended. 29 unique states visited; 4 backtracks (44 transition replays, 73 states visited overall)
+> [Checker] DFS exploration ended. 29 unique states visited; 5 explored traces (44 transition replays, 73 states visited overall)

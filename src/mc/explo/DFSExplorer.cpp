@@ -60,9 +60,9 @@ RecordTrace DFSExplorer::get_record_trace() // override
 void DFSExplorer::log_state() // override
 {
   on_log_state_signal(get_remote_app());
-  XBT_INFO("DFS exploration ended. %ld unique states visited; %lu backtracks (%lu transition replays, %lu states "
+  XBT_INFO("DFS exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, %lu states "
            "visited overall)",
-           State::get_expanded_states(), backtrack_count_, Transition::get_replayed_transitions(),
+           State::get_expanded_states(), explored_traces_, Transition::get_replayed_transitions(),
            visited_states_count_);
   Exploration::log_state();
 }
@@ -73,6 +73,8 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
   // This means the exploration asked us to visit a parallel history
   // So first, go to there in the application
   if (not is_execution_descending) {
+
+    explored_traces_++;
     backtrack_to_state(state_stack.back().get());
     is_execution_descending = true;
   }
@@ -90,7 +92,7 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
     }
   }
 
-  XBT_DEBUG("Going to execut actor %ld", next_actor);
+  XBT_DEBUG("Going to execute actor %ld", next_actor);
   auto transition_to_be_executed = state->get_actors_list().at(next_actor).get_transition();
 
   auto executed_transition = state->execute_next(next_actor, get_remote_app());

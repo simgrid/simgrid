@@ -38,6 +38,9 @@ private:
 
   static xbt::signal<void(RemoteApp&)> on_log_state_signal;
 
+  // For statistics
+  unsigned long explored_traces_ = 0;
+
 public:
   explicit OutOfOrderExplorer(const std::vector<char*>& args, ReductionMode mode);
   void run() override;

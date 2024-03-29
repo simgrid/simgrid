@@ -27,6 +27,7 @@
 #include <cstdio>
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -59,6 +60,7 @@ RecordTrace OutOfOrderExplorer::get_record_trace() // override
 
 void OutOfOrderExplorer::restore_stack(std::shared_ptr<State> state)
 {
+  XBT_DEBUG("Going to restore stack. Current depth is %lu; chosen state is #%ld", stack_.size(), state->get_num());
   stack_.clear();
   execution_seq_     = odpor::Execution();
   auto current_state = state;
@@ -80,10 +82,11 @@ void OutOfOrderExplorer::restore_stack(std::shared_ptr<State> state)
 void OutOfOrderExplorer::log_state() // override
 {
   on_log_state_signal(get_remote_app());
-  XBT_INFO(
-      "Out-of-Order exploration ended. %ld unique states visited; %lu backtracks (%lu transition replays, %lu states "
-      "visited overall)",
-      State::get_expanded_states(), backtrack_count_, Transition::get_replayed_transitions(), visited_states_count_);
+  XBT_INFO("Out-of-Order exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, "
+           "%lu states "
+           "visited overall)",
+           State::get_expanded_states(), explored_traces_, Transition::get_replayed_transitions(),
+           visited_states_count_);
   Exploration::log_state();
 }
 
@@ -94,31 +97,35 @@ void OutOfOrderExplorer::run()
    * We do so iteratively instead of recursively, dealing with the call stack manually.
    * This allows one to explore the call stack at will. */
 
-  while (not stack_.empty()) {
-    /* Get current state */
-    auto state = stack_.back();
+  while (not opened_states_.empty()) {
+
+    std::shared_ptr<State> state = best_opened_state();
+    backtrack_to_state(state.get());
+    restore_stack(state);
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%zu (state:#%ld; %zu interleaves todo)", stack_.size(), state->get_num(),
-              state->count_todo());
+    XBT_VERB("Exploration depth=%zu (state:#%ld; %zu interleaves todo; %lu currently opened states)", stack_.size(),
+             state->get_num(), state->count_todo(), opened_states_.size());
 
-    // Backtrack if we reached the maximum depth
-    if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
-      if (reduction_mode_ == ReductionMode::dpor) {
-        XBT_ERROR("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\",
-                  _sg_mc_max_depth.get());
-        XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
-      } else if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
-        XBT_ERROR("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
-                  "when stopping at a fixed depth /!\\",
-                  _sg_mc_max_depth.get());
-        XBT_ERROR("/!\\ If bad things happen, disable the reduction with --cfg=model-check/reduction:none /!\\");
-      } else {
-        XBT_WARN("/!\\ Max depth reached ! /!\\ ");
-      }
-      this->backtrack();
-      continue;
-    }
+    // // Backtrack if we reached the maximum depth
+    // if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
+    //   if (reduction_mode_ == ReductionMode::dpor) {
+    //     XBT_ERROR("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\",
+    //               _sg_mc_max_depth.get());
+    //     XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
+    //   } else if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
+    //     XBT_ERROR("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
+    //               "when stopping at a fixed depth /!\\",
+    //               _sg_mc_max_depth.get());
+    //     XBT_ERROR("/!\\ If bad things happen, disable the reduction with --cfg=model-check/reduction:none /!\\");
+    //   } else {
+    //     XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+    //   }
+    //   this->backtrack();
+    //   continue;
+    // }
+
+    reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
 
     // Search for the next transition
     // next_transition returns a pair<aid_t, int>
@@ -127,19 +134,19 @@ void OutOfOrderExplorer::run()
 
     if (next < 0) {
 
+      explored_traces_++;
       // If there is no more transition in the current state (or if ODPOR picked an actor that is not enabled --
       // ReversibleRace is an overapproximation), backtrace
       XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
                stack_.size() + 1);
+      Exploration::check_deadlock();
 
       if (state->get_actor_count() == 0) {
         get_remote_app().finalize_app();
         XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
-        XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(),
-                 backtrack_count_ + 1);
+        XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(), explored_traces_);
       }
 
-      this->backtrack();
       continue;
     }
 
@@ -180,14 +187,10 @@ void OutOfOrderExplorer::run()
     // Before leaving that state, if the transition we just took can be taken multiple times, we
     // need to give it to the opened states
     if (stack_.back()->count_todo_multiples() > 0)
-      opened_states_.emplace_back(stack_.back());
+      opened_states_.emplace_back(state);
+    opened_states_.emplace_back(std::move(next_state));
 
     reduction_algo_->on_backtrack(state.get());
-
-    stack_.emplace_back(std::move(next_state));
-    execution_seq_.push_transition(std::move(executed_transition));
-
-    reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
 
     dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
                state->get_transition_out()->dot_string().c_str());
@@ -197,36 +200,28 @@ void OutOfOrderExplorer::run()
 
 std::shared_ptr<State> OutOfOrderExplorer::best_opened_state()
 {
-  int best_prio = 0; // cache the value for the best priority found so far (initialized to silence gcc)
-  auto best     = end(opened_states_);   // iterator to the state to explore having the best priority
-  auto valid    = begin(opened_states_); // iterator marking the limit between states still to explore, and already
-                                         // explored ones
+  int best_prio = std::numeric_limits<int>::max(); // cache the value for the best priority found so far (initialized to
+                                                   // silence gcc)
+  auto best = end(opened_states_);                 // iterator to the state to explore having the best priority
 
-  // Keep only still non-explored states (aid != -1), and record the one with the best (greater) priority.
+  // Find the best state regarding priority (smallest one) or a state that has no opened transition (next == -1).
+  // The latter can be discarded more quickly by the execution.
   for (auto current = begin(opened_states_); current != end(opened_states_); ++current) {
     auto [aid, prio] = (*current)->next_transition_guided();
-    if (aid == -1)
-      continue;
-    if (valid != current)
-      *valid = std::move(*current);
-    if (best == end(opened_states_) || prio <= best_prio) {
-      best_prio = prio;
-      best      = valid;
+    if (aid == -1) {
+      best = current;
+      break;
     }
-    ++valid;
+    if (best == end(opened_states_) || prio < best_prio) {
+      best_prio = prio;
+      best      = current;
+    }
   }
 
   std::shared_ptr<State> best_state;
-  if (best < valid) {
-    // There are non-explored states, and one of them has the best priority.  Remove it from opened_states_ before
-    // returning.
-    best_state = std::move(*best);
-    --valid;
-    if (best != valid)
-      *best = std::move(*valid);
-  }
-  opened_states_.erase(valid, end(opened_states_));
-
+  xbt_assert(best < end(opened_states_), "Shouldn't be calling this method if the vector is empty. Fix Me");
+  best_state = std::move(*best);
+  opened_states_.erase(best);
   return best_state;
 }
 
@@ -276,7 +271,7 @@ OutOfOrderExplorer::OutOfOrderExplorer(const std::vector<char*>& args, Reduction
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   XBT_DEBUG("Initial state. %lu actors to consider", stack_.back()->get_actor_count());
-  if (stack_.back()->count_todo_multiples() > 1)
+
     opened_states_.emplace_back(stack_.back());
 }
 
