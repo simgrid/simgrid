@@ -31,10 +31,10 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 141 unique states visited; 8 explored traces (68 transition replays, 209 states visited overall)
 
 ! expect return 2
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:dpor --cfg=model-check/exploration-algo:OOO --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_mutex_deadlock 4 0
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:dpor --cfg=model-check/exploration-algo:BFS --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_mutex_deadlock 4 0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'dpor'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'OOO'
-> [0.000000] [mc_ooo/INFO] Start an Out-of-Order exploration. Reduction is: dpor.
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BFS'
+> [0.000000] [mc_bfs/INFO] Start a BFS exploration. Reduction is: dpor.
 > [0.000000] [mc_global/INFO] **************************
 > [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
 > [0.000000] [mc_global/INFO] **************************
@@ -58,7 +58,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_WAIT(mutex: 3, owner: 5)
 > [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;3;2;3;4;3;4;5;4;5;5'
-> [0.000000] [mc_ooo/INFO] Out-of-Order exploration ended. 141 unique states visited; 15 explored traces (2607 transition replays, 2748 states visited overall)
+> [0.000000] [mc_bfs/INFO] BFS exploration ended. 141 unique states visited; 8 explored traces (68 transition replays, 209 states visited overall)
 
 ! expect return 2
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_mutex_deadlock 5 0

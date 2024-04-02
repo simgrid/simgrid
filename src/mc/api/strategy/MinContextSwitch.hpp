@@ -26,6 +26,8 @@ class MinContextSwitch : public StratLocalInfo {
 public:
   MinContextSwitch() {}
 
+  int get_actor_valuation(aid_t aid) const override { return nb_context_switch_; }
+
   void copy_from(const StratLocalInfo* strategy) override
   {
     const auto* cast_strategy = dynamic_cast<MinContextSwitch const*>(strategy);

@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_WAITSTRATEGY_HPP
 #define SIMGRID_MC_WAITSTRATEGY_HPP
 
+#include "src/mc/api/strategy/StratLocalInfo.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
 
 namespace simgrid::mc {
@@ -39,6 +40,8 @@ public:
   }
   MaxMatchComm()                     = default;
   ~MaxMatchComm() override           = default;
+
+  int get_actor_valuation(aid_t aid) const override { return value_of_state_; }
 
   std::pair<aid_t, int> best_transition(bool must_be_todo) const override
   {

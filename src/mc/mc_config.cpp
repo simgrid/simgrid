@@ -6,6 +6,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simgrid/sg_config.hpp"
+#include "xbt/asserts.h"
 #include "xbt/config.hpp"
 #include <simgrid/modelchecker.h>
 
@@ -41,7 +42,7 @@ simgrid::config::Flag<std::string> _sg_mc_record_path{
                  "Either remove the model-check/replay parameter, or execute your code out of simgrid-mc.",
                  to_c_str(simgrid::mc::get_model_checking_mode()));
       simgrid::mc::set_model_checking_mode(simgrid::mc::ModelCheckingMode::REPLAY);
-      MC_record_path()                 = value;
+      MC_record_path() = value;
     }};
 
 simgrid::config::Flag<bool> _sg_mc_timeout{
@@ -69,8 +70,9 @@ simgrid::config::Flag<std::string> _sg_mc_explore_algo{
     "DFS",
     {{"DFS",
       "Depth First Search order: this search politic is the one following the best the classical reduction algorithm."},
-     {"OOO", "Out-Of-Order: this search politic allows for a better use of the strategy by augmenting the number of "
-             "state choices available at runtime."}}};
+     {"BFS",
+      "Best First Search: this search politic allows for a better use of the strategy by augmenting the number of "
+      "state choices available at runtime."}}};
 
 simgrid::config::Flag<std::string> _sg_mc_strategy{
     "model-check/strategy",
@@ -97,10 +99,8 @@ simgrid::config::Flag<bool> _sg_mc_comms_determinism{
       _mc_cfg_cb_check("value to enable/disable the detection of determinism in the communications schemes");
     }};
 simgrid::config::Flag<bool> _sg_mc_send_determinism{
-    "model-check/send-determinism",
-    "Enable/disable the detection of send-determinism in the communications schemes",
-    false,
-    [](bool) {
+    "model-check/send-determinism", "Enable/disable the detection of send-determinism in the communications schemes",
+    false, [](bool) {
       _mc_cfg_cb_check("value to enable/disable the detection of send-determinism in the communications schemes");
     }};
 
@@ -112,14 +112,21 @@ simgrid::config::Flag<std::string> _sg_mc_buffering{
      {"infty", "Infinite system buffering: MPI_Send returns immediately"}},
     [](std::string_view) { _mc_cfg_cb_check("buffering mode"); }};
 
-simgrid::config::Flag<int> _sg_mc_max_depth{"model-check/max-depth",
-                                            "Maximal exploration depth (default: 1000)",
-                                            1000,
+simgrid::config::Flag<int> _sg_mc_max_depth{"model-check/max-depth", "Maximal exploration depth (default: 1000)", 1000,
                                             [](int) { _mc_cfg_cb_check("max depth value"); }};
 
 simgrid::config::Flag<int> _sg_mc_max_deadlocks{
     "model-check/max-deadlocks",
     "Maximal amount of deadlocks to accept before stopping the exploration (negative value for no maximum).", 0};
+
+simgrid::config::Flag<int> _sg_mc_bfs_threshold{
+    "model-check/bfs-threshold",
+    "Percentage of deviation from the best option allowed for the best first search. "
+    "The algorithm switches if current * threshold / 100 > best. Use 100 to follow strict strategy and 0 to always "
+    "fully "
+    "explore traces before backtracking."
+    "Must be a floating point value between 0 and 100",
+    0, [](int val) { xbt_assert(0 <= val and val <= 100); }};
 
 simgrid::config::Flag<bool> _sg_mc_nofork{
     "model-check/no-fork", "Forbids the use of forks to allow the verification of multithreaded applications.", false,

@@ -241,6 +241,11 @@ public:
    * as a leaf node in the tree
    */
   InsertionResult insert(const PartialExecution& seq);
+
+  /**
+   * @brief The number of children at depth one
+   */
+  unsigned int direct_children() const { return root_->get_ordered_children().size(); }
 };
 
 } // namespace simgrid::mc::odpor

@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_MINWAITTAKEN_HPP
 #define SIMGRID_MC_MINWAITTAKEN_HPP
 
+#include "src/mc/api/strategy/StratLocalInfo.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
 
 namespace simgrid::mc {
@@ -44,7 +45,9 @@ public:
     MinMatchComm()                     = default;
   ~MinMatchComm() override           = default;
 
- std::pair<aid_t, int> best_transition(bool must_be_todo) const override
+  int get_actor_valuation(aid_t aid) const override { return value_of_state_; }
+
+  std::pair<aid_t, int> best_transition(bool must_be_todo) const override
   {
     std::pair<aid_t, int> min_found = std::make_pair(-1, value_of_state_ + 2);
     for (auto const& [aid, actor] : actors_to_run_) {

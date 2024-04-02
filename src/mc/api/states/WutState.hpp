@@ -86,6 +86,8 @@ public:
    * pseudocode
    */
   void do_odpor_unwind();
+
+  unsigned int direct_children() const { return wakeup_tree_.direct_children(); }
 };
 
 } // namespace simgrid::mc

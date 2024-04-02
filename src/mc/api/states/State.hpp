@@ -48,6 +48,8 @@ public:
    internal cost of the transition is returned */
   std::pair<aid_t, int> next_transition_guided() const;
 
+  int get_actor_strategy_valuation(aid_t actor) const { return strategy_->get_actor_valuation(actor); }
+
   /**
    * @brief Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
    * next_transition()

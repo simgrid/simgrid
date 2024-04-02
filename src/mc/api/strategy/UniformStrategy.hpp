@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_UNIFORMSTRATEGY_HPP
 #define SIMGRID_MC_UNIFORMSTRATEGY_HPP
 
+#include "src/mc/api/strategy/StratLocalInfo.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "xbt/random.hpp"
 
@@ -28,6 +29,8 @@ public:
     for (auto const& [aid, _] : actors_to_run_)
       valuation[aid] = xbt::random::uniform_int(0, MAX_RAND);
   }
+
+  int get_actor_valuation(aid_t aid) const override { return valuation.at(aid); }
 
   std::pair<aid_t, int> best_transition(bool must_be_todo) const override
   {

@@ -40,6 +40,9 @@ public:
    *  be executed and a children StratLocalInfo will then be created. */
   virtual void execute_next(aid_t aid, RemoteApp& app) = 0;
 
+  /** Return the associated value of the actor */
+  virtual int get_actor_valuation(aid_t aid) const = 0;
+
   /** Ensure at least one transition is marked as todo among the enabled ones not done.
    *  If required, it marks as todo the best transition according to the StratLocalInfo. */
   void consider_best()

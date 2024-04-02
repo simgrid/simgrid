@@ -36,33 +36,31 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Executed 3: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
 > [Checker] DFS exploration ended. 8 unique states visited; 2 explored traces (1 transition replays, 9 states visited overall)
 
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/exploration-algo:OOO --log=mc_ooo.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-barrier 3 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
-> [Checker] Configuration change: Set 'model-check/exploration-algo' to 'OOO'
-> [Checker] Start an Out-of-Order exploration. Reduction is: dpor.
-> [Checker] Exploration depth=1 (state:#1; 1 interleaves todo; 0 currently opened states)
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/exploration-algo:BFS --log=mc_bfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-barrier 3 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
+> [Checker] Configuration change: Set 'model-check/exploration-algo' to 'BFS'
+> [Checker] Start a BFS exploration. Reduction is: dpor.
+> [Checker] Exploration depth=1 (state:#1; 1 interleaves todo; 1 currently opened states)
 > [Checker] Executed 1: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
-> [Checker] Exploration depth=2 (state:#2; 1 interleaves todo; 0 currently opened states)
+> [Checker] Exploration depth=2 (state:#2; 1 interleaves todo; 1 currently opened states)
 > [Checker] Executed 2: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
-> [Checker] Exploration depth=3 (state:#3; 1 interleaves todo; 0 currently opened states)
+> [Checker] Exploration depth=3 (state:#3; 1 interleaves todo; 1 currently opened states)
 > [Checker] Executed 3: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 3, state: 3, 0 interleaves)
-> [Checker] Exploration depth=4 (state:#4; 1 interleaves todo; 0 currently opened states)
+> [Checker] Exploration depth=4 (state:#4; 1 interleaves todo; 1 currently opened states)
 > [Checker] Executed 1: BARRIER_WAIT(barrier: 0) (stack depth: 4, state: 4, 0 interleaves)
-> [Checker] Exploration depth=5 (state:#5; 1 interleaves todo; 0 currently opened states)
+> [Checker] Exploration depth=5 (state:#5; 1 interleaves todo; 2 currently opened states)
 > [Checker] Executed 2: BARRIER_WAIT(barrier: 0) (stack depth: 5, state: 5, 0 interleaves)
-> [Checker] Exploration depth=3 (state:#3; 0 interleaves todo; 1 currently opened states)
-> [Checker] 3 actors remain, but none of them need to be interleaved (depth 4).
-> [Checker] Exploration depth=6 (state:#6; 1 interleaves todo; 0 currently opened states)
+> [Checker] Exploration depth=6 (state:#6; 1 interleaves todo; 3 currently opened states)
 > [Checker] Executed 3: BARRIER_WAIT(barrier: 0) (stack depth: 6, state: 6, 0 interleaves)
-> [Checker] Exploration depth=3 (state:#3; 0 interleaves todo; 1 currently opened states)
-> [Checker] 3 actors remain, but none of them need to be interleaved (depth 4).
-> [Checker] Exploration depth=7 (state:#7; 0 interleaves todo; 0 currently opened states)
+> [Checker] Exploration depth=7 (state:#7; 0 interleaves todo; 4 currently opened states)
 > [Checker] 0 actors remain, but none of them need to be interleaved (depth 8).
 > [Checker] Execution came to an end at 1;2;3;1;2;3
-> [Checker] (state: 7, depth: 7, 3 explored traces)
+> [Checker] (state: 7, depth: 7, 1 explored traces)
+> [Checker] Backtracking from 1;2;3;1;2;3
 > [Checker] Exploration depth=2 (state:#2; 1 interleaves todo; 0 currently opened states)
 > [Checker] Sleep set actually containing:
 > [Checker]   <2,BARRIER_ASYNC_LOCK(barrier: 0)>
 > [Checker] Executed 3: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
 > [Checker] Exploration depth=3 (state:#8; 0 interleaves todo; 0 currently opened states)
 > [Checker] 3 actors remain, but none of them need to be interleaved (depth 4).
-> [Checker] Out-of-Order exploration ended. 8 unique states visited; 4 explored traces (28 transition replays, 36 states visited overall)
+> [Checker] Backtracking from 1;3
+> [Checker] BFS exploration ended. 8 unique states visited; 2 explored traces (1 transition replays, 9 states visited overall)

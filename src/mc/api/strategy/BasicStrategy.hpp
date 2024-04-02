@@ -18,7 +18,7 @@ namespace simgrid::mc {
  *  it will follow a depth first search politics to minize the number of opened states. */
 class BasicStrategy : public StratLocalInfo {
   int depth_ = _sg_mc_max_depth; // Arbitrary starting point. next_transition must return a positive value to work with
-                                 // threshold in DFSExplorer
+                                 // threshold in BFSExplorer
 
 public:
   void copy_from(const StratLocalInfo* strategy) override
@@ -36,12 +36,14 @@ public:
         if (i < 100 || i > (trace.size() - 100))
           XBT_CERROR(mc_dfs, "  %s", trace[i].c_str());
         else if (i == 100)
-          XBT_CERROR(mc_dfs, " (800 omitted trace elements)");
+          XBT_CERROR(mc_dfs, " ... (omitted trace elements)");
       xbt_die("Aborting now.");
     }
   }
   BasicStrategy()           = default;
   ~BasicStrategy() override = default;
+
+  int get_actor_valuation(aid_t aid) const override { return depth_; }
 
   std::pair<aid_t, int> best_transition(bool must_be_todo) const override
   {

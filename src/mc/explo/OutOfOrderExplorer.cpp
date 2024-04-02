@@ -33,7 +33,7 @@
 #include <unordered_set>
 #include <vector>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ooo, mc, "Out-of-Order exploration algorithm of the model-checker");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_bfs, mc, "BFS exploration algorithm of the model-checker");
 
 namespace simgrid::mc {
 
@@ -82,7 +82,7 @@ void OutOfOrderExplorer::restore_stack(std::shared_ptr<State> state)
 void OutOfOrderExplorer::log_state() // override
 {
   on_log_state_signal(get_remote_app());
-  XBT_INFO("Out-of-Order exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, "
+  XBT_INFO("BFS exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, "
            "%lu states "
            "visited overall)",
            State::get_expanded_states(), explored_traces_, Transition::get_replayed_transitions(),
@@ -93,39 +93,27 @@ void OutOfOrderExplorer::log_state() // override
 void OutOfOrderExplorer::run()
 {
   on_exploration_start_signal(get_remote_app());
-  /* This function runs the Out-Of-Order algorithm the state space.
+  /* This function runs the Best First Search algorithm the state space.
    * We do so iteratively instead of recursively, dealing with the call stack manually.
    * This allows one to explore the call stack at will. */
 
-  while (not opened_states_.empty()) {
-
-    std::shared_ptr<State> state = best_opened_state();
-    backtrack_to_state(state.get());
-    restore_stack(state);
+  while (not stack_.empty()) {
+    /* Get current state */
+    auto state = stack_.back();
 
     XBT_DEBUG("**************************************************");
     XBT_VERB("Exploration depth=%zu (state:#%ld; %zu interleaves todo; %lu currently opened states)", stack_.size(),
              state->get_num(), state->count_todo(), opened_states_.size());
 
-    // // Backtrack if we reached the maximum depth
-    // if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
-    //   if (reduction_mode_ == ReductionMode::dpor) {
-    //     XBT_ERROR("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\",
-    //               _sg_mc_max_depth.get());
-    //     XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
-    //   } else if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
-    //     XBT_ERROR("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
-    //               "when stopping at a fixed depth /!\\",
-    //               _sg_mc_max_depth.get());
-    //     XBT_ERROR("/!\\ If bad things happen, disable the reduction with --cfg=model-check/reduction:none /!\\");
-    //   } else {
-    //     XBT_WARN("/!\\ Max depth reached ! /!\\ ");
-    //   }
-    //   this->backtrack();
-    //   continue;
-    // }
-
-    reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
+    // Backtrack if we reached the maximum depth
+    if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
+      XBT_WARN("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the reduction /!\\", _sg_mc_max_depth.get());
+      XBT_WARN("/!\\ Any bug you may find are real, but not finding bug doesn't mean anything /!\\");
+      XBT_WARN("/!\\ You should consider changing the depth limit with --cfg=model-check/max-depth /!\\");
+      XBT_WARN("/!\\ Asumming you know what you are doing, the programm will now backtrack /!\\");
+      this->backtrack();
+      continue;
+    }
 
     // Search for the next transition
     // next_transition returns a pair<aid_t, int>
@@ -147,13 +135,29 @@ void OutOfOrderExplorer::run()
         XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(), explored_traces_);
       }
 
+      this->backtrack();
       continue;
     }
 
     xbt_assert(state->is_actor_enabled(next));
 
+    if (_sg_mc_bfs_threshold != 0) {
+      auto dist = state->get_actor_strategy_valuation(next);
+      auto best = best_opened_state();
+      if (best != nullptr) {
+        int best_dist = best->next_transition_guided().second;
+        opened_states_.emplace_back(std::move(best));
+        if ((float)(dist * _sg_mc_bfs_threshold) / 100.0 > (float)best_dist) {
+          XBT_VERB("current selected dist:%d vs. best*rate:%d", dist, best_dist);
+          opened_states_.emplace_back(std::move(state));
+          this->backtrack();
+          continue;
+        }
+      }
+    }
+
     // If we use a state containing a sleep state, display it during debug
-    if (XBT_LOG_ISENABLED(mc_ooo, xbt_log_priority_verbose)) {
+    if (XBT_LOG_ISENABLED(mc_bfs, xbt_log_priority_verbose)) {
       std::shared_ptr<SleepSetState> sleep_state = std::static_pointer_cast<SleepSetState>(state);
       if (sleep_state != nullptr and not sleep_state->get_sleep_set().empty()) {
         XBT_VERB("Sleep set actually containing:");
@@ -188,9 +192,13 @@ void OutOfOrderExplorer::run()
     // need to give it to the opened states
     if (stack_.back()->count_todo_multiples() > 0)
       opened_states_.emplace_back(state);
-    opened_states_.emplace_back(std::move(next_state));
 
     reduction_algo_->on_backtrack(state.get());
+
+    stack_.emplace_back(std::move(next_state));
+    execution_seq_.push_transition(std::move(executed_transition));
+
+    reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
 
     dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
                state->get_transition_out()->dot_string().c_str());
@@ -200,28 +208,36 @@ void OutOfOrderExplorer::run()
 
 std::shared_ptr<State> OutOfOrderExplorer::best_opened_state()
 {
-  int best_prio = std::numeric_limits<int>::max(); // cache the value for the best priority found so far (initialized to
-                                                   // silence gcc)
-  auto best = end(opened_states_);                 // iterator to the state to explore having the best priority
+  int best_prio = 0; // cache the value for the best priority found so far (initialized to silence gcc)
+  auto best     = end(opened_states_);   // iterator to the state to explore having the best priority
+  auto valid    = begin(opened_states_); // iterator marking the limit between states still to explore, and already
+                                         // explored ones
 
-  // Find the best state regarding priority (smallest one) or a state that has no opened transition (next == -1).
-  // The latter can be discarded more quickly by the execution.
+  // Keep only still non-explored states (aid != -1), and record the one with the best (greater) priority.
   for (auto current = begin(opened_states_); current != end(opened_states_); ++current) {
     auto [aid, prio] = (*current)->next_transition_guided();
-    if (aid == -1) {
-      best = current;
-      break;
-    }
-    if (best == end(opened_states_) || prio < best_prio) {
+    if (aid == -1)
+      continue;
+    if (valid != current)
+      *valid = std::move(*current);
+    if (best == end(opened_states_) || prio <= best_prio) {
       best_prio = prio;
-      best      = current;
+      best      = valid;
     }
+    ++valid;
   }
 
   std::shared_ptr<State> best_state;
-  xbt_assert(best < end(opened_states_), "Shouldn't be calling this method if the vector is empty. Fix Me");
-  best_state = std::move(*best);
-  opened_states_.erase(best);
+  if (best < valid) {
+    // There are non-explored states, and one of them has the best priority.  Remove it from opened_states_ before
+    // returning.
+    best_state = std::move(*best);
+    --valid;
+    if (best != valid)
+      *best = std::move(*valid);
+  }
+  opened_states_.erase(valid, end(opened_states_));
+
   return best_state;
 }
 
@@ -260,7 +276,7 @@ OutOfOrderExplorer::OutOfOrderExplorer(const std::vector<char*>& args, Reduction
     reduction_algo_ = std::make_unique<NoReduction>();
   }
 
-  XBT_INFO("Start an Out-of-Order exploration. Reduction is: %s.", to_c_str(reduction_mode_));
+  XBT_INFO("Start a BFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
 
   auto initial_state = reduction_algo_->state_create(get_remote_app());
 

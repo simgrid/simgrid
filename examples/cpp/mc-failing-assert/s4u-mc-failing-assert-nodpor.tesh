@@ -20,10 +20,10 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 
 ! expect return 1
 ! timeout 300
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/exploration-algo:OOO --cfg=model-check/reduction:none -- ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml --log=root.thresh:critical 
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'OOO'
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/exploration-algo:BFS --cfg=model-check/reduction:none -- ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml --log=root.thresh:critical 
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BFS'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'none'
-> [0.000000] [mc_ooo/INFO] Start an Out-of-Order exploration. Reduction is: none.
+> [0.000000] [mc_bfs/INFO] Start a BFS exploration. Reduction is: none.
 > [0.000000] [mc_explo/INFO] **************************
 > [0.000000] [mc_explo/INFO] *** PROPERTY NOT VALID ***
 > [0.000000] [mc_explo/INFO] **************************
@@ -35,15 +35,15 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [0.000000] [mc_explo/INFO]   Actor 2 in Isend ==> simcall: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   Actor 1 in Wait ==> simcall: WaitComm(from 2 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;1;2;1'
-> [0.000000] [mc_ooo/INFO] Out-of-Order exploration ended. 119 unique states visited; 36 explored traces (937 transition replays, 1056 states visited overall)
+> [0.000000] [mc_bfs/INFO] BFS exploration ended. 119 unique states visited; 36 explored traces (175 transition replays, 294 states visited overall)
 
 ! expect return 1
 ! timeout 300
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/exploration-algo:OOO --cfg=model-check/reduction:none --cfg=model-check/strategy:max_match_comm -- ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml --log=root.thresh:critical
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'OOO'
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/exploration-algo:BFS --cfg=model-check/reduction:none --cfg=model-check/strategy:max_match_comm -- ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml --log=root.thresh:critical
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BFS'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'none'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/strategy' to 'max_match_comm'
-> [0.000000] [mc_ooo/INFO] Start an Out-of-Order exploration. Reduction is: none.
+> [0.000000] [mc_bfs/INFO] Start a BFS exploration. Reduction is: none.
 > [0.000000] [mc_explo/INFO] **************************
 > [0.000000] [mc_explo/INFO] *** PROPERTY NOT VALID ***
 > [0.000000] [mc_explo/INFO] **************************
@@ -51,20 +51,21 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [0.000000] [mc_explo/INFO]   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
 > [0.000000] [mc_explo/INFO]   Actor 3 in Isend ==> simcall: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   Actor 1 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout)
+> [0.000000] [mc_explo/INFO]   Actor 3 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO]   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
 > [0.000000] [mc_explo/INFO]   Actor 2 in Isend ==> simcall: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   Actor 1 in Wait ==> simcall: WaitComm(from 2 to 1, mbox=0, no timeout)
-> [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;1;2;1'
-> [0.000000] [mc_ooo/INFO] Out-of-Order exploration ended. 45 unique states visited; 8 explored traces (248 transition replays, 293 states visited overall)
+> [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;3;1;2;1'
+> [0.000000] [mc_bfs/INFO] BFS exploration ended. 24 unique states visited; 4 explored traces (15 transition replays, 39 states visited overall)
 
 
 ! expect return 1
 ! timeout 300
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/exploration-algo:OOO --cfg=model-check/reduction:none --cfg=model-check/strategy:min_match_comm -- ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml --log=root.thresh:critical
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'OOO'
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/exploration-algo:BFS --cfg=model-check/reduction:none --cfg=model-check/strategy:min_match_comm -- ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml --log=root.thresh:critical
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BFS'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'none'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/strategy' to 'min_match_comm'
-> [0.000000] [mc_ooo/INFO] Start an Out-of-Order exploration. Reduction is: none.
+> [0.000000] [mc_bfs/INFO] Start a BFS exploration. Reduction is: none.
 > [0.000000] [mc_explo/INFO] **************************
 > [0.000000] [mc_explo/INFO] *** PROPERTY NOT VALID ***
 > [0.000000] [mc_explo/INFO] **************************
@@ -73,7 +74,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [0.000000] [mc_explo/INFO]   Actor 2 in Isend ==> simcall: iSend(mbox=0)
 > [0.000000] [mc_explo/INFO]   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
 > [0.000000] [mc_explo/INFO]   Actor 1 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout)
+> [0.000000] [mc_explo/INFO]   Actor 3 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [0.000000] [mc_explo/INFO]   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
 > [0.000000] [mc_explo/INFO]   Actor 1 in Wait ==> simcall: WaitComm(from 2 to 1, mbox=0, no timeout)
-> [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'3;2;1;1;1;1'
-> [0.000000] [mc_ooo/INFO] Out-of-Order exploration ended. 72 unique states visited; 0 explored traces (236 transition replays, 308 states visited overall)
+> [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'3;2;1;1;3;1;1'
+> [0.000000] [mc_bfs/INFO] BFS exploration ended. 33 unique states visited; 4 explored traces (6 transition replays, 39 states visited overall)
