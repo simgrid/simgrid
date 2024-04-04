@@ -7,6 +7,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/simgrid/sg_config.hpp"
+#include <iostream>
 
 #if HAVE_SMPI
 #include "smpi/smpi.h"
@@ -47,6 +48,11 @@ int main(int argc, char** argv)
 
   ExitStatus status;
   try {
+    if (explo->empty()) {
+      std::cerr
+          << "Your program did not do any transition before terminating. I won't try to verify it, but that's OK.\n";
+      exit(0);
+    }
     explo->run();
     if (explo->deadlocks_seen() > 0) {
       status = ExitStatus::DEADLOCK;

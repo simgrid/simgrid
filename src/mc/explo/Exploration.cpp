@@ -9,6 +9,7 @@
 #include "src/mc/mc_environ.h"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
+#include "xbt/log.h"
 #include "xbt/string.hpp"
 
 #include <sys/wait.h>
@@ -144,6 +145,16 @@ void Exploration::check_deadlock()
       throw McError(ExitStatus::DEADLOCK);
     }
   }
+}
+bool Exploration::empty()
+{
+  std::map<aid_t, simgrid::mc::ActorState> actors;
+  get_remote_app().get_actors_status(actors);
+  for (auto [aid, state] : actors)
+    if (state.is_enabled())
+      return false;
+
+  return true;
 }
 
 void Exploration::backtrack_to_state(State* target_state)

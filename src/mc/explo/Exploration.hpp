@@ -62,6 +62,9 @@ public:
   /** Returns the amount of deadlocks seen so far (if model-checker/max-deadlocks is not 0) */
   int deadlocks_seen() const { return deadlocks_; }
 
+  /* sanity check returning true if there is no actor to run in the simulation */
+  bool empty();
+
   /** Restore the application to that state, by rollback of a previously saved fork and replay the transitions afterward
    */
   void backtrack_to_state(State* target_state);
