@@ -32,6 +32,8 @@ Exploration::Exploration(const std::vector<char*>& args) : remote_app_(std::make
   xbt_assert(instance_ == nullptr, "Cannot have more than one exploration instance");
   instance_ = this;
 
+  time(&starting_time_);
+
   if (not cfg_dot_output_file.get().empty()) {
     dot_output_ = fopen(cfg_dot_output_file.get().c_str(), "w");
     xbt_assert(dot_output_ != nullptr, "Error open dot output file: %s", strerror(errno));
@@ -145,6 +147,12 @@ void Exploration::check_deadlock()
       throw McError(ExitStatus::DEADLOCK);
     }
   }
+
+  if (soft_timouted()) {
+    XBT_INFO("Soft timeout after %d seconds. Gracefully exiting.", _sg_mc_soft_timeout.get());
+    get_remote_app().finalize_app(true);
+    exit(0);
+  }
 }
 bool Exploration::empty()
 {
@@ -155,6 +163,14 @@ bool Exploration::empty()
       return false;
 
   return true;
+}
+
+bool Exploration::soft_timouted() const
+{
+  if (_sg_mc_soft_timeout < 0)
+    return false;
+
+  return time(nullptr) - starting_time_ > _sg_mc_soft_timeout;
 }
 
 void Exploration::backtrack_to_state(State* target_state)

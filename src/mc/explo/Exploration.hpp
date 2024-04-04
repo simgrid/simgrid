@@ -40,6 +40,8 @@ protected:
   unsigned long backtrack_count_      = 0; // for statistics
   unsigned long visited_states_count_ = 0; // for statistics
 
+  time_t starting_time_; // For timeouts
+
 public:
   explicit Exploration(const std::vector<char*>& args);
   virtual ~Exploration();
@@ -61,6 +63,9 @@ public:
 
   /** Returns the amount of deadlocks seen so far (if model-checker/max-deadlocks is not 0) */
   int deadlocks_seen() const { return deadlocks_; }
+
+  /** Returns whether the soft timeout elapsed, asking to end the exploration at the next backtracking point */
+  bool soft_timouted() const;
 
   /* sanity check returning true if there is no actor to run in the simulation */
   bool empty();
