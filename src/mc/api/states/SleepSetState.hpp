@@ -23,7 +23,7 @@ public:
   explicit SleepSetState(RemoteApp& remote_app);
   explicit SleepSetState(RemoteApp& remote_app, std::shared_ptr<SleepSetState> parent_state);
 
-  std::unordered_set<aid_t> get_sleeping_actors() const;
+  virtual std::unordered_set<aid_t> get_sleeping_actors(aid_t) const;
   std::vector<aid_t> get_enabled_minus_sleep() const;
 
   std::map<aid_t, std::shared_ptr<Transition>> const& get_sleep_set() const { return sleep_set_; }

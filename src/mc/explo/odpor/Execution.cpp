@@ -240,7 +240,8 @@ Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordere
 }
 
 std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle e, EventHandle e_prime,
-                                                                    const SleepSetState& state_at_e) const
+                                                                    const SleepSetState& state_at_e,
+                                                                    aid_t actor_after_e) const
 {
   // `e` is assumed to be in a reversible race with `e_prime`.
   // If `e > e_prime`, then `e` occurs-after `e_prime` which means
@@ -257,7 +258,7 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
 
   PartialExecution v;
   std::unordered_set<aid_t> disqualified_actors = {get_actor_with_handle(e)};
-  const std::unordered_set<aid_t> sleep_E_prime = state_at_e.get_sleeping_actors();
+  const std::unordered_set<aid_t> sleep_E_prime = state_at_e.get_sleeping_actors(actor_after_e);
 
   // For each event after e, find the first dependent on each actor. From this point,
   // all other event on those actors "happens-after" and are then disqualified from

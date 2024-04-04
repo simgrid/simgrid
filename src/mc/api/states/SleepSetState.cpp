@@ -30,7 +30,7 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, std::shared_ptr<SleepSetStat
   }
 }
 
-std::unordered_set<aid_t> SleepSetState::get_sleeping_actors() const
+std::unordered_set<aid_t> SleepSetState::get_sleeping_actors(aid_t) const
 {
   std::unordered_set<aid_t> actors;
   for (const auto& [aid, _] : get_sleep_set()) {

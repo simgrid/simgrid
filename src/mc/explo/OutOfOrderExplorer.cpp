@@ -188,12 +188,12 @@ void OutOfOrderExplorer::run()
 
     visited_states_count_++;
 
+    reduction_algo_->on_backtrack(state.get());
+
     // Before leaving that state, if the transition we just took can be taken multiple times, we
     // need to give it to the opened states
     if (stack_.back()->count_todo_multiples() > 0)
       opened_states_.emplace_back(state);
-
-    reduction_algo_->on_backtrack(state.get());
 
     stack_.emplace_back(std::move(next_state));
     execution_seq_.push_transition(std::move(executed_transition));

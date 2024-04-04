@@ -22,9 +22,6 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
    */
   std::unique_ptr<CheckerSide> state_factory_ = nullptr;
 
-  /** @brief The outgoing transition is the last transition that we took to leave this state.  */
-  std::shared_ptr<Transition> outgoing_transition_ = nullptr;
-
   /** @brief The incoming transition is what led to this state, coming from its parent  */
   std::shared_ptr<Transition> incoming_transition_ = nullptr;
 
@@ -37,6 +34,9 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
 
 protected:
   std::shared_ptr<StratLocalInfo> strategy_;
+
+  /** @brief The outgoing transition is the last transition that we took to leave this state.  */
+  std::shared_ptr<Transition> outgoing_transition_ = nullptr;
 
 public:
   explicit State(const RemoteApp& remote_app);
@@ -53,8 +53,11 @@ public:
   /**
    * @brief Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
    * next_transition()
+   *
+   * Some algorithm may sometimes require to not really explore a new state; hence the real behavior is dependent
+   * of the currently used state and strategy
    */
-  std::shared_ptr<Transition> execute_next(aid_t next, RemoteApp& app);
+  virtual std::shared_ptr<Transition> execute_next(aid_t next, RemoteApp& app);
 
   long get_num() const { return num_; }
   std::size_t count_todo() const;
