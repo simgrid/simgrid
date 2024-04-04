@@ -109,7 +109,23 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
 
   S.push_transition(executed_transition);
 
-  explore(S, state_stack);
+  // Backtrack if we reached the maximum depth
+  if (state_stack.size() > (std::size_t)_sg_mc_max_depth) {
+    if (reduction_mode_ == ReductionMode::dpor) {
+      XBT_ERROR("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\",
+                _sg_mc_max_depth.get());
+      XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
+    } else if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
+      XBT_ERROR("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
+                "when stopping at a fixed depth /!\\",
+                _sg_mc_max_depth.get());
+      XBT_ERROR("/!\\ If bad things happen, disable the reduction with --cfg=model-check/reduction:none /!\\");
+    } else {
+      XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+    }
+  } else {
+    explore(S, state_stack);
+  }
 
   XBT_DEBUG("Backtracking from the exploration by one step");
 
@@ -125,7 +141,6 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
 
 void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 {
-
   visited_states_count_++;
 
   State* s = state_stack.back().get();
