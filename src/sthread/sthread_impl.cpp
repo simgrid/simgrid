@@ -59,7 +59,18 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
     }
 
   /* Do not intercept system binaries such as valgrind step 1 */
-  std::vector<std::string> binaries = {"/usr/bin/valgrind.bin", "/bin/sh", "/bin/bash", "gdb", "addr2line"};
+  std::vector<std::string> binaries = {"/usr/bin/valgrind.bin",
+                                       "/bin/sh",
+                                       "/bin/bash",
+                                       "addr2line",
+                                       "cat",
+                                       "dirname",
+                                       "gdb",
+                                       "make",
+                                       "md5sum",
+                                       "rm",
+                                       "simgrid-mc",
+                                       "wc"};
   for (int i = 0; envp[i] != nullptr; i++) {
     auto view = std::string_view(envp[i]);
     /* If you want to ignore more than one binary, export STHREAD_IGNORE_BINARY1=toto STHREAD_IGNORE_BINARY2=tutu */
@@ -72,19 +83,15 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
   auto binary_view = std::string_view(argv[0]);
   for (auto binary : binaries) {
     if (binary_view.rfind(binary) != std::string_view::npos) {
-      if (not sthread_quiet) {
-        printf("sthread refuses to intercept the execution of %s. Running the application unmodified.\n", argv[0]);
-        fflush(stdout);
-      }
       return raw_main(argc, argv, envp);
     }
   }
 
   /* If not in SMPI, the old main becomes an actor in a newly created simulation */
   if (not sthread_quiet) {
-    printf("sthread is intercepting the execution of %s. If it's not what you want, export STHREAD_IGNORE_BINARY=%s\n",
-           argv[0], argv[0]);
-    fflush(stdout);
+    fprintf(stderr,
+            "sthread is intercepting the execution of %s. If it's not what you want, export STHREAD_IGNORE_BINARY=%s\n",
+            argv[0], argv[0]);
   }
 
   sg4::Engine e(&argc, argv);
