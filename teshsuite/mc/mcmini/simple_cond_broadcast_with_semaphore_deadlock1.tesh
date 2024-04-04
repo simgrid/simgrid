@@ -1,0 +1,36 @@
+# We ignore the LD_PRELOAD lines from the expected output because they contain the build path
+! ignore .*LD_PRELOAD.*
+
+! expect return 2
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-simple_cond_broadcast_with_semaphore_deadlock1 3 0
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [ker_engine/INFO] 4 actors are still active, awaiting something. Here is their status:
+> [0.000000] [ker_engine/INFO]  - pid 1 (main thread@Lilibeth) simcall SEM_WAIT(sem_id:0 not granted)
+> [0.000000] [ker_engine/INFO]  - pid 2 (thread 1@Lilibeth) simcall CONDVAR_WAIT(cond_id: 0, mutex_id:0, timeout: no)
+> [0.000000] [ker_engine/INFO]  - pid 3 (thread 2@Lilibeth) simcall CONDVAR_WAIT(cond_id: 0, mutex_id:0, timeout: no)
+> [0.000000] [ker_engine/INFO]  - pid 4 (thread 3@Lilibeth) simcall CONDVAR_WAIT(cond_id: 0, mutex_id:0, timeout: no)
+> [0.000000] [mc_global/INFO] Counter-example execution trace:
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall SEM_ASYNC_LOCK(semaphore: 0, capacity: 0)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall SEM_UNLOCK(semaphore: 0, capacity: 0)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall SEM_WAIT(semaphore: 0, capacity: 0, granted: yes)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall SEM_ASYNC_LOCK(semaphore: 0, capacity: 0)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall CONDVAR_ASYNC_LOCK(cond: 0, mutex: 0)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 3)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_WAIT(mutex: 0, owner: 3)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall SEM_UNLOCK(semaphore: 0, capacity: 0)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall SEM_WAIT(semaphore: 0, capacity: 0, granted: yes)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall SEM_ASYNC_LOCK(semaphore: 0, capacity: 0)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall CONDVAR_ASYNC_LOCK(cond: 0, mutex: 0)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 4)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_WAIT(mutex: 0, owner: 4)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall SEM_UNLOCK(semaphore: 0, capacity: 0)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall SEM_WAIT(semaphore: 0, capacity: 0, granted: yes)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall SEM_ASYNC_LOCK(semaphore: 0, capacity: 0)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall CONDVAR_ASYNC_LOCK(cond: 0, mutex: 0)
+> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;2;2;2;1;1;2;3;3;3;1;1;3;4;4;4;1;1;4'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 20 unique states visited; 0 backtracks (0 transition replays, 20 states visited overall)

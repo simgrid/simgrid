@@ -690,6 +690,10 @@ include teshsuite/mc/mcmini/simple_cond_broadcast_deadlock.c
 include teshsuite/mc/mcmini/simple_cond_broadcast_deadlock.tesh
 include teshsuite/mc/mcmini/simple_cond_broadcast_ok.c
 include teshsuite/mc/mcmini/simple_cond_broadcast_ok.tesh
+include teshsuite/mc/mcmini/simple_cond_broadcast_with_semaphore_deadlock1.c
+include teshsuite/mc/mcmini/simple_cond_broadcast_with_semaphore_deadlock1.tesh
+include teshsuite/mc/mcmini/simple_cond_broadcast_with_semaphore_deadlock2.c
+include teshsuite/mc/mcmini/simple_cond_broadcast_with_semaphore_deadlock2.tesh
 include teshsuite/mc/mcmini/simple_cond_deadlock.c
 include teshsuite/mc/mcmini/simple_cond_deadlock.tesh
 include teshsuite/mc/mcmini/simple_cond_ok.c
