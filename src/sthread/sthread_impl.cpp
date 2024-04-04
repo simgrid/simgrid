@@ -289,6 +289,10 @@ int sthread_cond_signal(sthread_cond_t* cond)
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
 
+  /* At least in glibc, PTHREAD_COND_INITIALIZER sets every fields to 0 */
+  if (cond->cond == nullptr)
+    sthread_cond_init(cond, nullptr);
+
   if (cond->mutex != nullptr) {
     auto* owner = static_cast<sg4::Mutex*>(cond->mutex)->get_owner();
     if (owner == nullptr)
@@ -308,6 +312,10 @@ int sthread_cond_broadcast(sthread_cond_t* cond)
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
 
+  /* At least in glibc, PTHREAD_COND_INITIALIZER sets every fields to 0 */
+  if (cond->cond == nullptr)
+    sthread_cond_init(cond, nullptr);
+
   if (cond->mutex != nullptr) {
     auto* owner = static_cast<sg4::Mutex*>(cond->mutex)->get_owner();
     if (owner == nullptr)
@@ -326,6 +334,10 @@ int sthread_cond_broadcast(sthread_cond_t* cond)
 int sthread_cond_wait(sthread_cond_t* cond, sthread_mutex_t* mutex)
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
+
+  /* At least in glibc, PTHREAD_COND_INITIALIZER sets every fields to 0 */
+  if (cond->cond == nullptr)
+    sthread_cond_init(cond, nullptr);
 
   if (cond->mutex == nullptr)
     cond->mutex = mutex->mutex;
