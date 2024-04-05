@@ -52,7 +52,7 @@ foreach(x
             simple_cond_broadcast_ok       simple_cond_broadcast_deadlock
 
 #            simple_cond_broadcast_with_semaphore_ok 
-#      	     simple_cond_broadcast_with_semaphore_deadlock1  simple_cond_broadcast_with_semaphore_deadlock2
+      	     simple_cond_broadcast_with_semaphore_deadlock1  simple_cond_broadcast_with_semaphore_deadlock2
 
              simple_mutex_ok simple_mutex_deadlock
              simple_mutex_with_threads_ok simple_mutex_with_threads_deadlock

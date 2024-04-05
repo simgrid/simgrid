@@ -118,7 +118,9 @@ Existing Configuration Items
 - **model-check/replay:** :ref:`cfg=model-check/replay`
 - **model-check/send-determinism:** :ref:`cfg=model-check/send-determinism`
 - **model-check/setenv:** :ref:`cfg=model-check/setenv`
+- **model-check/strategy:** :ref:`cfg=model-check/strategy`
 - **model-check/timeout:** :ref:`cfg=model-check/timeout`
+- **model-check/timeout-soft:** :ref:`cfg=model-check/timeout-soft`
 
 - **network/bandwidth-factor:** :ref:`cfg=network/bandwidth-factor`
 - **network/crosstraffic:** :ref:`cfg=network/crosstraffic`
@@ -721,6 +723,15 @@ be seen as a bounded exploration yet.
 
 By default, the exploration stops after the first deadlock (value = 0).
 
+.. _cfg=model-check/timeout-soft:
+
+Setting a timeout upon execution
+................................
+
+If you wish to search for bugs in a best effort way, you probably want to explore with the ``uniform`` strategy (see
+:ref:`cfg=model-check/strategy`) and with a soft timeout. If such a timeout expires, the exploration will gracefully terminate
+at the next exploration end, without backtracking to a yet-to-be-explored case. The return code is 0 in this case.
+
 .. _cfg=model-check/timeout:
 
 Handling of Timeouts
@@ -740,6 +751,17 @@ The ``model-check/communications-determinism`` and
 ``model-check/send-determinism`` items can be used to select the
 communication determinism mode of the model checker, which checks
 determinism properties of the communications of an application.
+
+.. _cfg=model-check/strategy:
+
+Exploration strategies
+......................
+
+By default, the model checker follows a depth-first exploration, but several other strategies exist. The following list may be
+incomplete, so you'd better look at the code or speak with us for more information.
+
+ - **uniform**: Randomly pick the next branch to explore each time that the exploration reaches an end.
+ - **none**: default value instructing SimGrid to follow a depth-first exploration.
 
 .. _cfg=model-check/cached-states-interval:
 

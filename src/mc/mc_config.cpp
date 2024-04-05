@@ -136,6 +136,12 @@ simgrid::config::Flag<bool> _sg_mc_nofork{
       }
     }};
 
+simgrid::config::Flag<int> _sg_mc_soft_timeout{
+    "model-check/timeout-soft",
+    {"model-check/soft-timeout"},
+    "If the exploration lasts more than this timeout (in seconds), gracefully exit at the next backtracking point.",
+    -1};
+
 simgrid::mc::ReductionMode simgrid::mc::get_model_checking_reduction()
 {
   if (cfg_mc_reduction.get() == "none") {
