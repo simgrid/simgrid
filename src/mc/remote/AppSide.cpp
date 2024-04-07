@@ -62,6 +62,10 @@ AppSide* AppSide::get()
 
   instance_ = std::make_unique<simgrid::mc::AppSide>(fd);
 
+  // If we plan to fork, remove the SIGINT handler that would get messed up by all the forked childs
+  if (not _sg_mc_nofork)
+    std::signal(SIGINT, SIG_DFL);
+
   instance_->handle_messages();
   return instance_.get();
 }
