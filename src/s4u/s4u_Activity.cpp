@@ -170,6 +170,7 @@ Activity* Activity::resume()
   if (state_ == State::STARTED)
     pimpl_->resume();
 
+  suspended_ = false;
   return this;
 }
 
