@@ -291,6 +291,8 @@ include examples/cpp/exec-ptask/s4u-exec-ptask.cpp
 include examples/cpp/exec-ptask/s4u-exec-ptask.tesh
 include examples/cpp/exec-remote/s4u-exec-remote.cpp
 include examples/cpp/exec-remote/s4u-exec-remote.tesh
+include examples/cpp/exec-suspend/s4u-exec-suspend.cpp
+include examples/cpp/exec-suspend/s4u-exec-suspend.tesh
 include examples/cpp/exec-threads/s4u-exec-threads.cpp
 include examples/cpp/exec-threads/s4u-exec-threads.tesh
 include examples/cpp/exec-unassigned/s4u-exec-unassigned.cpp

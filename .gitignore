@@ -213,6 +213,7 @@ examples/cpp/exec-ptask/s4u-exec-ptask
 examples/cpp/exec-ptask-multicore/s4u-exec-ptask-multicore
 examples/cpp/exec-ptask-multicore-latency/s4u-exec-ptask-multicore-latency
 examples/cpp/exec-remote/s4u-exec-remote
+examples/cpp/exec-suspend/s4u-exec-suspend
 examples/cpp/exec-unassigned/s4u-exec-unassigned
 examples/cpp/exec-waitany/s4u-exec-waitany
 examples/cpp/exec-waitfor/s4u-exec-waitfor
