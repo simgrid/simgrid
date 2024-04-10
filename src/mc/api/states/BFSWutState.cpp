@@ -33,7 +33,7 @@ BFSWutState::BFSWutState(RemoteApp& remote_app) : WutState(remote_app)
   }
 }
 
-BFSWutState::BFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutState(remote_app, parent_state, true)
+BFSWutState::BFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutState(remote_app, parent_state, false)
 {
   auto parent = static_cast<BFSWutState*>(parent_state.get());
   for (const aid_t actor : parent->done_) {

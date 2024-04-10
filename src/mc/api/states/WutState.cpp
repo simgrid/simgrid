@@ -21,8 +21,12 @@ WutState::WutState(RemoteApp& remote_app) : SleepSetState(remote_app)
   initialize_if_empty_wut();
 }
 
-WutState::WutState(RemoteApp& remote_app, StatePtr parent_state) : SleepSetState(remote_app, parent_state)
+WutState::WutState(RemoteApp& remote_app, StatePtr parent_state, bool initialize_wut)
+    : SleepSetState(remote_app, parent_state)
 {
+  if (not initialize_wut) // We don't initialize the WUT when running in BFS order
+    return;
+
   auto parent = static_cast<WutState*>(parent_state.get());
 
   xbt_assert(parent != nullptr, "Attempting to construct a wakeup tree for the root state "
@@ -48,11 +52,6 @@ WutState::WutState(RemoteApp& remote_app, StatePtr parent_state) : SleepSetState
   }
   wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(min_process_node.value());
   initialize_if_empty_wut();
-}
-
-WutState::WutState(RemoteApp& remote_app, StatePtr parent_state, bool dont_initialize_wut)
-    : SleepSetState(remote_app, parent_state)
-{
 }
 
 aid_t WutState::next_odpor_transition() const

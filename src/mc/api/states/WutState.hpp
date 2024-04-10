@@ -30,8 +30,7 @@ protected:
 
 public:
   explicit WutState(RemoteApp& remote_app);
-  explicit WutState(RemoteApp& remote_app, StatePtr parent_state);
-  explicit WutState(RemoteApp& remote_app, StatePtr parent_state, bool dont_initialize_wut);
+  explicit WutState(RemoteApp& remote_app, StatePtr parent_state, bool initialize_wut = true);
 
   /**
    * Same as next_transition(), but the choice is based off the ODPOR
