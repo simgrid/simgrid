@@ -7,11 +7,12 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/simgrid/sg_config.hpp"
-#include <iostream>
 
 #if HAVE_SMPI
 #include "smpi/smpi.h"
 #endif
+
+#include <iostream>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(mc);
 

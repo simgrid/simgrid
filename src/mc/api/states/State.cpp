@@ -10,8 +10,6 @@
 #include "src/mc/api/strategy/MinMatchComm.hpp"
 #include "src/mc/api/strategy/UniformStrategy.hpp"
 #include "src/mc/explo/Exploration.hpp"
-#include "src/mc/mc_config.hpp"
-#include "xbt/random.hpp"
 
 #include <algorithm>
 #include <boost/range/algorithm.hpp>
@@ -33,10 +31,8 @@ State::State(const RemoteApp& remote_app) : num_(++expended_states_)
   else if (_sg_mc_strategy == "min_match_comm")
     strategy_ = std::make_shared<MinMatchComm>();
   else if (_sg_mc_strategy == "uniform") {
-    xbt::random::set_mersenne_seed(_sg_mc_random_seed);
     strategy_ = std::make_shared<UniformStrategy>();
   } else if (_sg_mc_strategy == "min_context_switch") {
-    xbt::random::set_mersenne_seed(_sg_mc_random_seed);
     strategy_ = std::make_shared<MinContextSwitch>();
   } else
     THROW_IMPOSSIBLE;
@@ -44,24 +40,12 @@ State::State(const RemoteApp& remote_app) : num_(++expended_states_)
   remote_app.get_actors_status(strategy_->actors_to_run_);
 }
 
-State::State(const RemoteApp& remote_app, StatePtr parent_state)
-    : incoming_transition_(parent_state->get_transition_out()), num_(++expended_states_), parent_state_(parent_state)
+State::State(const RemoteApp& remote_app, StatePtr parent_state) : State(remote_app)
 {
-  if (_sg_mc_strategy == "none")
-    strategy_ = std::make_shared<BasicStrategy>();
-  else if (_sg_mc_strategy == "max_match_comm")
-    strategy_ = std::make_shared<MaxMatchComm>();
-  else if (_sg_mc_strategy == "min_match_comm")
-    strategy_ = std::make_shared<MinMatchComm>();
-  else if (_sg_mc_strategy == "uniform")
-    strategy_ = std::make_shared<UniformStrategy>();
-  else if (_sg_mc_strategy == "min_context_switch")
-    strategy_ = std::make_shared<MinContextSwitch>();
-  else
-    THROW_IMPOSSIBLE;
-  strategy_->copy_from(parent_state_->strategy_.get());
+  parent_state_        = parent_state;
+  incoming_transition_ = parent_state->get_transition_out();
 
-  remote_app.get_actors_status(strategy_->actors_to_run_);
+  strategy_->copy_from(parent_state_->strategy_.get());
 }
 
 std::size_t State::count_todo() const

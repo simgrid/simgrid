@@ -10,6 +10,7 @@
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "xbt/log.h"
+#include "xbt/random.hpp"
 #include "xbt/string.hpp"
 
 #include <sys/wait.h>
@@ -33,6 +34,8 @@ Exploration::Exploration(const std::vector<char*>& args) : remote_app_(std::make
   instance_ = this;
 
   time(&starting_time_);
+
+  simgrid::xbt::random::set_mersenne_seed(_sg_mc_random_seed);
 
   if (not cfg_dot_output_file.get().empty()) {
     dot_output_ = fopen(cfg_dot_output_file.get().c_str(), "w");
