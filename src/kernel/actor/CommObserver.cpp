@@ -64,7 +64,7 @@ IprobeSimcall::IprobeSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, s4u:
 void IprobeSimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::COMM_IPROBE << ' ';
-  stream << mbox_->get_id() << ' ' << static_cast<bool>(kind_ == s4u::Mailbox::IprobeKind::SEND) << ' ' << tag_;
+  stream << mbox_->get_id() << ' ' << (kind_ == s4u::Mailbox::IprobeKind::SEND) << ' ' << tag_;
   XBT_DEBUG("IprobeObserver mbox:%u kind:%s tag:%d", mbox_->get_id(),
             (kind_ == s4u::Mailbox::IprobeKind::SEND ? "send" : "recv"), tag_);
 }

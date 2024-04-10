@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/Exploration.hpp"
+#include "simgrid/forward.h"
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
@@ -13,7 +14,9 @@
 #include "xbt/random.hpp"
 #include "xbt/string.hpp"
 
+#include <algorithm>
 #include <sys/wait.h>
+#include <utility>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_explo, mc, "Generic exploration algorithm of the model-checker");
 
@@ -161,11 +164,8 @@ bool Exploration::empty()
 {
   std::map<aid_t, simgrid::mc::ActorState> actors;
   get_remote_app().get_actors_status(actors);
-  for (auto [aid, state] : actors)
-    if (state.is_enabled())
-      return false;
-
-  return true;
+  return std::none_of(actors.begin(), actors.end(),
+                      [](std::pair<aid_t, simgrid::mc::ActorState> kv) { return kv.second.is_enabled(); });
 }
 
 bool Exploration::soft_timouted() const

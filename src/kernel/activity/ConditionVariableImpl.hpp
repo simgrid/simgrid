@@ -54,7 +54,7 @@ public:
 
   const s4u::ConditionVariable* get_iface() const { return &piface_; }
   s4u::ConditionVariable* get_iface() { return &piface_; }
-  unsigned get_id() { return id_; }
+  unsigned get_id() const { return id_; }
 
   ConditionVariableAcquisitionImplPtr acquire_async(actor::ActorImpl* issuer, MutexImpl* mutex);
   void broadcast();

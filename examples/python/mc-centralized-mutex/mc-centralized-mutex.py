@@ -30,20 +30,20 @@ def coordinator():
   requests = []
   mbox = Mailbox.by_name("coordinator")
 
-  CS_used = False # initially the CS is idle
+  critical_section_used = False # initially the critical section is idle
   active_clients = PROCESS_AMOUNT
 
   while active_clients > 0:
     this_actor.info(f"Still {active_clients} clients")
     m = mbox.get()
     if m.kind == MsgKind.REQUEST:
-      if (CS_used): # need to push the request in the vector
+      if (critical_section_used): # need to push the request in the vector
         this_actor.info("CS already used. Queue the request")
         requests.append(m.return_mailbox)
       else: # can serve it immediately
         this_actor.info(f"CS idle. Grant immediately to {m.return_mailbox.name}")
         m.return_mailbox.put(Message(MsgKind.GRANT, mbox), 1000)
-        CS_used = True
+        critical_section_used = True
     elif m.kind == MsgKind.FINISH:
       active_clients -= 1
     else: # that's a release. Check if someone was waiting for the lock
@@ -53,7 +53,7 @@ def coordinator():
         req.put(Message(MsgKind.GRANT, mbox), 1000)
       else: # nobody wants it
         this_actor.info("CS release. resource now idle")
-        CS_used = False
+        critical_section_used = False
   
   this_actor.info("Received all releases, quit now")
 

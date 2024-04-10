@@ -14,7 +14,7 @@ from simgrid import Actor, Engine, Host, Semaphore, NetZone, Mailbox, this_actor
 def server(worker_amount: int):
   value_got = -1
   mb = Mailbox.by_name("server")
-  for count in range(worker_amount):
+  for _ in range(worker_amount):
     value_got = mb.get()
 
   # We assert here that the last message we got (which overwrite any previously received message) is the one from the
