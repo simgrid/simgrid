@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/reduction/ODPOR.hpp"
 #include "src/mc/api/states/WutState.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "xbt/log.h"
 
 #include "src/mc/api/states/SleepSetState.hpp"
@@ -32,18 +33,17 @@ void ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<std::
    * ("eventually looks like C", viz. the `~_E` relation)
    */
   for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
-    if (E.get_event_with_handle(e_prime).has_race_been_computed())
-      continue;
     XBT_VERB("Computing reversible races of Event `%u`", e_prime);
     for (const auto e : E.get_reversible_races_of(e_prime)) {
       XBT_DEBUG("... racing event `%u``", e);
       WutState* prev_state = static_cast<WutState*>((*S)[e].get());
       xbt_assert(prev_state != nullptr, "ODPOR should use WutState. Fix me");
 
-      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value())
+      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value()) {
         prev_state->insert_into_wakeup_tree(v.value());
+        XBT_DEBUG("... wut after insertion: %s", prev_state->string_of_wut().c_str());
+      }
     }
-    E.get_event_with_handle(e_prime).consider_races();
   }
 }
 
