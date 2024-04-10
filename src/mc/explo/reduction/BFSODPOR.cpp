@@ -57,10 +57,8 @@ void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<st
           v.has_value()) {
         XBT_DEBUG("... inserting sequence %s in final_wut before event `%u`",
                   odpor::one_string_textual_trace(v.value()).c_str(), e);
-        XBT_DEBUG("... before insertion final_wut looks like this: %s", prev_state->get_string_of_final_wut().c_str());
         const auto v_prime = prev_state->insert_into_final_wakeup_tree(v.value());
         XBT_DEBUG("... after insertion final_wut looks like this: %s", prev_state->get_string_of_final_wut().c_str());
-        XBT_DEBUG("... before insertion wut looks like this: %s", prev_state->string_of_wut().c_str());
         if (not v_prime.empty()) {
           XBT_DEBUG("... inserting sequence %s before event `%u`", odpor::one_string_textual_trace(v_prime).c_str(), e);
           prev_state->insert_into_wakeup_tree(v_prime);
