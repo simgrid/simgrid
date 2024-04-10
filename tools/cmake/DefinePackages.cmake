@@ -586,6 +586,7 @@ set(MC_SRC_STATELESS
 
   src/mc/api/strategy/BasicStrategy.hpp
   src/mc/api/strategy/MaxMatchComm.hpp
+  src/mc/api/strategy/MinContextSwitch.hpp
   src/mc/api/strategy/MinMatchComm.hpp
   src/mc/api/strategy/StratLocalInfo.hpp
   src/mc/api/strategy/UniformStrategy.hpp
