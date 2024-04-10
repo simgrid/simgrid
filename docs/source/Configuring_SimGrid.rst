@@ -1871,6 +1871,7 @@ as the date, or the actor ID, everything. Existing format directives:
  - %h: Hostname (SimGrid extension)
  - %a: Actor name (SimGrid extension -- note that with SMPI this is the integer value of the process rank)
  - %i: Actor PID (SimGrid extension -- this is a 'i' as in 'i'dea)
+ - %I: system PID (the result of the UNIX getpid() function -- only useful if your simulation forks at the system level)
  - %t: Thread "name" (LOG4J compatible -- actually the address of the thread in memory)
 
  - %F: file name where the log event was raised (LOG4J compatible)

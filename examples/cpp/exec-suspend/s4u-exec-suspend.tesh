@@ -1,0 +1,10 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-exec-suspend ${platfdir}/small_platform.xml
+> [Tremblay:executor:(1) 1.000000] [exec_suspend/INFO] Task is suspended (remaining: 196190000.000000)
+> [Tremblay:executor:(1) 11.000000] [exec_suspend/INFO] Task is resumed (remaining: 196190000.000000)
+> [Tremblay:executor:(1) 11.000000] [exec_suspend/INFO] Activity hasn't advanced: yes. (remaining before sleep: 196190000.000000, remaining after sleep: 196190000.000000)
+> [Tremblay:executor:(1) 12.000000] [exec_suspend/INFO] Task is suspended (remaining: 98095000.000000)
+> [Tremblay:executor:(1) 22.000000] [exec_suspend/INFO] Task is resumed (remaining: 98095000.000000)
+> [Tremblay:executor:(1) 22.000000] [exec_suspend/INFO] Activity hasn't advanced: yes. (remaining before sleep: 98095000.000000, remaining after sleep: 98095000.000000)
+> [Tremblay:executor:(1) 23.000000] [exec_suspend/INFO] Finished

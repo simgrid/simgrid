@@ -74,7 +74,6 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
   // So first, go to there in the application
   if (not is_execution_descending) {
 
-    explored_traces_++;
     backtrack_to_state(state_stack.back().get());
     is_execution_descending = true;
   }
@@ -162,6 +161,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
   Exploration::check_deadlock();
 
   if (s->get_actor_count() == 0) {
+    explored_traces_++;
     get_remote_app().finalize_app();
     XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
     XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", s->get_num(), state_stack.size(), backtrack_count_ + 1);

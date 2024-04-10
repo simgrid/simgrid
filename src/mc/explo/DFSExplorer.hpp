@@ -42,7 +42,7 @@ private:
   stack_t* stack_;
 
   // For statistics. Starts at one because we only track the act of starting a new trace
-  unsigned long explored_traces_ = 1;
+  unsigned long explored_traces_ = 0;
 
 public:
   explicit DFSExplorer(const std::vector<char*>& args, ReductionMode mode);

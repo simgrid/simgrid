@@ -62,6 +62,10 @@ AppSide* AppSide::get()
 
   instance_ = std::make_unique<simgrid::mc::AppSide>(fd);
 
+  // If we plan to fork, remove the SIGINT handler that would get messed up by all the forked childs
+  if (not _sg_mc_nofork)
+    std::signal(SIGINT, SIG_DFL);
+
   instance_->handle_messages();
   return instance_.get();
 }
@@ -90,8 +94,10 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
 {
   kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(message->aid_);
   xbt_assert(actor != nullptr, "Invalid pid %ld", message->aid_);
-  xbt_assert(actor->simcall_.observer_ == nullptr || actor->simcall_.observer_->is_enabled(),
-             "Please, model-checker, don't execute disabled transitions.");
+  xbt_assert(
+      (actor->simcall_.observer_ == nullptr && actor->simcall_.call_ != simgrid::kernel::actor::Simcall::Type::NONE) ||
+          actor->simcall_.observer_->is_enabled(),
+      "Please, model-checker, don't execute disabled transitions.");
 
   // The client may send some messages to the server while processing the transition
   actor->simcall_handle(message->times_considered_);

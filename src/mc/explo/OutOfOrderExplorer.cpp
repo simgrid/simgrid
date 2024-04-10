@@ -124,7 +124,6 @@ void OutOfOrderExplorer::run()
 
     if (next < 0) {
 
-      explored_traces_++;
       // If there is no more transition in the current state (or if ODPOR picked an actor that is not enabled --
       // ReversibleRace is an overapproximation), backtrace
       XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
@@ -132,6 +131,7 @@ void OutOfOrderExplorer::run()
       Exploration::check_deadlock();
 
       if (state->get_actor_count() == 0) {
+        explored_traces_++;
         get_remote_app().finalize_app();
         XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
         XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(), explored_traces_);
