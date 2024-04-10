@@ -23,8 +23,6 @@
 
 namespace simgrid::mc {
 
-using stack_t = std::deque<std::shared_ptr<State>>;
-
 class XBT_PRIVATE OutOfOrderExplorer : public Exploration {
 private:
   ReductionMode reduction_mode_;
@@ -82,18 +80,18 @@ private:
 
   /** Opened states are states that still contains todo actors.
    *  When backtracking, we pick a state from it*/
-  std::vector<std::shared_ptr<State>> opened_states_;
-  std::shared_ptr<State> best_opened_state();
+  std::vector<StatePtr> opened_states_;
+  StatePtr best_opened_state();
 
   /** If we're running ODPOR, picks the corresponding state in the stack
    * (opened_states_ are ignored)
    */
-  std::shared_ptr<State> next_odpor_state();
+  StatePtr next_odpor_state();
 
   /** Change current stack_ value to correspond to the one we would have
    *  had if we executed transition to get to state. This is required when
    *  backtracking, and achieved thanks to the fact states save their parent.*/
-  void restore_stack(std::shared_ptr<State> state);
+  void restore_stack(StatePtr state);
 
   RecordTrace get_record_trace_of_stack(stack_t stack);
 };

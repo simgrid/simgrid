@@ -8,6 +8,7 @@
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/log.h"
 
@@ -20,17 +21,17 @@ WutState::WutState(RemoteApp& remote_app) : SleepSetState(remote_app)
   initialize_if_empty_wut();
 }
 
-WutState::WutState(RemoteApp& remote_app, std::shared_ptr<WutState> parent_state)
-    : SleepSetState(remote_app, parent_state)
+WutState::WutState(RemoteApp& remote_app, StatePtr parent_state) : SleepSetState(remote_app, parent_state)
 {
-  parent_state_ = parent_state;
+  auto parent = static_cast<WutState*>(parent_state.get());
+
+  xbt_assert(parent != nullptr, "Attempting to construct a wakeup tree for the root state "
+                                "(or what appears to be, rather for state without a parent defined)");
 
   XBT_DEBUG("Initializing Wut with parent one:");
-  XBT_DEBUG("\n%s", parent_state_->wakeup_tree_.string_of_whole_tree().c_str());
+  XBT_DEBUG("\n%s", parent->wakeup_tree_.string_of_whole_tree().c_str());
 
-  xbt_assert(parent_state_ != nullptr, "Attempting to construct a wakeup tree for the root state "
-                                       "(or what appears to be, rather for state without a parent defined)");
-  const auto min_process_node = parent_state_->wakeup_tree_.get_min_single_process_node();
+  const auto min_process_node = parent->wakeup_tree_.get_min_single_process_node();
   xbt_assert(min_process_node.has_value(), "Attempting to construct a subtree for a substate from a "
                                            "parent with an empty wakeup tree. This indicates either that ODPOR "
                                            "actor selection in State.cpp is incorrect, or that the code "
@@ -49,10 +50,9 @@ WutState::WutState(RemoteApp& remote_app, std::shared_ptr<WutState> parent_state
   initialize_if_empty_wut();
 }
 
-WutState::WutState(RemoteApp& remote_app, std::shared_ptr<WutState> parent_state, bool dont_initialize_wut)
+WutState::WutState(RemoteApp& remote_app, StatePtr parent_state, bool dont_initialize_wut)
     : SleepSetState(remote_app, parent_state)
 {
-  parent_state_ = parent_state;
 }
 
 aid_t WutState::next_odpor_transition() const
@@ -113,13 +113,15 @@ void WutState::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
 
 void WutState::sprout_tree_from_parent_state()
 {
+  xbt_assert(get_parent_state() != nullptr, "Attempting to construct a wakeup tree for the root state "
+                                            "(or what appears to be, rather for state without a parent defined)");
+
+  auto parent = static_cast<WutState*>(get_parent_state());
 
   XBT_DEBUG("Initializing Wut with parent one:");
-  XBT_DEBUG("\n%s", parent_state_->wakeup_tree_.string_of_whole_tree().c_str());
+  XBT_DEBUG("\n%s", parent->wakeup_tree_.string_of_whole_tree().c_str());
 
-  xbt_assert(parent_state_ != nullptr, "Attempting to construct a wakeup tree for the root state "
-                                       "(or what appears to be, rather for state without a parent defined)");
-  const auto min_process_node = parent_state_->wakeup_tree_.get_min_single_process_node();
+  const auto min_process_node = parent->wakeup_tree_.get_min_single_process_node();
   xbt_assert(min_process_node.has_value(), "Attempting to construct a subtree for a substate from a "
                                            "parent with an empty wakeup tree. This indicates either that ODPOR "
                                            "actor selection in State.cpp is incorrect, or that the code "
@@ -168,8 +170,10 @@ void WutState::remove_subtree_using_children_in_transition(const std::shared_ptr
 void WutState::do_odpor_unwind()
 {
   XBT_DEBUG("Unwinding ODPOR from state %ld", get_num());
-  xbt_assert(parent_state_ != nullptr, "ODPOR shouldn't try to unwind from root state");
-  parent_state_->remove_subtree_using_children_in_transition(get_transition_in());
+  xbt_assert(get_parent_state() != nullptr, "ODPOR shouldn't try to unwind from root state");
+
+  auto parent = static_cast<WutState*>(get_parent_state());
+  parent->remove_subtree_using_children_in_transition(get_transition_in());
 
   // Only when we've exhausted all variants of the transition which
   // can be chosen from this state do we finally add the actor to the
@@ -177,8 +181,8 @@ void WutState::do_odpor_unwind()
   // works with ODPOR in the way we intend it to work. There is not a
   // good way to perform transition equality in SimGrid; instead, we
   // effectively simply check for the presence of an actor in the sleep set.
-  if (not parent_state_->get_actors_list().at(get_transition_in()->aid_).has_more_to_consider())
-    parent_state_->add_sleep_set((get_transition_in()));
+  if (not parent->get_actors_list().at(get_transition_in()->aid_).has_more_to_consider())
+    parent->add_sleep_set((get_transition_in()));
 }
 
 } // namespace simgrid::mc

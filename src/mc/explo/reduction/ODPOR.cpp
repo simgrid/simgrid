@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor, mc_reduction, "Logging specific to the
 
 namespace simgrid::mc {
 
-void ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states)
+void ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
 {
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
@@ -65,20 +65,17 @@ aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
   }
   return next;
 }
-std::shared_ptr<State> ODPOR::state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
+StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
 {
   if (parent_state == nullptr)
-    return std::make_shared<WutState>(remote_app);
-  else {
-    std::shared_ptr<WutState> wut_state = std::static_pointer_cast<WutState>(parent_state);
-    xbt_assert(wut_state != nullptr, "Wrong kind of state for this reduction. This shouldn't happen, fix me");
-    return std::make_shared<WutState>(remote_app, wut_state);
-  }
+    return StatePtr(new WutState(remote_app), true);
+  else
+    return StatePtr(new WutState(remote_app, parent_state), true);
 }
 
 void ODPOR::on_backtrack(State* s)
 {
-  std::shared_ptr<State> parent = s->get_parent_state();
+  StatePtr parent = s->get_parent_state();
   if (parent == nullptr) // this is the root
     return;              // Backtracking from the root means we end exploration, nothing to do
 

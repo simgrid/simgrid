@@ -16,6 +16,11 @@ namespace simgrid::mc {
 
 /* A node in the exploration graph (kind-of) */
 class XBT_PRIVATE State : public xbt::Extendable<State> {
+  // Support for the StatePtr datatype, aka boost::intrusive_ptr<State>
+  std::atomic_int_fast32_t refcount_{0};
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(State* activity);
+  friend XBT_PUBLIC void intrusive_ptr_release(State* activity);
+
   static long expended_states_; /* Count total amount of states, for stats */
 
   /** A forked application stationned in this state, to quickly recreate child states w/o replaying from the beginning
@@ -28,9 +33,8 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   /** Sequential state ID (used for debugging) */
   long num_ = 0;
 
-  /** Unique parent of this state. Required both for sleep set computation
-      and for guided model-checking */
-  std::shared_ptr<State> parent_state_ = nullptr;
+  /** Unique parent of this state */
+  StatePtr parent_state_ = nullptr;
 
 protected:
   std::shared_ptr<StratLocalInfo> strategy_;
@@ -40,7 +44,8 @@ protected:
 
 public:
   explicit State(const RemoteApp& remote_app);
-  explicit State(const RemoteApp& remote_app, std::shared_ptr<State> parent_state);
+  explicit State(const RemoteApp& remote_app, StatePtr parent_state);
+  virtual ~State() = default;
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const; // this function should disapear as it is redundant with the next one
 
@@ -76,7 +81,7 @@ public:
   bool is_actor_done(aid_t actor) const { return strategy_->actors_to_run_.at(actor).is_done(); }
   std::shared_ptr<Transition> get_transition_out() const { return outgoing_transition_; }
   std::shared_ptr<Transition> get_transition_in() const { return incoming_transition_; }
-  std::shared_ptr<State> get_parent_state() const { return parent_state_; }
+  State* get_parent_state() const { return parent_state_.get(); }
 
   std::map<aid_t, ActorState> const& get_actors_list() const { return strategy_->actors_to_run_; }
 

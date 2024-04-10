@@ -50,7 +50,7 @@ RecordTrace DFSExplorer::get_record_trace() // override
 
   if (const auto trans = stack_->back()->get_transition_out(); trans != nullptr)
     res.push_back(trans.get());
-  for (const auto* state = stack_->back().get(); state != nullptr; state = state->get_parent_state().get())
+  for (const auto* state = stack_->back().get(); state != nullptr; state = state->get_parent_state())
     if (state->get_transition_in() != nullptr)
       res.push_front(state->get_transition_in().get());
 
@@ -82,7 +82,7 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
 
   // If we use a state containing a sleep state, display it during debug
   if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose)) {
-    std::shared_ptr<SleepSetState> sleep_state = std::static_pointer_cast<SleepSetState>(state);
+    auto sleep_state = dynamic_cast<SleepSetState*>(state.get());
     if (sleep_state != nullptr and not sleep_state->get_sleep_set().empty()) {
       XBT_VERB("Sleep set actually containing:");
 
@@ -179,7 +179,7 @@ void DFSExplorer::run()
 
   XBT_DEBUG("**************************************************");
 
-  stack_t state_stack = std::deque<std::shared_ptr<State>>();
+  stack_t state_stack = std::deque<StatePtr>();
   state_stack.emplace_back(std::move(initial_state));
 
   odpor::Execution empty_seq = odpor::Execution();

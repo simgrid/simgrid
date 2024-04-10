@@ -9,25 +9,21 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_reduction, mc, "Logging specific to the reduc
 
 namespace simgrid::mc {
 
-std::shared_ptr<State> Reduction::state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
+StatePtr Reduction::state_create(RemoteApp& remote_app, StatePtr parent_state)
 {
   if (parent_state == nullptr)
-    return std::make_shared<SleepSetState>(remote_app);
-  else {
-    std::shared_ptr<SleepSetState> sleep_state = std::static_pointer_cast<SleepSetState>(parent_state);
-    xbt_assert(sleep_state != nullptr, "Wrong kind of state for this reduction. This shouldn't happen, fix me");
-    return std::make_shared<SleepSetState>(remote_app, sleep_state);
-  }
+    return StatePtr(new SleepSetState(remote_app), true);
+  else
+    return StatePtr(new SleepSetState(remote_app, parent_state), true);
 }
 
 void Reduction::on_backtrack(State* s)
 {
-  std::shared_ptr<State> parent = s->get_parent_state();
+  StatePtr parent = s->get_parent_state();
   if (parent == nullptr) // this is the root
     return;              // Backtracking from the root means we end exploration, nothing to do
 
-  std::shared_ptr<SleepSetState> sleep_parent = std::static_pointer_cast<SleepSetState>(parent);
-  xbt_assert(sleep_parent != nullptr, "Wrong kind of state for this reduction. This shouldn't happen, fix me");
+  SleepSetState* sleep_parent = static_cast<SleepSetState*>(parent.get());
   sleep_parent->add_sleep_set(s->get_transition_in());
 }
 } // namespace simgrid::mc

@@ -180,7 +180,7 @@ void Exploration::backtrack_to_state(State* target_state)
   std::deque<Transition*> replay_recipe;
   auto* state = target_state;
   State* root_state = nullptr;
-  for (; state != nullptr && not state->has_state_factory(); state = state->get_parent_state().get()) {
+  for (; state != nullptr && not state->has_state_factory(); state = state->get_parent_state()) {
     if (state->get_transition_in() != nullptr) // The root has no transition_in
       replay_recipe.push_front(state->get_transition_in().get());
     else

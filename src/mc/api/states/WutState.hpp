@@ -18,10 +18,6 @@ class XBT_PRIVATE WutState : public SleepSetState {
 
   bool has_initialized_wakeup_tree = false;
 
-  /** Unique parent of this state. Required both for sleep set computation
-      and for guided model-checking */
-  std::shared_ptr<WutState> parent_state_ = nullptr;
-
 protected:
   /**
    * The wakeup tree with respect to the execution represented
@@ -34,8 +30,8 @@ protected:
 
 public:
   explicit WutState(RemoteApp& remote_app);
-  explicit WutState(RemoteApp& remote_app, std::shared_ptr<WutState> parent_state);
-  explicit WutState(RemoteApp& remote_app, std::shared_ptr<WutState> parent_state, bool dont_initialize_wut);
+  explicit WutState(RemoteApp& remote_app, StatePtr parent_state);
+  explicit WutState(RemoteApp& remote_app, StatePtr parent_state, bool dont_initialize_wut);
 
   /**
    * Same as next_transition(), but the choice is based off the ODPOR

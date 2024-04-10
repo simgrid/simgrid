@@ -8,6 +8,7 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 
+#include "src/mc/mc_forward.hpp"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 
@@ -19,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_bfsodpor, mc_reduction, "Logging specific to 
 
 namespace simgrid::mc {
 
-void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states)
+void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
 {
   xbt_assert(opened_states != nullptr, "BFDODPOR reduction should only be used with BFS algorithm");
 
@@ -90,21 +91,21 @@ aid_t BFSODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
   return next;
 }
 
-std::shared_ptr<State> BFSODPOR::state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
+StatePtr BFSODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
 {
   if (parent_state == nullptr)
-    return std::make_shared<BFSWutState>(remote_app);
+    return StatePtr(new BFSWutState(remote_app), true);
   else {
-    std::shared_ptr<BFSWutState> bfswut_state = std::static_pointer_cast<BFSWutState>(parent_state);
-    xbt_assert(bfswut_state != nullptr, "Wrong kind of state for this reduction. This shouldn't happen, fix me");
+    BFSWutState* bfswut_state = static_cast<BFSWutState*>(parent_state.get());
     if (auto existing_state = bfswut_state->get_children_state_of_aid(parent_state->get_transition_out()->aid_);
         existing_state != nullptr) {
-      existing_state->unwind_wakeup_tree_from_parent();
+      auto wut_state = static_cast<BFSWutState*>(existing_state.get());
+      wut_state->unwind_wakeup_tree_from_parent();
       return existing_state;
     }
-    auto new_state = std::make_shared<BFSWutState>(remote_app, bfswut_state);
+    auto new_state = StatePtr(new BFSWutState(remote_app, bfswut_state), true);
     bfswut_state->record_child_state(new_state);
-    return std::move(new_state);
+    return new_state;
   }
 }
 

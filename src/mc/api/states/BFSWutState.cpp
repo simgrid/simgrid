@@ -10,6 +10,7 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/log.h"
 #include <algorithm>
@@ -32,31 +33,27 @@ BFSWutState::BFSWutState(RemoteApp& remote_app) : WutState(remote_app)
   }
 }
 
-BFSWutState::BFSWutState(RemoteApp& remote_app, std::shared_ptr<BFSWutState> parent_state)
-    : WutState(remote_app, parent_state, true)
+BFSWutState::BFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutState(remote_app, parent_state, true)
 {
-
-  parent_state_ = parent_state;
-
-  for (const aid_t actor : parent_state_->done_) {
-    auto transition_in_done_set = parent_state_->get_actors_list().at(actor).get_transition();
+  auto parent = static_cast<BFSWutState*>(parent_state.get());
+  for (const aid_t actor : parent->done_) {
+    auto transition_in_done_set = parent->get_actors_list().at(actor).get_transition();
     if (not get_transition_in()->depends(transition_in_done_set.get())) {
       add_sleep_set(transition_in_done_set);
     }
   }
 
   aid_t incoming_actor = parent_state->get_transition_out()->aid_;
-  parent_state->done_.push_back(incoming_actor);
+  parent->done_.push_back(incoming_actor);
 
-  auto child_node = parent_state->final_wakeup_tree_.get_node_after_actor(incoming_actor);
+  auto child_node = parent->final_wakeup_tree_.get_node_after_actor(incoming_actor);
   xbt_assert(child_node != nullptr,
              "Since this state is created from something, it should exist in its parent final_wakeup_tree! Fix Me");
   final_wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(child_node);
 
-  wakeup_tree_ =
-      odpor::WakeupTree::make_subtree_rooted_at(parent_state->wakeup_tree_.get_node_after_actor(incoming_actor));
+  wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(parent->wakeup_tree_.get_node_after_actor(incoming_actor));
 
-  parent_state->wakeup_tree_.remove_subtree_at_aid(incoming_actor);
+  parent->wakeup_tree_.remove_subtree_at_aid(incoming_actor);
 
   if (not wakeup_tree_.empty())
     // We reach a state that is already guided by a wakeup tree
@@ -78,7 +75,7 @@ BFSWutState::BFSWutState(RemoteApp& remote_app, std::shared_ptr<BFSWutState> par
   }
 }
 
-void BFSWutState::record_child_state(std::shared_ptr<BFSWutState> child)
+void BFSWutState::record_child_state(StatePtr child)
 {
   aid_t child_aid = outgoing_transition_->aid_;
   children_states_.emplace(child_aid, child);
@@ -95,11 +92,12 @@ std::pair<aid_t, int> BFSWutState::next_transition_guided() const
 
 void BFSWutState::unwind_wakeup_tree_from_parent()
 {
+  auto parent = static_cast<BFSWutState*>(get_parent_state());
 
   // For each leaf of the parent WuT corresponding to this actor,
   // try to insert the corresponding sequence. If it still correponds to a new
   // possibility, insert it for real in the WuT.
-  for (auto node : *parent_state_->wakeup_tree_.get_node_after_actor(parent_state_->get_transition_out()->aid_)) {
+  for (auto node : *parent->wakeup_tree_.get_node_after_actor(parent->get_transition_out()->aid_)) {
     if (not node->is_leaf())
       continue;
 
@@ -108,7 +106,7 @@ void BFSWutState::unwind_wakeup_tree_from_parent()
       wakeup_tree_.insert(v_prime);
   }
 
-  parent_state_->wakeup_tree_.remove_subtree_at_aid(parent_state_->get_transition_out()->aid_);
+  parent->wakeup_tree_.remove_subtree_at_aid(parent->get_transition_out()->aid_);
 }
 
 aid_t BFSWutState::next_transition() const

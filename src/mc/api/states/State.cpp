@@ -44,7 +44,7 @@ State::State(const RemoteApp& remote_app) : num_(++expended_states_)
   remote_app.get_actors_status(strategy_->actors_to_run_);
 }
 
-State::State(const RemoteApp& remote_app, std::shared_ptr<State> parent_state)
+State::State(const RemoteApp& remote_app, StatePtr parent_state)
     : incoming_transition_(parent_state->get_transition_out()), num_(++expended_states_), parent_state_(parent_state)
 {
   if (_sg_mc_strategy == "none")
@@ -180,6 +180,20 @@ std::vector<aid_t> State::get_batrack_minus_done() const
     }
   }
   return actors;
+}
+
+// boost::intrusive_ptr<State> support:
+void intrusive_ptr_add_ref(State* state)
+{
+  state->refcount_.fetch_add(1, std::memory_order_relaxed);
+}
+
+void intrusive_ptr_release(State* state)
+{
+  if (state->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+    std::atomic_thread_fence(std::memory_order_acquire);
+    delete state;
+  }
 }
 
 } // namespace simgrid::mc

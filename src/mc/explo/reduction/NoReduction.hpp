@@ -21,16 +21,15 @@ public:
   NoReduction()           = default;
   ~NoReduction() override = default;
 
-  void races_computation(odpor::Execution& E, stack_t* S,
-                         std::vector<std::shared_ptr<State>>* opened_states) override{};
+  void races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states) override{};
 
-  std::shared_ptr<State> state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state) override
+  StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override
   {
-    std::shared_ptr<State> state;
+    StatePtr state;
     if (parent_state == nullptr)
-      state = std::make_shared<State>(remote_app);
+      state = new State(remote_app);
     else
-      state = std::make_shared<State>(remote_app, parent_state);
+      state = new State(remote_app, parent_state);
 
     state->consider_all();
 

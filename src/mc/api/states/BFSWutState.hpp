@@ -19,11 +19,7 @@
 namespace simgrid::mc {
 
 class XBT_PRIVATE BFSWutState : public WutState {
-  /** Unique parent of this state. Required both for sleep set computation
-      and for guided model-checking */
-  std::shared_ptr<BFSWutState> parent_state_ = nullptr;
-
-  std::map<aid_t, std::shared_ptr<BFSWutState>> children_states_;
+  std::map<aid_t, StatePtr> children_states_;
 
   /** This wakeup tree is used to store the whole tree explored during the process,
       it is only growing. There could be an optimization where we store only one wakeup
@@ -37,9 +33,9 @@ class XBT_PRIVATE BFSWutState : public WutState {
 
 public:
   explicit BFSWutState(RemoteApp& remote_app);
-  explicit BFSWutState(RemoteApp& remote_app, std::shared_ptr<BFSWutState> parent_state);
+  explicit BFSWutState(RemoteApp& remote_app, StatePtr parent_state);
 
-  void record_child_state(std::shared_ptr<BFSWutState> child);
+  void record_child_state(StatePtr child);
 
   aid_t next_transition() const;
 
@@ -56,7 +52,7 @@ public:
    */
   std::shared_ptr<Transition> execute_next(aid_t next, RemoteApp& app) override;
 
-  std::shared_ptr<BFSWutState> get_children_state_of_aid(aid_t next)
+  StatePtr get_children_state_of_aid(aid_t next)
   {
     if (auto children_state = children_states_.find(next); children_state != children_states_.end())
       return children_state->second;
