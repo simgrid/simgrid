@@ -10,31 +10,35 @@
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "xbt/log.h"
+#include <memory>
 
 namespace simgrid::mc {
 
 class XBT_PRIVATE WutState : public SleepSetState {
 
-  /**
-   * The wakeup tree with respect to the execution represented
-   * by the totality of all states before and including this one
-   * and with respect to this state's sleep set
-   */
-  odpor::WakeupTree wakeup_tree_;
   bool has_initialized_wakeup_tree = false;
 
   /** Unique parent of this state. Required both for sleep set computation
       and for guided model-checking */
   std::shared_ptr<WutState> parent_state_ = nullptr;
 
+protected:
+  /**
+   * The wakeup tree with respect to the execution represented
+   * by the totality of all states before and including this one
+   * and with respect to this state's sleep set
+   */
+  odpor::WakeupTree wakeup_tree_;
+
   void initialize_if_empty_wut();
 
 public:
   explicit WutState(RemoteApp& remote_app);
   explicit WutState(RemoteApp& remote_app, std::shared_ptr<WutState> parent_state);
+  explicit WutState(RemoteApp& remote_app, std::shared_ptr<WutState> parent_state, bool dont_initialize_wut);
 
   /**
-   * Same as next_transition(), but the choice is not based off the ODPOR
+   * Same as next_transition(), but the choice is based off the ODPOR
    * wakeup tree associated with this state
    */
   aid_t next_odpor_transition() const;
@@ -87,7 +91,9 @@ public:
    */
   void do_odpor_unwind();
 
-  unsigned int direct_children() const { return wakeup_tree_.direct_children(); }
+  unsigned int direct_children() const { return wakeup_tree_.count_direct_children(); }
+
+  bool has_more_to_be_explored() const override { return direct_children() > 0; }
 };
 
 } // namespace simgrid::mc

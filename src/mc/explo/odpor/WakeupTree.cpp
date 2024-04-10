@@ -108,6 +108,7 @@ std::string WakeupTree::string_of_whole_tree() const
 
 WakeupTree WakeupTree::make_subtree_rooted_at(WakeupTreeNode* root)
 {
+  xbt_assert(root != nullptr, "Making a subtree of a nullptr won't do anything. Fix Me.");
   // Perform a BFS search to perform a deep copy of the portion
   // of the tree underneath and including `root`. Note that `root`
   // is contained within the context of a *different* wakeup tree;
@@ -229,12 +230,35 @@ WakeupTree::InsertionResult WakeupTree::insert(const PartialExecution& w)
         // 2. a leaf node in the tree already contains `w` exactly.
         // In this case, the empty `w'` returned (viz. `shortest_seq`)
         // such that `w [=_[E] v.w'` would be empty
+        XBT_DEBUG("Inserting the following sequence in WuT %s",
+                  one_string_textual_trace(shortest_sequence.value()).c_str());
         this->insert_sequence_after(node, shortest_sequence.value());
         return node == this->root_ ? InsertionResult::root : InsertionResult::interior_node;
       }
       // Since we're following the post-order traversal of the tree,
       // the first such node we see is the smallest w.r.t "<"
       return InsertionResult::leaf;
+    }
+  }
+  xbt_die("Insertion should always succeed with the root node (which contains no "
+          "prior execution). If we've reached this point, this implies either that "
+          "the wakeup tree traversal is broken or that computation of the shortest "
+          "sequence to insert into the tree is broken");
+}
+
+const PartialExecution WakeupTree::insert_and_get_inserted_seq(const PartialExecution& w)
+{
+  PartialExecution inserted_seq;
+  for (WakeupTreeNode* node : *this) {
+    if (const auto shortest_sequence = Execution::get_shortest_odpor_sq_subset_insertion(node->get_sequence(), w);
+        shortest_sequence.has_value()) {
+      if (not node->is_leaf() || node == this->root_) {
+        this->insert_sequence_after(node, shortest_sequence.value());
+        inserted_seq = node->get_sequence();
+        inserted_seq.insert(inserted_seq.end(), shortest_sequence.value().begin(), shortest_sequence.value().end());
+        return inserted_seq;
+      }
+      return inserted_seq;
     }
   }
   xbt_die("Insertion should always succeed with the root node (which contains no "
@@ -251,6 +275,15 @@ void WakeupTree::insert_sequence_after(WakeupTreeNode* node, const PartialExecut
     cur_node->add_child(new_node);
     cur_node = new_node;
   }
+}
+
+WakeupTreeNode* WakeupTree::get_node_after_actor(aid_t aid) const
+{
+  for (auto const node : root_->children_)
+    if (node->get_actor() == aid)
+      return node;
+
+  return nullptr;
 }
 
 } // namespace simgrid::mc::odpor

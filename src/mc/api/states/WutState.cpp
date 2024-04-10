@@ -11,7 +11,7 @@
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wutstate, mc_state, "DFS exploration algorithm of the model-checker");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wutstate, mc_state, "States using wakeup tree for ODPOR algorithm");
 
 namespace simgrid::mc {
 
@@ -47,6 +47,12 @@ WutState::WutState(RemoteApp& remote_app, std::shared_ptr<WutState> parent_state
   }
   wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(min_process_node.value());
   initialize_if_empty_wut();
+}
+
+WutState::WutState(RemoteApp& remote_app, std::shared_ptr<WutState> parent_state, bool dont_initialize_wut)
+    : SleepSetState(remote_app, parent_state)
+{
+  parent_state_ = parent_state;
 }
 
 aid_t WutState::next_odpor_transition() const

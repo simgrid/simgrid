@@ -46,7 +46,7 @@ public:
 
   /* Same as next_transition(), but choice is now guided, and an integer corresponding to the
    internal cost of the transition is returned */
-  std::pair<aid_t, int> next_transition_guided() const;
+  virtual std::pair<aid_t, int> next_transition_guided() const;
 
   int get_actor_strategy_valuation(aid_t actor) const { return strategy_->get_actor_valuation(actor); }
 
@@ -61,7 +61,8 @@ public:
 
   long get_num() const { return num_; }
   std::size_t count_todo() const;
-  std::size_t count_todo_multiples() const;
+
+  virtual bool has_more_to_be_explored() const;
 
   /* Marking as TODO some actor in this state:
    *  + consider_one mark aid actor (and assert it is possible)

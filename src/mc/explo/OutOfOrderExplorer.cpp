@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/OutOfOrderExplorer.hpp"
+#include "src/mc/api/states/BFSWutState.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -13,6 +14,7 @@
 #include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"
 
+#include "src/mc/explo/reduction/BFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
@@ -102,8 +104,8 @@ void OutOfOrderExplorer::run()
     auto state = stack_.back();
 
     XBT_DEBUG("**************************************************");
-    XBT_VERB("Exploration depth=%zu (state:#%ld; %zu interleaves todo; %lu currently opened states)", stack_.size(),
-             state->get_num(), state->count_todo(), opened_states_.size());
+    XBT_DEBUG("Exploration depth=%zu (state:#%ld; %zu interleaves todo; %lu currently opened states)", stack_.size(),
+              state->get_num(), state->count_todo(), opened_states_.size());
 
     // Backtrack if we reached the maximum depth
     if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
@@ -176,8 +178,9 @@ void OutOfOrderExplorer::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition_out()->aid_,
-             state->get_transition_out()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
+    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves, %lu opened states)",
+             state->get_transition_out()->aid_, state->get_transition_out()->to_string().c_str(), stack_.size(),
+             state->get_num(), state->count_todo(), opened_states_.size());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     auto next_state = reduction_algo_->state_create(get_remote_app(), state);
@@ -192,7 +195,7 @@ void OutOfOrderExplorer::run()
 
     // Before leaving that state, if the transition we just took can be taken multiple times, we
     // need to give it to the opened states
-    if (stack_.back()->count_todo_multiples() > 0)
+    if (stack_.back()->has_more_to_be_explored() > 0)
       opened_states_.emplace_back(state);
 
     stack_.emplace_back(std::move(next_state));
@@ -215,11 +218,13 @@ std::shared_ptr<State> OutOfOrderExplorer::best_opened_state()
 
   // Keep only still non-explored states (aid != -1), and record the one with the best (greater) priority.
   for (auto current = begin(opened_states_); current != end(opened_states_); ++current) {
+    xbt_assert(current->get() != nullptr);
     auto [aid, prio] = (*current)->next_transition_guided();
     if (aid == -1)
       continue;
-    if (valid != current)
+    if (valid != current) {
       *valid = std::move(*current);
+    }
     if (best == end(opened_states_) || prio <= best_prio) {
       best_prio = prio;
       best      = valid;
@@ -270,8 +275,10 @@ OutOfOrderExplorer::OutOfOrderExplorer(const std::vector<char*>& args, Reduction
     reduction_algo_ = std::make_unique<DPOR>();
   else if (reduction_mode_ == ReductionMode::sdpor)
     reduction_algo_ = std::make_unique<SDPOR>();
+  else if (reduction_mode_ == ReductionMode::odpor)
+    reduction_algo_ = std::make_unique<BFSODPOR>();
   else {
-    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
+    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by BFS explorer",
                to_c_str(reduction_mode_));
     reduction_algo_ = std::make_unique<NoReduction>();
   }
@@ -288,7 +295,7 @@ OutOfOrderExplorer::OutOfOrderExplorer(const std::vector<char*>& args, Reduction
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   XBT_DEBUG("Initial state. %lu actors to consider", stack_.back()->get_actor_count());
 
-    opened_states_.emplace_back(stack_.back());
+  opened_states_.emplace_back(stack_.back());
 }
 
 Exploration* create_out_of_order_exploration(const std::vector<char*>& args, ReductionMode mode)

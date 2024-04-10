@@ -241,11 +241,32 @@ public:
    * as a leaf node in the tree
    */
   InsertionResult insert(const PartialExecution& seq);
+  /**
+   * @brief Does the same as 'insert' but instead of returning a result type, yield the
+   * inserted sequence.
+   */
+  const PartialExecution insert_and_get_inserted_seq(const PartialExecution& seq);
 
   /**
    * @brief The number of children at depth one
    */
-  unsigned int direct_children() const { return root_->get_ordered_children().size(); }
+  unsigned int count_direct_children() const { return root_->get_ordered_children().size(); }
+
+  std::vector<aid_t> get_direct_children_actors() const
+  {
+    std::vector<aid_t> result;
+    for (auto const leaf : root_->get_ordered_children())
+      result.push_back(leaf->get_actor());
+    return result;
+  }
+
+  /**
+   * @brief Gets the node itself that is the the one at the root directly after
+   * aid.
+   *
+   * If the tree is empty, returns nullptr
+   */
+  WakeupTreeNode* get_node_after_actor(aid_t aid) const;
 };
 
 } // namespace simgrid::mc::odpor

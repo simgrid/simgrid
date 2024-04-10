@@ -9,8 +9,10 @@
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/states/WutState.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
+#include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "xbt/log.h"
 #include <map>
+#include <memory>
 #include <unordered_set>
 #include <vector>
 
@@ -34,10 +36,16 @@ class XBT_PRIVATE BFSWutState : public WutState {
   std::vector<aid_t> done_;
 
 public:
-  explicit BFSWutState(RemoteApp& remote_app) : WutState(remote_app){};
+  explicit BFSWutState(RemoteApp& remote_app);
   explicit BFSWutState(RemoteApp& remote_app, std::shared_ptr<BFSWutState> parent_state);
 
-  aid_t next_to_explore();
+  void record_child_state(std::shared_ptr<BFSWutState> child);
+
+  aid_t next_transition() const;
+
+  odpor::PartialExecution insert_into_final_wakeup_tree(const odpor::PartialExecution&);
+
+  std::pair<aid_t, int> next_transition_guided() const override;
 
   /**
    * @brief Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
@@ -55,7 +63,13 @@ public:
     return nullptr;
   }
 
+  /**
+   * @brief Take the Wakeup tree from the parent and extract the correponding subtree in this state.
+   */
+  void unwind_wakeup_tree_from_parent();
+
   std::unordered_set<aid_t> get_sleeping_actors(aid_t after_actor) const override;
+  std::string get_string_of_final_wut() const { return final_wakeup_tree_.string_of_whole_tree(); }
 };
 
 } // namespace simgrid::mc

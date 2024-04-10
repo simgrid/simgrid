@@ -5,11 +5,15 @@
 
 #include "src/mc/explo/reduction/BFSODPOR.hpp"
 #include "src/mc/api/states/BFSWutState.hpp"
+#include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/odpor/Execution.hpp"
+
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/api/states/State.hpp"
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_bfsodpor, mc_reduction, "Logging specific to the odpor reduction");
 
@@ -17,13 +21,16 @@ namespace simgrid::mc {
 
 void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states)
 {
+  xbt_assert(opened_states != nullptr, "BFDODPOR reduction should only be used with BFS algorithm");
+
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
   if (not s->get_enabled_actors().empty()) {
-    auto s_cast = static_cast<WutState*>(S->back().get());
-    xbt_assert(s != nullptr, "ODPOR should use WutState. Fix me");
+    auto s_cast = static_cast<BFSWutState*>(S->back().get());
+    xbt_assert(s != nullptr, "BFSODPOR should use BFSWutState. Fix me");
+    XBT_DEBUG("Non terminal execution reached, current WuT is the following: %s", s_cast->string_of_wut().c_str());
     if (s_cast->direct_children() > 1 and opened_states != nullptr)
-      opened_states->emplace_back(s);
+      opened_states->emplace_back(S->back());
     return;
   }
 
@@ -43,11 +50,23 @@ void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<st
     XBT_VERB("Computing reversible races of Event `%u`", e_prime);
     for (const auto e : E.get_reversible_races_of(e_prime)) {
       XBT_DEBUG("... racing event `%u``", e);
-      WutState* prev_state = static_cast<WutState*>((*S)[e].get());
+      BFSWutState* prev_state = static_cast<BFSWutState*>((*S)[e].get());
       xbt_assert(prev_state != nullptr, "ODPOR should use WutState. Fix me");
 
-      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value())
-        prev_state->insert_into_wakeup_tree(v.value());
+      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state, prev_state->get_transition_out()->aid_);
+          v.has_value()) {
+        XBT_DEBUG("... inserting sequence %s in final_wut before event `%u`",
+                  odpor::one_string_textual_trace(v.value()).c_str(), e);
+        XBT_DEBUG("... before insertion final_wut looks like this: %s", prev_state->get_string_of_final_wut().c_str());
+        const auto v_prime = prev_state->insert_into_final_wakeup_tree(v.value());
+        XBT_DEBUG("... after insertion final_wut looks like this: %s", prev_state->get_string_of_final_wut().c_str());
+        XBT_DEBUG("... before insertion wut looks like this: %s", prev_state->string_of_wut().c_str());
+        if (not v_prime.empty()) {
+          XBT_DEBUG("... inserting sequence %s before event `%u`", odpor::one_string_textual_trace(v_prime).c_str(), e);
+          prev_state->insert_into_wakeup_tree(v_prime);
+          opened_states->push_back((*S)[e]);
+        }
+      }
     }
     E.get_event_with_handle(e_prime).consider_races();
   }
@@ -57,14 +76,13 @@ aid_t BFSODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 {
   auto s = static_cast<BFSWutState*>(S->back().get());
   xbt_assert(s != nullptr, "BFSODPOR should use BFSWutState. Fix me");
-  const aid_t next = s->next_to_explore();
+  const aid_t next = s->next_transition();
 
   if (next == -1)
     return -1;
 
   if (not s->is_actor_enabled(next)) {
-    xbt_die("Can BFSDPOR execute disabled transition? Fix Me");
-    XBT_DEBUG("ODPOR wants to execute a disabled transition %s.",
+    XBT_DEBUG("BFSODPOR wants to execute a disabled transition %s.",
               s->get_actors_list().at(next).get_transition()->to_string(true).c_str());
     s->remove_subtree_at_aid(next);
     s->add_sleep_set(s->get_actors_list().at(next).get_transition());
@@ -82,9 +100,13 @@ std::shared_ptr<State> BFSODPOR::state_create(RemoteApp& remote_app, std::shared
     std::shared_ptr<BFSWutState> bfswut_state = std::static_pointer_cast<BFSWutState>(parent_state);
     xbt_assert(bfswut_state != nullptr, "Wrong kind of state for this reduction. This shouldn't happen, fix me");
     if (auto existing_state = bfswut_state->get_children_state_of_aid(parent_state->get_transition_out()->aid_);
-        existing_state != nullptr)
+        existing_state != nullptr) {
+      existing_state->unwind_wakeup_tree_from_parent();
       return existing_state;
-    return std::make_shared<BFSWutState>(remote_app, bfswut_state);
+    }
+    auto new_state = std::make_shared<BFSWutState>(remote_app, bfswut_state);
+    bfswut_state->record_child_state(new_state);
+    return std::move(new_state);
   }
 }
 

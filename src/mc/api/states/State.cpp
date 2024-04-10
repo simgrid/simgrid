@@ -69,14 +69,14 @@ std::size_t State::count_todo() const
   return boost::range::count_if(this->strategy_->actors_to_run_, [](auto& pair) { return pair.second.is_todo(); });
 }
 
-std::size_t State::count_todo_multiples() const
+bool State::has_more_to_be_explored() const
 {
   size_t count = 0;
   for (auto const& [_, actor] : strategy_->actors_to_run_)
     if (actor.is_todo())
       count += actor.get_times_not_considered();
 
-  return count;
+  return count > 0;
 }
 
 aid_t State::next_transition() const

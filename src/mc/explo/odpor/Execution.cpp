@@ -12,7 +12,7 @@
 #include <limits>
 #include <vector>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor_execution, mc_dfs, "ODPOR exploration algorithm of the model-checker");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor_execution, mc_reduction, "ODPOR exploration algorithm of the model-checker");
 
 namespace simgrid::mc::odpor {
 
@@ -295,6 +295,7 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
       // we've found an initial contained in the sleep set and
       // so the intersection is non-empty
       if (sleep_E_prime.count((*transition_it)->aid_) > 0) {
+        XBT_DEBUG("Discarding this potential because an initial actor is already in the sleep set");
         return std::nullopt;
       }
     }
@@ -306,8 +307,10 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
 
     // `action(aid)` is in `WI_[E](v)` but also is contained in the sleep set.
     // This implies that the intersection between the two is non-empty
-    if (is_in_WI_E && is_in_sleep_set)
+    if (is_in_WI_E && is_in_sleep_set) {
+      XBT_DEBUG("Discarding this potential because a weak-initial actor is already in the sleep set");
       return std::nullopt;
+    }
   }
 
   return v;
