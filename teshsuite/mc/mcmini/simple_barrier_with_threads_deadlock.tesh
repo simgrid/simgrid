@@ -22,4 +22,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorJoin(target 3, no timeout)
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall BARRIER_ASYNC_LOCK(barrier: 0)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;2;3;1;2;1;3;1;4'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 10 unique states visited; 1 explored traces (0 transition replays, 10 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 10 unique states visited; 0 explored traces (0 transition replays, 10 states visited overall)

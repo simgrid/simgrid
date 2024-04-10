@@ -3,27 +3,27 @@
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/pthread-producer-consumer -q  -C 1 -P 1
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 689 unique states visited; 54 explored traces (1112 transition replays, 1801 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 689 unique states visited; 30 explored traces (1112 transition replays, 1801 states visited overall)
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:sdpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/pthread-producer-consumer -q  -C 1 -P 1
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'sdpor'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: sdpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 689 unique states visited; 54 explored traces (1112 transition replays, 1801 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 689 unique states visited; 30 explored traces (1112 transition replays, 1801 states visited overall)
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/pthread-producer-consumer -q  -C 1 -P 1
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 689 unique states visited; 54 explored traces (1112 transition replays, 1801 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 689 unique states visited; 30 explored traces (1112 transition replays, 1801 states visited overall)
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/exploration-algo:BFS --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/pthread-producer-consumer -q  -C 1 -P 1
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BFS'
 > [0.000000] [mc_bfs/INFO] Start a BFS exploration. Reduction is: odpor.
-> [0.000000] [mc_bfs/INFO] BFS exploration ended. 689 unique states visited; 54 explored traces (1112 transition replays, 1801 states visited overall)
+> [0.000000] [mc_bfs/INFO] BFS exploration ended. 689 unique states visited; 30 explored traces (1112 transition replays, 1801 states visited overall)
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/exploration-algo:BFS --cfg=model-check/strategy:min_context_switch --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/pthread-producer-consumer -q  -C 1 -P 1
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BFS'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/strategy' to 'min_context_switch'
 > [0.000000] [mc_bfs/INFO] Start a BFS exploration. Reduction is: odpor.
-> [0.000000] [mc_bfs/INFO] BFS exploration ended. 649 unique states visited; 54 explored traces (1152 transition replays, 1801 states visited overall)
+> [0.000000] [mc_bfs/INFO] BFS exploration ended. 649 unique states visited; 30 explored traces (1152 transition replays, 1801 states visited overall)

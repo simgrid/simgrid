@@ -20,4 +20,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall CONDVAR_ASYNC_LOCK(cond: 0, mutex: 0)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;1;2;2;2'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 8 unique states visited; 1 explored traces (0 transition replays, 8 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 8 unique states visited; 0 explored traces (0 transition replays, 8 states visited overall)
