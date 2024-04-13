@@ -76,6 +76,7 @@ void Task::complete(const std::string& instance)
     while (ready_to_run(next_instance))
       fire(next_instance);
   } else {
+    on_instance_completion(this, instance);
     queued_firings_["collector"]++;
     while (ready_to_run("collector"))
       fire("collector");

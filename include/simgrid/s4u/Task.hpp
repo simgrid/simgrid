@@ -47,6 +47,7 @@ class XBT_PUBLIC Task {
   xbt::signal<void(Task*)> on_this_start;
   inline static xbt::signal<void(Task*)> on_completion;
   xbt::signal<void(Task*)> on_this_completion;
+  inline static xbt::signal<void(Task*, const std::string&)> on_instance_completion;
 
 protected:
   explicit Task(const std::string& name);
@@ -86,6 +87,9 @@ public:
   {
     return parallelism_degree_.at(instance);
   }
+
+  int get_instance_count() const { return this->running_instances_.size(); }
+
   /** @param bytes The amount of bytes this instance has to send to the next instance of this Task
    *  @note This amount is used when the host is different between the dispatcher and the instance doing the work of the
    * Task, or between the instance and the collector. */
@@ -133,6 +137,11 @@ public:
   /** Add a callback fired after a task activity ends.
    * Triggered after the on_this_end function, but before sending tokens to successors.**/
   static void on_completion_cb(const std::function<void(Task*)>& cb) { on_completion.connect(cb); }
+
+  static void on_instance_completion_cb(const std::function<void(Task*, const std::string&)>& cb)
+  {
+    on_instance_completion.connect(cb);
+  }
 
 #ifndef DOXYGEN
   friend void intrusive_ptr_release(Task* o)
