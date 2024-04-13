@@ -87,9 +87,8 @@ public:
   {
     return parallelism_degree_.at(instance);
   }
-
+  /** @return Number of instances present in this task. */
   int get_instance_count() const { return this->running_instances_.size(); }
-
   /** @param bytes The amount of bytes this instance has to send to the next instance of this Task
    *  @note This amount is used when the host is different between the dispatcher and the instance doing the work of the
    * Task, or between the instance and the collector. */
@@ -137,7 +136,7 @@ public:
   /** Add a callback fired after a task activity ends.
    * Triggered after the on_this_end function, but before sending tokens to successors.**/
   static void on_completion_cb(const std::function<void(Task*)>& cb) { on_completion.connect(cb); }
-
+  /** Add a callback fired before a task instance activity ends (excluding the dispatcher and the receiver). **/
   static void on_instance_completion_cb(const std::function<void(Task*, const std::string&)>& cb)
   {
     on_instance_completion.connect(cb);
