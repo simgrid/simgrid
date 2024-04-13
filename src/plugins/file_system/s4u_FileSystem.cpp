@@ -200,7 +200,7 @@ sg_size_t File::size() const
 
 void File::seek(sg_offset_t offset)
 {
-  current_position_ = offset;
+  update_position(offset);
 }
 
 void File::seek(sg_offset_t offset, int origin)
