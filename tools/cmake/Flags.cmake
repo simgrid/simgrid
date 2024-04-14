@@ -1,7 +1,7 @@
 ##
 ## This file is in charge of setting our paranoid flags with regard to warnings and optimization.
 ##
-##   It is only used for gcc, clang and Intel compilers.
+##   It is used for gcc, clang and Intel compilers.
 ##
 ##   These flags do break some classical CMake tests, so you don't
 ##   want to do so before the very end of the configuration.
@@ -69,6 +69,9 @@ if(enable_compile_warnings)
   elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all")
   endif()
+
+  # makecontext takes a pointer to function of non-matching type, and we cannot do otherwise
+  set_source_files_properties(src/kernel/context/ContextUnix.cpp PROPERTIES COMPILE_FLAGS -Wno-cast-function-type-strict)
 endif()
 
 # NDEBUG gives a lot of "initialized but unused variables" errors. Don't die anyway.
