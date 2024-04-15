@@ -7,11 +7,11 @@
 #include <stdio.h>
 #include "mpitest.h"
 
-void addem(int *, int *, int *, MPI_Datatype *);
-void assoc(int *, int *, int *, MPI_Datatype *);
-
-void addem(int *invec, int *inoutvec, int *len, MPI_Datatype * dtype)
+static void addem(void *inv, void *inoutv, int *len, MPI_Datatype * dtype)
 {
+    int* invec = inv;
+    int* inoutvec = inoutv;
+
     int i;
     for (i = 0; i < *len; i++)
         inoutvec[i] += invec[i];
@@ -26,8 +26,11 @@ void addem(int *invec, int *inoutvec, int *len, MPI_Datatype * dtype)
     Note that the computation is in process rank (in the communicator)
     order, independent of the root.
  */
-void assoc(int *invec, int *inoutvec, int *len, MPI_Datatype * dtype)
+ static void assoc(void *inv, void *inoutv, int *len, MPI_Datatype * dtype)
 {
+    int* invec = inv;
+    int* inoutvec = inoutv;
+
     int i;
     for (i = 0; i < *len; i++) {
         if (inoutvec[i] <= invec[i]) {

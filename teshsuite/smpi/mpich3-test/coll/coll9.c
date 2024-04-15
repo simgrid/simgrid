@@ -7,10 +7,10 @@
 #include <stdio.h>
 #include "mpitest.h"
 
-void addem(int *, int *, int *, MPI_Datatype *);
-
-void addem(int *invec, int *inoutvec, int *len, MPI_Datatype * dtype)
+static void addem(void *inv, void *inoutv, int *len, MPI_Datatype * dtype)
 {
+    int* invec = inv;
+    int* inoutvec = inoutv;
     int i;
     for (i = 0; i < *len; i++)
         inoutvec[i] += invec[i];
