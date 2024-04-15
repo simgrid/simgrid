@@ -14,8 +14,7 @@
 /* Ensure that setting a user-defined error handler on predefined
  * communicators does not cause a problem at finalize time.  Regression
  * test for ticket #1591 */
-void errf(MPI_Comm * comm, int *ec);
-void errf(MPI_Comm * comm, int *ec)
+static void errf(MPI_Comm* comm, int* ec, ...)
 {
     /* do nothing */
 }
@@ -26,7 +25,7 @@ int main(int argc, char **argv)
     int wrank;
     MTest_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &wrank);
-    MPI_Comm_create_errhandler((MPI_Comm_errhandler_function *) errf, &errh);
+    MPI_Comm_create_errhandler(errf, &errh);
     MPI_Comm_set_errhandler(MPI_COMM_WORLD, errh);
     MPI_Comm_set_errhandler(MPI_COMM_SELF, errh);
     MPI_Errhandler_free(&errh);
