@@ -71,7 +71,11 @@ if(enable_compile_warnings)
   endif()
 
   # makecontext takes a pointer to function of non-matching type, and we cannot do otherwise
-  set_source_files_properties(src/kernel/context/ContextUnix.cpp PROPERTIES COMPILE_FLAGS -Wno-cast-function-type-strict)
+  CHECK_CXX_COMPILER_FLAG(-Wno-cast-function-type-strict _have_flag)
+  if(_have_flag)
+    set_source_files_properties(src/kernel/context/ContextUnix.cpp PROPERTIES COMPILE_FLAGS -Wno-cast-function-type-strict)
+  endif()
+  unset(_have_flag)
 endif()
 
 # NDEBUG gives a lot of "initialized but unused variables" errors. Don't die anyway.
