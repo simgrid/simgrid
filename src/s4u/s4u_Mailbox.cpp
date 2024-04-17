@@ -110,7 +110,14 @@ void Mailbox::put(void* payload, uint64_t simulated_size_in_bytes)
 {
   xbt_assert(payload != nullptr, "You cannot send nullptr");
 
-  put_init()->set_payload_size(simulated_size_in_bytes)->set_src_data(payload)->start()->wait();
+  CommPtr comm = put_init()->set_payload_size(simulated_size_in_bytes)->set_src_data(payload)->start();
+  try {
+    comm->wait();
+  } catch (simgrid::TimeoutException&) {
+    comm->cancel();
+    // Rethrowing the original exception segfaults in parallel tests
+    throw TimeoutException(XBT_THROW_POINT, "Timeouted");
+  }
 }
 
 /** Blocking send with timeout */
