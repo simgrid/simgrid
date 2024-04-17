@@ -23,4 +23,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ../../smpi_script/bin/smpirun -wrapper "${bindir:=
 > rank 1 Finished normally
 > rank 0 received 0
 > rank 0 Finished normally
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 4 unique states visited; 0 backtracks (0 transition replays, 4 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 4 unique states visited; 1 explored traces (0 transition replays, 4 states visited overall)
