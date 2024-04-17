@@ -87,8 +87,8 @@ endforeach()
 
 # Borrowed from FindSimGrid with modification because we are in tree. TODO: this should be moved to a better location
 MACRO(smpi_c_target NAME)
-  target_compile_options(${NAME} PUBLIC "-include;smpi/smpi_helpers.h;-fPIC;-shared;-Wl,-z,defs")
-  target_link_options(${NAME} PUBLIC "-fPIC;-shared;-Wl,-z,defs;-lm")
+  target_compile_options(${NAME} PUBLIC "-include;smpi/smpi_helpers.h")
+  target_link_options(${NAME} PUBLIC "-fPIC;-shared")
   target_link_libraries(${NAME} PUBLIC simgrid)
   target_include_directories(${NAME} PUBLIC "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/include/smpi")
 ENDMACRO()
@@ -107,6 +107,7 @@ foreach(x iprobe_ok iprobe_nok probe_deadlock probe_ok)
 
     ADD_TESH(mc-mpi-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mpi/${x}.tesh)
   endif()
+  unset(${x}_disable)
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/mpi/${x}.tesh)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/mpi/${x}.c)
