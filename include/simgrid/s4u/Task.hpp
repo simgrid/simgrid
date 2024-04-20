@@ -48,6 +48,7 @@ class XBT_PUBLIC Task {
   inline static xbt::signal<void(Task*)> on_completion;
   xbt::signal<void(Task*)> on_this_completion;
   inline static xbt::signal<void(Task*, const std::string&)> on_instance_completion;
+  xbt::signal<void(Task*, const std::string&)> on_this_instance_completion;
 
 protected:
   explicit Task(const std::string& name);
@@ -136,6 +137,11 @@ public:
   /** Add a callback fired after a task activity ends.
    * Triggered after the on_this_end function, but before sending tokens to successors.**/
   static void on_completion_cb(const std::function<void(Task*)>& cb) { on_completion.connect(cb); }
+  /** Add a callback fired before this task activity ends */
+  void on_this_instance_completion_cb(const std::function<void(Task*, const std::string&)>& func)
+  {
+    on_this_instance_completion.connect(func);
+  };
   /** Add a callback fired before a task instance activity ends (excluding the dispatcher and the receiver). **/
   static void on_instance_completion_cb(const std::function<void(Task*, const std::string&)>& cb)
   {
