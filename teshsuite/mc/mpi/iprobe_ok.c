@@ -14,10 +14,9 @@ int main(int argc, char** argv)
   int namelen        = 128;
   int probe_received = 0;
 
-  int const0 = 0;
+  int const11 = 11;
 
   MPI_Status status;
-  MPI_Request request;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -29,19 +28,21 @@ int main(int argc, char** argv)
 
     int g = 0;
 
-    while (!probe_received)
+    while (!probe_received && g < 10) {
+      g++;
       MPI_Iprobe(1, MPI_ANY_TAG, MPI_COMM_WORLD, &probe_received, &status);
+    }
+    printf("exited loop with g=%d\n", g);
 
-    MPI_Irecv(&g, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &request);
+    MPI_Recv(&g, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
 
-    printf("rank %d received %d\n", rank, g);
+    printf("Received g=%d\n", g);
   }
 
   if (rank == 1) {
-    MPI_Send(&const0, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    MPI_Send(&const11, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
   }
 
   MPI_Finalize();
-  printf("rank %d Finished normally\n", rank);
   return 0;
 }

@@ -154,6 +154,9 @@ bool CommRecvTransition::depends(const Transition* other) const
   if (other->type_ == Type::COMM_ASYNC_SEND)
     return false;
 
+  if (other->type_ == Type::COMM_IPROBE)
+    return mbox_ == static_cast<const CommIprobeTransition*>(other)->get_mailbox();
+
   if (other->type_ == Type::COMM_TEST) {
     const auto* test = static_cast<const CommTestTransition*>(other);
 
@@ -234,6 +237,9 @@ bool CommSendTransition::depends(const Transition* other) const
   if (other->type_ == Type::COMM_ASYNC_RECV)
     return false;
 
+  if (other->type_ == Type::COMM_IPROBE)
+    return mbox_ == static_cast<const CommIprobeTransition*>(other)->get_mailbox();
+
   if (other->type_ == Type::COMM_TEST) {
     const auto* test = static_cast<const CommTestTransition*>(other);
 
@@ -301,15 +307,28 @@ std::string CommIprobeTransition::to_string(bool verbose) const
 }
 bool CommIprobeTransition::depends(const Transition* other) const
 {
-  return true; // FIXME: come up with a decent independence theorem
+  if (other->type_ < type_)
+    return other->depends(this);
+
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
+
+  if (other->type_ == Type::COMM_IPROBE)
+    return mbox_ == static_cast<const CommIprobeTransition*>(other)->get_mailbox();
+
+  // Iprobe can't enable a wait and is independent with every non Recv nor Send transition
+  return false;
 }
 bool CommIprobeTransition::reversible_race(const Transition* other) const
 {
-  return true; // FIXME https://media1.tenor.com/m/eB4QsynicO0AAAAC/platypus-no-idea-what-im-doing.gif
+  // In every cases, we can execute Iprobe before someone else
+  return true;
 }
 bool CommIprobeTransition::can_be_co_enabled(const Transition* o) const
 {
-  return true; // FIXME: I don't know what I'm doin, please complete
+  // Iprobe can be executed at any time
+  return true;
 }
 
 } // namespace simgrid::mc
