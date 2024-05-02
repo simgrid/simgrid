@@ -6,6 +6,8 @@
 
 #include "src/mc/explo/reduction/DPOR.hpp"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc, "Dynamic partial order reduction algorithm");
+
 namespace simgrid::mc {
 
 std::optional<EventHandle> DPOR::max_dependent_dpor(const odpor::Execution& S, const State* s, aid_t p)
@@ -30,6 +32,7 @@ std::unordered_set<aid_t> DPOR::compute_ancestors(const odpor::Execution& S, sta
                                                   EventHandle i)
 {
 
+  XBT_DEBUG("Computing the ancestors of aid %ld before event %u", p, i);
   std::unordered_set<aid_t> E = std::unordered_set<aid_t>();
   for (aid_t q : (*state_stack)[i]->get_enabled_actors()) {
 
@@ -51,6 +54,9 @@ std::unordered_set<aid_t> DPOR::compute_ancestors(const odpor::Execution& S, sta
 
 void DPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
 {
+  XBT_DEBUG("Doing the race computation phase with a stack of size %lu and an execution of size %lu", S->size(),
+            E.size());
+
   // If there are less then 2 events, there is no possible race yet
   if (E.size() <= 1)
     return;
