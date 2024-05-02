@@ -596,6 +596,7 @@ set(MC_SRC_STATELESS
   src/mc/explo/reduction/Reduction.cpp
   src/mc/explo/reduction/Reduction.hpp
   src/mc/explo/reduction/NoReduction.hpp
+  src/mc/explo/reduction/DPOR.cpp
   src/mc/explo/reduction/DPOR.hpp
   src/mc/explo/reduction/SDPOR.hpp
   src/mc/explo/reduction/ODPOR.cpp
