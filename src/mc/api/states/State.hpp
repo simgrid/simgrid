@@ -36,6 +36,10 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   /** Unique parent of this state */
   StatePtr parent_state_ = nullptr;
 
+  /** @brief Wether this state can lead to a correct execution.
+   *  Used by the critical transisition algorithm */
+  bool has_correct_descendent_ = false;
+
 protected:
   std::shared_ptr<StratLocalInfo> strategy_;
 
@@ -121,6 +125,14 @@ public:
 
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }
+
+  /**
+   * @brief Register this state as leading to a correct execution and
+   * does the same for all its predecessors
+   */
+  void register_as_correct();
+
+  bool has_correct_execution() { return has_correct_descendent_; }
 };
 } // namespace simgrid::mc
 

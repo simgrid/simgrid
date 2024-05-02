@@ -166,6 +166,13 @@ std::vector<aid_t> State::get_batrack_minus_done() const
   return actors;
 }
 
+void State::register_as_correct()
+{
+  has_correct_descendent_ = true;
+  if (parent_state_ != nullptr)
+    parent_state_->register_as_correct();
+}
+
 // boost::intrusive_ptr<State> support:
 void intrusive_ptr_add_ref(State* state)
 {
