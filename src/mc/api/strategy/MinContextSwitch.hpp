@@ -47,7 +47,7 @@ public:
     }
 
     // If we executed something else because current actor is blocked for now, it's okay
-    if (action->second.is_disabled())
+    if (action->second.is_unknown())
       return;
 
     // In other cases, it means we did a context switch. Certainly because
