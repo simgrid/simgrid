@@ -6,7 +6,7 @@ foreach(x random-bug mutex-handling)
   endif()
 
   if(NOT DEFINED ${x}_disable)
-    add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
+    add_executable       (${x}  EXCLUDE_FROM_ALL ${${x}_sources})
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
     set_property(TARGET ${x} APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
@@ -44,18 +44,16 @@ if(enable_coverage)
   ADD_TEST(cover-mc-mutex-handling ${CMAKE_CURRENT_BINARY_DIR}/mutex-handling/mutex-handling ${CMAKE_HOME_DIRECTORY}/examples/platforms/small_platform.xml)
 endif()
 
-
 foreach(x
             simple_barrier_ok              simple_barrier_deadlock
             simple_barrier_with_threads_ok simple_barrier_with_threads_deadlock
 
-#            simple_cond_ok 
+            simple_cond_ok                 simple_cond_deadlock
+            simple_cond_broadcast_ok       simple_cond_broadcast_deadlock
 
-#            simple_cond_broadcast_ok                simple_cond_broadcast_deadlock
 #            simple_cond_broadcast_with_semaphore_ok 
-#      	     simple_cond_broadcast_with_semaphore_deadlock1  simple_cond_broadcast_with_semaphore_deadlock2
+      	     simple_cond_broadcast_with_semaphore_deadlock1  simple_cond_broadcast_with_semaphore_deadlock2
 
-#                 simple_cond_deadlock
              simple_mutex_ok simple_mutex_deadlock
              simple_mutex_with_threads_ok simple_mutex_with_threads_deadlock
 
@@ -87,6 +85,38 @@ foreach(x
   endif()
 endforeach()
 
+# Borrowed from FindSimGrid with modification because we are in tree. TODO: this should be moved to a better location
+MACRO(smpi_c_target NAME)
+  target_compile_options(${NAME} PUBLIC "-include;smpi/smpi_helpers.h;-fPIC")
+  target_link_options(${NAME} PUBLIC "-fPIC;-shared")
+  target_link_libraries(${NAME} PUBLIC simgrid)
+  target_include_directories(${NAME} PUBLIC "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/include/smpi")
+ENDMACRO()
+
+set(probe_deadlock_disable 1)
+set(probe_ok_disable 1)
+foreach(x iprobe_ok iprobe_nok probe_deadlock probe_ok)
+  if(NOT DEFINED ${x}_disable)
+    set(${x}_disable 0)
+  endif()
+  if(enable_smpi AND NOT ${${x}_disable})
+    add_executable       (mpi_${x}  EXCLUDE_FROM_ALL mpi/${x}.c)
+    smpi_c_target(mpi_${x})
+    set_target_properties(mpi_${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    add_dependencies(tests-mc mpi_${x})
+
+    ADD_TESH(mc-mpi-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mpi/${x}.tesh)
+  endif()
+  unset(${x}_disable)
+
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/mpi/${x}.tesh)
+  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/mpi/${x}.c)
+endforeach()
+
+
+
+
 set(teshsuite_src  ${teshsuite_src}                                                                        PARENT_SCOPE)
 set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/random-bug/random-bug-replay.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/mutex-handling/without-mutex-handling.tesh PARENT_SCOPE)
+

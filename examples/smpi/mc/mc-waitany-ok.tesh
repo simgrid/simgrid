@@ -1,0 +1,17 @@
+#!/usr/bin/env tesh
+! expect return 0
+$ $VALGRIND_NO_TRACE_CHILDREN ../../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../../bin/simgrid-mc" --cfg=model-check/reduction:odpor  -platform ${srcdir:=.}/../../platforms/cluster_backbone.xml -np 5 ./smpi_mc-waitany-ok
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/privatization' to 'ON'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/np' to '5'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/hostfile' to ''
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'precision/timing' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/privatization' to 'ON'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/np' to '5'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/hostfile' to ''
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'precision/timing' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 11 unique states visited; 2 explored traces (2 transition replays, 13 states visited overall)

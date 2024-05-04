@@ -8,9 +8,11 @@
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/transition/Transition.hpp"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wutstate, mc_state, "DFS exploration algorithm of the model-checker");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wutstate, mc_state, "States using wakeup tree for ODPOR algorithm");
 
 namespace simgrid::mc {
 
@@ -19,17 +21,21 @@ WutState::WutState(RemoteApp& remote_app) : SleepSetState(remote_app)
   initialize_if_empty_wut();
 }
 
-WutState::WutState(RemoteApp& remote_app, std::shared_ptr<WutState> parent_state)
+WutState::WutState(RemoteApp& remote_app, StatePtr parent_state, bool initialize_wut)
     : SleepSetState(remote_app, parent_state)
 {
-  parent_state_ = parent_state;
+  if (not initialize_wut) // We don't initialize the WUT when running in BFS order
+    return;
+
+  auto parent = static_cast<WutState*>(parent_state.get());
+
+  xbt_assert(parent != nullptr, "Attempting to construct a wakeup tree for the root state "
+                                "(or what appears to be, rather for state without a parent defined)");
 
   XBT_DEBUG("Initializing Wut with parent one:");
-  XBT_DEBUG("\n%s", parent_state_->wakeup_tree_.string_of_whole_tree().c_str());
+  XBT_DEBUG("\n%s", parent->wakeup_tree_.string_of_whole_tree().c_str());
 
-  xbt_assert(parent_state_ != nullptr, "Attempting to construct a wakeup tree for the root state "
-                                       "(or what appears to be, rather for state without a parent defined)");
-  const auto min_process_node = parent_state_->wakeup_tree_.get_min_single_process_node();
+  const auto min_process_node = parent->wakeup_tree_.get_min_single_process_node();
   xbt_assert(min_process_node.has_value(), "Attempting to construct a subtree for a substate from a "
                                            "parent with an empty wakeup tree. This indicates either that ODPOR "
                                            "actor selection in State.cpp is incorrect, or that the code "
@@ -60,15 +66,17 @@ void WutState::initialize_if_empty_wut()
 
   if (wakeup_tree_.empty()) {
     // Find an enabled transition to pick
-    for (const auto& [aid, actor] : get_actors_list()) {
-      if (actor.is_enabled() && !is_actor_sleeping(aid)) {
-        // For each variant of the transition that is enabled, we want to insert the action into the tree.
-        // This ensures that all variants are searched
-        for (unsigned times = 0; times < actor.get_max_considered(); ++times) {
-          wakeup_tree_.insert_at_root(actor.get_transition(times));
-        }
-        break; // Only one actor gets inserted (see pseudocode)
-      }
+    auto const [best_actor, _] = this->strategy_->best_transition(false);
+    if (best_actor == -1)
+      return; // This means that no transitions are enabled at this point
+
+    XBT_DEBUG("Best actor to consider to initialize an empty WuT is %ld", best_actor);
+    this->strategy_->consider_one(best_actor);
+    auto actor_state = get_actors_list().at(best_actor);
+    // For each variant of the transition that is enabled, we want to insert the action into the tree.
+    // This ensures that all variants are searched
+    for (unsigned times = 0; times < actor_state.get_max_considered(); ++times) {
+      wakeup_tree_.insert_at_root(actor_state.get_transition(times));
     }
   }
 }
@@ -93,7 +101,7 @@ void WutState::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
         // For each variant of the transition that is enabled, we want to insert the action into the tree.
         // This ensures that all variants are searched
         for (unsigned times = 0; times < actor.get_max_considered(); ++times) {
-          wakeup_tree_.insert(prior, odpor::PartialExecution{actor.get_transition(times)});
+          wakeup_tree_.insert(odpor::PartialExecution{actor.get_transition(times)});
         }
         break; // Only one actor gets inserted (see pseudocode)
       }
@@ -104,13 +112,15 @@ void WutState::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
 
 void WutState::sprout_tree_from_parent_state()
 {
+  xbt_assert(get_parent_state() != nullptr, "Attempting to construct a wakeup tree for the root state "
+                                            "(or what appears to be, rather for state without a parent defined)");
+
+  auto parent = static_cast<WutState*>(get_parent_state());
 
   XBT_DEBUG("Initializing Wut with parent one:");
-  XBT_DEBUG("\n%s", parent_state_->wakeup_tree_.string_of_whole_tree().c_str());
+  XBT_DEBUG("\n%s", parent->wakeup_tree_.string_of_whole_tree().c_str());
 
-  xbt_assert(parent_state_ != nullptr, "Attempting to construct a wakeup tree for the root state "
-                                       "(or what appears to be, rather for state without a parent defined)");
-  const auto min_process_node = parent_state_->wakeup_tree_.get_min_single_process_node();
+  const auto min_process_node = parent->wakeup_tree_.get_min_single_process_node();
   xbt_assert(min_process_node.has_value(), "Attempting to construct a subtree for a substate from a "
                                            "parent with an empty wakeup tree. This indicates either that ODPOR "
                                            "actor selection in State.cpp is incorrect, or that the code "
@@ -130,49 +140,48 @@ void WutState::sprout_tree_from_parent_state()
   this->wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(min_process_node.value());
 }
 
-void WutState::remove_subtree_using_current_out_transition()
-{
-  if (auto out_transition = get_transition_out(); out_transition != nullptr) {
-    if (const auto min_process_node = wakeup_tree_.get_min_single_process_node(); min_process_node.has_value()) {
-      xbt_assert((out_transition->aid_ == min_process_node.value()->get_actor()) &&
-                     (out_transition->type_ == min_process_node.value()->get_action()->type_),
-                 "We tried to make a subtree from a parent state who claimed to have executed `%s` "
-                 "but whose wakeup tree indicates it should have executed `%s`. This indicates "
-                 "that exploration is not following ODPOR. Are you sure you're choosing actors "
-                 "to schedule from the wakeup tree?",
-                 out_transition->to_string(false).c_str(),
-                 min_process_node.value()->get_action()->to_string(false).c_str());
-    }
-  }
-  wakeup_tree_.remove_min_single_process_subtree();
-}
-
 void WutState::remove_subtree_at_aid(const aid_t proc)
 {
   wakeup_tree_.remove_subtree_at_aid(proc);
 }
 
-odpor::WakeupTree::InsertionResult WutState::insert_into_wakeup_tree(const odpor::PartialExecution& pe,
-                                                                     const odpor::Execution& E)
+odpor::WakeupTree::InsertionResult WutState::insert_into_wakeup_tree(const odpor::PartialExecution& pe)
 {
-  return this->wakeup_tree_.insert(E, pe);
+  return this->wakeup_tree_.insert(pe);
+}
+
+void WutState::remove_subtree_using_children_in_transition(const std::shared_ptr<Transition> transition)
+{
+  xbt_assert(transition != nullptr, "Children state should always have an in_transition");
+  if (const auto min_process_node = wakeup_tree_.get_min_single_process_node(); min_process_node.has_value()) {
+    xbt_assert((transition->aid_ == min_process_node.value()->get_actor()) &&
+                   (transition->type_ == min_process_node.value()->get_action()->type_),
+               "We tried to make a subtree from a parent state who claimed to have executed `%s` "
+               "but whose wakeup tree indicates it should have executed `%s`. This indicates "
+               "that exploration is not following ODPOR. Are you sure you're choosing actors "
+               "to schedule from the wakeup tree?",
+               transition->to_string(false).c_str(), min_process_node.value()->get_action()->to_string(false).c_str());
+  }
+
+  wakeup_tree_.remove_min_single_process_subtree();
 }
 
 void WutState::do_odpor_unwind()
 {
-  XBT_DEBUG("Unwinding ODPOR from state %ld", get_expanded_states());
-  if (auto out_transition = get_transition_out(); out_transition != nullptr) {
-    remove_subtree_using_current_out_transition();
+  XBT_DEBUG("Unwinding ODPOR from state %ld", get_num());
+  xbt_assert(get_parent_state() != nullptr, "ODPOR shouldn't try to unwind from root state");
 
-    // Only when we've exhausted all variants of the transition which
-    // can be chosen from this state do we finally add the actor to the
-    // sleep set. This ensures that the current logic handling sleep sets
-    // works with ODPOR in the way we intend it to work. There is not a
-    // good way to perform transition equality in SimGrid; instead, we
-    // effectively simply check for the presence of an actor in the sleep set.
-    if (not get_actors_list().at(out_transition->aid_).has_more_to_consider())
-      add_sleep_set(std::move(out_transition));
-  }
+  auto parent = static_cast<WutState*>(get_parent_state());
+  parent->remove_subtree_using_children_in_transition(get_transition_in());
+
+  // Only when we've exhausted all variants of the transition which
+  // can be chosen from this state do we finally add the actor to the
+  // sleep set. This ensures that the current logic handling sleep sets
+  // works with ODPOR in the way we intend it to work. There is not a
+  // good way to perform transition equality in SimGrid; instead, we
+  // effectively simply check for the presence of an actor in the sleep set.
+  if (not parent->get_actors_list().at(get_transition_in()->aid_).has_more_to_consider())
+    parent->add_sleep_set((get_transition_in()));
 }
 
 } // namespace simgrid::mc

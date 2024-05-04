@@ -7,6 +7,8 @@
 #define SIMGRID_S4U_MAILBOX_HPP
 
 #include <simgrid/forward.h>
+
+#include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Comm.hpp>
 #include <smpi/forward.hpp>
@@ -101,8 +103,9 @@ public:
    */
   CommPtr put_async(void* data, uint64_t simulated_size_in_bytes);
 
+  XBT_DECLARE_ENUM_CLASS(IprobeKind, SEND, RECV);
   kernel::activity::ActivityImplPtr
-  iprobe(int type, const std::function<bool(void*, void*, kernel::activity::CommImpl*)>& match_fun, void* data);
+  iprobe(IprobeKind kind, const std::function<bool(void*, void*, kernel::activity::CommImpl*)>& match_fun, void* data);
   /** Blocking data transmission.
    *
    * Please note that if you send a pointer to some data, you must ensure that your data remains live during the
@@ -143,14 +146,23 @@ template <typename T> CommPtr Mailbox::get_async(T** data)
 template <typename T> T* Mailbox::get()
 {
   T* res = nullptr;
-  get_async<T>(&res)->wait();
+
+  CommPtr comm = get_async<T>(&res);
+  try {
+    comm->wait();
+  } catch (simgrid::TimeoutException&) {
+    comm->cancel();
+    /* Rethrowing the original exception segfaults in parallel tests */
+    throw TimeoutException(XBT_THROW_POINT, "Timeouted");
+  }
+
   return res;
 }
 
 template <typename T> T* Mailbox::get(double timeout)
 {
   T* res = nullptr;
-  get_async<T>(&res)->wait_for(timeout);
+  get_async<T>(&res)->wait_for_or_cancel(timeout);
   return res;
 }
 } // namespace simgrid::s4u

@@ -66,9 +66,9 @@ int main(int argc, char* argv[])
   sg_host_t ginette = sg_host_by_name("Ginette");
   sg_host_t boivin  = sg_host_by_name("Boivin");
 
-  sg_actor_create("wait", fafard, waiter, 0, NULL);
-  sg_actor_create("monitor", ginette, monitor, 0, NULL);
-  sg_actor_create("cancel", boivin, canceller, 0, NULL);
+  sg_actor_create("wait", fafard, &waiter, 0, NULL);
+  sg_actor_create("monitor", ginette, &monitor, 0, NULL);
+  sg_actor_create("cancel", boivin, &canceller, 0, NULL);
 
   simgrid_run();
 

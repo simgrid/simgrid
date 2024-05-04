@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
   sg_host_t first_host = all_hosts[0];
   xbt_free(all_hosts);
 
-  sg_actor_create("test", first_host, runner, 0, NULL);
+  sg_actor_create("test", first_host, &runner, 0, NULL);
 
   simgrid_run();
   XBT_INFO("Simulation done.");

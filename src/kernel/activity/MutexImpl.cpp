@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/MutexImpl.hpp"
+#include "src/kernel/actor/SynchroObserver.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 
 XBT_LOG_NEW_SUBCATEGORY(ker_synchro, kernel,
                         "Kernel synchronization activities (lock/acquire on a mutex, semaphore or condition)");
@@ -27,16 +29,17 @@ void MutexAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 
   if (mutex_->get_owner() == issuer_) { // I'm the owner
     finish();
-  } else {
-    // Already in the queue
   }
+
+  // Already in the queue
 }
 
 void MutexAcquisitionImpl::finish()
 {
   xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
   auto issuer = unregister_first_simcall();
-  issuer->simcall_answer();
+  if (issuer != nullptr) /* don't answer exiting and dying actors */
+    issuer->simcall_answer();
 }
 
 /* -------- Mutex -------- */
@@ -45,6 +48,8 @@ unsigned MutexImpl::next_id_ = 0;
 
 MutexAcquisitionImplPtr MutexImpl::lock_async(actor::ActorImpl* issuer)
 {
+  XBT_DEBUG("lock async of mutex %p %u", this, id_);
+
   /* If the mutex is recursive */
   if (is_recursive_) {
     if (owner_ == issuer) {
@@ -105,14 +110,18 @@ bool MutexImpl::try_lock(actor::ActorImpl* issuer)
 /** Unlock a mutex for a actor
  *
  * Unlocks the mutex and gives it to a actor waiting for it.
- * If the unlocker is not the owner of the mutex nothing happens.
+ * If the unlocker is not the owner of the mutex, the attempt results in an assertion failure.
  * If there are no actor waiting, it sets the mutex as free.
  */
 void MutexImpl::unlock(actor::ActorImpl* issuer)
 {
   XBT_IN("(%p, %p)", this, issuer);
-  xbt_assert(issuer == owner_, "Cannot release that mutex: you're not the owner. %s is (pid:%ld).",
-             owner_ != nullptr ? owner_->get_cname() : "(nobody)", owner_ != nullptr ? owner_->get_pid() : -1);
+  xbt_assert(
+      issuer == owner_,
+      "Cannot release that mutex: you're not the owner. %s is (pid:%ld). "
+      "According to specification of https://pubs.opengroup.org/onlinepubs/009695399/functions/pthread_mutex_lock.html "
+      "this is an undefined behavior.",
+      owner_ != nullptr ? owner_->get_cname() : "(nobody)", owner_ != nullptr ? owner_->get_pid() : -1);
 
   if (is_recursive_) {
     recursive_depth--;

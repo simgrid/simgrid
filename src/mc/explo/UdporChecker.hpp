@@ -34,12 +34,16 @@ namespace simgrid::mc::udpor {
  * 3. The Anh Pham's Thesis "Exploration efficace de l'espace ..."
  */
 class XBT_PRIVATE UdporChecker : public Exploration {
+
+  static xbt::signal<void(RemoteApp&)> on_log_state_signal;
+
 public:
   explicit UdporChecker(const std::vector<char*>& args);
 
   void run() override;
   RecordTrace get_record_trace() override;
   std::unique_ptr<State> get_current_state() { return std::make_unique<State>(get_remote_app()); }
+  std::vector<std::string> get_textual_trace(int max_elements = -1);
 
 private:
   Unfolding unfolding = Unfolding();
@@ -47,6 +51,11 @@ private:
   // The current sequence of states that the checker has
   // visited in order to reach the current configuration
   std::list<std::unique_ptr<State>> state_stack;
+
+  void log_state() override;
+
+  Configuration current_configuration_;
+  unsigned long backtrack_count_ = 0; // for statistics
 
   /**
    * @brief Explores the unfolding of the concurrent system

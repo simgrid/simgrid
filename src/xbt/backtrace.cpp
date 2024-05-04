@@ -57,14 +57,6 @@ public:
           ss << (frame_name.empty() ? "(debug info not found and log:no_loc activated)" : frame_name) << "\n";
         else
           ss << frame << "\n";
-        // If we are displaying the user side of a simcall, remove the crude details of context switching
-        if (frame_name.find("simgrid::kernel::actor::simcall_answered") != std::string::npos ||
-            frame_name.find("simgrid::kernel::actor::simcall_blocking") != std::string::npos ||
-            frame_name.find("simcall_run_answered") != std::string::npos ||
-            frame_name.find("simcall_run_blocking") != std::string::npos) {
-          frame_count = 0;
-          ss.str(""); // This is how you clear a stringstream in C++. clear() is something else :'(
-        }
         if (frame_name == "main")
           break;
       } else {

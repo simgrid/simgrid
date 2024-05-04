@@ -4,11 +4,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/udpor/History.hpp"
 
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 #include <xbt/string.hpp>
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_event, mc_udpor, "Logging specific to the unfolding events used in UDPOR");
 
 namespace simgrid::mc::udpor {
 
@@ -53,14 +56,25 @@ std::string UnfoldingEvent::to_string() const
   dependencies_string += "[";
   for (const auto* e : immediate_causes) {
     dependencies_string += " ";
-    dependencies_string += e->to_string();
+    dependencies_string += std::to_string(e->id);
     dependencies_string += " and ";
   }
   dependencies_string += "]";
 
-  return xbt::string_printf("Event %lu, Actor %ld: %s (%lu dependencies: %s)", this->id, associated_transition->aid_,
-                            associated_transition->to_string().c_str(), immediate_causes.size(),
-                            dependencies_string.c_str());
+  return xbt::string_printf("Event %lu, Actor %ld: %.60s (%lu dependencies: %.100s)", this->id,
+                            associated_transition->aid_, associated_transition->to_string(true).c_str(),
+                            immediate_causes.size(), dependencies_string.c_str());
+}
+
+std::string UnfoldingEvent::to_dot_string() const
+{
+  if (immediate_causes.empty())
+    return "\"Bot\" -> \"" + std::to_string(id) + "\"\n";
+  std::string output = "";
+  for (const auto* e : immediate_causes) {
+    output += "\"" + std::to_string(e->id) + "\" -> \"" + std::to_string(id) + "\"\n";
+  }
+  return output;
 }
 
 EventSet UnfoldingEvent::get_history() const
@@ -130,6 +144,10 @@ bool UnfoldingEvent::immediately_conflicts_with(const UnfoldingEvent* other) con
   if (not combined_events.is_valid_configuration())
     return false;
   combined_events.insert(other);
+
+  if (Exploration::get_instance() != nullptr)
+    Exploration::get_instance()->dot_output("\"%lu\" -> \"%lu\"[color=\"red\", dir=none, style=\"dashed\"]\n", id,
+                                            other->id);
 
   return true;
 }

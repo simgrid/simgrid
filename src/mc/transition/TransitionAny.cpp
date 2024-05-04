@@ -21,7 +21,7 @@ TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, std::st
   xbt_assert(stream >> size);
   for (int i = 0; i < size; i++) {
     Transition* t = deserialize_transition(issuer, 0, stream);
-    XBT_INFO("TestAny received a transition %s", t->to_string(true).c_str());
+    XBT_DEBUG("TestAny received transition %d/%d %s", (i + 1), size, t->to_string(true).c_str());
     transitions_.push_back(t);
   }
 }
@@ -40,8 +40,10 @@ bool TestAnyTransition::depends(const Transition* other) const
   // Actions executed by the same actor are always dependent
   if (other->aid_ == aid_)
     return true;
-
-  return transitions_[times_considered_]->depends(other);
+  for (auto const& transition : transitions_)
+    if (transition->depends(other))
+      return true;
+  return false;
 }
 bool TestAnyTransition::reversible_race(const Transition* other) const
 {
@@ -57,7 +59,7 @@ WaitAnyTransition::WaitAnyTransition(aid_t issuer, int times_considered, std::st
   xbt_assert(stream >> size);
   for (int i = 0; i < size; i++) {
     Transition* t = deserialize_transition(issuer, 0, stream);
-    XBT_INFO("WaitAny received transition %d/%d %s", (i + 1), size, t->to_string(true).c_str());
+    XBT_DEBUG("WaitAny received transition %d/%d %s", (i + 1), size, t->to_string(true).c_str());
     transitions_.push_back(t);
   }
 }
@@ -74,7 +76,10 @@ bool WaitAnyTransition::depends(const Transition* other) const
   // Actions executed by the same actor are always dependent
   if (other->aid_ == aid_)
     return true;
-  return transitions_[times_considered_]->depends(other);
+  for (auto const& transition : transitions_)
+    if (transition->depends(other))
+      return true;
+  return false;
 }
 bool WaitAnyTransition::reversible_race(const Transition* other) const
 {

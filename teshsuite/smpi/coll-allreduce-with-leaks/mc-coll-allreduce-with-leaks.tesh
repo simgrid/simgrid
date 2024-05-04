@@ -73,4 +73,4 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 211 unique states visited; 50 backtracks (837 transition replays, 1048 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 211 unique states visited; 6 explored traces (837 transition replays, 1048 states visited overall)

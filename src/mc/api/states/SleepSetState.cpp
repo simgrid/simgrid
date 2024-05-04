@@ -13,15 +13,14 @@ namespace simgrid::mc {
 
 SleepSetState::SleepSetState(RemoteApp& remote_app) : State(remote_app) {}
 
-SleepSetState::SleepSetState(RemoteApp& remote_app, std::shared_ptr<SleepSetState> parent_state)
-    : State(remote_app, parent_state)
+SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state) : State(remote_app, parent_state)
 {
   /* Copy the sleep set and eventually removes things from it: */
   /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.
    * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
    * it is not explored*/
-  for (const auto& [aid, transition] : parent_state->get_sleep_set()) {
-    if (not parent_state->get_transition_out()->depends(transition.get())) {
+  for (const auto& [aid, transition] : static_cast<SleepSetState*>(parent_state.get())->get_sleep_set()) {
+    if (not get_transition_in()->depends(transition.get())) {
       sleep_set_.try_emplace(aid, transition);
       if (strategy_->actors_to_run_.count(aid) != 0) {
         strategy_->actors_to_run_.at(aid).mark_done();
@@ -30,7 +29,7 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, std::shared_ptr<SleepSetStat
   }
 }
 
-std::unordered_set<aid_t> SleepSetState::get_sleeping_actors() const
+std::unordered_set<aid_t> SleepSetState::get_sleeping_actors(aid_t) const
 {
   std::unordered_set<aid_t> actors;
   for (const auto& [aid, _] : get_sleep_set()) {

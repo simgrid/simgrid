@@ -44,6 +44,7 @@ private:
 
 class BoostContextFactory : public SwappedContextFactory {
 public:
+  const char* get_name() const override { return "boost"; }
   BoostContext* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
 };
 } // namespace simgrid::kernel::context

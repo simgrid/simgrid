@@ -76,6 +76,8 @@ public:
   std::function<bool(void*, void*, CommImpl*)> match_fun; /* Filter function used by the other side. It is used when
 looking if a given communication matches my needs. For that, myself must match the
 expectations of the other side, too. See  */
+  void* src_match_data_ = nullptr;                        /* User data associated to the communication */
+  void* dst_match_data_ = nullptr;
   std::function<void(CommImpl*, void*, size_t)> copy_data_fun;
 
   actor::ActorImplPtr src_actor_ = nullptr;
@@ -87,9 +89,6 @@ expectations of the other side, too. See  */
   size_t src_buff_size_    = 0;
   size_t* dst_buff_size_   = nullptr;
   void* payload_           = nullptr; // If dst_buff_ is NULL, the default copy callback puts the data here
-
-  void* src_data_ = nullptr; /* User data associated to the communication */
-  void* dst_data_ = nullptr;
 };
 } // namespace simgrid::kernel::activity
 

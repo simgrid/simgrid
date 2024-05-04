@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
   auto pm0 = e.host_by_name("PM0");
   auto t   = sg4::ExecTask::init("exec_A", 100 * pm0->get_speed(), pm0);
   sg4::Task::on_completion_cb(
-      [](const sg4::Task* t) { XBT_INFO("Task %s finished (%d)", t->get_cname(), t->get_count()); });
+      [](const sg4::Task* task) { XBT_INFO("Task %s finished (%d)", task->get_cname(), task->get_count()); });
   sg4::Task::on_start_cb([](const sg4::Task* t) { XBT_INFO("Task %s start", t->get_cname()); });
   sg4::Actor::create("sender", pm0, manager, t);
 

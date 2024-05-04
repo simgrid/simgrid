@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-failure.py "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/comm-failure.py "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (2:Receiver-1@Host2) Receiver posting a receive (mailbox2)...
 > [  0.000000] (3:Receiver-2@Host3) Receiver posting a receive (mailbox3)...
 > [  0.000000] (1:Sender@Host1) Initiating asynchronous send to mailbox2

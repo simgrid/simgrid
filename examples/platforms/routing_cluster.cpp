@@ -54,7 +54,7 @@ static sg4::NetZone* create_cluster(const sg4::NetZone* root, const std::string&
 
 /** @brief Programmatic version of routing_cluster.xml */
 extern "C" void load_platform(const sg4::Engine& e);
-void load_platform(const sg4::Engine& e)
+void load_platform(const sg4::Engine&)
 {
   /**
    *
@@ -76,9 +76,9 @@ void load_platform(const sg4::Engine& e)
   auto* root = sg4::create_full_zone("AS0");
 
   /* create left cluster */
-  auto* left_cluster = create_cluster(root, "1", {"host1", "host2", "host3"}, "host3");
+  const auto* left_cluster = create_cluster(root, "1", {"host1", "host2", "host3"}, "host3");
   /* create right cluster */
-  auto* right_cluster = create_cluster(root, "2", {"host4", "host5", "host6"}, "host6");
+  const auto* right_cluster = create_cluster(root, "2", {"host4", "host5", "host6"}, "host6");
 
   /* connect both clusters */
   const sg4::Link* l = root->create_link("link1-2", "20Gbps")->set_latency("500us");

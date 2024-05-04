@@ -11,6 +11,7 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "xbt/asserts.h"
 #include <boost/intrusive/list.hpp>
+#include <string>
 
 namespace simgrid::kernel::activity {
 
@@ -97,10 +98,25 @@ public:
   {
     if (mutex->refcount_.fetch_sub(1) == 1) {
       xbt_assert(mutex->ongoing_acquisitions_.empty(), "The destroyed mutex still had ongoing acquisitions");
-      xbt_assert(mutex->owner_ == nullptr, "The destroyed mutex is still owned by actor %s",
+      xbt_assert(mutex->owner_ == nullptr, "The destroyed mutex %u is still owned by actor %s", mutex->id_,
                  mutex->owner_->get_cname());
       delete mutex;
     }
+  }
+
+  std::string to_string() const
+  {
+    std::string out = std::string("mutex(id: ") + std::to_string(id_);
+    if (is_recursive_) {
+      out += ", recusive with recdepth=" + std::to_string(recursive_depth);
+    } else {
+      out += ", non-recursive";
+    }
+    out += std::string(", owner: ") + (owner_ ? std::to_string(owner_->get_pid()) : "none");
+    out += ongoing_acquisitions_.empty() ? " + no" : std::to_string(ongoing_acquisitions_.size());
+    out += " queued acquisitions";
+    out += ")";
+    return out;
   }
 
   s4u::Mutex& get_iface() { return piface_; }

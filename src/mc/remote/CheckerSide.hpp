@@ -19,7 +19,7 @@ namespace simgrid::mc {
 
 class CheckerSide {
   event* socket_event_;
-  event* signal_event_;
+  event* signal_event_ = nullptr;
   std::unique_ptr<event_base, decltype(&event_base_free)> base_{nullptr, &event_base_free};
 
   Channel channel_;
@@ -29,7 +29,7 @@ class CheckerSide {
   // child_checker_ is a CheckerSide to our child that can waitpid our grandchild on our behalf
   CheckerSide* child_checker_ = nullptr;
 
-  void setup_events(bool socket_only); // Part of the initialization
+  void setup_events();                // Part of the initialization
   void handle_dead_child(int status); // Launched when the dying child is the PID we follow
   void handle_waitpid();              // Launched when receiving a sigchild
 

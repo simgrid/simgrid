@@ -6,11 +6,10 @@
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/api/strategy/BasicStrategy.hpp"
 #include "src/mc/api/strategy/MaxMatchComm.hpp"
+#include "src/mc/api/strategy/MinContextSwitch.hpp"
 #include "src/mc/api/strategy/MinMatchComm.hpp"
 #include "src/mc/api/strategy/UniformStrategy.hpp"
 #include "src/mc/explo/Exploration.hpp"
-#include "src/mc/mc_config.hpp"
-#include "xbt/random.hpp"
 
 #include <algorithm>
 #include <boost/range/algorithm.hpp>
@@ -21,7 +20,7 @@ namespace simgrid::mc {
 
 long State::expended_states_ = 0;
 
-State::State(RemoteApp& remote_app) : num_(++expended_states_)
+State::State(const RemoteApp& remote_app) : num_(++expended_states_)
 {
   XBT_VERB("Creating a guide for the state");
 
@@ -32,30 +31,21 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
   else if (_sg_mc_strategy == "min_match_comm")
     strategy_ = std::make_shared<MinMatchComm>();
   else if (_sg_mc_strategy == "uniform") {
-    xbt::random::set_mersenne_seed(_sg_mc_random_seed);
     strategy_ = std::make_shared<UniformStrategy>();
+  } else if (_sg_mc_strategy == "min_context_switch") {
+    strategy_ = std::make_shared<MinContextSwitch>();
   } else
     THROW_IMPOSSIBLE;
 
   remote_app.get_actors_status(strategy_->actors_to_run_);
 }
 
-State::State(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
-    : incoming_transition_(parent_state->get_transition_out()), num_(++expended_states_), parent_state_(parent_state)
+State::State(const RemoteApp& remote_app, StatePtr parent_state) : State(remote_app)
 {
-  if (_sg_mc_strategy == "none")
-    strategy_ = std::make_shared<BasicStrategy>();
-  else if (_sg_mc_strategy == "max_match_comm")
-    strategy_ = std::make_shared<MaxMatchComm>();
-  else if (_sg_mc_strategy == "min_match_comm")
-    strategy_ = std::make_shared<MinMatchComm>();
-  else if (_sg_mc_strategy == "uniform")
-    strategy_ = std::make_shared<UniformStrategy>();
-  else
-    THROW_IMPOSSIBLE;
-  strategy_->copy_from(parent_state_->strategy_.get());
+  parent_state_        = parent_state;
+  incoming_transition_ = parent_state->get_transition_out();
 
-  remote_app.get_actors_status(strategy_->actors_to_run_);
+  strategy_->copy_from(parent_state_->strategy_.get());
 }
 
 std::size_t State::count_todo() const
@@ -63,14 +53,14 @@ std::size_t State::count_todo() const
   return boost::range::count_if(this->strategy_->actors_to_run_, [](auto& pair) { return pair.second.is_todo(); });
 }
 
-std::size_t State::count_todo_multiples() const
+bool State::has_more_to_be_explored() const
 {
   size_t count = 0;
   for (auto const& [_, actor] : strategy_->actors_to_run_)
     if (actor.is_todo())
       count += actor.get_times_not_considered();
 
-  return count;
+  return count > 0;
 }
 
 aid_t State::next_transition() const
@@ -174,6 +164,20 @@ std::vector<aid_t> State::get_batrack_minus_done() const
     }
   }
   return actors;
+}
+
+// boost::intrusive_ptr<State> support:
+void intrusive_ptr_add_ref(State* state)
+{
+  state->refcount_.fetch_add(1, std::memory_order_relaxed);
+}
+
+void intrusive_ptr_release(State* state)
+{
+  if (state->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+    std::atomic_thread_fence(std::memory_order_acquire);
+    delete state;
+  }
 }
 
 } // namespace simgrid::mc

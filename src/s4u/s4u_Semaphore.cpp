@@ -10,17 +10,22 @@
 #include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/actor/SynchroObserver.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "xbt/log.h"
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_sema, s4u_synchro, "S4U semaphores");
 
 namespace simgrid::s4u {
 
 SemaphorePtr Semaphore::create(unsigned int initial_capacity)
 {
   auto* sem = new kernel::activity::SemaphoreImpl(initial_capacity);
+  XBT_VERB("Create semaphore %u of capacity %u", sem->get_id(), initial_capacity);
   return SemaphorePtr(&sem->sem(), false);
 }
 
 void Semaphore::acquire()
 {
+  XBT_VERB("Acquire semaphore %u (capacity: %d)", pimpl_->get_id(), get_capacity());
   acquire_timeout(-1);
 }
 
@@ -41,7 +46,7 @@ bool Semaphore::acquire_timeout(double timeout)
   } else { // Do it in one simcall only
     // We don't need no observer on this non-MC path, but simcall_blocking() requires it.
     // Use an invalid type in the hope to get a loud error if it gets used despite our expectations.
-    kernel::actor::SemaphoreAcquisitionObserver observer{issuer, mc::Transition::Type::UNKNOWN, nullptr, timeout};
+    kernel::actor::SemaphoreAcquisitionObserver observer{issuer, mc::Transition::Type::SEM_LOCK_NOMC, nullptr, timeout};
     return kernel::actor::simcall_blocking(
         [this, issuer, timeout] { pimpl_->acquire_async(issuer)->wait_for(issuer, timeout); }, &observer);
   }
@@ -52,6 +57,7 @@ void Semaphore::release()
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::SemaphoreObserver observer{issuer, mc::Transition::Type::SEM_UNLOCK, pimpl_};
 
+  XBT_VERB("Release semaphore %u", pimpl_->get_id());
   kernel::actor::simcall_answered([this] { pimpl_->release(); }, &observer);
 }
 

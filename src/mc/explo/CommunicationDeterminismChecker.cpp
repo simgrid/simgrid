@@ -101,9 +101,22 @@ public:
   std::vector<unsigned> communication_indices_;
 
   static simgrid::xbt::Extension<simgrid::mc::State, StateCommDet> EXTENSION_ID;
-  explicit StateCommDet(CommDetExtension const& checker, RemoteApp const& remote_app)
+  explicit StateCommDet(CommDetExtension& checker, RemoteApp const& remote_app)
   {
     const unsigned long maxpid = remote_app.get_maxpid();
+    xbt_assert(maxpid > 0,
+               "Communication Determinism checker initialized too early (maxpid==0). Please fix this bug in SimGrid.");
+
+    if (checker.incomplete_communications_pattern.empty()) {
+      /* First creation. Initialize our data. */
+      checker.initial_communications_pattern.resize(maxpid);
+      checker.incomplete_communications_pattern.resize(maxpid);
+      for (unsigned long j = 0; j < maxpid; j++) {
+        checker.incomplete_communications_pattern[j].clear();
+        checker.initial_communications_pattern[j].index_comm = 0;
+      }
+    }
+
     for (unsigned long i = 0; i < maxpid; i++) {
       std::vector<simgrid::mc::PatternCommunication> res;
       for (auto const& comm : checker.incomplete_communications_pattern[i])
@@ -310,17 +323,6 @@ void CommDetExtension::handle_comm_pattern(const Transition* transition)
   }
 }
 
-/* FIXME: CommDet probably don't play nicely with stateful exploration
-
-      bool all_communications_are_finished = true;
-      for (size_t current_actor = 1; all_communications_are_finished && current_actor < maxpid; current_actor++) {
-        if (not extension->incomplete_communications_pattern[current_actor].empty()) {
-          XBT_DEBUG("Some communications are not finished, cannot stop the exploration! State not visited.");
-          all_communications_are_finished = false;
-        }
-      }
- */
-
 Exploration* create_communication_determinism_checker(const std::vector<char*>& args, ReductionMode mode)
 {
   CommDetExtension::EXTENSION_ID = simgrid::mc::Exploration::extension_create<CommDetExtension>();
@@ -341,18 +343,8 @@ Exploration* create_communication_determinism_checker(const std::vector<char*>& 
     state->extension_set(new StateCommDet(*extension, remote_app));
   });
 
-  DFSExplorer::on_restore_system_state([extension](State const* state, RemoteApp const& remote_app) {
-    extension->restore_communications_pattern(state, remote_app);
-  });
-
-  DFSExplorer::on_restore_initial_state([extension](RemoteApp const& remote_app) {
-    const unsigned long maxpid = remote_app.get_maxpid();
-    assert(maxpid == extension->incomplete_communications_pattern.size());
-    assert(maxpid == extension->initial_communications_pattern.size());
-    for (unsigned long j = 0; j < maxpid; j++) {
-      extension->incomplete_communications_pattern[j].clear();
-      extension->initial_communications_pattern[j].index_comm = 0;
-    }
+  DFSExplorer::on_restore_state([extension](State const& state, RemoteApp const& remote_app) {
+    extension->restore_communications_pattern(&state, remote_app);
   });
 
   DFSExplorer::on_transition_replay(

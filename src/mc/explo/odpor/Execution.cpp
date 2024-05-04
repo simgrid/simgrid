@@ -12,7 +12,7 @@
 #include <limits>
 #include <vector>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor_execution, mc_dfs, "ODPOR exploration algorithm of the model-checker");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor_execution, mc_reduction, "ODPOR exploration algorithm of the model-checker");
 
 namespace simgrid::mc::odpor {
 
@@ -25,6 +25,16 @@ std::vector<std::string> get_textual_trace(const PartialExecution& w)
   }
   return trace;
 }
+std::string one_string_textual_trace(const PartialExecution& w)
+{
+  std::vector<std::string> trace = get_textual_trace(w);
+  std::string res;
+  for (const auto& one_actor : trace) {
+    res += one_actor;
+    res += "\n";
+  }
+  return res;
+}
 
 Execution::Execution(const PartialExecution& w)
 {
@@ -33,17 +43,22 @@ Execution::Execution(const PartialExecution& w)
 
 void Execution::push_transition(std::shared_ptr<Transition> t)
 {
-  if (t == nullptr) {
-    throw std::invalid_argument("Unexpectedly received `nullptr`");
-  }
+  xbt_assert(t != nullptr, "Unexpectedly received `nullptr`");
+
   ClockVector max_clock_vector;
   for (const Event& e : this->contents_) {
     if (e.get_transition()->depends(t.get())) {
-      max_clock_vector = ClockVector::max(max_clock_vector, e.get_clock_vector());
+      ClockVector::max_emplace_left(max_clock_vector, e.get_clock_vector());
     }
   }
   max_clock_vector[t->aid_] = this->size();
-  contents_.push_back(Event({std::move(t), max_clock_vector}));
+  contents_.push_back(Event({std::move(t), std::move(max_clock_vector)}));
+}
+
+void Execution::remove_last_event()
+{
+  xbt_assert(!contents_.empty(), "Tried to remove an element from an empty Execution");
+  contents_.pop_back();
 }
 
 void Execution::push_partial_execution(const PartialExecution& w)
@@ -56,74 +71,71 @@ void Execution::push_partial_execution(const PartialExecution& w)
 std::vector<std::string> Execution::get_textual_trace() const
 {
   std::vector<std::string> trace;
-  for (const auto& t : this->contents_) {
-    auto a = xbt::string_printf("Actor %ld: %s", t.get_transition()->aid_, t.get_transition()->to_string(true).c_str());
+  for (EventHandle e_i = 0; e_i != this->contents_.size(); e_i++) {
+    auto a = xbt::string_printf("Actor %ld: %s (Is racy = %s)", contents_[e_i].get_transition()->aid_,
+                                contents_[e_i].get_transition()->to_string(true).c_str(),
+                                get_racing_events_of(e_i).empty() ? "Yes" : "No");
+
     trace.emplace_back(std::move(a));
   }
   return trace;
 }
 
-std::unordered_set<Execution::EventHandle> Execution::get_racing_events_of(Execution::EventHandle target) const
+std::list<Execution::EventHandle> Execution::get_racing_events_of(Execution::EventHandle target) const
 {
-  std::unordered_set<Execution::EventHandle> racing_events;
-  // This keep tracks of events that happens-before the target
-  std::unordered_set<Execution::EventHandle> disqualified_events;
+  std::list<Execution::EventHandle> racing_events;
+  std::list<Execution::EventHandle> candidates;
+  for (auto const& [aid, event_handle] : get_event_with_handle(target).get_clock_vector())
+    if (aid != get_actor_with_handle(target))
+      candidates.push_back(event_handle);
 
-  // For each event of the execution
-  for (auto e_i = target; e_i != std::numeric_limits<Execution::EventHandle>::max(); e_i--) {
-    // We need `e_i -->_E target` as a necessary condition
-    if (not happens_before(e_i, target)) {
-      XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` discarded because `%u` --\\-->_E `%u`", target, e_i, e_i, target);
+  candidates.sort(std::greater<EventHandle>());
+  candidates.unique();
+
+  // We need to determine previous action of actor proc(target) in order
+  // to fully determine if there exist a "event in the middle"
+  Execution::EventHandle prev_on_actor;
+  for (prev_on_actor = target - 1; prev_on_actor != std::numeric_limits<Execution::EventHandle>::max(); prev_on_actor--)
+    if (get_actor_with_handle(prev_on_actor) == get_actor_with_handle(target))
+      break;
+
+  bool disqualified;
+  // For each event in the vector clock that is not on the event itself
+  for (auto e_i : candidates) {
+    if (prev_on_actor != std::numeric_limits<Execution::EventHandle>::max() and happens_before(e_i, prev_on_actor))
       continue;
-    }
 
-    // Further, `proc(e_i) != proc(target)`
-    if (get_actor_with_handle(e_i) == get_actor_with_handle(target)) {
-      disqualified_events.insert(e_i);
-      XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` disqualified because proc(`%u`)=proc(`%u`)", target, e_i, e_i,
-                target);
-      continue;
-    }
+    disqualified = false;
+    // If there exist an event e_j such that e_i --> e_j --> target
+    // then e_j was found in the candidates already and we must drop e_i
+    for (auto e_j : racing_events) {
 
-    // There could an event that "happens-between" the two events which would discount `e_i` as a race
-    for (auto e_j = e_i; e_j < target; e_j++) {
-      // If both:
-      // 1. e_i --->_E e_j; and
-      // 2. disqualified_events.count(e_j) > 0
-      // then e_i --->_E target indirectly (either through
-      // e_j directly, or transitively through e_j)
-      if (disqualified_events.count(e_j) > 0 && happens_before(e_i, e_j)) {
-        XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` disqualified because `%u` happens-between `%u`-->`%u`-->`%u`)",
-                  target, e_i, e_j, e_i, e_j, target);
-        disqualified_events.insert(e_i);
+      if (happens_before(e_i, e_j)) {
+        disqualified = true;
         break;
       }
     }
+    if (disqualified)
+      continue;
 
-    // If `e_i` wasn't disqualified in the last round,
-    // it's in a race with `target`. After marking it
-    // as such, we ensure no other event `e` can happen-before
-    // it (since this would transitively make it the event
-    // which "happens-between" `target` and `e`)
-    if (disqualified_events.count(e_i) == 0) {
-      XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` : `%u` is a valid racing event", target, e_i);
-      racing_events.insert(e_i);
-      disqualified_events.insert(e_i);
-    }
+    XBT_DEBUG("ODPOR_RACING_EVENTS with `%u` (%s) : `%u` (%s) is a valid racing event", target,
+              get_transition_for_handle(target)->to_string().c_str(), e_i,
+              get_transition_for_handle(e_i)->to_string().c_str());
+    racing_events.push_back(e_i);
   }
 
   return racing_events;
 }
 
-std::unordered_set<Execution::EventHandle> Execution::get_reversible_races_of(EventHandle handle) const
+std::list<Execution::EventHandle> Execution::get_reversible_races_of(EventHandle handle) const
 {
-  std::unordered_set<EventHandle> reversible_races;
+  std::list<EventHandle> reversible_races;
   const auto* this_transition = get_transition_for_handle(handle);
   for (EventHandle race : get_racing_events_of(handle)) {
     const auto* other_transition = get_transition_for_handle(race);
 
     if (this_transition->reversible_race(other_transition)) {
-      reversible_races.insert(race);
+      reversible_races.push_back(race);
     }
   }
   return reversible_races;
@@ -228,7 +240,8 @@ Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordere
 }
 
 std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle e, EventHandle e_prime,
-                                                                    const SleepSetState& state_at_e) const
+                                                                    const SleepSetState& state_at_e,
+                                                                    aid_t actor_after_e) const
 {
   // `e` is assumed to be in a reversible race with `e_prime`.
   // If `e > e_prime`, then `e` occurs-after `e_prime` which means
@@ -244,190 +257,104 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   }
 
   PartialExecution v;
-  std::vector<Execution::EventHandle> v_handles;
-  std::unordered_set<aid_t> WI_E_prime_v;
-  std::unordered_set<aid_t> disqualified_actors;
-  Execution E_prime_v                           = get_prefix_before(e);
-  const std::unordered_set<aid_t> sleep_E_prime = state_at_e.get_sleeping_actors();
+  std::unordered_set<aid_t> disqualified_actors = {get_actor_with_handle(e)};
+  const std::unordered_set<aid_t> sleep_E_prime = state_at_e.get_sleeping_actors(actor_after_e);
 
-  // Note `e + 1` here: `notdep(e, E)` is defined as the
-  // set of events that *occur-after* but don't *happen-after* `e`
-  //
-  // SUBTLE NOTE: ODPOR requires us to compute `notdep(e, E)` EVEN THOUGH
-  // the race is between `e` and `e'`; that is, events occurring in `E`
-  // that "occur-after" `e'` may end up in the partial execution `v`.
-  //
-  // Observe that `notdep(e, E).proc(e')` will contain all transitions
-  // that don't happen-after `e` in the order they appear FOLLOWED BY
-  // THE **TRANSITION** ASSOCIATED WITH **`e'`**!!
-  //
-  // SUBTLE NOTE: Observe that any event that "happens-after" `e'`
-  // must necessarily "happen-after" `e` as well, since `e` and
-  // `e'` are presumed to be in a reversible race. Hence, we know that
-  // all events `e_star` such that `e` "happens-before" `e_star` cannot affect
-  // the enabledness of `e'`; furthermore, `e'` cannot affect the enabledness
-  // of any event independent with `e` that "occurs-after" `e'`
+  // For each event after e, find the first dependent on each actor. From this point,
+  // all other event on those actors "happens-after" and are then disqualified from
+  // the construction of v.
   for (auto e_star = e + 1; e_star <= get_latest_event_handle().value(); ++e_star) {
-    // Any event `e*` which occurs after `e` but which does not
-    // happen after `e` is a member of `v`. In addition to marking
-    // the event in `v`, we also "simulate" running the action `v` from E'
-    // to be able to compute `--->[E'.v]`
-    if (not happens_before(e, e_star)) {
-      xbt_assert(e_star != e_prime,
-                 "Invariant Violation: We claimed events %u and %u were in a reversible race, yet we also "
-                 "claim that they do not happen-before one another. This is impossible: "
-                 "are you sure that the two events are in a reversible race?",
-                 e, e_prime);
-      E_prime_v.push_transition(get_event_with_handle(e_star).get_transition());
-      v.push_back(get_event_with_handle(e_star).get_transition());
 
-      XBT_DEBUG("Added Event `%u` (%ld:%s) to the construction of v", e_star, get_actor_with_handle(e_star),
-                get_event_with_handle(e_star).get_transition()->to_string().c_str());
+    if (disqualified_actors.count(get_actor_with_handle(e_star)) > 0)
+      continue;
 
-      const EventHandle e_star_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
-
-      // When checking whether any event in `dom_[E'](v)` happens before
-      // `next_[E'](q)` below for thread `q`, we must consider that the
-      // events relative to `E` (this execution) are different than those
-      // relative to `E'.v`. Thus e.g. event `7` in `E` may be event `4`
-      // in `E'.v`. Since we are asking about "happens-before"
-      // `-->_[E'.v]` about `E'.v`, we must build `v` relative to `E'`
-      v_handles.push_back(e_star_in_E_prime_v);
-
-      // Note that we add `q` to v regardless of whether `q` itself has been
-      // disqualified since `q` may itself disqualify other actors
-      // (i.e. even if `q` is disqualified from being an initial, it
-      // is still contained in the sequence `v`)
-      const aid_t q = E_prime_v.get_actor_with_handle(e_star_in_E_prime_v);
-      if (disqualified_actors.count(q) > 0) { // Did we already note that `q` is not an initial?
-        continue;
-      }
-      const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& handle) {
-        return E_prime_v.happens_before(handle, e_star_in_E_prime_v);
-      });
-      if (is_initial) {
-        // If the sleep set already contains `q`, we're done:
-        // we've found an initial contained in the sleep set and
-        // so the intersection is non-empty
-        if (sleep_E_prime.count(q) > 0) {
-          return std::nullopt;
-        } else {
-          WI_E_prime_v.insert(q);
-        }
-      } else {
-        // If `q` is disqualified as a candidate, clearly
-        // no event occurring after `e_prime` in `E` executed
-        // by actor `q` will qualify since any (valid) happens-before
-        // relation orders actions taken by each actor
-        disqualified_actors.insert(q);
-      }
-    } else {
-      XBT_DEBUG("Event `%u` (%ld:%s) dismissed from the construction of v", e_star, get_actor_with_handle(e_star),
-                get_event_with_handle(e_star).get_transition()->to_string().c_str());
+    if (happens_before(e, e_star)) {
+      disqualified_actors.emplace(get_actor_with_handle(e_star));
+      continue;
     }
+
+    xbt_assert(e_star != e_prime,
+               "Invariant Violation: We claimed events %u and %u were in a reversible race, yet we also "
+               "claim that they do not happen-before one another. This is impossible: "
+               "are you sure that the two events are in a reversible race?",
+               e, e_prime);
+
+    v.push_back(get_event_with_handle(e_star).get_transition());
   }
 
-  // Now we add `e_prime := <q, i>` to `E'.v` and repeat the same work
-  // It's possible `proc(e_prime)` is an initial
-  //
-  // Note the form of `v` in the pseudocode:
-  //  `v := notdep(e, E).e'^
-  E_prime_v.push_transition(get_event_with_handle(e_prime).get_transition());
   v.push_back(get_event_with_handle(e_prime).get_transition());
 
-  const EventHandle e_prime_in_E_prime_v = E_prime_v.get_latest_event_handle().value();
-  v_handles.push_back(e_prime_in_E_prime_v);
+  XBT_DEBUG("Potential v := \n%s", one_string_textual_trace(v).c_str());
 
-  const bool is_initial = std::none_of(v_handles.begin(), v_handles.end(), [&](const auto& handle) {
-    return E_prime_v.happens_before(handle, e_prime_in_E_prime_v);
-  });
-  if (is_initial) {
-    if (const aid_t q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v); sleep_E_prime.count(q) > 0) {
-      return std::nullopt;
-    } else {
-      WI_E_prime_v.insert(q);
+  for (auto transition_it = v.begin(); transition_it != v.end(); ++transition_it) {
+    const bool is_initial = std::none_of(v.begin(), transition_it, [&](const auto& transition_it_prime) {
+      return (*transition_it)->depends(transition_it_prime.get());
+    });
+    if (is_initial) {
+      // If the sleep set already contains `q`, we're done:
+      // we've found an initial contained in the sleep set and
+      // so the intersection is non-empty
+      if (sleep_E_prime.count((*transition_it)->aid_) > 0) {
+        XBT_DEBUG("Discarding this potential because an initial actor is already in the sleep set");
+        return std::nullopt;
+      }
     }
   }
 
-  const Execution pre_E_e    = get_prefix_before(e);
-  const auto sleeping_actors = state_at_e.get_sleeping_actors();
-
-  // Check if any enabled actor that is independent with
-  // this execution after `v` is contained in the sleep set
   for (const auto& [aid, astate] : state_at_e.get_actors_list()) {
-    const bool is_in_WI_E =
-        astate.is_enabled() and pre_E_e.is_independent_with_execution_of(v, astate.get_transition());
-    const bool is_in_sleep_set = sleeping_actors.count(aid) > 0;
+    const bool is_in_WI_E      = astate.is_enabled() and is_independent_with_execution_of(v, astate.get_transition());
+    const bool is_in_sleep_set = sleep_E_prime.count(aid) > 0;
 
     // `action(aid)` is in `WI_[E](v)` but also is contained in the sleep set.
     // This implies that the intersection between the two is non-empty
-    if (is_in_WI_E && is_in_sleep_set)
+    if (is_in_WI_E && is_in_sleep_set) {
+      XBT_DEBUG("Discarding this potential because a weak-initial actor is already in the sleep set");
       return std::nullopt;
+    }
   }
 
   return v;
 }
 
-bool Execution::is_initial_after_execution_of(const PartialExecution& w, aid_t p) const
+bool Execution::is_initial_after_execution_of(const PartialExecution& w, aid_t p)
 {
-  auto E_w = *this;
-  std::vector<EventHandle> w_handles;
-  for (const auto& w_i : w) {
-    // Take one step in the direction of `w`
-    E_w.push_transition(w_i);
 
-    // If that step happened to be executed by `p`,
-    // great: we know that `p` is contained in `w`.
-    // We now need to verify that it doens't "happen-after"
-    // any events which occur before it
-    if (w_i->aid_ == p) {
-      const auto p_handle = E_w.get_latest_event_handle().value();
-      return std::none_of(w_handles.begin(), w_handles.end(),
-                          [&](const auto handle) { return E_w.happens_before(handle, p_handle); });
-    } else {
-      w_handles.push_back(E_w.get_latest_event_handle().value());
+  for (auto w_i = w.begin(); w_i != w.end(); w_i++) {
+    if ((*w_i)->aid_ != p)
+      continue;
+
+    for (auto w_j = w.begin(); w_j != w_i; w_j++) {
+      if ((*w_j)->depends((*w_i).get()))
+        return false;
     }
+
+    return true;
   }
+
   return false;
 }
 
-bool Execution::is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const
+bool Execution::is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p)
 {
-  // INVARIANT: Here, we assume that for any process `p_i` of `w`,
-  // the events of this execution followed by the execution of all
-  // actors occurring before `p_i` in `v` (`p_j`, `0 <= j < i`)
-  // are sufficient to enable `p_i`. This is fortunately the case
-  // with what ODPOR requires of us, viz. to ask the question about
-  // `v := notdep(e, E)` for some execution `E` and event `e` of
-  // that execution.
-  auto E_p_w = *this;
-  E_p_w.push_transition(std::move(next_E_p));
-  const auto p_handle = E_p_w.get_latest_event_handle().value();
-
-  // As we add events to `w`, verify that none
-  // of them "happen-after" the event associated with
-  // the step `next_E_p` (viz. p_handle)
-  for (const auto& w_i : w) {
-    E_p_w.push_transition(w_i);
-    const auto w_i_handle = E_p_w.get_latest_event_handle().value();
-    if (E_p_w.happens_before(p_handle, w_i_handle)) {
+  for (const auto& transition : w)
+    if (transition->depends(next_E_p.get()))
       return false;
-    }
-  }
+
   return true;
 }
 
 std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,
-                                                                                  const PartialExecution& w) const
+                                                                                  const PartialExecution& w)
 {
   // See section 4 of Abdulla. et al.'s 2017 ODPOR paper for details (specifically
   // where the [iterative] computation of `v ~_[E] w` is described)
-  auto E_v   = *this;
   auto w_now = w;
-
+  XBT_DEBUG("Computing 'v~_[E]w' with v:=\n%s w:=\n%s", one_string_textual_trace(v).c_str(),
+            one_string_textual_trace(w).c_str());
   for (const auto& next_E_p : v) {
     // Is `p in `I_[E](w)`?
-    if (const aid_t p = next_E_p->aid_; E_v.is_initial_after_execution_of(w_now, p)) {
+
+    if (const aid_t p = next_E_p->aid_; is_initial_after_execution_of(w_now, p)) {
       // Remove `p` from w and continue
 
       // INVARIANT: If `p` occurs in `w`, it had better refer to the same
@@ -451,7 +378,7 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
       w_now.erase(action_by_p_in_w);
     }
     // Is `E ⊢ p ◇ w`?
-    else if (E_v.is_independent_with_execution_of(w_now, next_E_p)) {
+    else if (is_independent_with_execution_of(w_now, next_E_p)) {
       // INVARIANT: Note that it is impossible for `p` to be
       // excluded from the set `I_[E](w)` BUT ALSO be contained in
       // `w` itself if `E ⊢ p ◇ w` (intuitively, the fact that `E ⊢ p ◇ w`
@@ -469,9 +396,6 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
       // Neither of the two above conditions hold, so the relation fails
       return std::nullopt;
     }
-
-    // Move one step forward in the direction of `v` and repeat
-    E_v.push_transition(next_E_p);
   }
   return std::optional<PartialExecution>{std::move(w_now)};
 }

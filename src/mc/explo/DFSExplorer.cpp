@@ -12,6 +12,7 @@
 #include "src/mc/explo/reduction/SDPOR.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/remote/mc_protocol.h"
@@ -36,13 +37,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dfs, mc, "DFS exploration algorithm of the mo
 namespace simgrid::mc {
 
 xbt::signal<void(RemoteApp&)> DFSExplorer::on_exploration_start_signal;
-xbt::signal<void(RemoteApp&)> DFSExplorer::on_backtracking_signal;
 
 xbt::signal<void(State*, RemoteApp&)> DFSExplorer::on_state_creation_signal;
 
-xbt::signal<void(State*, RemoteApp&)> DFSExplorer::on_restore_system_state_signal;
-xbt::signal<void(RemoteApp&)> DFSExplorer::on_restore_initial_state_signal;
-xbt::signal<void(Transition*, RemoteApp&)> DFSExplorer::on_transition_replay_signal;
 xbt::signal<void(Transition*, RemoteApp&)> DFSExplorer::on_transition_execute_signal;
 
 xbt::signal<void(RemoteApp&)> DFSExplorer::on_log_state_signal;
@@ -51,9 +48,9 @@ RecordTrace DFSExplorer::get_record_trace() // override
 {
   RecordTrace res;
 
-  if (const auto trans = stack_.back()->get_transition_out(); trans != nullptr)
+  if (const auto trans = stack_->back()->get_transition_out(); trans != nullptr)
     res.push_back(trans.get());
-  for (const auto* state = stack_.back().get(); state != nullptr; state = state->get_parent_state().get())
+  for (const auto* state = stack_->back().get(); state != nullptr; state = state->get_parent_state())
     if (state->get_transition_in() != nullptr)
       res.push_front(state->get_transition_in().get());
 
@@ -63,36 +60,21 @@ RecordTrace DFSExplorer::get_record_trace() // override
 void DFSExplorer::log_state() // override
 {
   on_log_state_signal(get_remote_app());
-  XBT_INFO("DFS exploration ended. %ld unique states visited; %lu backtracks (%lu transition replays, %lu states "
+  XBT_INFO("DFS exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, %lu states "
            "visited overall)",
-           State::get_expanded_states(), backtrack_count_, Transition::get_replayed_transitions(),
+           State::get_expanded_states(), explored_traces_, Transition::get_replayed_transitions(),
            visited_states_count_);
   Exploration::log_state();
 }
 
-void DFSExplorer::simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, stack_t state_stack)
+void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor, stack_t& state_stack)
 {
 
   // This means the exploration asked us to visit a parallel history
-  // So firt, go to their in the application
+  // So first, go to there in the application
   if (not is_execution_descending) {
-    backtrack_count_++;
-    on_backtracking_signal(get_remote_app());
 
-    std::deque<Transition*> replay_recipe;
-    for (auto* s = state_stack.back().get(); s != nullptr; s = s->get_parent_state().get()) {
-      if (s->get_transition_in() != nullptr) // The root has no transition_in
-        replay_recipe.push_front(s->get_transition_in().get());
-    }
-
-    get_remote_app().restore_initial_state();
-    on_restore_initial_state_signal(get_remote_app());
-
-    for (auto& transition : replay_recipe) {
-      transition->replay(get_remote_app());
-      on_transition_replay_signal(transition, get_remote_app());
-      visited_states_count_++;
-    }
+    backtrack_to_state(state_stack.back().get());
     is_execution_descending = true;
   }
 
@@ -100,8 +82,8 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, 
 
   // If we use a state containing a sleep state, display it during debug
   if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose)) {
-    std::shared_ptr<SleepSetState> sleep_state = std::static_pointer_cast<SleepSetState>(state);
-    if (sleep_state != nullptr) {
+    auto sleep_state = dynamic_cast<SleepSetState*>(state.get());
+    if (sleep_state != nullptr and not sleep_state->get_sleep_set().empty()) {
       XBT_VERB("Sleep set actually containing:");
 
       for (const auto& [aid, transition] : sleep_state->get_sleep_set())
@@ -109,40 +91,58 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution S, aid_t next_actor, 
     }
   }
 
+  XBT_DEBUG("Going to execute actor %ld", next_actor);
   auto transition_to_be_executed = state->get_actors_list().at(next_actor).get_transition();
 
   auto executed_transition = state->execute_next(next_actor, get_remote_app());
-  on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
+  on_transition_execute_signal(executed_transition.get(), get_remote_app());
 
-  XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition_out()->aid_,
-           state->get_transition_out()->to_string().c_str(), state_stack.size(), state->get_num(), state->count_todo());
+  XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", executed_transition->aid_,
+           executed_transition->to_string().c_str(), state_stack.size(), state->get_num(), state->count_todo());
 
   auto next_state = reduction_algo_->state_create(get_remote_app(), state);
+  if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
+    next_state->set_state_factory(get_remote_app().clone_checker_side());
+  }
   on_state_creation_signal(next_state.get(), get_remote_app());
 
   state_stack.emplace_back(std::move(next_state));
-  stack_ = state_stack;
+  stack_ = &state_stack;
 
   S.push_transition(executed_transition);
 
-  explore(S, state_stack);
+  // Backtrack if we reached the maximum depth
+  if (state_stack.size() > (std::size_t)_sg_mc_max_depth) {
+    if (reduction_mode_ == ReductionMode::dpor) {
+      XBT_ERROR("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\",
+                _sg_mc_max_depth.get());
+      XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
+    } else if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
+      XBT_ERROR("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
+                "when stopping at a fixed depth /!\\",
+                _sg_mc_max_depth.get());
+      XBT_ERROR("/!\\ If bad things happen, disable the reduction with --cfg=model-check/reduction:none /!\\");
+    } else {
+      XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+    }
+  } else {
+    explore(S, state_stack);
+  }
 
   XBT_DEBUG("Backtracking from the exploration by one step");
+
+  reduction_algo_->on_backtrack(state_stack.back().get());
 
   is_execution_descending = false;
 
   state_stack.pop_back();
-  stack_ = state_stack;
+  stack_ = &state_stack;
 
-  reduction_algo_->on_backtrack(state_stack.back().get());
-
-  S = S.get_prefix_before(S.size() - 1);
-  XBT_DEBUG("End of explore_wrapper at depth %lu", S.size());
+  S.remove_last_event();
 }
 
-void DFSExplorer::explore(odpor::Execution S, stack_t state_stack)
+void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 {
-
   visited_states_count_++;
 
   State* s = state_stack.back().get();
@@ -158,14 +158,16 @@ void DFSExplorer::explore(odpor::Execution S, stack_t state_stack)
 
   XBT_DEBUG("%lu actors remain, but none of them need to be interleaved (depth %zu).", s->get_actor_count(),
             state_stack.size() + 1);
-  get_remote_app().check_deadlock();
+  Exploration::check_deadlock();
+
   if (s->get_actor_count() == 0) {
+    explored_traces_++;
     get_remote_app().finalize_app();
-    XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
-             s->get_num(), state_stack.size());
+    XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
+    XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", s->get_num(), state_stack.size(), backtrack_count_ + 1);
   }
 
-  XBT_DEBUG("End of call Explore at depth %lu", S.size());
+  XBT_DEBUG("End of Exploration at depth %lu", S.size() + 1);
 }
 
 void DFSExplorer::run()
@@ -173,10 +175,11 @@ void DFSExplorer::run()
   XBT_INFO("Start a DFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
 
   auto initial_state = reduction_algo_->state_create(get_remote_app());
+  on_state_creation_signal(initial_state.get(), get_remote_app());
 
   XBT_DEBUG("**************************************************");
 
-  stack_t state_stack = std::deque<std::shared_ptr<State>>();
+  stack_t state_stack = std::deque<StatePtr>();
   state_stack.emplace_back(std::move(initial_state));
 
   odpor::Execution empty_seq = odpor::Execution();

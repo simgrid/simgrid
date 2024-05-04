@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/reduction/ODPOR.hpp"
 #include "src/mc/api/states/WutState.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "xbt/log.h"
 
 #include "src/mc/api/states/SleepSetState.hpp"
@@ -14,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor, mc_reduction, "Logging specific to the
 
 namespace simgrid::mc {
 
-void ODPOR::races_computation(odpor::Execution E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states)
+void ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
 {
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
@@ -32,18 +33,21 @@ void ODPOR::races_computation(odpor::Execution E, stack_t* S, std::vector<std::s
    * ("eventually looks like C", viz. the `~_E` relation)
    */
   for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
+    XBT_VERB("Computing reversible races of Event `%u`", e_prime);
     for (const auto e : E.get_reversible_races_of(e_prime)) {
-
+      XBT_DEBUG("... racing event `%u``", e);
       WutState* prev_state = static_cast<WutState*>((*S)[e].get());
       xbt_assert(prev_state != nullptr, "ODPOR should use WutState. Fix me");
 
-      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value())
-        prev_state->insert_into_wakeup_tree(v.value(), E.get_prefix_before(e));
+      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value()) {
+        prev_state->insert_into_wakeup_tree(v.value());
+        XBT_DEBUG("... wut after insertion: %s", prev_state->string_of_wut().c_str());
+      }
     }
   }
 }
 
-aid_t ODPOR::next_to_explore(odpor::Execution E, stack_t* S)
+aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 {
   auto s = static_cast<WutState*>(S->back().get());
   xbt_assert(s != nullptr, "ODPOR should use WutState. Fix me");
@@ -61,21 +65,22 @@ aid_t ODPOR::next_to_explore(odpor::Execution E, stack_t* S)
   }
   return next;
 }
-std::shared_ptr<State> ODPOR::state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state)
+StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
 {
   if (parent_state == nullptr)
-    return std::make_shared<WutState>(remote_app);
-  else {
-    std::shared_ptr<WutState> wut_state = std::static_pointer_cast<WutState>(parent_state);
-    xbt_assert(wut_state != nullptr, "Wrong kind of state for this reduction. This shouldn't happen, fix me");
-    return std::make_shared<WutState>(remote_app, wut_state);
-  }
+    return StatePtr(new WutState(remote_app), true);
+  else
+    return StatePtr(new WutState(remote_app, parent_state), true);
 }
 
 void ODPOR::on_backtrack(State* s)
 {
+  StatePtr parent = s->get_parent_state();
+  if (parent == nullptr) // this is the root
+    return;              // Backtracking from the root means we end exploration, nothing to do
+
   auto wut_state = static_cast<WutState*>(s);
-  xbt_assert(wut_state != nullptr, "ODPOR should use SleepSetState. Fix me");
+  xbt_assert(wut_state != nullptr, "ODPOR should use WutState. Fix me");
   wut_state->do_odpor_unwind();
 }
 

@@ -1,0 +1,30 @@
+#!/usr/bin/env tesh
+
+! expect return 1
+$ $VALGRIND_NO_TRACE_CHILDREN ../../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../../bin/simgrid-mc" --cfg=model-check/reduction:odpor -platform ${srcdir:=.}/../../platforms/cluster_backbone.xml -np 3 ./smpi_mc-waitany-bugged
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/privatization' to 'ON'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/np' to '3'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/hostfile' to ''
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'precision/timing' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/tmpdir' to '/tmp'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/privatization' to 'ON'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/np' to '3'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/hostfile' to ''
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'precision/timing' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/tmpdir' to '/tmp'
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
+> [0.000000] [mc_explo/INFO] **************************
+> [0.000000] [mc_explo/INFO] *** PROPERTY NOT VALID ***
+> [0.000000] [mc_explo/INFO] **************************
+> [0.000000] [mc_explo/INFO] Counter-example execution trace:
+> [0.000000] [mc_explo/INFO]   Actor 1 in :0:() ==> simcall: iRecv(mbox=3)
+> [0.000000] [mc_explo/INFO]   Actor 1 in :0:() ==> simcall: iRecv(mbox=3)
+> [0.000000] [mc_explo/INFO]   Actor 3 in :0:() ==> simcall: iSend(mbox=3)
+> [0.000000] [mc_explo/INFO]   Actor 1 in simcall WaitAny{ WaitComm(from 3 to 1, mbox=3, no timeout)WaitComm(from -1 to 1, mbox=3, no timeout) } (times considered = 0)
+> [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;3;1'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 8 unique states visited; 1 backtracks (2 transition replays, 10 states visited overall)
+! output display

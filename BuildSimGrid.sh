@@ -35,6 +35,6 @@ fi
   echo "Target: ${target}"
   echo "Cores to build: ${ncores}"
   echo "Cores to test: ${halfcores}"
-  (nice ${builder} -j${ncores} ${target} tests || ${builder} ${target} tests) && nice ctest -j${halfcores} --output-on-failure ; date
+  (nice ${builder} -j${ncores} ${target} tests || ${builder} -j1 ${target} tests) && nice ctest -j${halfcores} --output-on-failure ; date
 ) 2>&1 | tee BuildSimGrid.sh.log
 

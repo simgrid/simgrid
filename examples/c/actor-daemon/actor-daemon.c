@@ -38,8 +38,8 @@ int main(int argc, char* argv[])
   xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
   simgrid_load_platform(argv[1]);
 
-  sg_actor_create("worker", sg_host_by_name("Boivin"), worker, 0, NULL);
-  sg_actor_create("daemon", sg_host_by_name("Tremblay"), my_daemon, 0, NULL);
+  sg_actor_create("worker", sg_host_by_name("Boivin"), &worker, 0, NULL);
+  sg_actor_create("daemon", sg_host_by_name("Tremblay"), &my_daemon, 0, NULL);
 
   simgrid_run();
 }

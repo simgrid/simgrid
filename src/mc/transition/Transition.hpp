@@ -32,23 +32,26 @@ class Transition {
 
 public:
   /* Ordering is important here. depends() implementations only consider subsequent types in this ordering */
-  XBT_DECLARE_ENUM_CLASS(Type,
-                         /* First because indep with anybody including themselves */
-                         RANDOM, ACTOR_JOIN, ACTOR_SLEEP,
-                         /* high priority because indep with almost everybody */
-                         OBJECT_ACCESS,
-                         /* high priority because they can rewrite themselves to *_WAIT */
-                         TESTANY, WAITANY,
-                         /* BARRIER transitions sorted alphabetically */
-                         BARRIER_ASYNC_LOCK, BARRIER_WAIT,
-                         /* Alphabetical ordering of COMM_* */
-                         COMM_ASYNC_RECV, COMM_ASYNC_SEND, COMM_TEST, COMM_WAIT,
-                         /* alphabetical */
-                         MUTEX_ASYNC_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT,
-                         /* alphabetical ordering of SEM transitions */
-                         SEM_ASYNC_LOCK, SEM_UNLOCK, SEM_WAIT,
-                         /* UNKNOWN must be last */
-                         UNKNOWN);
+  XBT_DECLARE_ENUM_CLASS(
+      Type,
+      /* First because indep with anybody including themselves */
+      RANDOM, ACTOR_JOIN, ACTOR_SLEEP,
+      /* high priority because indep with almost everybody */
+      OBJECT_ACCESS,
+      /* high priority because they can rewrite themselves to *_WAIT */
+      TESTANY, WAITANY,
+      /* BARRIER transitions sorted alphabetically */
+      BARRIER_ASYNC_LOCK, BARRIER_WAIT,
+      /* Alphabetical ordering of COMM_* */
+      COMM_ASYNC_RECV, COMM_ASYNC_SEND, COMM_IPROBE, COMM_TEST, COMM_WAIT,
+      /* alphabetical, but the MUTEX_LOCK_NOMC that is not used in MC mode and thus only used for debug msg */
+      MUTEX_ASYNC_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT, MUTEX_LOCK_NOMC,
+      /* alphabetical ordering of SEM transitions */
+      SEM_ASYNC_LOCK, SEM_UNLOCK, SEM_WAIT, SEM_LOCK_NOMC,
+      /* alphabetical ordering of condition variable transitions */
+      CONDVAR_ASYNC_LOCK, CONDVAR_BROADCAST, CONDVAR_SIGNAL, CONDVAR_WAIT, CONDVAR_NOMC,
+      /* UNKNOWN must be last */
+      UNKNOWN);
   Type type_ = Type::UNKNOWN;
 
   aid_t aid_ = 0;

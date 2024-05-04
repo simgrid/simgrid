@@ -9,6 +9,7 @@
 #include "src/mc/explo/udpor/Unfolding.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/explo/udpor/maximal_subsets_iterator.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/xbt/utils/iter/variable_for_loop.hpp"
 #include "xbt/asserts.h"
 
@@ -156,7 +157,7 @@ EventSet Configuration::get_minimally_reproducible_events() const
 std::optional<Configuration> Configuration::compute_alternative_to(const EventSet& D, const Unfolding& U) const
 {
   // A full alternative can be computed by checking against everything in D
-  return compute_k_partial_alternative_to(D, U, D.size());
+  return compute_k_partial_alternative_to(D, U, _sg_mc_k_alternatives == -1 ? D.size() : _sg_mc_k_alternatives);
 }
 
 std::optional<Configuration> Configuration::compute_k_partial_alternative_to(const EventSet& D, const Unfolding& U,
@@ -188,7 +189,7 @@ std::optional<Configuration> Configuration::compute_k_partial_alternative_to(con
   // A later performance improvement would be to incorporate the work of Nguyen et al.
   // into SimGrid which associated additonal data structures with each unfolding event.
   // Since that is a rather complicated addition, we defer it to a later time...
-  Comb comb(k);
+  Comb comb(k_alt_size);
 
   for (const auto* e : U) {
     for (size_t i = 0; i < k_alt_size; i++) {

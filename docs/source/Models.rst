@@ -103,13 +103,15 @@ described in the next section.
 The TCP models
 **************
 
-SimGrid provides several network performance models that compute the time taken by each communication in isolation.
-**CM02** is the simplest one. It captures TCP windowing effects, but does not introduce any correction factors. This
-model should be used if you prefer human-understandable results over realistic ones. **LV08** (the default model) uses
-constant factors that are intended to capture common effects such as slow-start, the fact that TCP headers reduce the
-*effective* bandwidth, or TCP's ACK messages. **SMPI** uses more advanced factors that also capture the MPI-specific
-effects such as the switch between the eager vs. rendez-vous communication modes. You can :ref:`choose the
-model <options_model_select>` on via command-line arguments, and each model can be :ref:`further configured <options_model>`.
+SimGrid provides several network performance models that compute the time taken by each communication in isolation. **raw** is
+the simplest one. It does not capture any fancy effect, and uses overly simplified equations. It is mostly useful when you want
+to model non-TCP communications such as an intra-node PCI communication bus. **CM02** is the simplest model capturing some
+TCP-specific effects, such as windowing effects, but does not introduce any correction factors. This model should be used if you
+prefer human-understandable TCP predictions over realistic ones. **LV08** (the default model) uses constant factors that are
+intended to capture common effects such as slow-start, the fact that TCP headers reduce the *effective* bandwidth, or TCP's ACK
+messages. **SMPI** uses more advanced factors that also capture the MPI-specific effects such as the switch between the eager
+vs. rendez-vous communication modes. You can :ref:`choose the model <options_model_select>` on via command-line arguments, and
+each model can be :ref:`further configured <options_model>`.
 
 The LMM solver is then used as described above to compute the effect of contention on the communication time when using TCP. 
 For the sake of realism, the sharing on saturated links is not necessarily a fair sharing
@@ -132,20 +134,37 @@ because it considers individual network packets.
 However, the above SimGrid models must be carefully :ref:`calibrated <models_calibration>` if
 achieve very high accuracy is needed, while ns-3 is less demanding in this regard.
 
+.. _understanding_raw_network_model:
+
+Raw network model
+=================
+
+This simplistic network model states that the bandwidth is fairly shared between competing communications (max-min sharing), and
+the time to send a message is equal to :math:`latency + \frac{size}{bandwidth}`. This model is not realistic for TCP
+communications, as the many effects captured by the other SimGrid models are ignored. It is also not really realistic for UDP
+communications as it does not incur any packet loss that a real UDP communication would experience when the amount of exchanged
+data overpass the links capacity. Instead, this model is mostly useful to model the intra-node communication buses such as PCI.
+This allows to model a :ref:`multi-CPU machine as a set of separate SimGrid hosts <howto_multicore_separate_hosts>`
+interconnected by such a raw network link. 
+
 .. _understanding_cm02:
 
 CM02
 ====
 
-This is a simple model of TCP performance, where the sender stops sending packets when its TCP window is full. If the
-acknowledgment packets are returned in time to the sender, the TCP window has no impact on the performance, which is then
-only limited by link bandwidths. Otherwise, late acknowledgments will reduce the data transfer rate.
+This is a simple model of TCP performance, with two main features. The first one comes from the TCP windowing algorithm
+requesting the sender to stop sending packets when its TCP window is full. If the acknowledgment packets are returned in time to
+the sender, the TCP window has no impact on the performance, which is then only limited by link bandwidths. Otherwise, late
+acknowledgments will reduce the data transfer rate. The second model feature is called cross-traffic. It represents the impact
+of ACKs on the performance of the reverse direction. Indeed, a TCP communication from A to B induces ACK packets going from B to
+A and competing with the user data going from B to A. The impact of cross-traffic is further discussed when presenting the LV08
+model below below.
 
-SimGrid models this mechanism as follows: :math:`real\_BW = min(physical\_BW, \frac{TCP\_GAMMA}{2\times latency})` The used
-bandwidth is either the physical bandwidth that is configured in the platform, or a value that represents a bandwidth
+SimGrid models the TCP windowing mechanism as follows: :math:`real\_BW = min(physical\_BW, \frac{TCP\_GAMMA}{2\times latency})`
+The used bandwidth is either the physical bandwidth that is configured in the platform, or a value that represents a bandwidth
 limit due to late acknowledgments. This value is the maximal TCP window size (noted TCP Gamma in SimGrid) divided by the
-round-trip time (i.e. twice the one-way latency). The default value of TCP Gamma is 4194304. This value can be changed with
-the :ref:`network/TCP-gamma <cfg=network/TCP-gamma>` configuration item.
+round-trip time (i.e. twice the one-way latency). The default value of TCP Gamma is 4194304. This value can be changed with the
+:ref:`network/TCP-gamma <cfg=network/TCP-gamma>` configuration item.
 
 If you want to disable this mechanism altogether (e.g.,to model UDP or memory operations), you should set TCP-gamma
 to 0. Otherwise, the time it takes to send 10 Gib of data over a 10 Gib/s link that is otherwise unused is computed as

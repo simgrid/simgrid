@@ -10,6 +10,8 @@
 
 #ifdef __cplusplus
 
+extern "C++"
+{
 #include <boost/intrusive_ptr.hpp>
 #include <vector>
 
@@ -267,7 +269,9 @@ using s4u_NetZone           = simgrid::s4u::NetZone;
 using s4u_VM                = simgrid::s4u::VirtualMachine;
 
 using smx_activity_t = simgrid::kernel::activity::ActivityImpl*;
-#else
+} // extern "C++"
+
+#else /* __cplusplus not defined */
 
 typedef struct s4u_Actor s4u_Actor;
 typedef struct s4u_Activity s4u_Activity;

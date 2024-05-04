@@ -22,7 +22,10 @@
 
 #include <xbt/config.h>
 #ifdef __cplusplus
+extern "C++"
+{
 #include <xbt/config.hpp>
+}
 #endif
 
 #include <xbt/xbt_os_time.h>

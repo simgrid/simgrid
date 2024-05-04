@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/plugins/ProducerConsumer.hpp>
+#include <simgrid/s4u/ActivitySet.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
@@ -23,12 +24,14 @@ static void ingester(int id, simgrid::plugin::ProducerConsumerPtr<int> pc)
     sg4::this_actor::sleep_for((3 - i) * simgrid::xbt::random::uniform_real(0, 1));
   }
 
+  sg4::ActivitySet pending;
   for (int i = 0; i < 3; i++) {
     auto* data = new int(10 * id + i);
-    pc->put_async(data, 1.2125e6); // last for 0.01s
+    pending.push(pc->put_async(data, 1.2125e6)); // last for 0.01s
     XBT_INFO("data sucessfully put: %d", *data);
     sg4::this_actor::sleep_for((i + 3) * simgrid::xbt::random::uniform_real(0, 1));
   }
+  pending.wait_all();
 }
 
 static void retriever(simgrid::plugin::ProducerConsumerPtr<int> pc)

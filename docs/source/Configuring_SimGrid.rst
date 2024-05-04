@@ -109,13 +109,18 @@ Existing Configuration Items
 
 - **model-check:** :ref:`options_modelchecking`
 - **model-check/communications-determinism:** :ref:`cfg=model-check/communications-determinism`
+- **model-check/cached-states-interval:** :ref:`cfg=model-check/cached-states-interval`
 - **model-check/dot-output:** :ref:`cfg=model-check/dot-output`
+- **model-check/max-deadlocks:** :ref:`cfg=model-check/max-deadlocks`
 - **model-check/max-depth:** :ref:`cfg=model-check/max-depth`
+- **model-check/no-fork:** :ref:`cfg=model-check/no-fork`
 - **model-check/reduction:** :ref:`cfg=model-check/reduction`
 - **model-check/replay:** :ref:`cfg=model-check/replay`
 - **model-check/send-determinism:** :ref:`cfg=model-check/send-determinism`
 - **model-check/setenv:** :ref:`cfg=model-check/setenv`
+- **model-check/strategy:** :ref:`cfg=model-check/strategy`
 - **model-check/timeout:** :ref:`cfg=model-check/timeout`
+- **model-check/timeout-soft:** :ref:`cfg=model-check/timeout-soft`
 
 - **network/bandwidth-factor:** :ref:`cfg=network/bandwidth-factor`
 - **network/crosstraffic:** :ref:`cfg=network/crosstraffic`
@@ -202,9 +207,7 @@ models for all existing resources.
   - **LV08 (default one):** Realistic network analytic model
     (slow-start modeled by multiplying latency by 13.01, bandwidth by
     .97; bottleneck sharing uses a payload of S=20537 for evaluating
-    RTT). Described in `Accuracy Study and Improvement of Network
-    Simulation in the SimGrid Framework
-    <http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf>`_.
+    RTT). Presented in :ref:`the relevant section<understanding_lv08>`.
   - **Constant:** Simplistic network model where all communication
     take a constant time (one second). This model provides the lowest
     realism, but is (marginally) faster.
@@ -219,9 +222,7 @@ models for all existing resources.
     This model can be :ref:`further configured <options_model_network>`.
   - **CM02:** Legacy network analytic model. Very similar to LV08, but
     without corrective factors. The timings of small messages are thus
-    poorly modeled. This model is described in `A Network Model for
-    Simulation of Grid Application
-    <https://hal.inria.fr/inria-00071989/document>`_.
+    poorly modeled. Presented in :ref:`the relevant section<understanding_cm02>`.
   - **ns-3** (only available if you compiled SimGrid accordingly):
     Use the packet-level network
     simulators as network models (see :ref:`models_ns3`).
@@ -707,6 +708,30 @@ logging message is sent and the results might not be exact.
 
 By default, the exploration is limited to the depth of 1000.
 
+.. _cfg=model-check/max-deadlocks:
+
+Maximal amount of deadlocks
+...........................
+
+The ``model-check/max-deadlocks`` can be used to find more than one deadlock in a given code. This may be useful if the trace of
+the first encountered deadlock is too long. In that case, increasing the value of this option may help to find another trace
+that could be smaller. Using a negative value ensures exhaustive exploration, with no maximal amount on the number of found
+deadlocks.
+
+It is currently not possible to survive assertion failures or application crashes, as the reduction cannot cope with what could
+be seen as a bounded exploration yet.
+
+By default, the exploration stops after the first deadlock (value = 0).
+
+.. _cfg=model-check/timeout-soft:
+
+Setting a timeout upon execution
+................................
+
+If you wish to search for bugs in a best effort way, you probably want to explore with the ``uniform`` strategy (see
+:ref:`cfg=model-check/strategy`) and with a soft timeout. If such a timeout expires, the exploration will gracefully terminate
+at the next exploration end, without backtracking to a yet-to-be-explored case. The return code is 0 in this case.
+
 .. _cfg=model-check/timeout:
 
 Handling of Timeouts
@@ -726,6 +751,47 @@ The ``model-check/communications-determinism`` and
 ``model-check/send-determinism`` items can be used to select the
 communication determinism mode of the model checker, which checks
 determinism properties of the communications of an application.
+
+.. _cfg=model-check/strategy:
+
+Exploration strategies
+......................
+
+By default, the model checker follows a depth-first exploration, but several other strategies exist. The following list may be
+incomplete, so you'd better look at the code or speak with us for more information.
+
+ - **uniform**: Randomly pick the next branch to explore each time that the exploration reaches an end.
+ - **none**: default value instructing SimGrid to follow a depth-first exploration.
+
+.. _cfg=model-check/cached-states-interval:
+
+Caching states for performance
+..............................
+
+To explore new execution branches, the verified application must be rollback to its original state, and some transitions must be
+replayed to bring the application to the desired decision point. If the application induces many computations, replaying the
+transition from the beginning of the application can be time-consuming.  To save time, one can use the
+``cached-states-interval`` configuration item to save intermediate states that can be used as a starting point while restoring
+an applicative state. This is implemented by forking the executing application to later restart from that fork instead of from
+the begining.
+
+By default, one in every 1000 states is cached this way. If the used value is 0, then no state gets cached. Caching too little
+states forces many useless transitions replays (consuming time) while caching too much states may exhaust the memory and other
+resources. Increasing the maximal amount of open file per process on your machine may allow to cache more states if your memory
+allows. States get removed from the memory once they become useless, so your resource consumption should plateau at some point
+during the exploration.
+
+.. _cfg=model-check/no-fork:
+
+Verifying Python or multitheaded codes
+......................................
+
+By default, the model checker relies on system forks to speed-up the exploration but POSIX forbids the use of this system call
+in multithreaded applications. So, you cannot verify an application with :ref:`cfg=contexts/factory` set to ``thread``. Since
+our Python bindings unfortunately require the threaded contexts, this makes it impossible to use forks to speed up the
+verification of Python programs. In this case, use ``--cfg=model-check/no-fork:1`` to go for the slow exploration without forks.
+With this option, a brand new python interpreter will be started when the model checker needs to rollback the application to
+explore another execution branch. This is slow, and will only work if your application is perfectly reproducible.
 
 .. _cfg=model-check/setenv:
 
@@ -986,6 +1052,8 @@ Parallel execution of the user code is only considered stable in
 SimGrid v3.7 and higher, and mostly for S4U simulations. SMPI
 simulations may well fail in parallel mode. It is described in
 `INRIA RR-7653 <http://hal.inria.fr/inria-00602216/>`_.
+
+Note that this feature is only tested on Linux. It may or may not work on other systems.
 
 If you are using the **ucontext** or **raw** context factories, you can
 request to execute the user code in parallel. Several threads are
@@ -1803,6 +1871,7 @@ as the date, or the actor ID, everything. Existing format directives:
  - %h: Hostname (SimGrid extension)
  - %a: Actor name (SimGrid extension -- note that with SMPI this is the integer value of the process rank)
  - %i: Actor PID (SimGrid extension -- this is a 'i' as in 'i'dea)
+ - %I: system PID (the result of the UNIX getpid() function -- only useful if your simulation forks at the system level)
  - %t: Thread "name" (LOG4J compatible -- actually the address of the thread in memory)
 
  - %F: file name where the log event was raised (LOG4J compatible)

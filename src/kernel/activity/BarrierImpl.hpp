@@ -27,8 +27,8 @@ class XBT_PUBLIC BarrierAcquisitionImpl : public ActivityImpl_T<BarrierAcquisiti
 
 public:
   BarrierAcquisitionImpl(actor::ActorImpl* issuer, BarrierImpl* bar) : issuer_(issuer), barrier_(bar) {}
-  BarrierImplPtr get_barrier() { return barrier_; }
-  actor::ActorImpl* get_issuer() { return issuer_; }
+  BarrierImplPtr get_barrier() const { return barrier_; }
+  actor::ActorImpl* get_issuer() const { return issuer_; }
 
   bool test(actor::ActorImpl* issuer = nullptr) override;
   void wait_for(actor::ActorImpl* issuer, double timeout) override;
@@ -53,6 +53,7 @@ public:
 
   BarrierAcquisitionImplPtr acquire_async(actor::ActorImpl* issuer);
   unsigned get_id() const { return id_; }
+  bool was_last() const { return ongoing_acquisitions_.empty(); }
 
   friend void intrusive_ptr_add_ref(BarrierImpl* barrier)
   {

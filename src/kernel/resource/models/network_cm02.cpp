@@ -14,6 +14,7 @@
 #include "src/simgrid/math_utils.h"
 #include "src/simgrid/module.hpp"
 #include "src/simgrid/sg_config.hpp"
+#include "xbt/config.hpp"
 
 #include <algorithm>
 #include <numeric>
@@ -26,6 +27,22 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 static simgrid::config::Flag<std::string> cfg_network_solver("network/solver",
                                                              "Set linear equations solver used by network model",
                                                              "maxmin", &simgrid::kernel::lmm::System::validate_solver);
+
+SIMGRID_REGISTER_NETWORK_MODEL(raw,
+                               "Simplest network model with `time = size/bw + lat` and fair sharing. "
+                               "No cross traffic, no TCP gamma, no correction factors, just these plain equations.",
+                               []() {
+                                 auto net_model =
+                                     std::make_shared<simgrid::kernel::resource::NetworkCm02Model>("Network_Raw");
+                                 auto* engine = simgrid::kernel::EngineImpl::get_instance();
+                                 engine->add_model(net_model);
+                                 engine->get_netzone_root()->set_network_model(net_model);
+
+                                 simgrid::config::set_default<std::string>("network/latency-factor", "1.0");
+                                 simgrid::config::set_default<std::string>("network/bandwidth-factor", "1.0");
+                                 simgrid::config::set_default<double>("network/weight-S", 0.0);
+                                 simgrid::config::set_default<bool>("network/crosstraffic", false);
+                               });
 
 /******************************************************************************/
 /* Network model based on optimizations discussed during Pedro Velho's thesis */

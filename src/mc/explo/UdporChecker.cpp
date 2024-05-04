@@ -7,6 +7,7 @@
 #include "src/mc/explo/udpor/Comb.hpp"
 #include "src/mc/explo/udpor/ExtensionSetCalculator.hpp"
 #include "src/mc/explo/udpor/History.hpp"
+#include "src/mc/explo/udpor/Unfolding.hpp"
 #include "src/mc/explo/udpor/maximal_subsets_iterator.hpp"
 
 #include <numeric>
@@ -18,15 +19,26 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to verification 
 
 namespace simgrid::mc::udpor {
 
+xbt::signal<void(RemoteApp&)> UdporChecker::on_log_state_signal;
+
 UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration(args) {}
+
+void UdporChecker::log_state()
+{
+  on_log_state_signal(get_remote_app());
+  XBT_INFO("UDPOR exploration ended. %ld unique events considered; %lu backtracks", Unfolding::get_expanded_events(),
+           backtrack_count_);
+  Exploration::log_state();
+}
 
 void UdporChecker::run()
 {
   XBT_INFO("Starting a UDPOR exploration");
   state_stack.clear();
   state_stack.push_back(get_current_state());
+  current_configuration_ = Configuration();
   explore(Configuration(), EventSet(), EventSet(), EventSet());
-  XBT_INFO("UDPOR exploration terminated -- model checking completed");
+  log_state();
 }
 
 void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, EventSet prev_exC)
@@ -74,7 +86,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
 
     return;
   }
-  UnfoldingEvent* e = select_next_unfolding_event(A, enC);
+  UnfoldingEvent* e = select_next_unfolding_event(A, enC.subtracting(D));
   xbt_assert(e != nullptr, "\n\n****** INVARIANT VIOLATION ******\n"
                            "UDPOR guarantees that an event will be chosen at each point in\n"
                            "the search, yet no events were actually chosen\n"
@@ -94,6 +106,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
   // Move the application into stateCe (i.e. `state(C + {e})`) and make note of that state
   move_to_stateCe(&stateC, e);
   state_stack.push_back(record_current_state());
+  current_configuration_ = Ce;
 
   explore(Ce, D, std::move(A), std::move(exC));
 
@@ -102,6 +115,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
   // another `Explore()` after computing an alternative, at that
   // point we'll actually create a fresh RemoteProcess
   state_stack.pop_back();
+  current_configuration_ = C;
 
   // D <-- D + {e}
   D.insert(e);
@@ -125,6 +139,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
               "J / C := %s\n"
               "UDPOR is going to explore it...",
               J.value().to_string().c_str(), J_minus_C.to_string().c_str());
+
     explore(C, D, std::move(J_minus_C), std::move(prev_exC));
   } else {
     XBT_DEBUG("No alternative detected with:\n"
@@ -138,7 +153,9 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, Event
   D.remove(e);
 
   // Remove(e, C, D)
+  XBT_DEBUG("Cleaning the exploration ...");
   clean_up_explore(e, C, D);
+  XBT_DEBUG("... cleaning done");
 }
 
 EventSet UdporChecker::compute_exC(const Configuration& C, const State& stateC, const EventSet& prev_exC)
@@ -196,7 +213,11 @@ void UdporChecker::move_to_stateCe(State* state, UnfoldingEvent* e)
                               "one transition of the state of an visited event is enabled, yet no\n"
                               "state was actually enabled. Please report this as a bug.\n"
                               "*********************************\n\n");
+  XBT_DEBUG("UDPOR going to execute actor %ld with transition <%s>", next_actor,
+            e->get_transition()->to_string().c_str());
   auto latest_transition_by_next_actor = state->execute_next(next_actor, get_remote_app());
+  XBT_DEBUG("UDPOR successfully executed actor %ld with transition <%s>", next_actor,
+            latest_transition_by_next_actor->to_string().c_str());
 
   // The transition that is associated with the event was just
   // executed, so it's possible that the new version of the transition
@@ -223,7 +244,8 @@ void UdporChecker::move_to_stateCe(State* state, UnfoldingEvent* e)
 void UdporChecker::restore_program_state_with_current_stack()
 {
   XBT_DEBUG("Restoring state using the current stack");
-  get_remote_app().restore_initial_state();
+  get_remote_app().restore_checker_side(nullptr);
+  backtrack_count_++;
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (const std::unique_ptr<State>& state : state_stack) {
@@ -264,8 +286,16 @@ UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, con
     return const_cast<UnfoldingEvent*>(*min_event);
   } else {
     const auto intersection = A.make_intersection(enC);
-    const auto min_event    = std::min_element(intersection.begin(), intersection.end(),
-                                               [](const auto e1, const auto e2) { return e1->get_id() < e2->get_id(); });
+    if (intersection.empty()) {
+      for (const auto& s : get_textual_trace())
+        XBT_CRITICAL("  %s", s.c_str());
+      xbt_die("There should be at least one event in the alternatives that is enbaled."
+              " The alternatives computation may require to be fixed. Current stack "
+              "trace: %s",
+              get_record_trace().to_string().c_str());
+    }
+    const auto min_event = std::min_element(intersection.begin(), intersection.end(),
+                                            [](const auto e1, const auto e2) { return e1->get_id() < e2->get_id(); });
     return const_cast<UnfoldingEvent*>(*min_event);
   }
 }
@@ -342,9 +372,26 @@ void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration
 RecordTrace UdporChecker::get_record_trace()
 {
   RecordTrace res;
-  for (auto const& state : state_stack)
-    res.push_back(state->get_transition_out().get());
+  for (auto const& event : current_configuration_.get_topologically_sorted_events())
+    res.push_back(event->get_transition());
   return res;
+}
+
+std::vector<std::string> UdporChecker::get_textual_trace(int max_elements)
+{
+  std::vector<std::string> trace;
+  for (auto const& event : current_configuration_.get_topologically_sorted_events()) {
+    auto const& transition    = event->get_transition();
+    auto const& call_location = transition->get_call_location();
+    if (not call_location.empty())
+      trace.push_back(xbt::string_printf("%s in %s", event->to_string().c_str(), call_location.c_str()));
+    else
+      trace.push_back(xbt::string_printf("%s", event->to_string().c_str()));
+    max_elements--;
+    if (max_elements == 0)
+      break;
+  }
+  return trace;
 }
 
 } // namespace simgrid::mc::udpor

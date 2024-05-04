@@ -11,19 +11,24 @@
 #include "src/kernel/resource/CpuImpl.hpp"
 
 #include <cmath> // std::isfinite
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_semaphore, ker_synchro, "Semaphore kernel-space implementation");
 
 namespace simgrid::kernel::activity {
 
 /* -------- Acquisition -------- */
+SemAcquisitionImpl::SemAcquisitionImpl(actor::ActorImpl* issuer, SemaphoreImpl* sem) : issuer_(issuer), semaphore_(sem)
+{
+  set_name(std::string("on semaphore ") + std::to_string(sem->get_id()));
+}
 
 void SemAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   xbt_assert(issuer == issuer_, "Cannot wait on acquisitions created by another actor (id %ld)", issuer_->get_pid());
 
-  XBT_DEBUG("Wait semaphore %p (timeout:%f)", this, timeout);
+  XBT_DEBUG("Wait semaphore %u (timeout:%f)", semaphore_->get_id(), timeout);
 
   this->register_simcall(&issuer_->simcall_); // Block on that acquisition
 
@@ -32,10 +37,9 @@ void SemAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   } else if (timeout > 0) {
     model_action_ = get_issuer()->get_host()->get_cpu()->sleep(timeout);
     model_action_->set_activity(this);
-
-  } else {
-    // Already in the queue
   }
+
+  // Already in the queue
 }
 void SemAcquisitionImpl::finish()
 {
@@ -71,6 +75,7 @@ void SemAcquisitionImpl::cancel()
   xbt_assert(it != semaphore_->ongoing_acquisitions_.end(),
              "Cannot find myself in the waiting queue that I have to leave");
   semaphore_->ongoing_acquisitions_.erase(it);
+  get_issuer()->activities_.erase(this); // The actor does not need to cancel the activity when it dies
 }
 
 /* -------- Semaphore -------- */
@@ -91,7 +96,7 @@ SemAcquisitionImplPtr SemaphoreImpl::acquire_async(actor::ActorImpl* issuer)
 }
 void SemaphoreImpl::release()
 {
-  XBT_DEBUG("Sem release semaphore %p", this);
+  XBT_DEBUG("Sem release semaphore %u", get_id());
 
   if (not ongoing_acquisitions_.empty()) {
     /* Release the first waiting actor */

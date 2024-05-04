@@ -159,6 +159,11 @@ void MessImpl::cancel()
       queue_->remove(this);
       set_state(State::CANCELED);
   }
+  MessImplPtr tmp = this; // Make sure the object does not disappear until after we check whether we need to remove it
+  if (tmp->src_actor_)
+      tmp->src_actor_->activities_.erase(this); // The actor does not need to cancel the activity when it dies
+  if (tmp->dst_actor_)
+      tmp->dst_actor_->activities_.erase(this); // The actor does not need to cancel the activity when it dies
 }
 
 void MessImpl::finish()
@@ -191,6 +196,9 @@ void MessImpl::finish()
       continue;
 
     issuer->activities_.erase(this);
+    if(detached_)
+      EngineImpl::get_instance()->get_maestro()->activities_.erase(this);
+
     issuer->simcall_answer();
   }
 }

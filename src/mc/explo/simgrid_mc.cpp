@@ -12,13 +12,15 @@
 #include "smpi/smpi.h"
 #endif
 
+#include <iostream>
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(mc);
 
 using namespace simgrid::mc;
 
 int main(int argc, char** argv)
 {
-  xbt_assert(argc >= 2, "Missing arguments");
+  xbt_assert(argc >= 2, "Missing arguments. Which executable shall we verify today?");
 
   // Currently, we need this before sg_config_init:
   simgrid::mc::set_model_checking_mode(simgrid::mc::ModelCheckingMode::CHECKER_SIDE);
@@ -38,7 +40,7 @@ int main(int argc, char** argv)
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
     explo = std::unique_ptr<Exploration>(
         create_communication_determinism_checker(argv_copy, get_model_checking_reduction()));
-  else if (_sg_mc_unfolding_checker)
+  else if (get_model_checking_reduction() == ReductionMode::udpor)
     explo = std::unique_ptr<Exploration>(create_udpor_checker(argv_copy));
   else if (_sg_mc_explore_algo == "DFS")
     explo = std::unique_ptr<Exploration>(create_dfs_exploration(argv_copy, get_model_checking_reduction()));
@@ -47,8 +49,17 @@ int main(int argc, char** argv)
 
   ExitStatus status;
   try {
+    if (explo->empty()) {
+      std::cerr
+          << "Your program did not do any transition before terminating. I won't try to verify it, but that's OK.\n";
+      exit(0);
+    }
     explo->run();
-    status = ExitStatus::SUCCESS;
+    if (explo->deadlocks_seen() > 0) {
+      status = ExitStatus::DEADLOCK;
+    } else {
+      status = ExitStatus::SUCCESS;
+    }
   } catch (const McError& e) {
     status = e.value;
   }

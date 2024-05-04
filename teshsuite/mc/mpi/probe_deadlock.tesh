@@ -1,0 +1,3 @@
+#!/usr/bin/env tesh
+
+$ $VALGRIND_NO_TRACE_CHILDREN ../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../bin/simgrid-mc" -platform ${srcdir:=.}/../../examples/platforms/cluster_backbone.xml -np 3 ./probe_deadlock

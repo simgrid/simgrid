@@ -2,7 +2,7 @@
 
 p Testing with default compound
 
-$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-pingpong.py --platform ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/comm-pingpong.py --platform ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 >[  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
 >[  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
 >[  0.019014] (2:ponger@Jupiter) Payload received : small communication (latency bound)
@@ -14,7 +14,7 @@ $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-pingpong.py -
 
 p Testing with default compound Full network optimization
 
-$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-pingpong.py --platform ${platfdir}/small_platform.xml "--cfg=network/optim:Full" "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/comm-pingpong.py --platform ${platfdir}/small_platform.xml "--cfg=network/optim:Full" "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 >[  0.000000] (0:maestro@) Configuration change: Set 'network/optim' to 'Full'
 >[  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
 >[  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1

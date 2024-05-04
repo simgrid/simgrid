@@ -2,6 +2,8 @@
 
 $ ${bindir}/s4u-plugin-jbod --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e%m%n"
 > [  0.000000] Configuration change: Set 'network/crosstraffic' to '0'
+> [  0.000000] 'jbod_raid1' is a valid JBOD
+> [  0.000000] 'jbod_raid3' is not a valid JBOD
 > [  0.000000] XXXXXXXXXXXXXXX RAID 0 XXXXXXXXXXXXXXXX
 > [  0.000000] asynchronous write posted, wait for it
 > [  1.500000] asynchronous write done

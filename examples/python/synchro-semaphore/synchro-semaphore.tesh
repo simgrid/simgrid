@@ -2,7 +2,7 @@
 
 p Testing Semaphore
 
-$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/synchro-semaphore.py --platform ${platfdir}/two_hosts.xml --words hello "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/synchro-semaphore.py --platform ${platfdir}/two_hosts.xml --words hello "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 >[  0.000000] (1:producer@Tremblay) starting consuming
 >[  0.000000] (2:consumer@Jupiter) starting producing
 >[  1.000000] (1:producer@Tremblay) Pushing 'hello'
@@ -12,7 +12,7 @@ $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/synchro-semaphore.
 >[  2.000000] (2:consumer@Jupiter) Receiving ''
 >[  2.000000] (2:consumer@Jupiter) Bye!
 
-$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/synchro-semaphore.py --platform ${platfdir}/two_hosts.xml --words one,two,three "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/synchro-semaphore.py --platform ${platfdir}/two_hosts.xml --words one,two,three "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 >[  0.000000] (1:producer@Tremblay) starting consuming
 >[  0.000000] (2:consumer@Jupiter) starting producing
 >[  1.000000] (1:producer@Tremblay) Pushing 'one'

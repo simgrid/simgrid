@@ -9,6 +9,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/ConditionVariable.hpp"
 #include "simgrid/s4u/Exec.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
 #include "simgrid/s4u/Mutex.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
@@ -17,7 +18,7 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/kernel/actor/WaitTestObserver.hpp"
 #include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
@@ -498,12 +499,13 @@ void Request::start()
       mailbox = process->mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted in the small mailbox %s (in case of SSEND)?",
                 mailbox->get_cname());
-      simgrid::kernel::activity::ActivityImplPtr action = mailbox->iprobe(0, &match_recv, static_cast<void*>(this));
+      simgrid::kernel::activity::ActivityImplPtr action =
+          mailbox->iprobe(s4u::Mailbox::IprobeKind::RECV, &match_recv, static_cast<void*>(this));
 
       if (action == nullptr) {
         mailbox = process->mailbox();
         XBT_DEBUG("No, nothing in the small mailbox test the other one : %s", mailbox->get_cname());
-        action = mailbox->iprobe(0, &match_recv, static_cast<void*>(this));
+        action = mailbox->iprobe(s4u::Mailbox::IprobeKind::RECV, &match_recv, static_cast<void*>(this));
         if (action == nullptr) {
           XBT_DEBUG("Still nothing, switch back to the small mailbox : %s", mailbox->get_cname());
           mailbox = process->mailbox_small();
@@ -514,7 +516,8 @@ void Request::start()
     } else {
       mailbox = process->mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted the small mailbox?");
-      simgrid::kernel::activity::ActivityImplPtr action = mailbox->iprobe(0, &match_recv, static_cast<void*>(this));
+      simgrid::kernel::activity::ActivityImplPtr action =
+          mailbox->iprobe(s4u::Mailbox::IprobeKind::RECV, &match_recv, static_cast<void*>(this));
 
       if (action == nullptr) {
         XBT_DEBUG("No, nothing in the permanent receive mailbox");
@@ -602,7 +605,7 @@ void Request::start()
 
       mailbox = process->mailbox();
       XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %s?", mailbox->get_cname());
-      if (not mailbox->iprobe(1, &match_send, static_cast<void*>(this))) {
+      if (not mailbox->iprobe(s4u::Mailbox::IprobeKind::SEND, &match_send, static_cast<void*>(this))) {
         if ((flags_ & MPI_REQ_SSEND) == 0) {
           mailbox = process->mailbox_small();
           XBT_DEBUG("No, nothing in the large mailbox, message is to be sent on the small one %s",
@@ -611,7 +614,7 @@ void Request::start()
           mailbox = process->mailbox_small();
           XBT_DEBUG("SSEND : Is there a corresponding recv already posted in the small mailbox %s?",
                     mailbox->get_cname());
-          if (not mailbox->iprobe(1, &match_send, static_cast<void*>(this))) {
+          if (not mailbox->iprobe(s4u::Mailbox::IprobeKind::SEND, &match_send, static_cast<void*>(this))) {
             XBT_DEBUG("No, we are first, send to large mailbox");
             mailbox = process->mailbox();
           }
@@ -870,6 +873,7 @@ void Request::probe(int source, int tag, MPI_Comm comm, MPI_Status* status){
   int flag=0;
   //FIXME find another way to avoid busy waiting ?
   // the issue here is that we have to wait on a nonexistent comm
+  xbt_assert(not(MC_is_active() || MC_record_replay_is_active()), "MPI_Probe is not supported yet in MC mode.");
   while(flag==0){
     iprobe(source, tag, comm, &flag, status);
     XBT_DEBUG("Busy Waiting on probing : %d", flag);
@@ -887,7 +891,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   auto* request =
       new Request(nullptr, 0, MPI_CHAR, source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(source),
                   simgrid::s4u::this_actor::get_pid(), tag, comm, MPI_REQ_PERSISTENT | MPI_REQ_RECV | MPI_REQ_PROBE);
-  if (smpi_iprobe_sleep > 0) {
+  if (smpi_iprobe_sleep > 0 && not(MC_is_active() || MC_record_replay_is_active())) {
     /** Compute the number of flops we will sleep **/
     s4u::this_actor::exec_init(/*nsleeps: See comment above */ nsleeps *
                                /*(seconds * flop/s -> total flops)*/ smpi_iprobe_sleep * speed * maxrate)
@@ -909,18 +913,18 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   if (smpi_cfg_async_small_thresh() > 0) {
     mailbox = smpi_process()->mailbox_small();
     XBT_DEBUG("Trying to probe the perm recv mailbox");
-    request->action_ = mailbox->iprobe(0, &match_recv, static_cast<void*>(request));
+    request->action_ = mailbox->iprobe(s4u::Mailbox::IprobeKind::RECV, &match_recv, static_cast<void*>(request));
   }
 
-  if (request->action_ == nullptr){
+  if (request->action_ == nullptr) {
     mailbox = smpi_process()->mailbox();
     XBT_DEBUG("trying to probe the other mailbox");
-    request->action_ = mailbox->iprobe(0, &match_recv, static_cast<void*>(request));
+    request->action_ = mailbox->iprobe(s4u::Mailbox::IprobeKind::RECV, &match_recv, static_cast<void*>(request));
   }
 
-  if (request->action_ != nullptr){
+  if (request->action_ != nullptr) {
     kernel::activity::CommImplPtr sync_comm = boost::static_pointer_cast<kernel::activity::CommImpl>(request->action_);
-    const Request* req                      = static_cast<MPI_Request>(sync_comm->src_data_);
+    const Request* req                      = static_cast<MPI_Request>(sync_comm->src_match_data_);
     *flag = 1;
     if (status != MPI_STATUS_IGNORE && (req->flags_ & MPI_REQ_PREPARED) == 0) {
       status->MPI_SOURCE = comm->group()->rank(req->src_);
@@ -929,8 +933,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
       status->count      = req->real_size_;
     }
     nsleeps = 1;//reset the number of sleeps we will do next time
-  }
-  else {
+  } else {
     *flag = 0;
     if (smpi_cfg_grow_injected_times())
       nsleeps++;

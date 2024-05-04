@@ -87,7 +87,6 @@ int main(int argc, char* argv[])
       comm = SA_to_B2;
     }
     std::vector<double> amount = {1e9, 1e3, 1e6};
-    // XBT_INFO("Comm %f", amount[count % 3]);
     comm->set_amount(amount[count % 3]);
     auto token = std::make_shared<sg4::Token>();
     token->set_data(new double(amount[count % 3]));

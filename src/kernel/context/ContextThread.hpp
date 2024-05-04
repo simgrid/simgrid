@@ -79,6 +79,7 @@ public:
   ThreadContextFactory(const ThreadContextFactory&) = delete;
   ThreadContextFactory& operator=(const ThreadContextFactory&) = delete;
   ~ThreadContextFactory() override;
+  const char* get_name() const override { return "thread"; }
   ThreadContext* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override
   {
     bool maestro = not code;

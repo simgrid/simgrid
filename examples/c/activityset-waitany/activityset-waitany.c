@@ -43,6 +43,7 @@ static void bob()
     sg_activity_unref(completed_one);
   }
   XBT_INFO("Last activity is complete");
+  sg_activity_set_delete(pending_activities);
   free(payload);
 }
 
@@ -63,8 +64,8 @@ int main(int argc, char* argv[])
 
   simgrid_load_platform(argv[1]);
 
-  sg_actor_create("alice", sg_host_by_name("alice"), alice, 0, NULL);
-  sg_actor_create("bob", sg_host_by_name("bob"), bob, 0, NULL);
+  sg_actor_create("alice", sg_host_by_name("alice"), &alice, 0, NULL);
+  sg_actor_create("bob", sg_host_by_name("bob"), &bob, 0, NULL);
 
   simgrid_run();
 

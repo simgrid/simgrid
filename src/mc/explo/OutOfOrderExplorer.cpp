@@ -4,14 +4,17 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/OutOfOrderExplorer.hpp"
+#include "src/mc/api/states/BFSWutState.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"
 
+#include "src/mc/explo/reduction/BFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
@@ -26,23 +29,20 @@
 #include <cstdio>
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <string>
 #include <unordered_set>
 #include <vector>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ooo, mc, "Out-of-Order exploration algorithm of the model-checker");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_bfs, mc, "BFS exploration algorithm of the model-checker");
 
 namespace simgrid::mc {
 
 xbt::signal<void(RemoteApp&)> OutOfOrderExplorer::on_exploration_start_signal;
-xbt::signal<void(RemoteApp&)> OutOfOrderExplorer::on_backtracking_signal;
 
 xbt::signal<void(State*, RemoteApp&)> OutOfOrderExplorer::on_state_creation_signal;
 
-xbt::signal<void(State*, RemoteApp&)> OutOfOrderExplorer::on_restore_system_state_signal;
-xbt::signal<void(RemoteApp&)> OutOfOrderExplorer::on_restore_initial_state_signal;
-xbt::signal<void(Transition*, RemoteApp&)> OutOfOrderExplorer::on_transition_replay_signal;
 xbt::signal<void(Transition*, RemoteApp&)> OutOfOrderExplorer::on_transition_execute_signal;
 
 xbt::signal<void(RemoteApp&)> OutOfOrderExplorer::on_log_state_signal;
@@ -53,15 +53,16 @@ RecordTrace OutOfOrderExplorer::get_record_trace() // override
 
   if (const auto trans = stack_.back()->get_transition_out(); trans != nullptr)
     res.push_back(trans.get());
-  for (const auto* state = stack_.back().get(); state != nullptr; state = state->get_parent_state().get())
+  for (const auto* state = stack_.back().get(); state != nullptr; state = state->get_parent_state())
     if (state->get_transition_in() != nullptr)
       res.push_front(state->get_transition_in().get());
 
   return res;
 }
 
-void OutOfOrderExplorer::restore_stack(std::shared_ptr<State> state)
+void OutOfOrderExplorer::restore_stack(StatePtr state)
 {
+  XBT_DEBUG("Going to restore stack. Current depth is %lu; chosen state is #%ld", stack_.size(), state->get_num());
   stack_.clear();
   execution_seq_     = odpor::Execution();
   auto current_state = state;
@@ -83,17 +84,18 @@ void OutOfOrderExplorer::restore_stack(std::shared_ptr<State> state)
 void OutOfOrderExplorer::log_state() // override
 {
   on_log_state_signal(get_remote_app());
-  XBT_INFO(
-      "Out-of-Order exploration ended. %ld unique states visited; %lu backtracks (%lu transition replays, %lu states "
-      "visited overall)",
-      State::get_expanded_states(), backtrack_count_, Transition::get_replayed_transitions(), visited_states_count_);
+  XBT_INFO("BFS exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, "
+           "%lu states "
+           "visited overall)",
+           State::get_expanded_states(), explored_traces_, Transition::get_replayed_transitions(),
+           visited_states_count_);
   Exploration::log_state();
 }
 
 void OutOfOrderExplorer::run()
 {
   on_exploration_start_signal(get_remote_app());
-  /* This function runs the Out-Of-Order algorithm the state space.
+  /* This function runs the Best First Search algorithm the state space.
    * We do so iteratively instead of recursively, dealing with the call stack manually.
    * This allows one to explore the call stack at will. */
 
@@ -102,23 +104,15 @@ void OutOfOrderExplorer::run()
     auto state = stack_.back();
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%zu (state:#%ld; %zu interleaves todo)", stack_.size(), state->get_num(),
-              state->count_todo());
+    XBT_DEBUG("Exploration depth=%zu (state:#%ld; %zu interleaves todo; %lu currently opened states)", stack_.size(),
+              state->get_num(), state->count_todo(), opened_states_.size());
 
     // Backtrack if we reached the maximum depth
     if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
-      if (reduction_mode_ == ReductionMode::dpor) {
-        XBT_ERROR("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\",
-                  _sg_mc_max_depth.get());
-        XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
-      } else if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
-        XBT_ERROR("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
-                  "when stopping at a fixed depth /!\\",
-                  _sg_mc_max_depth.get());
-        XBT_ERROR("/!\\ If bad things happen, disable the reduction with --cfg=model-check/reduction:none /!\\");
-      } else {
-        XBT_WARN("/!\\ Max depth reached ! /!\\ ");
-      }
+      XBT_WARN("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the reduction /!\\", _sg_mc_max_depth.get());
+      XBT_WARN("/!\\ Any bug you may find are real, but not finding bug doesn't mean anything /!\\");
+      XBT_WARN("/!\\ You should consider changing the depth limit with --cfg=model-check/max-depth /!\\");
+      XBT_WARN("/!\\ Asumming you know what you are doing, the programm will now backtrack /!\\");
       this->backtrack();
       continue;
     }
@@ -134,11 +128,13 @@ void OutOfOrderExplorer::run()
       // ReversibleRace is an overapproximation), backtrace
       XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
                stack_.size() + 1);
+      Exploration::check_deadlock();
 
       if (state->get_actor_count() == 0) {
+        explored_traces_++;
         get_remote_app().finalize_app();
-        XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
-                 state->get_num(), stack_.size());
+        XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
+        XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(), explored_traces_);
       }
 
       this->backtrack();
@@ -147,10 +143,25 @@ void OutOfOrderExplorer::run()
 
     xbt_assert(state->is_actor_enabled(next));
 
+    if (_sg_mc_bfs_threshold != 0) {
+      auto dist = state->get_actor_strategy_valuation(next);
+      auto best = best_opened_state();
+      if (best != nullptr) {
+        int best_dist = best->next_transition_guided().second;
+        opened_states_.emplace_back(std::move(best));
+        if ((float)(dist * _sg_mc_bfs_threshold) / 100.0 > (float)best_dist) {
+          XBT_VERB("current selected dist:%d vs. best*rate:%d", dist, best_dist);
+          opened_states_.emplace_back(std::move(state));
+          this->backtrack();
+          continue;
+        }
+      }
+    }
+
     // If we use a state containing a sleep state, display it during debug
-    if (XBT_LOG_ISENABLED(mc_ooo, xbt_log_priority_verbose)) {
-      std::shared_ptr<SleepSetState> sleep_state = std::static_pointer_cast<SleepSetState>(state);
-      if (sleep_state != nullptr) {
+    if (XBT_LOG_ISENABLED(mc_bfs, xbt_log_priority_verbose)) {
+      auto sleep_state = dynamic_cast<SleepSetState*>(state.get());
+      if (sleep_state != nullptr and not sleep_state->get_sleep_set().empty()) {
         XBT_VERB("Sleep set actually containing:");
 
         for (const auto& [aid, transition] : sleep_state->get_sleep_set())
@@ -167,24 +178,28 @@ void OutOfOrderExplorer::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition_out()->aid_,
-             state->get_transition_out()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
+    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves, %lu opened states)",
+             state->get_transition_out()->aid_, state->get_transition_out()->to_string().c_str(), stack_.size(),
+             state->get_num(), state->count_todo(), opened_states_.size());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     auto next_state = reduction_algo_->state_create(get_remote_app(), state);
+    if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
+      next_state->set_state_factory(get_remote_app().clone_checker_side());
+    }
     on_state_creation_signal(next_state.get(), get_remote_app());
 
     visited_states_count_++;
 
+    reduction_algo_->on_backtrack(state.get());
+
     // Before leaving that state, if the transition we just took can be taken multiple times, we
     // need to give it to the opened states
-    if (stack_.back()->count_todo_multiples() > 0)
-      opened_states_.emplace_back(stack_.back());
+    if (stack_.back()->has_more_to_be_explored() > 0)
+      opened_states_.emplace_back(state);
 
     stack_.emplace_back(std::move(next_state));
     execution_seq_.push_transition(std::move(executed_transition));
-
-    reduction_algo_->on_backtrack(state.get());
 
     reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
 
@@ -194,7 +209,7 @@ void OutOfOrderExplorer::run()
   log_state();
 }
 
-std::shared_ptr<State> OutOfOrderExplorer::best_opened_state()
+StatePtr OutOfOrderExplorer::best_opened_state()
 {
   int best_prio = 0; // cache the value for the best priority found so far (initialized to silence gcc)
   auto best     = end(opened_states_);   // iterator to the state to explore having the best priority
@@ -203,11 +218,13 @@ std::shared_ptr<State> OutOfOrderExplorer::best_opened_state()
 
   // Keep only still non-explored states (aid != -1), and record the one with the best (greater) priority.
   for (auto current = begin(opened_states_); current != end(opened_states_); ++current) {
+    xbt_assert(current->get() != nullptr);
     auto [aid, prio] = (*current)->next_transition_guided();
     if (aid == -1)
       continue;
-    if (valid != current)
+    if (valid != current) {
       *valid = std::move(*current);
+    }
     if (best == end(opened_states_) || prio <= best_prio) {
       best_prio = prio;
       best      = valid;
@@ -215,7 +232,7 @@ std::shared_ptr<State> OutOfOrderExplorer::best_opened_state()
     ++valid;
   }
 
-  std::shared_ptr<State> best_state;
+  StatePtr best_state;
   if (best < valid) {
     // There are non-explored states, and one of them has the best priority.  Remove it from opened_states_ before
     // returning.
@@ -231,12 +248,10 @@ std::shared_ptr<State> OutOfOrderExplorer::best_opened_state()
 
 void OutOfOrderExplorer::backtrack()
 {
-
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
   XBT_DEBUG("%lu alternatives are yet to be explored:", opened_states_.size());
 
-  on_backtracking_signal(get_remote_app());
-  get_remote_app().check_deadlock();
+  Exploration::check_deadlock();
 
   // Take the point with smallest distance
   auto backtracking_point = best_opened_state();
@@ -248,27 +263,7 @@ void OutOfOrderExplorer::backtrack()
     return;
   }
   // We found a backtracking point, let's go to it
-  backtrack_count_++;
-  XBT_DEBUG("Backtracking to state#%ld", backtracking_point->get_num());
-
-  // Search how to restore the backtracking point
-  std::deque<Transition*> replay_recipe;
-  for (auto* s = backtracking_point.get(); s != nullptr; s = s->get_parent_state().get()) {
-    if (s->get_transition_in() != nullptr) // The root has no transition_in
-      replay_recipe.push_front(s->get_transition_in().get());
-  }
-
-  // Restore the initial state if no intermediate state was found
-  get_remote_app().restore_initial_state();
-  on_restore_initial_state_signal(get_remote_app());
-
-  /* if no snapshot, we need to restore the initial state and replay the transitions */
-  /* Traverse the stack from the state at position start and re-execute the transitions */
-  for (auto& transition : replay_recipe) {
-    transition->replay(get_remote_app());
-    on_transition_replay_signal(transition, get_remote_app());
-    visited_states_count_++;
-  }
+  backtrack_to_state(backtracking_point.get());
   this->restore_stack(backtracking_point);
 }
 
@@ -280,13 +275,15 @@ OutOfOrderExplorer::OutOfOrderExplorer(const std::vector<char*>& args, Reduction
     reduction_algo_ = std::make_unique<DPOR>();
   else if (reduction_mode_ == ReductionMode::sdpor)
     reduction_algo_ = std::make_unique<SDPOR>();
+  else if (reduction_mode_ == ReductionMode::odpor)
+    reduction_algo_ = std::make_unique<BFSODPOR>();
   else {
-    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
+    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by BFS explorer",
                to_c_str(reduction_mode_));
     reduction_algo_ = std::make_unique<NoReduction>();
   }
 
-  XBT_INFO("Start an Out-of-Order exploration. Reduction is: %s.", to_c_str(reduction_mode_));
+  XBT_INFO("Start a BFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
 
   auto initial_state = reduction_algo_->state_create(get_remote_app());
 
@@ -297,8 +294,8 @@ OutOfOrderExplorer::OutOfOrderExplorer(const std::vector<char*>& args, Reduction
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   XBT_DEBUG("Initial state. %lu actors to consider", stack_.back()->get_actor_count());
-  if (stack_.back()->count_todo_multiples() > 1)
-    opened_states_.emplace_back(stack_.back());
+
+  opened_states_.emplace_back(stack_.back());
 }
 
 Exploration* create_out_of_order_exploration(const std::vector<char*>& args, ReductionMode mode)

@@ -314,6 +314,8 @@ set(KERNEL_SRC
   src/kernel/actor/SimcallObserver.hpp
   src/kernel/actor/SynchroObserver.cpp
   src/kernel/actor/SynchroObserver.hpp
+  src/kernel/actor/WaitTestObserver.cpp
+  src/kernel/actor/WaitTestObserver.hpp
 
   src/kernel/context/Context.cpp
   src/kernel/context/Context.hpp
@@ -553,6 +555,8 @@ set(MC_SRC_STATELESS
   src/mc/remote/RemotePtr.hpp
   src/mc/remote/mc_protocol.h
 
+  src/mc/api/states/BFSWutState.cpp
+  src/mc/api/states/BFSWutState.hpp
   src/mc/api/states/SleepSetState.cpp
   src/mc/api/states/SleepSetState.hpp
   src/mc/api/states/State.cpp
@@ -580,19 +584,27 @@ set(MC_SRC_STATELESS
   src/mc/mc_private.hpp
   src/mc/mc_record.cpp
 
+  src/mc/api/strategy/BasicStrategy.cpp
   src/mc/api/strategy/BasicStrategy.hpp
+  src/mc/api/strategy/MaxMatchComm.cpp
   src/mc/api/strategy/MaxMatchComm.hpp
+  src/mc/api/strategy/MinContextSwitch.cpp
+  src/mc/api/strategy/MinContextSwitch.hpp
+  src/mc/api/strategy/MinMatchComm.cpp
   src/mc/api/strategy/MinMatchComm.hpp
-  src/mc/api/strategy/Strategy.hpp
+  src/mc/api/strategy/StratLocalInfo.hpp
+  src/mc/api/strategy/UniformStrategy.cpp
   src/mc/api/strategy/UniformStrategy.hpp
-  
-  src/mc/explo/reduction/Reduction.hpp
+
+  src/mc/explo/reduction/BFSODPOR.cpp
+  src/mc/explo/reduction/BFSODPOR.hpp
   src/mc/explo/reduction/Reduction.cpp
+  src/mc/explo/reduction/Reduction.hpp
   src/mc/explo/reduction/NoReduction.hpp
   src/mc/explo/reduction/DPOR.hpp
   src/mc/explo/reduction/SDPOR.hpp
-  src/mc/explo/reduction/ODPOR.hpp
   src/mc/explo/reduction/ODPOR.cpp
+  src/mc/explo/reduction/ODPOR.hpp
   )
 
 set(MC_SIMGRID_MC_SRC  src/mc/explo/simgrid_mc.cpp)

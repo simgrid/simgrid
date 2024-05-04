@@ -20,6 +20,7 @@
 namespace simgrid::mc::odpor {
 
 std::vector<std::string> get_textual_trace(const PartialExecution& w);
+std::string one_string_textual_trace(const PartialExecution& w);
 
 /**
  * @brief The occurrence of a transition in an execution
@@ -31,6 +32,9 @@ std::vector<std::string> get_textual_trace(const PartialExecution& w);
 class Event {
   std::pair<std::shared_ptr<Transition>, ClockVector> contents_;
 
+  // Have reversible races between this event and its prefix already been computed ?
+  mutable bool race_considered_ = false;
+
 public:
   Event()                        = default;
   Event(Event&&)                 = default;
@@ -40,6 +44,9 @@ public:
 
   std::shared_ptr<Transition> get_transition() const { return std::get<0>(contents_); }
   const ClockVector& get_clock_vector() const { return std::get<1>(contents_); }
+
+  bool has_race_been_computed() const { return race_considered_; }
+  void consider_races() const { race_considered_ = true; }
 };
 
 /**
@@ -173,7 +180,8 @@ public:
    * `std::nullopt` otherwise
    */
   std::optional<PartialExecution> get_odpor_extension_from(EventHandle e, EventHandle e_prime,
-                                                           const SleepSetState& state_at_e) const;
+                                                           const SleepSetState& state_at_e,
+                                                           aid_t actor_after_e = -1) const;
 
   /**
    * @brief For a given sequence of actors `v` and a sequence of transitions `w`,
@@ -217,8 +225,8 @@ public:
    * if `v ~_[E] w`, or `std::nullopt` if that relation does not hold
    * between the two sequences `v` and `w`
    */
-  std::optional<PartialExecution> get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,
-                                                                         const PartialExecution& w) const;
+  static std::optional<PartialExecution> get_shortest_odpor_sq_subset_insertion(const PartialExecution& v,
+                                                                                const PartialExecution& w);
 
   /**
    * @brief For a given sequence `w`, determines whether p in I_[E](w)
@@ -231,12 +239,12 @@ public:
    * `N` actors, we can process them "in-parallel" as is done with the
    * computation of SDPOR initials)
    */
-  bool is_initial_after_execution_of(const PartialExecution& w, aid_t p) const;
+  static bool is_initial_after_execution_of(const PartialExecution& w, aid_t p);
 
   /**
    * @brief Determines whether `E ⊢ p ◊ w` given the next action taken by `p`
    */
-  bool is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p) const;
+  static bool is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p);
 
   /**
    * @brief Determines the event associated with the given handle `handle`
@@ -288,7 +296,7 @@ public:
    * @returns a set of event handles, each element of which is an
    * event in this execution which is in a *race* with event `handle`
    */
-  std::unordered_set<EventHandle> get_racing_events_of(EventHandle handle) const;
+  std::list<EventHandle> get_racing_events_of(EventHandle handle) const;
 
   /**
    * @brief Returns a set of events which are in a reversible
@@ -307,7 +315,7 @@ public:
    * @returns a set of event handles, each element of which is an event
    * in this execution which is in a *reversible race* with event `handle`
    */
-  std::unordered_set<EventHandle> get_reversible_races_of(EventHandle handle) const;
+  std::list<EventHandle> get_reversible_races_of(EventHandle handle) const;
 
   /**
    * @brief Computes `pre(e, E)` as described in ODPOR [1]
@@ -364,6 +372,12 @@ public:
    * actor which executed transition `t`.
    */
   void push_transition(std::shared_ptr<Transition>);
+
+  /**
+   * @brief Shorten the execution by one step
+   *
+   */
+  void remove_last_event();
 
   /**
    * @brief Extends the execution by a sequence of steps

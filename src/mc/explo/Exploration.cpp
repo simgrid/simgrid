@@ -4,13 +4,19 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/Exploration.hpp"
+#include "simgrid/forward.h"
+#include "src/mc/api/states/State.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
+#include "xbt/log.h"
+#include "xbt/random.hpp"
 #include "xbt/string.hpp"
 
+#include <algorithm>
 #include <sys/wait.h>
+#include <utility>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_explo, mc, "Generic exploration algorithm of the model-checker");
 
@@ -21,17 +27,25 @@ static simgrid::config::Flag<std::string> cfg_dot_output_file{
 
 Exploration* Exploration::instance_ = nullptr; // singleton instance
 
+xbt::signal<void(State&, RemoteApp&)> Exploration::on_restore_state_signal;
+xbt::signal<void(Transition*, RemoteApp&)> Exploration::on_transition_replay_signal;
+xbt::signal<void(RemoteApp&)> Exploration::on_backtracking_signal;
+
 Exploration::Exploration(const std::vector<char*>& args) : remote_app_(std::make_unique<RemoteApp>(args))
 {
   xbt_assert(instance_ == nullptr, "Cannot have more than one exploration instance");
   instance_ = this;
+
+  time(&starting_time_);
+
+  simgrid::xbt::random::set_mersenne_seed(_sg_mc_random_seed);
 
   if (not cfg_dot_output_file.get().empty()) {
     dot_output_ = fopen(cfg_dot_output_file.get().c_str(), "w");
     xbt_assert(dot_output_ != nullptr, "Error open dot output file: %s", strerror(errno));
 
     fprintf(dot_output_, "digraph graphname{\n fixedsize=true; rankdir=TB; ranksep=.25; edge [fontsize=12]; node "
-                         "[fontsize=10, shape=circle,width=.5 ]; graph [resolution=20, fontsize=10];\n");
+                         "[fontsize=10, shape=circle,width=.5 ]; graph [fontsize=10];\n");
   }
 }
 
@@ -130,6 +144,67 @@ XBT_ATTRIB_NORETURN void Exploration::report_assertion_failure()
            get_record_trace().to_string().c_str());
   log_state();
   throw McError(ExitStatus::SAFETY);
+}
+void Exploration::check_deadlock()
+{
+  if (get_remote_app().check_deadlock()) {
+    deadlocks_++;
+    if (_sg_mc_max_deadlocks >= 0 && deadlocks_ > _sg_mc_max_deadlocks) {
+      throw McError(ExitStatus::DEADLOCK);
+    }
+  }
+
+  if (soft_timouted()) {
+    XBT_INFO("Soft timeout after %d seconds. Gracefully exiting.", _sg_mc_soft_timeout.get());
+    get_remote_app().finalize_app(true);
+    exit(0);
+  }
+}
+bool Exploration::empty()
+{
+  std::map<aid_t, simgrid::mc::ActorState> actors;
+  get_remote_app().get_actors_status(actors);
+  return std::none_of(actors.begin(), actors.end(),
+                      [](std::pair<aid_t, simgrid::mc::ActorState> kv) { return kv.second.is_enabled(); });
+}
+
+bool Exploration::soft_timouted() const
+{
+  if (_sg_mc_soft_timeout < 0)
+    return false;
+
+  return time(nullptr) - starting_time_ > _sg_mc_soft_timeout;
+}
+
+void Exploration::backtrack_to_state(State* target_state)
+{
+  on_backtracking_signal(get_remote_app());
+
+  std::deque<Transition*> replay_recipe;
+  auto* state = target_state;
+  State* root_state = nullptr;
+  for (; state != nullptr && not state->has_state_factory(); state = state->get_parent_state()) {
+    if (state->get_transition_in() != nullptr) // The root has no transition_in
+      replay_recipe.push_front(state->get_transition_in().get());
+    else
+      root_state = state;
+  }
+
+  if (state == nullptr) { /* restart from the root */
+    get_remote_app().restore_checker_side(nullptr);
+    on_restore_state_signal(*root_state, get_remote_app());
+  } else { /* Found an intermediate restart point */
+    get_remote_app().restore_checker_side(state->get_state_factory());
+    on_restore_state_signal(*state, get_remote_app());
+  }
+
+  for (auto& transition : replay_recipe) {
+    transition->replay(get_remote_app());
+    on_transition_replay_signal(transition, get_remote_app());
+    visited_states_count_++;
+  }
+
+  backtrack_count_++;
 }
 
 }; // namespace simgrid::mc

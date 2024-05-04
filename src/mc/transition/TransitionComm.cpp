@@ -36,8 +36,12 @@ CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, std::
 }
 std::string CommWaitTransition::to_string(bool verbose) const
 {
-  return xbt::string_printf("WaitComm(from %ld to %ld, mbox=%u, %s)", sender_, receiver_, mbox_,
-                            (timeout_ ? "timeout" : "no timeout"));
+  if (not verbose)
+    return xbt::string_printf("WaitComm(from %ld to %ld, mbox=%u, %s)", sender_, receiver_, mbox_,
+                              (timeout_ ? "timeout" : "no timeout"));
+  else
+    return xbt::string_printf("WaitComm(from %ld to %ld, mbox=%u, %s, comm=%u)", sender_, receiver_, mbox_,
+                              (timeout_ ? "timeout" : "no timeout"), comm_);
 }
 bool CommWaitTransition::depends(const Transition* other) const
 {
@@ -130,7 +134,10 @@ CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::
 }
 std::string CommRecvTransition::to_string(bool verbose) const
 {
-  return xbt::string_printf("iRecv(mbox=%u)", mbox_);
+  if (not verbose)
+    return xbt::string_printf("iRecv(mbox=%u)", mbox_);
+  else
+    return xbt::string_printf("iRecv(mbox=%u, comm=%u, tag=%d))", mbox_, comm_, tag_);
 }
 bool CommRecvTransition::depends(const Transition* other) const
 {
@@ -146,6 +153,9 @@ bool CommRecvTransition::depends(const Transition* other) const
 
   if (other->type_ == Type::COMM_ASYNC_SEND)
     return false;
+
+  if (other->type_ == Type::COMM_IPROBE)
+    return mbox_ == static_cast<const CommIprobeTransition*>(other)->get_mailbox();
 
   if (other->type_ == Type::COMM_TEST) {
     const auto* test = static_cast<const CommTestTransition*>(other);
@@ -204,9 +214,12 @@ CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::
   xbt_assert(stream >> comm_ >> mbox_ >> tag_ >> call_location_);
   XBT_DEBUG("SendTransition comm:%u mbox:%u tag:%d call_loc:%s", comm_, mbox_, tag_, call_location_.c_str());
 }
-std::string CommSendTransition::to_string(bool verbose = false) const
+std::string CommSendTransition::to_string(bool verbose) const
 {
-  return xbt::string_printf("iSend(mbox=%u)", mbox_);
+  if (not verbose)
+    return xbt::string_printf("iSend(mbox=%u)", mbox_);
+  else
+    return xbt::string_printf("iSend(mbox=%u, comm=%u, tag=%d)", mbox_, comm_, tag_);
 }
 
 bool CommSendTransition::depends(const Transition* other) const
@@ -223,6 +236,9 @@ bool CommSendTransition::depends(const Transition* other) const
 
   if (other->type_ == Type::COMM_ASYNC_RECV)
     return false;
+
+  if (other->type_ == Type::COMM_IPROBE)
+    return mbox_ == static_cast<const CommIprobeTransition*>(other)->get_mailbox();
 
   if (other->type_ == Type::COMM_TEST) {
     const auto* test = static_cast<const CommTestTransition*>(other);
@@ -269,6 +285,50 @@ bool CommSendTransition::reversible_race(const Transition* other) const
   xbt_assert(type_ == Type::COMM_ASYNC_SEND, "Unexpected transition type %s", to_c_str(type_));
 
   return true; // CommSend is always enabled
+}
+
+CommIprobeTransition::CommIprobeTransition(aid_t issuer, int times_considered, bool is_sender, unsigned mbox, int tag)
+    : Transition(Type::COMM_IPROBE, issuer, times_considered), is_sender_(is_sender), mbox_(mbox), tag_(tag)
+{
+}
+CommIprobeTransition::CommIprobeTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+    : Transition(Type::COMM_IPROBE, issuer, times_considered)
+{
+  xbt_assert(stream >> mbox_ >> is_sender_ >> tag_);
+  XBT_DEBUG("SendTransition mbox:%u %s tag:%d", mbox_, (is_sender_ ? "sender side" : "recv side"), tag_);
+}
+
+std::string CommIprobeTransition::to_string(bool verbose) const
+{
+  if (not verbose)
+    return xbt::string_printf("iProbe(mbox=%u, %s)", mbox_, (is_sender_ ? "sender side" : "recv side"));
+  else
+    return xbt::string_printf("iProbe(mbox=%u, %s, tag=%d)", mbox_, (is_sender_ ? "sender side" : "recv side"), tag_);
+}
+bool CommIprobeTransition::depends(const Transition* other) const
+{
+  if (other->type_ < type_)
+    return other->depends(this);
+
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
+
+  if (other->type_ == Type::COMM_IPROBE)
+    return mbox_ == static_cast<const CommIprobeTransition*>(other)->get_mailbox();
+
+  // Iprobe can't enable a wait and is independent with every non Recv nor Send transition
+  return false;
+}
+bool CommIprobeTransition::reversible_race(const Transition* other) const
+{
+  // In every cases, we can execute Iprobe before someone else
+  return true;
+}
+bool CommIprobeTransition::can_be_co_enabled(const Transition* o) const
+{
+  // Iprobe can be executed at any time
+  return true;
 }
 
 } // namespace simgrid::mc

@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_TRANSITION_COMM_HPP
 #define SIMGRID_MC_TRANSITION_COMM_HPP
 
+#include "simgrid/s4u/Mailbox.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/transition/Transition.hpp"
 
@@ -107,6 +108,26 @@ public:
 
   /** ID of the corresponding Communication object in the application, or 0 if unknown */
   unsigned get_comm() const { return comm_; }
+  /** Mailbox ID */
+  unsigned get_mailbox() const { return mbox_; }
+  /** If using SMPI, the tag */
+  int get_tag() const { return tag_; }
+};
+
+class CommIprobeTransition : public Transition {
+  bool is_sender_;
+  unsigned mbox_;
+  int tag_;
+
+public:
+  CommIprobeTransition(aid_t issuer, int times_considered, bool is_sender, unsigned mbox, int tag);
+  CommIprobeTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  std::string to_string(bool verbose) const override;
+  bool depends(const Transition* other) const override;
+  bool reversible_race(const Transition* other) const override;
+  bool can_be_co_enabled(const Transition* o) const override;
+
+  bool is_sender_side() const { return is_sender_; }
   /** Mailbox ID */
   unsigned get_mailbox() const { return mbox_; }
   /** If using SMPI, the tag */

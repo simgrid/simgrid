@@ -47,13 +47,15 @@ class XBT_PUBLIC Task {
   xbt::signal<void(Task*)> on_this_start;
   inline static xbt::signal<void(Task*)> on_completion;
   xbt::signal<void(Task*)> on_this_completion;
+  inline static xbt::signal<void(Task*, const std::string&)> on_instance_completion;
+  xbt::signal<void(Task*, const std::string&)> on_this_instance_completion;
 
 protected:
   explicit Task(const std::string& name);
   virtual ~Task() = default;
 
-  virtual void fire(std::string instance);
-  void complete(std::string instance);
+  virtual void fire(const std::string& instance);
+  void complete(const std::string& instance);
 
   void store_activity(ActivityPtr a, const std::string& instance) { current_activities_[instance].push_back(a); }
 
@@ -72,24 +74,31 @@ public:
    * instances */
   void set_amount(double amount, std::string instance = "instance_0");
   /** @return Amout of work this instance of this Task has to process */
-  double get_amount(std::string instance = "instance_0") const { return amount_.at(instance); }
+  double get_amount(const std::string& instance = "instance_0") const { return amount_.at(instance); }
   /** @return Amount of queued firings for this instance of this Task */
-  int get_queued_firings(std::string instance = "instance_0") const { return queued_firings_.at(instance); }
+  int get_queued_firings(const std::string& instance = "instance_0") const { return queued_firings_.at(instance); }
   /** @return Amount currently running of this instance of this Task */
-  int get_running_count(std::string instance = "instance_0") const { return running_instances_.at(instance); }
+  int get_running_count(const std::string& instance = "instance_0") const { return running_instances_.at(instance); }
   /** @return Number of times this instance of this Task has been completed */
-  int get_count(std::string instance = "collector") const { return count_.at(instance); }
-  /** @param n The parallelism degree to set
-   *  @brief The parallelism degree defines how many of this instance can run in parallel. */
-  void set_parallelism_degree(int n, std::string instance = "all");
+  int get_count(const std::string& instance = "collector") const { return count_.at(instance); }
+  /** @brief The parallelism degree defines how many of this instance can run in parallel. */
+  void set_parallelism_degree(int new_degree, const std::string& instance = "all");
   /** @return Parallelism degree of this instance of this Task */
-  int get_parallelism_degree(std::string instance = "instance_0") const { return parallelism_degree_.at(instance); }
+  int get_parallelism_degree(const std::string& instance = "instance_0") const
+  {
+    return parallelism_degree_.at(instance);
+  }
+  /** @return Number of instances present in this task. */
+  int get_instance_count() const { return this->running_instances_.size(); }
   /** @param bytes The amount of bytes this instance has to send to the next instance of this Task
    *  @note This amount is used when the host is different between the dispatcher and the instance doing the work of the
    * Task, or between the instance and the collector. */
-  void set_internal_bytes(int bytes, std::string instance = "instance_0");
+  void set_internal_bytes(int bytes, const std::string& instance = "instance_0");
   /** @return Amount of bytes this instance of the Task has to send to the next instance */
-  double get_internal_bytes(std::string instance = "instance_0") const { return internal_bytes_to_send_.at(instance); }
+  double get_internal_bytes(const std::string& instance = "instance_0") const
+  {
+    return internal_bytes_to_send_.at(instance);
+  }
   /** @param func The new balancing function
    *  @note This function is used by the dispatcher to determine which instance will effectively do the work. This
    * function must return the name of the instance as a string. The default balancing function always returns
@@ -128,6 +137,16 @@ public:
   /** Add a callback fired after a task activity ends.
    * Triggered after the on_this_end function, but before sending tokens to successors.**/
   static void on_completion_cb(const std::function<void(Task*)>& cb) { on_completion.connect(cb); }
+  /** Add a callback fired before this task activity ends */
+  void on_this_instance_completion_cb(const std::function<void(Task*, const std::string&)>& func)
+  {
+    on_this_instance_completion.connect(func);
+  };
+  /** Add a callback fired before a task instance activity ends (excluding the dispatcher and the receiver). **/
+  static void on_instance_completion_cb(const std::function<void(Task*, const std::string&)>& cb)
+  {
+    on_instance_completion.connect(cb);
+  }
 
 #ifndef DOXYGEN
   friend void intrusive_ptr_release(Task* o)
@@ -147,7 +166,7 @@ class CommTask : public Task {
   Host* destination_;
 
   explicit CommTask(const std::string& name);
-  void fire(std::string instance) override;
+  void fire(const std::string& instance) override;
 
 public:
   static CommTaskPtr init(const std::string& name);
@@ -174,7 +193,7 @@ class ExecTask : public Task {
   std::map<std::string, Host*> host_ = {{"instance_0", nullptr}, {"dispatcher", nullptr}, {"collector", nullptr}};
 
   explicit ExecTask(const std::string& name);
-  void fire(std::string instance) override;
+  void fire(const std::string& instance) override;
 
 public:
   static ExecTaskPtr init(const std::string& name);
@@ -201,7 +220,7 @@ class IoTask : public Task {
   Disk* disk_;
   Io::OpType type_;
   explicit IoTask(const std::string& name);
-  void fire(std::string instance) override;
+  void fire(const std::string& instance) override;
 
 public:
   static IoTaskPtr init(const std::string& name);

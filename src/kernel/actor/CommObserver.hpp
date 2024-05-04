@@ -7,6 +7,7 @@
 #define SIMGRID_MC_SIMCALL_COMM_OBSERVER_HPP
 
 #include "simgrid/forward.h"
+#include "simgrid/s4u/Mailbox.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/asserts.h"
@@ -16,76 +17,6 @@
 
 namespace simgrid::kernel::actor {
 
-class ActivityTestSimcall final : public DelayedSimcallObserver<bool> {
-  activity::ActivityImpl* const activity_;
-  std::string fun_call_;
-
-public:
-  ActivityTestSimcall(ActorImpl* actor, activity::ActivityImpl* activity, std::string_view fun_call)
-      : DelayedSimcallObserver(actor, true), activity_(activity), fun_call_(fun_call)
-  {
-  }
-  activity::ActivityImpl* get_activity() const { return activity_; }
-  void serialize(std::stringstream& stream) const override;
-  std::string to_string() const override;
-};
-
-class ActivityTestanySimcall final : public DelayedSimcallObserver<ssize_t> {
-  const std::vector<activity::ActivityImpl*>& activities_;
-  std::vector<int> indexes_; // indexes in activities_ pointing to ready activities (=whose test() is positive)
-  int next_value_ = 0;
-  std::string fun_call_;
-
-public:
-  ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities,
-                         std::string_view fun_call);
-  bool is_enabled() override { return true; /* can return -1 if no activity is ready */ }
-  void serialize(std::stringstream& stream) const override;
-  std::string to_string() const override;
-  int get_max_consider() const override;
-  void prepare(int times_considered) override;
-  const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
-  int get_value() const { return next_value_; }
-};
-
-class ActivityWaitSimcall final : public DelayedSimcallObserver<bool> {
-  activity::ActivityImpl* activity_;
-  const double timeout_;
-  std::string fun_call_;
-
-public:
-  ActivityWaitSimcall(ActorImpl* actor, activity::ActivityImpl* activity, double timeout, std::string_view fun_call)
-      : DelayedSimcallObserver(actor, false), activity_(activity), timeout_(timeout), fun_call_(fun_call)
-  {
-  }
-  void serialize(std::stringstream& stream) const override;
-  std::string to_string() const override;
-  bool is_enabled() override;
-  activity::ActivityImpl* get_activity() const { return activity_; }
-  void set_activity(activity::ActivityImpl* activity) { activity_ = activity; }
-  double get_timeout() const { return timeout_; }
-};
-
-class ActivityWaitanySimcall final : public DelayedSimcallObserver<ssize_t> {
-  const std::vector<activity::ActivityImpl*>& activities_;
-  std::vector<int> indexes_; // indexes in activities_ pointing to ready activities (=whose test() is positive)
-  const double timeout_;
-  int next_value_ = 0;
-  std::string fun_call_;
-
-public:
-  ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities, double timeout,
-                         std::string_view fun_call);
-  bool is_enabled() override;
-  void serialize(std::stringstream& stream) const override;
-  std::string to_string() const override;
-  void prepare(int times_considered) override;
-  int get_max_consider() const override;
-  const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
-  double get_timeout() const { return timeout_; }
-  int get_value() const { return next_value_; }
-};
-
 // This is a DelayedSimcallObserver even if its name denotes an async_comm, because in non-MC mode, the recv is not
 // split in irecv+wait but executed in one simcall only, with such an observer that then needs to be delayed
 class CommIsendSimcall final : public DelayedSimcallObserver<void> {
@@ -94,7 +25,7 @@ class CommIsendSimcall final : public DelayedSimcallObserver<void> {
   double rate_;
   unsigned char* src_buff_;
   size_t src_buff_size_;
-  void* payload_;
+  void* match_data_;
   bool detached_;
   activity::CommImpl* comm_ = {};
   int tag_                  = {};
@@ -112,14 +43,14 @@ public:
       const std::function<void(void*)>& clean_fun, // used to free the synchro in case of problem after a detached send
       const std::function<void(activity::CommImpl*, void*, size_t)>&
           copy_data_fun, // used to copy data if not default one
-      void* payload, bool detached, std::string_view fun_call)
+      void* match_data, bool detached, std::string_view fun_call)
       : DelayedSimcallObserver<void>(actor)
       , mbox_(mbox)
       , payload_size_(payload_size)
       , rate_(rate)
       , src_buff_(src_buff)
       , src_buff_size_(src_buff_size)
-      , payload_(payload)
+      , match_data_(match_data)
       , detached_(detached)
       , match_fun_(match_fun)
       , clean_fun_(clean_fun)
@@ -134,7 +65,7 @@ public:
   double get_rate() const { return rate_; }
   unsigned char* get_src_buff() const { return src_buff_; }
   size_t get_src_buff_size() const { return src_buff_size_; }
-  void* get_payload() const { return payload_; }
+  void* get_match_data() const { return match_data_; }
   bool is_detached() const { return detached_; }
   void set_comm(activity::CommImpl* comm) { comm_ = comm; }
   void set_tag(int tag) { tag_ = tag; }
@@ -150,7 +81,7 @@ class CommIrecvSimcall final : public DelayedSimcallObserver<void> {
   activity::MailboxImpl* mbox_;
   unsigned char* dst_buff_;
   size_t* dst_buff_size_;
-  void* payload_;
+  void* match_data_;
   double rate_;
   activity::CommImpl* comm_ = {};
   int tag_                  = {};
@@ -163,13 +94,13 @@ class CommIrecvSimcall final : public DelayedSimcallObserver<void> {
 public:
   CommIrecvSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, unsigned char* dst_buff, size_t* dst_buff_size,
                    const std::function<bool(void*, void*, activity::CommImpl*)>& match_fun,
-                   const std::function<void(activity::CommImpl*, void*, size_t)>& copy_data_fun, void* payload,
+                   const std::function<void(activity::CommImpl*, void*, size_t)>& copy_data_fun, void* match_data,
                    double rate, std::string_view fun_call)
       : DelayedSimcallObserver<void>(actor)
       , mbox_(mbox)
       , dst_buff_(dst_buff)
       , dst_buff_size_(dst_buff_size)
-      , payload_(payload)
+      , match_data_(match_data)
       , rate_(rate)
       , match_fun_(match_fun)
       , copy_data_fun_(copy_data_fun)
@@ -182,12 +113,29 @@ public:
   double get_rate() const { return rate_; }
   unsigned char* get_dst_buff() const { return dst_buff_; }
   size_t* get_dst_buff_size() const { return dst_buff_size_; }
-  void* get_payload() const { return payload_; }
+  void* get_match_data() const { return match_data_; }
   void set_comm(activity::CommImpl* comm) { comm_ = comm; }
   void set_tag(int tag) { tag_ = tag; }
 
   auto const& get_match_fun() const { return match_fun_; };
   auto const& get_copy_data_fun() const { return copy_data_fun_; }
+};
+
+class IprobeSimcall final : public SimcallObserver {
+  activity::MailboxImpl* mbox_;
+  s4u::Mailbox::IprobeKind kind_;
+  int tag_ = {};
+  std::function<bool(void*, void*, activity::CommImpl*)> match_fun_;
+  void* match_data_; // Actually, that's the smpi request
+
+public:
+  IprobeSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, s4u::Mailbox::IprobeKind kind,
+                const std::function<bool(void*, void*, activity::CommImpl*)>& match_fun, void* match_data);
+
+  void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
+  auto const& get_match_fun() const { return match_fun_; }
+  void* get_match_data() const { return match_data_; }
 };
 
 class MessIputSimcall final : public SimcallObserver {

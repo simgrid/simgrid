@@ -6,6 +6,23 @@ SimGrid (3.35.1) not released (target: Feb 24)
 - Remove the include/xbt/promise.hpp header, that was kinda internal.
 - Bugfix: non-recursive locks must deadlock when relocking by same actor.
 
+Kernel:
+- Implement asynchronous condvar acquisition. Not visible from the s4u API, but needed for the model-checker.
+
+Models:
+- Introduce a raw network model with overly simplistic equations, for non-TCP settings.
+
+Model-checker:
+- Enable the verification of SimGrid programs written in Python.
+- Enable the verification of condition variables in both s4u and sthread. Reduction theorems are stil TBD.
+- Introduce option 'model-check/cached-states-interval' to control how often the application state is cached using fork, to
+  speedup later restore when exploring other execution branches.
+- Introduce option 'model-check/no-fork' to forbid the use of system forks to speed-up the exploration. This is mandated for
+  multithreaded applications, such as our Python bindings.
+
+C API:
+- Add sg_actor_start_voidp() to start actors using a pthread-like prototype, taking a void* as parameter.
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.35) November 23. 2023

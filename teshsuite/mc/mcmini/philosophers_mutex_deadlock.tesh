@@ -1,20 +1,19 @@
 # We ignore the LD_PRELOAD lines from the expected output because they contain the build path
 ! ignore .*LD_PRELOAD.*
 
-! expect return 3
+! expect return 2
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:dpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_mutex_deadlock 4 0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'dpor'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
 > [0.000000] [mc_global/INFO] **************************
 > [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
 > [0.000000] [mc_global/INFO] **************************
-> [0.000000] [ker_engine/INFO] 5 actors are still running, waiting for something.
-> [0.000000] [ker_engine/INFO] Legend of the following listing: "Actor <pid> (<name>@<host>): <status>"
-> [0.000000] [ker_engine/INFO] Actor 1 (main thread@Lilibeth) simcall ActorJoin(pid:2)
-> [0.000000] [ker_engine/INFO] Actor 2 (thread 1@Lilibeth) simcall MUTEX_WAIT(mutex_id:1 owner:3)
-> [0.000000] [ker_engine/INFO] Actor 3 (thread 2@Lilibeth) simcall MUTEX_WAIT(mutex_id:2 owner:4)
-> [0.000000] [ker_engine/INFO] Actor 4 (thread 3@Lilibeth) simcall MUTEX_WAIT(mutex_id:3 owner:5)
-> [0.000000] [ker_engine/INFO] Actor 5 (thread 4@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [ker_engine/INFO] 5 actors are still active, awaiting something. Here is their status:
+> [0.000000] [ker_engine/INFO]  - pid 1 (main thread@Lilibeth) simcall ActorJoin(pid:2)
+> [0.000000] [ker_engine/INFO]  - pid 2 (thread 1@Lilibeth) simcall MUTEX_WAIT(mutex_id:1 owner:3)
+> [0.000000] [ker_engine/INFO]  - pid 3 (thread 2@Lilibeth) simcall MUTEX_WAIT(mutex_id:2 owner:4)
+> [0.000000] [ker_engine/INFO]  - pid 4 (thread 3@Lilibeth) simcall MUTEX_WAIT(mutex_id:3 owner:5)
+> [0.000000] [ker_engine/INFO]  - pid 5 (thread 4@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
@@ -29,23 +28,22 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_WAIT(mutex: 3, owner: 5)
 > [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;3;2;3;4;3;4;5;4;5;5'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 296 unique states visited; 36 backtracks (494 transition replays, 790 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 141 unique states visited; 7 explored traces (68 transition replays, 209 states visited overall)
 
-! expect return 3
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:dpor --cfg=model-check/exploration-algo:OOO --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_mutex_deadlock 4 0
+! expect return 2
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:dpor --cfg=model-check/exploration-algo:BFS --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_mutex_deadlock 4 0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'dpor'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'OOO'
-> [0.000000] [mc_ooo/INFO] Start an Out-of-Order exploration. Reduction is: dpor.
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BFS'
+> [0.000000] [mc_bfs/INFO] Start a BFS exploration. Reduction is: dpor.
 > [0.000000] [mc_global/INFO] **************************
 > [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
 > [0.000000] [mc_global/INFO] **************************
-> [0.000000] [ker_engine/INFO] 5 actors are still running, waiting for something.
-> [0.000000] [ker_engine/INFO] Legend of the following listing: "Actor <pid> (<name>@<host>): <status>"
-> [0.000000] [ker_engine/INFO] Actor 1 (main thread@Lilibeth) simcall ActorJoin(pid:2)
-> [0.000000] [ker_engine/INFO] Actor 2 (thread 1@Lilibeth) simcall MUTEX_WAIT(mutex_id:1 owner:3)
-> [0.000000] [ker_engine/INFO] Actor 3 (thread 2@Lilibeth) simcall MUTEX_WAIT(mutex_id:2 owner:4)
-> [0.000000] [ker_engine/INFO] Actor 4 (thread 3@Lilibeth) simcall MUTEX_WAIT(mutex_id:3 owner:5)
-> [0.000000] [ker_engine/INFO] Actor 5 (thread 4@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [ker_engine/INFO] 5 actors are still active, awaiting something. Here is their status:
+> [0.000000] [ker_engine/INFO]  - pid 1 (main thread@Lilibeth) simcall ActorJoin(pid:2)
+> [0.000000] [ker_engine/INFO]  - pid 2 (thread 1@Lilibeth) simcall MUTEX_WAIT(mutex_id:1 owner:3)
+> [0.000000] [ker_engine/INFO]  - pid 3 (thread 2@Lilibeth) simcall MUTEX_WAIT(mutex_id:2 owner:4)
+> [0.000000] [ker_engine/INFO]  - pid 4 (thread 3@Lilibeth) simcall MUTEX_WAIT(mutex_id:3 owner:5)
+> [0.000000] [ker_engine/INFO]  - pid 5 (thread 4@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
@@ -60,23 +58,22 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_WAIT(mutex: 3, owner: 5)
 > [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;3;2;3;4;3;4;5;4;5;5'
-> [0.000000] [mc_ooo/INFO] Out-of-Order exploration ended. 296 unique states visited; 36 backtracks (494 transition replays, 790 states visited overall)
+> [0.000000] [mc_bfs/INFO] BFS exploration ended. 141 unique states visited; 7 explored traces (68 transition replays, 209 states visited overall)
 
-! expect return 3
+! expect return 2
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_mutex_deadlock 5 0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
 > [0.000000] [mc_global/INFO] **************************
 > [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
 > [0.000000] [mc_global/INFO] **************************
-> [0.000000] [ker_engine/INFO] 6 actors are still running, waiting for something.
-> [0.000000] [ker_engine/INFO] Legend of the following listing: "Actor <pid> (<name>@<host>): <status>"
-> [0.000000] [ker_engine/INFO] Actor 1 (main thread@Lilibeth) simcall ActorJoin(pid:2)
-> [0.000000] [ker_engine/INFO] Actor 2 (thread 1@Lilibeth) simcall MUTEX_WAIT(mutex_id:1 owner:3)
-> [0.000000] [ker_engine/INFO] Actor 3 (thread 2@Lilibeth) simcall MUTEX_WAIT(mutex_id:2 owner:4)
-> [0.000000] [ker_engine/INFO] Actor 4 (thread 3@Lilibeth) simcall MUTEX_WAIT(mutex_id:3 owner:5)
-> [0.000000] [ker_engine/INFO] Actor 5 (thread 4@Lilibeth) simcall MUTEX_WAIT(mutex_id:4 owner:6)
-> [0.000000] [ker_engine/INFO] Actor 6 (thread 5@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [ker_engine/INFO] 6 actors are still active, awaiting something. Here is their status:
+> [0.000000] [ker_engine/INFO]  - pid 1 (main thread@Lilibeth) simcall ActorJoin(pid:2)
+> [0.000000] [ker_engine/INFO]  - pid 2 (thread 1@Lilibeth) simcall MUTEX_WAIT(mutex_id:1 owner:3)
+> [0.000000] [ker_engine/INFO]  - pid 3 (thread 2@Lilibeth) simcall MUTEX_WAIT(mutex_id:2 owner:4)
+> [0.000000] [ker_engine/INFO]  - pid 4 (thread 3@Lilibeth) simcall MUTEX_WAIT(mutex_id:3 owner:5)
+> [0.000000] [ker_engine/INFO]  - pid 5 (thread 4@Lilibeth) simcall MUTEX_WAIT(mutex_id:4 owner:6)
+> [0.000000] [ker_engine/INFO]  - pid 6 (thread 5@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
@@ -94,4 +91,38 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_WAIT(mutex: 4, owner: 6)
 > [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;3;2;3;4;3;4;5;4;5;6;5;6;6'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 317 unique states visited; 15 backtracks (224 transition replays, 541 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 317 unique states visited; 15 explored traces (224 transition replays, 541 states visited overall)
+
+! expect return 2
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/exploration-algo:BFS --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_mutex_deadlock 5 0
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BFS'
+> [0.000000] [mc_bfs/INFO] Start a BFS exploration. Reduction is: odpor.
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [ker_engine/INFO] 6 actors are still active, awaiting something. Here is their status:
+> [0.000000] [ker_engine/INFO]  - pid 1 (main thread@Lilibeth) simcall ActorJoin(pid:2)
+> [0.000000] [ker_engine/INFO]  - pid 2 (thread 1@Lilibeth) simcall MUTEX_WAIT(mutex_id:1 owner:3)
+> [0.000000] [ker_engine/INFO]  - pid 3 (thread 2@Lilibeth) simcall MUTEX_WAIT(mutex_id:2 owner:4)
+> [0.000000] [ker_engine/INFO]  - pid 4 (thread 3@Lilibeth) simcall MUTEX_WAIT(mutex_id:3 owner:5)
+> [0.000000] [ker_engine/INFO]  - pid 5 (thread 4@Lilibeth) simcall MUTEX_WAIT(mutex_id:4 owner:6)
+> [0.000000] [ker_engine/INFO]  - pid 6 (thread 5@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [mc_global/INFO] Counter-example execution trace:
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_WAIT(mutex: 1, owner: 3)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_WAIT(mutex: 2, owner: 4)
+> [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_ASYNC_LOCK(mutex: 3, owner: 5)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 3, owner: 5)
+> [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_WAIT(mutex: 3, owner: 5)
+> [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_ASYNC_LOCK(mutex: 4, owner: 6)
+> [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_ASYNC_LOCK(mutex: 4, owner: 6)
+> [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_WAIT(mutex: 4, owner: 6)
+> [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;3;2;3;4;3;4;5;4;5;6;5;6;6'
+> [0.000000] [mc_bfs/INFO] BFS exploration ended. 317 unique states visited; 15 explored traces (224 transition replays, 541 states visited overall)

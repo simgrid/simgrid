@@ -16,8 +16,11 @@
     Note that the computation is in process rank (in the communicator)
     order, independent of the root.
  */
-static void assoc(int *invec, int *inoutvec, int *len, MPI_Datatype *dtype)
+static void assoc(void *inv, void *inoutv, int *len, MPI_Datatype * dtype)
 {
+    int* invec = inv;
+    int* inoutvec = inoutv;
+
     int i;
     for (i = 0; i < *len; i++) {
         if (inoutvec[i] <= invec[i]) {

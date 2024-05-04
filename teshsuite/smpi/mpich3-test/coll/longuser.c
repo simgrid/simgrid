@@ -12,8 +12,11 @@
  * possible pipelining in the implementation of reductions with user-defined
  * operations).
  */
-static void add(double *invec, double *inoutvec, int *len, MPI_Datatype *dtype)
+static void add(void *inv, void *inoutv, int *len, MPI_Datatype * dtype)
 {
+    double* invec = inv;
+    double* inoutvec = inoutv;
+
     int i, n = *len;
     for (i = 0; i < n; i++) {
         inoutvec[i] = invec[i] + inoutvec[i];

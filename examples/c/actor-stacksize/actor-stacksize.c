@@ -25,24 +25,24 @@ int main(int argc, char* argv[])
   simgrid_load_platform(argv[1]);
 
   // If you don't specify anything, you get the default size (8Mb) or the one passed on the command line
-  sg_actor_create("actor", sg_host_by_name("Tremblay"), actor, 0, NULL);
+  sg_actor_create("actor", sg_host_by_name("Tremblay"), &actor, 0, NULL);
 
   // You can use sg_cfg_set_int(key, value) to pass a size that will be parsed. That value will be used for any
   // subsequent actors
   sg_cfg_set_int("contexts/stack-size", 16384);
-  sg_actor_create("actor", sg_host_by_name("Tremblay"), actor, 0, NULL);
-  sg_actor_create("actor", sg_host_by_name("Tremblay"), actor, 0, NULL);
+  sg_actor_create("actor", sg_host_by_name("Tremblay"), &actor, 0, NULL);
+  sg_actor_create("actor", sg_host_by_name("Tremblay"), &actor, 0, NULL);
 
   sg_cfg_set_int("contexts/stack-size", 32 * 1024);
-  sg_actor_create("actor", sg_host_by_name("Tremblay"), actor, 0, NULL);
-  sg_actor_create("actor", sg_host_by_name("Tremblay"), actor, 0, NULL);
+  sg_actor_create("actor", sg_host_by_name("Tremblay"), &actor, 0, NULL);
+  sg_actor_create("actor", sg_host_by_name("Tremblay"), &actor, 0, NULL);
 
   // Or you can use set_stacksize() before starting the actor to modify only this one
   sg_actor_t a = sg_actor_init("actor", sg_host_by_name("Tremblay"));
   sg_actor_set_stacksize(a, 64 * 1024);
   sg_actor_start(a, actor, 0, NULL);
 
-  sg_actor_create("actor", sg_host_by_name("Tremblay"), actor, 0, NULL);
+  sg_actor_create("actor", sg_host_by_name("Tremblay"), &actor, 0, NULL);
 
   simgrid_run();
   XBT_INFO("Simulation time %g", simgrid_get_clock());

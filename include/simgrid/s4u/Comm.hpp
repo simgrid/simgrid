@@ -32,8 +32,7 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
 
   /* FIXME: expose these elements in the API */
   bool detached_                                                          = false;
-  std::function<bool(void*, void*, kernel::activity::CommImpl*)> match_fun_;
-  std::function<void(void*)> clean_fun_;
+  std::function<void(void*)> clean_fun_; // used if detached
   std::function<void(kernel::activity::CommImpl*, void*, size_t)> copy_data_function_;
 
   Comm() = default;
@@ -105,7 +104,7 @@ public:
 
   /* Mailbox-based communications */
   CommPtr set_mailbox(Mailbox* mailbox);
-  /** Retrieve the mailbox on which this comm acts */
+  /** Retrieve the mailbox on which this comm acts. This is nullptr if the comm was created through sendto() */
   Mailbox* get_mailbox() const { return mailbox_; }
 
   /** Specify the data to send.

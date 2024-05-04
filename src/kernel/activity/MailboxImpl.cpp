@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/MailboxImpl.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 
 #include <unordered_map>
@@ -49,7 +50,7 @@ void MailboxImpl::set_receiver(s4u::ActorPtr actor)
 void MailboxImpl::push(const CommImplPtr& comm)
 {
   comm->set_mailbox(this);
-  this->comm_queue_.push_back(std::move(comm));
+  this->comm_queue_.push_back(comm);
 }
 
 /** @brief Removes a communication activity from a mailbox
@@ -94,13 +95,14 @@ void MailboxImpl::clear(bool do_finish)
   xbt_assert(comm_queue_.empty() && done_comm_queue_.empty());
 }
 
-CommImplPtr MailboxImpl::iprobe(int type, const std::function<bool(void*, void*, CommImpl*)>& match_fun, void* data)
+CommImplPtr MailboxImpl::iprobe(s4u::Mailbox::IprobeKind kind,
+                                const std::function<bool(void*, void*, CommImpl*)>& match_fun, void* data)
 {
   XBT_DEBUG("iprobe from %p %p", this, &comm_queue_);
 
   CommImplPtr this_comm(new CommImpl);
   CommImplType other_type;
-  if (type == 1) {
+  if (kind == s4u::Mailbox::IprobeKind::SEND) {
     this_comm->set_type(CommImplType::SEND);
     other_type = CommImplType::RECEIVE;
   } else {
@@ -131,16 +133,19 @@ CommImplPtr MailboxImpl::iprobe(int type, const std::function<bool(void*, void*,
  */
 CommImplPtr MailboxImpl::find_matching_comm(CommImplType type,
                                             const std::function<bool(void*, void*, CommImpl*)>& match_fun,
-                                            void* this_user_data, const CommImplPtr& my_synchro, bool done,
+                                            void* this_match_data, const CommImplPtr& my_synchro, bool done,
                                             bool remove_matching)
 {
   auto& comm_queue      = done ? done_comm_queue_ : comm_queue_;
 
   auto iter = std::find_if(
-      comm_queue.begin(), comm_queue.end(), [&type, &match_fun, &this_user_data, &my_synchro](const CommImplPtr& comm) {
-        void* other_user_data = (comm->get_type() == CommImplType::SEND ? comm->src_data_ : comm->dst_data_);
-        return (comm->get_type() == type && (not match_fun || match_fun(this_user_data, other_user_data, comm.get())) &&
-                (not comm->match_fun || comm->match_fun(other_user_data, this_user_data, my_synchro.get())));
+      comm_queue.begin(), comm_queue.end(),
+      [&type, &match_fun, &this_match_data, &my_synchro](const CommImplPtr& comm) {
+        void* other_match_data =
+            (comm->get_type() == CommImplType::SEND ? comm->src_match_data_ : comm->dst_match_data_);
+        return (comm->get_type() == type &&
+                (not match_fun || match_fun(this_match_data, other_match_data, comm.get())) &&
+                (not comm->match_fun || comm->match_fun(other_match_data, this_match_data, my_synchro.get())));
       });
   if (iter == comm_queue.end()) {
     XBT_DEBUG("No matching communication synchro found");

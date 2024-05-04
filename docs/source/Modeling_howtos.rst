@@ -123,6 +123,8 @@ they will share the total computing power, and each activity will be
 computed in 5/4 = 1.25 seconds. This is a very simple model, but that is
 all what you get by default from SimGrid.
 
+.. _howto_multicore_separate_hosts:
+
 Pinning tasks to cores
 ======================
 
@@ -143,9 +145,9 @@ possible work around is to never start any simulated communication
 between the cores and have the same routes from each core to the
 rest of the external network.
 
-Modeling a multicore CPU as a set of SimGrid hosts may seem strange
-and unconvincing, but some users achieved very realistic simulations
-of multicore and GPU machines this way.
+Modeling a multicore CPU as a set of SimGrid hosts may seem strange and unconvincing, but some users achieved very realistic
+simulations of multicore and GPU machines this way. A :ref:`raw network model <understanding_raw_network_model>` proves useful
+in this context.
 
 Modeling machine boot and shutdown periods
 ******************************************

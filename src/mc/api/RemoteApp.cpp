@@ -9,6 +9,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
+#include "src/mc/remote/CheckerSide.hpp"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
@@ -66,13 +67,34 @@ RemoteApp::RemoteApp(const std::vector<char*>& args) : app_args_(args)
 
     xbt_assert(listen(master_socket_, SOMAXCONN) >= 0, "Cannot listen to the master socket: %s.", strerror(errno));
 
-    application_factory_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
-    checker_side_        = application_factory_->clone(master_socket_, master_socket_name);
+    if (_sg_mc_nofork) {
+      checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
+    } else {
+      application_factory_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
+      checker_side_        = application_factory_->clone(master_socket_, master_socket_name);
+    }
 }
 
-void RemoteApp::restore_initial_state()
+void RemoteApp::restore_checker_side(CheckerSide* from)
 {
-    checker_side_ = application_factory_->clone(master_socket_, master_socket_name);
+    XBT_DEBUG("Restore the checker side");
+
+    if (checker_side_)
+      checker_side_->finalize(true);
+
+    if (_sg_mc_nofork) {
+      checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
+    } else if (from == nullptr) {
+      checker_side_ = application_factory_->clone(master_socket_, master_socket_name);
+    } else {
+      checker_side_ = from->clone(master_socket_, master_socket_name);
+    }
+}
+std::unique_ptr<CheckerSide> RemoteApp::clone_checker_side()
+{
+    xbt_assert(not _sg_mc_nofork, "Cannot clone the checker_side in nofork mode");
+    XBT_DEBUG("Clone the checker side, saving an intermediate state");
+    return checker_side_->clone(master_socket_, master_socket_name);
 }
 
 unsigned long RemoteApp::get_maxpid() const
@@ -149,7 +171,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   }
 }
 
-void RemoteApp::check_deadlock() const
+bool RemoteApp::check_deadlock() const
 {
   xbt_assert(checker_side_->get_channel().send(MessageType::DEADLOCK_CHECK) == 0, "Could not check deadlock state");
   s_mc_message_int_t message;
@@ -169,8 +191,9 @@ void RemoteApp::check_deadlock() const
              "--cfg=model-check/replay:'%s'",
              explo->get_record_trace().to_string().c_str());
     explo->log_state();
-    throw McError(ExitStatus::DEADLOCK);
+    return true;
   }
+  return false;
 }
 
 void RemoteApp::wait_for_requests()
@@ -180,6 +203,9 @@ void RemoteApp::wait_for_requests()
 
 Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_transition)
 {
+  XBT_DEBUG("Handle simcall of pid %d (time considered: %d; new? %s)", (int)aid, times_considered,
+            (new_transition ? "yes" : "no"));
+
   s_mc_message_simcall_execute_t m = {};
   m.type                           = MessageType::SIMCALL_EXECUTE;
   m.aid_                           = aid;
@@ -206,6 +232,7 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
 
 void RemoteApp::finalize_app(bool terminate_asap)
 {
+  XBT_DEBUG("Finalise the application");
   checker_side_->finalize(terminate_asap);
 }
 

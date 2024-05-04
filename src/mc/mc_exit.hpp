@@ -10,16 +10,7 @@
 
 namespace simgrid::mc {
 
-enum class ExitStatus {
-  SUCCESS         = 0,
-  SAFETY          = 1,
-  LIVENESS        = 2,
-  DEADLOCK        = 3,
-  NON_TERMINATION = 4,
-  NON_DETERMINISM = 5,
-  PROGRAM_CRASH   = 6,
-  ERROR           = 63
-};
+enum class ExitStatus { SUCCESS = 0, SAFETY = 1, DEADLOCK = 2, NON_DETERMINISM = 3, PROGRAM_CRASH = 4, ERROR = 63 };
 
 struct McError : public std::exception {
   const ExitStatus value;

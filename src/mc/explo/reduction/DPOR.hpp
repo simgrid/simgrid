@@ -19,7 +19,7 @@ class DPOR : public Reduction {
 
   /** Compute the eventual i of Godefroid algorithm, line 4
    *  Note that with persistency, we do not consider every p in "advance" but only the lastly taken p */
-  std::optional<EventHandle> max_dependent_dpor(const odpor::Execution S, const State* s, aid_t p)
+  std::optional<EventHandle> max_dependent_dpor(const odpor::Execution& S, const State* s, aid_t p)
   {
 
     if (S.size() == 0)
@@ -37,7 +37,7 @@ class DPOR : public Reduction {
     return {};
   }
 
-  std::unordered_set<aid_t> compute_ancestors(const odpor::Execution S, stack_t* state_stack, aid_t p, EventHandle i)
+  std::unordered_set<aid_t> compute_ancestors(const odpor::Execution& S, stack_t* state_stack, aid_t p, EventHandle i)
   {
 
     std::unordered_set<aid_t> E = std::unordered_set<aid_t>();
@@ -63,7 +63,7 @@ public:
   DPOR()           = default;
   ~DPOR() override = default;
 
-  void races_computation(odpor::Execution E, stack_t* S, std::vector<std::shared_ptr<State>>* opened_states) override
+  void races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states) override
   {
     // If there are less then 2 events, there is no possible race yet
     if (E.size() <= 1)
@@ -89,20 +89,19 @@ public:
     }
   }
 
-  std::shared_ptr<State> state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state) override
+  StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override
   {
-
-    std::shared_ptr<SleepSetState> sleep_set_state =
-        std::static_pointer_cast<SleepSetState>(Reduction::state_create(remote_app, parent_state));
+    auto res             = Reduction::state_create(remote_app, parent_state);
+    auto sleep_set_state = static_cast<SleepSetState*>(res.get());
 
     if (not sleep_set_state->get_enabled_minus_sleep().empty()) {
       sleep_set_state->consider_best();
     }
 
-    return sleep_set_state;
+    return res;
   }
 
-  aid_t next_to_explore(odpor::Execution E, stack_t* S) override
+  aid_t next_to_explore(odpor::Execution& E, stack_t* S) override
   {
     if (S->back()->get_batrack_minus_done().empty())
       return -1;

@@ -36,9 +36,9 @@ static void victimB_fun(int argc, char* argv[])
 static void killer_fun(int argc, char* argv[])
 {
   XBT_INFO("Hello!"); /* - First start a victim actor */
-  sg_actor_t victimA = sg_actor_create("victim A", sg_host_by_name("Fafard"), victimA_fun, 0, NULL);
+  sg_actor_t victimA = sg_actor_create("victim A", sg_host_by_name("Fafard"), &victimA_fun, 0, NULL);
 
-  sg_actor_t victimB = sg_actor_create("victim B", sg_host_by_name("Jupiter"), victimB_fun, 0, NULL);
+  sg_actor_t victimB = sg_actor_create("victim B", sg_host_by_name("Jupiter"), &victimB_fun, 0, NULL);
   sg_actor_ref(victimB); // We have to take that ref because victimB will end before we try to kill it
 
   sg_actor_sleep_for(10.0);
@@ -57,7 +57,7 @@ static void killer_fun(int argc, char* argv[])
   sg_actor_sleep_for(1.0);
 
   XBT_INFO("Start a new actor, and kill it right away");
-  sg_actor_t victimC = sg_actor_create("victim C", sg_host_by_name("Jupiter"), victimA_fun, 0, NULL);
+  sg_actor_t victimC = sg_actor_create("victim C", sg_host_by_name("Jupiter"), &victimA_fun, 0, NULL);
   sg_actor_kill(victimC);
   sg_actor_sleep_for(1.0);
 
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
   simgrid_load_platform(argv[1]);
 
   /* - Create and deploy killer actor, that will create the victim actor  */
-  sg_actor_create("killer", sg_host_by_name("Tremblay"), killer_fun, 0, NULL);
+  sg_actor_create("killer", sg_host_by_name("Tremblay"), &killer_fun, 0, NULL);
 
   simgrid_run();
 

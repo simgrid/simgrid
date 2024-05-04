@@ -25,8 +25,8 @@ namespace simgrid::kernel::resource {
 /*********
  * Model *
  *********/
-Action* HostModel::io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk,
-                                double size)
+Action* HostModel::io_stream(s4u::Host* src_host, const DiskImpl* src_disk, s4u::Host* dst_host,
+                             const DiskImpl* dst_disk, double size)
 {
   auto* net_model = src_host->get_englobing_zone()->get_network_model();
   auto* system    = net_model->get_maxmin_system();
@@ -117,12 +117,18 @@ void HostImpl::turn_off(const actor::ActorImpl* issuer)
               actor.get_host()->get_cname(), issuer->get_cname());
     issuer->kill(&actor);
   }
-  for (const auto& activity : EngineImpl::get_instance()->get_maestro()->activities_) {
+  // Let the maestro activities fail. Do so in 2 traversal, as cancel() removes the activity from the activities_,
+  // invalidating the iterators
+  std::vector<simgrid::kernel::activity::ActivityImpl*> to_clean;
+  for (auto const& activity : EngineImpl::get_instance()->get_maestro()->activities_) {
     auto const& hosts = activity->get_hosts();
     if (std::find(hosts.begin(), hosts.end(), &piface_) != hosts.end()) {
-      activity->cancel();
-      activity->set_state(activity::State::FAILED);
+      to_clean.push_back(activity.get());
     }
+  }
+  for (auto const& activity : to_clean) {
+    activity->cancel();
+    activity->set_state(activity::State::FAILED);
   }
   // When a host is turned off, we want to keep only the actors that should restart for when it will boot again.
   // Then get rid of the others.

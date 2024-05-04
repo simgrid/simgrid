@@ -10,6 +10,10 @@
 #include <simgrid/s4u/Host.hpp>
 
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/activity/ActivityImpl.hpp"
+#include "src/kernel/activity/BarrierImpl.hpp"
+#include "src/kernel/activity/MutexImpl.hpp"
+#include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/kernel/xml/platf.hpp"
@@ -20,6 +24,7 @@
 #include "src/simgrid/math_utils.h"
 #include "src/simgrid/sg_config.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
+#include "xbt/log.h"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/remote/AppSide.hpp"
@@ -29,6 +34,7 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <dlfcn.h>
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(ker_engine, "Logging specific to Engine (kernel)");
 
@@ -441,45 +447,64 @@ void EngineImpl::empty_trash()
   }
 }
 
+static const char* activity_type_name(activity::ActivityImpl* acti)
+{
+  if (dynamic_cast<kernel::activity::ExecImpl*>(acti) != nullptr)
+    return "an execution";
+
+  if (dynamic_cast<kernel::activity::CommImpl*>(acti) != nullptr)
+    return "a communication";
+
+  if (dynamic_cast<kernel::activity::MessImpl*>(acti) != nullptr)
+    return "a message";
+
+  if (dynamic_cast<kernel::activity::SleepImpl*>(acti) != nullptr)
+    return "a sleeping";
+
+  if (dynamic_cast<kernel::activity::IoImpl*>(acti) != nullptr)
+    return "an I/O";
+
+  if (dynamic_cast<kernel::activity::SemAcquisitionImpl*>(acti) != nullptr)
+    return "a semaphore acquisition";
+
+  if (dynamic_cast<kernel::activity::MutexAcquisitionImpl*>(acti) != nullptr)
+    return "a mutex lock";
+
+  if (dynamic_cast<kernel::activity::BarrierAcquisitionImpl*>(acti) != nullptr)
+    return "a barrier acquisition";
+
+  return "an unknown";
+}
+
 void EngineImpl::display_all_actor_status() const
 {
-  XBT_INFO("%zu actors are still running, waiting for something.", actor_list_.size());
+  if (actor_list_.size() == 1)
+    XBT_INFO("1 actor is still active, awaiting something. Here is its status:");
+  else
+    XBT_INFO("%zu actors are still active, awaiting something. Here is their status:", actor_list_.size());
   /*  List the actors and their state */
-  XBT_INFO("Legend of the following listing: \"Actor <pid> (<name>@<host>): <status>\"");
   for (auto const& [_, actor] : actor_list_) {
     if (actor->waiting_synchros_.empty()) {
-      XBT_INFO("Actor %ld (%s@%s) simcall %s", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname(),
+      XBT_INFO(" - pid %ld (%s@%s) simcall %s", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname(),
                (actor->simcall_.observer_ != nullptr ? actor->simcall_.observer_->to_string().c_str()
                                                      : actor->simcall_.get_cname()));
+    } else if (actor->waiting_synchros_.size() == 1) {
+      auto synchro = actor->waiting_synchros_[0];
+      XBT_INFO(" - pid %ld (%s@%s): waiting for %s activity %#zx (%s) in state %s", actor->get_pid(),
+               actor->get_cname(), actor->get_host()->get_cname(), activity_type_name(synchro.get()),
+               (xbt_log_no_loc ? (size_t)0xDEADBEEF : (size_t)synchro.get()), synchro->get_cname(),
+               synchro->get_state_str());
     } else {
-      XBT_INFO("Actor %ld (%s@%s): waiting for %zu activit%s to finish %s", actor->get_pid(),
-                 actor->get_cname(), actor->get_host()->get_cname(), actor->waiting_synchros_.size(), 
-                 (actor->waiting_synchros_.size()==1?"y":"ies"),
-                 (actor->simcall_.observer_ != nullptr && not xbt_log_no_loc
-                      ? actor->simcall_.observer_->to_string().c_str()
-                      : ""));
+      XBT_INFO(" - pid %ld (%s@%s): waiting for %zu activit%s to finish %s", actor->get_pid(), actor->get_cname(),
+               actor->get_host()->get_cname(), actor->waiting_synchros_.size(),
+               (actor->waiting_synchros_.size() == 1 ? "y" : "ies"),
+               (actor->simcall_.observer_ != nullptr && not xbt_log_no_loc
+                    ? actor->simcall_.observer_->to_string().c_str()
+                    : ""));
       for (auto const& synchro : actor->waiting_synchros_) {
-        const char* synchro_description = "an unknown";
-
-        if (boost::dynamic_pointer_cast<kernel::activity::ExecImpl>(synchro) != nullptr)
-          synchro_description = "an execution";
-
-        if (boost::dynamic_pointer_cast<kernel::activity::CommImpl>(synchro) != nullptr)
-          synchro_description = "a communication";
-
-        if (boost::dynamic_pointer_cast<kernel::activity::MessImpl>(synchro) != nullptr)
-          synchro_description = "a message";
-
-        if (boost::dynamic_pointer_cast<kernel::activity::SleepImpl>(synchro) != nullptr)
-          synchro_description = "a sleeping";
-
-        if (boost::dynamic_pointer_cast<kernel::activity::IoImpl>(synchro) != nullptr)
-          synchro_description = "an I/O";
-
-        XBT_INFO("   - %s activity %#zx (%s) in state %s", synchro_description,
-                 (xbt_log_no_loc ? (size_t)0xDEADBEEF : (size_t)synchro.get()),
-                 synchro->get_cname(), synchro->get_state_str()
-                 );
+        XBT_INFO("     - %s activity %#zx (%s) in state %s", activity_type_name(synchro.get()),
+                 (xbt_log_no_loc ? (size_t)0xDEADBEEF : (size_t)synchro.get()), synchro->get_cname(),
+                 synchro->get_state_str());
       }
     }
   }

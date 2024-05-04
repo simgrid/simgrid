@@ -39,18 +39,38 @@ namespace sg4 = simgrid::s4u;
 
 static sg4::Host* lilibeth = nullptr;
 
+static bool sthread_quiet = false;
+
 int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**, char**))
 {
+  /* Check whether we should keep silent about non-error situations */
+  for (int i = 0; envp[i] != nullptr; i++)
+    if (std::string_view(envp[i]).rfind("STHREAD_QUIET", 0) == 0)
+      sthread_quiet = true;
+
   /* Do not intercept the main when run from SMPI: it will initialize the simulation properly */
   for (int i = 0; envp[i] != nullptr; i++)
     if (std::string_view(envp[i]).rfind("SMPI_GLOBAL_SIZE", 0) == 0) {
-      printf("sthread refuses to intercept the SMPI application %s directly, as its interception is done otherwise.\n",
-             argv[0]);
+      if (not sthread_quiet)
+        printf(
+            "sthread refuses to intercept the SMPI application %s directly, as its interception is done otherwise.\n",
+            argv[0]);
       return raw_main(argc, argv, envp);
     }
 
   /* Do not intercept system binaries such as valgrind step 1 */
-  std::vector<std::string> binaries = {"/usr/bin/valgrind.bin", "/bin/sh", "/bin/bash", "gdb", "addr2line"};
+  std::vector<std::string> binaries = {"/usr/bin/valgrind.bin",
+                                       "/bin/sh",
+                                       "/bin/bash",
+                                       "addr2line",
+                                       "cat",
+                                       "dirname",
+                                       "gdb",
+                                       "make",
+                                       "md5sum",
+                                       "rm",
+                                       "simgrid-mc",
+                                       "wc"};
   for (int i = 0; envp[i] != nullptr; i++) {
     auto view = std::string_view(envp[i]);
     /* If you want to ignore more than one binary, export STHREAD_IGNORE_BINARY1=toto STHREAD_IGNORE_BINARY2=tutu */
@@ -63,16 +83,16 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
   auto binary_view = std::string_view(argv[0]);
   for (auto binary : binaries) {
     if (binary_view.rfind(binary) != std::string_view::npos) {
-      printf("sthread refuses to intercept the execution of %s. Running the application unmodified.\n", argv[0]);
-      fflush(stdout);
       return raw_main(argc, argv, envp);
     }
   }
 
   /* If not in SMPI, the old main becomes an actor in a newly created simulation */
-  printf("sthread is intercepting the execution of %s. If it's not what you want, export STHREAD_IGNORE_BINARY=%s\n",
-         argv[0], argv[0]);
-  fflush(stdout);
+  if (not sthread_quiet) {
+    fprintf(stderr,
+            "sthread is intercepting the execution of %s. If it's not what you want, export STHREAD_IGNORE_BINARY=%s\n",
+            argv[0], argv[0]);
+  }
 
   sg4::Engine e(&argc, argv);
   auto* zone = sg4::create_full_zone("world");
@@ -85,7 +105,8 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 
   sg4::Engine::get_instance()->run();
   sthread_disable();
-  XBT_INFO("All threads exited. Terminating the simulation.");
+  if (not sthread_quiet)
+    XBT_INFO("All threads exited. Terminating the simulation.");
 
   return 0;
 }
@@ -142,6 +163,7 @@ int sthread_mutexattr_init(sthread_mutexattr_t* attr)
 int sthread_mutexattr_settype(sthread_mutexattr_t* attr, int type)
 {
   switch (type) {
+    default: // Let's assume that unknown mutex policies behave as normal ones. That's somehow true for ADAPTIVE ones
     case PTHREAD_MUTEX_NORMAL:
       xbt_assert(not attr->recursive, "S4U does not allow to remove the recursivness of a mutex.");
       attr->recursive = 0;
@@ -154,8 +176,6 @@ int sthread_mutexattr_settype(sthread_mutexattr_t* attr, int type)
       attr->errorcheck = 1;
       THROW_UNIMPLEMENTED;
       break;
-    default:
-      THROW_IMPOSSIBLE;
   }
   return 0;
 }
@@ -230,6 +250,9 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
+  xbt_assert(static_cast<sg4::Mutex*>(mutex->mutex)->get_owner() == nullptr,
+             "Destroying a mutex that is still owned is UB. See https://cwe.mitre.org/data/definitions/667.html");
+
   XBT_DEBUG("%s(%p)", __func__, mutex);
   intrusive_ptr_release(static_cast<sg4::Mutex*>(mutex->mutex));
   return 0;
@@ -266,9 +289,11 @@ int sthread_cond_signal(sthread_cond_t* cond)
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
 
-  if (cond->mutex == nullptr)
-    XBT_WARN("No mutex was associated so far with condition variable %p. Safety checks skipped.", cond);
-  else {
+  /* At least in glibc, PTHREAD_COND_INITIALIZER sets every fields to 0 */
+  if (cond->cond == nullptr)
+    sthread_cond_init(cond, nullptr);
+
+  if (cond->mutex != nullptr) {
     auto* owner = static_cast<sg4::Mutex*>(cond->mutex)->get_owner();
     if (owner == nullptr)
       XBT_WARN("The mutex associated to condition %p is not currently owned by anyone when calling "
@@ -287,9 +312,11 @@ int sthread_cond_broadcast(sthread_cond_t* cond)
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
 
-  if (cond->mutex == nullptr)
-    XBT_WARN("No mutex was associated so far with condition variable %p. Safety checks skipped.", cond);
-  else {
+  /* At least in glibc, PTHREAD_COND_INITIALIZER sets every fields to 0 */
+  if (cond->cond == nullptr)
+    sthread_cond_init(cond, nullptr);
+
+  if (cond->mutex != nullptr) {
     auto* owner = static_cast<sg4::Mutex*>(cond->mutex)->get_owner();
     if (owner == nullptr)
       XBT_WARN("The mutex associated to condition %p is not currently owned by anyone when calling "
@@ -307,6 +334,10 @@ int sthread_cond_broadcast(sthread_cond_t* cond)
 int sthread_cond_wait(sthread_cond_t* cond, sthread_mutex_t* mutex)
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
+
+  /* At least in glibc, PTHREAD_COND_INITIALIZER sets every fields to 0 */
+  if (cond->cond == nullptr)
+    sthread_cond_init(cond, nullptr);
 
   if (cond->mutex == nullptr)
     cond->mutex = mutex->mutex;

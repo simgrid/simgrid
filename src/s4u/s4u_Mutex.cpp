@@ -29,8 +29,10 @@ void Mutex::lock()
 
   } else { // Do it in one simcall only
     // We don't need no observer on this non-MC path, but simcall_blocking() requires it.
-    // Use an invalid type in the hope to get a loud error if it gets used despite our expectations.
-    kernel::actor::MutexAcquisitionObserver useless_observer{issuer, mc::Transition::Type::UNKNOWN, nullptr, -1};
+    // Use a type clearly indicating it's NO-MC in the hope to get a loud error if it gets used despite our
+    // expectations.
+    kernel::actor::MutexAcquisitionObserver useless_observer{issuer, mc::Transition::Type::MUTEX_LOCK_NOMC, nullptr,
+                                                             -1};
     kernel::actor::simcall_blocking([issuer, this] { pimpl_->lock_async(issuer)->wait_for(issuer, -1); },
                                     &useless_observer);
   }

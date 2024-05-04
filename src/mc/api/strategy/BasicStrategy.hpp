@@ -6,64 +6,27 @@
 #ifndef SIMGRID_MC_BASICSTRATEGY_HPP
 #define SIMGRID_MC_BASICSTRATEGY_HPP
 
-#include "Strategy.hpp"
+#include "src/mc/api/strategy/StratLocalInfo.hpp"
 #include "src/mc/explo/Exploration.hpp"
-
-XBT_LOG_EXTERNAL_CATEGORY(mc_dfs);
 
 namespace simgrid::mc {
 
 /** Basic MC guiding class which corresponds to no guide. When asked for different states
  *  it will follow a depth first search politics to minize the number of opened states. */
-class BasicStrategy : public Strategy {
+class BasicStrategy : public StratLocalInfo {
   int depth_ = _sg_mc_max_depth; // Arbitrary starting point. next_transition must return a positive value to work with
-                                 // threshold in DFSExplorer
+                                 // threshold in BFSExplorer
 
 public:
-  void copy_from(const Strategy* strategy) override
-  {
-    const auto* cast_strategy = dynamic_cast<BasicStrategy const*>(strategy);
-    xbt_assert(cast_strategy != nullptr);
-    depth_ = cast_strategy->depth_ - 1;
-    if (depth_ <= 0) {
-      XBT_CERROR(mc_dfs,
-                 "The exploration reached a depth greater than %d. Change the depth limit with "
-                 "--cfg=model-check/max-depth. Here are the 100 first trace elements",
-                 _sg_mc_max_depth.get());
-      auto trace = Exploration::get_instance()->get_textual_trace(100);
-      for (auto const& elm : trace)
-        XBT_CERROR(mc_dfs, "  %s", elm.c_str());
-      xbt_die("Aborting now.");
-    }
-  }
+  void copy_from(const StratLocalInfo* strategy) override;
   BasicStrategy()           = default;
   ~BasicStrategy() override = default;
 
-  std::pair<aid_t, int> best_transition(bool must_be_todo) const override
-  {
-    for (auto const& [aid, actor] : actors_to_run_) {
-      /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
-      if ((not actor.is_todo() && must_be_todo) || not actor.is_enabled() || actor.is_done())
-        continue;
+  int get_actor_valuation(aid_t aid) const override { return depth_; }
 
-      return std::make_pair(aid, depth_);
-    }
-    return std::make_pair(-1, depth_);
-  }
+  std::pair<aid_t, int> best_transition(bool must_be_todo) const override;
 
-  void consider_best_among_set(std::unordered_set<aid_t> E) override
-  {
-    if (std::any_of(begin(E), end(E), [this](const auto& aid) { return actors_to_run_.at(aid).is_todo(); }))
-      return;
-    for (auto& [aid, actor] : actors_to_run_) {
-      /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
-      if (E.count(aid) > 0) {
-        xbt_assert(actor.is_enabled(), "Asked to consider one among a set containing the disabled actor %ld", aid);
-        actor.mark_todo();
-        return;
-      }
-    }
-  }
+  void consider_best_among_set(std::unordered_set<aid_t> E) override;
 
   void execute_next(aid_t aid, RemoteApp& app) override { return; }
 };

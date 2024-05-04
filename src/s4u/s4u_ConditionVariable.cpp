@@ -7,11 +7,13 @@
 #include <simgrid/s4u/ConditionVariable.hpp>
 #include <xbt/log.h>
 
+#include "simgrid/modelchecker.h"
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/actor/SynchroObserver.hpp"
+#include "src/mc/mc_replay.hpp"
 
-#include <mutex>
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_condition);
 
 namespace simgrid::s4u {
 
@@ -25,20 +27,56 @@ ConditionVariablePtr ConditionVariable::create()
 /**
  * Wait functions
  */
+static bool do_wait(kernel::actor::ActorImpl* issuer, kernel::activity::ConditionVariableImpl* pimpl,
+                    kernel::activity::MutexImpl* mutex, double timeout)
+{
+  xbt_assert(mutex != nullptr, "Cannot wait on a condition variable without a valid mutex");
+  xbt_assert(mutex->get_owner() == issuer,
+             "Cannot wait on a condvar with a mutex (id %u) owned by another actor (id %ld)", mutex->get_id(),
+             mutex->get_owner()->get_pid());
+
+  if (MC_is_active() || MC_record_replay_is_active()) { // Split in 2 simcalls for transition persistency
+
+    kernel::actor::ConditionVariableObserver lock_observer{issuer, mc::Transition::Type::CONDVAR_ASYNC_LOCK, pimpl,
+                                                           mutex, timeout};
+    auto acquisition = kernel::actor::simcall_answered(
+        [issuer, pimpl, mutex] { return pimpl->acquire_async(issuer, mutex); }, &lock_observer);
+
+    kernel::actor::ConditionVariableObserver wait_observer{issuer, mc::Transition::Type::CONDVAR_WAIT,
+                                                           acquisition.get(), timeout};
+    bool res = kernel::actor::simcall_blocking(
+        [issuer, &acquisition, timeout] { acquisition->wait_for(issuer, timeout); }, &wait_observer);
+
+    /* get back the mutex after the wait */
+    mutex->get_iface().lock();
+
+    return res;
+
+  } else { // Do it in one simcall only
+    // We don't need no observer on this non-MC path, but simcall_blocking() requires it.
+    // Use a type clearly indicating it's NO-MC in the hope to get a loud error if it gets used despite our
+    // expectations.
+    kernel::actor::ConditionVariableObserver observer{issuer, mc::Transition::Type::CONDVAR_NOMC, pimpl, mutex};
+
+    return kernel::actor::simcall_blocking(
+        [&observer, timeout] {
+          auto issuer = observer.get_issuer();
+          observer.get_cond()->acquire_async(issuer, observer.get_mutex())->wait_for(issuer, timeout);
+
+          // The mutex_lock is done within wait_for
+        },
+        &observer);
+  }
+}
+
 void ConditionVariable::wait(MutexPtr lock)
 {
-  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ConditionVariableObserver observer{issuer, pimpl_, lock->pimpl_};
-  kernel::actor::simcall_blocking(
-      [&observer] { observer.get_cond()->wait(observer.get_mutex(), -1.0, observer.get_issuer()); }, &observer);
+  do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock->pimpl_, -1);
 }
 
 void ConditionVariable::wait(const std::unique_lock<Mutex>& lock)
 {
-  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ConditionVariableObserver observer{issuer, pimpl_, lock.mutex()->pimpl_};
-  kernel::actor::simcall_blocking(
-      [&observer] { observer.get_cond()->wait(observer.get_mutex(), -1.0, observer.get_issuer()); }, &observer);
+  do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock.mutex()->pimpl_, -1);
 }
 
 std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& lock, double timeout)
@@ -47,18 +85,9 @@ std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& l
   if (timeout < 0)
     timeout = 0.0;
 
-  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ConditionVariableObserver observer{issuer, pimpl_, lock.mutex()->pimpl_, timeout};
-  bool timed_out = kernel::actor::simcall_blocking(
-      [&observer] { observer.get_cond()->wait(observer.get_mutex(), observer.get_timeout(), observer.get_issuer()); },
-      &observer);
-  if (timed_out) {
-    // If we reached the timeout, we have to take the lock again:
-    lock.mutex()->lock();
-    return std::cv_status::timeout;
-  } else {
-    return std::cv_status::no_timeout;
-  }
+  bool timed_out = do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock.mutex()->pimpl_, timeout);
+
+  return timed_out ? std::cv_status::timeout : std::cv_status::no_timeout;
 }
 
 std::cv_status ConditionVariable::wait_until(const std::unique_lock<Mutex>& lock, double timeout_time)
@@ -69,7 +98,10 @@ std::cv_status ConditionVariable::wait_until(const std::unique_lock<Mutex>& lock
     timeout = 0.0;
   else
     timeout = timeout_time - now;
-  return this->wait_for(lock, timeout);
+
+  bool timed_out = do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock.mutex()->pimpl_, timeout);
+
+  return timed_out ? std::cv_status::timeout : std::cv_status::no_timeout;
 }
 
 /**
@@ -77,7 +109,9 @@ std::cv_status ConditionVariable::wait_until(const std::unique_lock<Mutex>& lock
  */
 void ConditionVariable::notify_one()
 {
-  simgrid::kernel::actor::simcall_answered([this]() { pimpl_->signal(); });
+  kernel::actor::ConditionVariableObserver observer{kernel::actor::ActorImpl::self(),
+                                                    mc::Transition::Type::CONDVAR_SIGNAL, pimpl_};
+  simgrid::kernel::actor::simcall_answered([this]() { pimpl_->signal(); }, &observer);
 }
 
 void ConditionVariable::notify_all()

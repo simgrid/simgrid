@@ -23,4 +23,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [   0.000000] (maestro@)   Actor 2 in simcall BeginObjectAccess(&v)
 > [   0.000000] (maestro@)   Actor 3 in simcall BeginObjectAccess(&v)
 > [   0.000000] (maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;3'
-> [   0.000000] (maestro@) DFS exploration ended. 7 unique states visited; 1 backtracks (1 transition replays, 8 states visited overall)
+> [   0.000000] (maestro@) DFS exploration ended. 7 unique states visited; 1 explored traces (1 transition replays, 8 states visited overall)

@@ -9,23 +9,22 @@ $ $VALGRIND_NO_LEAK_CHECK ../../../smpi_script/bin/smpirun -quiet -wrapper "${bi
 > rank 0 recv the data
 > rank 1 recv the data
 > Sent 1 to rank 0
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 9 unique states visited; 1 backtracks (0 transition replays, 9 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 9 unique states visited; 1 explored traces (0 transition replays, 9 states visited overall)
 
 p Testing the paranoid model
 ! timeout 60
-! expect return 3
+! expect return 2
 $ $VALGRIND_NO_LEAK_CHECK ../../../smpi_script/bin/smpirun -quiet -wrapper "${bindir:=.}/../../../bin/simgrid-mc" -np 2 -platform ${platfdir:=.}/cluster_backbone.xml --cfg=smpi/buffering:zero --log=xbt_cfg.thresh:warning ./smpi_sendsend
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
 > [0.000000] [mc_global/INFO] **************************
 > [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
 > [0.000000] [mc_global/INFO] **************************
-> [0.000000] [ker_engine/INFO] 2 actors are still running, waiting for something.
-> [0.000000] [ker_engine/INFO] Legend of the following listing: "Actor <pid> (<name>@<host>): <status>"
-> [0.000000] [ker_engine/INFO] Actor 1 (0@node-0.simgrid.org) simcall CommWait(comm_id:1 src:1 dst:-1 mbox:SMPI-2(id:2))
-> [0.000000] [ker_engine/INFO] Actor 2 (1@node-1.simgrid.org) simcall CommWait(comm_id:2 src:2 dst:-1 mbox:SMPI-1(id:3))
+> [0.000000] [ker_engine/INFO] 2 actors are still active, awaiting something. Here is their status:
+> [0.000000] [ker_engine/INFO]  - pid 1 (0@node-0.simgrid.org) simcall CommWait(comm_id:1 src:1 dst:-1 mbox:SMPI-2(id:2))
+> [0.000000] [ker_engine/INFO]  - pid 2 (1@node-1.simgrid.org) simcall CommWait(comm_id:2 src:2 dst:-1 mbox:SMPI-1(id:3))
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
 > [0.000000] [mc_global/INFO]   Actor 1 in :0:() ==> simcall: iSend(mbox=2)
 > [0.000000] [mc_global/INFO]   Actor 2 in :0:() ==> simcall: iSend(mbox=3)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;2'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 3 unique states visited; 0 backtracks (0 transition replays, 3 states visited overall)
-> Execution failed with code 3.
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 3 unique states visited; 0 explored traces (0 transition replays, 3 states visited overall)
+> Execution failed with code 2.

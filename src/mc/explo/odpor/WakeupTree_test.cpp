@@ -76,11 +76,11 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Constructing Trees")
     // action `a2`) are added such that they are "greater than" (under
     // the tree's `<` relation) all those that exist under the given parent
     WakeupTree tree;
-    tree.insert(Execution(), {a1, a2, a3, a4});
-    tree.insert(Execution(), {a1, a3, a2, a4});
-    tree.insert(Execution(), {a1, a3, a2, a4, a5});
-    tree.insert(Execution(), {a1, a3, a5});
-    tree.insert(Execution(), {a4, a2, a1, a3});
+    tree.insert({a1, a2, a3, a4});
+    tree.insert({a1, a3, a2, a4});
+    tree.insert({a1, a3, a2, a4, a5});
+    tree.insert({a1, a3, a5});
+    tree.insert({a4, a2, a1, a3});
     REQUIRE(tree.get_num_nodes() == 13);
     test_tree_iterator(tree, std::vector<PartialExecution>{
                                  PartialExecution{a1, a2, a3, a4}, PartialExecution{a1, a2, a3},
@@ -202,30 +202,30 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
     execution.push_transition(a3);
     execution.push_transition(a4);
 
-    REQUIRE(execution.get_racing_events_of(2) == std::unordered_set<Execution::EventHandle>{0});
-    REQUIRE(execution.get_racing_events_of(3) == std::unordered_set<Execution::EventHandle>{0});
+    REQUIRE(execution.get_racing_events_of(2) == std::list<Execution::EventHandle>{0});
+    REQUIRE(execution.get_racing_events_of(3) == std::list<Execution::EventHandle>{0});
 
     WakeupTree tree;
 
     SECTION("Attempting to insert the empty sequence into an empty tree should have no effect")
     {
-      tree.insert(Execution(), {});
+      tree.insert({});
       test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{}});
     }
 
     // First, we initialize the tree to how it looked prior
     // to the insertion of the race.
-    tree.insert(Execution(), {a0});
+    tree.insert({a0});
 
     // Then, after insertion, we ensure that the node was
     // indeed added to the tree.
-    tree.insert(Execution(), {a1, a3});
+    tree.insert({a1, a3});
     test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{a1, a3},
                                                            PartialExecution{a1}, PartialExecution{}});
 
     SECTION("Attempting to re-insert the same EXACT sequence should have no effect")
     {
-      tree.insert(Execution(), {a1, a3});
+      tree.insert({a1, a3});
       test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{a1, a3},
                                                              PartialExecution{a1}, PartialExecution{}});
     }
@@ -234,14 +234,14 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
     {
       // a3 and a1 are interchangeable since `a1` is independent with everything.
       // Since we found an equivalent sequence that is a leaf, nothing should result..
-      tree.insert(Execution(), {a3, a1});
+      tree.insert({a3, a1});
       test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{a1, a3},
                                                              PartialExecution{a1}, PartialExecution{}});
     }
 
     SECTION("Attempting to insert the empty sequence should have no effect")
     {
-      tree.insert(Execution(), {});
+      tree.insert({});
       test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{a1, a3},
                                                              PartialExecution{a1}, PartialExecution{}});
     }
@@ -260,7 +260,7 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
       // Recall that new nodes (in this case the one with
       // action `a2`) are added such that they are "greater than" (under
       // the tree's `<` relation) all those that exist under the given parent.
-      tree.insert(Execution(), {a1, a4});
+      tree.insert({a1, a4});
       test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{a1, a3},
                                                              PartialExecution{a1, a4}, PartialExecution{a1},
                                                              PartialExecution{}});
@@ -281,7 +281,7 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
       // Recall that new nodes (in this case the one with
       // action `a2`) are added such that they are "greater than" (under
       // the tree's `<` relation) all those that exist under the given parent.
-      tree.insert(Execution(), {a1, a3});
+      tree.insert({a1, a3});
       test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{a1, a3},
                                                              PartialExecution{a1}, PartialExecution{}});
     }
@@ -299,15 +299,15 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
 
     SECTION("Attempting to insert the empty sequence into an empty tree should have no effect")
     {
-      tree.insert(Execution(), {});
+      tree.insert({});
       test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{}});
     }
 
     SECTION("Attempting to re-insert the same sequence multiple times should have no extra effect")
     {
-      tree.insert(Execution(), {a4});
-      tree.insert(Execution(), {a4});
-      tree.insert(Execution(), {a4});
+      tree.insert({a4});
+      tree.insert({a4});
+      tree.insert({a4});
       REQUIRE(tree.get_num_nodes() == 2);
       test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a4}, PartialExecution{}});
     }
@@ -322,8 +322,8 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
       // (in this case, consisting only of `a1`) which IS true. Since `a4`
       // is already a leaf node of the tree, it suffices to only have `a4`
       // in this tree to guide ODPOR.
-      tree.insert(Execution(), {a4});
-      tree.insert(Execution(), {a1});
+      tree.insert({a4});
+      tree.insert({a1});
       REQUIRE(tree.get_num_nodes() == 2);
       test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a4}, PartialExecution{}});
     }
@@ -334,11 +334,11 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
       // All progressions starting with `a0` are effectively already accounted
       // for by inserting `a0` since we `a0` "can always be made to look like"
       // (viz. the `~` relation) `a0.*` where `*` is some sequence of actions
-      tree.insert(Execution(), {a0});
-      tree.insert(Execution(), {a0, a3});
-      tree.insert(Execution(), {a0, a3, a2});
-      tree.insert(Execution(), {a0, a3, a2, a4});
-      tree.insert(Execution(), {a0, a3, a2, a4});
+      tree.insert({a0});
+      tree.insert({a0, a3});
+      tree.insert({a0, a3, a2});
+      tree.insert({a0, a3, a2, a4});
+      tree.insert({a0, a3, a2, a4});
       REQUIRE(tree.get_num_nodes() == 2);
       test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{}});
     }
@@ -351,10 +351,10 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
       //            a0     a2
       //                 /  |   /
       //               a0  a3   a5
-      tree.insert(Execution(), {a0});
-      tree.insert(Execution(), {a2, a0});
-      tree.insert(Execution(), {a2, a3});
-      tree.insert(Execution(), {a2, a5});
+      tree.insert({a0});
+      tree.insert({a2, a0});
+      tree.insert({a2, a3});
+      tree.insert({a2, a5});
       REQUIRE(tree.get_num_nodes() == 6);
       test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{a2, a0},
                                                              PartialExecution{a2, a3}, PartialExecution{a2, a5},
@@ -367,7 +367,7 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
         // series. HOWEVER: we notice that `a2.a5` is "eventually equivalent to"
         // (that is `~` with) `a1.a2` since `a2` is an initial of the latter and
         // `a1` and `a5` are independent of each other.
-        tree.insert(Execution(), {a1, a2});
+        tree.insert({a1, a2});
         REQUIRE(tree.get_num_nodes() == 6);
         test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{a2, a0},
                                                                PartialExecution{a2, a3}, PartialExecution{a2, a5},
@@ -382,7 +382,7 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
         //            a0     a2        a3
         //                 /  |  /     |
         //               a0  a3  a5    a0
-        tree.insert(Execution(), {a3, a0});
+        tree.insert({a3, a0});
         REQUIRE(tree.get_num_nodes() == 8);
         test_tree_iterator(tree, std::vector<PartialExecution>{PartialExecution{a0}, PartialExecution{a2, a0},
                                                                PartialExecution{a2, a3}, PartialExecution{a2, a5},
@@ -416,9 +416,9 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
     //          d_2                d_2              d_1
     //
     // d_1.i_3.d_2 is equivalent to i_3.d_2.d_1
-    complex_tree.insert(Execution(), {cd_1, i_2, d_1, i_3, d_2, d_2});
-    complex_tree.insert(Execution(), {i_2, d_2, cd_1, d_1, i_3, d_2});
-    complex_tree.insert(Execution(), {i_2, d_2, cd_1, i_3, d_2, d_1});
+    complex_tree.insert({cd_1, i_2, d_1, i_3, d_2, d_2});
+    complex_tree.insert({i_2, d_2, cd_1, d_1, i_3, d_2});
+    complex_tree.insert({i_2, d_2, cd_1, i_3, d_2, d_1});
     REQUIRE(complex_tree.get_num_nodes() == 16);
     test_tree_iterator(complex_tree, std::vector<PartialExecution>{{cd_1, i_2, d_1, i_3, d_2, d_2},
                                                                    {cd_1, i_2, d_1, i_3, d_2},
@@ -443,7 +443,7 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
     // is already equivalent to
     //
     //    i_2.d_2.cd_1.i_3.d_2.d_1
-    complex_tree.insert(Execution(), {i_3, i_2, d_2, cd_1, d_2, d_1});
+    complex_tree.insert({i_3, i_2, d_2, cd_1, d_2, d_1});
     REQUIRE(complex_tree.get_num_nodes() == 16);
 
     // Here we note that the sequence that we are attempting to insert, viz.
@@ -453,7 +453,7 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
     // is already equivalent to
     //
     //    i_2.d_2.cd_1.i_3.d_2.d_1
-    complex_tree.insert(Execution(), {i_2, d_2, cd_1, d_1, i_3});
+    complex_tree.insert({i_2, d_2, cd_1, d_1, i_3});
     REQUIRE(complex_tree.get_num_nodes() == 16);
 
     // Here we note that the sequence that we are attempting to insert, viz.
@@ -463,7 +463,7 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
     // is accounted for by an interior node of the tree. Since there is no
     // "extra" portions that are different from what is already
     // contained in the tree, nothing is added and the tree stays the same
-    complex_tree.insert(Execution(), {i_2, d_2, cd_1});
+    complex_tree.insert({i_2, d_2, cd_1});
     REQUIRE(complex_tree.get_num_nodes() == 16);
   }
 }

@@ -4,10 +4,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/udpor/Unfolding.hpp"
+#include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/udpor/EventSet.hpp"
 
 #include <stdexcept>
 
 namespace simgrid::mc::udpor {
+
+long Unfolding::expanded_events_ = 0;
 
 void Unfolding::mark_finished(const EventSet& events)
 {
@@ -60,18 +64,46 @@ const UnfoldingEvent* Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
   this->U.insert(handle);
   this->event_handles.insert(handle);
   this->global_events_[handle] = std::move(e);
+
+  EventSet immediate_conflicts_of_e = this->compute_immediate_conflicts_of(handle);
+  for (auto const eprime : immediate_conflicts_of_e) {
+    if (this->immediate_conflicts_.count(eprime) > 0)
+
+      this->immediate_conflicts_.at(eprime).insert(handle);
+    else
+      this->immediate_conflicts_.insert({eprime, EventSet({handle})});
+  }
+  immediate_conflicts_.insert({handle, immediate_conflicts_of_e});
+  if (Exploration::get_instance() != nullptr) {
+    Exploration::get_instance()->dot_output("%u [tooltip=\"Actor %ld : %s\"]\n", handle->get_id(), handle->get_actor(),
+                                            handle->get_transition()->to_string(true).c_str());
+    Exploration::get_instance()->dot_output("%s", handle->to_dot_string().c_str());
+  }
+  expanded_events_++;
   return handle;
+}
+
+EventSet Unfolding::compute_immediate_conflicts_of(const UnfoldingEvent* e) const
+{
+  EventSet immediate_conflicts;
+  EventSet skippable{};
+  for (const auto* event : U) {
+    if (skippable.contains(event))
+      continue;
+    if (event->immediately_conflicts_with(e)) {
+      immediate_conflicts.insert(event);
+      skippable.form_union(event->get_history());
+    }
+  }
+  return immediate_conflicts;
 }
 
 EventSet Unfolding::get_immediate_conflicts_of(const UnfoldingEvent* e) const
 {
-  EventSet immediate_conflicts;
-  for (const auto* event : U) {
-    if (event->immediately_conflicts_with(e)) {
-      immediate_conflicts.insert(event);
-    }
-  }
-  return immediate_conflicts;
+  if (immediate_conflicts_.count(e) > 0)
+    return immediate_conflicts_.at(e);
+  else
+    return EventSet();
 }
 
 } // namespace simgrid::mc::udpor

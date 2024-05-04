@@ -31,7 +31,7 @@ class XBT_PUBLIC ActivitySet : public xbt::Extendable<ActivitySet> {
 
 public:
   ActivitySet()  = default;
-  ActivitySet(const std::vector<ActivityPtr> init) : activities_(init) {}
+  explicit ActivitySet(const std::vector<ActivityPtr>& init) : activities_(init) {}
   ~ActivitySet() = default;
 
   /** Add an activity to the set */
@@ -40,9 +40,10 @@ public:
   void erase(ActivityPtr a);
 
   /** Get the amount of activities in the set. Failed activities (if any) are not counted */
-  int size() { return activities_.size(); }
+  int size() const { return activities_.size(); }
   /** Return whether the set is empty. Failed activities (if any) are not counted */
-  int empty() { return activities_.empty(); }
+  int empty() const { return activities_.empty(); }
+  void clear() { activities_.clear(); }
 
   /** Access to one specific activity in the set */
   ActivityPtr at(unsigned int index) { return activities_.at(index); }
@@ -85,7 +86,7 @@ public:
    * ActivityPtr() if no failed activity exist in the set. */
   ActivityPtr get_failed_activity();
   /** Return whether the set contains any failed activity. */
-  bool has_failed_activities() { return not failed_activities_.empty(); }
+  bool has_failed_activities() const { return not failed_activities_.empty(); }
 
   // boost::intrusive_ptr<ActivitySet> support:
   friend void intrusive_ptr_add_ref(ActivitySet* as)

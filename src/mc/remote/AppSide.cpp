@@ -12,6 +12,7 @@
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
+#include "xbt/log.h"
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif
@@ -61,6 +62,10 @@ AppSide* AppSide::get()
 
   instance_ = std::make_unique<simgrid::mc::AppSide>(fd);
 
+  // If we plan to fork, remove the SIGINT handler that would get messed up by all the forked childs
+  if (not _sg_mc_nofork)
+    std::signal(SIGINT, SIG_DFL);
+
   instance_->handle_messages();
   return instance_.get();
 }
@@ -89,8 +94,10 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
 {
   kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(message->aid_);
   xbt_assert(actor != nullptr, "Invalid pid %ld", message->aid_);
-  xbt_assert(actor->simcall_.observer_ == nullptr || actor->simcall_.observer_->is_enabled(),
-             "Please, model-checker, don't execute disabled transitions.");
+  xbt_assert(
+      (actor->simcall_.observer_ == nullptr && actor->simcall_.call_ != simgrid::kernel::actor::Simcall::Type::NONE) ||
+          (actor->simcall_.observer_ != nullptr && actor->simcall_.observer_->is_enabled()),
+      "Please, model-checker, don't execute disabled transitions.");
 
   // The client may send some messages to the server while processing the transition
   actor->simcall_handle(message->times_considered_);
@@ -138,6 +145,20 @@ void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
 }
 void AppSide::handle_fork(const s_mc_message_fork_t* msg)
 {
+  static bool first_time = true;
+  if (first_time && std::strcmp(simgrid::s4u::Engine::get_instance()->get_context_factory_name(), "thread") == 0) {
+    s_mc_message_int_t answer = {.type = MessageType::FORK_REPLY, .value = 0};
+    xbt_assert(channel_.send(answer) == 0, "Could not send failure as a response to FORK: %s", strerror(errno));
+
+    xbt_die("The SimGrid model-checker cannot handle the threaded context factory because it relies on forking the "
+            "application, which is not possible with multi-threaded applications. Please remove the "
+            "--cfg=contexts/factory:thread parameter to the application, or add --cfg=model-check/no-fork:1 to "
+            "simgrid-mc. The second option results in slower explorations, but it is the only option when verifying "
+            "Python programs, as the SimGrid Python bindings mandate threads.");
+    // See also commit c2c077dc7edb4a4217610dbaf675f414cbf6f09f for the reason why Python needs threads
+  }
+  first_time = false;
+
   int status;
   int pid;
   /* Reap any zombie child, saving its status for later use in AppSide::handle_wait_child() */
@@ -168,7 +189,7 @@ void AppSide::handle_fork(const s_mc_message_fork_t* msg)
     s_mc_message_int_t answer = {};
     answer.type               = MessageType::FORK_REPLY;
     answer.value              = getpid();
-    xbt_assert(channel_.send(answer) == 0, "Could not send response to WAIT_CHILD_REPLY: %s", strerror(errno));
+    xbt_assert(channel_.send(answer) == 0, "Could not send response to FORK: %s", strerror(errno));
   } else {
     XBT_VERB("App %d forks subprocess %d.", getpid(), pid);
   }

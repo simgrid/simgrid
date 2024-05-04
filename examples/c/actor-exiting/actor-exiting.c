@@ -71,9 +71,9 @@ int main(int argc, char* argv[])
 
   simgrid_load_platform(argv[1]); /* - Load the platform description */
 
-  sg_actor_create("A", sg_host_by_name("Tremblay"), actorA_fun, 0, NULL);
-  sg_actor_create("B", sg_host_by_name("Fafard"), actorB_fun, 0, NULL);
-  sg_actor_create("C", sg_host_by_name("Ginette"), actorC_fun, 0, NULL);
+  sg_actor_create("A", sg_host_by_name("Tremblay"), &actorA_fun, 0, NULL);
+  sg_actor_create("B", sg_host_by_name("Fafard"), &actorB_fun, 0, NULL);
+  sg_actor_create("C", sg_host_by_name("Ginette"), &actorC_fun, 0, NULL);
 
   simgrid_run();
 

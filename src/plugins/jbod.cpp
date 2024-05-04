@@ -30,10 +30,27 @@ JbodPtr Jbod::create_jbod(s4u::NetZone* zone, const std::string& name, double sp
   for (unsigned int i = 0; i < num_disks; i++)
     jbod->get_controller()->create_disk(name + "_disk_" + std::to_string(i), read_bandwidth, write_bandwidth);
 
-  return JbodPtr(jbod, false);
+  auto res = JbodPtr(jbod, false);
+  all_jbods_.insert({name,res});
+  return res;
 }
 
-JbodIoPtr Jbod::read_async(sg_size_t size)
+JbodPtr Jbod::by_name(const std::string& name)
+{
+  auto jbod = Jbod::by_name_or_null(name);
+  if (not jbod)
+    throw std::invalid_argument("Host not found: '" + name + "'");
+  return jbod;
+}
+
+JbodPtr Jbod::by_name_or_null(const std::string& name)
+{
+  if (auto jbod_it = all_jbods_.find(name); jbod_it != all_jbods_.end())
+    return jbod_it->second;
+  return nullptr;
+}
+
+JbodIoPtr Jbod::read_init(sg_size_t size)
 {
   auto comm = s4u::Comm::sendto_init()->set_source(this->controller_)->set_payload_size(size);
   std::vector<s4u::IoPtr> pending_ios;
@@ -77,11 +94,18 @@ JbodIoPtr Jbod::read_async(sg_size_t size)
   }
   for (const auto* disk : targets) {
     auto io = s4u::IoPtr(disk->io_init(read_size, s4u::Io::OpType::READ));
-    io->set_name(disk->get_name())->start();
+    io->set_name(disk->get_name());
     pending_ios.push_back(io);
   }
 
   return JbodIoPtr(new JbodIo(this, comm, nullptr, pending_ios, s4u::Io::OpType::READ));
+}
+
+JbodIoPtr Jbod::read_async(sg_size_t size)
+{
+  JbodIoPtr io = read_init(size);
+  io->start();
+  return io;
 }
 
 sg_size_t Jbod::read(sg_size_t size)
@@ -90,7 +114,7 @@ sg_size_t Jbod::read(sg_size_t size)
   return size;
 }
 
-JbodIoPtr Jbod::write_async(sg_size_t size)
+JbodIoPtr Jbod::write_init(sg_size_t size)
 {
   auto comm = s4u::Comm::sendto_init(s4u::Host::current(), this->get_controller());
   std::vector<s4u::IoPtr> pending_ios;
@@ -132,9 +156,16 @@ JbodIoPtr Jbod::write_async(sg_size_t size)
     else
       parity_block_comp = s4u::Exec::init()->set_flops_amount(write_size);
   }
-
-  comm->set_payload_size(size)->start();
+  comm->set_payload_size(size);
   return JbodIoPtr(new JbodIo(this, comm, parity_block_comp, pending_ios, s4u::Io::OpType::WRITE));
+}
+
+
+JbodIoPtr Jbod::write_async(sg_size_t size)
+{
+  JbodIoPtr io = write_init(size);
+  io->start();
+  return io;
 }
 
 sg_size_t Jbod::write(sg_size_t size)
@@ -143,8 +174,24 @@ sg_size_t Jbod::write(sg_size_t size)
   return size;
 }
 
+JbodIo* JbodIo::start()
+{
+  if (type_ == s4u::Io::OpType::READ) {
+    for (auto& io : pending_ios_)
+      io->start();
+  } else if (type_ == s4u::Io::OpType::WRITE) {
+    transfer_->start();
+  } else
+    xbt_die("Unknown JBOD I/O type");
+  return this;
+}
+
 void JbodIo::wait()
 {
+  if ((type_ == s4u::Io::OpType::WRITE && transfer_->get_state() == s4u::Activity::State::INITED) ||
+      (type_ == s4u::Io::OpType::READ && pending_ios_.front()->get_state() == s4u::Activity::State::INITED))
+    start();
+
   if (type_ == s4u::Io::OpType::WRITE) {
     transfer_->wait();
     XBT_DEBUG("Data received on JBOD");

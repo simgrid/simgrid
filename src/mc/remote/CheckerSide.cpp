@@ -8,6 +8,7 @@
 #include "src/mc/mc_environ.h"
 #include "xbt/config.hpp"
 #include "xbt/system_error.hpp"
+#include <cerrno>
 
 #ifdef __linux__
 #include <sys/prctl.h>
@@ -113,7 +114,7 @@ static void wait_application_process(pid_t pid)
   XBT_DEBUG("%d ptrace correctly setup.", getpid());
 }
 
-void CheckerSide::setup_events(bool socket_only)
+void CheckerSide::setup_events()
 {
   auto* base = event_base_new();
   base_.reset(base);
@@ -146,9 +147,9 @@ void CheckerSide::setup_events(bool socket_only)
       this);
   event_add(socket_event_, nullptr);
 
-  if (socket_only) {
-    signal_event_ = nullptr;
-  } else {
+  static bool first_time = true;
+  if (first_time) {
+    first_time    = false;
     signal_event_ = event_new(
         base, SIGCHLD, EV_SIGNAL | EV_PERSIST,
         [](evutil_socket_t sig, short events, void* arg) {
@@ -197,7 +198,7 @@ CheckerSide::CheckerSide(const std::vector<char*>& args) : running_(true)
   ::close(sockets[0]);
   channel_.reset_socket(sockets[1]);
 
-  setup_events(false); /* we need a signal handler too */
+  setup_events();
   wait_for_requests();
 }
 
@@ -215,7 +216,7 @@ CheckerSide::~CheckerSide()
 CheckerSide::CheckerSide(int socket, CheckerSide* child_checker)
     : channel_(socket, child_checker->channel_), running_(true), child_checker_(child_checker)
 {
-  setup_events(true); // We already have a signal handled in that case
+  setup_events();
 
   s_mc_message_int_t answer;
   ssize_t s = get_channel().receive(answer);
@@ -224,6 +225,7 @@ CheckerSide::CheckerSide(int socket, CheckerSide* child_checker)
   xbt_assert(answer.type == MessageType::FORK_REPLY,
              "Received unexpected message %s (%i); expected MessageType::FORK_REPLY (%i)", to_c_str(answer.type),
              (int)answer.type, (int)MessageType::FORK_REPLY);
+  xbt_assert(answer.value != 0, "Error while forking the application.");
   pid_ = answer.value;
 
   wait_for_requests();
@@ -238,7 +240,20 @@ std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket, const std::st
   xbt_assert(get_channel().send(m) == 0, "Could not ask the app to fork on need.");
 
   int sock = accept(master_socket, nullptr /* I know who's connecting*/, nullptr);
-  xbt_assert(sock > 0, "Cannot accept the incomming connection of the forked app: %s.", strerror(errno));
+  if (sock <= 0) {
+    switch (errno) {
+      case EMFILE:
+        xbt_die("Cannot accept the incomming connection of the forked app: the per-process limit on the number of open "
+                "file has been reached (errno: EMFILE).\n"
+                "You may want to increase the limit using for example `ulimit -n 10000`");
+      case ENFILE:
+        xbt_die("Cannot accept the incomming connection of the forked app: the system-wide limit on the number of open "
+                "file has been reached (errno: ENFILE).\n"
+                "If you want to push the limit, try increasing the value in /proc/sys/fs/file-max (at your own risk).");
+      default:
+        perror("Cannot accept the incomming connection of the forked app");
+    }
+  }
 
   return std::make_unique<CheckerSide>(sock, this);
 }

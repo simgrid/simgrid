@@ -5,6 +5,7 @@
 
 #include "src/mc/transition/TransitionSynchro.hpp"
 #include "src/mc/mc_forward.hpp"
+#include "src/mc/transition/Transition.hpp"
 #include "src/mc/transition/TransitionObjectAccess.hpp"
 #include "xbt/asserts.h"
 #include "xbt/ex.h"
@@ -119,19 +120,28 @@ bool MutexTransition::depends(const Transition* o) const
   // iff wait/test are not first in the waiting queue, because the other WAIT are not enabled anyway so this optim is
   // useless
 
+  // two unlock can never occur in the same state, or after one another. Hence, the independency is true by
+  // verifying a forall on an empty set.
+  if (type_ == Type::MUTEX_UNLOCK && o->type_ == Type::MUTEX_UNLOCK)
+    return false;
+
+  // An async_lock is behaving as a mutex_unlock, so it muste have the same behavior regarding Mutex Wait
+  if (type_ == Type::MUTEX_WAIT && o->type_ == Type::CONDVAR_ASYNC_LOCK)
+    return mutex_ == static_cast<const CondvarTransition*>(o)->get_mutex();
+
   // Theorem 4.4.7: Any pair of synchronization actions of distinct actors concerning distinct mutexes are independent
   // Since it's the last rule in this file, we can use the contrapositive version of the theorem
   if (o->type_ == Type::MUTEX_ASYNC_LOCK || o->type_ == Type::MUTEX_TEST || o->type_ == Type::MUTEX_TRYLOCK ||
       o->type_ == Type::MUTEX_UNLOCK || o->type_ == Type::MUTEX_WAIT)
     return (mutex_ == static_cast<const MutexTransition*>(o)->mutex_);
 
-  return false; // mutexes are INDEP with non-mutex transitions
+  return false;
 }
 
 bool MutexTransition::can_be_co_enabled(const Transition* o) const
 {
   if (o->type_ < type_)
-    return o->depends(this);
+    return o->can_be_co_enabled(this);
 
   // Transition executed by the same actor can never be co-enabled
   if (o->aid_ == aid_)
@@ -152,9 +162,13 @@ bool MutexTransition::can_be_co_enabled(const Transition* o) const
   if (type_ == Type::MUTEX_UNLOCK && o->type_ == Type::MUTEX_WAIT)
     return false;
 
-  // If someone can wait, that someon has the mutex. Hence, nobody else can wait on it
+  // If someone can wait, that someone has the mutex. Hence, nobody else can wait on it
   if (type_ == Type::MUTEX_WAIT && o->type_ == Type::MUTEX_WAIT)
     return false;
+
+  // If you can wait on the muytex, then the CONDVAR async lock cannot be enabled
+  if (type_ == Type::MUTEX_WAIT && o->type_ == Type::CONDVAR_ASYNC_LOCK)
+    return mutex_ != static_cast<const CondvarTransition*>(o)->get_mutex();
 
   return true; // mutexes are INDEP with non-mutex transitions
 }
@@ -167,11 +181,8 @@ bool SemaphoreTransition::reversible_race(const Transition* other) const
     case Type::SEM_UNLOCK:
       return true; // SemUnlock is always enabled
     case Type::SEM_WAIT:
-      if (other->type_ == Transition::Type::SEM_UNLOCK &&
-          static_cast<const SemaphoreTransition*>(other)->get_capacity() <= 1) {
-        return false;
-      }
-      xbt_die("SEM_WAIT that is dependent with a SEM_UNLOCK should not be reversible. FixMe");
+      // Some times the race is not reversible: we decide to catch it during the exploration
+      // instead of doing tedious computation here.
       return true;
     default:
       xbt_die("Unexpected transition type %s", to_c_str(type_));
@@ -214,10 +225,6 @@ bool SemaphoreTransition::depends(const Transition* o) const
   if (type_ == Type::SEM_UNLOCK && o->type_ == Type::SEM_UNLOCK)
     return false;
 
-  // UNLOCK indep with a WAIT if the semaphore had enought capacity anyway
-  if (type_ == Type::SEM_UNLOCK && capacity_ > 1 && o->type_ == Type::SEM_WAIT)
-    return false;
-
   // WAIT indep WAIT:
   // if both enabled (may happen in the initial value is sufficient), the ordering has no impact on the result.
   // If only one enabled, the other won't be enabled by the first one.
@@ -226,10 +233,7 @@ bool SemaphoreTransition::depends(const Transition* o) const
     return false;
 
   if (o->type_ == Type::SEM_ASYNC_LOCK || o->type_ == Type::SEM_UNLOCK || o->type_ == Type::SEM_WAIT) {
-    if (sem_ != static_cast<const SemaphoreTransition*>(o)->sem_)
-      return false;
-
-    return true; // Other semaphore cases are dependent
+    return sem_ == static_cast<const SemaphoreTransition*>(o)->sem_;
   }
 
   return false; // semaphores are INDEP with non-semaphore transitions
@@ -255,6 +259,94 @@ bool MutexTransition::reversible_race(const Transition* other) const
     default:
       xbt_die("Unexpected transition type %s", to_c_str(type_));
   }
+}
+
+CondvarTransition::CondvarTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream)
+    : Transition(type, issuer, times_considered)
+{
+  if (type == Type::CONDVAR_ASYNC_LOCK)
+    xbt_assert(stream >> condvar_ >> mutex_, "type: %d %s", (int)type, to_c_str(type));
+  else if (type == Type::CONDVAR_WAIT)
+    xbt_assert(stream >> condvar_ >> mutex_ >> granted_, "type: %d %s", (int)type, to_c_str(type));
+  else if (type == Type::CONDVAR_SIGNAL || type == Type::CONDVAR_BROADCAST)
+    xbt_assert(stream >> condvar_, "type: %d %s", (int)type, to_c_str(type));
+  else
+    xbt_die("type: %d %s", (int)type, to_c_str(type));
+}
+
+std::string CondvarTransition::to_string(bool verbose) const
+{
+  if (type_ == Type::CONDVAR_ASYNC_LOCK)
+    return xbt::string_printf("%s(cond: %u, mutex: %u)", Transition::to_c_str(type_), condvar_, mutex_);
+  if (type_ == Type::CONDVAR_SIGNAL || type_ == Type::CONDVAR_BROADCAST)
+    return xbt::string_printf("%s(cond: %u)", Transition::to_c_str(type_), condvar_);
+  if (type_ == Type::CONDVAR_WAIT)
+    return xbt::string_printf("%s(cond: %u, mutex: %u, granted: %s)", Transition::to_c_str(type_), condvar_, mutex_,
+                              granted_ ? "yes" : "no");
+  THROW_IMPOSSIBLE;
+}
+bool CondvarTransition::depends(const Transition* o) const
+{
+  if (o->type_ < type_)
+    return o->depends(this);
+
+  // Actions executed by the same actor are always dependent
+  if (o->aid_ == aid_)
+    return true;
+
+  // CondvarAsyncLock are dependent with wake up signals on the same condvar_
+  if (type_ == Type::CONDVAR_ASYNC_LOCK && (o->type_ == Type::CONDVAR_SIGNAL || o->type_ == Type::CONDVAR_BROADCAST))
+    return condvar_ == static_cast<const CondvarTransition*>(o)->condvar_;
+
+  // Broadcast and Signal are dependent with wait since they can enable it
+  if ((type_ == Type::CONDVAR_BROADCAST || type_ == Type::CONDVAR_SIGNAL) && o->type_ == Type::CONDVAR_WAIT)
+    return condvar_ == static_cast<const CondvarTransition*>(o)->condvar_;
+
+  // Wait is independent with itself
+
+  // Independent with transitions that are neither Condvar nor Mutex related
+  return false;
+}
+bool CondvarTransition::reversible_race(const Transition* other) const
+{
+  switch (type_) {
+    case Type::CONDVAR_ASYNC_LOCK:
+      xbt_assert(other->type_ == Transition::Type::CONDVAR_BROADCAST or
+                 other->type_ == Transition::Type::CONDVAR_SIGNAL);
+      return true;
+
+      // if wait can be executed in the first place, then broadcast and signal don't impact him
+    case Type::CONDVAR_BROADCAST:
+    case Type::CONDVAR_SIGNAL:
+      xbt_assert(other->type_ == Transition::Type::CONDVAR_ASYNC_LOCK or
+                 other->type_ == Transition::Type::CONDVAR_WAIT);
+      return true;
+
+      // broadcast and signal can enable the wait, hence this race is not always reversible
+    case Type::CONDVAR_WAIT:
+      xbt_assert(other->type_ == Transition::Type::CONDVAR_BROADCAST or
+                 other->type_ == Transition::Type::CONDVAR_SIGNAL);
+      return true;
+
+    default:
+      xbt_die("Unexpected transition type %s was declared dependent with %s", to_c_str(type_), to_c_str(other->type_));
+  }
+}
+
+bool CondvarTransition::can_be_co_enabled(const Transition* o) const
+{
+  if (o->type_ < type_)
+    return o->can_be_co_enabled(this);
+
+  // Transition executed by the same actor can never be co-enabled
+  if (o->aid_ == aid_)
+    return false;
+
+  // The only actions that can not be co-enabled are async lock asking for the same mutex
+  if (type_ == Type::CONDVAR_ASYNC_LOCK && o->type_ == Type::CONDVAR_ASYNC_LOCK)
+    return mutex_ != static_cast<const CondvarTransition*>(o)->condvar_;
+
+  return true;
 }
 
 } // namespace simgrid::mc

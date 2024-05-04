@@ -21,7 +21,7 @@ static constexpr const char* ERRMSG =
     "  what:        %%m: user message  %%c: log category  %%p: log priority\n"
     "  where:\n"
     "    source:    %%F: file          %%L: line          %%M: function  %%l: location (%%F:%%L)\n"
-    "    runtime:   %%h: hostname      %%a: actor         %%i: PID\n"
+    "    runtime:   %%h: hostname      %%a: actor         %%i: PID       %%I: system PID\n"
     "  when:        %%d: date          %%r: app. age\n"
     "  other:       %%%%: %%             %%n: new line      %%e: plain space\n";
 
@@ -141,6 +141,9 @@ static bool xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_even
           break;
         case 'i': /* actor ID; SimGrid extension */
           show_long(sg_actor_self_get_pid());
+          break;
+        case 'I': /* System PID */
+          show_int(static_cast<int>(getpid()));
           break;
         case 'F': /* file name; LOG4J compliant */
           show_string(ev->fileName);

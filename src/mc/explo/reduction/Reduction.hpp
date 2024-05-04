@@ -12,7 +12,6 @@ namespace simgrid::mc {
 
 class State;
 
-using stack_t     = std::deque<std::shared_ptr<State>>;
 using EventHandle = uint32_t;
 
 /**
@@ -32,19 +31,18 @@ public:
 
   // Eventually changes values in the stack S so that the races discovered while
   // visiting E will be taken care of at some point
-  virtual void races_computation(odpor::Execution E, stack_t* S,
-                                 std::vector<std::shared_ptr<State>>* opened_states = nullptr) = 0;
+  virtual void races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states = nullptr) = 0;
   // Return the next aid to be explored from the E. If -1 is returned, then the
   // reduction assumes no more traces need to be explored from E.
-  virtual aid_t next_to_explore(odpor::Execution E, stack_t* S) = 0;
+  virtual aid_t next_to_explore(odpor::Execution& E, stack_t* S) = 0;
   // Update the state s field according to the reduction.
   // The base case is to only do the Sleep-Set procedure since most of the
   // algorithm are based on sleep sets anyway.
-  virtual std::shared_ptr<State> state_create(RemoteApp& remote_app, std::shared_ptr<State> parent_state = nullptr);
+  virtual StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state = nullptr);
 
   // Update the state s fields assuming we just ended the exploration of the subtree
-  // rooted in s, taking the transition s->out_transition_
-  // base case simply add to the sleep set the corresponding transition
+  // rooted in s.
+  // base case simply add the incoming transition to the sleep set of the parent
   virtual void on_backtrack(State* s);
 };
 
