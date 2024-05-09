@@ -68,6 +68,16 @@ ExecImpl& ExecImpl::set_thread_count(int thread_count)
 
 ExecImpl* ExecImpl::start()
 {
+  if (is_detached()) {
+    //ownership has been transferred to maestro
+    // remove this activity from the list of the actor that created it
+    get_actor()->activities_.erase(this);
+    // set maestro as the new actor for this activity
+    set_actor(EngineImpl::get_instance()->get_maestro());
+    // Add a ref on the interface in case the initial ends before the completion of the detached activity
+    piface_->add_ref();
+  }
+
   set_state(State::RUNNING);
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     if (get_hosts().size() == 1) {
@@ -136,7 +146,7 @@ ExecImpl& ExecImpl::update_sharing_penalty(double sharing_penalty)
 
 void ExecImpl::finish()
 {
-  XBT_DEBUG("ExecImpl::finish() in state %s", get_state_str());
+  XBT_DEBUG("ExecImpl::finish() in state %s, detached: %d", get_state_str(), is_detached());
   if (model_action_ != nullptr) {
     if (auto const& hosts = get_hosts();
         std::any_of(hosts.begin(), hosts.end(), [](const s4u::Host* host) { return not host->is_on(); })) {
@@ -150,6 +160,13 @@ void ExecImpl::finish()
     }
 
     clean_action();
+  }
+
+  if (detached_) {
+    // Remove the finishing activity from maestro's list
+    EngineImpl::get_instance()->get_maestro()->activities_.erase(this);
+    // release the extra ref taken at start time
+    piface_->unref();
   }
 
   while (not simcalls_.empty()) {
