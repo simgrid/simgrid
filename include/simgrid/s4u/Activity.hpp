@@ -183,6 +183,7 @@ public:
   bool is_done() const { return state_ == State::FINISHED; }
   void set_state(Activity::State state) { state_ = state; }
   void set_detached (bool detached) { detached_ = detached; }
+  bool is_detached() const { return detached_;}
 
   /** Blocks the progression of this activity until it gets resumed */
   virtual Activity* suspend();
