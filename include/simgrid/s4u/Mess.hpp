@@ -23,8 +23,6 @@ class XBT_PUBLIC Mess : public Activity_T<Mess> {
   void* payload_        = nullptr;
   size_t dst_buff_size_ = 0;
   void* dst_buff_       = nullptr;
-  bool detached_        = false;
-  std::function<void(void*)> clean_fun_;
 
   Mess() = default;
   Mess* do_start() override;
@@ -56,15 +54,6 @@ public:
   Actor* get_receiver() const;
 
   bool is_assigned() const override { return true; };
-
-   /* Mess life cycle */
-  /** Start the message transfer, and ignore its result. It can be completely forgotten after that. */
-  Mess* detach();
-  Mess* detach(const std::function<void(void*)>& clean_function)
-  {
-    clean_fun_ = clean_function;
-    return detach();
-  }
 
   Mess* wait_for(double timeout) override;
 

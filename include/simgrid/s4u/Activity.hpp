@@ -182,6 +182,7 @@ public:
   bool is_failed() const { return state_ == State::FAILED; }
   bool is_done() const { return state_ == State::FINISHED; }
   void set_state(Activity::State state) { state_ = state; }
+  void set_detached (bool detached) { detached_ = detached; }
 
   /** Blocks the progression of this activity until it gets resumed */
   virtual Activity* suspend();
@@ -230,6 +231,8 @@ private:
   double remains_                          = 0;
   bool suspended_                          = false;
   bool marked_                             = false;
+  bool detached_                           = false;
+
   std::vector<ActivityPtr> successors_;
   std::set<ActivityPtr> dependencies_;
   std::atomic_int_fast32_t refcount_{0};
@@ -238,6 +241,7 @@ private:
 template <class AnyActivity> class Activity_T : public Activity {
   std::string name_             = "unnamed";
   std::string tracing_category_ = "";
+  std::function<void(void*)> clean_fun_; // used if detached
 
   inline static xbt::signal<void(AnyActivity const&)> on_start;
   xbt::signal<void(AnyActivity const&)> on_this_start;
@@ -320,11 +324,27 @@ public:
     return static_cast<AnyActivity*>(this);
   }
   const std::string& get_tracing_category() const { return tracing_category_; }
+  const std::function<void(void*)>& get_clean_function() const { return clean_fun_; }
 
   AnyActivity* start()
   {
     Activity::start();
     return static_cast<AnyActivity*>(this);
+  }
+   /** Start the activity, and ignore its result. It can be completely forgotten after that. */
+  AnyActivity* detach()
+  {
+    xbt_assert(get_state() == State::INITED || get_state() == State::STARTING,
+               "You cannot use %s() once your activity is %s (not implemented)", __func__, get_state_str());
+
+    set_detached(true);
+    return start();
+  }
+
+  AnyActivity* detach(const std::function<void(void*)>& clean_function)
+  {
+    clean_fun_ = clean_function;
+    return detach();
   }
 
   AnyActivity* cancel() { return static_cast<AnyActivity*>(Activity::cancel()); }

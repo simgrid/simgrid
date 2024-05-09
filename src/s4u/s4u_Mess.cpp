@@ -69,7 +69,7 @@ Mess* Mess::do_start()
   if (myself == sender_) {
     on_send(*this);
     on_this_send(*this);
-    kernel::actor::MessIputSimcall observer{sender_, queue_->get_impl(), clean_fun_, get_payload(), detached_};
+    kernel::actor::MessIputSimcall observer{sender_, queue_->get_impl(), get_clean_function(), get_payload(), detached_};
     pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::MessImpl::iput(&observer); },
                                              &observer);
   } else if (myself == receiver_) {
@@ -99,15 +99,6 @@ Mess* Mess::do_start()
   return this;
 }
 
-Mess* Mess::detach()
-{
-  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
-             "You cannot use %s() once your message is %s (not implemented)", __func__, get_state_str());
-  detached_ = true;
-  start();
-  return this;
-}
-
 Mess* Mess::wait_for(double timeout)
 {
   XBT_DEBUG("Calling Mess::wait_for with state %s", get_state_str());
@@ -122,7 +113,7 @@ Mess* Mess::wait_for(double timeout)
       if (get_payload() != nullptr) {
         on_send(*this);
         on_this_send(*this);
-        kernel::actor::MessIputSimcall observer{sender_, queue_->get_impl(), clean_fun_, get_payload(), detached_};
+        kernel::actor::MessIputSimcall observer{sender_, queue_->get_impl(), get_clean_function(), get_payload(), detached_};
         pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::MessImpl::iput(&observer); },
                                                  &observer);
       } else { // Receiver
