@@ -92,13 +92,6 @@ CommImpl& CommImpl::set_dst_buff(unsigned char* buff, size_t* size)
   return *this;
 }
 
-CommImpl& CommImpl::detach()
-{
-  detached_ = true;
-  EngineImpl::get_instance()->get_maestro()->activities_.insert(this);
-  return *this;
-}
-
 CommImpl::~CommImpl()
 {
   XBT_DEBUG("Really free communication %p in state %s (detached = %d)", this, get_state_str(), detached_);

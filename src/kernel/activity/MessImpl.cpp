@@ -52,13 +52,6 @@ MessImpl& MessImpl::set_dst_buff(unsigned char* buff, size_t* size)
   return *this;
 }
 
-MessImpl& MessImpl::detach()
-{
-  detached_ = true;
-  EngineImpl::get_instance()->get_maestro()->activities_.insert(this);
-  return *this;
-}
-
 MessImpl* MessImpl::start()
 {
   if (get_state() == State::READY) {

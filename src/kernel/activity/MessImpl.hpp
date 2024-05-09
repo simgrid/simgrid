@@ -19,7 +19,6 @@ class XBT_PUBLIC MessImpl : public ActivityImpl_T<MessImpl> {
 
   MessageQueueImpl* queue_ = nullptr;
   void* payload_           = nullptr;
-  bool detached_           = false;   /* If detached or not */
   MessImplType type_       = MessImplType::PUT;
   unsigned char* dst_buff_ = nullptr;
   size_t* dst_buff_size_   = nullptr;
@@ -33,8 +32,6 @@ public:
   MessImpl& set_queue(MessageQueueImpl* queue);
   MessageQueueImpl* get_queue() const { return queue_; }
   MessImpl& set_dst_buff(unsigned char* buff, size_t* size);
-  MessImpl& detach();
-  bool is_detached() const { return detached_; }
 
   static ActivityImplPtr iput(actor::MessIputSimcall* observer);
   static ActivityImplPtr iget(actor::MessIgetSimcall* observer);
