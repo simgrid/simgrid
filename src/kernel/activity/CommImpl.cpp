@@ -403,8 +403,10 @@ void CommImpl::finish()
     set_iface(nullptr); // reset iface to protect against multiple trigger of the on_completion signals
     piface.fire_on_completion_for_real();
     piface.fire_on_this_completion_for_real();
-    if (detached_ && get_state() == State::DONE)
+    if (detached_ && get_state() == State::DONE){
+      s4u::CommPtr keepalive(&piface);
       piface.release_dependencies();
+    }
   }
 
   /* destroy the model actions associated with the communication activity */
