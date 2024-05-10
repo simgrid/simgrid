@@ -76,6 +76,16 @@ IoImpl& IoImpl::set_dst_host(s4u::Host* host)
 
 IoImpl* IoImpl::start()
 {
+  if (is_detached()) {
+    //ownership has been transferred to maestro
+    // remove this activity from the list of the actor that created it
+    get_actor()->activities_.erase(this);
+    // set maestro as the new actor for this activity
+    set_actor(EngineImpl::get_instance()->get_maestro());
+    // Add a ref on the interface in case the initial ends before the completion of the detached activity
+    piface_->add_ref();
+  }
+
   set_state(State::RUNNING);
   if (dst_host_ == nullptr) {
     XBT_DEBUG("Starting regular I/O");
@@ -115,6 +125,13 @@ void IoImpl::finish()
     }
 
     clean_action();
+  }
+
+  if (detached_) {
+    // Remove the finishing activity from maestro's list
+    EngineImpl::get_instance()->get_maestro()->activities_.erase(this);
+    // release the extra ref taken at start time
+    piface_->unref();
   }
 
   while (not simcalls_.empty()) {
