@@ -81,6 +81,17 @@ std::vector<std::string> Execution::get_textual_trace() const
   return trace;
 }
 
+std::string Execution::get_one_string_textual_trace() const
+{
+  std::string trace = xbt::string_printf(";%ld", contents_[0].get_transition()->aid_).c_str();
+
+  for (EventHandle e_i = 1; e_i != this->contents_.size(); e_i++) {
+    trace = trace + xbt::string_printf(";%ld", contents_[e_i].get_transition()->aid_).c_str();
+  }
+
+  return trace;
+}
+
 std::list<Execution::EventHandle> Execution::get_racing_events_of(Execution::EventHandle target) const
 {
   std::list<Execution::EventHandle> racing_events;

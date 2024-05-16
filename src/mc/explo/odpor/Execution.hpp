@@ -104,6 +104,7 @@ public:
   Execution(const PartialExecution&);
 
   std::vector<std::string> get_textual_trace() const;
+  std::string get_one_string_textual_trace() const;
 
   size_t size() const { return this->contents_.size(); }
   bool empty() const { return this->contents_.empty(); }
