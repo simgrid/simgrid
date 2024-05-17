@@ -75,13 +75,19 @@ foreach(x
   set(teshsuite_src  ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.c)
   set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
 
-  if("${CMAKE_SYSTEM}" MATCHES "Linux" AND ${enable_testsuite_McMini})
+  if("${CMAKE_SYSTEM}" MATCHES "Linux" AND ${enable_testsuite_McMini} AND SIMGRID_HAVE_MC)
     add_executable       (mcmini-${x}  EXCLUDE_FROM_ALL mcmini/${x}.c)         
     set_target_properties(mcmini-${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mcmini)
     target_link_libraries(mcmini-${x}  PRIVATE Threads::Threads)
     add_dependencies(tests-mc mcmini-${x})
 
     ADD_TESH(mc-mini-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
+  endif()
+  if(${enable_testsuite_McMini} AND (NOT ("${CMAKE_SYSTEM}" MATCHES "Linux")))
+    message(STATUS "McMini tests cannot be executed on this system (${CMAKE_SYSTEM}) because it requires Linux.")
+  endif()
+  if(${enable_testsuite_McMini} AND SIMGRID_HAVE_MC)
+    message(STATUS "McMini tests cannot be executed when MC is disabled.")
   endif()
 endforeach()
 
@@ -112,8 +118,6 @@ foreach(x iprobe_ok iprobe_nok probe_deadlock probe_ok)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/mpi/${x}.tesh)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/mpi/${x}.c)
 endforeach()
-
-
 
 
 set(teshsuite_src  ${teshsuite_src}                                                                        PARENT_SCOPE)
