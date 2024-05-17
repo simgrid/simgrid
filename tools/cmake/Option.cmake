@@ -39,10 +39,11 @@ option(minimal-bindings      "Whether to compile the Python bindings libraries w
 mark_as_advanced(minimal-bindings)
 
 option(enable_model-checking "Turn this on to experiment with our prototype of model-checker" on)
-option(enable-model-checking "Please set 'enable_model-checking' instead" on)
+option(enable-model-checking "Please set 'enable_model-checking' instead" off)
 mark_as_advanced(enable-model-checking)
 if(enable-model-checking)
-  SET(enable_model-checking ON CACHE BOOL "Whether to compile the model-checker" FORCE)
+  SET(enable_model-checking ON CACHE BOOL "Whether to compile the model-checker")
+  SET(enable-model-checking 0)
 endif()
 
 option(enable_smpi "Whether SMPI is included in the library." on)
