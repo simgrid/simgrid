@@ -54,6 +54,9 @@ public:
   /** Ask to the application to check for a deadlock. If so, returns true. */
   bool check_deadlock() const;
 
+  /** Change the application verbosity */
+  void verbosity_set(bool verbose) const;
+
   /** Ask the application to run post-mortem analysis, and maybe to stop ASAP */
   void finalize_app(bool terminate_asap = false);
 
