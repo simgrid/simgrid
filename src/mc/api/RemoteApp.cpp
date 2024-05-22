@@ -171,6 +171,22 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   }
 }
 
+void RemoteApp::verbosity_set(bool verbose) const
+{
+  s_mc_message_int_t m = {};
+  m.type               = MessageType::VERBOSITY_SET;
+  m.value              = verbose;
+  checker_side_->get_channel().send(m);
+
+  s_mc_message_t answer;
+  ssize_t answer_size = checker_side_->get_channel().receive(answer);
+  xbt_assert(answer_size != -1, "Could not receive message");
+  xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
+  xbt_assert(answer.type == MessageType::VERBOSITY_SET_REPLY,
+             "Received unexpected message %s (%i); expected MessageType::VERBOSITY_SET_REPLY (%i)",
+             to_c_str(answer.type), (int)answer.type, (int)MessageType::VERBOSITY_SET_REPLY);
+}
+
 bool RemoteApp::check_deadlock() const
 {
   xbt_assert(checker_side_->get_channel().send(MessageType::DEADLOCK_CHECK) == 0, "Could not check deadlock state");
