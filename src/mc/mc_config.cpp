@@ -136,6 +136,12 @@ simgrid::config::Flag<bool> _sg_mc_nofork{
       }
     }};
 
+simgrid::config::Flag<bool> _sg_mc_no_critical_transition{
+    "model-check/no-critical",
+    "Deactivate the search for the critical transition. Note that it is enabled by default when not asking for "
+    "multiple deadlocks in the program.",
+    false};
+
 simgrid::config::Flag<int> _sg_mc_soft_timeout{
     "model-check/timeout-soft",
     {"model-check/soft-timeout"},

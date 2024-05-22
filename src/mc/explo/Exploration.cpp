@@ -165,7 +165,7 @@ void Exploration::check_deadlock()
       return;
 
     deadlocks_++;
-    if (_sg_mc_max_deadlocks == 0 && not is_looking_for_critical) {
+    if (_sg_mc_max_deadlocks == 0 && not _sg_mc_no_critical_transition && not is_looking_for_critical) {
       is_looking_for_critical = true;
       stack_t stack           = get_stack();
       create_critical_transition_exploration(std::move(remote_app_), get_model_checking_reduction(), &stack);
