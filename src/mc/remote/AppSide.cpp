@@ -12,7 +12,6 @@
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
-#include "src/mc/remote/mc_protocol.h"
 #include "xbt/log.h"
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
@@ -71,15 +70,6 @@ AppSide* AppSide::get()
   return instance_.get();
 }
 
-void AppSide::handle_verbosity_msg(const s_mc_message_t* msg)
-{
-  verbose_ = ((s_mc_message_int_t*)msg)->value;
-  // Send result:
-  s_mc_message_t answer = {};
-  answer.type           = MessageType::VERBOSITY_SET_REPLY;
-  xbt_assert(channel_.send(answer) == 0, "Could not send response: %s", strerror(errno));
-}
-
 void AppSide::handle_deadlock_check(const s_mc_message_t*) const
 {
   const auto* engine     = kernel::EngineImpl::get_instance();
@@ -88,7 +78,7 @@ void AppSide::handle_deadlock_check(const s_mc_message_t*) const
     return mc::actor_is_enabled(kv.second);
   });
 
-  if (deadlock && verbose_) {
+  if (deadlock) {
     XBT_CINFO(mc_global, "**************************");
     XBT_CINFO(mc_global, "*** DEADLOCK DETECTED ***");
     XBT_CINFO(mc_global, "**************************");
@@ -316,11 +306,6 @@ void AppSide::handle_messages()
       case MessageType::CONTINUE:
         assert_msg_size("MESSAGE_CONTINUE", s_mc_message_t);
         return;
-
-      case MessageType::VERBOSITY_SET:
-        assert_msg_size("VERBOSITY_SET", s_mc_message_int_t);
-        handle_verbosity_msg(message);
-        break;
 
       case MessageType::DEADLOCK_CHECK:
         assert_msg_size("DEADLOCK_CHECK", s_mc_message_t);
