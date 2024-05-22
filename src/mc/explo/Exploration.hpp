@@ -11,6 +11,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_record.hpp"
+#include "xbt/asserts.h"
 #include <xbt/Extendable.hpp>
 
 #include <memory>
@@ -36,6 +37,9 @@ class Exploration : public xbt::Extendable<Exploration> {
   FILE* dot_output_ = nullptr;
   int deadlocks_    = 0; // Amount of deadlocks seen so far; tested against model-check/max-deadlocks
 
+  /** @brief Wether the current exploration is a CriticalTransitionExplorer */
+  bool is_looking_for_critical = false;
+
 protected:
   unsigned long backtrack_count_      = 0; // for statistics
   unsigned long visited_states_count_ = 0; // for statistics
@@ -44,6 +48,7 @@ protected:
 
 public:
   explicit Exploration(const std::vector<char*>& args);
+  explicit Exploration(std::unique_ptr<RemoteApp> remote_app);
   virtual ~Exploration();
 
   static Exploration* get_instance() { return instance_; }
@@ -53,6 +58,10 @@ public:
 
   /** Main function of this algorithm */
   virtual void run() = 0;
+
+  /** Allows the exploration to report that it found a correct execution. This updates a bool informations
+   *  in corresponding states, and eventually rise an exception if we were looking for the critical transition. */
+  void report_correct_execution(State* last_state);
 
   /** Produce an error message indicating that the application crashed (status was produced by waitpid) */
   XBT_ATTRIB_NORETURN void report_crash(int status);
@@ -66,6 +75,8 @@ public:
 
   /** Returns whether the soft timeout elapsed, asking to end the exploration at the next backtracking point */
   bool soft_timouted() const;
+
+  bool is_critical_transition_explorer() const { return is_looking_for_critical; }
 
   /* sanity check returning true if there is no actor to run in the simulation */
   bool empty();
@@ -86,6 +97,13 @@ public:
 
   /** Log additional information about the state of the model-checker */
   virtual void log_state();
+
+  virtual stack_t get_stack()
+  {
+    xbt_die("You asked for a combination of feature that is not yet supported by SimgridMC (most likely a combination "
+            "of exploration algorithm + another special feature). If you really want to try this combination, reach "
+            "out to us so we can cover those.");
+  }
 
   RemoteApp& get_remote_app() { return *remote_app_.get(); }
 
@@ -117,6 +135,8 @@ public:
 // External constructors so that the types (and the types of their content) remain hidden
 XBT_PUBLIC Exploration* create_dfs_exploration(const std::vector<char*>& args, ReductionMode mode);
 XBT_PUBLIC Exploration* create_out_of_order_exploration(const std::vector<char*>& args, ReductionMode mode);
+XBT_PUBLIC Exploration* create_critical_transition_exploration(std::unique_ptr<RemoteApp> remote_app,
+                                                               ReductionMode mode, stack_t* stack);
 
 XBT_PUBLIC Exploration* create_communication_determinism_checker(const std::vector<char*>& args, ReductionMode mode);
 XBT_PUBLIC Exploration* create_udpor_checker(const std::vector<char*>& args);

@@ -508,6 +508,8 @@ set(MC_SRC_STATELESS
   src/mc/api/RemoteApp.cpp
   src/mc/api/RemoteApp.hpp
  
+  src/mc/explo/CriticalTransitionExplorer.cpp
+  src/mc/explo/CriticalTransitionExplorer.hpp
   src/mc/explo/DFSExplorer.cpp
   src/mc/explo/DFSExplorer.hpp
   src/mc/explo/Exploration.cpp

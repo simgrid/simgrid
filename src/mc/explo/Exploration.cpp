@@ -6,6 +6,7 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "simgrid/forward.h"
 #include "src/mc/api/states/State.hpp"
+#include "src/mc/explo/CriticalTransitionExplorer.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
 #include "src/mc/mc_exit.hpp"
@@ -30,6 +31,15 @@ Exploration* Exploration::instance_ = nullptr; // singleton instance
 xbt::signal<void(State&, RemoteApp&)> Exploration::on_restore_state_signal;
 xbt::signal<void(Transition*, RemoteApp&)> Exploration::on_transition_replay_signal;
 xbt::signal<void(RemoteApp&)> Exploration::on_backtracking_signal;
+
+Exploration::Exploration(std::unique_ptr<RemoteApp> remote_app) : remote_app_(std::move(remote_app))
+{
+  // This awfull code should only be called when trying to create a critical transition explorer in the middle of
+  // something else. It would be nice if someone smarter than me figured out a better way to do it.
+  xbt_assert(instance_ != nullptr, "You shouldn't call this to create your first exploration");
+  instance_               = this;
+  is_looking_for_critical = true;
+}
 
 Exploration::Exploration(const std::vector<char*>& args) : remote_app_(std::make_unique<RemoteApp>(args))
 {
@@ -148,7 +158,19 @@ XBT_ATTRIB_NORETURN void Exploration::report_assertion_failure()
 void Exploration::check_deadlock()
 {
   if (get_remote_app().check_deadlock()) {
+
+    // If we are looking for the critical transition, finding deadlocks is normal
+    // keep going, we want a correct trace!
+    if (is_looking_for_critical)
+      return;
+
     deadlocks_++;
+    if (_sg_mc_max_deadlocks == 0 && not is_looking_for_critical) {
+      is_looking_for_critical = true;
+      stack_t stack           = get_stack();
+      create_critical_transition_exploration(std::move(remote_app_), get_model_checking_reduction(), &stack);
+      throw McError(ExitStatus::DEADLOCK);
+    }
     if (_sg_mc_max_deadlocks >= 0 && deadlocks_ > _sg_mc_max_deadlocks) {
       throw McError(ExitStatus::DEADLOCK);
     }
@@ -160,6 +182,15 @@ void Exploration::check_deadlock()
     exit(0);
   }
 }
+
+void Exploration::report_correct_execution(State* last_state)
+{
+  XBT_DEBUG("A correct execution has been reported !");
+  last_state->register_as_correct();
+  if (is_looking_for_critical)
+    throw McError(ExitStatus::SUCCESS);
+}
+
 bool Exploration::empty()
 {
   std::map<aid_t, simgrid::mc::ActorState> actors;
@@ -181,7 +212,7 @@ void Exploration::backtrack_to_state(State* target_state)
   on_backtracking_signal(get_remote_app());
 
   std::deque<Transition*> replay_recipe;
-  auto* state = target_state;
+  auto* state       = target_state;
   State* root_state = nullptr;
   for (; state != nullptr && not state->has_state_factory(); state = state->get_parent_state()) {
     if (state->get_transition_in() != nullptr) // The root has no transition_in

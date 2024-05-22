@@ -41,60 +41,60 @@ RemoteApp::RemoteApp(const std::vector<char*>& args) : app_args_(args)
                           SOCK_SEQPACKET,
 #endif
                           0);
-    xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
+  xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
 
-    master_socket_name = "/tmp/simgrid-mc-" + std::to_string(getpid());
-    master_socket_name.resize(MC_SOCKET_NAME_LEN); // truncate socket name if it's too long
-    master_socket_name.back() = '\0';              // ensure the data are null-terminated
+  master_socket_name = "/tmp/simgrid-mc-" + std::to_string(getpid());
+  master_socket_name.resize(MC_SOCKET_NAME_LEN); // truncate socket name if it's too long
+  master_socket_name.back() = '\0';              // ensure the data are null-terminated
 #ifdef __linux__
-    master_socket_name[0] = '\0'; // abstract socket, automatically removed after close
+  master_socket_name[0] = '\0'; // abstract socket, automatically removed after close
 #else
-    unlink(master_socket_name.c_str()); // remove possible stale socket before bind
-    atexit([]() {
-      if (not master_socket_name.empty())
-        unlink(master_socket_name.c_str());
-      master_socket_name.clear();
-    });
+  unlink(master_socket_name.c_str()); // remove possible stale socket before bind
+  atexit([]() {
+    if (not master_socket_name.empty())
+      unlink(master_socket_name.c_str());
+    master_socket_name.clear();
+  });
 #endif
 
-    struct sockaddr_un serv_addr = {};
-    serv_addr.sun_family         = AF_UNIX;
-    master_socket_name.copy(serv_addr.sun_path, MC_SOCKET_NAME_LEN);
+  struct sockaddr_un serv_addr = {};
+  serv_addr.sun_family         = AF_UNIX;
+  master_socket_name.copy(serv_addr.sun_path, MC_SOCKET_NAME_LEN);
 
-    xbt_assert(bind(master_socket_, (struct sockaddr*)&serv_addr, sizeof serv_addr) >= 0,
-               "Cannot bind the master socket to %c%s: %s.", (serv_addr.sun_path[0] ? serv_addr.sun_path[0] : '@'),
-               serv_addr.sun_path + 1, strerror(errno));
+  xbt_assert(bind(master_socket_, (struct sockaddr*)&serv_addr, sizeof serv_addr) >= 0,
+             "Cannot bind the master socket to %c%s: %s.", (serv_addr.sun_path[0] ? serv_addr.sun_path[0] : '@'),
+             serv_addr.sun_path + 1, strerror(errno));
 
-    xbt_assert(listen(master_socket_, SOMAXCONN) >= 0, "Cannot listen to the master socket: %s.", strerror(errno));
+  xbt_assert(listen(master_socket_, SOMAXCONN) >= 0, "Cannot listen to the master socket: %s.", strerror(errno));
 
-    if (_sg_mc_nofork) {
-      checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
-    } else {
-      application_factory_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
-      checker_side_        = application_factory_->clone(master_socket_, master_socket_name);
-    }
+  if (_sg_mc_nofork) {
+    checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
+  } else {
+    application_factory_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
+    checker_side_        = application_factory_->clone(master_socket_, master_socket_name);
+  }
 }
 
 void RemoteApp::restore_checker_side(CheckerSide* from)
 {
-    XBT_DEBUG("Restore the checker side");
+  XBT_DEBUG("Restore the checker side");
 
-    if (checker_side_)
-      checker_side_->finalize(true);
+  if (checker_side_)
+    checker_side_->finalize(true);
 
-    if (_sg_mc_nofork) {
-      checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
-    } else if (from == nullptr) {
-      checker_side_ = application_factory_->clone(master_socket_, master_socket_name);
-    } else {
-      checker_side_ = from->clone(master_socket_, master_socket_name);
-    }
+  if (_sg_mc_nofork) {
+    checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
+  } else if (from == nullptr) {
+    checker_side_ = application_factory_->clone(master_socket_, master_socket_name);
+  } else {
+    checker_side_ = from->clone(master_socket_, master_socket_name);
+  }
 }
 std::unique_ptr<CheckerSide> RemoteApp::clone_checker_side()
 {
-    xbt_assert(not _sg_mc_nofork, "Cannot clone the checker_side in nofork mode");
-    XBT_DEBUG("Clone the checker side, saving an intermediate state");
-    return checker_side_->clone(master_socket_, master_socket_name);
+  xbt_assert(not _sg_mc_nofork, "Cannot clone the checker_side in nofork mode");
+  XBT_DEBUG("Clone the checker side, saving an intermediate state");
+  return checker_side_->clone(master_socket_, master_socket_name);
 }
 
 unsigned long RemoteApp::get_maxpid() const
@@ -184,13 +184,15 @@ bool RemoteApp::check_deadlock() const
 
   if (message.value != 0) {
     auto* explo = Exploration::get_instance();
-    XBT_CINFO(mc_global, "Counter-example execution trace:");
-    for (auto const& frame : explo->get_textual_trace())
-      XBT_CINFO(mc_global, "  %s", frame.c_str());
-    XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
-             "--cfg=model-check/replay:'%s'",
-             explo->get_record_trace().to_string().c_str());
-    explo->log_state();
+    if (not explo->is_critical_transition_explorer()) {
+      XBT_CINFO(mc_global, "Counter-example execution trace:");
+      for (auto const& frame : explo->get_textual_trace())
+        XBT_CINFO(mc_global, "  %s", frame.c_str());
+      XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
+               "--cfg=model-check/replay:'%s'",
+               explo->get_record_trace().to_string().c_str());
+      explo->log_state();
+    }
     return true;
   }
   return false;

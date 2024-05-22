@@ -6,6 +6,7 @@
 #include "src/mc/explo/DFSExplorer.hpp"
 #include "simgrid/forward.h"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
+#include "src/mc/explo/reduction/BFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
 #include "src/mc/explo/reduction/ODPOR.hpp"
@@ -165,6 +166,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
     get_remote_app().finalize_app();
     XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
     XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", s->get_num(), state_stack.size(), backtrack_count_ + 1);
+    report_correct_execution(s);
   }
 
   XBT_DEBUG("End of Exploration at depth %lu", S.size() + 1);
@@ -189,6 +191,25 @@ void DFSExplorer::run()
   explore(empty_seq, state_stack);
 
   log_state();
+}
+
+DFSExplorer::DFSExplorer(std::unique_ptr<RemoteApp> remote_app, ReductionMode mode)
+    : Exploration(std::move(remote_app)), reduction_mode_(mode)
+{
+
+  if (reduction_mode_ == ReductionMode::dpor)
+    reduction_algo_ = std::make_unique<DPOR>();
+  else if (reduction_mode_ == ReductionMode::sdpor)
+    reduction_algo_ = std::make_unique<SDPOR>();
+  else if (reduction_mode_ == ReductionMode::odpor and _sg_mc_explore_algo == "DFS")
+    reduction_algo_ = std::make_unique<ODPOR>();
+  else if (reduction_mode_ == ReductionMode::odpor and _sg_mc_explore_algo == "BFS")
+    reduction_algo_ = std::make_unique<BFSODPOR>();
+  else {
+    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
+               to_c_str(reduction_mode_));
+    reduction_algo_ = std::make_unique<NoReduction>();
+  }
 }
 
 DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration(args), reduction_mode_(mode)

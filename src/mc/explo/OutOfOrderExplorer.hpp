@@ -44,6 +44,7 @@ public:
   void run() override;
   RecordTrace get_record_trace() override;
   void log_state() override;
+  stack_t get_stack() override { return stack_; }
 
   /** Called once when the exploration starts */
   static void on_exploration_start(std::function<void(RemoteApp& remote_app)> const& f)

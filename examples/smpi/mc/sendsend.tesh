@@ -27,4 +27,11 @@ $ $VALGRIND_NO_LEAK_CHECK ../../../smpi_script/bin/smpirun -quiet -wrapper "${bi
 > [0.000000] [mc_global/INFO]   Actor 2 in :0:() ==> simcall: iSend(mbox=3)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;2'
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 3 unique states visited; 0 explored traces (0 transition replays, 3 states visited overall)
+> [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
+> [0.000000] [mc_ct/INFO] Looking at depth 2
+> [0.000000] [mc_ct/INFO] Current candidates for critical transition:
+> [0.000000] [mc_ct/INFO]   (  UNKNOWN) Actor 1 in :0:() ==> simcall: iSend(mbox=2, comm=1, tag=42)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in :0:() ==> simcall: iSend(mbox=3, comm=2, tag=42)
+> [0.000000] [mc_ct/INFO] The critical transition explorer reached the beginning of the stack without finding a correct execution. The program may have no correct behavior.
+> [0.000000] [mc_ct/INFO] Found the critical transition: Actor 1 ==> simcall: iSend(mbox=2, comm=1, tag=42)
 > Execution failed with code 2.

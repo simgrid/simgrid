@@ -22,7 +22,9 @@ namespace simgrid::mc {
 
 void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
 {
-  xbt_assert(opened_states != nullptr, "BFDODPOR reduction should only be used with BFS algorithm");
+  if (opened_states != nullptr)
+    XBT_VERB("calling BFSODPOR outside of BFS algorithm: the only case this should happen is if you are looking for "
+             "the critical transition");
 
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
@@ -63,7 +65,8 @@ void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<St
         if (not v_prime.empty()) {
           XBT_DEBUG("... inserting sequence %s before event `%u`", odpor::one_string_textual_trace(v_prime).c_str(), e);
           prev_state->insert_into_wakeup_tree(v_prime);
-          opened_states->push_back((*S)[e]);
+          if (opened_states != nullptr)
+            opened_states->push_back((*S)[e]);
         }
       }
     }
