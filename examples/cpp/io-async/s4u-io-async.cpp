@@ -8,6 +8,22 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 namespace sg4 = simgrid::s4u;
 
+static void test_detach(sg_size_t size)
+{
+  const sg4::Disk* disk = sg4::Host::current()->get_disks().front();
+  sg4::this_actor::sleep_for(0.2);
+  XBT_INFO("Hello! read %llu bytes from %s", size, disk->get_cname());
+
+  sg4::IoPtr activity = disk->io_init(size, sg4::Io::OpType::READ);
+  // Attach a callback to print some log when the detached activity completes
+  activity->on_this_completion_cb([](sg4::Io const&) {
+    XBT_INFO("Detached activity is done");
+  });
+  activity->detach();
+
+  XBT_INFO("Goodbye now!");
+}
+
 static void test(sg_size_t size)
 {
   const sg4::Disk* disk = sg4::Host::current()->get_disks().front();
@@ -69,6 +85,7 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
   sg4::Actor::create("test", e.host_by_name("bob"), test, 2e7);
+  sg4::Actor::create("test_detach", e.host_by_name("bob"), test_detach, 2e7);
   sg4::Actor::create("test_waitfor", e.host_by_name("alice"), test_waitfor, 5e7);
   sg4::Actor::create("test_cancel", e.host_by_name("alice"), test_cancel, 5e7);
   sg4::Actor::create("test_monitor", e.host_by_name("alice"), test_monitor, 5e7);

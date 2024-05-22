@@ -348,7 +348,7 @@ Comm* Comm::do_start()
                                              static_cast<unsigned char*>(src_buff_),
                                              src_buff_size_,
                                              nullptr,
-                                             clean_fun_,
+                                             get_clean_function(),
                                              copy_data_function_,
                                              nullptr,
                                              detached_,
@@ -388,16 +388,6 @@ Comm* Comm::do_start()
   }
 
   state_ = State::STARTED;
-  return this;
-}
-
-Comm* Comm::detach()
-{
-  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
-             "You cannot use %s() once your communication is %s (not implemented)", __func__, get_state_str());
-  xbt_assert(dst_buff_ == nullptr && dst_buff_size_ == 0, "You can only detach sends, not recvs");
-  detached_ = true;
-  start();
   return this;
 }
 

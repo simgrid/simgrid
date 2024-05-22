@@ -83,8 +83,13 @@ IoPtr Io::set_destination(Host* to, const Disk* to_disk)
 
 Io* Io::do_start()
 {
-  kernel::actor::simcall_answered(
-      [this] { (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)).set_name(get_name()).start(); });
+  kernel::actor::simcall_answered([this] {
+    auto pimpl = boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_);
+    pimpl->set_name(get_name());
+    if (detached_)
+      pimpl->detach();
+    pimpl->start();
+  });
 
   if (suspended_)
     pimpl_->suspend();

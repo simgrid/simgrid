@@ -37,10 +37,12 @@ ExecPtr Exec::init()
 Exec* Exec::do_start()
 {
   kernel::actor::simcall_answered([this] {
-    (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
-        .set_name(get_name())
-        .set_tracing_category(get_tracing_category())
-        .start();
+    auto pimpl = boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_);
+    pimpl->set_name(get_name());
+    pimpl->set_tracing_category(get_tracing_category());
+    if (detached_)
+      pimpl->detach();
+    pimpl->start();
   });
 
   if (suspended_)

@@ -7,6 +7,7 @@
 #include <simgrid/s4u/Activity.hpp>
 #include <simgrid/s4u/Engine.hpp>
 
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
@@ -103,6 +104,12 @@ double ActivityImpl::get_remaining() const
 const char* ActivityImpl::get_state_str() const
 {
   return to_c_str(state_);
+}
+
+void ActivityImpl::detach()
+{
+  set_detached(true);
+  EngineImpl::get_instance()->get_maestro()->activities_.insert(this);
 }
 
 bool ActivityImpl::test(actor::ActorImpl* issuer)

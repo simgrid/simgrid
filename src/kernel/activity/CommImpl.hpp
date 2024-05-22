@@ -21,7 +21,6 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
 
   double rate_       = -1.0;
   double size_       = 0.0;
-  bool detached_     = false;   /* If detached or not */
   bool copied_       = false;   /* whether the data were already copied */
   MailboxImpl* mbox_ = nullptr; /* Rendez-vous where the comm is queued. nullptr once the comm is matched with both a
                                    sender and receiver */
@@ -49,13 +48,12 @@ public:
   CommImpl& set_dst_buff(unsigned char* buff, size_t* size);
   CommImpl& set_rate(double rate);
   CommImpl& set_mailbox(MailboxImpl* mbox);
-  CommImpl& detach();
+
 
   double get_rate() const { return rate_; }
   MailboxImpl* get_mailbox() const { return mbox_; }
   unsigned get_mailbox_id() const { return mbox_id_; }
   unsigned get_id() const { return id_; }
-  bool is_detached() const { return detached_; }
   bool is_assigned() const { return (to_ != nullptr && from_ != nullptr); }
 
   std::vector<s4u::Link*> get_traversed_links() const;

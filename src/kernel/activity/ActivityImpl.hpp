@@ -37,6 +37,7 @@ public:
   std::list<actor::Simcall*> simcalls_; /* List of simcalls waiting for this activity */
   s4u::Activity* piface_          = nullptr;
   resource::Action* model_action_ = nullptr; /* The resource consumption in the used model */
+  bool detached_                  = false;   /* If detached or not */
 
 protected:
   void inline set_name(std::string_view name)
@@ -49,6 +50,7 @@ protected:
   void clear_hosts() { hosts_.clear(); }
   void add_host(s4u::Host* host) { hosts_.push_back(host); }
   void set_hosts(const std::vector<s4u::Host*>& hosts) { hosts_ = hosts; }
+  void set_detached(bool detached) { detached_ = detached; }
 
 public:
   const std::string& get_name() const { return name_; }
@@ -68,6 +70,9 @@ public:
   void set_finish_time(double finish_time) { finish_time_ = finish_time; }
   double get_finish_time() const { return finish_time_; }
 
+  bool is_detached() const { return detached_; }
+
+  void detach();
   virtual bool test(actor::ActorImpl* issuer);
   static ssize_t test_any(actor::ActorImpl* issuer, const std::vector<ActivityImpl*>& activities);
 
@@ -119,6 +124,12 @@ public:
     return static_cast<AnyActivityImpl&>(*this);
   }
   const std::string& get_tracing_category() const { return tracing_category_; }
+
+  AnyActivityImpl& detach()
+  {
+    ActivityImpl::detach();
+    return static_cast<AnyActivityImpl&>(*this);
+  }
 };
 
 } // namespace simgrid::kernel::activity

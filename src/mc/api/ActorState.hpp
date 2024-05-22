@@ -62,7 +62,7 @@ class ActorState {
    */
   enum class InterleavingType {
     /** This actor transition is not considered by the checker (yet?) */
-    disabled = 0,
+    unknown = 0,
     /** The checker algorithm decided that this actor transitions should be done at some point */
     todo,
     /** The checker algorithm decided that this should be done, but it was done in the meanwhile */
@@ -70,7 +70,7 @@ class ActorState {
   };
 
   /** Exploration control information */
-  InterleavingType state_ = InterleavingType::disabled;
+  InterleavingType state_ = InterleavingType::unknown;
 
   /** The ID of that actor */
   const aid_t aid_;
@@ -107,7 +107,7 @@ public:
   /* returns whether the actor is marked as enabled in the application side */
   bool is_enabled() const { return enabled_; }
   /* returns whether the actor is marked as disabled by the exploration algorithm */
-  bool is_disabled() const { return this->state_ == InterleavingType::disabled; }
+  bool is_unknown() const { return this->state_ == InterleavingType::unknown; }
   bool is_done() const { return this->state_ == InterleavingType::done; }
   bool is_todo() const { return this->state_ == InterleavingType::todo; }
   /** Mark that we should try executing this process at some point in the future of the checker algorithm */

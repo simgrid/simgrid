@@ -92,13 +92,6 @@ CommImpl& CommImpl::set_dst_buff(unsigned char* buff, size_t* size)
   return *this;
 }
 
-CommImpl& CommImpl::detach()
-{
-  detached_ = true;
-  EngineImpl::get_instance()->get_maestro()->activities_.insert(this);
-  return *this;
-}
-
 CommImpl::~CommImpl()
 {
   XBT_DEBUG("Really free communication %p in state %s (detached = %d)", this, get_state_str(), detached_);
@@ -392,13 +385,6 @@ void CommImpl::finish()
   XBT_DEBUG("CommImpl::finish() comm %p, state %s, src_proc %p, dst_proc %p, detached: %d", this, get_state_str(),
             src_actor_.get(), dst_actor_.get(), detached_);
 
-  if (get_iface()) {
-    const auto& piface = static_cast<const s4u::Comm&>(*get_iface());
-    set_iface(nullptr); // reset iface to protect against multiple trigger of the on_completion signals
-    piface.fire_on_completion_for_real();
-    piface.fire_on_this_completion_for_real();
-  }
-
   /* Update synchro state */
   if (from_ && not from_->is_on())
     set_state(State::SRC_HOST_FAILURE);
@@ -410,6 +396,17 @@ void CommImpl::finish()
     xbt_assert(from_ && from_->is_on());
     xbt_assert(to_ && to_->is_on());
     set_state(State::DONE);
+  }
+
+  if (get_iface()) {
+    auto& piface = static_cast<s4u::Comm&>(*get_iface());
+    set_iface(nullptr); // reset iface to protect against multiple trigger of the on_completion signals
+    piface.fire_on_completion_for_real();
+    piface.fire_on_this_completion_for_real();
+    if (detached_ && get_state() == State::DONE){
+      s4u::CommPtr keepalive(&piface);
+      piface.release_dependencies();
+    }
   }
 
   /* destroy the model actions associated with the communication activity */

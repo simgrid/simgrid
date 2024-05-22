@@ -586,11 +586,16 @@ set(MC_SRC_STATELESS
   src/mc/mc_private.hpp
   src/mc/mc_record.cpp
 
+  src/mc/api/strategy/BasicStrategy.cpp
   src/mc/api/strategy/BasicStrategy.hpp
+  src/mc/api/strategy/MaxMatchComm.cpp
   src/mc/api/strategy/MaxMatchComm.hpp
+  src/mc/api/strategy/MinContextSwitch.cpp
   src/mc/api/strategy/MinContextSwitch.hpp
+  src/mc/api/strategy/MinMatchComm.cpp
   src/mc/api/strategy/MinMatchComm.hpp
   src/mc/api/strategy/StratLocalInfo.hpp
+  src/mc/api/strategy/UniformStrategy.cpp
   src/mc/api/strategy/UniformStrategy.hpp
 
   src/mc/explo/reduction/BFSODPOR.cpp

@@ -31,8 +31,6 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
   size_t src_buff_size_               = sizeof(void*);
 
   /* FIXME: expose these elements in the API */
-  bool detached_                                                          = false;
-  std::function<void(void*)> clean_fun_; // used if detached
   std::function<void(kernel::activity::CommImpl*, void*, size_t)> copy_data_function_;
 
   Comm() = default;
@@ -172,15 +170,6 @@ public:
   Actor* get_receiver() const;
 
   /* Comm life cycle */
-  /** Start the comm, and ignore its result. It can be completely forgotten after that. */
-  Comm* detach();
-  /** Start the comm, and ignore its result. It can be completely forgotten after that. */
-  Comm* detach(const std::function<void(void*)>& clean_function)
-  {
-    clean_fun_ = clean_function;
-    return detach();
-  }
-
   Comm* wait_for(double timeout) override;
 
 #ifndef DOXYGEN
