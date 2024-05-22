@@ -71,9 +71,9 @@ AppSide* AppSide::get()
   return instance_.get();
 }
 
-void AppSide::handle_verbosity_msg(const s_mc_message_int_t* msg)
+void AppSide::handle_verbosity_msg(const s_mc_message_t* msg)
 {
-  verbose_ = msg->value;
+  verbose_ = ((s_mc_message_int_t*)msg)->value;
   // Send result:
   s_mc_message_t answer = {};
   answer.type           = MessageType::VERBOSITY_SET_REPLY;
