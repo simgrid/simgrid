@@ -51,8 +51,12 @@ public:
   std::unique_ptr<CheckerSide> clone_checker_side();
   void wait_for_requests();
 
-  /** Ask to the application to check for a deadlock. If so, returns true. */
-  bool check_deadlock() const;
+  /** Ask to the application to check for a deadlock. If so, returns true.
+   *
+   * If verbose is false, the application won't complain on deadlock. Useful to quietely search for the critical
+   * transition once we find a first deadlock.
+   */
+  bool check_deadlock(bool verbose = true) const;
 
   /** Ask the application to run post-mortem analysis, and maybe to stop ASAP */
   void finalize_app(bool terminate_asap = false);

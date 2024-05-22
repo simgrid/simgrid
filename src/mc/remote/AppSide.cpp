@@ -70,7 +70,7 @@ AppSide* AppSide::get()
   return instance_.get();
 }
 
-void AppSide::handle_deadlock_check(const s_mc_message_t*) const
+void AppSide::handle_deadlock_check(const s_mc_message_int_t* request) const
 {
   const auto* engine     = kernel::EngineImpl::get_instance();
   const auto& actor_list = engine->get_actor_list();
@@ -78,7 +78,7 @@ void AppSide::handle_deadlock_check(const s_mc_message_t*) const
     return mc::actor_is_enabled(kv.second);
   });
 
-  if (deadlock) {
+  if (deadlock && request->value) {
     XBT_CINFO(mc_global, "**************************");
     XBT_CINFO(mc_global, "*** DEADLOCK DETECTED ***");
     XBT_CINFO(mc_global, "**************************");
@@ -308,8 +308,8 @@ void AppSide::handle_messages()
         return;
 
       case MessageType::DEADLOCK_CHECK:
-        assert_msg_size("DEADLOCK_CHECK", s_mc_message_t);
-        handle_deadlock_check(message);
+        assert_msg_size("DEADLOCK_CHECK", s_mc_message_int_t);
+        handle_deadlock_check((s_mc_message_int_t*)message);
         break;
 
       case MessageType::SIMCALL_EXECUTE:

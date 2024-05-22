@@ -171,18 +171,22 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   }
 }
 
-bool RemoteApp::check_deadlock() const
+bool RemoteApp::check_deadlock(bool verbose) const
 {
-  xbt_assert(checker_side_->get_channel().send(MessageType::DEADLOCK_CHECK) == 0, "Could not check deadlock state");
-  s_mc_message_int_t message;
-  ssize_t received = checker_side_->get_channel().receive(message);
-  xbt_assert(received != -1, "Could not receive message");
-  xbt_assert(received == sizeof message, "Broken message (size=%zd; expected %zu)", received, sizeof message);
-  xbt_assert(message.type == MessageType::DEADLOCK_CHECK_REPLY,
-             "Received unexpected message %s (%i); expected MessageType::DEADLOCK_CHECK_REPLY (%i)",
-             to_c_str(message.type), (int)message.type, (int)MessageType::DEADLOCK_CHECK_REPLY);
+  s_mc_message_int_t request;
+  request.type  = MessageType::DEADLOCK_CHECK;
+  request.value = verbose;
+  xbt_assert(checker_side_->get_channel().send(request) == 0, "Could not check deadlock state");
 
-  if (message.value != 0) {
+  s_mc_message_int_t answer;
+  ssize_t received = checker_side_->get_channel().receive(answer);
+  xbt_assert(received != -1, "Could not receive message");
+  xbt_assert(received == sizeof answer, "Broken message (size=%zd; expected %zu)", received, sizeof answer);
+  xbt_assert(answer.type == MessageType::DEADLOCK_CHECK_REPLY,
+             "Received unexpected message %s (%i); expected MessageType::DEADLOCK_CHECK_REPLY (%i)",
+             to_c_str(answer.type), (int)answer.type, (int)MessageType::DEADLOCK_CHECK_REPLY);
+
+  if (answer.value != 0) {
     auto* explo = Exploration::get_instance();
     XBT_CINFO(mc_global, "Counter-example execution trace:");
     for (auto const& frame : explo->get_textual_trace())
