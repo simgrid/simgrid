@@ -173,6 +173,13 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
 
 bool RemoteApp::check_deadlock(bool verbose) const
 {
+
+  auto* explo = Exploration::get_instance();
+  // While looking for critical transition, we don't want to dilute the output with
+  // all the deadlock informations
+  if (explo->is_critical_transition_explorer())
+    verbose = false;
+
   s_mc_message_int_t request;
   request.type  = MessageType::DEADLOCK_CHECK;
   request.value = verbose;
@@ -187,8 +194,7 @@ bool RemoteApp::check_deadlock(bool verbose) const
              to_c_str(answer.type), (int)answer.type, (int)MessageType::DEADLOCK_CHECK_REPLY);
 
   if (answer.value != 0) {
-    auto* explo = Exploration::get_instance();
-    if (not explo->is_critical_transition_explorer()) {
+    if (verbose) {
       XBT_CINFO(mc_global, "Counter-example execution trace:");
       for (auto const& frame : explo->get_textual_trace())
         XBT_CINFO(mc_global, "  %s", frame.c_str());
