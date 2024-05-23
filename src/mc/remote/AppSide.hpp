@@ -23,7 +23,6 @@ private:
   Channel channel_;
   static std::unique_ptr<AppSide> instance_;
   std::unordered_map<int, int> child_statuses_;
-  bool verbose_ = true;
 
 public:
   AppSide();
@@ -31,8 +30,7 @@ public:
   void handle_messages();
 
 private:
-  void handle_verbosity_msg(const s_mc_message_t* msg);
-  void handle_deadlock_check(const s_mc_message_t* msg) const;
+  void handle_deadlock_check(const s_mc_message_int_t* msg) const;
   void handle_simcall_execute(const s_mc_message_simcall_execute_t* message) const;
   void handle_finalize(const s_mc_message_int_t* msg) const;
   void handle_fork(const s_mc_message_fork_t* msg);
