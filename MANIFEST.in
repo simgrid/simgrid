@@ -2285,9 +2285,9 @@ include src/mc/api/strategy/StratLocalInfo.hpp
 include src/mc/api/strategy/UniformStrategy.cpp
 include src/mc/api/strategy/UniformStrategy.hpp
 include src/mc/datatypes.h
+include src/mc/explo/CommunicationDeterminismChecker.cpp
 include src/mc/explo/CriticalTransitionExplorer.cpp
 include src/mc/explo/CriticalTransitionExplorer.hpp
-include src/mc/explo/CommunicationDeterminismChecker.cpp
 include src/mc/explo/DFSExplorer.cpp
 include src/mc/explo/DFSExplorer.hpp
 include src/mc/explo/Exploration.cpp
@@ -2309,6 +2309,7 @@ include src/mc/explo/odpor/odpor_forward.hpp
 include src/mc/explo/odpor/odpor_tests_private.hpp
 include src/mc/explo/reduction/BFSODPOR.cpp
 include src/mc/explo/reduction/BFSODPOR.hpp
+include src/mc/explo/reduction/DPOR.cpp
 include src/mc/explo/reduction/DPOR.hpp
 include src/mc/explo/reduction/NoReduction.hpp
 include src/mc/explo/reduction/ODPOR.cpp
