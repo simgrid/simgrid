@@ -2285,6 +2285,8 @@ include src/mc/api/strategy/StratLocalInfo.hpp
 include src/mc/api/strategy/UniformStrategy.cpp
 include src/mc/api/strategy/UniformStrategy.hpp
 include src/mc/datatypes.h
+include src/mc/explo/CriticalTransitionExplorer.cpp
+include src/mc/explo/CriticalTransitionExplorer.hpp
 include src/mc/explo/CommunicationDeterminismChecker.cpp
 include src/mc/explo/DFSExplorer.cpp
 include src/mc/explo/DFSExplorer.hpp
