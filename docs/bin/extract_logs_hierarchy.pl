@@ -32,17 +32,17 @@ sub cleanup_ctn {
     my @elms;
     print STDERR "ctn=$ctn\n" if $debug > 1;
     if ($ctn =~ m/^(\w+)\s*,\s*(\w+)\s*,\s*"?([^"]*)"?$/s) {
-	# Perfect, we got 0->name; 1->anc; 2->desc
-	$elms[0] = $1;
-	$elms[1] = $2;
-	$elms[2] = $3;
+	    # Perfect, we got 0->name; 1->anc; 2->desc
+	    $elms[0] = $1;
+	    $elms[1] = $2;
+	    $elms[2] = $3;
     } elsif ($ctn =~ m/^(\w+)\s*,\s*"?([^"]*)"?$/s) {
-	# Mmm. got no ancestor. Add the default one.
-	$elms[0] = $1;
-	$elms[1] = "XBT_LOG_ROOT_CAT";
-	$elms[2] = $2;
+	    # Mmm. got no ancestor. Add the default one.
+	    $elms[0] = $1;
+	    $elms[1] = "XBT_LOG_ROOT_CAT";
+	    $elms[2] = $2;
     } else {
-	die "Unparsable content: $ctn\n";
+	    die "Unparsable content: $ctn\n";
     }
     $elms[2] =~ s/\\\\/\\/gs;
     return @elms;
@@ -55,8 +55,8 @@ sub parse_file {
 
     print STDERR "Parse $filename\n" if $debug;
     open IN, "$filename" || die "Cannot read $filename: $!\n";
-    while (<IN>) {
-	$data .= $_;
+        while (<IN>) {
+	    $data .= $_;
     }
     close IN;
 
@@ -65,17 +65,17 @@ sub parse_file {
     $data =~ s|//.*$||mg;
 
     while ($data =~ s/^.*?XBT_LOG_NEW(_DEFAULT)?_(SUB)?CATEGORY\(//s) {
-	$data =~ s/([^"]*"[^"]*")\)//s || die "unparsable macro: $data";
+	    $data =~ s/([^"]*"[^"]*")\)//s || die "unparsable macro: $data";
 
         my ($name,$anc,$desc) = cleanup_ctn($1);
 
         # build the tree, checking for name conflict
         die "ERROR: Category name conflict: $name used several times (in $ancestor{$name} and $anc, last time in $filename)\n"
-	   if defined ($ancestor{$name}) && $ancestor{$name} ne $anc && defined ($desc{$name}) && $desc{$name} ne $desc;
-       $ancestor{$name}=$anc;
-       $desc{$name}=$desc;
+	        if defined ($ancestor{$name}) && $ancestor{$name} ne $anc && defined ($desc{$name}) && $desc{$name} ne $desc;
+        $ancestor{$name}=$anc;
+        $desc{$name}=$desc;
 
-       print STDERR " $name -> $anc\n" if $debug;
+        print STDERR " $name -> $anc\n" if $debug;
    }
 }
 # Retrieve all the file names
