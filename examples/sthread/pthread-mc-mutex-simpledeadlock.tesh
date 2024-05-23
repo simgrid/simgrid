@@ -26,6 +26,18 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;3;2;3;3'
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 19 unique states visited; 1 explored traces (2 transition replays, 21 states visited overall)
+> [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
+> [0.000000] [mc_ct/INFO] *********************************
+> [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
+> [0.000000] [mc_ct/INFO] *********************************
+> [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: MUTEX_WAIT(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO] Found the critical transition: Actor 3 ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
 
 
 # The return code of a replay is not modified
