@@ -40,9 +40,15 @@ private:
   // For statistics. Starts at one because we only track the act of starting a new trace
   unsigned long explored_traces_ = 0;
 
-  stack_t initial_bugged_stack;
+  // The first non-correct execution found. We must record the state (in order to re-explore them later) AND
+  // the corresponding out-transition (since this can change during later explorations).
+  std::deque<std::pair<StatePtr, std::shared_ptr<Transition>>> initial_bugged_stack = {};
+
   // Display the initial bugged stacked and update information to track where the current critical transition might be
   void log_stack();
+
+  // Display information about the exploration after it ended
+  void log_end_exploration();
 
 public:
   explicit CriticalTransitionExplorer(std::unique_ptr<RemoteApp> remote_app, ReductionMode mode, stack_t* stack);

@@ -49,11 +49,19 @@ xbt::signal<void(Transition*, RemoteApp&)> CriticalTransitionExplorer::on_transi
 
 xbt::signal<void(RemoteApp&)> CriticalTransitionExplorer::on_log_state_signal;
 
+void CriticalTransitionExplorer::log_end_exploration()
+{
+  XBT_INFO("*********************************");
+  XBT_INFO("*** CRITICAL TRANSITION FOUND ***");
+  XBT_INFO("*********************************");
+  log_stack();
+}
+
 void CriticalTransitionExplorer::log_stack()
 {
-  XBT_INFO("Current candidates for critical transition:");
+  XBT_INFO("Current knowledge of explored stack:");
   unsigned depth = 0;
-  for (const auto& state : initial_bugged_stack) {
+  for (const auto& [state, out_transition] : initial_bugged_stack) {
     std::string status;
     if (state->has_correct_execution())
       status = "  CORRECT";
@@ -61,7 +69,6 @@ void CriticalTransitionExplorer::log_stack()
       status = "INCORRECT";
     else
       status = "  UNKNOWN";
-    const auto out_transition = state->get_transition_out();
     if (out_transition == nullptr)
       return; // We reached the last state of the stack and nothing is going out of it
     XBT_INFO("  (%s) Actor %ld in %s ==> simcall: %s", status.c_str(), out_transition->aid_,
@@ -91,8 +98,9 @@ void CriticalTransitionExplorer::run()
   while (stack_->size() > 1 and not stack_->back()->has_correct_execution()) {
     auto current_candidate = stack_->back()->get_transition_out();
 
-    XBT_INFO("Looking at depth %zu", stack_->size());
-    log_stack();
+    XBT_VERB("Looking at depth %zu", stack_->size() - 1);
+    if (XBT_LOG_ISENABLED(mc_ct, xbt_log_priority_verbose))
+      log_stack();
 
     backtrack_to_state(stack_->back().get());
     is_execution_descending = true;
@@ -103,6 +111,7 @@ void CriticalTransitionExplorer::run()
       DFSExplorer::explore(execution_seq_, *stack_);
     } catch (McError& error) {
       xbt_assert(error.value == ExitStatus::SUCCESS);
+      log_end_exploration();
       XBT_INFO("Found a correct execution of the programm!");
       XBT_INFO("Found the critical transition: Actor %ld ==> simcall: %s", current_candidate->aid_,
                current_candidate->to_string(true).c_str());
@@ -113,6 +122,7 @@ void CriticalTransitionExplorer::run()
     execution_seq_ = execution_seq_.get_prefix_before(execution_seq_.size() - 1);
   }
 
+  log_end_exploration();
   if (stack_->size() == 1)
     XBT_INFO("The critical transition explorer reached the beginning of the stack without finding a correct execution. "
              "The program may have no correct behavior.");
@@ -127,7 +137,8 @@ CriticalTransitionExplorer::CriticalTransitionExplorer(std::unique_ptr<RemoteApp
     : DFSExplorer(std::move(remote_app), mode)
 {
   stack_               = stack;
-  initial_bugged_stack = get_stack();
+  for (auto const& state : get_stack())
+    initial_bugged_stack.emplace_back(state, state->get_transition_out());
   run();
 }
 
