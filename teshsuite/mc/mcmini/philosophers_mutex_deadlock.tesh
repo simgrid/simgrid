@@ -83,20 +83,19 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 2)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: MUTEX_WAIT(mutex: 1, owner: 3)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: MUTEX_WAIT(mutex: 2, owner: 4)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 5 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 3, owner: 5)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_WAIT(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 4 in  ==> simcall: MUTEX_WAIT(mutex: 2, owner: 4)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 5 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 3, owner: 5)
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 3, owner: 5)
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 5 in  ==> simcall: MUTEX_WAIT(mutex: 3, owner: 5)
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 5 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
-> [0.000000] [mc_ct/INFO] The critical transition explorer reached the beginning of the stack without finding a correct execution. The program may have no correct behavior.
-> [0.000000] [mc_ct/INFO] Found the critical transition: Actor 2 ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO] Found the critical transition: Actor 5 ==> simcall: MUTEX_ASYNC_LOCK(mutex: 3, owner: 5)
 
 ! expect return 2
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_mutex_deadlock 5 0
@@ -190,20 +189,19 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 2)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: MUTEX_WAIT(mutex: 1, owner: 3)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: MUTEX_WAIT(mutex: 2, owner: 4)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 5 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 3, owner: 5)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 3, owner: 5)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 5 in  ==> simcall: MUTEX_WAIT(mutex: 3, owner: 5)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 6 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 4, owner: 6)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_WAIT(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 4 in  ==> simcall: MUTEX_WAIT(mutex: 2, owner: 4)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 5 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 3, owner: 5)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 3, owner: 5)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 5 in  ==> simcall: MUTEX_WAIT(mutex: 3, owner: 5)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 6 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 4, owner: 6)
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 5 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 4, owner: 6)
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 6 in  ==> simcall: MUTEX_WAIT(mutex: 4, owner: 6)
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 6 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
-> [0.000000] [mc_ct/INFO] The critical transition explorer reached the beginning of the stack without finding a correct execution. The program may have no correct behavior.
-> [0.000000] [mc_ct/INFO] Found the critical transition: Actor 2 ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO] Found the critical transition: Actor 6 ==> simcall: MUTEX_ASYNC_LOCK(mutex: 4, owner: 6)

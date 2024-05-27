@@ -26,6 +26,8 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state) : Sta
         strategy_->actors_to_run_.at(aid).mark_done();
       }
     }
+    if (not sleep_set_.empty() and parent_state->has_correct_execution())
+      this->register_as_correct();
   }
 }
 

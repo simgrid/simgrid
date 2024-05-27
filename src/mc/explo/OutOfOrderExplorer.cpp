@@ -135,6 +135,7 @@ void OutOfOrderExplorer::run()
         get_remote_app().finalize_app();
         XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
         XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(), explored_traces_);
+        report_correct_execution(state.get());
       }
 
       this->backtrack();
