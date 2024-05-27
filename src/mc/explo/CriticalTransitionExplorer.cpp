@@ -36,8 +36,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(
     mc_ct, mc,
-    "Critical transition exploration algorithm of the model-checker. Disclaimer: this is still experimental. The "
-    "current associated algorithm only gives an approximation of the real answer when used with reductions");
+    "Critical transition exploration algorithm. For now, the answer is approximate when used with reduction");
 
 namespace simgrid::mc {
 
