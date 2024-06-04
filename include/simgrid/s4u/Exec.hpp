@@ -53,7 +53,13 @@ public:
   /** @brief On sequential executions, returns the amount of flops that remain to be done; This cannot be used on
    * parallel executions. */
   double get_remaining() const override;
+  /** @brief Returns the ratio of elements that are still to do
+   *
+   * The returned value is between 0 (completely done) and 1 (nothing done yet). */
   double get_remaining_ratio() const;
+  /** @brief Change the host on which this activity takes place.
+   *
+   * This cannot be done once the activity is terminated, but it can be done on started executions. */
   ExecPtr set_host(Host* host);
   ExecPtr set_hosts(const std::vector<Host*>& hosts);
   ExecPtr unset_host();
@@ -65,10 +71,21 @@ public:
 
   ExecPtr set_thread_count(int thread_count);
 
+  /** @brief change the execution bound
+   * This means changing the maximal amount of flops per second that it may consume, regardless of what the host may
+   * deliver. Currently, this cannot be changed once the exec started. See also the "cloud-capping" example.  */
   ExecPtr set_bound(double bound);
+
+  /** @brief  Change the execution priority, don't you think?
+   * An execution with twice the priority will get twice the amount of flops when the resource is shared.
+   * The default priority is 1.
+   *
+   * Currently, this cannot be changed once the exec started. */
   ExecPtr set_priority(double priority);
   ExecPtr update_priority(double priority);
 
+  /** @brief Retrieve the host on which this activity takes place.
+   *  If it runs on more than one host, only the first host is returned. */
   Host* get_host() const;
   unsigned int get_host_number() const;
   int get_thread_count() const;
