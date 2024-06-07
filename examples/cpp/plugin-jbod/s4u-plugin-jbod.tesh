@@ -46,12 +46,12 @@ $ ${bindir}/s4u-plugin-jbod --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r
 > [ 47.186666] synchonous read done
 > [ 47.186666] XXXXXXXXXXXXXXX RAID 6 XXXXXXXXXXXXXXXX
 > [ 47.186666] asynchronous write posted, wait for it
-> [ 50.186666] asynchronous write done
-> [ 51.686666] synchonous read done
-> [ 54.686666] synchonous write done
-> [ 54.686666] asynchronous read posted, wait for it
-> [ 56.186666] asynchonous read done
-> [ 59.186666] synchonous write done
-> [ 60.686666] synchonous read done
-> [ 62.186666] synchonous read done
-> [ 62.186666] Simulated time: 62.1867
+> [ 49.196666] asynchronous write done
+> [ 50.696666] synchonous read done
+> [ 52.706666] synchonous write done
+> [ 52.706666] asynchronous read posted, wait for it
+> [ 54.206666] asynchonous read done
+> [ 56.216666] synchonous write done
+> [ 57.716666] synchonous read done
+> [ 59.216666] synchonous read done
+> [ 59.216666] Simulated time: 59.2167
