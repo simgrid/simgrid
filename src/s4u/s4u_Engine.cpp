@@ -143,7 +143,7 @@ std::vector<long long> Engine::get_papi_counters()
     return std::vector<long long>(0);
   }
 #else
-    return std::vector<long long>(0);    
+    return std::vector<long long>(0);
 #endif
 }
 
@@ -189,14 +189,14 @@ void Engine::papi_start()
 #endif
 }
 
-void Engine::papi_stop(){    
-#if HAVE_PAPI    
+void Engine::papi_stop(){
+#if HAVE_PAPI
     if (not smpi_cfg_papi_events_file().empty()) {
 
         int event_set                       = smpi_process()->papi_event_set();
         papi_counter_t& counter_data        = smpi_process()->papi_counters();
         std::vector<long long> event_values = Engine::get_papi_counters();
-        
+
         if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized() && PAPI_NULL != event_set){
             auto ret = PAPI_stop(event_set, &event_values[0]);
 
@@ -634,6 +634,17 @@ void Engine::set_netzone_root(const s4u::NetZone* netzone)
 {
   xbt_assert(pimpl_->netzone_root_ == nullptr, "The root NetZone cannot be changed once set");
   pimpl_->netzone_root_ = netzone->get_impl();
+}
+
+std::vector<NetZone*> Engine::get_all_netzones() const
+{
+  std::vector<kernel::routing::NetZoneImpl*> netzone_pimpl_list = {pimpl_->netzone_root_};
+  std::vector<NetZone*> netzone_list;
+  get_filtered_netzones_recursive(pimpl_->netzone_root_->get_iface(), &netzone_pimpl_list);
+  for (auto const& n : netzone_pimpl_list) {
+    netzone_list.push_back(n->get_iface());
+  }
+  return netzone_list;
 }
 
 static NetZone* netzone_by_name_recursive(NetZone* current, const std::string& name)

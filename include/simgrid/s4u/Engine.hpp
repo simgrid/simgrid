@@ -177,6 +177,7 @@ public:
   kernel::routing::NetPoint* netpoint_by_name(const std::string& name) const;
 
   NetZone* get_netzone_root() const;
+  std::vector<NetZone*> get_all_netzones() const;
 
   NetZone* netzone_by_name_or_null(const std::string& name) const;
 
