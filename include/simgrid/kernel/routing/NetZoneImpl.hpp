@@ -9,6 +9,7 @@
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Link.hpp>
 #include <simgrid/s4u/NetZone.hpp>
+#include <xbt/Extendable.hpp>
 #include <xbt/PropertyHolder.hpp>
 #include <xbt/graph.h>
 
@@ -16,7 +17,10 @@
 #include <unordered_set>
 #include <vector>
 
-namespace simgrid::kernel::routing {
+namespace simgrid {
+extern template class XBT_PUBLIC xbt::Extendable<kernel::routing::NetZoneImpl>;
+
+namespace kernel::routing {
 
 class Route {
 public:
@@ -69,7 +73,7 @@ public:
  * called Autonomous Systems in this article).
  *
  */
-class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
+class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder, public xbt::Extendable<NetZoneImpl> {
   friend EngineImpl; // it destroys netRoot_
   s4u::NetZone piface_;
 
@@ -291,6 +295,8 @@ private:
   virtual resource::StandardLinkImpl* do_create_link(const std::string& name, const std::vector<double>& bandwidths);
   void add_child(NetZoneImpl* new_zone);
 };
-} // namespace simgrid::kernel::routing
+
+} // namespace kernel::routing
+} // namespace simgrid
 
 #endif /* SIMGRID_ROUTING_NETZONEIMPL_HPP */
