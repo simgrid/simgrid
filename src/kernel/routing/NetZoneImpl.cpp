@@ -23,7 +23,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_platform, kernel, "Kernel platform-related information");
 
-namespace simgrid::kernel::routing {
+namespace simgrid {
+
+template class xbt::Extendable<kernel::routing::NetZoneImpl>;
+
+namespace kernel::routing {
 
 xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                  kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
@@ -795,4 +799,6 @@ bool NetZoneImpl::is_component_recursive(const NetPoint* netpoint) const
   return std::any_of(begin(children_), end(children_),
                      [netpoint](const auto* child) { return child->is_component_recursive(netpoint); });
 }
-} // namespace simgrid::kernel::routing
+
+} // namespace kernel::routing
+} // namespace simgrid
