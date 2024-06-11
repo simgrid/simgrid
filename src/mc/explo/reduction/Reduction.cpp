@@ -26,4 +26,10 @@ void Reduction::on_backtrack(State* s)
   SleepSetState* sleep_parent = static_cast<SleepSetState*>(parent.get());
   sleep_parent->add_sleep_set(s->get_transition_in());
 }
+
+void Reduction::consider_best(StatePtr state)
+{
+  state->consider_best();
+}
+
 } // namespace simgrid::mc

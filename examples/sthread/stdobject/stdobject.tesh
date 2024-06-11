@@ -24,3 +24,12 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [   0.000000] (maestro@)   Actor 3 in simcall BeginObjectAccess(&v)
 > [   0.000000] (maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;3'
 > [   0.000000] (maestro@) DFS exploration ended. 7 unique states visited; 1 explored traces (1 transition replays, 8 states visited overall)
+> [   0.000000] (maestro@) thread 1 takes &v
+> [   0.000000] (maestro@) Start the critical transition detection phase.
+> [   0.000000] (maestro@) *********************************
+> [   0.000000] (maestro@) *** CRITICAL TRANSITION FOUND ***
+> [   0.000000] (maestro@) *********************************
+> [   0.000000] (maestro@) Current knowledge of explored stack:
+> [   0.000000] (maestro@)   (  CORRECT) Actor 2 in  ==> simcall: BeginObjectAccess(&v)
+> [   0.000000] (maestro@)   (  CORRECT) Actor 3 in  ==> simcall: BeginObjectAccess(&v)
+> [   0.000000] (maestro@) Found the critical transition: Actor 3 ==> simcall: BeginObjectAccess(&v)

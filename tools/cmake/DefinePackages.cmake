@@ -561,6 +561,7 @@ set(MC_SRC_STATELESS
   src/mc/api/states/BFSWutState.hpp
   src/mc/api/states/SleepSetState.cpp
   src/mc/api/states/SleepSetState.hpp
+  src/mc/api/states/SoftLockedState.hpp
   src/mc/api/states/State.cpp
   src/mc/api/states/State.hpp
   src/mc/api/states/WutState.cpp

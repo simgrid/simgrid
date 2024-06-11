@@ -64,20 +64,23 @@ void WutState::initialize_if_empty_wut()
   xbt_assert(!has_initialized_wakeup_tree);
   has_initialized_wakeup_tree = true;
 
-  if (wakeup_tree_.empty()) {
-    // Find an enabled transition to pick
-    auto const [best_actor, _] = this->strategy_->best_transition(false);
-    if (best_actor == -1)
-      return; // This means that no transitions are enabled at this point
+  if (wakeup_tree_.empty())
+    add_arbitrary_todo();
+}
 
-    XBT_DEBUG("Best actor to consider to initialize an empty WuT is %ld", best_actor);
-    this->strategy_->consider_one(best_actor);
-    auto actor_state = get_actors_list().at(best_actor);
-    // For each variant of the transition that is enabled, we want to insert the action into the tree.
-    // This ensures that all variants are searched
-    for (unsigned times = 0; times < actor_state.get_max_considered(); ++times) {
-      wakeup_tree_.insert_at_root(actor_state.get_transition(times));
-    }
+void WutState::add_arbitrary_todo()
+{
+  // Find an enabled transition to pick
+  auto const [best_actor, _] = this->strategy_->best_transition(false);
+  if (best_actor == -1)
+    return; // This means that no transitions are enabled at this point
+  xbt_assert(sleep_set_.find(best_actor) == sleep_set_.end(), "Why is a transition in a sleep set not marked as done?");
+  this->strategy_->consider_one(best_actor);
+  auto actor_state = get_actors_list().at(best_actor);
+  // For each variant of the transition that is enabled, we want to insert the action into the tree.
+  // This ensures that all variants are searched
+  for (unsigned times = 0; times < actor_state.get_max_considered(); ++times) {
+    wakeup_tree_.insert_at_root(actor_state.get_transition(times));
   }
 }
 
@@ -180,8 +183,10 @@ void WutState::do_odpor_unwind()
   // works with ODPOR in the way we intend it to work. There is not a
   // good way to perform transition equality in SimGrid; instead, we
   // effectively simply check for the presence of an actor in the sleep set.
-  if (not parent->get_actors_list().at(get_transition_in()->aid_).has_more_to_consider())
+  if (not parent->get_actors_list().at(get_transition_in()->aid_).has_more_to_consider()) {
     parent->add_sleep_set((get_transition_in()));
+    parent->get_actor_at(get_transition_in()->aid_).mark_done();
+  }
 }
 
 } // namespace simgrid::mc

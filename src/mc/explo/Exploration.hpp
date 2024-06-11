@@ -35,7 +35,7 @@ class Exploration : public xbt::Extendable<Exploration> {
   static Exploration* instance_;
 
   FILE* dot_output_ = nullptr;
-  int deadlocks_    = 0; // Amount of deadlocks seen so far; tested against model-check/max-deadlocks
+  int errors_       = 0; // Amount of errors seen so far; tested against model-check/max-errors
 
   /** @brief Wether the current exploration is a CriticalTransitionExplorer */
   bool is_looking_for_critical = false;
@@ -71,7 +71,7 @@ public:
   void check_deadlock();
 
   /** Returns the amount of deadlocks seen so far (if model-checker/max-deadlocks is not 0) */
-  int deadlocks_seen() const { return deadlocks_; }
+  int errors_seen() const { return errors_; }
 
   /** Returns whether the soft timeout elapsed, asking to end the exploration at the next backtracking point */
   bool soft_timouted() const;
@@ -81,9 +81,13 @@ public:
   /* sanity check returning true if there is no actor to run in the simulation */
   bool empty();
 
-  /** Restore the application to that state, by rollback of a previously saved fork and replay the transitions afterward
+  /** @brief Restore the application to that state, by rollback of a previously saved fork and replay the transitions
+   * afterward
+   *
+   * @param finalize_app wether we should try to finalize the app before rollbacking. This should always be done,
+   *                     except if you already know that the application is dead.
    */
-  void backtrack_to_state(State* target_state);
+  void backtrack_to_state(State* target_state, bool finalize_app = true);
 
   /* These methods are callbacks called by the model-checking engine
    * to get and display information about the current state of the
@@ -127,6 +131,17 @@ public:
   {
     on_backtracking_signal.connect(f);
   }
+
+  /** @brief If the exploration is not already looking for a critical transition,
+   *  start a critical transition explorer.
+   *
+   *
+   *  @return If a critical exploration has already started, this function call returns
+   *  false without any effect. Else, it starts a critical transition explorer, runs it,
+   *  and returns true when it has finished.
+   */
+
+  bool try_to_launch_critical_exploration();
 
   /** Print something to the dot output file*/
   void dot_output(const char* fmt, ...) XBT_ATTRIB_PRINTF(2, 3);

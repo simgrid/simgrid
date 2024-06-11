@@ -39,11 +39,13 @@ public:
   // The base case is to only do the Sleep-Set procedure since most of the
   // algorithm are based on sleep sets anyway.
   virtual StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state = nullptr);
-
   // Update the state s fields assuming we just ended the exploration of the subtree
   // rooted in s.
   // base case simply add the incoming transition to the sleep set of the parent
   virtual void on_backtrack(State* s);
+  // Ask the reduction to consider one action from a given state
+  //   this is required to handle so called soft-locked states
+  virtual void consider_best(StatePtr best);
 };
 
 } // namespace simgrid::mc

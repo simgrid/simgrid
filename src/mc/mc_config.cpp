@@ -115,9 +115,9 @@ simgrid::config::Flag<std::string> _sg_mc_buffering{
 simgrid::config::Flag<int> _sg_mc_max_depth{"model-check/max-depth", "Maximal exploration depth (default: 1000)", 1000,
                                             [](int) { _mc_cfg_cb_check("max depth value"); }};
 
-simgrid::config::Flag<int> _sg_mc_max_deadlocks{
-    "model-check/max-deadlocks",
-    "Maximal amount of deadlocks to accept before stopping the exploration (negative value for no maximum).", 0};
+simgrid::config::Flag<int> _sg_mc_max_errors{
+    "model-check/max-errors",
+    "Maximal amount of errors to accept before stopping the exploration (negative value for no maximum).", 0};
 
 simgrid::config::Flag<int> _sg_mc_bfs_threshold{
     "model-check/bfs-threshold",
@@ -139,7 +139,7 @@ simgrid::config::Flag<bool> _sg_mc_nofork{
 simgrid::config::Flag<bool> _sg_mc_no_critical_transition{
     "model-check/no-critical",
     "Deactivate the search for the critical transition. Note that it is enabled by default when not asking for "
-    "multiple deadlocks in the program.",
+    "multiple errors in the program.",
     false};
 
 simgrid::config::Flag<int> _sg_mc_soft_timeout{

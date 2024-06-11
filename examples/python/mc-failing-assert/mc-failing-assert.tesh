@@ -21,3 +21,16 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/bin/simgrid-mc --cfg=model-check/no-f
 > [  0.000000] [maestro]   Actor 1 in Wait ==> simcall: WaitComm(from 2 to 1, mbox=0, no timeout)
 > [  0.000000] [maestro] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;3;1;1;2;1'
 > [  0.000000] [maestro] DFS exploration ended. 15 unique states visited; 1 explored traces (4 transition replays, 19 states visited overall)
+> [  0.000000] [maestro] Start the critical transition detection phase.
+> [  0.000000] [client2] Sent!
+> [  0.000000] [maestro] *********************************
+> [  0.000000] [maestro] *** CRITICAL TRANSITION FOUND ***
+> [  0.000000] [maestro] *********************************
+> [  0.000000] [maestro] Current knowledge of explored stack:
+> [  0.000000] [maestro]   (  CORRECT) Actor 1 in Irecv ==> simcall: iRecv(mbox=0, comm=1, tag=0))
+> [  0.000000] [maestro]   (  CORRECT) Actor 3 in Isend ==> simcall: iSend(mbox=0, comm=1, tag=0)
+> [  0.000000] [maestro]   (INCORRECT) Actor 1 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout, comm=1)
+> [  0.000000] [maestro]   (INCORRECT) Actor 1 in Irecv ==> simcall: iRecv(mbox=0, comm=3, tag=0))
+> [  0.000000] [maestro]   (INCORRECT) Actor 2 in Isend ==> simcall: iSend(mbox=0, comm=3, tag=0)
+> [  0.000000] [maestro]   (INCORRECT) Actor 1 in Wait ==> simcall: WaitComm(from 2 to 1, mbox=0, no timeout, comm=3)
+> [  0.000000] [maestro] Found the critical transition: Actor 3 ==> simcall: iSend(mbox=0, comm=1, tag=0)

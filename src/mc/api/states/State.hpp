@@ -46,6 +46,8 @@ protected:
   /** @brief The outgoing transition is the last transition that we took to leave this state.  */
   std::shared_ptr<Transition> outgoing_transition_ = nullptr;
 
+  ActorState get_actor_at(aid_t aid) { return strategy_->actors_to_run_.at(aid); }
+
 public:
   explicit State(const RemoteApp& remote_app);
   explicit State(const RemoteApp& remote_app, StatePtr parent_state);
@@ -120,7 +122,7 @@ public:
    * backtrack set still contains processes added to the done set.
    */
   std::unordered_set<aid_t> get_backtrack_set() const;
-  std::unordered_set<aid_t> get_enabled_actors() const;
+  virtual std::unordered_set<aid_t> get_enabled_actors() const;
   std::vector<aid_t> get_batrack_minus_done() const;
 
   /* Returns the total amount of states created so far (for statistics) */

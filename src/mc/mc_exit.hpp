@@ -16,6 +16,12 @@ struct McError : public std::exception {
   const ExitStatus value;
   explicit McError(ExitStatus v = ExitStatus::ERROR) : value(v) {}
 };
+
+struct McWarning : public std::exception {
+  const ExitStatus value;
+  explicit McWarning(ExitStatus v = ExitStatus::ERROR) : value(v) {}
+};
+
 } // namespace simgrid::mc
 
 #endif

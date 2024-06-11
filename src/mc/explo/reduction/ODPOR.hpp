@@ -22,6 +22,7 @@ public:
   aid_t next_to_explore(odpor::Execution& E, stack_t* S) override;
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override;
   void on_backtrack(State* s) override;
+  void consider_best(StatePtr state) override;
 };
 
 } // namespace simgrid::mc

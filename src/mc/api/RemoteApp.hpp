@@ -46,7 +46,7 @@ public:
   explicit RemoteApp(const std::vector<char*>& args);
 
   /** Rollback the application to the state passed as argument or to the beginning of history if from == nullptr */
-  void restore_checker_side(CheckerSide* from);
+  void restore_checker_side(CheckerSide* from, bool finalize_app = true);
   /** Make a clone of the checker side. The application is forked. */
   std::unique_ptr<CheckerSide> clone_checker_side();
   void wait_for_requests();

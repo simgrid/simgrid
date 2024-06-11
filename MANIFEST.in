@@ -2269,6 +2269,7 @@ include src/mc/api/states/BFSWutState.cpp
 include src/mc/api/states/BFSWutState.hpp
 include src/mc/api/states/SleepSetState.cpp
 include src/mc/api/states/SleepSetState.hpp
+include src/mc/api/states/SoftLockedState.hpp
 include src/mc/api/states/State.cpp
 include src/mc/api/states/State.hpp
 include src/mc/api/states/WutState.cpp

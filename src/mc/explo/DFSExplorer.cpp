@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/DFSExplorer.hpp"
 #include "simgrid/forward.h"
+#include "src/mc/api/states/SoftLockedState.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/explo/reduction/BFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
@@ -95,16 +96,60 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
   XBT_DEBUG("Going to execute actor %ld", next_actor);
   auto transition_to_be_executed = state->get_actors_list().at(next_actor).get_transition();
 
-  auto executed_transition = state->execute_next(next_actor, get_remote_app());
-  on_transition_execute_signal(executed_transition.get(), get_remote_app());
+  std::shared_ptr<Transition> executed_transition;
+  StatePtr next_state;
+  try {
+    executed_transition = state->execute_next(next_actor, get_remote_app());
+    on_transition_execute_signal(executed_transition.get(), get_remote_app());
+    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", executed_transition->aid_,
+             executed_transition->to_string().c_str(), state_stack.size(), state->get_num(), state->count_todo());
 
-  XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", executed_transition->aid_,
-           executed_transition->to_string().c_str(), state_stack.size(), state->get_num(), state->count_todo());
+    next_state = reduction_algo_->state_create(get_remote_app(), state);
 
-  auto next_state = reduction_algo_->state_create(get_remote_app(), state);
-  if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
-    next_state->set_state_factory(get_remote_app().clone_checker_side());
+    if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
+      next_state->set_state_factory(get_remote_app().clone_checker_side());
+    }
+  } catch (McWarning& error) {
+    // If an error is reached while executing the transition ...
+    XBT_VERB("An error occured while executing %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)",
+             transition_to_be_executed->aid_, transition_to_be_executed->to_string().c_str(), state_stack.size(),
+             state->get_num(), state->count_todo());
+
+    // ... reset the application to the step before dying
+    // ... the normal backtrack style would be upset, because currently the application is dead
+    backtrack_to_state(state.get(), false);
+
+    // ... construct a fake state with no successors so the reduction think it is time to compute races
+    next_state = StatePtr(new SoftLockedState(get_remote_app(), state));
+
+    // ... Add that fake state and compute races
+    state_stack.emplace_back(std::move(next_state));
+    stack_ = &state_stack;
+    S.push_transition(transition_to_be_executed);
+    reduction_algo_->races_computation(S, stack_);
+
+    // ... If we are not already doing it, start critical exploration
+    if (try_to_launch_critical_exploration())
+      // This will be executed after the first (and only) critical exploration:
+      // we raise the same error, so the checker can return the correct failure code in the end
+      throw McError(error.value);
+
+    // ... Unwind the addition of this fake state and prepare to let the algo keep going
+    reduction_algo_->on_backtrack(state_stack.back().get());
+
+    is_execution_descending = false;
+
+    state_stack.pop_back();
+    stack_ = &state_stack;
+
+    S.remove_last_event();
+
+    // ... reduction trick to keep it sound
+    reduction_algo_->consider_best(state);
+
+    return;
   }
+
   on_state_creation_signal(next_state.get(), get_remote_app());
 
   state_stack.emplace_back(std::move(next_state));

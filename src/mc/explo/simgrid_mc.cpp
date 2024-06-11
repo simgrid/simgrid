@@ -55,12 +55,14 @@ int main(int argc, char** argv)
       exit(0);
     }
     explo->run();
-    if (explo->deadlocks_seen() > 0) {
-      status = ExitStatus::DEADLOCK;
+    if (explo->errors_seen() > 0) {
+      status = ExitStatus::DEADLOCK; // The other error cases will result in exceptions caught just after
     } else {
       status = ExitStatus::SUCCESS;
     }
   } catch (const McError& e) {
+    status = e.value;
+  } catch (const McWarning& e) {
     status = e.value;
   }
   return static_cast<int>(status);

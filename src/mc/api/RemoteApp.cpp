@@ -75,11 +75,11 @@ RemoteApp::RemoteApp(const std::vector<char*>& args) : app_args_(args)
   }
 }
 
-void RemoteApp::restore_checker_side(CheckerSide* from)
+void RemoteApp::restore_checker_side(CheckerSide* from, bool finalize_app)
 {
   XBT_DEBUG("Restore the checker side");
 
-  if (checker_side_)
+  if (checker_side_ and finalize_app)
     checker_side_->finalize(true);
 
   if (_sg_mc_nofork) {

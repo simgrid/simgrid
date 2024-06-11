@@ -84,4 +84,9 @@ void ODPOR::on_backtrack(State* s)
   wut_state->do_odpor_unwind();
 }
 
+void ODPOR::consider_best(StatePtr state)
+{
+  static_cast<WutState*>(state.get())->add_arbitrary_todo();
+}
+
 } // namespace simgrid::mc
