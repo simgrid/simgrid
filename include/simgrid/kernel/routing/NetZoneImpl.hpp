@@ -266,11 +266,9 @@ public:
   static void get_global_route(const NetPoint* src, const NetPoint* dst,
                                /* OUT */ std::vector<resource::StandardLinkImpl*>& links, double* latency);
 
-#ifdef HIGH_DEPTH_ROUTING_ALGORITHM
   static void get_interzone_route(const NetPoint* netpoint, NetPoint* gw, const bool gateway_to_netpoint,
                                   std::vector<kernel::resource::StandardLinkImpl*>& links, double* latency,
                                   std::vector<NetZoneImpl*>* zones_path);
-#endif
 
   /** @brief Similar to get_global_route but get the NetZones traversed by route */
   static void get_global_route_with_netzones(const NetPoint* src, const NetPoint* dst,

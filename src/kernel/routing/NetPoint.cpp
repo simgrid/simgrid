@@ -25,7 +25,6 @@ NetPoint::NetPoint(const std::string& name, NetPoint::Type componentType) : name
   simgrid::kernel::routing::NetPoint::on_creation(*this);
 }
 
-#ifdef HIGH_DEPTH_ROUTING_ALGORITHM
 std::vector<NetZoneImpl*> NetPoint::get_englobing_zones() const
 {
   std::vector<NetZoneImpl*> path;
@@ -37,7 +36,6 @@ std::vector<NetZoneImpl*> NetPoint::get_englobing_zones() const
   path.shrink_to_fit();
   return path;
 }
-#endif
 
 NetPoint* NetPoint::set_englobing_zone(NetZoneImpl* netzone_p)
 {
