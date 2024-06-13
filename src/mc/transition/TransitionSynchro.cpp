@@ -252,8 +252,8 @@ bool MutexTransition::reversible_race(const Transition* other) const
       return true; // MutexUnlock is always enabled
 
     case Type::MUTEX_WAIT:
-      // Only an Unlock can be dependent with a Wait
-      // and in this case, that Unlock enabled the wait
+      // Only an Unlock or a CondVarAsynclock can be dependent with a Wait
+      // and in this case, that transition enabled the wait
       // Not reversible
       return false;
     default:
@@ -311,9 +311,16 @@ bool CondvarTransition::reversible_race(const Transition* other) const
 {
   switch (type_) {
     case Type::CONDVAR_ASYNC_LOCK:
-      xbt_assert(other->type_ == Transition::Type::CONDVAR_BROADCAST or
-                 other->type_ == Transition::Type::CONDVAR_SIGNAL);
-      return true;
+      switch (other->type_) {
+        case Transition::Type::MUTEX_WAIT:
+          return false;
+        case Transition::Type::CONDVAR_BROADCAST:
+        case Transition::Type::CONDVAR_SIGNAL:
+          return true;
+        default:
+          xbt_die("Unexpected transition type %s was declared dependent with %s", to_c_str(type_),
+                  to_c_str(other->type_));
+      }
 
       // if wait can be executed in the first place, then broadcast and signal don't impact him
     case Type::CONDVAR_BROADCAST:
