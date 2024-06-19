@@ -25,6 +25,9 @@ static void sender(int messages_count)
 
   sg4::this_actor::sleep_for(0.5);
 
+  XBT_INFO("Send 'hello' to 'receiver'");
+  mqueue->put(new std::string("hello"));
+
   for (int i = 0; i < messages_count; i++) {
     std::string msg_content = "Message " + std::to_string(i);
     // Copy the data we send: the 'msg_content' variable is not a stable storage location.
@@ -48,6 +51,13 @@ static void receiver()
   sg4::MessageQueue* mqueue = sg4::MessageQueue::by_name("control");
 
   sg4::this_actor::sleep_for(1);
+  // Messages can be received without providing a destination buffer. In that case, you can retrieve the payload
+  // once the Mess is over by calling the get_payload() function.
+  sg4::MessPtr hello = mqueue->get_async();
+  hello->wait();
+  auto* msg = static_cast<std::string*>(hello->get_payload());
+  XBT_INFO("I got a '%s'.", msg->c_str());
+  delete msg;
 
   XBT_INFO("Wait for my first message");
   for (bool cont = true; cont;) {
