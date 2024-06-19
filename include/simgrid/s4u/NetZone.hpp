@@ -143,6 +143,25 @@ public:
    */
   void add_route(const Host* src, const Host* dst, const std::vector<const Link*>& links);
 
+ /**
+   * @brief Add a route between two netpoints in the same netzone
+   *
+   * @param src Source netpoint
+   * @param dst Destination netpoint
+   * @param link_list List of links and their direction used in this communication
+   * @param symmetrical Bi-directional communication
+   */
+  void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, const std::vector<LinkInRoute>& link_list,
+                 bool symmetrical = true);
+  /**
+   * @brief Add a route between two netpoints in the same netzone
+   *
+   * @param src Source netpoint
+   * @param dst Destination netpoint
+   * @param links List of links. The UP direction will be used on src->dst and DOWN direction on dst->src
+   */
+  void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, const std::vector<const Link*>& links);
+
   void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                         const std::vector<LinkInRoute>& link_list);
