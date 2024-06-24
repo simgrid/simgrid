@@ -870,6 +870,7 @@ set(DOC_SOURCES
   docs/source/tuto_s4u/master-workers-lab2.cpp
   docs/source/tuto_s4u/master-workers-lab2.py
   docs/source/tuto_s4u/master-workers-lab3.cpp
+  docs/source/tuto_s4u/master-workers-lab3.py
   docs/source/tuto_s4u/master-workers-lab4.cpp
 
   docs/source/Tutorial_DAG.rst
