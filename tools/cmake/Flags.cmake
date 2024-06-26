@@ -41,7 +41,7 @@ if(enable_compile_warnings)
       # workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81767
       set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-error=unused-variable")
     endif()
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL "13.2.0")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "13.2.0")
       # workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=101361
       set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-error=stringop-overread -Wno-error=stringop-overflow")
     endif()
