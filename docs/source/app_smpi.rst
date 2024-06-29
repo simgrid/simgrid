@@ -610,35 +610,6 @@ Alltoall on 16 Nodes with the Ring Algorithm.
 
 Alltoall on 16 Nodes with the Pairwise Algorithm.
 
-.. _SMPI_mix_s4u:
-
-.............................
-Mixing S4U and MPI simulation
-.............................
-
-Mixing both interfaces is very easy. This can be useful to easily implement a service in S4U that is provided by your
-infrastructure in some way, and test how your MPI application interacts with this service. Or you can use it to start more than
-one MPI application in your simulation, and study their interactions. For that, you just need to use
-:cpp:ref:`SMPI_app_instance_register` in a regular S4U program, as shown in the example below. Compile it as usual (with gcc or
-g++, **not** smpicc) and execute it directly (**not** with smpirun).
-
-.. doxygenfunction:: SMPI_app_instance_start
-
-.. tabs::
-
-   .. group-tab:: Example
-
-      Here is a simple example of use, which starts the function ``alltoall_mpi`` as a MPI instance on 4 hosts, along several
-      S4U actors doing a master/workers.
-
-      .. showfile:: examples/smpi/smpi_s4u_masterworker/masterworker_mailbox_smpi.cpp
-         :language: cpp
-
-   .. group-tab:: Deployment file
-
-      .. showfile:: examples/smpi/smpi_s4u_masterworker/deployment_masterworker_mailbox_smpi.xml
-         :language: xml
-
 ..............................................
 Adapting your MPI code for further scalability
 ..............................................
@@ -816,6 +787,38 @@ simulation and the replay, you will see that the behavior is
 unchanged. The simulation does not run much faster on this very
 example, but this becomes very interesting when your application
 is computationally hungry.
+
+.. _SMPI_mix_s4u:
+
+-----------------------------
+Mixing S4U and MPI simulation
+-----------------------------
+
+Mixing both interfaces is very easy. This can be useful to easily implement a service in S4U that is provided by your
+infrastructure in some way, and test how your MPI application interacts with this service. Or you can use it to start more than
+one MPI application in your simulation, and study their interactions. 
+
+To that extend, it is possible to define a :ref:`plugin <plugins>` and load it in your SMPI simulation, but that may not be the
+easiest approach for newcomers. It is probably easier to simply start your MPI application within a regular S4U program using
+:cpp:ref:`SMPI_app_instance_register`, as shown in the example below. Compile it as usual (with gcc or g++, **not** smpicc) and
+execute it directly (**not** with smpirun).
+
+.. doxygenfunction:: SMPI_app_instance_start
+
+.. tabs::
+
+   .. group-tab:: Example
+
+      Here is a simple example of use, which starts the function ``alltoall_mpi`` as a MPI instance on 4 hosts, along several
+      S4U actors doing a master/workers.
+
+      .. showfile:: examples/smpi/smpi_s4u_masterworker/masterworker_mailbox_smpi.cpp
+         :language: cpp
+
+   .. group-tab:: Deployment file
+
+      .. showfile:: examples/smpi/smpi_s4u_masterworker/deployment_masterworker_mailbox_smpi.xml
+         :language: xml
 
 -------------------------
 Troubleshooting with SMPI
