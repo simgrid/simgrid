@@ -664,6 +664,8 @@ PYBIND11_MODULE(simgrid, m)
                              "Time at which this Comm finished")
       .def_property_readonly("is_suspended", &Comm::is_suspended, py::call_guard<py::gil_scoped_release>(),
                              "Whether this Comm is suspended")
+      .def("set_tracing_category", &Comm::set_tracing_category, py::call_guard<py::gil_scoped_release>(), py::arg("category"),
+           "Set a user-defined tracing category.")
       .def("set_payload_size", &Comm::set_payload_size, py::call_guard<py::gil_scoped_release>(), py::arg("bytes"),
            "Specify the amount of bytes which exchange should be simulated.")
       .def("set_rate", &Comm::set_rate, py::call_guard<py::gil_scoped_release>(), py::arg("rate"),
@@ -707,6 +709,8 @@ PYBIND11_MODULE(simgrid, m)
   /* Class Io */
   py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr, Activity>(m, "Io",
                                                               "I/O activities. See the C++ documentation for details.")
+      .def("set_tracing_category", &simgrid::s4u::Io::set_tracing_category, py::call_guard<py::gil_scoped_release>(), py::arg("category"),
+           "Set a user-defined tracing category.")
       .def("test", &simgrid::s4u::Io::test, py::call_guard<py::gil_scoped_release>(),
            "Test whether the I/O is terminated.")
       .def("wait", &simgrid::s4u::Io::wait, py::call_guard<py::gil_scoped_release>(),
@@ -726,6 +730,8 @@ PYBIND11_MODULE(simgrid, m)
                     "Changing this value migrates the execution.")
       .def_property_readonly("is_suspended", &simgrid::s4u::Exec::is_suspended,
                              py::call_guard<py::gil_scoped_release>(), "Whether this Exec is suspended")
+      .def("set_tracing_category", &simgrid::s4u::Exec::set_tracing_category, py::call_guard<py::gil_scoped_release>(), py::arg("category"),
+           "Set a user-defined tracing category.")
       .def("test", &simgrid::s4u::Exec::test, py::call_guard<py::gil_scoped_release>(),
            "Test whether the execution is terminated.")
       .def("cancel", &simgrid::s4u::Exec::cancel, py::call_guard<py::gil_scoped_release>(), "Cancel that execution.")

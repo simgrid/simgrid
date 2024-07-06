@@ -145,6 +145,7 @@ public:
    */
   std::vector<Host*> get_all_hosts() const;
   std::vector<Host*> get_filtered_hosts(const std::function<bool(Host*)>& filter) const;
+  std::vector<Host*> get_hosts_from_MPI_hostfile(const std::string& hostfile) const;
   Host* host_by_name(const std::string& name) const;
   Host* host_by_name_or_null(const std::string& name) const;
 

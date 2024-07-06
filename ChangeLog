@@ -1,6 +1,6 @@
 SimGrid (3.35.1) not released (target: Feb 24)
 
-- Timeout on communications do not interrupt the comm anymore. This is for symmetry with 
+- Timeout on communications do not interrupt the comm anymore. This is for symmetry with
   the other activity kinds, which already had this behavior enabling polling activities.
   The previous behavior is still available with Activity::wait_for_or_cancel()
 - Remove the include/xbt/promise.hpp header, that was kinda internal.
@@ -20,9 +20,19 @@ Model-checker:
 - Introduce option 'model-check/no-fork' to forbid the use of system forks to speed-up the exploration. This is mandated for
   multithreaded applications, such as our Python bindings.
 
+C++ API
+- add Engine::get_hosts_from_MPI_hostfile(const std::string& hostfile) to select a list of hosts within a loaded
+  platform from a text file. Each line of this text file comprises the name of a host (e.g., node-0) which can be
+  followed by a number of repetitions (e.g., node-0:2 will add node-0 twice to the created list of hosts). This
+  allows users to specify that more than one actor has to be started on a given host.
+
 C API:
 - Add sg_actor_start_voidp() to start actors using a pthread-like prototype, taking a void* as parameter.
 
+Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
+ (FG: issues on Framagit; GH: issues on GitHub)
+- FG#123: get_async for MessageQueue bugged
+- FG#117: Exec.set_tracing_category referenced in documentation but inexistant in Python
 ----------------------------------------------------------------------------
 
 SimGrid (3.35) November 23. 2023

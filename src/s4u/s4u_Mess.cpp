@@ -69,7 +69,7 @@ Mess* Mess::do_start()
   if (myself == sender_) {
     on_send(*this);
     on_this_send(*this);
-    kernel::actor::MessIputSimcall observer{sender_, queue_->get_impl(), get_clean_function(), get_payload(), detached_};
+    kernel::actor::MessIputSimcall observer{sender_, queue_->get_impl(), get_clean_function(), payload_, detached_};
     pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::MessImpl::iput(&observer); },
                                              &observer);
   } else if (myself == receiver_) {
@@ -79,7 +79,7 @@ Mess* Mess::do_start()
                                             queue_->get_impl(),
                                             static_cast<unsigned char*>(dst_buff_),
                                             &dst_buff_size_,
-                                            get_payload()};
+                                            payload_};
     pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::MessImpl::iget(&observer); },
                                              &observer);
   } else {
@@ -110,10 +110,10 @@ Mess* Mess::wait_for(double timeout)
       throw NetworkFailureException(XBT_THROW_POINT, "Cannot wait for a failed communication");
     case State::INITED:
     case State::STARTING:
-      if (get_payload() != nullptr) {
+      if (payload_ != nullptr) {
         on_send(*this);
         on_this_send(*this);
-        kernel::actor::MessIputSimcall observer{sender_, queue_->get_impl(), get_clean_function(), get_payload(), detached_};
+        kernel::actor::MessIputSimcall observer{sender_, queue_->get_impl(), get_clean_function(), payload_, detached_};
         pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::MessImpl::iput(&observer); },
                                                  &observer);
       } else { // Receiver
@@ -123,7 +123,7 @@ Mess* Mess::wait_for(double timeout)
                                                 queue_->get_impl(),
                                                 static_cast<unsigned char*>(dst_buff_),
                                                 &dst_buff_size_,
-                                                get_payload()};
+                                                payload_};
         pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::MessImpl::iget(&observer); },
                                                  &observer);
       }
@@ -152,6 +152,14 @@ Mess* Mess::wait_for(double timeout)
   }
   complete(State::FINISHED);
   return this;
+}
+
+void* Mess::get_payload() const
+{
+  xbt_assert(get_state() == State::FINISHED,
+             "You can only retrieve the payload of a Message that gracefully terminated, but its state is %s.",
+             get_state_str());
+  return static_cast<kernel::activity::MessImpl*>(pimpl_.get())->get_payload();
 }
 
 } // namespace simgrid::s4u

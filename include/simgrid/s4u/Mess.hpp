@@ -47,7 +47,7 @@ public:
 
   /** Retrieve the payload associated to the communication. You can only do that once the comm is (gracefully)
    * terminated */
-  void* get_payload() const { return payload_; }
+  void* get_payload() const;
   MessPtr set_payload(void* data);
   MessPtr set_dst_data(void** buff, size_t size);
   Actor* get_sender() const;

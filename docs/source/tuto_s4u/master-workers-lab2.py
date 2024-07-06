@@ -22,7 +22,7 @@ def master(*args):
 
     this_actor.info(f"Got {tasks_count} tasks to process")
 
-    hosts = Engine.instance.get_all_hosts()
+    hosts = Engine.instance.all_hosts
 
     for h in hosts:
         Actor.create(f'Worker-{h.name}', h, worker)

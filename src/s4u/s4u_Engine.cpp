@@ -27,6 +27,8 @@
 #endif
 
 #include <algorithm>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <string>
 
 XBT_LOG_NEW_CATEGORY(s4u, "Log channels of the S4U (SimGrid for you) interface");
@@ -451,6 +453,31 @@ std::vector<Host*> Engine::get_filtered_hosts(const std::function<bool(Host*)>& 
   }
   /* Sort hosts in lexicographical order: keep same behavior when the hosts were saved on Engine
    * Some tests do a get_all_hosts() and selects hosts in this order */
+  std::sort(hosts.begin(), hosts.end(), [](const auto* h1, const auto* h2) { return h1->get_name() < h2->get_name(); });
+
+  return hosts;
+}
+
+std::vector<Host*> Engine::get_hosts_from_MPI_hostfile(const std::string& hostfile) const
+{
+  std::vector<Host*> hosts;
+  std::ifstream in(hostfile.c_str());
+  xbt_assert(in, "Cannot open the MPI hostfile: %s", hostfile.c_str());
+  std::string str;
+  while (std::getline(in, str)) {
+    if (not str.empty()) {
+      std::vector<std::string> tokens;
+      boost::split(tokens, str, boost::is_any_of(":"));
+      auto host = host_by_name_or_null(tokens[0]);
+      xbt_assert(host, "Host '%s' doesn't exist in this platform", tokens[0].c_str());
+      if (tokens.size() > 1)
+        for (int i = 0; i < std::stoi(tokens[1]); i++)
+          hosts.emplace_back(host);
+      else
+          hosts.emplace_back(host);
+    }
+  }
+  xbt_assert(not hosts.empty(), "The hostfile '%s' is empty", hostfile.c_str());
   std::sort(hosts.begin(), hosts.end(), [](const auto* h1, const auto* h2) { return h1->get_name() < h2->get_name(); });
 
   return hosts;

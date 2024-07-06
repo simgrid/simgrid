@@ -180,8 +180,8 @@ void MessImpl::finish()
   if (queue_)
     queue_->remove(this);
 
-  if (get_state() == State::DONE && payload_ != nullptr)
-    *(void**)(dst_buff_) = payload_;
+  if (get_state() == State::DONE && payload_ != nullptr && dst_buff_ != nullptr)
+     *(void**)(dst_buff_) = payload_;
 
   while (not simcalls_.empty()) {
     auto issuer = unregister_first_simcall();

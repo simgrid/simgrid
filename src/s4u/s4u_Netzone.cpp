@@ -5,6 +5,7 @@
 
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/NetZone.hpp>
@@ -148,6 +149,25 @@ void NetZone::add_route(const Host* src, const Host* dst, const std::vector<cons
                     links_direct, false);
   pimpl_->add_route(dst ? dst->get_netpoint(): nullptr, src ? src->get_netpoint(): nullptr, nullptr, nullptr,
                     links_reverse, false);
+}
+
+void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, const std::vector<LinkInRoute>& link_list, bool symmetrical)
+{
+  xbt_assert(src->get_englobing_zone() == dst->get_englobing_zone(), "Netpoints have to be in the same NetZone");
+  pimpl_->add_route(src, dst, nullptr, nullptr, link_list, symmetrical);
+}
+
+void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, const std::vector<const Link*>& links)
+{
+  xbt_assert(src->get_englobing_zone() == dst->get_englobing_zone(), "Netpoints have to be in the same NetZone");
+  std::vector<LinkInRoute> links_direct;
+  std::vector<LinkInRoute> links_reverse;
+  for (auto* l : links) {
+    links_direct.emplace_back(LinkInRoute(l, LinkInRoute::Direction::UP));
+    links_reverse.emplace_back(LinkInRoute(l, LinkInRoute::Direction::DOWN));
+  }
+  pimpl_->add_route(src, dst, nullptr, nullptr, links_direct, false);
+  pimpl_->add_route(dst, src, nullptr, nullptr, links_reverse, false);
 }
 
 void NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
