@@ -436,27 +436,34 @@ run it again and again.
 .. code-block:: R
 
    # Read the data
-   library(tidyverse)
-   library(pajengr)
-   dta <- pajeng_read("lu.S.4.trace")
+   suppressMessages(library(tidyverse))
+   dta <- read_csv("lu.S.4.csv",
+                         show_col_types = FALSE,
+                         col_names=c("Nature",
+                                     "Container",
+                                     "Type",
+                                     "Start",
+                                     "End",
+                                     "Duration",
+                                     "Imbrication",
+                                     "Value"))
 
-   # Manipulate the data
-   dta$state %>%
+   # Some clean-up
+   dta |>
       # Remove some unnecessary columns for this example
-      select(-Type, -Imbrication) %>%
+      select(-Type, -Imbrication) |>
       # Create the nice MPI rank and operations identifiers
       mutate(Container = as.integer(gsub("rank-", "", Container)),
-             Value = gsub("^PMPI_", "MPI_", Value)) %>%
+             Value = gsub("^PMPI_", "MPI_", Value)) |>
       # Rename some columns so it can better fit MPI terminology
-      rename(Rank = Container,
-             Operation = Value) -> df.states
+      rename(Rank = Container, Operation = Value) -> df.states
 
    # Draw the Gantt Chart
-   df.states %>%
+   df.states |>
       ggplot() +
       # Each MPI operation is becoming a rectangle
       geom_rect(aes(xmin=Start, xmax=End,
-                    ymin=Rank,  ymax=Rank + 1,
+                    ymin=Rank,  ymax=Rank + 0.9,
                     fill=Operation)) +
       # Cosmetics
       xlab("Time [seconds]") +
