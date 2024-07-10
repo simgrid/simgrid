@@ -414,7 +414,21 @@ use:
 
    $ smpirun -np 4 -platform ../cluster_backbone.xml -trace --cfg=tracing/filename:lu.S.4.trace bin/lu.S.4
 
-You can then produce a Gantt Chart with the following R chunk. You can
+The file ``lu.S.4.trace`` is a text file that follows the
+`Paje file format
+<https://paje.sourceforge.net/download/publication/lang-paje.pdf>`_. This
+trace can be read by the `ViTE -- Visual Trace Explorer
+<https://solverstack.gitlabpages.inria.fr/vite/>`_ or can be
+transformed to a CSV file using `pj_dump
+<https://github.com/schnorr/pajeng/wiki/pj_dump>`_ (from the
+``pajeng`` package). Let's do it and grab only lines that represent an
+application state, which in this case represent traced MPI operations.
+
+.. code-block:: console
+
+   $ pj_dump lu.S.4.trace | grep ^State > lu.S.4.csv
+
+You can now produce a Gantt Chart with the following R chunk. You can
 either copy/paste it in an R session, or `turn it into a Rscript executable
 <https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/>`_ to
 run it again and again.
