@@ -283,7 +283,7 @@ container to enjoy the provided dependencies.
    when you log out of the container, so don't edit the other files!
 
 All needed dependencies are already installed in this container
-(SimGrid, the C/C++/Fortran compilers, make, pajeng, R and pajengr). Vite being
+(SimGrid, the C/C++/Fortran compilers, make, pajeng, and R). Vite being
 only optional in this tutorial, it is not installed to reduce the
 image size.
 
@@ -312,17 +312,12 @@ Debian and Ubuntu, you can get them as follows:
 
    $ sudo apt install simgrid pajeng make gcc g++ gfortran python3 vite
 
-For R analysis of the produced traces, you may want to install R
-and the `pajengr <https://github.com/schnorr/pajengr#installation/>`_ package.
+For R analysis of the produced traces, you may want to install R.
 
 .. code-block:: console
 
    # install R and necessary packages
    $ sudo apt install r-base r-cran-devtools r-cran-tidyverse
-   # install pajengr dependencies
-   $ sudo apt install git cmake flex bison
-   # install the pajengr R package
-   $ Rscript -e "library(devtools); install_github('schnorr/pajengr');"
 
 To take this tutorial, you will also need the platform files from the
 previous section as well as the source code of the NAS Parallel
