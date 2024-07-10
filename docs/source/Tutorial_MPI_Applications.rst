@@ -412,7 +412,7 @@ data size
    (execution logs)
 
 To get a better understanding of what is going on, activate the
-visualization tracing, and convert the produced trace for later
+tracing mechanism, and convert the produced trace for later
 use:
 
 .. code-block:: console
