@@ -6,33 +6,39 @@ SimGrid (3.35.1) not released (target: Feb 24)
 - Remove the include/xbt/promise.hpp header, that was kinda internal.
 - Bugfix: non-recursive locks must deadlock when relocking by same actor.
 
+S4U:
+ - Starting Activities in a detached (a.k.a. fire-and-forget) mode is not limited to Comm and Mess anymore. Exec and
+   I/O can also benefit from that feature. This allows users to create a sequence of interdependent activities
+   (informally called a 'compound' activity and only wait for the completion of the last activity of the sequence.
+
 Kernel:
-- Implement asynchronous condvar acquisition. Not visible from the s4u API, but needed for the model-checker.
+ - Implement asynchronous condvar acquisition. Not visible from the s4u API, but needed for the model-checker.
 
 Models:
-- Introduce a raw network model with overly simplistic equations, for non-TCP settings.
+ - Introduce a raw network model with overly simplistic equations, for non-TCP settings.
 
 Model-checker:
-- Enable the verification of SimGrid programs written in Python.
-- Enable the verification of condition variables in both s4u and sthread. Reduction theorems are stil TBD.
-- Introduce option 'model-check/cached-states-interval' to control how often the application state is cached using fork, to
-  speedup later restore when exploring other execution branches.
-- Introduce option 'model-check/no-fork' to forbid the use of system forks to speed-up the exploration. This is mandated for
-  multithreaded applications, such as our Python bindings.
+ - Enable the verification of SimGrid programs written in Python.
+ - Enable the verification of condition variables in both s4u and sthread. Reduction theorems are stil TBD.
+ - Introduce option 'model-check/cached-states-interval' to control how often the application state is cached using fork, to
+   speedup later restore when exploring other execution branches.
+ - Introduce option 'model-check/no-fork' to forbid the use of system forks to speed-up the exploration. This is mandated for
+   multithreaded applications, such as our Python bindings.
 
 C++ API
-- add Engine::get_hosts_from_MPI_hostfile(const std::string& hostfile) to select a list of hosts within a loaded
-  platform from a text file. Each line of this text file comprises the name of a host (e.g., node-0) which can be
-  followed by a number of repetitions (e.g., node-0:2 will add node-0 twice to the created list of hosts). This
-  allows users to specify that more than one actor has to be started on a given host.
+ - add Engine::get_hosts_from_MPI_hostfile(const std::string& hostfile) to select a list of hosts within a loaded
+   platform from a text file. Each line of this text file comprises the name of a host (e.g., node-0) which can be
+   followed by a number of repetitions (e.g., node-0:2 will add node-0 twice to the created list of hosts). This
+   allows users to specify that more than one actor has to be started on a given host.
+ - add Engine::get_all_netzones() to build a list of all the NetZones (including the root Zone) declared in the loaded platform.
 
 C API:
-- Add sg_actor_start_voidp() to start actors using a pthread-like prototype, taking a void* as parameter.
+ - Add sg_actor_start_voidp() to start actors using a pthread-like prototype, taking a void* as parameter.
 
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GH: issues on GitHub)
-- FG#123: get_async for MessageQueue bugged
-- FG#117: Exec.set_tracing_category referenced in documentation but inexistant in Python
+ - FG#123: get_async for MessageQueue bugged
+ - FG#117: Exec.set_tracing_category referenced in documentation but inexistant in Python
 ----------------------------------------------------------------------------
 
 SimGrid (3.35) November 23. 2023
