@@ -32,6 +32,17 @@ class XBT_PUBLIC Mess : public Activity_T<Mess> {
   static xbt::signal<void(Mess const&)> on_recv;
   xbt::signal<void(Mess const&)> on_this_recv;
 
+  void fire_on_completion() const override {
+    /* The completion signal of a Mess has to be thrown only once and not by the sender AND the receiver.
+       then Mess::on_completion is thrown in the kernel in MessImpl::finish.
+     */
+  }
+  void fire_on_this_completion() const override {
+    /* The completion signal of a Mess has to be thrown only once and not by the sender AND the receiver.
+       then Mess::on_this_completion is thrown in the kernel in MessImpl::finish.
+     */
+  }
+
   /* These ensure that the on_completion signals are really thrown */
   void fire_on_completion_for_real() const { Activity_T<Mess>::fire_on_completion(); }
   void fire_on_this_completion_for_real() const { Activity_T<Mess>::fire_on_this_completion(); }
