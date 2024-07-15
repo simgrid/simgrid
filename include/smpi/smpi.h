@@ -1247,6 +1247,8 @@ XBT_PUBLIC void SMPI_thread_create();
 SG_END_DECL
 
 #ifdef __cplusplus
+XBT_PUBLIC void SMPI_executable_start(const std::string& executable, const std::vector<simgrid::s4u::Host*> &hosts, const std::vector<std::string> run_args);
+
 XBT_PUBLIC void SMPI_app_instance_start(const char* name, std::function<void()> const& code,
                                         std::vector<simgrid::s4u::Host*> const& hosts);
 

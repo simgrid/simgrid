@@ -1872,6 +1872,7 @@ include docs/source/tuto_s4u/master-workers-lab1.py
 include docs/source/tuto_s4u/master-workers-lab2.cpp
 include docs/source/tuto_s4u/master-workers-lab2.py
 include docs/source/tuto_s4u/master-workers-lab3.cpp
+include docs/source/tuto_s4u/master-workers-lab3.py
 include docs/source/tuto_s4u/master-workers-lab4.cpp
 include docs/source/tuto_smpi/3hosts.png
 include docs/source/tuto_smpi/3hosts.xml

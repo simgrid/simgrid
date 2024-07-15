@@ -46,19 +46,19 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (kernel)");
 
 #if SMPI_IFORT
-  extern "C" void for_rtl_init_ (int *, char **);
-  extern "C" void for_rtl_finish_ ();
+extern "C" void for_rtl_init_(int*, char**);
+extern "C" void for_rtl_finish_();
 #elif SMPI_FLANG
-  extern "C" void __io_set_argc(int);
-  extern "C" void __io_set_argv(char **);
+extern "C" void __io_set_argc(int);
+extern "C" void __io_set_argv(char**);
 #elif SMPI_GFORTRAN
-  extern "C" void _gfortran_set_args(int, char **);
+extern "C" void _gfortran_set_args(int, char**);
 #endif
 
 /* RTLD_DEEPBIND is a bad idea of GNU ld that obviously does not exist on other platforms
  * See https://www.akkadia.org/drepper/dsohowto.pdf
  * and https://lists.freebsd.org/pipermail/freebsd-current/2016-March/060284.html
-*/
+ */
 #if !defined(RTLD_DEEPBIND) || !RTLD_DEEPBIND || HAVE_SANITIZER_ADDRESS || HAVE_SANITIZER_THREAD
 #define WANT_RTLD_DEEPBIND 0
 #else
@@ -66,44 +66,46 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
 #endif
 
 #if HAVE_PAPI
-  std::map</* computation unit name */ std::string, papi_process_data, std::less<>> units2papi_setup;
+std::map</* computation unit name */ std::string, papi_process_data, std::less<>> units2papi_setup;
 #endif
 
-  std::unordered_map<std::string, double> location2speedup;
+std::unordered_map<std::string, double> location2speedup;
 
-  static int smpi_exit_status = 0;
-  static xbt_os_timer_t global_timer;
-  static std::vector<std::string> privatize_libs_paths;
+static int smpi_exit_status = 0;
+static xbt_os_timer_t global_timer;
+static std::vector<std::string> privatize_libs_paths;
 
-  // No instance gets manually created; check also the smpirun.in script as
-  // this default name is used there as well (when the <actor> tag is generated).
-  static const std::string smpi_default_instance_name("smpirun");
+// No instance gets manually created; check also the smpirun.in script as
+// this default name is used there as well (when the <actor> tag is generated).
+static const std::string smpi_default_instance_name("smpirun");
 
-  static simgrid::config::Flag<std::string>
-      smpi_hostfile("smpi/hostfile",
-                    "Classical MPI hostfile containing list of machines to dispatch "
-                    "the processes, one per line",
-                    "");
+static std::vector<std::string> smpi_executables;
 
-  static simgrid::config::Flag<std::string> smpi_replay("smpi/replay",
-                                                        "Replay a trace instead of executing the application", "");
+static simgrid::config::Flag<std::string>
+    smpi_hostfile("smpi/hostfile",
+                  "Classical MPI hostfile containing list of machines to dispatch "
+                  "the processes, one per line",
+                  "");
 
-  static simgrid::config::Flag<int> smpi_np("smpi/np", "Number of processes to be created", 0);
+static simgrid::config::Flag<std::string> smpi_replay("smpi/replay",
+                                                      "Replay a trace instead of executing the application", "");
 
-  static simgrid::config::Flag<int> smpi_map("smpi/map", "Display the mapping between nodes and processes", 0);
+static simgrid::config::Flag<int> smpi_np("smpi/np", "Number of processes to be created", 0);
 
-  std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)> smpi_comm_copy_data_callback =
-      &smpi_comm_copy_buffer_callback;
+static simgrid::config::Flag<int> smpi_map("smpi/map", "Display the mapping between nodes and processes", 0);
 
-  simgrid::smpi::ActorExt* smpi_process()
-  {
-    simgrid::s4u::ActorPtr me = simgrid::s4u::Actor::self();
+std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)> smpi_comm_copy_data_callback =
+    &smpi_comm_copy_buffer_callback;
 
-    if (me == nullptr) // This happens sometimes (eg, when linking against NS3 because it pulls openMPI...)
-      return nullptr;
+simgrid::smpi::ActorExt* smpi_process()
+{
+  simgrid::s4u::ActorPtr me = simgrid::s4u::Actor::self();
 
-    return me->extension<simgrid::smpi::ActorExt>();
-  }
+  if (me == nullptr) // This happens sometimes (eg, when linking against NS3 because it pulls openMPI...)
+    return nullptr;
+
+  return me->extension<simgrid::smpi::ActorExt>();
+}
 
 simgrid::smpi::ActorExt* smpi_process_remote(simgrid::s4u::ActorPtr actor)
 {
@@ -112,23 +114,27 @@ simgrid::smpi::ActorExt* smpi_process_remote(simgrid::s4u::ActorPtr actor)
   return actor->extension<simgrid::smpi::ActorExt>();
 }
 
-MPI_Comm smpi_process_comm_self(){
+MPI_Comm smpi_process_comm_self()
+{
   return smpi_process()->comm_self();
 }
 
-MPI_Info smpi_process_info_env(){
+MPI_Info smpi_process_info_env()
+{
   return smpi_process()->info_env();
 }
 
-void * smpi_process_get_user_data(){
+void* smpi_process_get_user_data()
+{
   return simgrid::s4u::Actor::self()->get_data<void>();
 }
 
-void smpi_process_set_user_data(void *data){
+void smpi_process_set_user_data(void* data)
+{
   simgrid::s4u::Actor::self()->set_data(data);
 }
 
-void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t))
+void smpi_comm_set_copy_data_callback(void (*callback)(smx_activity_t, void*, size_t))
 {
   smpi_comm_copy_data_callback = callback;
 }
@@ -145,33 +151,33 @@ static void check_blocks(const std::vector<std::pair<size_t, size_t>>& private_b
     xbt_assert(block_begin <= block_end && block_end <= buff_size, "Oops, bug in shared malloc.");
 }
 
-static void smpi_cleanup_comm_after_copy(simgrid::kernel::activity::CommImpl* comm, void* buff){
+static void smpi_cleanup_comm_after_copy(simgrid::kernel::activity::CommImpl* comm, void* buff)
+{
   if (comm->is_detached()) {
     // if this is a detached send, the source buffer was duplicated by SMPI
     // sender to make the original buffer available to the application ASAP
     xbt_free(buff);
-    //It seems that the request is used after the call there this should be free somewhere else but where???
-    //xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
+    // It seems that the request is used after the call there this should be free somewhere else but where???
+    // xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
     comm->src_buff_ = nullptr;
   }
 }
 
 void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
 {
-  size_t src_offset                     = 0;
-  size_t dst_offset                     = 0;
+  size_t src_offset = 0;
+  size_t dst_offset = 0;
   std::vector<std::pair<size_t, size_t>> src_private_blocks;
   std::vector<std::pair<size_t, size_t>> dst_private_blocks;
   XBT_DEBUG("Copy the data over");
-  if(smpi_is_shared(buff, src_private_blocks, &src_offset)) {
+  if (smpi_is_shared(buff, src_private_blocks, &src_offset)) {
     src_private_blocks = shift_and_frame_private_blocks(src_private_blocks, src_offset, buff_size);
     if (src_private_blocks.empty()) { // simple shared malloc ... return.
       XBT_VERB("Sender is shared. Let's ignore it.");
       smpi_cleanup_comm_after_copy(comm, buff);
       return;
     }
-  }
-  else {
+  } else {
     src_private_blocks.clear();
     src_private_blocks.emplace_back(0, buff_size);
   }
@@ -182,8 +188,7 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
       smpi_cleanup_comm_after_copy(comm, buff);
       return;
     }
-  }
-  else {
+  } else {
     dst_private_blocks.clear();
     dst_private_blocks.emplace_back(0, buff_size);
   }
@@ -191,7 +196,7 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
   check_blocks(dst_private_blocks, buff_size);
   auto private_blocks = merge_private_blocks(src_private_blocks, dst_private_blocks);
   check_blocks(private_blocks, buff_size);
-  void* tmpbuff=buff;
+  void* tmpbuff = buff;
   if (smpi_switch_data_segment(comm->src_actor_->get_iface(), buff)) {
     XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
     tmpbuff = xbt_malloc(buff_size);
@@ -204,7 +209,7 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
   XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff, comm->dst_buff_);
   memcpy_private(comm->dst_buff_, tmpbuff, private_blocks);
 
-  smpi_cleanup_comm_after_copy(comm,buff);
+  smpi_cleanup_comm_after_copy(comm, buff);
   if (tmpbuff != buff)
     xbt_free(tmpbuff);
 }
@@ -304,7 +309,7 @@ static int smpi_run_entry_point(const F& entry_point, const std::string& executa
   try {
     int argc    = static_cast<int>(args4argv.size() - 1);
     char** argv = args4argv.data();
-    int res = entry_point(argc, argv);
+    int res     = entry_point(argc, argv);
     if (res != 0) {
       XBT_WARN("SMPI process did not return 0. Return value : %d", res);
       if (smpi_exit_status == 0)
@@ -392,12 +397,12 @@ static int visit_libs(struct dl_phdr_info* info, size_t, void* data)
 }
 #endif
 
-static void smpi_init_privatization_dlopen(const std::string& executable)
+static void smpi_init_privatization_dlopen(const std::string& executable, bool use_default = true)
 {
   // Prepare the copy of the binary (get its size)
   struct stat fdin_stat;
   stat(executable.c_str(), &fdin_stat);
-  off_t fdin_size         = fdin_stat.st_size;
+  off_t fdin_size = fdin_stat.st_size;
 
   if (std::string libnames = simgrid::config::get_value<std::string>("smpi/privatize-libs"); not libnames.empty()) {
     // split option
@@ -423,67 +428,137 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
     }
   }
 
-  simgrid::s4u::Engine::get_instance()->register_default([executable, fdin_size](std::vector<std::string> args) {
-    return simgrid::kernel::actor::ActorCode([executable, fdin_size, args = std::move(args)] {
-      static std::size_t rank = 0;
-      // Copy the dynamic library:
-      simgrid::xbt::Path path(executable);
-      std::string target_executable = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" +
-          path.get_base_name() + "_" + std::to_string(getpid()) + "_" + std::to_string(rank) + ".so";
+  if (use_default) {
+    simgrid::s4u::Engine::get_instance()->register_default([executable, fdin_size](std::vector<std::string> args) {
+      return simgrid::kernel::actor::ActorCode([executable, fdin_size, args = std::move(args)] {
+        static std::size_t rank = 0;
+        // Copy the dynamic library:
+        simgrid::xbt::Path path(executable);
+        std::string target_executable = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" +
+                                        path.get_base_name() + "_" + std::to_string(getpid()) + "_" +
+                                        std::to_string(rank) + ".so";
 
-      smpi_copy_file(executable, target_executable, fdin_size);
-      // if smpi/privatize-libs is set, duplicate pointed lib and link each executable copy to a different one.
-      std::vector<std::string> target_libs;
-      for (auto const& libpath : privatize_libs_paths) {
-        // if we were given a full path, strip it
-        size_t index = libpath.find_last_of("/\\");
-        std::string libname;
-        if (index != std::string::npos)
-          libname = libpath.substr(index + 1);
+        smpi_copy_file(executable, target_executable, fdin_size);
+        // if smpi/privatize-libs is set, duplicate pointed lib and link each executable copy to a different one.
+        std::vector<std::string> target_libs;
+        for (auto const& libpath : privatize_libs_paths) {
+          // if we were given a full path, strip it
+          size_t index = libpath.find_last_of("/\\");
+          std::string libname;
+          if (index != std::string::npos)
+            libname = libpath.substr(index + 1);
 
-        if (not libname.empty()) {
-          // load the library to add it to the local libs, to get the absolute path
-          struct stat fdin_stat2;
-          stat(libpath.c_str(), &fdin_stat2);
-          off_t fdin_size2 = fdin_stat2.st_size;
+          if (not libname.empty()) {
+            // load the library to add it to the local libs, to get the absolute path
+            struct stat fdin_stat2;
+            stat(libpath.c_str(), &fdin_stat2);
+            off_t fdin_size2 = fdin_stat2.st_size;
 
-          // Copy the dynamic library, the new name must be the same length as the old one
-          // just replace the name with 7 digits for the rank and the rest of the name.
-          auto pad                   = std::min<size_t>(7, libname.length());
-          std::string target_libname = std::string(pad - std::to_string(rank).length(), '0') + std::to_string(rank) + libname.substr(pad);
-          std::string target_lib = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" + target_libname;
-          target_libs.push_back(target_lib);
-          XBT_DEBUG("copy lib %s to %s, with size %lld", libpath.c_str(), target_lib.c_str(), (long long)fdin_size2);
-          smpi_copy_file(libpath, target_lib, fdin_size2);
+            // Copy the dynamic library, the new name must be the same length as the old one
+            // just replace the name with 7 digits for the rank and the rest of the name.
+            auto pad = std::min<size_t>(7, libname.length());
+            std::string target_libname =
+                std::string(pad - std::to_string(rank).length(), '0') + std::to_string(rank) + libname.substr(pad);
+            std::string target_lib = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" + target_libname;
+            target_libs.push_back(target_lib);
+            XBT_DEBUG("copy lib %s to %s, with size %lld", libpath.c_str(), target_lib.c_str(), (long long)fdin_size2);
+            smpi_copy_file(libpath, target_lib, fdin_size2);
 
-          std::string sedcommand = "sed -i -e 's/" + libname + "/" + target_libname + "/g' " + target_executable;
-          int status             = system(sedcommand.c_str());
-          xbt_assert(status == 0, "error while applying sed command %s \n", sedcommand.c_str());
+            std::string sedcommand = "sed -i -e 's/" + libname + "/" + target_libname + "/g' " + target_executable;
+            int status             = system(sedcommand.c_str());
+            xbt_assert(status == 0, "error while applying sed command %s \n", sedcommand.c_str());
+          }
         }
-      }
 
-      rank++;
-      // Load the copy and resolve the entry point:
-      void* handle    = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | WANT_RTLD_DEEPBIND);
-      int saved_errno = errno;
-      if (not simgrid::config::get_value<bool>("smpi/keep-temps")) {
-        unlink(target_executable.c_str());
-        for (const std::string& target_lib : target_libs)
-          unlink(target_lib.c_str());
-      }
-      xbt_assert(handle != nullptr,
-                 "dlopen failed: %s (errno: %d -- %s).\nError: Did you compile the program with a SMPI-specific "
-                 "compiler (spmicc or friends)?",
-                 dlerror(), saved_errno, strerror(saved_errno));
+        rank++;
+        // Load the copy and resolve the entry point:
+        void* handle    = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | WANT_RTLD_DEEPBIND);
+        int saved_errno = errno;
+        if (not simgrid::config::get_value<bool>("smpi/keep-temps")) {
+          unlink(target_executable.c_str());
+          for (const std::string& target_lib : target_libs)
+            unlink(target_lib.c_str());
+        }
+        xbt_assert(handle != nullptr,
+                   "dlopen failed: %s (errno: %d -- %s).\nError: Did you compile the program with a SMPI-specific "
+                   "compiler (spmicc or friends)?",
+                   dlerror(), saved_errno, strerror(saved_errno));
 
-      smpi_entry_point_type entry_point = smpi_resolve_function(handle);
-      xbt_assert(entry_point, "Could not resolve entry point. Does your program contain a main() function?");
-      smpi_run_entry_point(entry_point, executable, args);
+        smpi_entry_point_type entry_point = smpi_resolve_function(handle);
+        xbt_assert(entry_point, "Could not resolve entry point. Does your program contain a main() function?");
+        smpi_run_entry_point(entry_point, executable, args);
+        dlclose(handle);
+      });
     });
-  });
+  } else {
+    simgrid::s4u::Engine::get_instance()->register_function(
+        executable,
+        static_cast<simgrid::kernel::actor::ActorCodeFactory>([executable, fdin_size](std::vector<std::string> args) {
+          return simgrid::kernel::actor::ActorCode([executable, fdin_size, args = std::move(args)] {
+            static std::size_t rank = 0;
+            // Copy the dynamic library:
+            simgrid::xbt::Path path(executable);
+            std::string target_executable = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" +
+                                            path.get_base_name() + "_" + std::to_string(getpid()) + "_" +
+                                            std::to_string(rank) + ".so";
+
+            smpi_copy_file(executable, target_executable, fdin_size);
+            // if smpi/privatize-libs is set, duplicate pointed lib and link each executable copy to a different one.
+            std::vector<std::string> target_libs;
+            for (auto const& libpath : privatize_libs_paths) {
+              // if we were given a full path, strip it
+              size_t index = libpath.find_last_of("/\\");
+              std::string libname;
+              if (index != std::string::npos)
+                libname = libpath.substr(index + 1);
+
+              if (not libname.empty()) {
+                // load the library to add it to the local libs, to get the absolute path
+                struct stat fdin_stat2;
+                stat(libpath.c_str(), &fdin_stat2);
+                off_t fdin_size2 = fdin_stat2.st_size;
+
+                // Copy the dynamic library, the new name must be the same length as the old one
+                // just replace the name with 7 digits for the rank and the rest of the name.
+                auto pad = std::min<size_t>(7, libname.length());
+                std::string target_libname =
+                    std::string(pad - std::to_string(rank).length(), '0') + std::to_string(rank) + libname.substr(pad);
+                std::string target_lib = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" + target_libname;
+                target_libs.push_back(target_lib);
+                XBT_DEBUG("copy lib %s to %s, with size %lld", libpath.c_str(), target_lib.c_str(),
+                          (long long)fdin_size2);
+                smpi_copy_file(libpath, target_lib, fdin_size2);
+
+                std::string sedcommand = "sed -i -e 's/" + libname + "/" + target_libname + "/g' " + target_executable;
+                int status             = system(sedcommand.c_str());
+                xbt_assert(status == 0, "error while applying sed command %s \n", sedcommand.c_str());
+              }
+            }
+
+            rank++;
+            // Load the copy and resolve the entry point:
+            void* handle    = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | WANT_RTLD_DEEPBIND);
+            int saved_errno = errno;
+            if (not simgrid::config::get_value<bool>("smpi/keep-temps")) {
+              unlink(target_executable.c_str());
+              for (const std::string& target_lib : target_libs)
+                unlink(target_lib.c_str());
+            }
+            xbt_assert(handle != nullptr,
+                       "dlopen failed: %s (errno: %d -- %s).\nError: Did you compile the program with a SMPI-specific "
+                       "compiler (spmicc or friends)?",
+                       dlerror(), saved_errno, strerror(saved_errno));
+
+            smpi_entry_point_type entry_point = smpi_resolve_function(handle);
+            xbt_assert(entry_point, "Could not resolve entry point. Does your program contain a main() function?");
+            smpi_run_entry_point(entry_point, executable, args);
+            dlclose(handle);
+          });
+        }));
+  }
 }
 
-static void smpi_init_privatization_no_dlopen(const std::string& executable)
+static void smpi_init_privatization_no_dlopen(const std::string& executable, bool use_default = true)
 {
   if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP)
     smpi_prepare_global_memory_segment();
@@ -498,19 +573,36 @@ static void smpi_init_privatization_no_dlopen(const std::string& executable)
   if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP)
     smpi_backup_global_memory_segment();
 
-  // Execute the same entry point for each simulated process:
-  simgrid::s4u::Engine::get_instance()->register_default([entry_point, executable](std::vector<std::string> args) {
-    return simgrid::kernel::actor::ActorCode([entry_point, executable, args = std::move(args)] {
-      if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-        simgrid::smpi::ActorExt* ext = smpi_process();
-        /* Now using the segment index of this process  */
-        ext->set_privatized_region(smpi_init_global_memory_segment_process());
-        /* Done at the process's creation */
-        smpi_switch_data_segment(simgrid::s4u::Actor::self());
-      }
-      smpi_run_entry_point(entry_point, executable, args);
+  if (use_default) {
+    // Execute the same entry point for each simulated process:
+    simgrid::s4u::Engine::get_instance()->register_default([entry_point, executable](std::vector<std::string> args) {
+      return simgrid::kernel::actor::ActorCode([entry_point, executable, args = std::move(args)] {
+        if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
+          simgrid::smpi::ActorExt* ext = smpi_process();
+          /* Now using the segment index of this process  */
+          ext->set_privatized_region(smpi_init_global_memory_segment_process());
+          /* Done at the process's creation */
+          smpi_switch_data_segment(simgrid::s4u::Actor::self());
+        }
+        smpi_run_entry_point(entry_point, executable, args);
+      });
     });
-  });
+  } else {
+    simgrid::s4u::Engine::get_instance()->register_function(
+        executable,
+        static_cast<simgrid::kernel::actor::ActorCodeFactory>([entry_point, executable](std::vector<std::string> args) {
+          return simgrid::kernel::actor::ActorCode([entry_point, executable, args = std::move(args)] {
+            if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
+              simgrid::smpi::ActorExt* ext = smpi_process();
+              /* Now using the segment index of this process  */
+              ext->set_privatized_region(smpi_init_global_memory_segment_process());
+              /* Done at the process's creation */
+              smpi_switch_data_segment(simgrid::s4u::Actor::self());
+            }
+            smpi_run_entry_point(entry_point, executable, args);
+          });
+        }));
+  }
 }
 
 int smpi_main(const char* executable, int argc, char* argv[])
@@ -596,7 +688,8 @@ int SMPI_is_inited()
 }
 
 // Called either directly from the user code, or from the code called by smpirun
-void SMPI_init(){
+void SMPI_init()
+{
   smpi_init_options_internal(false);
   simgrid::s4u::Actor::on_creation_cb([](simgrid::s4u::Actor& actor) {
     if (not actor.is_daemon())
@@ -637,25 +730,63 @@ void SMPI_finalize()
   simgrid::smpi::utils::print_memory_analysis();
 }
 
-void smpi_mpi_init() {
+void smpi_mpi_init()
+{
   smpi_init_fortran_types();
-  if(_smpi_init_sleep > 0)
+  if (_smpi_init_sleep > 0)
     simgrid::s4u::this_actor::sleep_for(_smpi_init_sleep);
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
   }
 }
 
-void SMPI_thread_create() {
+void SMPI_thread_create()
+{
   TRACE_smpi_init(simgrid::s4u::this_actor::get_pid(), __func__);
   smpi_process()->mark_as_initialized();
 }
 
-void smpi_exit(int res){
-  if(res != 0){
+void smpi_exit(int res)
+{
+  if (res != 0) {
     XBT_WARN("SMPI process did not return 0. Return value : %d", res);
     smpi_exit_status = res;
   }
   simgrid::s4u::this_actor::exit();
   THROW_IMPOSSIBLE;
+}
+
+void SMPI_executable_init(const std::string& executable)
+{
+  if (std::find(smpi_executables.begin(), smpi_executables.end(), executable) != smpi_executables.end())
+    return;
+
+  XBT_DEBUG("Initialize SMPI for %s", executable.c_str());
+  simgrid::s4u::Engine* engine = simgrid::s4u::Engine::get_instance();
+
+  if (smpi_executables.empty())
+    sg_storage_file_system_init();
+  engine->set_default_comm_data_copy_callback(smpi_comm_copy_buffer_callback);
+
+  xbt_assert(not MC_is_active() || smpi_cfg_privatization() != SmpiPrivStrategies::MMAP,
+             "Please use the dlopen privatization schema when model-checking SMPI code");
+
+  if (smpi_cfg_privatization() == SmpiPrivStrategies::DLOPEN)
+    smpi_init_privatization_dlopen(executable, false);
+  else
+    smpi_init_privatization_no_dlopen(executable, false);
+
+  /* DON'T KNOW IF I NEED THIS OR NOT (PROBABLY NOT?)
+    // Setup argc/argv for the Fortran run-time environment
+    #if SMPI_IFORT
+      for_rtl_init_(&real_argc, real_argv);
+    #elif SMPI_FLANG
+      __io_set_argc(real_argc);
+      __io_set_argv(real_argv);
+    #elif SMPI_GFORTRAN
+      _gfortran_set_args(real_argc, real_argv);
+    #endif
+  */
+
+  smpi_executables.push_back(executable);
 }

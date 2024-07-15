@@ -4,11 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smpi_host.hpp"
 #include "private.hpp"
-#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Barrier.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "smpi_comm.hpp"
+#include "smpi_host.hpp"
 #include <map>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi);
@@ -21,7 +21,7 @@ public:
   {
     auto* group = new simgrid::smpi::Group(size_);
     comm_world_ = new simgrid::smpi::Comm(group, nullptr, false, -1);
-    bar_ = s4u::Barrier::create(size_);
+    bar_        = s4u::Barrier::create(size_);
   }
   s4u::BarrierPtr bar_;
   unsigned int size_;
@@ -44,7 +44,7 @@ static std::map<std::string, Instance, std::less<>> smpi_instances;
  *              e.g., when deploying manually or using smpirun)
  * @param num_processes the size of the instance we want to deploy
  */
-void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_processes)
+void SMPI_app_instance_register(const char* name, xbt_main_func_t code, int num_processes)
 {
   if (code != nullptr) // When started with smpirun, we will not execute a function
     simgrid::s4u::Engine::get_instance()->register_function(name, code);
@@ -113,7 +113,8 @@ MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id)
   return &instance.comm_world_;
 }
 
-void smpi_deployment_cleanup_instances(){
+void smpi_deployment_cleanup_instances()
+{
   for (auto const& [name, instance] : smpi_instances) {
     XBT_INFO("Stalling SMPI instance: %s. Do all your MPI ranks call MPI_Finalize()?", name.c_str());
     simgrid::smpi::Comm::destroy(instance.comm_world_);
@@ -210,4 +211,24 @@ int smpi_deployment_smpirun(const simgrid::s4u::Engine* e, const std::string& ho
       actor->set_property("tracefile", replay[0]);
   }
   return np;
+}
+
+void SMPI_executable_start(const std::string& executable, const std::vector<simgrid::s4u::Host*>& hosts,
+                           const std::vector<std::string> run_args)
+{
+  SMPI_executable_init(executable);
+
+  int hosts_size = static_cast<int>(hosts.size());
+
+  for (int i = 0; i < hosts_size; i++) {
+    simgrid::s4u::Host* host = hosts[i];
+    std::string rank_id      = std::to_string(i);
+    std::vector<std::string> args{rank_id};
+    args.insert(args.end(), run_args.begin(), run_args.end());
+    auto actor = simgrid::s4u::Actor::create(rank_id, host, executable, args);
+    actor->set_property("instance_id", "SMPI_app");
+    actor->set_property("rank", rank_id);
+  }
+
+  SMPI_app_instance_register("SMPI_app", nullptr, hosts.size());
 }
