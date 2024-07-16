@@ -379,7 +379,7 @@ void smpi_sample_iter(int global, const char* file, const char* tag)
   data.sum_pow2 += period * period;
   double n       = data.count;
   data.mean      = data.sum / n;
-  data.relstderr = sqrt((data.sum_pow2 / n - data.mean * data.mean) / n) / data.mean;
+  data.relstderr = sqrt((data.sum_pow2 / n) - (data.mean * data.mean)) / data.mean;
 
   XBT_DEBUG("Average mean after %d steps is %f, relative standard error is %f (sample was %f)",
             data.count, data.mean, data.relstderr, period);
