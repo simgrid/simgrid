@@ -86,6 +86,9 @@ XBT_PRIVATE int smpi_deployment_smpirun(const simgrid::s4u::Engine* e, const std
                                         const std::string& replayfile, int map,
                                         const std::vector<const char*>& run_args);
 
+/** SMPI_executable functions*/
+XBT_PRIVATE void SMPI_executable_init(const std::string& executable);
+
 /** @brief Cleanup user's callback structure. Avoid segfault while destroying process */
 XBT_PRIVATE void smpi_cleanup_op_cost_callback();
 
