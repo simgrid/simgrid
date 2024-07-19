@@ -213,12 +213,7 @@ int smpi_deployment_smpirun(const simgrid::s4u::Engine* e, const std::string& ho
 }
 
 
-/**
- * @brief Deploy an SMPI application from a smpirun call
- *
- * This used to be done at smpirun script, parsing either the hostfile or the platform XML.
- * If hostfile isn't provided, get the list of hosts from engine.
- */
+/** @brief Deploy an SMPI executable from within an S4U application */
 void SMPI_executable_start(const std::string& executable, const std::vector<simgrid::s4u::Host*> &hosts, const std::vector<std::string> run_args)
 {
   SMPI_executable_init(executable);
