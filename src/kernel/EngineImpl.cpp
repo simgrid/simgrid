@@ -316,7 +316,7 @@ void EngineImpl::load_platform(const std::string& platf)
     void* handle = dlopen(platf.c_str(), RTLD_LAZY);
     xbt_assert(handle, "Impossible to open platform file: %s", platf.c_str());
     platf_handle_           = std::unique_ptr<void, std::function<int(void*)>>(handle, dlclose);
-    using load_fct_t        = void (*)(const simgrid::s4u::Engine&);
+    using load_fct_t = void (*)(const simgrid::s4u::Engine&);
     auto callable           = (load_fct_t)dlsym(platf_handle_.get(), "load_platform");
     const char* dlsym_error = dlerror();
     xbt_assert(not dlsym_error, "Error: %s", dlsym_error);
@@ -575,8 +575,8 @@ double EngineImpl::solve(double max_date) const
     XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, now_, next_event_date);
 
     while (auto* event = profile::future_evt_set.pop_leq(next_event_date, &value, &resource)) {
-      if (value < 0)
-        continue;
+      if(value<0)
+	      continue;
       if (resource->is_used()) {
         time_delta = next_event_date - now_;
         XBT_DEBUG("This event invalidates the next_occurring_event() computation of models. Next event set to %f",
@@ -639,7 +639,7 @@ void EngineImpl::run(double max_date)
     return;
   }
 
-  double elapsed_time                               = -1;
+  double elapsed_time = -1;
   const std::set<s4u::Activity*>* vetoed_activities = s4u::Activity::get_vetoed_activities();
 
   do {
