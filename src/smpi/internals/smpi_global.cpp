@@ -492,7 +492,6 @@ static void smpi_init_privatization_dlopen(const std::string& executable, bool u
           smpi_entry_point_type entry_point = smpi_resolve_function(handle);
           xbt_assert(entry_point, "Could not resolve entry point. Does your program contain a main() function?");
           smpi_run_entry_point(entry_point, executable, args);
-          dlclose(handle);
         });
       }));
 }
@@ -520,7 +519,7 @@ static void smpi_init_privatization_no_dlopen(const std::string& executable, boo
 
   // Execute the same entry point for each simulated process:
   simgrid::s4u::Engine::get_instance()->register_function(
-      executable,
+      function_name,
       static_cast<simgrid::kernel::actor::ActorCodeFactory>([entry_point, executable](std::vector<std::string> args) {
         return simgrid::kernel::actor::ActorCode([entry_point, executable, args = std::move(args)] {
           if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
