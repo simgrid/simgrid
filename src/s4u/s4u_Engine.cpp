@@ -415,12 +415,13 @@ void Engine::register_default(const std::function<void(int, char**)>& code)
 }
 void Engine::register_default(const kernel::actor::ActorCodeFactory& code)
 {
-  simgrid::kernel::actor::simcall_answered([this, &code]() { pimpl_->register_default(code); });
+  register_function("", code);
 }
 
 void Engine::register_function(const std::string& name, const kernel::actor::ActorCodeFactory& code)
 {
-  simgrid::kernel::actor::simcall_answered([this, name, &code]() { pimpl_->register_function(name, code); });
+  simgrid::kernel::actor::simcall_answered(
+      [this, name, &code]() { name.empty() ? pimpl_->register_default(code) : pimpl_->register_function(name, code); });
 }
 
 /** Load a deployment file and launch the actors that it contains
