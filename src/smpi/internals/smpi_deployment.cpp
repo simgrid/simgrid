@@ -231,4 +231,5 @@ void SMPI_executable_start(const std::string& executable, const std::vector<simg
   }
 
   SMPI_app_instance_register("SMPI_app", nullptr, hosts.size());
+  MPI_COMM_WORLD = *smpi_deployment_comm_world("SMPI_app");
 }
