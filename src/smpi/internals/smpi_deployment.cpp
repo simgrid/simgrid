@@ -211,3 +211,25 @@ int smpi_deployment_smpirun(const simgrid::s4u::Engine* e, const std::string& ho
   }
   return np;
 }
+
+
+/** @brief Deploy an SMPI executable from within an S4U application */
+void SMPI_executable_start(const std::string& executable, const std::vector<simgrid::s4u::Host*> &hosts, const std::vector<std::string> run_args)
+{
+  SMPI_executable_init(executable);
+
+  int hosts_size = static_cast<int>(hosts.size());
+
+  for (int i = 0; i < hosts_size; i++) {
+    simgrid::s4u::Host* host = hosts[i];
+    std::string rank_id      = std::to_string(i);
+    std::vector<std::string> args{rank_id};
+    args.insert(args.end(), run_args.begin(), run_args.end());
+    auto actor = simgrid::s4u::Actor::create(rank_id, host, executable, args);
+    actor->set_property("instance_id", "SMPI_app");
+    actor->set_property("rank", rank_id);
+  }
+
+  SMPI_app_instance_register("SMPI_app", nullptr, hosts.size());
+  MPI_COMM_WORLD = *smpi_deployment_comm_world("SMPI_app");
+}
