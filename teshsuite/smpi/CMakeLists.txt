@@ -33,8 +33,6 @@ if(enable_smpi)
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
     add_dependencies(tests ${x})
-    set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
-    set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
   endforeach()
 endif()
 
