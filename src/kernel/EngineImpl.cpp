@@ -188,6 +188,10 @@ void EngineImpl::initialize(int* argc, char** argv)
   simgrid::mc::AppSide::get(); // To ensure that it's initialized
 #endif
 
+#if HAVE_SMPI
+  smpi_init_options_internal(true);
+#endif
+
   if (static bool inited = false; not inited) {
     inited = true;
     xbt_log_init(argc, argv);

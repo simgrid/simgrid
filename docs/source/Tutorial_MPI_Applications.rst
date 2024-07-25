@@ -283,7 +283,7 @@ container to enjoy the provided dependencies.
    when you log out of the container, so don't edit the other files!
 
 All needed dependencies are already installed in this container
-(SimGrid, the C/C++/Fortran compilers, make, pajeng, R and pajengr). Vite being
+(SimGrid, the C/C++/Fortran compilers, make, pajeng, and R). Vite being
 only optional in this tutorial, it is not installed to reduce the
 image size.
 
@@ -312,17 +312,12 @@ Debian and Ubuntu, you can get them as follows:
 
    $ sudo apt install simgrid pajeng make gcc g++ gfortran python3 vite
 
-For R analysis of the produced traces, you may want to install R
-and the `pajengr <https://github.com/schnorr/pajengr#installation/>`_ package.
+For R analysis of the produced traces, you may want to install R.
 
 .. code-block:: console
 
    # install R and necessary packages
    $ sudo apt install r-base r-cran-devtools r-cran-tidyverse
-   # install pajengr dependencies
-   $ sudo apt install git cmake flex bison
-   # install the pajengr R package
-   $ Rscript -e "library(devtools); install_github('schnorr/pajengr');"
 
 To take this tutorial, you will also need the platform files from the
 previous section as well as the source code of the NAS Parallel
@@ -412,14 +407,28 @@ data size
    (execution logs)
 
 To get a better understanding of what is going on, activate the
-visualization tracing, and convert the produced trace for later
+tracing mechanism, and convert the produced trace for later
 use:
 
 .. code-block:: console
 
    $ smpirun -np 4 -platform ../cluster_backbone.xml -trace --cfg=tracing/filename:lu.S.4.trace bin/lu.S.4
 
-You can then produce a Gantt Chart with the following R chunk. You can
+The file ``lu.S.4.trace`` is a text file that follows the
+`Paje file format
+<https://paje.sourceforge.net/download/publication/lang-paje.pdf>`_. This
+trace can be read by the `ViTE -- Visual Trace Explorer
+<https://solverstack.gitlabpages.inria.fr/vite/>`_ or can be
+transformed to a CSV file using `pj_dump
+<https://github.com/schnorr/pajeng/wiki/pj_dump>`_ (from the
+``pajeng`` package). Let's do it and grab only lines that represent an
+application state, which in this case represent traced MPI operations.
+
+.. code-block:: console
+
+   $ pj_dump lu.S.4.trace | grep ^State > lu.S.4.csv
+
+You can now produce a Gantt Chart with the following R chunk. You can
 either copy/paste it in an R session, or `turn it into a Rscript executable
 <https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/>`_ to
 run it again and again.
@@ -427,27 +436,34 @@ run it again and again.
 .. code-block:: R
 
    # Read the data
-   library(tidyverse)
-   library(pajengr)
-   dta <- pajeng_read("lu.S.4.trace")
+   suppressMessages(library(tidyverse))
+   dta <- read_csv("lu.S.4.csv",
+                         show_col_types = FALSE,
+                         col_names=c("Nature",
+                                     "Container",
+                                     "Type",
+                                     "Start",
+                                     "End",
+                                     "Duration",
+                                     "Imbrication",
+                                     "Value"))
 
-   # Manipulate the data
-   dta$state %>%
+   # Some clean-up
+   dta |>
       # Remove some unnecessary columns for this example
-      select(-Type, -Imbrication) %>%
+      select(-Type, -Imbrication) |>
       # Create the nice MPI rank and operations identifiers
       mutate(Container = as.integer(gsub("rank-", "", Container)),
-             Value = gsub("^PMPI_", "MPI_", Value)) %>%
+             Value = gsub("^PMPI_", "MPI_", Value)) |>
       # Rename some columns so it can better fit MPI terminology
-      rename(Rank = Container,
-             Operation = Value) -> df.states
+      rename(Rank = Container, Operation = Value) -> df.states
 
    # Draw the Gantt Chart
-   df.states %>%
+   df.states |>
       ggplot() +
       # Each MPI operation is becoming a rectangle
       geom_rect(aes(xmin=Start, xmax=End,
-                    ymin=Rank,  ymax=Rank + 1,
+                    ymin=Rank,  ymax=Rank + 0.9,
                     fill=Operation)) +
       # Cosmetics
       xlab("Time [seconds]") +
