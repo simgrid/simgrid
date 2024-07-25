@@ -66,8 +66,10 @@ typedef enum {
 #  endif                        /* NDEBUG */
 #endif                          /* !defined(NLOG) */
 
-/* Transforms a category name to a global variable name. */
-#define _XBT_LOGV(cat) _XBT_CONCAT(_simgrid_log_category__, cat)
+/* Transforms a category name to a global variable name.
+ * The weird name is to make the error messages more understandable (hopefully).
+ * See https://github.com/simgrid/simgrid/issues/397 */
+#define _XBT_LOGV(cat) _XBT_CONCAT(_misuse_of_XBT_LOG_macros_detected__, cat)
 #define _XBT_LOGV_CTOR(cat) _XBT_CONCAT2(_XBT_LOGV(cat), __constructor__)
 
 /* The root of the category hierarchy. */
@@ -372,7 +374,7 @@ extern s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT);
     }                                                                                                                  \
   } while (0)
 
-#define XBT_LOG(prio, ...) XBT_CLOG(*_simgrid_log_category__default, (prio), __VA_ARGS__)
+#define XBT_LOG(prio, ...) XBT_CLOG(*_misuse_of_XBT_LOG_macros_detected__default, (prio), __VA_ARGS__)
 
 #endif
 
