@@ -27,6 +27,13 @@ if(enable_smpi)
     set_target_properties(fort_args PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fort_args)
     add_dependencies(tests fort_args)
   endif()
+
+  foreach(x privatization-executable)
+    add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
+    target_link_libraries(${x}  simgrid)
+    set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+    add_dependencies(tests ${x})
+  endforeach()
 endif()
 
 foreach(x coll-allgather coll-allgatherv coll-allreduce coll-allreduce-with-leaks coll-alltoall coll-alltoallv coll-barrier coll-bcast
@@ -161,5 +168,7 @@ if(enable_smpi)
     foreach(PRIVATIZATION dlopen mmap)
       ADD_TESH_FACTORIES(tesh-smpi-privatization-${PRIVATIZATION}  "*" --setenv privatization=${PRIVATIZATION} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/privatization/privatization.tesh)
     endforeach()
+
+    ADD_TESH_FACTORIES(tesh-smpi-privatization-executable-dlopen  "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization-executable --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization-executable ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/privatization-executable/privatization-executable.tesh)
   endif()
 endif()
