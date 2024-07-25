@@ -116,6 +116,7 @@ Existing Configuration Items
 - **model-check/no-fork:** :ref:`cfg=model-check/no-fork`
 - **model-check/reduction:** :ref:`cfg=model-check/reduction`
 - **model-check/replay:** :ref:`cfg=model-check/replay`
+- **model-check/search-critical:** :ref:`cfg=model-check/search-critical`
 - **model-check/send-determinism:** :ref:`cfg=model-check/send-determinism`
 - **model-check/setenv:** :ref:`cfg=model-check/setenv`
 - **model-check/strategy:** :ref:`cfg=model-check/strategy`
@@ -722,6 +723,16 @@ It is currently not possible to survive assertion failures or application crashe
 be seen as a bounded exploration yet.
 
 By default, the exploration stops after the first deadlock (value = 0).
+
+.. _cfg=model-check/search-critical:
+
+Searching for the critical transition
+.....................................
+
+When it finds a failure, SimGrid automatically searches for the so-called critical transition. Before that transition, at least
+one exploration is correct; After it, all explorations are faulty. We hope that exhibiting critical transition will help you
+understanding the error. This option is disabled by default, unless when the model-checker is instructed to continue after the
+first deadlock (in which case it's enabled by default but you can still override this setting).
 
 .. _cfg=model-check/timeout-soft:
 
