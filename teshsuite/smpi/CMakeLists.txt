@@ -36,6 +36,7 @@ if(enable_smpi)
   endforeach()
 endif()
 
+# C tests
 foreach(x coll-allgather coll-allgatherv coll-allreduce coll-allreduce-with-leaks coll-alltoall coll-alltoallv coll-barrier coll-bcast
     coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
     type-hvector type-indexed type-struct type-vector bug-17132 gh-139 timers privatization
@@ -44,6 +45,13 @@ foreach(x coll-allgather coll-allgatherv coll-allreduce coll-allreduce-with-leak
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
 endforeach()
+
+# CPP tests
+foreach(x privatization-executable)
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
+  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
+endforeach()
+
 
 set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/fort_args/fort_args.f90 PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-large.tesh

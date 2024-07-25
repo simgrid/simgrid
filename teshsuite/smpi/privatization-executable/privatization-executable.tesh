@@ -5,8 +5,8 @@ $ ./privatization-executable ${platfdir:=.}/small_platform.xml --log=smpi_config
 p Test privatization-executable with mmap
 ! timeout 5
 ! expect signal SIGIOT
-$ ./privatization-executable ${platfdir:=.}/small_platform.xml --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/privatization:mmap --log=ker_context.thres:error --log=xbt_memory_map.thres:critical
-> [0.000000] ./src/smpi/internals/smpi_global.cpp:702: [root/CRITICAL] Privatization with MMAP is not supported
+$ ./privatization-executable ${platfdir:=.}/small_platform.xml --log=root.fmt:[%10.6r]%e[%c/%p]%e%m%n --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/privatization:mmap --log=ker_context.thres:error --log=xbt_memory_map.thres:critical
+> [  0.000000] [root/CRITICAL] Privatization with MMAP is not supported
 
 p Test privatization-executable without privatization
 ! timeout 5

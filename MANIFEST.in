@@ -1655,6 +1655,8 @@ include teshsuite/smpi/mpich3-test/util/mtest.c
 include teshsuite/smpi/mpich3-test/util/mtest_datatype.c
 include teshsuite/smpi/mpich3-test/util/mtest_datatype_gen.c
 include teshsuite/smpi/mpich3-test/util/mtestcheck.c
+include teshsuite/smpi/privatization-executable/privatization-executable.cpp
+include teshsuite/smpi/privatization-executable/privatization-executable.tesh
 include teshsuite/smpi/privatization/privatization.c
 include teshsuite/smpi/privatization/privatization.tesh
 include teshsuite/smpi/pt2pt-dsend/pt2pt-dsend.c
