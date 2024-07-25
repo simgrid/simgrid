@@ -177,6 +177,9 @@ if(enable_smpi)
       ADD_TESH_FACTORIES(tesh-smpi-privatization-${PRIVATIZATION}  "*" --setenv privatization=${PRIVATIZATION} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/privatization/privatization.tesh)
     endforeach()
 
-    ADD_TESH_FACTORIES(tesh-smpi-privatization-executable-dlopen  "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization-executable --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization-executable ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/privatization-executable/privatization-executable.tesh)
+    # This test is rather fragile and only works with GNU libc on Linux
+    if("${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT HAVE_MUSL)
+      ADD_TESH_FACTORIES(tesh-smpi-privatization-executable-dlopen  "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization-executable --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization-executable ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/privatization-executable/privatization-executable.tesh)
+    endif()
   endif()
 endif()
