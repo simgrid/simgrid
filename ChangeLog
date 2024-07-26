@@ -37,11 +37,11 @@ Model-checker:
    to speedup later restore when exploring other execution branches.
  - Introduce option 'model-check/no-fork' to forbid the use of system forks to speed-up the exploration.
    This is mandated for multithreaded applications, such as our Python bindings.
- - Introduce option 'model-check/max-deadlocks' continue the exploration after the first deadlocks
+ - Introduce option 'model-check/max-errors' continue the exploration after the first errors.
  - Introduce option 'model-check/timeout-soft' to only search for a given amount of time
  - Enable the use of guiding strategies with DPOR, ODPOR and SDPOR (not UDPOR yet).
  - Allow to use mutexes and semaphores with UDPOR, that remains more experimental than the other explorations algorithms.
- - Support iprobes in MC (maybe not with UDPOR).
+ - Support iprobes in MC, not yet with UDPOR.
  - Various bug fixes and performance optimizations all over the MC module.
  - New guiding strategy: min_context_switch trying to minimize the context switches, inspired from the paper
    "A randomized scheduler with probabilistic guarantees of finding bugs", by Musavathi et Al.

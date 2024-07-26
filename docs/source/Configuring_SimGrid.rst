@@ -728,8 +728,8 @@ Searching for the critical transition
 
 When it finds a failure, SimGrid automatically searches for the so-called critical transition. Before that transition, at least
 one exploration is correct; After it, all explorations are faulty. We hope that exhibiting critical transition will help you
-understanding the error. This option is disabled by default, unless when the model-checker is instructed to continue after the
-first deadlock (in which case it's enabled by default but you can still override this setting).
+understanding the error. This option is enabled by default, unless when the model-checker is instructed to continue after the
+first error (in which case it cannot properly look for the critical transition).
 
 .. _cfg=model-check/timeout-soft:
 

@@ -138,7 +138,7 @@ simgrid::config::Flag<bool> _sg_mc_nofork{
 
 simgrid::config::Flag<bool> _sg_mc_search_critical_transition{
     "model-check/search-critical",
-    "Search for the critical transition. Note that it is disabled by default when not asking for multiple errors in "
+    "Search for the critical transition. Note that it is disabled by default when asking for multiple errors in "
     "the program.",
     true};
 
