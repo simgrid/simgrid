@@ -54,6 +54,5 @@ int main(int argc, char* argv[])
   });
 
   e.run();
-
   return 0;
 }
