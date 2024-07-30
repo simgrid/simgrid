@@ -74,6 +74,8 @@
 #cmakedefine01 HAVE_PRIVATIZATION
 /* We have PAPI to fine-grain trace execution time */
 #cmakedefine01 HAVE_PAPI
+/* Non-standard libc on Linux */
+#cmakedefine01 HAVE_MUSL
 /* We have sendfile to efficiently copy files for dl-open privatization */
 #cmakedefine01 SG_HAVE_SENDFILE
 

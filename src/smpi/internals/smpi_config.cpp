@@ -3,24 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#if defined(_GNU_SOURCE)
-  #define DEFINED_GNUSOURCE 1
-#else
-  #define _GNU_SOURCE
-#endif
-
-#if defined(__linux__)
-  #include <features.h>
-//inspired by https://stackoverflow.com/a/70211227
-  #if not defined(__USE_GNU)
-    #define __MUSL__
-  #endif
-#endif
-
-#ifndef DEFINED_GNUSOURCE
-  #undef _GNU_SOURCE
-#endif
-
 #include "private.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_config.hpp"
@@ -46,7 +28,7 @@
 # endif
 
 constexpr bool HAVE_WORKING_MMAP = ((MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12) && (MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_11_0));
-#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__sun) || defined(__HAIKU__) || defined(__MUSL__)
+#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__sun) || defined(__HAIKU__) || HAVE_MUSL
 constexpr bool HAVE_WORKING_MMAP = false;
 #else
 constexpr bool HAVE_WORKING_MMAP = true;

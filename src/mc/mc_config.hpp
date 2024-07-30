@@ -34,7 +34,7 @@ extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_strategy;
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_explore_algo;
 extern XBT_PUBLIC simgrid::config::Flag<int> _sg_mc_cached_states_interval;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_nofork;
-extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_no_critical_transition;
+extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_search_critical_transition;
 extern XBT_PUBLIC simgrid::config::Flag<int> _sg_mc_soft_timeout;
 
 #endif

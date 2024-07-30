@@ -27,8 +27,16 @@ if(enable_smpi)
     set_target_properties(fort_args PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fort_args)
     add_dependencies(tests fort_args)
   endif()
+
+  foreach(x privatization-executable)
+    add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
+    target_link_libraries(${x}  simgrid)
+    set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+    add_dependencies(tests ${x})
+  endforeach()
 endif()
 
+# C tests
 foreach(x coll-allgather coll-allgatherv coll-allreduce coll-allreduce-with-leaks coll-alltoall coll-alltoallv coll-barrier coll-bcast
     coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
     type-hvector type-indexed type-struct type-vector bug-17132 gh-139 timers privatization
@@ -37,6 +45,13 @@ foreach(x coll-allgather coll-allgatherv coll-allreduce coll-allreduce-with-leak
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
 endforeach()
+
+# CPP tests
+foreach(x privatization-executable)
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
+  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
+endforeach()
+
 
 set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/fort_args/fort_args.f90 PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-large.tesh
@@ -161,5 +176,10 @@ if(enable_smpi)
     foreach(PRIVATIZATION dlopen mmap)
       ADD_TESH_FACTORIES(tesh-smpi-privatization-${PRIVATIZATION}  "*" --setenv privatization=${PRIVATIZATION} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/privatization/privatization.tesh)
     endforeach()
+
+    # This test is rather fragile and only works with GNU libc on Linux
+    if("${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT HAVE_MUSL)
+      ADD_TESH_FACTORIES(tesh-smpi-privatization-executable-dlopen  "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization-executable --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization-executable ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/privatization-executable/privatization-executable.tesh)
+    endif()
   endif()
 endif()

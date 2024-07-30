@@ -1,44 +1,69 @@
 SimGrid (3.35.1) not released (target: Feb 24)
 
-- Timeout on communications do not interrupt the comm anymore. This is for symmetry with
-  the other activity kinds, which already had this behavior enabling polling activities.
-  The previous behavior is still available with Activity::wait_for_or_cancel()
-- Remove the include/xbt/promise.hpp header, that was kinda internal.
-- Bugfix: non-recursive locks must deadlock when relocking by same actor.
+Intrusive changes:
+ - Timeout on communications do not interrupt the comm anymore.
+   This is for symmetry with the other activity kinds, which already had this behavior enabling polling activities.
+   The previous behavior is still available with Activity::wait_for_or_cancel()
+ - Remove the include/xbt/promise.hpp header, that was kinda internal.
+ - Remove the ill-inspired communication matching mechanism. If you need it, talk to us (and use the kernel version).
 
 S4U:
  - Starting Activities in a detached (a.k.a. fire-and-forget) mode is not limited to Comm and Mess anymore. Exec and
    I/O can also benefit from that feature. This allows users to create a sequence of interdependent activities
    (informally called a 'compound' activity and only wait for the completion of the last activity of the sequence.
-
-Kernel:
- - Implement asynchronous condvar acquisition. Not visible from the s4u API, but needed for the model-checker.
-
-Models:
- - Introduce a raw network model with overly simplistic equations, for non-TCP settings.
-
-Model-checker:
- - Enable the verification of SimGrid programs written in Python.
- - Enable the verification of condition variables in both s4u and sthread. Reduction theorems are stil TBD.
- - Introduce option 'model-check/cached-states-interval' to control how often the application state is cached using fork, to
-   speedup later restore when exploring other execution branches.
- - Introduce option 'model-check/no-fork' to forbid the use of system forks to speed-up the exploration. This is mandated for
-   multithreaded applications, such as our Python bindings.
-
-C++ API
- - add Engine::get_hosts_from_MPI_hostfile(const std::string& hostfile) to select a list of hosts within a loaded
+ - Add Engine::get_hosts_from_MPI_hostfile(const std::string& hostfile) to select a list of hosts within a loaded
    platform from a text file. Each line of this text file comprises the name of a host (e.g., node-0) which can be
    followed by a number of repetitions (e.g., node-0:2 will add node-0 twice to the created list of hosts). This
    allows users to specify that more than one actor has to be started on a given host.
- - add Engine::get_all_netzones() to build a list of all the NetZones (including the root Zone) declared in the loaded platform.
+ - Add Engine::get_all_netzones() to build a list of all the NetZones (including the root Zone) declared.
+ - Add Engine::papi_{start,stop,get_num_counters,get_counters}() to interact with PAPI.
+ - Enable to track task instances at runtime, and add Task::on_this_instance_completion_cb()
+ - Add SMPI_executable_start() to start a SMPI external binary instead of providing the code inline.
+ - C API: Add sg_actor_start_voidp() to start actors using a pthread-like prototype, taking a void* as parameter.
 
-C API:
- - Add sg_actor_start_voidp() to start actors using a pthread-like prototype, taking a void* as parameter.
+Kernel:
+ - Bugfix: non-recursive locks must deadlock when relocking by same actor.
+ - Make NetZoneImpl extendable.
+ - Implement asynchronous condvar acquisition. Not visible from the s4u API, but needed for the model-checker.
+ - (internals) cleanup the implementation of timeouts for activities, and other bits of activities.
+
+Models:
+ - Introduce a 'raw' network model with overly simplistic equations, for non-TCP settings.
+
+Model-checker:
+ - Enable the verification of SimGrid programs written in Python.
+ - Enable the verification of condition variables in both s4u and sthread.
+ - Introduce option 'model-check/cached-states-interval' to control how often the application state is cached using fork,
+   to speedup later restore when exploring other execution branches.
+ - Introduce option 'model-check/no-fork' to forbid the use of system forks to speed-up the exploration.
+   This is mandated for multithreaded applications, such as our Python bindings.
+ - Introduce option 'model-check/max-errors' continue the exploration after the first errors.
+ - Introduce option 'model-check/timeout-soft' to only search for a given amount of time
+ - Enable the use of guiding strategies with DPOR, ODPOR and SDPOR (not UDPOR yet).
+ - Allow to use mutexes and semaphores with UDPOR, that remains more experimental than the other explorations algorithms.
+ - Support iprobes in MC, not yet with UDPOR.
+ - Various bug fixes and performance optimizations all over the MC module.
+ - New guiding strategy: min_context_switch trying to minimize the context switches, inspired from the paper
+   "A randomized scheduler with probabilistic guarantees of finding bugs", by Musavathi et Al.
+ - Compute the transition dependencies without considering the context. That may reduce the dependency detection,
+   but it's much faster to compute so that should still be an optimization. The contextual gain of our dependency theorems
+   was near to zero (because our compute model is not optimized toward that goal).
+ - (internals) Reimplement the DPOR, ODPOR and SDPOR algorithms so that the code is closer to the pseudo-code of the
+   articles. The correction of our implementation is thus easier to check.
+ - Introduce a new option 'model-check/search-critical' to exhibit the critical transition when a failure is found.
+   Before that transition, at least one exploration is correct; After it, all explorations are faulty.
+   For now, the answer is approximate when a reduction algorithm is enabled.
+
+sthread:
+ - Disable all verbose outputs when STHREAD_QUIET environment variable is defined
+ - Assume that unknown mutex types are similar to PLAIN ones (somehow true for ADAPTATIVE ones).
+ - Various fixes and other robustness improvements.
 
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GH: issues on GitHub)
  - FG#123: get_async for MessageQueue bugged
  - FG#117: Exec.set_tracing_category referenced in documentation but inexistant in Python
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.35) November 23. 2023

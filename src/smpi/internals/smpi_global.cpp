@@ -698,8 +698,10 @@ void SMPI_executable_init(const std::string& executable)
 
   if (smpi_cfg_privatization() == SmpiPrivStrategies::DLOPEN)
     smpi_init_privatization_dlopen(executable, false);
+  else if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP)
+    xbt_die("Privatization with MMAP is not supported");
   else
-    xbt_die("Privatization without dlopen is not supported");
+    smpi_init_privatization_no_dlopen(executable, false);
 
   smpi_executables.push_back(executable);
 }

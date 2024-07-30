@@ -121,7 +121,7 @@ std::vector<std::string> Exploration::get_textual_trace(int max_elements)
 
 bool Exploration::try_to_launch_critical_exploration()
 {
-  if (_sg_mc_max_errors == 0 && not _sg_mc_no_critical_transition && not is_looking_for_critical) {
+  if (_sg_mc_max_errors == 0 && _sg_mc_search_critical_transition && not is_looking_for_critical) {
     is_looking_for_critical = true;
     stack_t stack           = get_stack();
     create_critical_transition_exploration(std::move(remote_app_), get_model_checking_reduction(), &stack);
@@ -159,7 +159,7 @@ XBT_ATTRIB_NORETURN void Exploration::report_crash(int status)
 
   // This is used to let the opportunity to the exploration to do things about the app crashing
   // and only then launch the critical exploration by itself
-  if (_sg_mc_max_errors == 0 && not _sg_mc_no_critical_transition)
+  if (_sg_mc_max_errors == 0 && _sg_mc_search_critical_transition)
     throw McWarning(ExitStatus::PROGRAM_CRASH);
 
   if (_sg_mc_max_errors >= 0 && errors_ > _sg_mc_max_errors)
@@ -191,7 +191,7 @@ XBT_ATTRIB_NORETURN void Exploration::report_assertion_failure()
 
   // This is used to let the opportunity to the exploration to do things about the app crashing
   // and only then launch the critical exploration by itself
-  if (_sg_mc_max_errors == 0 && not _sg_mc_no_critical_transition)
+  if (_sg_mc_max_errors == 0 && _sg_mc_search_critical_transition)
     throw McWarning(ExitStatus::SAFETY);
 
   if (_sg_mc_max_errors >= 0 && errors_ > _sg_mc_max_errors)

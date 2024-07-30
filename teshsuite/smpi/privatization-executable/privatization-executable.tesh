@@ -1,0 +1,14 @@
+p Test privatization-executable with dlopen
+! timeout 5
+$ ./privatization-executable ${platfdir:=.}/small_platform.xml --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/privatization:dlopen --log=ker_context.thres:error --log=xbt_memory_map.thres:critical
+
+p Test privatization-executable with mmap
+! timeout 5
+! expect signal SIGIOT
+$ ./privatization-executable ${platfdir:=.}/small_platform.xml --log=root.fmt:[%10.6r]%e[%c/%p]%e%m%n --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/privatization:mmap --log=ker_context.thres:error --log=xbt_memory_map.thres:critical
+> [  0.000000] [root/CRITICAL] Privatization with MMAP is not supported
+
+p Test privatization-executable without privatization
+! timeout 5
+$ ./privatization-executable ${platfdir:=.}/small_platform.xml --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/privatization:OFF --log=ker_context.thres:error --log=xbt_memory_map.thres:critical
+> Privatization error - 1 != 0
