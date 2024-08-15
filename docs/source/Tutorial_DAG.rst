@@ -131,17 +131,23 @@ Start the executions of Activities without dependencies.
    :language: cpp
    :lines: 43-44
 
-Add a callback to monitor the activities.
+Add a callback to monitor the Exec activities.
 
 .. literalinclude:: ../../examples/cpp/dag-tuto/s4u-dag-tuto.cpp
    :language: cpp
    :lines: 46-49
 
+Add a callback to monitor the Comm activities.
+
+.. literalinclude:: ../../examples/cpp/dag-tuto/s4u-dag-tuto.cpp
+   :language: cpp
+   :lines: 51-54
+
 Finally, run the simulation.
 
 .. literalinclude:: ../../examples/cpp/dag-tuto/s4u-dag-tuto.cpp
    :language: cpp
-   :lines: 51
+   :lines: 56
 
 The execution of this code should give you the following output:
 
