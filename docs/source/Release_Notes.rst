@@ -750,6 +750,33 @@ release.
 Version 3.36 (TBD)
 ------------------
 
+**On the interface front**, the MessageQueue abstraction introduced in the previous release is now used in the WRENCH
+framework. This integration highlighted some bugs that have been fixed in this release cycle.
+
+We also decided to revisit the simulation of file systems and array of disks (JBOD). The current plugins are going to
+be replaced by an external module, a standalone library that can be linked to any SimGrid-based simulator. This module
+can be found at: https://github.com/simgrid/file-system-module. A notable development in this area is that of
+asynchronous read and write operations in a JBOD with RAID5. These operations involve a sequence of activities (i.e.,
+sending data to the controller of the JBOD, computing a parity block, and writing on each of disks composing the JBOD),
+whose order is enforced by adding dependencies between the corresponding activities. To allow users to get an
+ActivityPtr on such a composite activity and wait for its completion, we had to add the capacity to detach (i.e., start
+in fire-and-forget mode) Exec and Io activities. This feature was previously limited to Comm and Mess. Thanks to this
+extended feature, it becomes unnecessary to explicitely wait for the activities composing the sequence. The returned
+ActivityPtr is on a non-detached no-op activity terminating the sequence.
+
+As part of our on-going efforts to automate the calibration of platform descriptions against some ground truth data, we
+identified and addressed some caveats in the SMPI world. First, some SMPI configuration options were not accessible
+when lauching MPI codes from a S4U main (using SMPI_app_instance_start). We thus modify the command line parsing to
+allow for the configuration of SMPI whenever SMPI is activated at compile time. Second, if the MPI code launched from a
+S4U main had global variables, these variables would not be privatized, as the use of privatization mechanisms (i.e.,
+dlopen and mmap) was limited to smpirun. To address this issue and broaden the range of MPI applications that can be
+launched from a S4U simulation, we introduced the SMPI_executable_start() function that takes an executable (compiled
+with one of the SMPI compilers) as argument, along with the list of hosts that will run this executable and its command
+line arguments. The current implementation only supports dlopen privatization of global variables. An example of usage
+of this new function can be found in teshsuite/smpi/privatization-executable. Finally, we identified a bug in the
+computation of the standard error used by the SMPI sampling function to stop benchmarking the sampled code once its
+execution time is stable enough to be replaced by a delay. This bug (an extra division by the number of samples) has
+remained silent for 13 years ... basically since the inception of SMPI.
 
 .. |br| raw:: html
 
