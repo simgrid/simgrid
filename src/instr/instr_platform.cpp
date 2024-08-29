@@ -519,7 +519,7 @@ void define_callbacks()
       if (c.get_sender()) {
         Container::by_name(instr_pid(*c.get_sender()))->get_state("ACTOR_STATE")->pop_event();
         Container::by_name(instr_pid(*c.get_receiver()))->get_state("ACTOR_STATE")->pop_event();
-      } else {
+      } else if(c.get_source()) {
         Container::by_name(c.get_source()->get_name())->get_state("HOST_STATE")->pop_event();
         Container::by_name(c.get_destination()->get_name())->get_state("HOST_STATE")->pop_event();
       }
