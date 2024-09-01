@@ -302,7 +302,7 @@ public:
   template <class F, class... Args,
   // This constructor is enabled only if the call code(args...) is valid:
 #ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
-            typename = typename std::result_of_t<F(Args...)>
+            typename = typename std::invoke_result_t<F, Args...>
 #endif
             >
   ActorPtr start(F code, Args... args)
