@@ -22,7 +22,7 @@ namespace simgrid::mc {
 
 void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
 {
-  if (opened_states != nullptr)
+  if (opened_states == nullptr)
     XBT_VERB("calling BFSODPOR outside of BFS algorithm: the only case this should happen is if you are looking for "
              "the critical transition");
 
