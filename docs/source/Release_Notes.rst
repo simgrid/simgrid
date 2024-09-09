@@ -753,16 +753,16 @@ Version 3.36 (TBD)
 **On the interface front**, the MessageQueue abstraction introduced in the previous release is now used in the WRENCH
 framework. This integration highlighted some bugs that have been fixed in this release cycle.
 
-We also decided to revisit the simulation of file systems and array of disks (JBOD). The current plugins are going to
+We also decided to revisit the simulation of file systems and arrays of disks (JBOD). The current plugins are going to
 be replaced by an external module, a standalone library that can be linked to any SimGrid-based simulator. This module
 can be found at: https://github.com/simgrid/file-system-module. A notable development in this area is that of
-asynchronous read and write operations in a JBOD with RAID5. These operations involve a sequence of activities (i.e.,
+asynchronous read and write operations on a JBOD with RAID5. These operations involve a sequence of activities (i.e.,
 sending data to the controller of the JBOD, computing a parity block, and writing on each of disks composing the JBOD),
 whose order is enforced by adding dependencies between the corresponding activities. To allow users to get an
 ActivityPtr on such a composite activity and wait for its completion, we had to add the capacity to detach (i.e., start
-in fire-and-forget mode) Exec and Io activities. This feature was previously limited to Comm and Mess. Thanks to this
-extended feature, it becomes unnecessary to explicitly wait for the activities composing the sequence. The returned
-ActivityPtr is on a non-detached no-op activity terminating the sequence.
+in fire-and-forget mode) Exec and Io activities. This feature was previously limited to Comm and Mess activities. 
+Thanks to this extended feature, it becomes unnecessary to explicitly wait for the activities composing the sequence. 
+The returned ActivityPtr is on a non-detached no-op activity terminating the sequence.
 
 As part of our ongoing efforts to automate the calibration of platform descriptions against some ground truth data, we
 identified and addressed some caveats in the SMPI world. First, some SMPI configuration options were not accessible
@@ -778,15 +778,16 @@ computation of the standard error used by the SMPI sampling function to stop ben
 execution time is stable enough to be replaced by a delay. This bug (an extra division by the number of samples) has
 remained silent for 13 years ... basically since the inception of SMPI.
 
-**On the model checking front**, we are still working hard to find our first "wild bug", aka existing bug in an arbitrary piece
-of code while all bugs found so far with Mc SimGrid are bugs that we purposely added to a given code base. To that extend, our
-efforts span upon three axes. **We first extended the programming model**, to allow the verification of more programs and
-hopefully of programs containing bugs. The most notable extensions are that the verified programs can now be written in Python,
-involve MPI_iprobe, or use condition variables. Mc SimGrid can now **exhibit the critical transition when a failure is found**.
-Before that transition, at least one exploration is correct; After it, all explorations are faulty. We added this feature to
-help us characterize whether the found issue is an application bug (and help understand its root cause), or whether it's yet
-another bug in Mc SimGrid itself. Finally, **we fixed dozens of bugs and vastly optimized the verification code** to improve our
-chances to find a wild bug. Still, we did not find any such bug yet, so the chase continues.
+**On the model checking front**, we are still working hard to find our first "wild bug", a.k.a. existing bug in an 
+arbitrary piece of code while all bugs found so far with Mc SimGrid are bugs that we purposely added to a given code 
+base. To that extend, our efforts span upon three axes. **We first extended the programming model**, to allow for the
+verification of more programs and hopefully of programs containing bugs. The most notable extensions are that the 
+verified programs can now be written in Python, involve MPI_iprobe, or use condition variables. Mc SimGrid can now 
+**exhibit the critical transition when a failure is found**. Before that transition, at least one exploration is 
+correct; After it, all explorations are faulty. We added this feature to help us characterize whether the found issue
+is an application bug (and help us understand its root cause), or whether it is yet another bug in Mc SimGrid itself.
+Finally, **we fixed dozens of bugs and vastly optimized the verification code** to improve our chances to find a wild
+bug. Still, we did not find any such bug yet, so the chase continues.
 
 .. |br| raw:: html
 

@@ -6,7 +6,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ / / /_
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/ \___/
                (not released yet)
 
- * Various improvement and unification to the simulation APIs
+ * Various improvements and unification of the simulation APIs
  * MC: Enable the verification of Python programs, and of condvars and iprobe calls.
  * MC: Exhibit the critical transition when a failure is found.
  * (+ internal refactoring and bug fixes)
