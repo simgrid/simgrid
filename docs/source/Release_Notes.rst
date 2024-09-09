@@ -747,8 +747,8 @@ to verify pthread_cond in sthread is that I didn't manage to write an asynchrono
 almost working code lying around, but it fails for timed waits on condition variables. This will probably be part of the next
 release.
 
-Version 3.36 (TBD)
-------------------
+Version 3.36 (September 9. 2024)
+--------------------------------
 
 **On the interface front**, the MessageQueue abstraction introduced in the previous release is now used in the WRENCH
 framework. This integration highlighted some bugs that have been fixed in this release cycle.

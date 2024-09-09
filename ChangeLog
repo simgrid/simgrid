@@ -1,4 +1,6 @@
-SimGrid (3.35.1) not released (target: Feb 24)
+SimGrid (3.36) September 9. 2024
+
+The Anne of Brittany release (she became a Duchess 536 years ago).
 
 Intrusive changes:
  - Timeout on communications do not interrupt the comm anymore.
