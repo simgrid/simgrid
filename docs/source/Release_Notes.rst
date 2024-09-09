@@ -761,12 +761,12 @@ sending data to the controller of the JBOD, computing a parity block, and writin
 whose order is enforced by adding dependencies between the corresponding activities. To allow users to get an
 ActivityPtr on such a composite activity and wait for its completion, we had to add the capacity to detach (i.e., start
 in fire-and-forget mode) Exec and Io activities. This feature was previously limited to Comm and Mess. Thanks to this
-extended feature, it becomes unnecessary to explicitely wait for the activities composing the sequence. The returned
+extended feature, it becomes unnecessary to explicitly wait for the activities composing the sequence. The returned
 ActivityPtr is on a non-detached no-op activity terminating the sequence.
 
-As part of our on-going efforts to automate the calibration of platform descriptions against some ground truth data, we
+As part of our ongoing efforts to automate the calibration of platform descriptions against some ground truth data, we
 identified and addressed some caveats in the SMPI world. First, some SMPI configuration options were not accessible
-when lauching MPI codes from a S4U main (using SMPI_app_instance_start). We thus modify the command line parsing to
+when launching MPI codes from a S4U main (using SMPI_app_instance_start). We thus modify the command line parsing to
 allow for the configuration of SMPI whenever SMPI is activated at compile time. Second, if the MPI code launched from a
 S4U main had global variables, these variables would not be privatized, as the use of privatization mechanisms (i.e.,
 dlopen and mmap) was limited to smpirun. To address this issue and broaden the range of MPI applications that can be
@@ -777,6 +777,16 @@ of this new function can be found in teshsuite/smpi/privatization-executable. Fi
 computation of the standard error used by the SMPI sampling function to stop benchmarking the sampled code once its
 execution time is stable enough to be replaced by a delay. This bug (an extra division by the number of samples) has
 remained silent for 13 years ... basically since the inception of SMPI.
+
+**On the model checking front**, we are still working hard to find our first "wild bug", aka existing bug in an arbitrary piece
+of code while all bugs found so far with Mc SimGrid are bugs that we purposely added to a given code base. To that extend, our
+efforts span upon three axes. **We first extended the programming model**, to allow the verification of more programs and
+hopefully of programs containing bugs. The most notable extensions are that the verified programs can now be written in Python,
+involve MPI_iprobe, or use condition variables. Mc SimGrid can now **exhibit the critical transition when a failure is found**.
+Before that transition, at least one exploration is correct; After it, all explorations are faulty. We added this feature to
+help us characterize whether the found issue is an application bug (and help understand its root cause), or whether it's yet
+another bug in Mc SimGrid itself. Finally, **we fixed dozens of bugs and vastly optimized the verification code** to improve our
+chances to find a wild bug. Still, we did not find any such bug yet, so the chase continues.
 
 .. |br| raw:: html
 
