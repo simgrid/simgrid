@@ -27,6 +27,7 @@ jobs:
           PAYLOAD: |-
             {
              "color": "#FF0000",
+             "channel": "robot-office",
              "text": "@henricasanova: Wrench's git failed to build on simgrid/unstable docker image! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
              "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
             }
@@ -39,5 +40,6 @@ jobs:
           PAYLOAD: |-
             {
              "color": "#00FF00",
+             "channel": "robot-office",
              "text": "Wrench's git successfully built on simgrid/unstable docker image! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
             }
