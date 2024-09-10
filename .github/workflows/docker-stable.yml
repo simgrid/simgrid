@@ -60,7 +60,7 @@ jobs:
             {
              "color": "#00FF00",
              "channel": "bot-office",
-             "text": "Docker STABLE docker v3.${{ env.sgversion }} built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+             "text": "Docker STABLE docker v3.${{ env.sgversion }} built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
 
   docker-tuto-s4u:
