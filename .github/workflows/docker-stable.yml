@@ -32,8 +32,8 @@ jobs:
       - name: build
         run: |
           grep SIMGRID_VERSION_PATCH CMakeLists.txt| grep -q 'SIMGRID_VERSION_PATCH "0"' || (echo "Only run this action on stable source";exit 1)
-          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//')
-          echo "sgversion=$ver" >> $env:GITHUB_ENV
+          sgversion=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//')
+          echo "sgversion=3.$sgversion" >> $env:GITHUB_ENV
           cd tools/docker
           make stable
           docker push --all-tags simgrid/stable
@@ -45,11 +45,12 @@ jobs:
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
           PAYLOAD: |-
             {
-             "color": "#FF0000",
              "channel": "bot-office",
-             "text": "Failure when building STABLE docker v3.${{ env.sgversion }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-             "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
-            }
+             "attachments": [{
+               "color": "#FF0000",
+               "text": "Failure when building STABLE docker v${{ env.sgversion }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+               "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
+            }]}
       - name: Send the success Message
         if: ${{ success() }}
         uses: mattermost/action-mattermost-notify@master
@@ -58,10 +59,11 @@ jobs:
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
           PAYLOAD: |-
             {
-             "color": "#00FF00",
              "channel": "bot-office",
-             "text": "Docker STABLE docker v3.${{ env.sgversion }} built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            }
+             "attachments": [{
+               "color": "#00FF00",
+               "text": "Docker STABLE docker v${{ env.sgversion }} built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }]}
 
   docker-tuto-s4u:
 
@@ -97,11 +99,12 @@ jobs:
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
           PAYLOAD: |-
             {
-             "color": "#FF0000",
              "channel": "bot-office",
-             "text": "Failure when building docker tuto-s4u! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-             "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
-            }
+             "attachments": [{
+               "color": "#FF0000",
+               "text": "Failure when building docker tuto-s4u! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+               "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
+            }]}
       - name: Send the success Message
         if: ${{ success() }}
         uses: mattermost/action-mattermost-notify@master
@@ -110,10 +113,11 @@ jobs:
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
           PAYLOAD: |-
             {
-             "color": "#00FF00",
              "channel": "bot-office",
-             "text": "Docker tuto-s4u built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            }
+             "attachments": [{
+               "color": "#00FF00",
+               "text": "Docker tuto-s4u built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }]}
 
   docker-tuto-smpi:
     # the Dockerfile builds upon the docker-stable image, so add a dependency
@@ -150,11 +154,12 @@ jobs:
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
           PAYLOAD: |-
             {
-             "color": "#FF0000",
              "channel": "bot-office",
-             "text": "Failure when building docker tuto SMPI! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-             "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
-            }
+             "attachments": [{
+               "color": "#FF0000",
+               "text": "Failure when building docker tuto SMPI! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+               "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
+            }]}
       - name: Send the success Message
         if: ${{ success() }}
         uses: mattermost/action-mattermost-notify@master
@@ -163,7 +168,8 @@ jobs:
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
           PAYLOAD: |-
             {
-             "color": "#00FF00",
              "channel": "bot-office",
-             "text": "Docker tuto SMPI built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            }
+             "attachments": [{
+               "color": "#00FF00",
+               "text": "Docker tuto SMPI built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }]}

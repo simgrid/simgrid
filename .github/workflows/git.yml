@@ -1,10 +1,5 @@
 name: Git builds
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 # Only trigger manually
 on: workflow_dispatch
 
@@ -26,7 +21,7 @@ jobs:
       - name: Init options
         run: |
           echo "CC=${{ matrix.config.cc }}"   >> $GITHUB_ENV
-          echo "CXX=${{ matrix.config.cxx }}" >> GITHUB_ENV
+          echo "CXX=${{ matrix.config.cxx }}" >> $GITHUB_ENV
       - name: prepare for ubuntu
         if: matrix.config.os == 'ubuntu'
         run: |
@@ -44,20 +39,33 @@ jobs:
                 -DCMAKE_DISABLE_SOURCE_CHANGES=ON  -DLTO_EXTRA_FLAG="auto" ..
           ninja tests
           ctest --output-on-failure -j$(nproc)
-      - name: Create the failure Message
+      - name: Send the failure message
         if: ${{ failure() }}
-        run: |
-          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when building simgrid on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
-      - name: Create the success Message
+        uses: mattermost/action-mattermost-notify@master
+        with:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
+          PAYLOAD: |-
+            {
+             "channel": "bot-office",
+             "attachments": [{
+               "color": "#FF0000",
+               "text": "Failure when building simgrid on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+               "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
+            }]}
+      - name: Send the success message
         if: ${{ success() }}
-        run: |
-          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"SimGrid built successfully on ${{ matrix.config.name }}! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
-      - uses: komarnitskyi/action-mattermost-notification@v0.1.2-beta
-        if: ${{ always() }}
-        env:
-          webhook: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
-          channel: ${{ secrets.MATTERMOST_CHANNEL}}
-          json: mattermost.json
+        uses: mattermost/action-mattermost-notify@master
+        with:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
+          PAYLOAD: |-
+            {
+             "channel": "bot-office",
+             "attachments": [{
+               "color": "#00FF00",
+               "text": "SimGrid built successfully on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }]}
 
   simgrid-modelcheck-ubuntu:
 
@@ -82,17 +90,30 @@ jobs:
                 -DCMAKE_DISABLE_SOURCE_CHANGES=ON  -DLTO_EXTRA_FLAG="auto" ..
           ninja tests
           ctest --output-on-failure -j$(nproc)
-      - name: Create the failure Message
+      - name: Send the failure message
         if: ${{ failure() }}
-        run: |
-          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when building simgrid Modelchecker on ubuntu-stable! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
-      - name: Create the success Message
+        uses: mattermost/action-mattermost-notify@master
+        with:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
+          PAYLOAD: |-
+            {
+             "channel": "bot-office",
+             "attachments": [{
+               "color": "#FF0000",
+               "text": "Failure when building Modelchecker on ubuntu-stable! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+               "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
+            }]}
+      - name: Send the success message
         if: ${{ success() }}
-        run: |
-          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Simgrid Modelchecker built successfully on ubuntu-stable! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
-      - uses: komarnitskyi/action-mattermost-notification@v0.1.2-beta
-        if: ${{ always() }}
-        env:
-          webhook: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
-          channel: ${{ secrets.MATTERMOST_CHANNEL}}
-          json: mattermost.json
+        uses: mattermost/action-mattermost-notify@master
+        with:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
+          PAYLOAD: |-
+            {
+             "channel": "bot-office",
+             "attachments": [{
+               "color": "#00FF00",
+               "text": "Modelchecker built successfully on ubuntu-stable! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }]}

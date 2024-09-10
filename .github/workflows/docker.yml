@@ -30,7 +30,7 @@ jobs:
           cd tools/docker
           make unstable
           docker push simgrid/unstable
-      - name: Send the failure Message
+      - name: Send the failure message
         if: ${{ failure() }}
         uses: mattermost/action-mattermost-notify@master
         with:
@@ -38,12 +38,13 @@ jobs:
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
           PAYLOAD: |-
             {
-             "color": "#FF0000",
              "channel": "bot-office",
-             "text": "Failure when building docker unstable! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-             "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
-            }
-      - name: Send the success Message
+             "attachments": [{
+               "color": "#FF0000",
+               "text": "Failure when building docker unstable! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+               "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
+            }]}
+      - name: Send the success message
         if: ${{ success() }}
         uses: mattermost/action-mattermost-notify@master
         with:
@@ -51,10 +52,11 @@ jobs:
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
           PAYLOAD: |-
             {
-             "color": "#00FF00",
              "channel": "bot-office",
-             "text": "Docker unstable built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            }
+             "attachments": [{
+               "color": "#00FF00",
+               "text": "Docker unstable built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }]}
 
   docker-tuto-mc:
 
@@ -90,11 +92,12 @@ jobs:
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
           PAYLOAD: |-
             {
-             "color": "#FF0000",
              "channel": "bot-office",
-             "text": "Failure when building docker tuto-mc! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-             "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
-            }
+             "attachments": [{
+               "color": "#FF0000",
+               "text": "Failure when building docker tuto-mc! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+               "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
+            }]}
       - name: Send the success Message
         if: ${{ success() }}
         uses: mattermost/action-mattermost-notify@master
@@ -103,7 +106,8 @@ jobs:
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
           PAYLOAD: |-
             {
-             "color": "#00FF00",
              "channel": "bot-office",
-             "text": "Docker tuto-mc built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            }
+             "attachments": [{
+               "color": "#00FF00",
+               "text": "Docker tuto-mc built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }]}
