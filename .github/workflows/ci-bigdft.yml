@@ -32,7 +32,7 @@ jobs:
           echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"BigDFT successfully built on simgrid/unstable docker image. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
         if: ${{ always() }}
-        env:
+        with:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
 

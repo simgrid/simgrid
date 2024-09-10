@@ -44,7 +44,7 @@ jobs:
         run: |
           echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Docker unstable built and pushed successfully ! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
-        env:
+        with:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
 
@@ -84,7 +84,7 @@ jobs:
         run: |
           echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Docker tuto-mc image built and pushed successfully ! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
-        env:
+        with:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
 
