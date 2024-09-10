@@ -31,4 +31,4 @@ jobs:
         with:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
-
+          PAYLOAD_FILENAME: mattermost.json
