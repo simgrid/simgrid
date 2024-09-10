@@ -39,7 +39,7 @@ jobs:
           PAYLOAD: |-
             {
              "color": "#FF0000",
-             "channel": "robot-office",
+             "channel": "bot-office",
              "text": "Failure when building docker unstable! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
              "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
             }
@@ -52,7 +52,7 @@ jobs:
           PAYLOAD: |-
             {
              "color": "#00FF00",
-             "channel": "robot-office",
+             "channel": "bot-office",
              "text": "Docker unstable built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
 
@@ -91,7 +91,7 @@ jobs:
           PAYLOAD: |-
             {
              "color": "#FF0000",
-             "channel": "robot-office",
+             "channel": "bot-office",
              "text": "Failure when building docker tuto-mc! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
              "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
             }
@@ -104,6 +104,6 @@ jobs:
           PAYLOAD: |-
             {
              "color": "#00FF00",
-             "channel": "robot-office",
+             "channel": "bot-office",
              "text": "Docker tuto-mc built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }

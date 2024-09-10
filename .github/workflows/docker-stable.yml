@@ -46,7 +46,7 @@ jobs:
           PAYLOAD: |-
             {
              "color": "#FF0000",
-             "channel": "robot-office",
+             "channel": "bot-office",
              "text": "Failure when building STABLE docker v3.${{ env.sgversion }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
              "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
             }
@@ -59,7 +59,7 @@ jobs:
           PAYLOAD: |-
             {
              "color": "#00FF00",
-             "channel": "robot-office",
+             "channel": "bot-office",
              "text": "Docker STABLE docker v3.${{ env.sgversion }} built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
             }
 
@@ -98,7 +98,7 @@ jobs:
           PAYLOAD: |-
             {
              "color": "#FF0000",
-             "channel": "robot-office",
+             "channel": "bot-office",
              "text": "Failure when building docker tuto-s4u! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
              "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
             }
@@ -111,7 +111,7 @@ jobs:
           PAYLOAD: |-
             {
              "color": "#00FF00",
-             "channel": "robot-office",
+             "channel": "bot-office",
              "text": "Docker tuto-s4u built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
 
@@ -151,7 +151,7 @@ jobs:
           PAYLOAD: |-
             {
              "color": "#FF0000",
-             "channel": "robot-office",
+             "channel": "bot-office",
              "text": "Failure when building docker tuto SMPI! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
              "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
             }
@@ -164,6 +164,6 @@ jobs:
           PAYLOAD: |-
             {
              "color": "#00FF00",
-             "channel": "robot-office",
+             "channel": "bot-office",
              "text": "Docker tuto SMPI built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
