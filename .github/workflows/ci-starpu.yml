@@ -40,6 +40,6 @@ jobs:
             {
              "color": "#00FF00",
              "channel": "robot-office",
-             "text": "StarPU successfully built on simgrid/unstable docker image! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+             "text": "StarPU successfully built on simgrid/unstable docker image! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
 

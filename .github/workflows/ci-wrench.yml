@@ -41,5 +41,5 @@ jobs:
             {
              "color": "#00FF00",
              "channel": "robot-office",
-             "text": "Wrench's git successfully built on simgrid/unstable docker image! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+             "text": "Wrench's git successfully built on simgrid/unstable docker image! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }

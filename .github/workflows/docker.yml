@@ -1,10 +1,5 @@
 name: Docker unstable
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 on:
   workflow_dispatch:
   schedule:
@@ -58,7 +53,7 @@ jobs:
             {
              "color": "#00FF00",
              "channel": "robot-office",
-             "text": "Docker unstable built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+             "text": "Docker unstable built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
 
   docker-tuto-mc:
@@ -110,5 +105,5 @@ jobs:
             {
              "color": "#00FF00",
              "channel": "robot-office",
-             "text": "Docker tuto-mc built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+             "text": "Docker tuto-mc built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }

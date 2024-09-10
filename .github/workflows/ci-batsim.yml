@@ -41,6 +41,6 @@ jobs:
             {
              "color": "#00FF00",
              "channel": "robot-office",
-             "text": "BatSim successfully built on simgrid/unstable docker image! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+             "text": "BatSim successfully built on simgrid/unstable docker image! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
 

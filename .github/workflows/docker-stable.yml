@@ -112,7 +112,7 @@ jobs:
             {
              "color": "#00FF00",
              "channel": "robot-office",
-             "text": "Docker tuto-s4u built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+             "text": "Docker tuto-s4u built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
 
   docker-tuto-smpi:
@@ -165,5 +165,5 @@ jobs:
             {
              "color": "#00FF00",
              "channel": "robot-office",
-             "text": "Docker tuto SMPI built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+             "text": "Docker tuto SMPI built and pushed successfully! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
