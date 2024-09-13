@@ -74,7 +74,9 @@ void WutState::add_arbitrary_todo()
   auto const [best_actor, _] = this->strategy_->best_transition(false);
   if (best_actor == -1)
     return; // This means that no transitions are enabled at this point
-  xbt_assert(sleep_set_.find(best_actor) == sleep_set_.end(), "Why is a transition in a sleep set not marked as done?");
+  xbt_assert(sleep_set_.find(best_actor) == sleep_set_.end(),
+             "Why is a transition in a sleep set not marked as done? <%s> is in the sleep set",
+             sleep_set_.find(best_actor)->second->to_string().c_str());
   this->strategy_->consider_one(best_actor);
   auto actor_state = get_actors_list().at(best_actor);
   // For each variant of the transition that is enabled, we want to insert the action into the tree.

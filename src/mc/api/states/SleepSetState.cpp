@@ -21,6 +21,8 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state) : Sta
    * it is not explored*/
   for (const auto& [aid, transition] : static_cast<SleepSetState*>(parent_state.get())->get_sleep_set()) {
     if (not get_transition_in()->depends(transition.get())) {
+      XBT_DEBUG("Adding transition Actor %ld:%s to the sleep set from parent state", aid,
+                transition->to_string().c_str());
       sleep_set_.try_emplace(aid, transition);
       if (strategy_->actors_to_run_.count(aid) != 0) {
         strategy_->actors_to_run_.at(aid).mark_done();

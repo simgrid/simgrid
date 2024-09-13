@@ -54,8 +54,22 @@ BFSWutState::BFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutStat
   parent->done_.push_back(incoming_actor);
 
   auto child_node = parent->final_wakeup_tree_.get_node_after_actor(incoming_actor);
-  xbt_assert(child_node != nullptr,
-             "Since this state is created from something, it should exist in its parent final_wakeup_tree! Fix Me");
+  if (child_node == nullptr) {
+    XBT_CRITICAL("Since this state is created from something, it should exist in its parent final_wakeup_tree! Fix Me. "
+                 "I was created from transition %s. Going to display WuT from everyone of this dynastie",
+                 parent->get_transition_out().get()->to_string().c_str());
+
+    auto curr_state = this;
+    while (curr_state != nullptr) {
+      XBT_CRITICAL("Final WuT at state %ld:", curr_state->get_num());
+      XBT_CRITICAL("%s", curr_state->get_string_of_final_wut().c_str());
+      XBT_CRITICAL("Current WuT at state %ld:", curr_state->get_num());
+      XBT_CRITICAL("%s", curr_state->string_of_wut().c_str());
+      curr_state = static_cast<BFSWutState*>(curr_state->get_parent_state());
+    }
+
+    xbt_die("Find the culprit and fix me!");
+  }
   final_wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(child_node);
 
   wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(parent->wakeup_tree_.get_node_after_actor(incoming_actor));
