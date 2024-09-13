@@ -22,13 +22,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_bfswutstate, mc_state,
 
 namespace simgrid::mc {
 
-void BFSWutState::compare_final_and_wut() {
+void BFSWutState::compare_final_and_wut()
+{
 
   xbt_assert(wakeup_tree_.is_contained_in(final_wakeup_tree_), "final_wut: %s\n versus curren wut: %s",
-	     get_string_of_final_wut().c_str(), string_of_wut().c_str());
-
+             get_string_of_final_wut().c_str(), string_of_wut().c_str());
 }
-  
+
 BFSWutState::BFSWutState(RemoteApp& remote_app) : WutState(remote_app)
 {
   aid_t chosen_actor = wakeup_tree_.get_min_single_process_actor().value();
@@ -61,7 +61,7 @@ BFSWutState::BFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutStat
   wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(parent->wakeup_tree_.get_node_after_actor(incoming_actor));
 
   parent->wakeup_tree_.remove_subtree_at_aid(incoming_actor);
-
+  compare_final_and_wut();
   if (not wakeup_tree_.empty())
     // We reach a state that is already guided by a wakeup tree
     // We don't need to worry about initializing it
@@ -80,6 +80,7 @@ BFSWutState::BFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutStat
   for (unsigned times = 0; times < actor_state.get_max_considered(); ++times) {
     final_wakeup_tree_.insert_at_root(actor_state.get_transition(times));
   }
+  compare_final_and_wut();
 }
 
 void BFSWutState::record_child_state(StatePtr child)
@@ -104,16 +105,24 @@ void BFSWutState::unwind_wakeup_tree_from_parent()
   // For each leaf of the parent WuT corresponding to this actor,
   // try to insert the corresponding sequence. If it still correponds to a new
   // possibility, insert it for real in the WuT.
-  for (auto node : *parent->wakeup_tree_.get_node_after_actor(parent->get_transition_out()->aid_)) {
+  for (odpor::WakeupTreeNode* node : *parent->wakeup_tree_.get_node_after_actor(parent->get_transition_out()->aid_)) {
     if (not node->is_leaf())
       continue;
 
-    const odpor::PartialExecution v_prime = final_wakeup_tree_.insert_and_get_inserted_seq(node->get_sequence());
+    XBT_DEBUG("Going to insert sequence from parent to children %s",
+              node->string_of_whole_tree("", false, true).c_str());
+
+    // Remove the aid from the sequence
+    auto v = node->get_sequence();
+    v.pop_front();
+
+    const odpor::PartialExecution v_prime = final_wakeup_tree_.insert_and_get_inserted_seq(v);
     if (not v_prime.empty())
       wakeup_tree_.insert(v_prime);
   }
 
   parent->wakeup_tree_.remove_subtree_at_aid(parent->get_transition_out()->aid_);
+  compare_final_and_wut();
 }
 
 aid_t BFSWutState::next_transition() const
@@ -136,6 +145,8 @@ std::shared_ptr<Transition> BFSWutState::execute_next(aid_t next, RemoteApp& app
   if (children_states_.find(next) != children_states_.end()) {
     outgoing_transition_ = get_actors_list().at(next).get_transition();
     XBT_DEBUG("Found an existing transition for actor %ld", next);
+    outgoing_transition_->replay(app);
+    // TODO: Fix me! Need to add the count for statistics
     return outgoing_transition_;
   }
   return State::execute_next(next, app);
@@ -158,6 +169,11 @@ std::unordered_set<aid_t> BFSWutState::get_sleeping_actors(aid_t after_actor) co
 odpor::PartialExecution BFSWutState::insert_into_final_wakeup_tree(const odpor::PartialExecution& pe)
 {
   return this->final_wakeup_tree_.insert_and_get_inserted_seq(pe);
+}
+
+void BFSWutState::force_insert_into_wakeup_tree(const odpor::PartialExecution& pe)
+{
+  this->wakeup_tree_.force_insert(pe);
 }
 
 } // namespace simgrid::mc
