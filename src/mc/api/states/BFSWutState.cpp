@@ -22,6 +22,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_bfswutstate, mc_state,
 
 namespace simgrid::mc {
 
+void BFSWutState::compare_final_and_wut() {
+
+  xbt_assert(wakeup_tree_.is_contained_in(final_wakeup_tree_), "final_wut: %s\n versus curren wut: %s",
+	     get_string_of_final_wut().c_str(), string_of_wut().c_str());
+
+}
+  
 BFSWutState::BFSWutState(RemoteApp& remote_app) : WutState(remote_app)
 {
   aid_t chosen_actor = wakeup_tree_.get_min_single_process_actor().value();
