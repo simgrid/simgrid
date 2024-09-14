@@ -10,7 +10,7 @@ RUN apt update && apt -y upgrade
 
 # - Clone simgrid-template-s4u, as it is needed by the tutorial
 # - Add an empty makefile advising to run cmake before make, just in case
-RUN apt install -y cmake g++ git libboost-dev libeigen3-dev flex bison libfmt-dev && \
+RUN apt install -y cmake g++ git libboost-dev libfmt-dev valgrind && \
     cd /source && \
     git clone --depth=1 https://framagit.org/simgrid/tutorial-model-checking.git tutorial-model-checking.git && \
     printf "all:\n\t@echo \"Please run the following command before make:\";echo \"    cmake .\"; exit 1" > Makefile && \
