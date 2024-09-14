@@ -88,14 +88,12 @@ In the container, you have access to the following directories of interest:
 - ``/source/simgrid-v???``: Source code of SimGrid, pre-configured in MC mode. The framework is also installed in ``/usr``
   so the source code is only provided for your information.
 
-Lab1: non-deterministic receive
--------------------------------
+Lab1: Dining philosophers
+-------------------------
 
-Motivational example
-^^^^^^^^^^^^^^^^^^^^
-
-Let's go with a first example of a bugged program. Once in the container, copy all files from the tutorial into the directory shared
-between your host computer and the container.
+Let's first explore the behavior of bugged implementation of the `dining philosophers problem
+<https://en.wikipedia.org/wiki/Dining_philosophers_problem>`_. Once in the container, copy all files from the tutorial into the
+directory shared between your host computer and the container.
 
 .. code-block:: console
 
@@ -104,8 +102,338 @@ between your host computer and the container.
   $ cd /source/tutorial/
 
 Several files should have appeared in the ``~/tuto-mcsimgrid`` directory of your computer.
-This tutorial uses `ndet-receive-s4u.cpp <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/ndet-receive-s4u.cpp>`_,
-that uses the :ref:`S4U interface <S4U_doc>` of SimGrid, but we provide a
+This lab uses `philosophers.c <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/philosophers.c>`_
+
+.. toggle-header::
+   :header: Code of ``philosophers.c``: click here to open
+
+   You can also `view it online <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/philosophers.c>`_
+
+   .. literalinclude:: tuto_mc/philosophers.c
+      :language: cpp
+
+|br| 
+The provided code is as simple as possible. It simply declares a ``philosopher_code`` function, representing a philosopher that
+first its left fork and then right fork before eating. This code is obviously wrong: if all philosopher manage to get their left
+fork at the same time, no one will manage to get its right fork (because it's the left fork of someone else), and the execution
+will deadlock. 
+
+Suprisingly, it works when you run it:
+
+.. code-block:: console
+
+   # From within the container, directory /source/tutorial/
+   $ cmake . && make philosophers
+   $ ./philosophers 5 1 # launch 5 philosophers, enabling debug
+   Philosopher 0 just ate.
+   Philosopher 2 just ate.
+   Philosopher 3 just ate.
+   Philosopher 1 just ate.
+   Philosopher 4 just ate.
+   $
+
+The philosophers may well eat in another order in your case, but it is really unlikely that you manage to trigger the bug in
+your first run. Actually, you can probably run the code ten thousands times without triggering the issue.
+
+.. code-block:: console
+
+   # From within the container, directory /source/tutorial/
+   $ for i in `seq 1 10000` ; do echo "XXX Run $i" ; ./philosophers 5 1 ; done
+   (10,000 non-buggy executions -- most likely)
+
+This is exactly what makes debugging multithreaded applications so frustrating. It often happens that even if you know for sure
+that your code is wrong, you fail to trigger the issue with your tests. The second source of frustration comes from the fact
+that when you get an unexpected deadlock in your test, you fail to understand how your application reached that buggy state. And
+if you add any logs to your application, its behavior changes and the bug disappear (such bugs are often called `heisenbugs
+<https://en.wikipedia.org/wiki/Heisenbug>`_). 
+
+Fortunately, SimGrid can catch the bug of such a small program very quickly and provides a large amount of information about the
+bugs it finds. You just have to run your code within the ``simgrid-mc`` program, asking for *sthread* replacement of
+``pthread``.
+
+.. code-block:: console
+
+   # From within the container, directory /source/tutorial/
+   $ simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libsthread.so ./philosophers 5 0
+   (output explained below)
+
+If you get an error such as ``Channel::receive failure: Connection reset by peer``, read further the logs. It's probably that
+the binary does not exist, of that the ``libsthread.so`` library is not under ``/usr/lib/x86_64-linux-gnu/`` on your system. In
+the later case, search its actual location with the following command and update the command line accordingly: 
+``find /usr/lib -name '*sthread.so'``
+
+If simgrid-mc fails with the error ``[root/CRITICAL] Could not wait for the model-checker.``, you need to explicitly add the
+PTRACE capability to your docker. Restart your docker with the additional parameter ``--cap-add SYS_PTRACE``.
+
+Since Mc SimGrid is a software model checker, it exhaustively explores all possible outcomes of your application, so you can
+take for granted that it will find a bug if there is any. If the exploration terminates without finding any bug, then you can be
+reasonably confident that your program is bug-free. It's not a proof either, because Mc SimGrid itself is a complex program
+which may contain bugs itself, preventing it from finding existing bugs in your application. If your program is too large, its
+exhaustive exploration may be too large to be practical. But in our case, Mc SimGrid produces a counter example in one tenth of
+a second:
+
+.. code-block:: console
+
+   [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/setenv' to 'LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libsthread.so'
+   [0.000000] [mc_checkerside/INFO] setenv 'LD_PRELOAD'='/usr/lib/x86_64-linux-gnu/libsthread.so'
+   sthread is intercepting the execution of ./philosophers. If it's not what you want, export STHREAD_IGNORE_BINARY=./philosophers
+   [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+   [0.000000] [mc_global/INFO] **************************
+   [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
+   [0.000000] [mc_global/INFO] **************************
+   (more info omitted)
+
+The first few lines are debug and various informative messages, such as the used version of sthread and the fact that sthread
+successfully intercepts our binary. Then the exploration starts, quickly leading to the deadlock. Then comes the current state
+of the system when the deadlock arises:
+
+.. code-block:: console
+
+   [0.000000] [ker_engine/INFO] 6 actors are still active, awaiting something. Here is their status:
+   [0.000000] [ker_engine/INFO]  - pid 1 (main thread@Lilibeth) simcall ActorJoin(pid:2)
+   [0.000000] [ker_engine/INFO]  - pid 2 (thread 1@Lilibeth) simcall MUTEX_WAIT(mutex_id:1 owner:3)
+   [0.000000] [ker_engine/INFO]  - pid 3 (thread 2@Lilibeth) simcall MUTEX_WAIT(mutex_id:2 owner:4)
+   [0.000000] [ker_engine/INFO]  - pid 4 (thread 3@Lilibeth) simcall MUTEX_WAIT(mutex_id:3 owner:5)
+   [0.000000] [ker_engine/INFO]  - pid 5 (thread 4@Lilibeth) simcall MUTEX_WAIT(mutex_id:4 owner:6)
+   [0.000000] [ker_engine/INFO]  - pid 6 (thread 5@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+
+The main thread of our program (the first one, the one given pid 1 by SimGrid) is waiting in a ``pthread_join`` (SimGrid
+converts it into its internal ActorJoin *simcall* i.e. transition i.e. observed program event). We even learn that this thread
+is trying to join on the thread of pid 2 at that point. We then see the expected loop of locks characterizing the deadlock:
+pid 2 owns mutex 0 and wants mutex 1; pid 3 owns mutex 1 and wants 2; pid 4 owns mutex 2 and wants 3; pid 5 owns mutex 3 and
+wants 4; pid 6 owns mutex 4 and wants 0. That's exactly the bug we were expecting from that code. 
+
+SimGrid then details the execution trace leading to this deadlock.
+
+.. code-block:: console
+
+   [0.000000] [mc_global/INFO] Counter-example execution trace:
+   [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+   [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
+   [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+   [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+   [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_WAIT(mutex: 1, owner: 3)
+   [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+   [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+   [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_WAIT(mutex: 2, owner: 4)
+   [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_ASYNC_LOCK(mutex: 3, owner: 5)
+   [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 3, owner: 5)
+   [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_WAIT(mutex: 3, owner: 5)
+   [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_ASYNC_LOCK(mutex: 4, owner: 6)
+   [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_ASYNC_LOCK(mutex: 4, owner: 6)
+   [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_WAIT(mutex: 4, owner: 6)
+   [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+
+SimGrid execution traces are not that easy to read because the internal events do not perfectly match the API we used. Most
+notably, ``pthread_lock`` is split into two events: ``MUTEX_ASYNC_LOCK`` (where the actor declares it intend to lock the mutex
+without blocking. It puts its name in the waiting list of that mutex) and ``MUTEX_WAIT`` (where it actually blocks until its
+name is becomes the first from that list). When ``MUTEX_ASYNC_LOCK`` appears in the execution trace, it means that this action
+was successfully run by the corresponding actor (intend to wait on the mutex do not appear in the trace, only successful waits
+appear). 
+
+You can read ``MUTEX_ASYNC_LOCK`` as ``pthread_lock_begin`` while ``MUTEX_WAIT`` would be  ``pthread_lock_end``.
+``pthread_unlock`` simply becomes ``MUTEX_UNLOCK``, even if there is no such operation in that execution trace.
+
+With this information and our previous understanding of the issue, we can read the trace as follows:
+
+ - Actor 2 takes mutex 0 (``MUTEX_ASYNC_LOCK`` + ``MUTEX_WAIT``)
+ - Actor 3 declares its intend to take mutex 1 (``MUTEX_ASYNC_LOCK``)
+ - Actor 2 declares its intend to take mutex 1 (``MUTEX_ASYNC_LOCK``)
+
+This is already a dangerous move, as actor 2 is the owner of mutex 0 and wants the mutex 1, that is owned by actor 3 that will
+need the mutex 2 to release the mutex 1. But the deadlock is not granted yet, as nobody owns mutex 2 yet, so actor 3 could still
+get it. When exactly does the trap close in on our threads?
+
+If we read the output further, SimGrid displays the critical transition, which is the first transition after which no valid
+execution exist. Before that critical transition, some possible executions still manage to avoid any issue, but after that
+transition all executions are buggy.
+
+.. code-block:: console
+
+   [0.000000] [mc_ct/INFO] *********************************
+   [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
+   [0.000000] [mc_ct/INFO] *********************************
+   [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
+   [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+   [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 2)
+   [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+   [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+   [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_WAIT(mutex: 1, owner: 3)
+   [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+   [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+   [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: MUTEX_WAIT(mutex: 2, owner: 4)
+   [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+   [0.000000] [mc_ct/INFO] Found the critical transition: Actor 4 ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)   
+
+Once the actor 4 becomes the owner of mutex 2 while any other philosopher owns a mutex, the deadlock becomes inevitable.
+
+Before that critical transition, SimGrid displays some information on how to reproduce the bug out of the model checker as well as additional statistics.
+
+.. code-block:: console
+
+   [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc 
+                                with --cfg=model-check/replay:'2;2;3;2;3;4;3;4;4'
+   [0.000000] [mc_dfs/INFO] DFS exploration ended. 57 unique states visited; 3 explored traces (16 transition replays, 73 states visited overall)
+
+As stated in the first message, you can rerun the faulty execution trace directly with the given extra parameter. This can be
+useful to run that execution within valgrind, you probably don't want to slow down your application with valgrind while running
+the time consuming model checker. But the real advantage of that command is that SimGrid provides much more information when
+replaying a given trace. As you can see below, that's probably more information than you could dream of. 
+
+Please notice how the program is run out of ``simgrid-mc`` (which binary disappeared from the following command line), but with
+*sthread* directly injected through ``LD_PRELOAD``. If you need to run extra tools such as ``bash`` or ``valgrind``, you
+probably want to use ``STHREAD_IGNORE_BINARY`` to instruct *sthread* to not intercept them.
+
+.. code-block:: console
+
+   $ LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libsthread.so ./philosophers 5 0 --cfg=model-check/replay:'2;2;3;2;3;4;3;4;4'
+   sthread is intercepting the execution of ./philosophers. If it's not what you want, export STHREAD_IGNORE_BINARY=./philosophers
+   [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/replay' to '2;2;3;2;3;4;3;4;4'
+   [0.000000] [mc_record/INFO] path=2;2;3;2;3;4;3;4;4
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #1 '2/0' Actor thread 1(pid:2): MUTEX_ASYNC_LOCK(mutex_id:0 owner:none)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 1):
+     ->  #0 xbt_backtrace_display_current at /src/xbt/backtrace.cpp:31
+     ->  #1 simcall_run_answered(std::function<void ()> const&, simgrid::kernel::actor::SimcallObserver*) at /src/kernel/actor/Simcall.cpp:67
+     ->  #2 simgrid::s4u::Mutex::lock() at /src/s4u/s4u_Mutex.cpp:24
+     ->  #3 sthread_mutex_lock at /src/sthread/sthread_impl.cpp:223
+     ->  #4 pthread_mutex_lock at /usr/include/pthread.h:738
+     ->  #5 philosopher_code at /source/tutorial/philosophers.c:19
+     ->  #6 std::_Function_handler<void (), std::_Bind<sthread_create::{lambda(auto:1*, auto:2*)#1} (void* (*)(sthread_create::{lambda(auto:1*, auto:2*)#1}), sthread_create::{lambda(auto:1*, auto:2*)#1})> >::_M_invoke(std::_Any_data const&) at /usr/include/c++/10/bits/std_function.h:293
+     ->  #7 smx_ctx_wrapper at /src/kernel/context/ContextSwapped.cpp:43
+
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #2 '2/0' Actor thread 1(pid:2): MUTEX_WAIT(mutex_id:0 owner:2)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 1):
+     ->  #0 xbt_backtrace_display_current at /src/xbt/backtrace.cpp:31
+     ->  #1 simcall_run_blocking(std::function<void ()> const&, simgrid::kernel::actor::SimcallObserver*) at /src/kernel/actor/Simcall.cpp:74
+     ->  #2 simgrid::s4u::Mutex::lock() at /src/s4u/s4u_Mutex.cpp:28
+     ->  #3 sthread_mutex_lock at /src/sthread/sthread_impl.cpp:223
+     ->  #4 pthread_mutex_lock at /usr/include/pthread.h:738
+     ->  #5 philosopher_code at /source/tutorial/philosophers.c:19
+     ->  #6 std::_Function_handler<void (), std::_Bind<sthread_create::{lambda(auto:1*, auto:2*)#1} (void* (*)(sthread_create::{lambda(auto:1*, auto:2*)#1}), sthread_create::{lambda(auto:1*, auto:2*)#1})> >::_M_invoke(std::_Any_data const&) at /usr/include/c++/10/bits/std_function.h:293
+     ->  #7 smx_ctx_wrapper at /src/kernel/context/ContextSwapped.cpp:43
+
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #3 '3/0' Actor thread 2(pid:3): MUTEX_ASYNC_LOCK(mutex_id:1 owner:none)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 2):
+     ->  #0 xbt_backtrace_display_current at /src/xbt/backtrace.cpp:31
+     ->  #1 simcall_run_answered(std::function<void ()> const&, simgrid::kernel::actor::SimcallObserver*) at /src/kernel/actor/Simcall.cpp:67
+     ->  #2 simgrid::s4u::Mutex::lock() at /src/s4u/s4u_Mutex.cpp:24
+     ->  #3 sthread_mutex_lock at /src/sthread/sthread_impl.cpp:223
+     ->  #4 pthread_mutex_lock at /usr/include/pthread.h:738
+     ->  #5 philosopher_code at /source/tutorial/philosophers.c:19
+     ->  #6 std::_Function_handler<void (), std::_Bind<sthread_create::{lambda(auto:1*, auto:2*)#1} (void* (*)(sthread_create::{lambda(auto:1*, auto:2*)#1}), sthread_create::{lambda(auto:1*, auto:2*)#1})> >::_M_invoke(std::_Any_data const&) at /usr/include/c++/10/bits/std_function.h:293
+     ->  #7 smx_ctx_wrapper at /src/kernel/context/ContextSwapped.cpp:43
+
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #4 '2/0' Actor thread 1(pid:2): MUTEX_ASYNC_LOCK(mutex_id:1 owner:3)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 1):
+     ->  #0 xbt_backtrace_display_current at /src/xbt/backtrace.cpp:31
+     ->  #1 simcall_run_answered(std::function<void ()> const&, simgrid::kernel::actor::SimcallObserver*) at /src/kernel/actor/Simcall.cpp:67
+     ->  #2 simgrid::s4u::Mutex::lock() at /src/s4u/s4u_Mutex.cpp:24
+     ->  #3 sthread_mutex_lock at /src/sthread/sthread_impl.cpp:223
+     ->  #4 pthread_mutex_lock at /usr/include/pthread.h:738
+     ->  #5 philosopher_code at /source/tutorial/philosophers.c:21
+     ->  #6 std::_Function_handler<void (), std::_Bind<sthread_create::{lambda(auto:1*, auto:2*)#1} (void* (*)(sthread_create::{lambda(auto:1*, auto:2*)#1}), sthread_create::{lambda(auto:1*, auto:2*)#1})> >::_M_invoke(std::_Any_data const&) at /usr/include/c++/10/bits/std_function.h:293
+     ->  #7 smx_ctx_wrapper at /src/kernel/context/ContextSwapped.cpp:43
+
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #5 '3/0' Actor thread 2(pid:3): MUTEX_WAIT(mutex_id:1 owner:3)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 2):
+     ->  #0 xbt_backtrace_display_current at /src/xbt/backtrace.cpp:31
+     ->  #1 simcall_run_blocking(std::function<void ()> const&, simgrid::kernel::actor::SimcallObserver*) at /src/kernel/actor/Simcall.cpp:74
+     ->  #2 simgrid::s4u::Mutex::lock() at /src/s4u/s4u_Mutex.cpp:28
+     ->  #3 sthread_mutex_lock at /src/sthread/sthread_impl.cpp:223
+     ->  #4 pthread_mutex_lock at /usr/include/pthread.h:738
+     ->  #5 philosopher_code at /source/tutorial/philosophers.c:19
+     ->  #6 std::_Function_handler<void (), std::_Bind<sthread_create::{lambda(auto:1*, auto:2*)#1} (void* (*)(sthread_create::{lambda(auto:1*, auto:2*)#1}), sthread_create::{lambda(auto:1*, auto:2*)#1})> >::_M_invoke(std::_Any_data const&) at /usr/include/c++/10/bits/std_function.h:293
+     ->  #7 smx_ctx_wrapper at /src/kernel/context/ContextSwapped.cpp:43
+
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #6 '4/0' Actor thread 3(pid:4): MUTEX_ASYNC_LOCK(mutex_id:2 owner:none)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 3):
+     ->  #0 xbt_backtrace_display_current at /src/xbt/backtrace.cpp:31
+     ->  #1 simcall_run_answered(std::function<void ()> const&, simgrid::kernel::actor::SimcallObserver*) at /src/kernel/actor/Simcall.cpp:67
+     ->  #2 simgrid::s4u::Mutex::lock() at /src/s4u/s4u_Mutex.cpp:24
+     ->  #3 sthread_mutex_lock at /src/sthread/sthread_impl.cpp:223
+     ->  #4 pthread_mutex_lock at /usr/include/pthread.h:738
+     ->  #5 philosopher_code at /source/tutorial/philosophers.c:19
+     ->  #6 std::_Function_handler<void (), std::_Bind<sthread_create::{lambda(auto:1*, auto:2*)#1} (void* (*)(sthread_create::{lambda(auto:1*, auto:2*)#1}), sthread_create::{lambda(auto:1*, auto:2*)#1})> >::_M_invoke(std::_Any_data const&) at /usr/include/c++/10/bits/std_function.h:293
+     ->  #7 smx_ctx_wrapper at /src/kernel/context/ContextSwapped.cpp:43
+
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #7 '3/0' Actor thread 2(pid:3): MUTEX_ASYNC_LOCK(mutex_id:2 owner:4)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 2):
+     ->  #0 xbt_backtrace_display_current at /src/xbt/backtrace.cpp:31
+     ->  #1 simcall_run_answered(std::function<void ()> const&, simgrid::kernel::actor::SimcallObserver*) at /src/kernel/actor/Simcall.cpp:67
+     ->  #2 simgrid::s4u::Mutex::lock() at /src/s4u/s4u_Mutex.cpp:24
+     ->  #3 sthread_mutex_lock at /src/sthread/sthread_impl.cpp:223
+     ->  #4 pthread_mutex_lock at /usr/include/pthread.h:738
+     ->  #5 philosopher_code at /source/tutorial/philosophers.c:21
+     ->  #6 std::_Function_handler<void (), std::_Bind<sthread_create::{lambda(auto:1*, auto:2*)#1} (void* (*)(sthread_create::{lambda(auto:1*, auto:2*)#1}), sthread_create::{lambda(auto:1*, auto:2*)#1})> >::_M_invoke(std::_Any_data const&) at /usr/include/c++/10/bits/std_function.h:293
+     ->  #7 smx_ctx_wrapper at /src/kernel/context/ContextSwapped.cpp:43
+
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #8 '4/0' Actor thread 3(pid:4): MUTEX_WAIT(mutex_id:2 owner:4)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 3):
+     ->  #0 xbt_backtrace_display_current at /src/xbt/backtrace.cpp:31
+     ->  #1 simcall_run_blocking(std::function<void ()> const&, simgrid::kernel::actor::SimcallObserver*) at /src/kernel/actor/Simcall.cpp:74
+     ->  #2 simgrid::s4u::Mutex::lock() at /src/s4u/s4u_Mutex.cpp:28
+     ->  #3 sthread_mutex_lock at /src/sthread/sthread_impl.cpp:223
+     ->  #4 pthread_mutex_lock at /usr/include/pthread.h:738
+     ->  #5 philosopher_code at /source/tutorial/philosophers.c:19
+     ->  #6 std::_Function_handler<void (), std::_Bind<sthread_create::{lambda(auto:1*, auto:2*)#1} (void* (*)(sthread_create::{lambda(auto:1*, auto:2*)#1}), sthread_create::{lambda(auto:1*, auto:2*)#1})> >::_M_invoke(std::_Any_data const&) at /usr/include/c++/10/bits/std_function.h:293
+     ->  #7 smx_ctx_wrapper at /src/kernel/context/ContextSwapped.cpp:43
+
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #9 '4/0' Actor thread 3(pid:4): MUTEX_ASYNC_LOCK(mutex_id:3 owner:none)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   Backtrace (displayed in actor thread 3):
+     ->  #0 xbt_backtrace_display_current at /src/xbt/backtrace.cpp:31
+     ->  #1 simcall_run_answered(std::function<void ()> const&, simgrid::kernel::actor::SimcallObserver*) at /src/kernel/actor/Simcall.cpp:67
+     ->  #2 simgrid::s4u::Mutex::lock() at /src/s4u/s4u_Mutex.cpp:24
+     ->  #3 sthread_mutex_lock at /src/sthread/sthread_impl.cpp:223
+     ->  #4 pthread_mutex_lock at /usr/include/pthread.h:738
+     ->  #5 philosopher_code at /source/tutorial/philosophers.c:21
+     ->  #6 std::_Function_handler<void (), std::_Bind<sthread_create::{lambda(auto:1*, auto:2*)#1} (void* (*)(sthread_create::{lambda(auto:1*, auto:2*)#1}), sthread_create::{lambda(auto:1*, auto:2*)#1})> >::_M_invoke(std::_Any_data const&) at /usr/include/c++/10/bits/std_function.h:293
+     ->  #7 smx_ctx_wrapper at /src/kernel/context/ContextSwapped.cpp:43
+
+   [0.000000] [mc_record/INFO] The replay of the trace is complete. The application could run further.
+   [0.000000] [sthread/INFO] All threads exited. Terminating the simulation.
+   [0.000000] /src/kernel/EngineImpl.cpp:275: [ker_engine/WARNING] Process called exit when leaving - Skipping cleanups
+   [0.000000] /src/kernel/EngineImpl.cpp:275: [ker_engine/WARNING] Process called exit when leaving - Skipping cleanups
+
+We hope this tool proves useful for debugging your multithreaded code. We encourage you to share your feedback, whether positive
+or negative. Additionally, we would appreciate learning about any bugs you have identified using this tool. Our team will strive
+to address any challenges you encounter while working with Mc SimGrid.
+
+Lab2: non-deterministic receive (S4U or MPI)
+--------------------------------------------
+
+Motivational example
+^^^^^^^^^^^^^^^^^^^^
+
+Let's go with another example of a bugged program, this time using message passing in a distributed setting. Once in the
+container, copy all files from the tutorial into the directory shared between your host computer and the container.
+
+.. code-block:: console
+
+  # From within the container
+  $ cp -r /source/tutorial-model-checking.git/* /source/tutorial/
+  $ cd /source/tutorial/
+
+Several files should have appeared in the ``~/tuto-mcsimgrid`` directory of your computer.
+This lab uses `ndet-receive-s4u.cpp <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/ndet-receive-s4u.cpp>`_,
+that relies the :ref:`S4U interface <S4U_doc>` of SimGrid, but we provide a
 `MPI version <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/ndet-receive-mpi.cpp>`_
 if you prefer (see below for details on using the MPI version).
 
