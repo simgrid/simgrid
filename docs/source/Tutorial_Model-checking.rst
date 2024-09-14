@@ -1,60 +1,61 @@
 .. _usecase_modelchecking:
 
-Formal Verification and Model-checking
+Formal Verification and Model checking
 ======================================
 
-SimGrid can not only predict the performance of your application, but also assess its correctness through formal methods. Mc SimGrid is
-a full-featured model-checker that is embedded in the SimGrid framework. It can be used to formally verify safety 
-properties on codes running on top of SimGrid, be it :ref:`simple algorithms <usecase_simalgo>` or :ref:`full MPI applications
-<usecase_smpi>`.
+SimGrid can not only predict the performance of your application, but also assess its correctness through formal methods. Mc
+SimGrid is a full-featured model-checker that is embedded in the SimGrid framework. It can be used to formally verify safety
+properties on codes running on top of SimGrid, be them classical pthread applications, :ref:`simple algorithms
+<usecase_simalgo>`, or :ref:`full MPI applications <usecase_smpi>`.
 
 Primer on formal methods
 ------------------------
 
 Formal methods are techniques leveraging mathematics to test and assess systems. They are routinely used to assess computer hardware,
-transportation systems or any other complex engineering process. Among these methods, model-checking is a technique to automatically
+transportation systems or any other complex engineering process. Among these methods, model checking is a technique to automatically
 prove that a given model verifies a given property by systematically checking all states of the model. The property and model are
 written in a mathematical language and fed to an automated tool called model checker. When the model does not verify the property, the
 model checker gives a counter-example that can be used to refine and improve the model. Conversely, if no counter-example can be found
 after an exhaustive exploration of the model, we know that the property holds for the model. It may also happen that the model is too
-large to be exhaustively explored, in which case the model-checker is not conclusive. Model checkers rely on so-called reduction
+large to be exhaustively explored, in which case the model checker is not conclusive. Model checkers rely on so-called reduction
 techniques (based on symmetries and equivalence) to efficiently explore the system state.
 
-Dynamic verification applies similar ideas to programs, without requiring a mathematical model of the system. Instead, the program
-itself is used as a model to verify against a property. Along these lines, Mc SimGrid is a stateful model checker: it does not leverage
-static analysis nor symbolic execution. Instead, the program is simply executed through all possible outcomes. On indecision points, a
-system checkpoint is taken, the first branch is executed exhaustively, and then the system is roll back to that point to explore the
-other branch.
+Software model checking applies similar ideas to programs, without requiring a mathematical model of the system. Instead, the
+program itself is used as a model to verify against a property. Along these lines, Mc SimGrid is a stateless model checker: it
+does not leverage static analysis nor symbolic execution. Instead, the program is simply executed through all possible outcomes.
+On indecision points, the application is forked (in the UNIX meaning), the first branch is executed exhaustively, and then the
+other fork of the system is used to explore the other execution branch.
 
 Mc SimGrid targets distributed applications that interact through message passing or through synchronization mechanisms (mutex,
 barrier, etc). Since it does not explicitly observe memory accesses, Mc SimGrid cannot automatically detect race conditions in
 multithreaded programs. It can however be used to detect misuses of the synchronization functions, such as the ones resulting in
 deadlocks.
 
-Mc SimGrid can be used to verify classical `safety properties <https://en.wikipedia.org/wiki/Linear_time_property>`_, but
-also `communication determinism <https://hal.inria.fr/hal-01953167/document>`_, a property that allows more efficient solutions toward
-fault-tolerance. It can alleviate the state space explosion problem through `Dynamic Partial Ordering Reduction (DPOR)
-<https://en.wikipedia.org/wiki/Partial_order_reduction>`_ and `state equality <https://hal.inria.fr/hal-01900120/document>`_. Note that
-Mc SimGrid is currently less mature than other parts of the framework, but it improves every month. Please report any question and
-issue so that we can further improve it.
+Mc SimGrid can be used to verify classical `safety properties <https://en.wikipedia.org/wiki/Linear_time_property>`_, but also
+`communication determinism <https://hal.inria.fr/hal-01953167/document>`_, a property that allows more efficient solutions
+toward fault-tolerance. It can alleviate the state space explosion problem through several variants of `Dynamic Partial Ordering
+Reduction (DPOR) <https://en.wikipedia.org/wiki/Partial_order_reduction>`_. Note that Mc SimGrid is currently less mature than
+other parts of the framework, but it improves every month. Please report any question and issue so that we can further improve
+it.
 
 Limits
 ^^^^^^
 
-The main limit of Model Checking lies in the huge amount of scenarios to explore. SimGrid tries to explore only non-redundant
-scenarios thanks to classical reduction techniques (such as DPOR and stateful exploration) but the exploration may well never
-finish if you don't carefully adapt your application to this mode.
+The main theoretical limit of the SimGrid model checker is that it does not observe memory accesses, which makes it
+inappropriate to the detection of memory race conditions and other bugs that can only be observed for specific ordering of the
+memory read and write events. 
 
-A classical trap is that the Model Checker can only verify whether your application fits the properties provided, which is
+The main practical limit lies in the huge amount of scenarios to explore. SimGrid tries to explore only non-redundant scenarios
+thanks to classical reduction techniques (such as DPOR) but the exploration may well never finish if you don't carefully adapt
+your application to this mode. The amount of event interleavings to explore grows exponentially with the amount of actors and
+amount of events in eact actor's history. Keep your program small to fully explore your scenarios.
+
+A classical trap is that the model checker can only verify whether your application fits the properties provided, which is
 useless if you have a bug in your property. Remember also that one way for your application to never violate a given assertion
 is to not start at all, because of a stupid bug.
 
-Another limit of this mode is that it does not use the performance models of the simulation mode. Time becomes discrete: You can
-say for example that the application took 42 steps to run, but there is no way to know how much time it took or the number of
-watts that were dissipated.
-
-Finally, the model checker only explores the interleavings of computations and communications. Other factors such as thread
-execution interleaving are not considered by the SimGrid model checker.
+Another limit of this mode is that time becomes discrete in the model checker: You can say for example that the application took
+42 steps to run, but there is no way to know how much time it took or the number of watts that were dissipated.
 
 The model checker may well miss existing issues, as it computes the possible outcomes *from a given initial situation*. There is
 no way to prove the correctness of your application in full generality with this tool.
@@ -62,12 +63,15 @@ no way to prove the correctness of your application in full generality with this
 Getting Mc SimGrid
 ------------------
 
-It is included in the SimGrid source code, but it is not compiled in by default as it induces a small performance overhead to the
-simulations. It is also not activated in the Debian package, nor in the Python binary distributions. If you just plan to
-experiment with Mc SimGrid, the easiest is to get the corresponding docker image. On the long term, you probably want to install it on
-your machine: it works out of the box on Linux, Windows (with WSL2) and FreeBSD. Simply request it from cmake (``cmake
--Denable_model-checking .``) and then compile SimGrid :ref:`as usual <install_src>`. Unfortunately, Mc SimGrid does not work natively
-on Mac OS X yet, so mac users should stick to the docker method for now.
+The model checker is included in the SimGrid source code, and it's compiled by default if all dependencies are found. It's also
+activated in the Debian package since v3.36-2. If your precompiled version of SimGrid lacks support for the model checker, you
+could build SimGrid from source. Simply request it from cmake (``cmake -Denable_model-checking .``) and then compile SimGrid
+:ref:`as usual <install_src>`. It should work out of the box on all major systems (Linux, FreeBSD, Windows with WSL, or Mac OS
+X). Double check the value of the ``SIMGRID_HAVE_MC`` in the generated file ``include/simgrid/config.h``. If it's not defined to
+1, read the configuration logs to understand why the model checker was not compiled in, and try again. Usually, it's because the
+``libevent-dev`` package is missing on the system.
+
+Another approach is to use a docker image as follows.
 
 .. code-block:: console
 
@@ -80,8 +84,8 @@ In the container, you have access to the following directories of interest:
 - ``/source/tutorial``: A view to the ``~/tuto-mcsimgrid`` directory on your disk, out of the container.
   Edit the files you want from your computer and save them in ``~/tuto-mcsimgrid``;
   Compile and use them immediately within the container in ``/source/tutorial``.
-- ``/source/tuto-mc.git``: Files provided with this tutorial.
-- ``/source/simgrid.git``: Source code of SimGrid, pre-configured in MC mode. The framework is also installed in ``/usr``
+- ``/source/tutorial-model-checking.git``: Files provided with this tutorial.
+- ``/source/simgrid-v???``: Source code of SimGrid, pre-configured in MC mode. The framework is also installed in ``/usr``
   so the source code is only provided for your information.
 
 Lab1: non-deterministic receive
@@ -96,7 +100,7 @@ between your host computer and the container.
 .. code-block:: console
 
   # From within the container
-  $ cp -r /source/tuto-mc.git/* /source/tutorial/
+  $ cp -r /source/tutorial-model-checking.git/* /source/tutorial/
   $ cd /source/tutorial/
 
 Several files should have appeared in the ``~/tuto-mcsimgrid`` directory of your computer.
@@ -134,9 +138,9 @@ If you compile and run it, it simply works:
 Running and understanding Mc SimGrid
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you think of it, that's weird that this code works: all the messages are sent at the exact same time (t=0), so there is no reason for
+If you think about it, that's weird that this code works: all the messages are sent at the exact same time (t=0), so there is no reason for
 the message ``3`` to arrive last. Depending on the link speed, any order should be possible. To trigger the bug, you could fiddle with the
-source code and/or the platform file, but this is not a method. Time to start Mc SimGrid, the SimGrid model checker, to exhaustively test
+source code and/or the platform file, but this is not a method. It's time to start Mc SimGrid, the SimGrid model checker, to exhaustively test
 all message orders. For that, you simply launch your simulation as a parameter to the ``simgrid-mc`` binary as you would do with ``valgrind``:
 
 .. code-block:: console
@@ -160,16 +164,10 @@ now read it together. It can be split in several parts:
 
     .. code-block:: console
 
-       [0.000000] [mc_safety/INFO] Check a safety property. Reduction is: dpor.
        [Jupiter:client:(2) 0.000000] [example/INFO] Sending 1
        [Bourassa:client:(3) 0.000000] [example/INFO] Sending 2
        [Ginette:client:(4) 0.000000] [example/INFO] Sending 3
-       [Jupiter:client:(2) 0.000000] [example/INFO] Sent!
-       [Bourassa:client:(3) 0.000000] [example/INFO] Sent!
-       [Tremblay:server:(1) 0.000000] [example/INFO] OK
-       [Ginette:client:(4) 0.000000] [example/INFO] Sent!
-       [Jupiter:client:(2) 0.000000] [example/INFO] Sent!
-       [Bourassa:client:(3) 0.000000] [example/INFO] Sent!
+       [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
        [Jupiter:client:(2) 0.000000] [example/INFO] Sent!
        [Bourassa:client:(3) 0.000000] [example/INFO] Sent!
        [Tremblay:server:(1) 0.000000] [example/INFO] OK
@@ -185,8 +183,9 @@ now read it together. It can be split in several parts:
 
        [Tremblay:server:(1) 0.000000] /source/tutorial/ndet-receive-s4u.cpp:27: [root/CRITICAL] Assertion value_got == 3 failed
        Backtrace (displayed in actor server):
-         ->  0# xbt_backtrace_display_current at /source/simgrid.git/src/xbt/backtrace.cpp:30
-         ->  1# server() at /source/tutorial/ndet-receive-s4u.cpp:27
+         ->  #0 xbt_backtrace_display_current at /src/xbt/backtrace.cpp:31
+         ->  #1 server() in ./ndet-receive-s4u
+         (uninformative frames omitted)
 
 -  After that comes a lot of information from the model-checker.
 
@@ -203,30 +202,31 @@ now read it together. It can be split in several parts:
 
   - An execution trace is then given, listing all the actions that led to that faulty execution. This is not easy to read, because the API
     calls we made (put/get) are split in atomic calls (iSend+Wait/iRecv+Wait), and all executions are interleaved. Also, Mc SimGrid
-    reports the first faulty execution it finds: it may not be the shorter possible one.
+    reports the first faulty execution it finds: it may not be the shorter one.
 
     .. code-block:: console
 
-       [0.000000] [mc_ModelChecker/INFO] Counter-example execution trace:
-       [0.000000] [mc_ModelChecker/INFO]   1: iRecv(mbox=0)
-       [0.000000] [mc_ModelChecker/INFO]   2: iSend(mbox=0)
-       [0.000000] [mc_ModelChecker/INFO]   1: WaitComm(from 2 to 1, mbox=0, no timeout)
-       [0.000000] [mc_ModelChecker/INFO]   1: iRecv(mbox=0)
-       [0.000000] [mc_ModelChecker/INFO]   2: WaitComm(from 2 to 1, mbox=0, no timeout)
-       [0.000000] [mc_ModelChecker/INFO]   4: iSend(mbox=0)
-       [0.000000] [mc_ModelChecker/INFO]   1: WaitComm(from 4 to 1, mbox=0, no timeout)
-       [0.000000] [mc_ModelChecker/INFO]   1: iRecv(mbox=0)
-       [0.000000] [mc_ModelChecker/INFO]   3: iSend(mbox=0)
-       [0.000000] [mc_ModelChecker/INFO]   1: WaitComm(from 3 to 1, mbox=0, no timeout)
+       [0.000000] [mc_explo/INFO] Counter-example execution trace:
+       [0.000000] [mc_explo/INFO]   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
+       [0.000000] [mc_explo/INFO]   Actor 2 in Isend ==> simcall: iSend(mbox=0)
+       [0.000000] [mc_explo/INFO]   Actor 1 in Wait ==> simcall: WaitComm(from 2 to 1, mbox=0, no timeout)
+       [0.000000] [mc_explo/INFO]   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
+       [0.000000] [mc_explo/INFO]   Actor 2 in Wait ==> simcall: WaitComm(from 2 to 1, mbox=0, no timeout)
+       [0.000000] [mc_explo/INFO]   Actor 4 in Isend ==> simcall: iSend(mbox=0)
+       [0.000000] [mc_explo/INFO]   Actor 1 in Wait ==> simcall: WaitComm(from 4 to 1, mbox=0, no timeout)
+       [0.000000] [mc_explo/INFO]   Actor 1 in Irecv ==> simcall: iRecv(mbox=0)
+       [0.000000] [mc_explo/INFO]   Actor 3 in Isend ==> simcall: iSend(mbox=0)
+       [0.000000] [mc_explo/INFO]   Actor 1 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout)
 
   - Then, the execution path is given.
 
     .. code-block:: console
 
-       [0.000000] [mc_record/INFO] Path = 1;2;1;1;2;4;1;1;3;1
+       [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out 
+                                  of simgrid-mc with --cfg=model-check/replay:'1;2;1;1;2;4;1;1;3;1'
 
     This is the magical string (here: ``1;2;1;1;2;4;1;1;3;1``) that you should pass to your simulator to follow the same execution path
-    without ``simgrid-mc``. This is because ``simgrid-mc`` forbids to use a debugger such as gdb or valgrind on the code during the
+    without ``simgrid-mc``. This is because ``simgrid-mc`` may hinder the use of a debugger such as gdb or valgrind on the code during the
     model-checking. For example, you can trigger the same execution in valgrind as follows:
 
     .. code-block:: console
@@ -252,16 +252,34 @@ now read it together. It can be split in several parts:
        ==402==    by 0x10C696: server() (ndet-receive-s4u.cpp:27)
        (more valgrind output ignored)
 
-  - Then, Mc SimGrid displays some statistics about the amount of expanded states (the unique states in which your program was at a given
-    point of the exploration), the visited states (the amount of times we visited another state -- the same state may have been visited
-    several times) and the amount of transitions.
+  - Then, Mc SimGrid displays some statistics about the amount of states and traces visited to find this bug.
 
     .. code-block:: console
 
-       [0.000000] [mc_dfs/INFO] DFS exploration ended. 22 unique states visited; 4 backtracks (56 transition replays, 30 states visited overall)
+       [0.000000] [mc_dfs/INFO] DFS exploration ended. 19 unique states visited; 1 explored traces (12 transition replays, 31 states visited overall)
 
-  - Finally, the application stack trace is displayed as the model-checker sees it. It should be the same as the one displayed from the
-    application side, unless you found a bug our tools.
+  - Finally, the model checker searches for the critical transition, that is, the execution step afer which the problem becomes
+    unavoidable. Before that transition, some executions manage to avoid any issue and reach a non-faulty program execution,
+    while after that transition, only faulty executions can be reached. We believe that this information could help you to
+    better understand the issue, and we would love to hear what you think about this feature.
+
+    .. code-block:: console
+
+       [0.000000] [mc_ct/INFO] *********************************
+       [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
+       [0.000000] [mc_ct/INFO] *********************************
+       [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
+       [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in Irecv ==> simcall: iRecv(mbox=0, comm=1, tag=0))
+       [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in Isend ==> simcall: iSend(mbox=0, comm=1, tag=0)
+       [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in Wait ==> simcall: WaitComm(from 2 to 1, mbox=0, no timeout, comm=1)
+       [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in Irecv ==> simcall: iRecv(mbox=0, comm=3, tag=0))
+       [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in Wait ==> simcall: WaitComm(from 2 to 1, mbox=0, no timeout, comm=1)
+       [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 4 in Isend ==> simcall: iSend(mbox=0, comm=3, tag=0)
+       [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in Wait ==> simcall: WaitComm(from 4 to 1, mbox=0, no timeout, comm=3)
+       [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in Irecv ==> simcall: iRecv(mbox=0, comm=5, tag=0))
+       [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in Isend ==> simcall: iSend(mbox=0, comm=5, tag=0)
+       [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout, comm=5)
+       [0.000000] [mc_ct/INFO] Found the critical transition: Actor 4 ==> simcall: iSend(mbox=0, comm=3, tag=0)
 
 Using MPI instead of S4U
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -305,9 +323,9 @@ Under the hood
 
 If you want to run such analysis on your own code, out of the provided docker, there is some steps that you should take.
 
-- SimGrid should naturally :ref:`be compiled <install_src>` with model-checking support. This requires a full set of dependencies
-  (documented on the :ref:`relevant page <install_src>`) and should not be activated by default as there is a small performance penalty for
-  codes using a SimGrid with MC enabled (even if you don't activate the model-checking at run time).
+- SimGrid should naturally :ref:`be compiled <install_src>` with model-checking support. This requires some extra dependencies
+  (documented on the :ref:`relevant page <install_src>`). Old versions of the SimGrid model checker used to induce a small performance penalty
+  when complied in, but this is not true anymore. You can now safely activate the model checker.
 - Also install ``libboost-stacktrace-dev`` to display nice backtraces from the application side (the one from the model-checking side is
   available in any case, but it contains less details).
 - Mc SimGrid uses the ``ptrace`` system call to spy on the verified application. Some versions of Docker forbid the use of this call by
@@ -318,13 +336,10 @@ If you want to run such analysis on your own code, out of the provided docker, t
 Going further
 -------------
 
-This tutorial is not complete yet, as there is nothing on reduction
-techniques. For now, the best source of
-information on these topics is `this old tutorial
-<https://simgrid.org/tutorials/simgrid-mc-101.pdf>`_ and `that old
-presentation
-<http://people.irisa.fr/Martin.Quinson/blog/2018/0123/McSimGrid-Boston.pdf>`_. But be warned that these source of 
-information are very old: the liveness verification was removed in v3.35, even if these docs still mention it.
+This tutorial is not complete yet, as there is nothing on reduction techniques. For now, the best source of information on these
+topics is `this old tutorial <https://simgrid.org/tutorials/simgrid-mc-101.pdf>`_ and `that old presentation
+<http://people.irisa.fr/Martin.Quinson/blog/2018/0123/McSimGrid-Boston.pdf>`_. But be warned that these source of information
+are very old: the liveness verification was removed in v3.35, even if these docs still mention it.
 
 .. |br| raw:: html
 
