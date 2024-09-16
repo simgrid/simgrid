@@ -926,7 +926,7 @@ PYBIND11_MODULE(simgrid, m)
                   py::call_guard<py::gil_scoped_release>(), py::arg("name"), "ExecTask constructor")
       .def_static("init", py::overload_cast<const std::string&, double, Host*>(&ExecTask::init),
                   py::call_guard<py::gil_scoped_release>(), py::arg("name"), py::arg("flops"), py::arg("host"),
-                  "CommTask constructor.")
+                  "ExecTask constructor.")
       .def_property("host", &ExecTask::get_host, &ExecTask::set_host, "The host of the execution.")
       .def_property("flops", &ExecTask::get_flops, &ExecTask::set_flops, "The amount of flops to execute.")
       .def(
@@ -942,7 +942,7 @@ PYBIND11_MODULE(simgrid, m)
                   py::arg("type"), "IoTask constructor.")
       .def_property("disk", &IoTask::get_disk, &IoTask::set_disk, "The disk of the IO.")
       .def_property("bytes", &IoTask::get_bytes, &IoTask::set_bytes, "The amount of bytes to process.")
-      .def_property("type", &IoTask::get_bytes, &IoTask::set_bytes, "The type of IO.")
+      .def_property("type", &IoTask::get_op_type, &IoTask::set_op_type, "The type of IO.")
       .def(
           "__repr__", [](const IoTaskPtr io) { return "IoTask(" + io->get_name() + ")"; },
           "Textual representation of the IoTask");

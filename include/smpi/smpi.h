@@ -1261,12 +1261,11 @@ XBT_PUBLIC void SMPI_app_instance_start(const char* name, F code, std::vector<si
 }
 
 #if __cplusplus >= 201703L
-template <class F, class... Args,
-            // This constructor is enabled only if the call code(args...) is valid:
+template <class F, class... Args, // This constructor is enabled only if calling code(args...) is valid
 #ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
-            typename = typename std::result_of_t<F(Args...)>
+          typename = typename std::invoke_result_t<F, Args...>
 #endif
-            >
+          >
 XBT_PUBLIC void SMPI_app_instance_start(const char* name, F code, std::vector<simgrid::s4u::Host*> const& hosts,
                                         Args... args)
 {

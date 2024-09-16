@@ -4,8 +4,14 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ / / /_
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \| '_ \
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) | (_) |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/ \___/
-               (not released yet)
+               September 9. 2024
 
+The Anne of Brittany release (she became a Duchess 536 years ago).
+
+ * Various improvements and unification of the simulation APIs
+ * MC: Enable the verification of Python programs, and of condvars and iprobe calls.
+ * MC: Exhibit the critical transition when a failure is found.
+ * (+ internal refactoring and bug fixes)
 
                     _               _____  _________
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ / ___|

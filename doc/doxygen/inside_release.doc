@@ -62,10 +62,7 @@ Please apply the following checklist before releasing.
   - git commit -a && git push # Check that the pipeline goes well on framagit
 
 - Rebuild and upload the python package
-  - rm -rf dist/ ; python3 setup.py sdist # Build a source distrib
-  - test that the built distrib recompiles:
-    rm -rf /tmp/pysimgrid && mkdir /tmp/pysimgrid && cp dist/simgrid-*.tar.gz /tmp/pysimgrid
-    (cd /tmp/pysimgrid && tar xfz simgrid*.tar.gz && cd simgrid-*/ && python3 setup.py build)
+  - rm -rf dist/ ; python3 -m build --outdir dist/ # Build and test the package
   - Upload it to pypi (WARNING: you cannot modify uploaded files, ever)
     twine upload dist/simgrid-*.tar.gz # User and password should be located in ~/.pypirc
 
@@ -84,7 +81,7 @@ Please apply the following checklist before releasing.
   - gbp import-orig ../simgrid_3.*.orig.tar.xz
   - dch -i "New upstream release" # + copy the NEWS into debian/changelog
   - git mv debian/libsimgrid3.XX.install debian/libsimgrid3.XY.install
-  - edit debian/control: s/simgrid3.XX/simgrid3.XY/
+  - edit debian/libsimgrid3.XY.install and debian/control: s/simgrid3.XX/simgrid3.XY/
 - Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
 - Push the stable branch to github to rebuild and push the stable Docker images
   - It downloads the latest tag on framagit, but sometimes gets out of synch.

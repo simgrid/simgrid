@@ -747,9 +747,47 @@ to verify pthread_cond in sthread is that I didn't manage to write an asynchrono
 almost working code lying around, but it fails for timed waits on condition variables. This will probably be part of the next
 release.
 
-Version 3.36 (TBD)
-------------------
+Version 3.36 (September 9. 2024)
+--------------------------------
 
+**On the interface front**, the MessageQueue abstraction introduced in the previous release is now used in the WRENCH
+framework. This integration highlighted some bugs that have been fixed in this release cycle.
+
+We also decided to revisit the simulation of file systems and arrays of disks (JBOD). The current plugins are going to
+be replaced by an external module, a standalone library that can be linked to any SimGrid-based simulator. This module
+can be found at: https://github.com/simgrid/file-system-module. A notable development in this area is that of
+asynchronous read and write operations on a JBOD with RAID5. These operations involve a sequence of activities (i.e.,
+sending data to the controller of the JBOD, computing a parity block, and writing on each of disks composing the JBOD),
+whose order is enforced by adding dependencies between the corresponding activities. To allow users to get an
+ActivityPtr on such a composite activity and wait for its completion, we had to add the capacity to detach (i.e., start
+in fire-and-forget mode) Exec and Io activities. This feature was previously limited to Comm and Mess activities. 
+Thanks to this extended feature, it becomes unnecessary to explicitly wait for the activities composing the sequence. 
+The returned ActivityPtr is on a non-detached no-op activity terminating the sequence.
+
+As part of our ongoing efforts to automate the calibration of platform descriptions against some ground truth data, we
+identified and addressed some caveats in the SMPI world. First, some SMPI configuration options were not accessible
+when launching MPI codes from a S4U main (using SMPI_app_instance_start). We thus modify the command line parsing to
+allow for the configuration of SMPI whenever SMPI is activated at compile time. Second, if the MPI code launched from a
+S4U main had global variables, these variables would not be privatized, as the use of privatization mechanisms (i.e.,
+dlopen and mmap) was limited to smpirun. To address this issue and broaden the range of MPI applications that can be
+launched from a S4U simulation, we introduced the SMPI_executable_start() function that takes an executable (compiled
+with one of the SMPI compilers) as argument, along with the list of hosts that will run this executable and its command
+line arguments. The current implementation only supports dlopen privatization of global variables. An example of usage
+of this new function can be found in teshsuite/smpi/privatization-executable. Finally, we identified a bug in the
+computation of the standard error used by the SMPI sampling function to stop benchmarking the sampled code once its
+execution time is stable enough to be replaced by a delay. This bug (an extra division by the number of samples) has
+remained silent for 13 years ... basically since the inception of SMPI.
+
+**On the model checking front**, we are still working hard to find our first "wild bug", a.k.a. existing bug in an 
+arbitrary piece of code while all bugs found so far with Mc SimGrid are bugs that we purposely added to a given code 
+base. To that extend, our efforts span upon three axes. **We first extended the programming model**, to allow for the
+verification of more programs and hopefully of programs containing bugs. The most notable extensions are that the 
+verified programs can now be written in Python, involve MPI_iprobe, or use condition variables. Mc SimGrid can now 
+**exhibit the critical transition when a failure is found**. Before that transition, at least one exploration is 
+correct; After it, all explorations are faulty. We added this feature to help us characterize whether the found issue
+is an application bug (and help us understand its root cause), or whether it is yet another bug in Mc SimGrid itself.
+Finally, **we fixed dozens of bugs and vastly optimized the verification code** to improve our chances to find a wild
+bug. Still, we did not find any such bug yet, so the chase continues.
 
 .. |br| raw:: html
 

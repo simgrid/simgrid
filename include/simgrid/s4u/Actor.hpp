@@ -302,7 +302,7 @@ public:
   template <class F, class... Args,
   // This constructor is enabled only if the call code(args...) is valid:
 #ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
-            typename = typename std::result_of_t<F(Args...)>
+            typename = typename std::invoke_result_t<F, Args...>
 #endif
             >
   ActorPtr start(F code, Args... args)
@@ -326,10 +326,9 @@ public:
    * Note that the arguments will be copied, so move-only parameters are forbidden.
    * @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
 
-  template <class F, class... Args,
-            // This constructor is enabled only if the call code(args...) is valid:
+  template <class F, class... Args, // This constructor is enabled only if calling code(args...) is valid
 #ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
-            typename = typename std::result_of_t<F(Args...)>
+            typename = typename std::invoke_result_t<F, Args...>
 #endif
             >
   static ActorPtr create(const std::string& name, s4u::Host* host, F code, Args... args)
