@@ -1199,23 +1199,73 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Disk::get_cname() const
       .. doxygenfunction:: simgrid::s4u::Disk::get_host() const
       .. doxygenfunction:: simgrid::s4u::Disk::get_name() const
-      .. doxygenfunction:: simgrid::s4u::Disk::get_properties() const
-      .. doxygenfunction:: simgrid::s4u::Disk::get_property(const std::string &key) const
-      .. doxygenfunction:: simgrid::s4u::Disk::get_read_bandwidth() const
-      .. doxygenfunction:: simgrid::s4u::Disk::get_write_bandwidth() const
-      .. doxygenfunction:: simgrid::s4u::Disk::set_property(const std::string &, const std::string &value)
-      .. doxygenfunction:: simgrid::s4u::Disk::set_sharing_policy
 
-      .. doxygenenum:: simgrid::s4u::Disk::Operation
-      .. doxygenenum:: simgrid::s4u::Disk::SharingPolicy
 
    .. group-tab:: Python
 
       .. autoattribute:: simgrid.Disk.name
-      .. automethod:: simgrid.Disk.set_sharing_policy
 
-      .. autoclass:: simgrid.Disk.Operation
+
+Performance
+-----------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Disk::get_read_bandwidth() const
+      .. doxygenfunction:: simgrid::s4u::Disk::get_write_bandwidth() const
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Disk.read_bandwidth
+      .. autoattribute:: simgrid.Disk.write_bandwidth
+      .. automethod:: simgrid.Disk.set_read_bandwidth
+      .. automethod:: simgrid.Disk.set_write_bandwidth
+
+   .. group-tab:: C
+
+      .. doxygenfunction:: sg_disk_read_bandwidth(const_sg_disk_t disk)
+      .. doxygenfunction:: sg_disk_write_bandwidth(const_sg_disk_t disk)
+
+Model policy
+------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenenum:: simgrid::s4u::Disk::SharingPolicy
+
+      .. doxygenfunction:: simgrid::s4u::Disk::get_sharing_policy() const
+      .. doxygenfunction:: simgrid::s4u::Disk::set_sharing_policy
+
+      .. doxygenfunction:: simgrid::s4u::Disk::get_concurrency_limit() const
+      .. doxygenfunction:: simgrid::s4u::Disk::set_concurrency_limit(int limit)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Disk.set_concurrency_limit
+      .. automethod:: simgrid.Disk.set_sharing_policy
       .. autoclass:: simgrid.Disk.SharingPolicy
+
+   .. group-tab:: C
+
+User data and properties
+------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Disk::get_properties() const
+      .. doxygenfunction:: simgrid::s4u::Disk::get_property(const std::string &key) const
+      .. doxygenfunction:: simgrid::s4u::Disk::set_property(const std::string &key, const std::string &value)
+
+   .. group-tab:: C
+
+      .. doxygenfunction:: sg_disk_get_data(const_sg_disk_t disk)
+      .. doxygenfunction:: sg_disk_set_data(sg_disk_t disk, void *data)
 
 I/O operations
 --------------
@@ -1224,6 +1274,7 @@ I/O operations
 
    .. group-tab:: C++
 
+      .. doxygenenum:: simgrid::s4u::Disk::Operation
       .. doxygenfunction:: simgrid::s4u::Disk::io_init(sg_size_t size, s4u::Io::OpType type) const
       .. doxygenfunction:: simgrid::s4u::Disk::read(sg_size_t size) const
       .. doxygenfunction:: simgrid::s4u::Disk::read_async(sg_size_t size) const
@@ -1231,6 +1282,8 @@ I/O operations
       .. doxygenfunction:: simgrid::s4u::Disk::write_async(sg_size_t size) const
 
    .. group-tab:: Python
+
+      .. autoclass:: simgrid.Disk.Operation
 
       .. automethod:: simgrid.Disk.read
       .. automethod:: simgrid.Disk.read_async
@@ -1340,6 +1393,7 @@ Modifying characteristics
       .. doxygenfunction:: simgrid::s4u::Host::set_core_count(int core_count)
       .. doxygenfunction:: simgrid::s4u::Host::set_coordinates(const std::string& coords)
       .. doxygenfunction:: simgrid::s4u::Host::set_sharing_policy
+      .. doxygenfunction:: simgrid::s4u::Host::set_concurrency_limit
 
    .. group-tab:: Python
 
@@ -1347,6 +1401,7 @@ Modifying characteristics
          :noindex:
       .. automethod:: simgrid.Host.set_coordinates
       .. automethod:: simgrid.Host.set_sharing_policy
+      .. automethod:: simgrid.Host.set_concurrency_limit
 
 Querying info
 -------------
@@ -1675,7 +1730,7 @@ Model policy
 
       .. doxygenfunction:: simgrid::s4u::Link::get_sharing_policy() const
       .. doxygenfunction:: simgrid::s4u::Link::set_sharing_policy
-         
+
       .. doxygenfunction:: simgrid::s4u::Link::get_concurrency_limit() const
       .. doxygenfunction:: simgrid::s4u::Link::set_concurrency_limit(int limit)
 
