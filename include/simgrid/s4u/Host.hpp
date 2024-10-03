@@ -174,6 +174,8 @@ public:
    * @brief Set the max amount of executions that can take place on this host at the same time
    *
    * Use -1 to set no limit.
+   *
+   * @param limit  Number of concurrent executions
    */
   Host* set_concurrency_limit(int limit);
   int get_concurrency_limit() const;
