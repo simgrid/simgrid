@@ -75,7 +75,7 @@ void WutState::add_arbitrary_todo()
   if (best_actor == -1)
     return; // This means that no transitions are enabled at this point
   xbt_assert(sleep_set_.find(best_actor) == sleep_set_.end(),
-             "Why is a transition in a sleep set not marked as done? <%s> is in the sleep set",
+             "Why is a transition in a sleep set not marked as done? <%ld, %s> is in the sleep set", best_actor,
              sleep_set_.find(best_actor)->second->to_string().c_str());
   this->strategy_->consider_one(best_actor);
   auto actor_state = get_actors_list().at(best_actor);

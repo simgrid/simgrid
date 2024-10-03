@@ -45,9 +45,8 @@ BFSWutState::BFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutStat
   auto parent = static_cast<BFSWutState*>(parent_state.get());
   for (const aid_t actor : parent->done_) {
     auto transition_in_done_set = parent->get_actors_list().at(actor).get_transition();
-    if (not get_transition_in()->depends(transition_in_done_set.get())) {
-      add_sleep_set(transition_in_done_set);
-    }
+    if (not get_transition_in()->depends(transition_in_done_set.get()))
+      sleep_add_and_mark(transition_in_done_set);
   }
 
   aid_t incoming_actor = parent_state->get_transition_out()->aid_;

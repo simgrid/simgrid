@@ -889,6 +889,7 @@ set(DOC_SOURCES
 
   docs/source/tuto_mc/ndet-receive-mpi.c
   docs/source/tuto_mc/ndet-receive-s4u.cpp
+  docs/source/tuto_mc/philosophers.c
 
   docs/source/tuto_disk/analysis.org
   docs/source/tuto_disk/analysis.irst
