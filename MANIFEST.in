@@ -1833,6 +1833,7 @@ include docs/source/tuto_disk/init.el
 include docs/source/tuto_disk/tuto_disk.cpp
 include docs/source/tuto_mc/ndet-receive-mpi.c
 include docs/source/tuto_mc/ndet-receive-s4u.cpp
+include docs/source/tuto_mc/philosophers.c
 include docs/source/tuto_network_calibration/CMakeLists.txt
 include docs/source/tuto_network_calibration/Dockerfile
 include docs/source/tuto_network_calibration/Utils.cpp

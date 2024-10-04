@@ -22,7 +22,7 @@ namespace simgrid::mc {
 
 void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
 {
-  if (opened_states != nullptr)
+  if (opened_states == nullptr)
     XBT_VERB("calling BFSODPOR outside of BFS algorithm: the only case this should happen is if you are looking for "
              "the critical transition");
 
@@ -31,7 +31,6 @@ void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<St
   if (not s->get_enabled_actors().empty()) {
     auto s_cast = static_cast<BFSWutState*>(S->back().get());
     xbt_assert(s != nullptr, "BFSODPOR should use BFSWutState. Fix me");
-    XBT_DEBUG("Non terminal execution reached, current WuT is the following: %s", s_cast->string_of_wut().c_str());
     if (s_cast->direct_children() > 1 and opened_states != nullptr)
       opened_states->emplace_back(S->back());
     return;
@@ -47,12 +46,16 @@ void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<St
    * by the wakeup tree at the appropriate reversal point, either as `C` directly or an as equivalent to `C`
    * ("eventually looks like C", viz. the `~_E` relation)
    */
+  XBT_DEBUG("Going to compute all the reversible races on sequence \n%s", E.get_one_string_textual_trace().c_str());
   for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
     if (E.get_event_with_handle(e_prime).has_race_been_computed())
       continue;
     XBT_VERB("Computing reversible races of Event `%u`", e_prime);
     for (const auto e : E.get_reversible_races_of(e_prime)) {
-      XBT_DEBUG("... racing event `%u``", e);
+      XBT_DEBUG("... racing event `%u`", e);
+      XBT_DEBUG("... race between event `%u`:%s and event `%u`:%s", e_prime,
+                E.get_transition_for_handle(e_prime)->to_string().c_str(), e,
+                E.get_transition_for_handle(e)->to_string().c_str());
       BFSWutState* prev_state = static_cast<BFSWutState*>((*S)[e].get());
       xbt_assert(prev_state != nullptr, "ODPOR should use WutState. Fix me");
 
@@ -64,9 +67,11 @@ void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<St
         XBT_DEBUG("... after insertion final_wut looks like this: %s", prev_state->get_string_of_final_wut().c_str());
         if (not v_prime.empty()) {
           XBT_DEBUG("... inserting sequence %s before event `%u`", odpor::one_string_textual_trace(v_prime).c_str(), e);
-          prev_state->insert_into_wakeup_tree(v_prime);
+          prev_state->compare_final_and_wut();
+          prev_state->force_insert_into_wakeup_tree(v_prime);
           if (opened_states != nullptr)
             opened_states->push_back((*S)[e]);
+          prev_state->compare_final_and_wut();
         }
       }
     }
@@ -82,6 +87,8 @@ aid_t BFSODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 
   if (next == -1)
     return -1;
+
+  XBT_DEBUG("Picking actor %ld among this WuT: %s", next, s->string_of_wut().c_str());
 
   if (not s->is_actor_enabled(next)) {
     XBT_DEBUG("BFSODPOR wants to execute a disabled transition %s.",
@@ -103,7 +110,11 @@ StatePtr BFSODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
     if (auto existing_state = bfswut_state->get_children_state_of_aid(parent_state->get_transition_out()->aid_);
         existing_state != nullptr) {
       auto wut_state = static_cast<BFSWutState*>(existing_state.get());
+      XBT_DEBUG("Found an existing state. Its WuT: %s\n finalWut: %s", wut_state->string_of_wut().c_str(),
+                wut_state->get_string_of_final_wut().c_str());
       wut_state->unwind_wakeup_tree_from_parent();
+      XBT_DEBUG("After update. Its WuT: %s\n finalWut: %s", wut_state->string_of_wut().c_str(),
+                wut_state->get_string_of_final_wut().c_str());
       return existing_state;
     }
     auto new_state = StatePtr(new BFSWutState(remote_app, bfswut_state), true);

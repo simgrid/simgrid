@@ -38,3 +38,10 @@ odr_violation:^on_resume$
 # size=56 'on_start' ../include/simgrid/s4u/Comm.hpp:45:48
 # size=56 'on_start' ../include/simgrid/s4u/Exec.hpp:45:48
 odr_violation:^on_start$
+
+#size=56 'on_start' ../include/simgrid/s4u/Task.hpp:46:62
+odr_violation:^on_start$
+#size=56 'on_completion' ../include/simgrid/s4u/Task.hpp:48:62
+odr_violation:^on_completion$
+#size=56 'on_instance_completion' ../include/simgrid/s4u/Task.hpp:50:62
+odr_violation:^on_instance_completion$

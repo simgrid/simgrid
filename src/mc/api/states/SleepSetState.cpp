@@ -20,16 +20,23 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state) : Sta
    * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
    * it is not explored*/
   for (const auto& [aid, transition] : static_cast<SleepSetState*>(parent_state.get())->get_sleep_set()) {
-    if (not get_transition_in()->depends(transition.get())) {
-      sleep_set_.try_emplace(aid, transition);
-      if (strategy_->actors_to_run_.count(aid) != 0) {
-        strategy_->actors_to_run_.at(aid).mark_done();
-      }
-    }
-    if (not sleep_set_.empty() and parent_state->has_correct_execution())
-      this->register_as_correct(); // FIX ME
-    // This is only working if the parent has been fully explored when creating this state
-    // In other word, if we are doing any sort of BFS, there are no good reason for this to work as intented
+    if (not get_transition_in()->depends(transition.get()))
+      sleep_add_and_mark(transition);
+  }
+
+  if (not sleep_set_.empty() and parent_state->has_correct_execution())
+    this->register_as_correct(); // FIX ME
+  // This is only working if the parent has been fully explored when creating this state
+  // In other word, if we are doing any sort of BFS, there are no good reason for this to work as intented
+}
+
+void SleepSetState::sleep_add_and_mark(std::shared_ptr<Transition> transition)
+{
+  XBT_DEBUG("Adding transition Actor %ld:%s to the sleep set from parent state", transition->aid_,
+            transition->to_string().c_str());
+  sleep_set_.try_emplace(transition->aid_, transition);
+  if (strategy_->actors_to_run_.count(transition->aid_) != 0) {
+    strategy_->actors_to_run_.at(transition->aid_).mark_done();
   }
 }
 

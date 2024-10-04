@@ -28,6 +28,7 @@ public:
 
   std::map<aid_t, std::shared_ptr<Transition>> const& get_sleep_set() const { return sleep_set_; }
   void add_sleep_set(std::shared_ptr<Transition> t) { sleep_set_.insert_or_assign(t->aid_, std::move(t)); }
+  void sleep_add_and_mark(std::shared_ptr<Transition> t);
   bool is_actor_sleeping(aid_t actor) const;
 };
 

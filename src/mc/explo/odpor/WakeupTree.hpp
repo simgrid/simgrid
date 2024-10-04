@@ -9,6 +9,7 @@
 #include "src/mc/explo/odpor/WakeupTreeIterator.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
+#include "xbt/asserts.h"
 
 #include <memory>
 #include <optional>
@@ -41,7 +42,7 @@ private:
   std::list<WakeupTreeNode*> children_;
 
   /** @brief The contents of the node */
-  std::shared_ptr<Transition> action_;
+  std::shared_ptr<Transition> action_ = nullptr;
 
   /** @brief Removes the node as a child from the parent */
   void detatch_from_parent();
@@ -69,13 +70,36 @@ public:
   bool is_root() const { return parent_ == nullptr; }
   aid_t get_actor() const { return action_->aid_; }
   PartialExecution get_sequence() const;
+
+  /** @brief Return a shared pointer to the transition if the action exists.
+
+   *  @note that the root of a wakeup tree does not correspond to any action.
+   *  In that case, get_action() return nullptr.
+   **/
   std::shared_ptr<Transition> get_action() const { return action_; }
   const std::list<WakeupTreeNode*>& get_ordered_children() const { return children_; }
 
-  std::string string_of_whole_tree(int indentation_level) const;
+  std::string string_of_whole_tree(const std::string& prefix, bool is_first, bool is_last) const;
 
   /** Insert a node `node` as a new child of this node */
   void add_child(WakeupTreeNode* node);
+
+  /**
+   * @brief returns true iff calling object is a subset of called object
+   *
+   */
+  bool is_contained_in(WakeupTreeNode& other_tree) const;
+
+  bool have_same_content(const WakeupTreeNode& n2) const;
+
+  WakeupTreeNode* get_node_after_actor(aid_t aid) const
+  {
+    for (auto const node : children_)
+      if (node->get_actor() == aid)
+        return node;
+
+    return nullptr;
+  }
 };
 
 /**
@@ -267,6 +291,22 @@ public:
    * If the tree is empty, returns nullptr
    */
   WakeupTreeNode* get_node_after_actor(aid_t aid) const;
+
+  /**
+   * @brief returns true iff calling object is a subset of called object
+   *
+   */
+  bool is_contained_in(WakeupTree& other_tree) const;
+
+  /**
+   * @brief insert a sequence in the wakeup tree as though it was a normal tree.
+   *
+   * In particular, this won't use the normal equivalence method. You shouldn't be
+   * calling this method, unless you are using another wakeup tree anyway.
+   * (see BFSWutstate for more information)
+   *
+   */
+  void force_insert(const PartialExecution& seq);
 };
 
 } // namespace simgrid::mc::odpor

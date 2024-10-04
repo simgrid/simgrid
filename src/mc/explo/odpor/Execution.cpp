@@ -254,6 +254,10 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
                                                                     const SleepSetState& state_at_e,
                                                                     aid_t actor_after_e) const
 {
+  XBT_VERB("Calling odpor extension from with parameters e:%u ; e_prime:%u ; actor_after_e:%ld\n sequence:<%s>", e,
+           e_prime, actor_after_e, get_one_string_textual_trace().c_str());
+  for (auto s : this->get_textual_trace())
+    XBT_VERB("... %s", s.c_str());
   // `e` is assumed to be in a reversible race with `e_prime`.
   // If `e > e_prime`, then `e` occurs-after `e_prime` which means
   // `e` could not race with if
@@ -362,6 +366,7 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
   auto w_now = w;
   XBT_DEBUG("Computing 'v~_[E]w' with v:=\n%s w:=\n%s", one_string_textual_trace(v).c_str(),
             one_string_textual_trace(w).c_str());
+
   for (const auto& next_E_p : v) {
     // Is `p in `I_[E](w)`?
 

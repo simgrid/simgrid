@@ -24,16 +24,20 @@ void WakeupTreeNode::add_child(WakeupTreeNode* node)
   node->parent_ = this;
 }
 
-std::string WakeupTreeNode::string_of_whole_tree(int indentation_level) const
+std::string WakeupTreeNode::string_of_whole_tree(const std::string& prefix, bool is_first, bool is_last) const
 {
-  std::string tabulations = "";
-  for (int i = 0; i < indentation_level; i++)
-    tabulations += "  ";
-  std::string final_string = action_ == nullptr ? "<>\n"
-                                                : tabulations + "Actor " + std::to_string(action_->aid_) + ": " +
-                                                      action_->to_string(true) + "\n";
-  for (auto node : children_)
-    final_string += node->string_of_whole_tree(indentation_level + 1);
+
+  std::string final_string = action_ == nullptr
+                                 ? "<>\n"
+                                 : prefix + (is_last ? "└──" : "├──") + "Actor " + std::to_string(action_->aid_) +
+                                       ": " + action_->to_string(true) + "\n";
+  bool is_next_first       = true;
+  for (auto node_it = children_.begin(); node_it != children_.end(); node_it++) {
+    auto node                    = *node_it;
+    const std::string new_prefix = prefix + (is_last ? "    " : "│   ");
+    final_string += node->string_of_whole_tree(new_prefix, is_next_first, std::next(node_it) == children_.end());
+    is_next_first = false;
+  }
   return final_string;
 }
 
@@ -103,7 +107,7 @@ std::optional<WakeupTreeNode*> WakeupTree::get_min_single_process_node() const
 
 std::string WakeupTree::string_of_whole_tree() const
 {
-  return root_->string_of_whole_tree(0);
+  return "\n" + root_->string_of_whole_tree("", false, true);
 }
 
 WakeupTree WakeupTree::make_subtree_rooted_at(WakeupTreeNode* root)
@@ -284,6 +288,53 @@ WakeupTreeNode* WakeupTree::get_node_after_actor(aid_t aid) const
       return node;
 
   return nullptr;
+}
+
+bool WakeupTreeNode::have_same_content(const WakeupTreeNode& n2) const
+{
+  return this->get_action() == n2.get_action();
+}
+
+bool WakeupTreeNode::is_contained_in(WakeupTreeNode& other_tree) const
+{
+
+  if (not have_same_content(other_tree))
+    return false;
+
+  for (auto child : children_) {
+    auto other_candidate = std::find_if(other_tree.children_.begin(), other_tree.children_.end(),
+                                        [=](const auto& node) { return child->have_same_content(*node); });
+    if (other_candidate == other_tree.children_.end())
+      return false;
+    if (not child->is_contained_in(**other_candidate))
+      return false;
+  }
+
+  return true;
+}
+
+bool WakeupTree::is_contained_in(WakeupTree& other_tree) const
+{
+  if (root_ == nullptr)
+    return true;
+  if (other_tree.root_ == nullptr)
+    return false; // if we are not empty but other is, we are not contained
+  return this->root_->is_contained_in(*other_tree.root_);
+}
+
+void WakeupTree::force_insert(const PartialExecution& seq)
+{
+  WakeupTreeNode* cur_node = root_;
+  for (const auto& w_i : seq) {
+    if (auto node_after_aid = cur_node->get_node_after_actor(w_i->aid_); node_after_aid != nullptr) {
+      cur_node = node_after_aid;
+      continue;
+    }
+
+    WakeupTreeNode* new_node = this->make_node(w_i);
+    cur_node->add_child(new_node);
+    cur_node = new_node;
+  }
 }
 
 } // namespace simgrid::mc::odpor

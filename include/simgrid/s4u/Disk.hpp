@@ -83,6 +83,8 @@ public:
    * @brief Set the max amount of operations (either read or write) that can take place on this disk at the same time
    *
    * Use -1 to set no limit.
+   *
+   * @param limit  Number of concurrent I/O operations
    */
   Disk* set_concurrency_limit(int limit);
   int get_concurrency_limit() const;

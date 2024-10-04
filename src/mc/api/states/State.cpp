@@ -10,6 +10,7 @@
 #include "src/mc/api/strategy/MinMatchComm.hpp"
 #include "src/mc/api/strategy/UniformStrategy.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "xbt/log.h"
 
 #include <algorithm>
 #include <boost/range/algorithm.hpp>
@@ -23,7 +24,6 @@ long State::expended_states_ = 0;
 State::State(const RemoteApp& remote_app) : num_(++expended_states_)
 {
   XBT_VERB("Creating a guide for the state");
-
   if (_sg_mc_strategy == "none")
     strategy_ = std::make_shared<BasicStrategy>();
   else if (_sg_mc_strategy == "max_match_comm")
