@@ -18,17 +18,12 @@ public:
   BFSODPOR()  = default;
   ~BFSODPOR() = default;
 
-  std::vector<std::pair<StatePtr, odpor::PartialExecution>> state_and_choices_;
-
   class RaceUpdate : public Reduction::RaceUpdate {
-    std::vector<std::pair<StatePtr, odpor::PartialExecution>> state_and_choices_;
+    std::vector<std::pair<StatePtr, odpor::PartialExecution>> state_and_exec_;
 
   public:
     RaceUpdate() = default;
-    void add_element(StatePtr state, odpor::PartialExecution v)
-    {
-      state_and_choices_.push_back(std::make_pair(state, v));
-    }
+    void add_element(StatePtr state, odpor::PartialExecution v) { state_and_exec_.push_back(std::make_pair(state, v)); }
   };
 
   Reduction::RaceUpdate races_computation(odpor::Execution& E, stack_t* S,
