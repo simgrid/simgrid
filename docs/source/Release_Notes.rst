@@ -789,6 +789,10 @@ is an application bug (and help us understand its root cause), or whether it is 
 Finally, **we fixed dozens of bugs and vastly optimized the verification code** to improve our chances to find a wild
 bug. Still, we did not find any such bug yet, so the chase continues.
 
+Version 3.37 (unreleased)
+-------------------------
+
+
 .. |br| raw:: html
 
    <br />
