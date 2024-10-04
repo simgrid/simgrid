@@ -5,6 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/reduction/DPOR.hpp"
+#include "xbt/log.h"
+#include <cstddef>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc, "Dynamic partial order reduction algorithm");
 
@@ -61,23 +63,29 @@ void DPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StateP
   if (E.size() <= 1)
     return;
 
-  State* s = S->back().get();
+  State* last_state = S->back().get();
+  // let's look for all the races but only at the end
+  if (not last_state->get_enabled_actors().empty())
+    return;
 
-  // With persistency, we only need to test the race detection for the lastly taken proc
-  aid_t proc                     = s->get_transition_in()->aid_;
-  odpor::Execution E_before_last = E.get_prefix_before(E.size() - 1);
-
-  if (std::optional<EventHandle> opt_i = max_dependent_dpor(E_before_last, s, proc); opt_i.has_value()) {
-    EventHandle i                       = opt_i.value();
-    std::unordered_set<aid_t> ancestors = compute_ancestors(E_before_last, S, proc, i);
-    // note: computing the whole set is necessary with guiding strategy
-    if (not ancestors.empty()) {
-      (*S)[i]->ensure_one_considered_among_set(ancestors);
-    } else {
-      (*S)[i]->consider_all();
+  for (std::size_t i = S->size(); i > 0; i--) {
+    StatePtr s = (*S)[i - 1];
+    // With persistency, we only need to test the race detection for the lastly taken proc
+    aid_t proc                     = s->get_transition_in()->aid_;
+    odpor::Execution E_before_last = E.get_prefix_before(i - 1);
+    XBT_CRITICAL("i=%lu, S->size()=%zu, E_before_last->size()=%zu", i, S->size(), E_before_last.size());
+    if (std::optional<EventHandle> opt_j = max_dependent_dpor(E_before_last, s.get(), proc); opt_j.has_value()) {
+      EventHandle j                       = opt_j.value();
+      std::unordered_set<aid_t> ancestors = compute_ancestors(E_before_last, S, proc, j);
+      // note: computing the whole set is necessary with guiding strategy
+      if (not ancestors.empty()) {
+        (*S)[j]->ensure_one_considered_among_set(ancestors);
+      } else {
+        (*S)[j]->consider_all();
+      }
+      if (opened_states != nullptr)
+        opened_states->emplace_back((*S)[j]);
     }
-    if (opened_states != nullptr)
-      opened_states->emplace_back((*S)[i]);
   }
 }
 
