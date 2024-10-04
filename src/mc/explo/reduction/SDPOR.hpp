@@ -20,11 +20,25 @@ public:
   SDPOR()           = default;
   ~SDPOR() override = default;
 
-  void races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states) override
+  class RaceUpdate : public Reduction::RaceUpdate {
+    std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>> state_and_choices_;
+
+  public:
+    RaceUpdate() = default;
+    void add_element(StatePtr state, std::unordered_set<aid_t> choices)
+    {
+      state_and_choices_.push_back(std::make_pair(state, choices));
+    }
+  };
+
+  Reduction::RaceUpdate races_computation(odpor::Execution& E, stack_t* S,
+                                          std::vector<StatePtr>* opened_states) override
   {
     // If there are less then 2 events, there is no possible race yet
     if (E.size() <= 1)
-      return;
+      return RaceUpdate();
+
+    RaceUpdate updates = RaceUpdate();
 
     const auto next_E_p = E.get_latest_event_handle().value();
     for (const auto e_race : E.get_reversible_races_of(next_E_p)) {
@@ -32,11 +46,13 @@ public:
       State* prev_state  = (*S)[e_race].get();
       const auto choices = E.get_missing_source_set_actors_from(e_race, prev_state->get_backtrack_set());
       if (not choices.empty()) {
+        updates.add_element((*S)[e_race], choices);
         prev_state->ensure_one_considered_among_set(choices);
         if (opened_states != nullptr)
           opened_states->emplace_back(prev_state);
       }
     }
+    return updates;
   }
 
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override

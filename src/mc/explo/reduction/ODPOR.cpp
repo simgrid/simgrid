@@ -6,6 +6,7 @@
 #include "src/mc/explo/reduction/ODPOR.hpp"
 #include "src/mc/api/states/WutState.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/reduction/Reduction.hpp"
 #include "xbt/log.h"
 
 #include "src/mc/api/states/SleepSetState.hpp"
@@ -15,15 +16,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor, mc_reduction, "Logging specific to the
 
 namespace simgrid::mc {
 
-void ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
+Reduction::RaceUpdate ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
 {
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
   if (not s->get_enabled_actors().empty())
-    return;
+    return RaceUpdate();
 
   const auto last_event = E.get_latest_event_handle();
-
+  RaceUpdate updates    = RaceUpdate();
   /**
    * ODPOR Race Detection Procedure:
    *
@@ -40,11 +41,13 @@ void ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<State
       xbt_assert(prev_state != nullptr, "ODPOR should use WutState. Fix me");
 
       if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value()) {
+        updates.add_element(prev_state, v.value());
         prev_state->insert_into_wakeup_tree(v.value());
         XBT_DEBUG("... wut after insertion: %s", prev_state->string_of_wut().c_str());
       }
     }
   }
+  return updates;
 }
 
 aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
