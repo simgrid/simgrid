@@ -2,7 +2,7 @@
 
 set(SIMGRID_VERSION_MAJOR "3")
 set(SIMGRID_VERSION_MINOR "36")
-set(SIMGRID_VERSION_PATCH "0") # odd => git branch; even => stable release or released snapshot
+set(SIMGRID_VERSION_PATCH "1") # odd => git branch; even => stable release or released snapshot
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
@@ -393,13 +393,14 @@ if(enable_model-checking)
     message(STATUS "Found libevent. The stateless model-checking can be enabled.")
     include_directories(${LIBEVENT_INCLUDE_DIR})
     set(SIMGRID_DEP "${SIMGRID_DEP} ${LIBEVENT_LIBRARIES}")
-    SET(SIMGRID_HAVE_MC ON)
+    set(SIMGRID_HAVE_MC ON)
   else()
     message(STATUS "libevent not found. Please install libevent-dev to enable the SimGrid model checker.")
   endif()
   mark_as_advanced(LIBEVENT_LIBRARY)
   mark_as_advanced(LIBEVENT_THREADS_LIBRARY)
 endif()
+set(STHREAD_PATH "${CMAKE_INSTALL_FULL_LIBDIR}")
 
 if(enable_smpi)
   SET(HAVE_SMPI ON)

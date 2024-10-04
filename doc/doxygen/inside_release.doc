@@ -96,7 +96,7 @@ Please apply the following checklist before releasing.
 
 @subsection inside_release_c_postrelease Post-release cleanups
 
-- Create the template for the next release in ChangeLog and NEWS files
+- Create the template for the next release in ChangeLog, NEWS and Release_Notes.rst files
   Release Target date: https://en.wikipedia.org/wiki/Equinox
 - Bump release number to 3.X.1 in CMakeLists.txt sonar-project.properties docs/source/conf.py setup.py
 - Deal with deprecations:
@@ -126,6 +126,5 @@ Release numbering semantic:
     - 3.22.4: unannounced/loosely documented stable release
     - 3.22.5: git status somewhere between the release of 3.22.4 and the next one
     - 3.23: Documented and announced stable release
-
 
 */

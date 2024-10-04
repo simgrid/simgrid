@@ -71,15 +71,7 @@ public:
   /** \static Add a callback fired on each newly created host */
   static void on_creation_cb(const std::function<void(Host&)>& cb) { on_creation.connect(cb); }
   /** \static Add a callback fired when any machine is turned on or off (called AFTER the change) */
-  static void on_onoff_cb(const std::function<void(Host const&)>& cb)
-  {
-    on_onoff.connect(cb);
-  }
-  XBT_ATTRIB_DEPRECATED_v338("Please use on_onoff_cb() instead") static void on_state_change_cb(
-      const std::function<void(Host const&)>& cb)
-  {
-    on_onoff.connect(cb);
-  }
+  static void on_onoff_cb(const std::function<void(Host const&)>& cb) { on_onoff.connect(cb); }
   /** Add a callback fired when this specific machine is turned on or off (called AFTER the change) */
   void on_this_onoff_cb(const std::function<void(Host const&)>& cb)
   {

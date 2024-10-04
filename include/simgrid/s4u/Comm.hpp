@@ -67,10 +67,6 @@ public:
   void on_this_recv_cb(const std::function<void(Comm const&)>& cb) { on_this_recv.connect(cb); }
 
   CommPtr set_copy_data_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback);
-  XBT_ATTRIB_DEPRECATED_v338("Please manifest if you actually need this function") static void copy_buffer_callback(
-      kernel::activity::CommImpl*, void*, size_t);
-  XBT_ATTRIB_DEPRECATED_v338("Please manifest if you actually need this function") static void copy_pointer_callback(
-      kernel::activity::CommImpl*, void*, size_t);
 
   ~Comm() override;
 

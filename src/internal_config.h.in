@@ -61,6 +61,8 @@
 /* MC variables */
 /* process_vm_readv: transfer data between process address spaces */
 #cmakedefine01 HAVE_PROCESS_VM_READV
+/* Path to sthread library */
+#cmakedefine STHREAD_PATH "@STHREAD_PATH@"
 
 /* SMPI variables */
 /* SMPI enabled */

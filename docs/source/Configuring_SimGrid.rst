@@ -810,6 +810,9 @@ You can specify extra environment variables to be set in the verified applicatio
 with ``model-check/setenv``. For example, you can preload a library as follows:
 ``-cfg=model-check/setenv:LD_PRELOAD=toto;LD_LIBRARY_PATH=/tmp``.
 
+If you are using simgrid-mc to start your program, you can also use the ``--sthread`` flag to directly use the right flag to
+load the sthread.so library through LD_PRELOAD.
+
 .. _options_mc_perf:
 
 Verification Performance Considerations

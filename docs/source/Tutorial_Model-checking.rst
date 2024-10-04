@@ -48,7 +48,7 @@ memory read and write events.
 The main practical limit lies in the huge amount of scenarios to explore. SimGrid tries to explore only non-redundant scenarios
 thanks to classical reduction techniques (such as DPOR) but the exploration may well never finish if you don't carefully adapt
 your application to this mode. The amount of event interleavings to explore grows exponentially with the amount of actors and
-amount of events in eact actor's history. Keep your program small to fully explore your scenarios.
+amount of events in each actor's history. Keep your program small to fully explore your scenarios.
 
 A classical trap is that the model checker can only verify whether your application fits the properties provided, which is
 useless if you have a bug in your property. Remember also that one way for your application to never violate a given assertion
@@ -112,11 +112,11 @@ This lab uses `philosophers.c <https://framagit.org/simgrid/tutorial-model-check
    .. literalinclude:: tuto_mc/philosophers.c
       :language: cpp
 
-|br| 
+|br|
 The provided code is as simple as possible. It simply declares a ``philosopher_code`` function, representing a philosopher that
-first its left fork and then right fork before eating. This code is obviously wrong: if all philosopher manage to get their left
-fork at the same time, no one will manage to get its right fork (because it's the left fork of someone else), and the execution
-will deadlock. 
+first picks its left fork and then right fork before eating. This code is obviously wrong: if all philosopher manage to get
+their left fork at the same time, no one will manage to get its right fork (because it's the left fork of someone else), and the
+execution will deadlock.
 
 Suprisingly, it works when you run it:
 
@@ -154,7 +154,7 @@ bugs it finds. You just have to run your code within the ``simgrid-mc`` program,
 .. code-block:: console
 
    # From within the container, directory /source/tutorial/
-   $ simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libsthread.so ./philosophers 5 0
+   $ simgrid-mc --sthread ./philosophers 5 0
    (output explained below)
 
 If you get an error such as ``Channel::receive failure: Connection reset by peer``, read further the logs. It's probably that

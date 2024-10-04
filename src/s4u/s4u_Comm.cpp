@@ -31,25 +31,6 @@ CommPtr Comm::set_copy_data_callback(const std::function<void(kernel::activity::
   return this;
 }
 
-void Comm::copy_buffer_callback(kernel::activity::CommImpl* comm, void* buff,
-                                size_t buff_size) // XBT_ATTRIB_DEPRECATED_v338
-{
-  XBT_DEBUG("Copy the data over");
-  memcpy(comm->dst_buff_, buff, buff_size);
-  if (comm->is_detached()) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the
-                             // original buffer available to the application ASAP
-    xbt_free(buff);
-    comm->src_buff_ = nullptr;
-  }
-}
-
-void Comm::copy_pointer_callback(kernel::activity::CommImpl* comm, void* buff,
-                                 size_t buff_size) // XBT_ATTRIB_DEPRECATED_v338
-{
-  xbt_assert((buff_size == sizeof(void*)), "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
-  *(void**)(comm->dst_buff_) = buff;
-}
-
 Comm::~Comm()
 {
   if (state_ == State::STARTED && not detached_ &&
