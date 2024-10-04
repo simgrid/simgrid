@@ -54,7 +54,7 @@ public:
    *
    * In any case, the completed activities remain in the set. Use test_any() to retrieve them.
    */
-  void wait_all_for(double timeout);
+  void wait_all_for(double timeout) const;
   /** Wait for the completion of all activities in the set. The set is NOT emptied afterward. */
   void wait_all() { wait_all_for(-1); }
   /** Returns the first terminated activity if any, or ActivityPtr(nullptr) if no activity is terminated */
