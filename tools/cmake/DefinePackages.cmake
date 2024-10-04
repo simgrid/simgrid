@@ -554,7 +554,6 @@ set(MC_SRC_STATELESS
   src/mc/remote/Channel.hpp
   src/mc/remote/CheckerSide.cpp
   src/mc/remote/CheckerSide.hpp
-  src/mc/remote/RemotePtr.hpp
   src/mc/remote/mc_protocol.h
 
   src/mc/api/states/BFSWutState.cpp

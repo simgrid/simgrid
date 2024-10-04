@@ -2367,7 +2367,6 @@ include src/mc/remote/Channel.cpp
 include src/mc/remote/Channel.hpp
 include src/mc/remote/CheckerSide.cpp
 include src/mc/remote/CheckerSide.hpp
-include src/mc/remote/RemotePtr.hpp
 include src/mc/remote/mc_protocol.h
 include src/mc/transition/Transition.cpp
 include src/mc/transition/Transition.hpp
