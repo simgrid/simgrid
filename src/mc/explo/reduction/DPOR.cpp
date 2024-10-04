@@ -68,12 +68,11 @@ void DPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StateP
   if (not last_state->get_enabled_actors().empty())
     return;
 
-  for (std::size_t i = S->size(); i > 0; i--) {
-    StatePtr s = (*S)[i - 1];
+  for (std::size_t i = 1; i < S->size(); i++) {
+    StatePtr s = (*S)[i];
     // With persistency, we only need to test the race detection for the lastly taken proc
     aid_t proc                     = s->get_transition_in()->aid_;
     odpor::Execution E_before_last = E.get_prefix_before(i - 1);
-    XBT_CRITICAL("i=%lu, S->size()=%zu, E_before_last->size()=%zu", i, S->size(), E_before_last.size());
     if (std::optional<EventHandle> opt_j = max_dependent_dpor(E_before_last, s.get(), proc); opt_j.has_value()) {
       EventHandle j                       = opt_j.value();
       std::unordered_set<aid_t> ancestors = compute_ancestors(E_before_last, S, proc, j);
