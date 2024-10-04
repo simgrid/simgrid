@@ -59,10 +59,6 @@ Reduction::RaceUpdate DPOR::races_computation(odpor::Execution& E, stack_t* S, s
   XBT_DEBUG("Doing the race computation phase with a stack of size %lu and an execution of size %lu", S->size(),
             E.size());
 
-  // If there are less then 2 events, there is no possible race yet
-  if (E.size() <= 1)
-    return Reduction::RaceUpdate();
-
   State* last_state = S->back().get();
   // let's look for all the races but only at the end
   if (not last_state->get_enabled_actors().empty())
