@@ -34,6 +34,21 @@ int main(int argc, char** argv)
   smpi_init_options(); // that's OK to call it twice, and we need it ASAP
 #endif
   sg_config_init(&argc, argv);
+  bool sthread = false;
+  for (int i = 1; i < argc; i++) {
+    if (strcmp(argv[i], "--sthread") == 0) {
+      sthread = true;
+      break;
+    }
+  }
+  if (sthread) {
+    auto val = simgrid::config::get_value<std::string>("model-check/setenv");
+    if (not val.empty())
+      val += ";";
+    val += "LD_PRELOAD=";
+    val += STHREAD_PATH;
+    simgrid::config::set_value("model-check/setenv", val);
+  }
 
   std::unique_ptr<Exploration> explo;
 

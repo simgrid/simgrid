@@ -154,7 +154,7 @@ bugs it finds. You just have to run your code within the ``simgrid-mc`` program,
 .. code-block:: console
 
    # From within the container, directory /source/tutorial/
-   $ simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libsthread.so ./philosophers 5 0
+   $ simgrid-mc --sthread ./philosophers 5 0
    (output explained below)
 
 If you get an error such as ``Channel::receive failure: Connection reset by peer``, read further the logs. It's probably that
