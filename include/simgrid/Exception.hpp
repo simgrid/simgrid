@@ -185,8 +185,6 @@ public:
   const char* what() const noexcept { return msg_.c_str(); }
 
   XBT_ATTRIB_NORETURN static void do_throw();
-  XBT_ATTRIB_DEPRECATED_v338("Please manifest if you actually need this function") static bool try_n_catch(
-      const std::function<void()>& try_block);
 
 private:
   std::string msg_ = "Actor killed.";

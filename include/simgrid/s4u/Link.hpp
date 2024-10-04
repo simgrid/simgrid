@@ -146,10 +146,6 @@ public:
   /** @brief Returns the current load (in bytes per second) */
   double get_load() const;
 
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v338("Please use get_load() instead") double get_usage() const { return get_load(); }
-#endif
-
   /** @brief Check if the Link is used (at least one flow uses the link) */
   bool is_used() const;
 
@@ -208,16 +204,7 @@ public:
   /** \static @brief Add a callback fired when any Link is destroyed */
   static void on_destruction_cb(const std::function<void(Link const&)>& cb) { on_destruction.connect(cb); }
   /** @brief Add a callback fired when this specific Link is destroyed */
-  void on_this_destruction_cb(const std::function<void(Link const&)>& cb)
-  {
-    on_this_destruction.connect(cb);
-  }
-
-  XBT_ATTRIB_DEPRECATED_v338("Please use on_onoff_cb() instead") static void on_state_change_cb(
-      const std::function<void(Link const&)>& cb)
-  {
-    on_onoff.connect(cb);
-  }
+  void on_this_destruction_cb(const std::function<void(Link const&)>& cb) { on_this_destruction.connect(cb); }
 };
 
 /**
