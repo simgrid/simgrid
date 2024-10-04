@@ -292,7 +292,7 @@ WakeupTreeNode* WakeupTree::get_node_after_actor(aid_t aid) const
 
 bool WakeupTreeNode::have_same_content(const WakeupTreeNode& n2) const
 {
-  return this->get_action() == n2.get_action() and this->get_actor() == n2.get_actor();
+  return this->get_action() == n2.get_action();
 }
 
 bool WakeupTreeNode::is_contained_in(WakeupTreeNode& other_tree) const

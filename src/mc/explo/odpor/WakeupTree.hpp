@@ -9,6 +9,7 @@
 #include "src/mc/explo/odpor/WakeupTreeIterator.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
+#include "xbt/asserts.h"
 
 #include <memory>
 #include <optional>
@@ -41,7 +42,7 @@ private:
   std::list<WakeupTreeNode*> children_;
 
   /** @brief The contents of the node */
-  std::shared_ptr<Transition> action_;
+  std::shared_ptr<Transition> action_ = nullptr;
 
   /** @brief Removes the node as a child from the parent */
   void detatch_from_parent();
@@ -69,6 +70,12 @@ public:
   bool is_root() const { return parent_ == nullptr; }
   aid_t get_actor() const { return action_->aid_; }
   PartialExecution get_sequence() const;
+
+  /** @brief Return a shared pointer to the transition if the action exists.
+
+   *  @note that the root of a wakeup tree does not correspond to any action.
+   *  In that case, get_action() return nullptr.
+   **/
   std::shared_ptr<Transition> get_action() const { return action_; }
   const std::list<WakeupTreeNode*>& get_ordered_children() const { return children_; }
 
