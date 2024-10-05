@@ -33,21 +33,23 @@ public:
   ~DPOR() override = default;
 
   class RaceUpdate : public Reduction::RaceUpdate {
-    std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>> state_and_ancestors_;
+    std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>> state_and_ancestors_ =
+        std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>>();
 
   public:
     RaceUpdate() = default;
+
     void add_element(StatePtr state, std::unordered_set<aid_t> ancestors)
     {
-      state_and_ancestors_.push_back(std::make_pair(state, ancestors));
+      state_and_ancestors_.emplace_back(state, ancestors);
     }
-    std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>> get_value() { return state_and_ancestors_; }
+    std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>>& get_value() { return state_and_ancestors_; }
   };
 
-  std::unique_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
+  std::shared_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
                                                            std::vector<StatePtr>* opened_states) override;
 
-  void apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates,
+  void apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
                          std::vector<StatePtr>* opened_states = nullptr) override;
 
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override;

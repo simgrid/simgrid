@@ -17,16 +17,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor, mc_reduction, "Logging specific to the
 
 namespace simgrid::mc {
 
-std::unique_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution& E, stack_t* S,
+std::shared_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution& E, stack_t* S,
                                                                 std::vector<StatePtr>* opened_states)
 {
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
   if (not s->get_enabled_actors().empty())
-    return std::make_unique<RaceUpdate>();
+    return std::make_shared<RaceUpdate>();
 
   const auto last_event = E.get_latest_event_handle();
-  auto updates          = std::make_unique<RaceUpdate>();
+  auto updates          = std::make_shared<RaceUpdate>();
   /**
    * ODPOR Race Detection Procedure:
    *
@@ -42,17 +42,14 @@ std::unique_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution
       WutState* prev_state = static_cast<WutState*>((*S)[e].get());
       xbt_assert(prev_state != nullptr, "ODPOR should use WutState. Fix me");
 
-      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value()) {
+      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value())
         updates->add_element(prev_state, v.value());
-        prev_state->insert_into_wakeup_tree(v.value());
-        XBT_DEBUG("... wut after insertion: %s", prev_state->string_of_wut().c_str());
-      }
     }
   }
   return updates;
 }
 
-void ODPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
+void ODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
 {
 
   xbt_assert(opened_states == nullptr, "Why is the non BeFS version of ODPOR called with the BeFS variation?");

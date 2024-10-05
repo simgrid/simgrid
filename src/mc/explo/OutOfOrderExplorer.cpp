@@ -202,7 +202,9 @@ void OutOfOrderExplorer::run()
     stack_.emplace_back(std::move(next_state));
     execution_seq_.push_transition(std::move(executed_transition));
 
-    reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
+    std::shared_ptr<Reduction::RaceUpdate> todo_updates =
+        reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
+    reduction_algo_->apply_race_update(std::move(todo_updates), &opened_states_);
 
     dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
                state->get_transition_out()->dot_string().c_str());

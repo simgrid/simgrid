@@ -54,7 +54,7 @@ std::unordered_set<aid_t> DPOR::compute_ancestors(const odpor::Execution& S, sta
   return E;
 }
 
-std::unique_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution& E, stack_t* S,
+std::shared_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution& E, stack_t* S,
                                                                std::vector<StatePtr>* opened_states)
 {
   XBT_DEBUG("Doing the race computation phase with a stack of size %lu and an execution of size %lu", S->size(),
@@ -63,9 +63,9 @@ std::unique_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution&
   State* last_state = S->back().get();
   // let's look for all the races but only at the end
   if (not last_state->get_enabled_actors().empty())
-    return std::make_unique<Reduction::RaceUpdate>();
+    return std::make_shared<RaceUpdate>();
 
-  auto updates = std::make_unique<RaceUpdate>();
+  auto updates = std::make_shared<RaceUpdate>();
 
   for (std::size_t i = 1; i < S->size(); i++) {
     StatePtr s = (*S)[i];
@@ -77,24 +77,16 @@ std::unique_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution&
       std::unordered_set<aid_t> ancestors = compute_ancestors(E_before_last, S, proc, j);
       // note: computing the whole set is necessary with guiding strategy
 
-      updates->add_element((*S)[j], ancestors);
-      if (not ancestors.empty()) {
-        (*S)[j]->ensure_one_considered_among_set(ancestors);
-      } else {
-        (*S)[j]->consider_all();
-      }
-      if (opened_states != nullptr)
-        opened_states->emplace_back((*S)[j]);
+      updates->add_element((*S)[j], std::move(ancestors));
     }
   }
   return updates;
 }
 
-void DPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
+void DPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
 {
 
   auto dpor_updates = static_cast<RaceUpdate*>(updates.get());
-
   for (auto& [state, ancestors] : dpor_updates->get_value()) {
     if (not ancestors.empty()) {
       state->ensure_one_considered_among_set(ancestors);

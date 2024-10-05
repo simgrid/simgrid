@@ -28,9 +28,9 @@ public:
     std::vector<std::pair<StatePtr, odpor::PartialExecution>> get_value() { return state_and_seq_; }
   };
 
-  std::unique_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
+  std::shared_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
                                                            std::vector<StatePtr>* opened_states) override;
-  void apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates,
+  void apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
                          std::vector<StatePtr>* opened_states = nullptr) override;
   aid_t next_to_explore(odpor::Execution& E, stack_t* S) override;
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override;
