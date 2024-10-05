@@ -82,6 +82,25 @@ std::unique_ptr<Reduction::RaceUpdate> BFSODPOR::races_computation(odpor::Execut
   return updates;
 }
 
+void BFSODPOR::ApplyRaceUpdate(std::unique_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
+{
+  xbt_assert(opened_states != nullptr, "Why is the BeFS variation of ODPOR called outside of BeFS algorithm?");
+
+  auto bfsodpor_updates = static_cast<RaceUpdate*>(updates.get());
+
+  for (auto& [raw_state, v] : bfsodpor_updates->get_value()) {
+    auto state         = static_cast<BFSWutState*>(raw_state.get());
+    const auto v_prime = state->insert_into_final_wakeup_tree(v);
+    XBT_DEBUG("... after insertion final_wut looks like this: %s", state->get_string_of_final_wut().c_str());
+    if (not v_prime.empty()) {
+      state->compare_final_and_wut();
+      state->force_insert_into_wakeup_tree(v_prime);
+      opened_states->push_back(raw_state);
+      state->compare_final_and_wut();
+    }
+  }
+}
+
 aid_t BFSODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 {
   auto s = static_cast<BFSWutState*>(S->back().get());

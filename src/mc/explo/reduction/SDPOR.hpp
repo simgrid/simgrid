@@ -30,6 +30,7 @@ public:
     {
       state_and_choices_.push_back(std::make_pair(state, choices));
     }
+    std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>> get_value() { return state_and_choices_; }
   };
 
   std::unique_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
@@ -60,6 +61,18 @@ public:
       }
     }
     return updates;
+  }
+
+  void ApplyRaceUpdate(std::unique_ptr<Reduction::RaceUpdate> updates,
+                       std::vector<StatePtr>* opened_states = nullptr) override
+  {
+    auto sdpor_updates = static_cast<SDPOR::RaceUpdate*>(updates.get());
+
+    for (auto& [state, choices] : sdpor_updates->get_value()) {
+      state->ensure_one_considered_among_set(choices);
+      if (opened_states != nullptr)
+        opened_states->emplace_back(state);
+    }
   }
 
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override

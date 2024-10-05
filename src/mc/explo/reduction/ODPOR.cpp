@@ -7,6 +7,7 @@
 #include "src/mc/api/states/WutState.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
+#include "xbt/asserts.h"
 #include "xbt/log.h"
 
 #include "src/mc/api/states/SleepSetState.hpp"
@@ -49,6 +50,17 @@ std::unique_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution
     }
   }
   return updates;
+}
+
+void ODPOR::ApplyRaceUpdate(std::unique_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
+{
+
+  xbt_assert(opened_states == nullptr, "Why is the non BeFS version of ODPOR called with the BeFS variation?");
+
+  auto odpor_updates = static_cast<RaceUpdate*>(updates.get());
+
+  for (auto& [state, seq] : odpor_updates->get_value())
+    static_cast<WutState*>(state.get())->insert_into_wakeup_tree(seq);
 }
 
 aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)

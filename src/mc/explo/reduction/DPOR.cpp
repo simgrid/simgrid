@@ -1,4 +1,3 @@
-
 /* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -89,6 +88,22 @@ std::unique_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution&
     }
   }
   return updates;
+}
+
+void DPOR::ApplyRaceUpdate(std::unique_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
+{
+
+  auto dpor_updates = static_cast<RaceUpdate*>(updates.get());
+
+  for (auto& [state, ancestors] : dpor_updates->get_value()) {
+    if (not ancestors.empty()) {
+      state->ensure_one_considered_among_set(ancestors);
+    } else {
+      state->consider_all();
+    }
+    if (opened_states != nullptr)
+      opened_states->emplace_back(state);
+  }
 }
 
 StatePtr DPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
