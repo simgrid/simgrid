@@ -30,10 +30,6 @@ std::shared_ptr<Reduction::RaceUpdate> BFSODPOR::races_computation(odpor::Execut
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
   if (not s->get_enabled_actors().empty()) {
-    auto s_cast = static_cast<BFSWutState*>(S->back().get());
-    xbt_assert(s != nullptr, "BFSODPOR should use BFSWutState. Fix me");
-    if (s_cast->direct_children() > 1 and opened_states != nullptr)
-      opened_states->emplace_back(S->back());
     return std::make_shared<RaceUpdate>();
   }
 
