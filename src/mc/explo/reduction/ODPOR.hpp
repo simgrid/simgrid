@@ -30,8 +30,8 @@ public:
     }
   };
 
-  Reduction::RaceUpdate races_computation(odpor::Execution& E, stack_t* S,
-                                          std::vector<StatePtr>* opened_states) override;
+  std::unique_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
+                                                           std::vector<StatePtr>* opened_states) override;
   aid_t next_to_explore(odpor::Execution& E, stack_t* S) override;
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override;
   void on_backtrack(State* s) override;

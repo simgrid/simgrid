@@ -13,6 +13,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "xbt/asserts.h"
+#include <memory>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -42,8 +43,8 @@ public:
     }
   };
 
-  Reduction::RaceUpdate races_computation(odpor::Execution& E, stack_t* S,
-                                          std::vector<StatePtr>* opened_states) override;
+  std::unique_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
+                                                           std::vector<StatePtr>* opened_states) override;
 
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override;
 

@@ -11,6 +11,7 @@
 #include "src/mc/explo/reduction/Reduction.hpp"
 
 #include "src/mc/api/states/SleepSetState.hpp"
+#include <memory>
 
 namespace simgrid::mc {
 
@@ -31,16 +32,16 @@ public:
     }
   };
 
-  Reduction::RaceUpdate races_computation(odpor::Execution& E, stack_t* S,
-                                          std::vector<StatePtr>* opened_states) override
+  std::unique_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
+                                                           std::vector<StatePtr>* opened_states) override
   {
 
     State* s = S->back().get();
     // let's look for race only on the maximal executions
     if (not s->get_enabled_actors().empty())
-      return RaceUpdate();
+      return std::make_unique<RaceUpdate>();
 
-    RaceUpdate updates = RaceUpdate();
+    auto updates = std::make_unique<RaceUpdate>();
 
     for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= E.get_latest_event_handle();
          ++e_prime) {
@@ -51,7 +52,7 @@ public:
         State* prev_state  = (*S)[e_race].get();
         const auto choices = E_prime.get_missing_source_set_actors_from(e_race, prev_state->get_backtrack_set());
         if (not choices.empty()) {
-          updates.add_element((*S)[e_race], choices);
+          updates->add_element((*S)[e_race], choices);
           prev_state->ensure_one_considered_among_set(choices);
           if (opened_states != nullptr)
             opened_states->emplace_back(prev_state);

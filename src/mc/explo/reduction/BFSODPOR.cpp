@@ -20,7 +20,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_bfsodpor, mc_reduction, "Logging specific to 
 
 namespace simgrid::mc {
 
-Reduction::RaceUpdate BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
+std::unique_ptr<Reduction::RaceUpdate> BFSODPOR::races_computation(odpor::Execution& E, stack_t* S,
+                                                                   std::vector<StatePtr>* opened_states)
 {
   if (opened_states == nullptr)
     XBT_VERB("calling BFSODPOR outside of BFS algorithm: the only case this should happen is if you are looking for "
@@ -33,11 +34,11 @@ Reduction::RaceUpdate BFSODPOR::races_computation(odpor::Execution& E, stack_t* 
     xbt_assert(s != nullptr, "BFSODPOR should use BFSWutState. Fix me");
     if (s_cast->direct_children() > 1 and opened_states != nullptr)
       opened_states->emplace_back(S->back());
-    return RaceUpdate();
+    return std::make_unique<RaceUpdate>();
   }
 
   const auto last_event = E.get_latest_event_handle();
-  RaceUpdate updates    = RaceUpdate();
+  auto updates          = std::make_unique<RaceUpdate>();
   /**
    * ODPOR Race Detection Procedure:
    *
@@ -63,7 +64,7 @@ Reduction::RaceUpdate BFSODPOR::races_computation(odpor::Execution& E, stack_t* 
           v.has_value()) {
         XBT_DEBUG("... inserting sequence %s in final_wut before event `%u`",
                   odpor::one_string_textual_trace(v.value()).c_str(), e);
-        updates.add_element(prev_state, v.value());
+        updates->add_element(prev_state, v.value());
         const auto v_prime = prev_state->insert_into_final_wakeup_tree(v.value());
         XBT_DEBUG("... after insertion final_wut looks like this: %s", prev_state->get_string_of_final_wut().c_str());
         if (not v_prime.empty()) {

@@ -21,10 +21,10 @@ public:
   NoReduction()           = default;
   ~NoReduction() override = default;
 
-  Reduction::RaceUpdate races_computation(odpor::Execution& E, stack_t* S,
-                                          std::vector<StatePtr>* opened_states) override
+  std::unique_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
+                                                           std::vector<StatePtr>* opened_states) override
   {
-    return RaceUpdate();
+    return std::make_unique<RaceUpdate>();
   };
 
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override

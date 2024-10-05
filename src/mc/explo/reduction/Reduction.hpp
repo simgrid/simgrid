@@ -7,6 +7,7 @@
 #define SIMGRID_MC_REDUCTION_HPP
 
 #include "src/mc/explo/odpor/Execution.hpp"
+#include <memory>
 
 namespace simgrid::mc {
 
@@ -36,8 +37,8 @@ public:
 
   // Eventually changes values in the stack S so that the races discovered while
   // visiting E will be taken care of at some point
-  virtual RaceUpdate races_computation(odpor::Execution& E, stack_t* S,
-                                       std::vector<StatePtr>* opened_states = nullptr) = 0;
+  virtual std::unique_ptr<RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
+                                                        std::vector<StatePtr>* opened_states = nullptr) = 0;
   // Return the next aid to be explored from the E. If -1 is returned, then the
   // reduction assumes no more traces need to be explored from E.
   virtual aid_t next_to_explore(odpor::Execution& E, stack_t* S) = 0;

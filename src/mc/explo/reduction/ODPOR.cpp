@@ -16,15 +16,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor, mc_reduction, "Logging specific to the
 
 namespace simgrid::mc {
 
-Reduction::RaceUpdate ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
+std::unique_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution& E, stack_t* S,
+                                                                std::vector<StatePtr>* opened_states)
 {
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
   if (not s->get_enabled_actors().empty())
-    return RaceUpdate();
+    return std::make_unique<RaceUpdate>();
 
   const auto last_event = E.get_latest_event_handle();
-  RaceUpdate updates    = RaceUpdate();
+  auto updates          = std::make_unique<RaceUpdate>();
   /**
    * ODPOR Race Detection Procedure:
    *
@@ -41,7 +42,7 @@ Reduction::RaceUpdate ODPOR::races_computation(odpor::Execution& E, stack_t* S, 
       xbt_assert(prev_state != nullptr, "ODPOR should use WutState. Fix me");
 
       if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value()) {
-        updates.add_element(prev_state, v.value());
+        updates->add_element(prev_state, v.value());
         prev_state->insert_into_wakeup_tree(v.value());
         XBT_DEBUG("... wut after insertion: %s", prev_state->string_of_wut().c_str());
       }

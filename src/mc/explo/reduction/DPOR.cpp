@@ -7,6 +7,7 @@
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "xbt/log.h"
 #include <cstddef>
+#include <memory>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc, "Dynamic partial order reduction algorithm");
 
@@ -54,7 +55,8 @@ std::unordered_set<aid_t> DPOR::compute_ancestors(const odpor::Execution& S, sta
   return E;
 }
 
-Reduction::RaceUpdate DPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
+std::unique_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution& E, stack_t* S,
+                                                               std::vector<StatePtr>* opened_states)
 {
   XBT_DEBUG("Doing the race computation phase with a stack of size %lu and an execution of size %lu", S->size(),
             E.size());
@@ -62,9 +64,9 @@ Reduction::RaceUpdate DPOR::races_computation(odpor::Execution& E, stack_t* S, s
   State* last_state = S->back().get();
   // let's look for all the races but only at the end
   if (not last_state->get_enabled_actors().empty())
-    return Reduction::RaceUpdate();
+    return std::make_unique<Reduction::RaceUpdate>();
 
-  RaceUpdate updates = RaceUpdate();
+  auto updates = std::make_unique<RaceUpdate>();
 
   for (std::size_t i = 1; i < S->size(); i++) {
     StatePtr s = (*S)[i];
@@ -76,7 +78,7 @@ Reduction::RaceUpdate DPOR::races_computation(odpor::Execution& E, stack_t* S, s
       std::unordered_set<aid_t> ancestors = compute_ancestors(E_before_last, S, proc, j);
       // note: computing the whole set is necessary with guiding strategy
 
-      updates.add_element((*S)[j], ancestors);
+      updates->add_element((*S)[j], ancestors);
       if (not ancestors.empty()) {
         (*S)[j]->ensure_one_considered_among_set(ancestors);
       } else {
