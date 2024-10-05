@@ -90,7 +90,7 @@ std::unique_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution&
   return updates;
 }
 
-void DPOR::ApplyRaceUpdate(std::unique_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
+void DPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
 {
 
   auto dpor_updates = static_cast<RaceUpdate*>(updates.get());

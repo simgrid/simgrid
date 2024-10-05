@@ -52,7 +52,7 @@ std::unique_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution
   return updates;
 }
 
-void ODPOR::ApplyRaceUpdate(std::unique_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
+void ODPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
 {
 
   xbt_assert(opened_states == nullptr, "Why is the non BeFS version of ODPOR called with the BeFS variation?");

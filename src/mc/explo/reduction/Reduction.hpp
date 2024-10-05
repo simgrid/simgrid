@@ -42,7 +42,8 @@ public:
   // Update the states saved in RaceUpdate accordingly to the saved informations
   // Splitting the update in two steps is mandatory for a future parallelization of the
   // race_computation() operation
-  virtual void ApplyRaceUpdate(std::unique_ptr<RaceUpdate> updates, std::vector<StatePtr>* opened_states = nullptr) = 0;
+  virtual void apply_race_update(std::unique_ptr<RaceUpdate> updates,
+                                 std::vector<StatePtr>* opened_states = nullptr) = 0;
   // Return the next aid to be explored from the E. If -1 is returned, then the
   // reduction assumes no more traces need to be explored from E.
   virtual aid_t next_to_explore(odpor::Execution& E, stack_t* S) = 0;

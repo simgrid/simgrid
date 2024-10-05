@@ -63,8 +63,8 @@ public:
     return updates;
   }
 
-  void ApplyRaceUpdate(std::unique_ptr<Reduction::RaceUpdate> updates,
-                       std::vector<StatePtr>* opened_states = nullptr) override
+  void apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates,
+                         std::vector<StatePtr>* opened_states = nullptr) override
   {
     auto sdpor_updates = static_cast<SDPOR::RaceUpdate*>(updates.get());
 

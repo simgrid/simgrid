@@ -82,7 +82,7 @@ std::unique_ptr<Reduction::RaceUpdate> BFSODPOR::races_computation(odpor::Execut
   return updates;
 }
 
-void BFSODPOR::ApplyRaceUpdate(std::unique_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
+void BFSODPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
 {
   xbt_assert(opened_states != nullptr, "Why is the BeFS variation of ODPOR called outside of BeFS algorithm?");
 
