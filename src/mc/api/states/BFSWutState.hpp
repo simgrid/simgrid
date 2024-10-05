@@ -10,6 +10,7 @@
 #include "src/mc/api/states/WutState.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "xbt/log.h"
 #include <map>
 #include <memory>
@@ -67,7 +68,11 @@ public:
   std::unordered_set<aid_t> get_sleeping_actors(aid_t after_actor) const override;
   std::string get_string_of_final_wut() const { return final_wakeup_tree_.string_of_whole_tree(); }
 
-  void force_insert_into_wakeup_tree(const odpor::PartialExecution&);
+  /**
+   * @brief Recursively unroll the given sequence into childs until none corresponding is find. The function
+   * then insert the remaining subsequence and return the corresponding state
+   */
+  StatePtr force_insert_into_wakeup_tree(const odpor::PartialExecution&);
 
   void compare_final_and_wut();
 };

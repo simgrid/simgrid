@@ -184,9 +184,19 @@ odpor::PartialExecution BFSWutState::insert_into_final_wakeup_tree(const odpor::
   return this->final_wakeup_tree_.insert_and_get_inserted_seq(pe);
 }
 
-void BFSWutState::force_insert_into_wakeup_tree(const odpor::PartialExecution& pe)
+StatePtr BFSWutState::force_insert_into_wakeup_tree(const odpor::PartialExecution& pe)
 {
+  // If the start of the sequence corresponds to an already explored state
+  this->insert_into_final_wakeup_tree(pe);
+  auto first_actor = pe.front()->aid_;
+  if (StatePtr children = get_children_state_of_aid(first_actor); children != nullptr) {
+    odpor::PartialExecution suffix = pe;
+    suffix.pop_front();
+    return static_cast<BFSWutState*>(children.get())->force_insert_into_wakeup_tree(std::move(suffix));
+  }
+
   this->wakeup_tree_.force_insert(pe);
+  return this;
 }
 
 } // namespace simgrid::mc

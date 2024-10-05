@@ -86,9 +86,9 @@ void BFSODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
     XBT_DEBUG("... after insertion final_wut looks like this: %s", state->get_string_of_final_wut().c_str());
     if (not v_prime.empty()) {
       state->compare_final_and_wut();
-      state->force_insert_into_wakeup_tree(v_prime);
+      auto modified_state = state->force_insert_into_wakeup_tree(v_prime);
       if (opened_states != nullptr)
-        opened_states->push_back(raw_state);
+        opened_states->push_back(modified_state);
       state->compare_final_and_wut();
     }
   }
