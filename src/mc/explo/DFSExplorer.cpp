@@ -194,15 +194,15 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 
   State* s = state_stack.back().get();
 
-  std::shared_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, &state_stack);
-  reduction_algo_->apply_race_update(std::move(todo_updates));
-
   aid_t next_to_explore;
 
   while ((next_to_explore = reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
 
     simgrid_wrapper_explore(S, next_to_explore, state_stack);
   }
+
+  std::shared_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, &state_stack);
+  reduction_algo_->apply_race_update(std::move(todo_updates));
 
   XBT_DEBUG("%lu actors remain, but none of them need to be interleaved (depth %zu).", s->get_actor_count(),
             state_stack.size() + 1);
