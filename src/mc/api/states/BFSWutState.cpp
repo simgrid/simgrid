@@ -186,8 +186,12 @@ odpor::PartialExecution BFSWutState::insert_into_final_wakeup_tree(const odpor::
 
 StatePtr BFSWutState::force_insert_into_wakeup_tree(const odpor::PartialExecution& pe)
 {
+  if (pe.size() == 0)
+    return nullptr;
+
   // If the start of the sequence corresponds to an already explored state
-  this->insert_into_final_wakeup_tree(pe);
+  final_wakeup_tree_.force_insert(pe);
+
   auto first_actor = pe.front()->aid_;
   if (StatePtr children = get_children_state_of_aid(first_actor); children != nullptr) {
     odpor::PartialExecution suffix = pe;
@@ -196,6 +200,7 @@ StatePtr BFSWutState::force_insert_into_wakeup_tree(const odpor::PartialExecutio
   }
 
   this->wakeup_tree_.force_insert(pe);
+  compare_final_and_wut();
   return this;
 }
 

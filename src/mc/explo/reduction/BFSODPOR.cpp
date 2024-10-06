@@ -83,7 +83,7 @@ void BFSODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
     if (not v_prime.empty()) {
       state->compare_final_and_wut();
       auto modified_state = state->force_insert_into_wakeup_tree(v_prime);
-      if (opened_states != nullptr)
+      if (opened_states != nullptr and modified_state != nullptr)
         opened_states->push_back(modified_state);
       state->compare_final_and_wut();
     }
