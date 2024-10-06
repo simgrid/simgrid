@@ -11,6 +11,7 @@
 #include "src/mc/explo/reduction/Reduction.hpp"
 
 #include "src/mc/api/states/SleepSetState.hpp"
+#include <memory>
 
 namespace simgrid::mc {
 
@@ -20,22 +21,53 @@ public:
   SDPOR()           = default;
   ~SDPOR() override = default;
 
-  void races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states) override
+  class RaceUpdate : public Reduction::RaceUpdate {
+    std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>> state_and_choices_;
+
+  public:
+    RaceUpdate() = default;
+    void add_element(StatePtr state, std::unordered_set<aid_t> choices)
+    {
+      state_and_choices_.push_back(std::make_pair(state, choices));
+    }
+    std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>> get_value() { return state_and_choices_; }
+  };
+
+  std::shared_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
+                                                           std::vector<StatePtr>* opened_states) override
   {
-    // If there are less then 2 events, there is no possible race yet
-    if (E.size() <= 1)
-      return;
 
-    const auto next_E_p = E.get_latest_event_handle().value();
-    for (const auto e_race : E.get_reversible_races_of(next_E_p)) {
+    State* s = S->back().get();
+    // let's look for race only on the maximal executions
+    if (not s->get_enabled_actors().empty())
+      return std::make_shared<RaceUpdate>();
 
-      State* prev_state  = (*S)[e_race].get();
-      const auto choices = E.get_missing_source_set_actors_from(e_race, prev_state->get_backtrack_set());
-      if (not choices.empty()) {
-        prev_state->ensure_one_considered_among_set(choices);
-        if (opened_states != nullptr)
-          opened_states->emplace_back(prev_state);
+    auto updates = std::make_shared<RaceUpdate>();
+
+    for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= E.get_latest_event_handle();
+         ++e_prime) {
+
+      auto E_prime = E.get_prefix_before(e_prime + 1);
+      for (const auto e_race : E_prime.get_reversible_races_of(e_prime)) {
+
+        State* prev_state  = (*S)[e_race].get();
+        const auto choices = E_prime.get_missing_source_set_actors_from(e_race, prev_state->get_backtrack_set());
+        if (not choices.empty())
+          updates->add_element((*S)[e_race], choices);
       }
+    }
+    return updates;
+  }
+
+  void apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
+                         std::vector<StatePtr>* opened_states = nullptr) override
+  {
+    auto sdpor_updates = static_cast<SDPOR::RaceUpdate*>(updates.get());
+
+    for (auto& [state, choices] : sdpor_updates->get_value()) {
+      state->ensure_one_considered_among_set(choices);
+      if (opened_states != nullptr)
+        opened_states->emplace_back(state);
     }
   }
 

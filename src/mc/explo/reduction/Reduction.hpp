@@ -7,6 +7,7 @@
 #define SIMGRID_MC_REDUCTION_HPP
 
 #include "src/mc/explo/odpor/Execution.hpp"
+#include <memory>
 
 namespace simgrid::mc {
 
@@ -26,12 +27,23 @@ using EventHandle = uint32_t;
 
 class Reduction {
 public:
+  class RaceUpdate {
+  public:
+    RaceUpdate() = default;
+  };
+
   Reduction()          = default;
   virtual ~Reduction() = default;
 
   // Eventually changes values in the stack S so that the races discovered while
   // visiting E will be taken care of at some point
-  virtual void races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states = nullptr) = 0;
+  virtual std::shared_ptr<RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
+                                                        std::vector<StatePtr>* opened_states = nullptr) = 0;
+  // Update the states saved in RaceUpdate accordingly to the saved informations
+  // Splitting the update in two steps is mandatory for a future parallelization of the
+  // race_computation() operation
+  virtual void apply_race_update(std::shared_ptr<RaceUpdate> updates,
+                                 std::vector<StatePtr>* opened_states = nullptr) = 0;
   // Return the next aid to be explored from the E. If -1 is returned, then the
   // reduction assumes no more traces need to be explored from E.
   virtual aid_t next_to_explore(odpor::Execution& E, stack_t* S) = 0;

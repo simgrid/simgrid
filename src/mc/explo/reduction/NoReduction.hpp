@@ -12,6 +12,7 @@
 #include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
 #include "xbt/asserts.h"
+#include <memory>
 
 namespace simgrid::mc {
 
@@ -21,7 +22,15 @@ public:
   NoReduction()           = default;
   ~NoReduction() override = default;
 
-  void races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states) override{};
+  std::shared_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
+                                                           std::vector<StatePtr>* opened_states) override
+  {
+    return std::make_shared<RaceUpdate>();
+  };
+
+  void apply_race_update(std::shared_ptr<RaceUpdate> updates, std::vector<StatePtr>* opened_states = nullptr) override
+  {
+  }
 
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override
   {

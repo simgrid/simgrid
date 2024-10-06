@@ -20,7 +20,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_bfsodpor, mc_reduction, "Logging specific to 
 
 namespace simgrid::mc {
 
-void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
+std::shared_ptr<Reduction::RaceUpdate> BFSODPOR::races_computation(odpor::Execution& E, stack_t* S,
+                                                                   std::vector<StatePtr>* opened_states)
 {
   if (opened_states == nullptr)
     XBT_VERB("calling BFSODPOR outside of BFS algorithm: the only case this should happen is if you are looking for "
@@ -33,11 +34,11 @@ void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<St
     xbt_assert(s != nullptr, "BFSODPOR should use BFSWutState. Fix me");
     if (s_cast->direct_children() > 1 and opened_states != nullptr)
       opened_states->emplace_back(S->back());
-    return;
+    return std::make_shared<RaceUpdate>();
   }
 
   const auto last_event = E.get_latest_event_handle();
-
+  auto updates          = std::make_shared<RaceUpdate>();
   /**
    * ODPOR Race Detection Procedure:
    *
@@ -63,19 +64,33 @@ void BFSODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<St
           v.has_value()) {
         XBT_DEBUG("... inserting sequence %s in final_wut before event `%u`",
                   odpor::one_string_textual_trace(v.value()).c_str(), e);
-        const auto v_prime = prev_state->insert_into_final_wakeup_tree(v.value());
-        XBT_DEBUG("... after insertion final_wut looks like this: %s", prev_state->get_string_of_final_wut().c_str());
-        if (not v_prime.empty()) {
-          XBT_DEBUG("... inserting sequence %s before event `%u`", odpor::one_string_textual_trace(v_prime).c_str(), e);
-          prev_state->compare_final_and_wut();
-          prev_state->force_insert_into_wakeup_tree(v_prime);
-          if (opened_states != nullptr)
-            opened_states->push_back((*S)[e]);
-          prev_state->compare_final_and_wut();
-        }
+        updates->add_element(prev_state, v.value());
       }
     }
     E.get_event_with_handle(e_prime).consider_races();
+  }
+  return updates;
+}
+
+void BFSODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
+{
+  if (opened_states == nullptr)
+    XBT_VERB("calling BFSODPOR outside of BFS algorithm: the only case this should happen is if you are looking for "
+             "the critical transition");
+
+  auto bfsodpor_updates = static_cast<RaceUpdate*>(updates.get());
+
+  for (auto& [raw_state, v] : bfsodpor_updates->get_value()) {
+    auto state         = static_cast<BFSWutState*>(raw_state.get());
+    const auto v_prime = state->insert_into_final_wakeup_tree(v);
+    XBT_DEBUG("... after insertion final_wut looks like this: %s", state->get_string_of_final_wut().c_str());
+    if (not v_prime.empty()) {
+      state->compare_final_and_wut();
+      state->force_insert_into_wakeup_tree(v_prime);
+      if (opened_states != nullptr)
+        opened_states->push_back(raw_state);
+      state->compare_final_and_wut();
+    }
   }
 }
 

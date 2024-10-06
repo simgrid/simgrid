@@ -6,6 +6,8 @@
 #include "src/mc/explo/reduction/ODPOR.hpp"
 #include "src/mc/api/states/WutState.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/reduction/Reduction.hpp"
+#include "xbt/asserts.h"
 #include "xbt/log.h"
 
 #include "src/mc/api/states/SleepSetState.hpp"
@@ -15,15 +17,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor, mc_reduction, "Logging specific to the
 
 namespace simgrid::mc {
 
-void ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
+std::shared_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution& E, stack_t* S,
+                                                                std::vector<StatePtr>* opened_states)
 {
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
   if (not s->get_enabled_actors().empty())
-    return;
+    return std::make_shared<RaceUpdate>();
 
   const auto last_event = E.get_latest_event_handle();
-
+  auto updates          = std::make_shared<RaceUpdate>();
   /**
    * ODPOR Race Detection Procedure:
    *
@@ -39,12 +42,22 @@ void ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<State
       WutState* prev_state = static_cast<WutState*>((*S)[e].get());
       xbt_assert(prev_state != nullptr, "ODPOR should use WutState. Fix me");
 
-      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value()) {
-        prev_state->insert_into_wakeup_tree(v.value());
-        XBT_DEBUG("... wut after insertion: %s", prev_state->string_of_wut().c_str());
-      }
+      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value())
+        updates->add_element(prev_state, v.value());
     }
   }
+  return updates;
+}
+
+void ODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
+{
+
+  xbt_assert(opened_states == nullptr, "Why is the non BeFS version of ODPOR called with the BeFS variation?");
+
+  auto odpor_updates = static_cast<RaceUpdate*>(updates.get());
+
+  for (auto& [state, seq] : odpor_updates->get_value())
+    static_cast<WutState*>(state.get())->insert_into_wakeup_tree(seq);
 }
 
 aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)

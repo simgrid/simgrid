@@ -126,7 +126,8 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
     state_stack.emplace_back(std::move(next_state));
     stack_ = &state_stack;
     S.push_transition(transition_to_be_executed);
-    reduction_algo_->races_computation(S, stack_);
+    std::shared_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, stack_);
+    reduction_algo_->apply_race_update(std::move(todo_updates));
 
     // ... If we are not already doing it, start critical exploration
     if (try_to_launch_critical_exploration())
@@ -193,7 +194,8 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 
   State* s = state_stack.back().get();
 
-  reduction_algo_->races_computation(S, &state_stack);
+  std::shared_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, &state_stack);
+  reduction_algo_->apply_race_update(std::move(todo_updates));
 
   aid_t next_to_explore;
 

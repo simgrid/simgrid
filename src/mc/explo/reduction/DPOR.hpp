@@ -11,7 +11,12 @@
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "xbt/asserts.h"
+#include <memory>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
 namespace simgrid::mc {
 
@@ -27,7 +32,25 @@ public:
   DPOR()           = default;
   ~DPOR() override = default;
 
-  void races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states) override;
+  class RaceUpdate : public Reduction::RaceUpdate {
+    std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>> state_and_ancestors_ =
+        std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>>();
+
+  public:
+    RaceUpdate() = default;
+
+    void add_element(StatePtr state, std::unordered_set<aid_t> ancestors)
+    {
+      state_and_ancestors_.emplace_back(state, ancestors);
+    }
+    std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>>& get_value() { return state_and_ancestors_; }
+  };
+
+  std::shared_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
+                                                           std::vector<StatePtr>* opened_states) override;
+
+  void apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
+                         std::vector<StatePtr>* opened_states = nullptr) override;
 
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override;
 
