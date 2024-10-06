@@ -57,7 +57,7 @@ public:
   virtual void on_backtrack(State* s);
   // Ask the reduction to consider one action from a given state
   //   this is required to handle so called soft-locked states
-  virtual void consider_best(StatePtr best);
+  virtual void consider_best(StatePtr state);
 };
 
 } // namespace simgrid::mc

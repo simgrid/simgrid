@@ -76,9 +76,6 @@ private:
    */
   odpor::Execution execution_seq_;
 
-  /** Per-actor clock vectors used to compute the "happens-before" relation */
-  std::unordered_map<aid_t, ClockVector> per_actor_clocks_;
-
   /** Opened states are states that still contains todo actors.
    *  When backtracking, we pick a state from it*/
   std::vector<StatePtr> opened_states_;
