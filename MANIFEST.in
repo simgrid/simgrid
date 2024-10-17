@@ -2297,6 +2297,8 @@ include src/mc/explo/DFSExplorer.cpp
 include src/mc/explo/DFSExplorer.hpp
 include src/mc/explo/Exploration.cpp
 include src/mc/explo/Exploration.hpp
+include src/mc/explo/ParallelizedExplorer.cpp
+include src/mc/explo/ParallelizedExplorer.hpp
 include src/mc/explo/OutOfOrderExplorer.cpp
 include src/mc/explo/OutOfOrderExplorer.hpp
 include src/mc/explo/UdporChecker.cpp

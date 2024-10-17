@@ -72,7 +72,9 @@ simgrid::config::Flag<std::string> _sg_mc_explore_algo{
       "Depth First Search order: this search politic is the one following the best the classical reduction algorithm."},
      {"BFS",
       "Best First Search: this search politic allows for a better use of the strategy by augmenting the number of "
-      "state choices available at runtime."}}};
+      "state choices available at runtime."},
+     {"parallel",
+      "parallel search: this work-in-progress aims at leveraging BFS algorithm to heavily parallelize the search."}}};
 
 simgrid::config::Flag<std::string> _sg_mc_strategy{
     "model-check/strategy",

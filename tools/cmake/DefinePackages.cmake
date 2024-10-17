@@ -515,6 +515,8 @@ set(MC_SRC_STATELESS
   src/mc/explo/Exploration.cpp
   src/mc/explo/Exploration.hpp
   src/mc/explo/CommunicationDeterminismChecker.cpp
+  src/mc/explo/ParallelizedExplorer.cpp
+  src/mc/explo/ParallelizedExplorer.hpp
   src/mc/explo/OutOfOrderExplorer.cpp
   src/mc/explo/OutOfOrderExplorer.hpp
 
