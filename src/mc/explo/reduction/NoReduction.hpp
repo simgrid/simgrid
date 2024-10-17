@@ -28,8 +28,10 @@ public:
     return std::make_shared<RaceUpdate>();
   };
 
-  void apply_race_update(std::shared_ptr<RaceUpdate> updates, std::vector<StatePtr>* opened_states = nullptr) override
+  unsigned long apply_race_update(std::shared_ptr<RaceUpdate> updates,
+                                  std::vector<StatePtr>* opened_states = nullptr) override
   {
+    return 0;
   }
 
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override

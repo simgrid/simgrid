@@ -49,8 +49,8 @@ public:
   std::shared_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
                                                            std::vector<StatePtr>* opened_states) override;
 
-  void apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
-                         std::vector<StatePtr>* opened_states = nullptr) override;
+  unsigned long apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
+                                  std::vector<StatePtr>* opened_states = nullptr) override;
 
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override;
 

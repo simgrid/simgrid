@@ -68,14 +68,15 @@ std::shared_ptr<Reduction::RaceUpdate> BFSODPOR::races_computation(odpor::Execut
   return updates;
 }
 
-void BFSODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
+unsigned long BFSODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
+                                          std::vector<StatePtr>* opened_states)
 {
   if (opened_states == nullptr)
     XBT_VERB("calling BFSODPOR outside of BFS algorithm: the only case this should happen is if you are looking for "
              "the critical transition");
 
   auto bfsodpor_updates = static_cast<RaceUpdate*>(updates.get());
-
+  unsigned long nb_updates = 0;
   for (auto& [raw_state, v] : bfsodpor_updates->get_value()) {
     auto state         = static_cast<BFSWutState*>(raw_state.get());
     const auto v_prime = state->insert_into_final_wakeup_tree(v);
@@ -85,9 +86,11 @@ void BFSODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
       auto modified_state = state->force_insert_into_wakeup_tree(v_prime);
       if (opened_states != nullptr and modified_state != nullptr)
         opened_states->push_back(modified_state);
+      nb_updates++;
       state->compare_final_and_wut();
     }
   }
+  return nb_updates;
 }
 
 aid_t BFSODPOR::next_to_explore(odpor::Execution& E, stack_t* S)

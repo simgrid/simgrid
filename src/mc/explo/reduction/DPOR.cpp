@@ -83,19 +83,24 @@ std::shared_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution&
   return updates;
 }
 
-void DPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
+unsigned long DPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
+                                      std::vector<StatePtr>* opened_states)
 {
 
-  auto dpor_updates = static_cast<RaceUpdate*>(updates.get());
+  auto dpor_updates        = static_cast<RaceUpdate*>(updates.get());
+  unsigned long nb_updates = 0;
   for (auto& [state, ancestors] : dpor_updates->get_value()) {
     if (not ancestors.empty()) {
       state->ensure_one_considered_among_set(ancestors);
     } else {
       state->consider_all();
     }
-    if (opened_states != nullptr)
+    if (opened_states != nullptr) {
       opened_states->emplace_back(state);
+      nb_updates++;
+    }
   }
+  return nb_updates;
 }
 
 StatePtr DPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)

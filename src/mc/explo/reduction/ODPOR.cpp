@@ -49,15 +49,20 @@ std::shared_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution
   return updates;
 }
 
-void ODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
+unsigned long ODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
+                                       std::vector<StatePtr>* opened_states)
 {
 
   xbt_assert(opened_states == nullptr, "Why is the non BeFS version of ODPOR called with the BeFS variation?");
 
+  unsigned long nb_updates = 0;
   auto odpor_updates = static_cast<RaceUpdate*>(updates.get());
 
-  for (auto& [state, seq] : odpor_updates->get_value())
+  for (auto& [state, seq] : odpor_updates->get_value()) {
     static_cast<WutState*>(state.get())->insert_into_wakeup_tree(seq);
+    nb_updates++;
+  }
+  return nb_updates;
 }
 
 aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
