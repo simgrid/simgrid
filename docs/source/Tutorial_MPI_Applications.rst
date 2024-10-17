@@ -270,6 +270,13 @@ image. Once you `installed Docker itself
    $ docker pull simgrid/tuto-smpi
    $ docker run --user $UID:$GID -it --rm --name simgrid --volume ~/smpi-tutorial:/source/tutorial simgrid/tuto-smpi bash
 
+More info if you want to understand that command. Skip it if you want. The ``--user $UID:$GID`` part request docker to use your
+login name and group within the container too. ``-it`` requests to run the command interactively in a terminal. ``--rm`` asks to
+remove the container once the command is done. ``--name`` gives a name to the container. ``--volume`` makes one directory of
+your machine visible from within the container. The part on the left of ``:`` is the name outside while the right part is the
+name within the container. The last words on the line are the docker image to use as a basis for the container (here,
+``simgrid/tuto-smpi``) and the program to run when the container starts (here, ``bash``).
+
 This will start a new container with all you need to take this
 tutorial, and create a ``smpi-tutorial`` directory in your home on
 your host machine that will be visible as ``/source/tutorial`` within the

@@ -9,7 +9,6 @@
 #include "simgrid/forward.h"
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/remote/CheckerSide.hpp"
-#include "src/mc/remote/RemotePtr.hpp"
 
 #include <functional>
 

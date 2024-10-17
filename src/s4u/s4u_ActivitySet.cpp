@@ -28,7 +28,7 @@ void ActivitySet::erase(ActivityPtr a)
     }
 }
 
-void ActivitySet::wait_all_for(double timeout)
+void ActivitySet::wait_all_for(double timeout) const
 {
   if (timeout < 0.0) {
     for (const auto& act : activities_)
@@ -101,13 +101,13 @@ ActivityPtr ActivitySet::wait_any_for(double timeout)
     erase(ret);
     ret->complete(Activity::State::FINISHED);
     return ret;
-  } catch (const HostFailureException& e) {
+  } catch (const HostFailureException&) {
     handle_failed_activities();
     throw;
-  } catch (const NetworkFailureException& e) {
+  } catch (const NetworkFailureException&) {
     handle_failed_activities();
     throw;
-  } catch (const StorageFailureException& e) {
+  } catch (const StorageFailureException&) {
     handle_failed_activities();
     throw;
   }
@@ -161,7 +161,7 @@ int sg_activity_set_wait_all_for(sg_activity_set_t as, double timeout)
   try {
     as->wait_all_for(timeout);
     return 1;
-  } catch (const simgrid::TimeoutException& e) {
+  } catch (const simgrid::TimeoutException&) {
     return 0;
   }
 }
@@ -173,7 +173,7 @@ sg_activity_t sg_activity_set_wait_any_for(sg_activity_set_t as, double timeout)
 {
   try {
     return as->wait_any_for(timeout).get();
-  } catch (const simgrid::TimeoutException& e) {
+  } catch (const simgrid::TimeoutException&) {
     return nullptr;
   }
 }

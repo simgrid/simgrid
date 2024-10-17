@@ -42,12 +42,16 @@ int main(int argc, char** argv)
     }
   }
   if (sthread) {
+#ifdef STHREAD_PATH /* only on Linux for now */
     auto val = simgrid::config::get_value<std::string>("model-check/setenv");
     if (not val.empty())
       val += ";";
     val += "LD_PRELOAD=";
     val += STHREAD_PATH;
     simgrid::config::set_value("model-check/setenv", val);
+#else
+    xbt_die("sthread is not ported to that operating system yet. You should try it under Linux.");
+#endif
   }
 
   std::unique_ptr<Exploration> explo;

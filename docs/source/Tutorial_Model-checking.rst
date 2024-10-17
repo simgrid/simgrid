@@ -71,13 +71,21 @@ X). Double check the value of the ``SIMGRID_HAVE_MC`` in the generated file ``in
 1, read the configuration logs to understand why the model checker was not compiled in, and try again. Usually, it's because the
 ``libevent-dev`` package is missing on the system.
 
-Another approach is to use a docker image as follows.
+Another approach is to use a docker image as follows. It starts a terminal within a Docker container where SimGrid is already 
+installed.
 
 .. code-block:: console
 
    $ docker image pull simgrid/tuto-mc
    $ mkdir ~/tuto-mcsimgrid # or chose another directory to share between your computer and the docker container
    $ docker run --user $UID:$GID -it --rm --name mcsimgrid --volume ~/tuto-mcsimgrid:/source/tutorial simgrid/tuto-mc bash
+
+More info if you want to understand that command. Skip it if you want. The ``--user $UID:$GID`` part request docker to use your
+login name and group within the container too. ``-it`` requests to run the command interactively in a terminal. ``--rm`` asks to
+remove the container once the command is done. ``--name`` gives a name to the container. ``--volume`` makes one directory of
+your machine visible from within the container. The part on the left of ``:`` is the name outside while the right part is the
+name within the container. The last words on the line are the docker image to use as a basis for the container (here,
+``simgrid/tuto-mc``) and the program to run when the container starts (here, ``bash``).
 
 In the container, you have access to the following directories of interest:
 

@@ -33,6 +33,7 @@ if("${CMAKE_SYSTEM}" MATCHES "Linux")
   set_property(TARGET sthread
                 APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
   target_link_libraries(sthread simgrid)
+  set(STHREAD_PATH "${CMAKE_INSTALL_FULL_LIBDIR}/libsthread.so")
 else()
   set(EXTRA_DIST ${EXTRA_DIST} ${STHREAD_SRC})
 endif()
