@@ -1,5 +1,8 @@
 SimGrid (3.36.1) Release target: spring 25
 
+SMPI:
+ - Allow automatic benchmarking with --cfg=smpi/host-speed:auto
+
 ----------------------------------------------------------------------------
 
 

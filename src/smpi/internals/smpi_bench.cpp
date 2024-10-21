@@ -18,6 +18,8 @@
 #include <getopt.h>
 
 #include "src/smpi/include/smpi_actor.hpp"
+#include "xbt/log.h"
+#include "xbt/xbt_os_time.h"
 
 #include <cerrno>
 #include <cmath>
@@ -475,4 +477,52 @@ int smpi_getopt (int argc,  char *const *argv,  const char *options)
 
 pid_t smpi_getpid(){
   return static_cast<pid_t>(simgrid::s4u::this_actor::get_pid());
+}
+
+#define SIZE 2000
+
+double smpi_autobench()
+{
+  XBT_INFO("You requested an automatic benchmark of this machine. This may take some time.");
+
+  // Allocate matrices
+  double* A = (double*)malloc(SIZE * SIZE * sizeof(double));
+  double* B = (double*)malloc(SIZE * SIZE * sizeof(double));
+  double* C = (double*)malloc(SIZE * SIZE * sizeof(double));
+
+  // Fill in matrix values
+  for (int i = 0; i < SIZE * SIZE; i++) {
+    A[i] = 2.0 * i / (SIZE * SIZE);
+    B[i] = -1.0 * i / (SIZE * SIZE);
+    C[i] = 0.0;
+  }
+
+  xbt_os_timer_t timer = xbt_os_timer_new();
+
+  // Multiply the matrices
+  xbt_os_threadtimer_start(timer);
+  for (int i = 0; i < SIZE; i++)
+    for (int k = 0; k < SIZE; k++)
+      for (int j = 0; j < SIZE; j++)
+        C[i * SIZE + j] = A[i * SIZE + k] * B[k * SIZE + j];
+  xbt_os_threadtimer_stop(timer);
+
+  // Compute the sum (to avoid compiler optimization)
+  double sum = 0;
+  for (int i = 0; i < SIZE * SIZE; i++)
+    sum += C[i];
+
+  double elapsed     = xbt_os_timer_elapsed(timer);
+  double number_flop = (3.0 * SIZE * SIZE * SIZE + SIZE * SIZE);
+
+  free(A);
+  free(B);
+  free(C);
+
+  // Print the wall-clock time and the sum (to avoid compiler optimization)
+  XBT_INFO("Automatic calibration ended after %lf seconds (for about 24Gflop). Use --cfg=smpi/host-speed:%.3lfGf next "
+           "time on this machine. (ignorable sum: %d)",
+           elapsed, number_flop / elapsed / (1000 * 1000 * 1000), (int)sum);
+
+  return number_flop / elapsed;
 }

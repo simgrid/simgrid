@@ -2,7 +2,7 @@ p Test the use of SMPI+S4u in the same file, as well as several different SMPI i
 ! output sort
 $ ./masterworker_mailbox_smpi ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/deployment_masterworker_mailbox_smpi.xml --log=smpi.:info --cfg=smpi/simulate-computation:no
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/simulate-computation' to 'no'
-> [0.000000] [smpi_config/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.  Check https://simgrid.org/doc/latest/Configuring_SimGrid.html#automatic-benchmarking-of-smpi-code for more information.
+> [0.000000] [smpi_config/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value, or "--cfg=smpi/host-speed:auto" to request an automatic benchmark of the correct value on your machine. Check https://simgrid.org/doc/latest/Configuring_SimGrid.html#automatic-benchmarking-of-smpi-code for more information.
 > [11.586581] [smpi_masterworkers/INFO] Simulation time 11.5866
 > [Bourassa:alltoall_mpi#1:(7) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 1
 > [Bourassa:alltoall_mpi#1:(7) 0.047272] [smpi_masterworkers/INFO] after alltoall 1

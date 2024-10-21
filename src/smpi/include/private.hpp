@@ -10,6 +10,7 @@
 #include "smpi/smpi_helpers_internal.h"
 #include "smpi_utils.hpp"
 #include "src/instr/instr_smpi.hpp"
+#include "xbt/base.h"
 #include <unordered_map>
 #include <vector>
 
@@ -128,6 +129,7 @@ XBT_PRIVATE void smpi_destroy_global_memory_segments();
 XBT_PRIVATE void smpi_bench_destroy();
 XBT_PRIVATE void smpi_shared_destroy();
 XBT_PRIVATE double smpi_adjust_comp_speed();
+XBT_PRIVATE double smpi_autobench();
 
 // This helper class uses RAII to call smpi_bench_end() when an object is built, and have smpi_bench_begin() be called
 // automatically when going out of scope.
