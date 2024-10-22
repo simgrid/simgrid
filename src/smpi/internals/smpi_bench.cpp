@@ -504,7 +504,7 @@ double smpi_autobench()
   for (int i = 0; i < SIZE; i++)
     for (int k = 0; k < SIZE; k++)
       for (int j = 0; j < SIZE; j++)
-        C[i * SIZE + j] = A[i * SIZE + k] * B[k * SIZE + j];
+        C[i * SIZE + j] += A[i * SIZE + k] * B[k * SIZE + j];
   xbt_os_threadtimer_stop(timer);
 
   // Compute the sum (to avoid compiler optimization)
