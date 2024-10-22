@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/explo/OutOfOrderExplorer.hpp"
+#include "src/mc/explo/BeFSExplorer.hpp"
 #include "src/mc/api/states/BeFSWutState.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
@@ -39,7 +39,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_befs, mc, "BeFS exploration algorithm of the 
 
 namespace simgrid::mc {
 
-RecordTrace OutOfOrderExplorer::get_record_trace() // override
+RecordTrace BeFSExplorer::get_record_trace() // override
 {
   RecordTrace res;
 
@@ -52,7 +52,7 @@ RecordTrace OutOfOrderExplorer::get_record_trace() // override
   return res;
 }
 
-void OutOfOrderExplorer::restore_stack(StatePtr state)
+void BeFSExplorer::restore_stack(StatePtr state)
 {
   XBT_DEBUG("Going to restore stack. Current depth is %lu; chosen state is #%ld", stack_.size(), state->get_num());
   stack_.clear();
@@ -73,7 +73,7 @@ void OutOfOrderExplorer::restore_stack(StatePtr state)
   }
 }
 
-void OutOfOrderExplorer::log_state() // override
+void BeFSExplorer::log_state() // override
 {
   on_log_state_signal(get_remote_app());
   XBT_INFO("BeFS exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, "
@@ -84,7 +84,7 @@ void OutOfOrderExplorer::log_state() // override
   Exploration::log_state();
 }
 
-void OutOfOrderExplorer::run()
+void BeFSExplorer::run()
 {
   on_exploration_start_signal(get_remote_app());
   /* This function runs the Best First Search algorithm the state space.
@@ -204,7 +204,7 @@ void OutOfOrderExplorer::run()
   log_state();
 }
 
-StatePtr OutOfOrderExplorer::best_opened_state()
+StatePtr BeFSExplorer::best_opened_state()
 {
   int best_prio = 0; // cache the value for the best priority found so far (initialized to silence gcc)
   auto best     = end(opened_states_);   // iterator to the state to explore having the best priority
@@ -241,7 +241,7 @@ StatePtr OutOfOrderExplorer::best_opened_state()
   return best_state;
 }
 
-void OutOfOrderExplorer::backtrack()
+void BeFSExplorer::backtrack()
 {
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
   XBT_DEBUG("%lu alternatives are yet to be explored:", opened_states_.size());
@@ -262,7 +262,7 @@ void OutOfOrderExplorer::backtrack()
   this->restore_stack(backtracking_point);
 }
 
-OutOfOrderExplorer::OutOfOrderExplorer(const std::vector<char*>& args, ReductionMode mode)
+BeFSExplorer::BeFSExplorer(const std::vector<char*>& args, ReductionMode mode)
     : Exploration(args), reduction_mode_(mode)
 {
 
@@ -293,9 +293,9 @@ OutOfOrderExplorer::OutOfOrderExplorer(const std::vector<char*>& args, Reduction
   opened_states_.emplace_back(stack_.back());
 }
 
-Exploration* create_out_of_order_exploration(const std::vector<char*>& args, ReductionMode mode)
+Exploration* create_befs_exploration(const std::vector<char*>& args, ReductionMode mode)
 {
-  return new OutOfOrderExplorer(args, mode);
+  return new BeFSExplorer(args, mode);
 }
 
 } // namespace simgrid::mc

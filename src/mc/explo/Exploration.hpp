@@ -171,7 +171,7 @@ public:
 
 // External constructors so that the types (and the types of their content) remain hidden
 XBT_PUBLIC Exploration* create_dfs_exploration(const std::vector<char*>& args, ReductionMode mode);
-XBT_PUBLIC Exploration* create_out_of_order_exploration(const std::vector<char*>& args, ReductionMode mode);
+XBT_PUBLIC Exploration* create_befs_exploration(const std::vector<char*>& args, ReductionMode mode);
 XBT_PUBLIC Exploration* create_parallelized_exploration(const std::vector<char*>& args, ReductionMode mode);
 XBT_PUBLIC Exploration* create_critical_transition_exploration(std::unique_ptr<RemoteApp> remote_app,
                                                                ReductionMode mode, stack_t* stack);

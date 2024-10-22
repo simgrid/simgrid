@@ -23,7 +23,7 @@
 
 namespace simgrid::mc {
 
-class XBT_PRIVATE OutOfOrderExplorer : public Exploration {
+class XBT_PRIVATE BeFSExplorer : public Exploration {
 private:
   ReductionMode reduction_mode_;
   std::unique_ptr<Reduction> reduction_algo_;
@@ -32,7 +32,7 @@ private:
   unsigned long explored_traces_ = 0;
 
 public:
-  explicit OutOfOrderExplorer(const std::vector<char*>& args, ReductionMode mode);
+  explicit BeFSExplorer(const std::vector<char*>& args, ReductionMode mode);
   void run() override;
   RecordTrace get_record_trace() override;
   void log_state() override;

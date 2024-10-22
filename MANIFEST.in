@@ -2290,6 +2290,8 @@ include src/mc/api/strategy/StratLocalInfo.hpp
 include src/mc/api/strategy/UniformStrategy.cpp
 include src/mc/api/strategy/UniformStrategy.hpp
 include src/mc/datatypes.h
+include src/mc/explo/BeFSExplorer.cpp
+include src/mc/explo/BeFSExplorer.hpp
 include src/mc/explo/CommunicationDeterminismChecker.cpp
 include src/mc/explo/CriticalTransitionExplorer.cpp
 include src/mc/explo/CriticalTransitionExplorer.hpp
@@ -2297,8 +2299,6 @@ include src/mc/explo/DFSExplorer.cpp
 include src/mc/explo/DFSExplorer.hpp
 include src/mc/explo/Exploration.cpp
 include src/mc/explo/Exploration.hpp
-include src/mc/explo/OutOfOrderExplorer.cpp
-include src/mc/explo/OutOfOrderExplorer.hpp
 include src/mc/explo/ParallelizedExplorer.cpp
 include src/mc/explo/ParallelizedExplorer.hpp
 include src/mc/explo/UdporChecker.cpp
