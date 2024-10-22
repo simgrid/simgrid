@@ -161,7 +161,8 @@ PYBIND11_MODULE(simgrid, m)
           "was killed. If False, the actor finished peacefully.")
       .def("get_pid", &simgrid::s4u::this_actor::get_pid, "Retrieves PID of the current actor")
       .def("get_ppid", &simgrid::s4u::this_actor::get_ppid,
-           "Retrieves PPID of the current actor (i.e., the PID of its parent).");
+           "Retrieves PPID of the current actor (i.e., the PID of its parent).")
+      .def("get_name", &simgrid::s4u::this_actor::get_cname, "The name of this actor (read-only property).");
 
   /* Class Engine */
   py::class_<Engine>(m, "Engine", "Simulation Engine")
@@ -182,7 +183,8 @@ PYBIND11_MODULE(simgrid, m)
            "Retrieve a host by its name, or None if it does not exist in the platform.")
       .def_property_readonly("all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
       .def_property_readonly("all_links", &Engine::get_all_links, "Returns the list of all links found in the platform")
-      .def_property_readonly("all_netpoints", &Engine::get_all_netpoints)
+      .def_property_readonly("all_netpoints", &Engine::get_all_netpoints, "Returns the list of all netpoints found in the platform")
+      .def_property_readonly("all_actors", &Engine::get_all_actors, "Returns the list of all actors found in the platform")
       .def_property_readonly("netzone_root", &Engine::get_netzone_root,
                              "Retrieve the root netzone, containing all others.")
       .def("netpoint_by_name", &Engine::netpoint_by_name_or_null)
@@ -560,6 +562,7 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("bandwidth", &Link::get_bandwidth,
                              "The bandwidth (in bytes per second) (read-only property).")
       .def_property_readonly("latency", &Link::get_latency, "The latency (in seconds) (read-only property).")
+      .def_property_readonly("load", &Link::get_load, "Returns the current load (in bytes per second) (read-only property).")
       .def(
           "__repr__", [](const Link* l) { return "Link(" + l->get_name() + ")"; },
           "Textual representation of the Link");
