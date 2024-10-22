@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/ParallelizedExplorer.hpp"
-#include "src/mc/api/states/BFSWutState.hpp"
+#include "src/mc/api/states/BeFSWutState.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -14,7 +14,7 @@
 #include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"
 
-#include "src/mc/explo/reduction/BFSODPOR.hpp"
+#include "src/mc/explo/reduction/BeFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
@@ -79,7 +79,7 @@ void ParallelizedExplorer::restore_stack(StatePtr state)
 void ParallelizedExplorer::log_state() // override
 {
   on_log_state_signal(get_remote_app());
-  XBT_INFO("BFS exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, "
+  XBT_INFO("BeFS exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, "
            "%lu states "
            "visited overall)",
            State::get_expanded_states(), explored_traces_, Transition::get_replayed_transitions(),
@@ -302,9 +302,9 @@ ParallelizedExplorer::ParallelizedExplorer(const std::vector<char*>& args, Reduc
   else if (reduction_mode_ == ReductionMode::sdpor)
     reduction_algo_ = std::make_unique<SDPOR>();
   else if (reduction_mode_ == ReductionMode::odpor)
-    reduction_algo_ = std::make_unique<BFSODPOR>();
+    reduction_algo_ = std::make_unique<BeFSODPOR>();
   else {
-    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by BFS explorer",
+    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by BeFS explorer",
                to_c_str(reduction_mode_));
     reduction_algo_ = std::make_unique<NoReduction>();
   }

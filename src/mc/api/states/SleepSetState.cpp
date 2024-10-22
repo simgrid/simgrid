@@ -27,7 +27,7 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state) : Sta
   if (not sleep_set_.empty() and parent_state->has_correct_execution())
     this->register_as_correct(); // FIX ME
   // This is only working if the parent has been fully explored when creating this state
-  // In other word, if we are doing any sort of BFS, there are no good reason for this to work as intented
+  // In other word, if we are doing any sort of BeFS, there are no good reason for this to work as intented
 }
 
 void SleepSetState::sleep_add_and_mark(std::shared_ptr<Transition> transition)

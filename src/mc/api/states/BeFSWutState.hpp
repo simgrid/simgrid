@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_MC_BFSWUTSTATE_HPP
-#define SIMGRID_MC_BFSWUTSTATE_HPP
+#ifndef SIMGRID_MC_BeFSWUTSTATE_HPP
+#define SIMGRID_MC_BeFSWUTSTATE_HPP
 
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/states/WutState.hpp"
@@ -19,7 +19,7 @@
 
 namespace simgrid::mc {
 
-class XBT_PRIVATE BFSWutState : public WutState {
+class XBT_PRIVATE BeFSWutState : public WutState {
   std::map<aid_t, StatePtr> children_states_;
 
   /** This wakeup tree is used to store the whole tree explored during the process,
@@ -33,8 +33,8 @@ class XBT_PRIVATE BFSWutState : public WutState {
   std::vector<aid_t> done_;
 
 public:
-  explicit BFSWutState(RemoteApp& remote_app);
-  explicit BFSWutState(RemoteApp& remote_app, StatePtr parent_state);
+  explicit BeFSWutState(RemoteApp& remote_app);
+  explicit BeFSWutState(RemoteApp& remote_app, StatePtr parent_state);
 
   void record_child_state(StatePtr child);
 

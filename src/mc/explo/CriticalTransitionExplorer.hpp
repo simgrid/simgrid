@@ -29,9 +29,6 @@ using EventHandle = uint32_t;
 
 class XBT_PRIVATE CriticalTransitionExplorer : public DFSExplorer {
 private:
-  // For statistics. Starts at one because we only track the act of starting a new trace
-  unsigned long explored_traces_ = 0;
-
   // The first non-correct execution found. We must record the state (in order to re-explore them later) AND
   // the corresponding out-transition (since this can change during later explorations).
   std::deque<std::pair<StatePtr, std::shared_ptr<Transition>>> initial_bugged_stack = {};

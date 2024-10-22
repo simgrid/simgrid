@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_MC_BFSODPOR_HPP
-#define SIMGRID_MC_BFSODPOR_HPP
+#ifndef SIMGRID_MC_BeFSODPOR_HPP
+#define SIMGRID_MC_BeFSODPOR_HPP
 
 #include "simgrid/forward.h"
 #include "src/mc/explo/odpor/Execution.hpp"
@@ -12,11 +12,11 @@
 
 namespace simgrid::mc {
 
-class BFSODPOR : public Reduction {
+class BeFSODPOR : public Reduction {
 
 public:
-  BFSODPOR()  = default;
-  ~BFSODPOR() = default;
+  BeFSODPOR()  = default;
+  ~BeFSODPOR() = default;
 
   class RaceUpdate : public Reduction::RaceUpdate {
     std::vector<std::pair<StatePtr, odpor::PartialExecution>> state_and_exec_;

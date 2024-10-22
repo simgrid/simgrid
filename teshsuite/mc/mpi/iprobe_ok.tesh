@@ -40,28 +40,28 @@ $ $VALGRIND_NO_TRACE_CHILDREN ../../smpi_script/bin/smpirun -wrapper "${bindir:=
 > Received g=11
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 54 unique states visited; 11 explored traces (45 transition replays, 99 states visited overall)
 
-$ $VALGRIND_NO_TRACE_CHILDREN ../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../bin/simgrid-mc" --cfg=model-check/reduction:odpor --cfg=model-check/exploration-algo:BFS --cfg=model-check/strategy:uniform --cfg=model-check/bfs-threshold:100 -platform ${srcdir:=.}/../../examples/platforms/cluster_backbone.xml -np 2 ./mpi_iprobe_ok
+$ $VALGRIND_NO_TRACE_CHILDREN ../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../bin/simgrid-mc" --cfg=model-check/reduction:odpor --cfg=model-check/exploration-algo:BeFS --cfg=model-check/strategy:uniform --cfg=model-check/befs-threshold:100 -platform ${srcdir:=.}/../../examples/platforms/cluster_backbone.xml -np 2 ./mpi_iprobe_ok
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/privatization' to 'ON'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/np' to '2'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/hostfile' to ''
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'precision/timing' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BFS'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BeFS'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/strategy' to 'uniform'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/bfs-threshold' to '100'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/befs-threshold' to '100'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/privatization' to 'ON'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/np' to '2'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/hostfile' to ''
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'precision/timing' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BFS'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BeFS'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/strategy' to 'uniform'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/bfs-threshold' to '100'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/befs-threshold' to '100'
 > rank 0 is alive on node-0.simgrid.org
 > rank 1 is alive on node-1.simgrid.org
-> [0.000000] [mc_bfs/INFO] Start a BFS exploration. Reduction is: odpor.
+> [0.000000] [mc_befs/INFO] Start a BeFS exploration. Reduction is: odpor.
 > exited loop with g=2
 > Received g=11
 > exited loop with g=1
@@ -84,4 +84,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ../../smpi_script/bin/smpirun -wrapper "${bindir:=
 > Received g=11
 > exited loop with g=10
 > Received g=11
-> [0.000000] [mc_bfs/INFO] BFS exploration ended. 54 unique states visited; 11 explored traces (74 transition replays, 128 states visited overall)
+> [0.000000] [mc_befs/INFO] BeFS exploration ended. 54 unique states visited; 11 explored traces (74 transition replays, 128 states visited overall)

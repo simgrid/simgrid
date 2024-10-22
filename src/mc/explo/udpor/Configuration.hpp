@@ -58,7 +58,7 @@ public:
    * that UDPOR is implemented as expected. There is a performance penalty that
    * should be noted: checking for maximality requires ensuring that all events in the
    * configuration have their dependencies containes within the configuration, which
-   * essentially means performing a BFS/DFS over the configuration using a History object.
+   * essentially means performing a BeFS/DFS over the configuration using a History object.
    * However, since the slowest part of UDPOR involves enumerating all
    * subsets of maximal events and computing k-partial alternatives (the
    * latter definitively an NP-hard problem when optimal), Amdahl's law suggests

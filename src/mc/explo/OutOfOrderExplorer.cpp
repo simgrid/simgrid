@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/OutOfOrderExplorer.hpp"
-#include "src/mc/api/states/BFSWutState.hpp"
+#include "src/mc/api/states/BeFSWutState.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -14,7 +14,7 @@
 #include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"
 
-#include "src/mc/explo/reduction/BFSODPOR.hpp"
+#include "src/mc/explo/reduction/BeFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
@@ -35,7 +35,7 @@
 #include <unordered_set>
 #include <vector>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_bfs, mc, "BFS exploration algorithm of the model-checker");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_befs, mc, "BeFS exploration algorithm of the model-checker");
 
 namespace simgrid::mc {
 
@@ -76,7 +76,7 @@ void OutOfOrderExplorer::restore_stack(StatePtr state)
 void OutOfOrderExplorer::log_state() // override
 {
   on_log_state_signal(get_remote_app());
-  XBT_INFO("BFS exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, "
+  XBT_INFO("BeFS exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, "
            "%lu states "
            "visited overall)",
            State::get_expanded_states(), explored_traces_, Transition::get_replayed_transitions(),
@@ -136,13 +136,13 @@ void OutOfOrderExplorer::run()
 
     xbt_assert(state->is_actor_enabled(next));
 
-    if (_sg_mc_bfs_threshold != 0) {
+    if (_sg_mc_befs_threshold != 0) {
       auto dist = state->get_actor_strategy_valuation(next);
       auto best = best_opened_state();
       if (best != nullptr) {
         int best_dist = best->next_transition_guided().second;
         opened_states_.emplace_back(std::move(best));
-        if ((float)(dist * _sg_mc_bfs_threshold) / 100.0 > (float)best_dist) {
+        if ((float)(dist * _sg_mc_befs_threshold) / 100.0 > (float)best_dist) {
           XBT_VERB("current selected dist:%d vs. best*rate:%d", dist, best_dist);
           opened_states_.emplace_back(std::move(state));
           this->backtrack();
@@ -152,7 +152,7 @@ void OutOfOrderExplorer::run()
     }
 
     // If we use a state containing a sleep state, display it during debug
-    if (XBT_LOG_ISENABLED(mc_bfs, xbt_log_priority_verbose)) {
+    if (XBT_LOG_ISENABLED(mc_befs, xbt_log_priority_verbose)) {
       auto sleep_state = dynamic_cast<SleepSetState*>(state.get());
       if (sleep_state != nullptr and not sleep_state->get_sleep_set().empty()) {
         XBT_VERB("Sleep set actually containing:");
@@ -271,14 +271,14 @@ OutOfOrderExplorer::OutOfOrderExplorer(const std::vector<char*>& args, Reduction
   else if (reduction_mode_ == ReductionMode::sdpor)
     reduction_algo_ = std::make_unique<SDPOR>();
   else if (reduction_mode_ == ReductionMode::odpor)
-    reduction_algo_ = std::make_unique<BFSODPOR>();
+    reduction_algo_ = std::make_unique<BeFSODPOR>();
   else {
-    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by BFS explorer",
+    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by BeFS explorer",
                to_c_str(reduction_mode_));
     reduction_algo_ = std::make_unique<NoReduction>();
   }
 
-  XBT_INFO("Start a BFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
+  XBT_INFO("Start a BeFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
 
   auto initial_state = reduction_algo_->state_create(get_remote_app());
 
