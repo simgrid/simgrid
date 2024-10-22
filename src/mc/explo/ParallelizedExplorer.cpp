@@ -42,14 +42,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_parallel, mc, "Parallel exploration algorithm
 
 namespace simgrid::mc {
 
-xbt::signal<void(RemoteApp&)> ParallelizedExplorer::on_exploration_start_signal;
-
-xbt::signal<void(State*, RemoteApp&)> ParallelizedExplorer::on_state_creation_signal;
-
-xbt::signal<void(Transition*, RemoteApp&)> ParallelizedExplorer::on_transition_execute_signal;
-
-xbt::signal<void(RemoteApp&)> ParallelizedExplorer::on_log_state_signal;
-
 RecordTrace ParallelizedExplorer::get_record_trace() // override
 {
   RecordTrace res;

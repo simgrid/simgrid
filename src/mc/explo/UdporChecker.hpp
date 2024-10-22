@@ -35,8 +35,6 @@ namespace simgrid::mc::udpor {
  */
 class XBT_PRIVATE UdporChecker : public Exploration {
 
-  static xbt::signal<void(RemoteApp&)> on_log_state_signal;
-
 public:
   explicit UdporChecker(const std::vector<char*>& args);
 

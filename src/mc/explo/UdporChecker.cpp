@@ -19,8 +19,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to verification 
 
 namespace simgrid::mc::udpor {
 
-xbt::signal<void(RemoteApp&)> UdporChecker::on_log_state_signal;
-
 UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration(args) {}
 
 void UdporChecker::log_state()

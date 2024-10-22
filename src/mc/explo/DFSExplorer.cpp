@@ -38,14 +38,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dfs, mc, "DFS exploration algorithm of the mo
 
 namespace simgrid::mc {
 
-xbt::signal<void(RemoteApp&)> DFSExplorer::on_exploration_start_signal;
-
-xbt::signal<void(State*, RemoteApp&)> DFSExplorer::on_state_creation_signal;
-
-xbt::signal<void(Transition*, RemoteApp&)> DFSExplorer::on_transition_execute_signal;
-
-xbt::signal<void(RemoteApp&)> DFSExplorer::on_log_state_signal;
-
 RecordTrace DFSExplorer::get_record_trace() // override
 {
   RecordTrace res;

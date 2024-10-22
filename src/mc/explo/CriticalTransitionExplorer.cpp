@@ -40,14 +40,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(
 
 namespace simgrid::mc {
 
-xbt::signal<void(RemoteApp&)> CriticalTransitionExplorer::on_exploration_start_signal;
-
-xbt::signal<void(State*, RemoteApp&)> CriticalTransitionExplorer::on_state_creation_signal;
-
-xbt::signal<void(Transition*, RemoteApp&)> CriticalTransitionExplorer::on_transition_execute_signal;
-
-xbt::signal<void(RemoteApp&)> CriticalTransitionExplorer::on_log_state_signal;
-
 void CriticalTransitionExplorer::log_end_exploration()
 {
   XBT_INFO("*********************************");

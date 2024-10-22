@@ -39,14 +39,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_bfs, mc, "BFS exploration algorithm of the mo
 
 namespace simgrid::mc {
 
-xbt::signal<void(RemoteApp&)> OutOfOrderExplorer::on_exploration_start_signal;
-
-xbt::signal<void(State*, RemoteApp&)> OutOfOrderExplorer::on_state_creation_signal;
-
-xbt::signal<void(Transition*, RemoteApp&)> OutOfOrderExplorer::on_transition_execute_signal;
-
-xbt::signal<void(RemoteApp&)> OutOfOrderExplorer::on_log_state_signal;
-
 RecordTrace OutOfOrderExplorer::get_record_trace() // override
 {
   RecordTrace res;

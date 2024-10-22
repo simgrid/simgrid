@@ -114,6 +114,28 @@ public:
   static xbt::signal<void(State&, RemoteApp&)> on_restore_state_signal;
   static xbt::signal<void(Transition*, RemoteApp&)> on_transition_replay_signal;
   static xbt::signal<void(RemoteApp&)> on_backtracking_signal;
+  static xbt::signal<void(RemoteApp&)> on_exploration_start_signal;
+  static xbt::signal<void(State*, RemoteApp&)> on_state_creation_signal;
+  static xbt::signal<void(Transition*, RemoteApp&)> on_transition_execute_signal;
+  static xbt::signal<void(RemoteApp&)> on_log_state_signal;
+
+  /** Called once when the exploration starts */
+  static void on_exploration_start(std::function<void(RemoteApp& remote_app)> const& f)
+  {
+    on_exploration_start_signal.connect(f);
+  }
+  /** Called each time that a new state is create */
+  static void on_state_creation(std::function<void(State*, RemoteApp& remote_app)> const& f)
+  {
+    on_state_creation_signal.connect(f);
+  }
+  /** Called when executing a new transition */
+  static void on_transition_execute(std::function<void(Transition*, RemoteApp& remote_app)> const& f)
+  {
+    on_transition_execute_signal.connect(f);
+  }
+  /** Called when displaying the statistics at the end of the exploration */
+  static void on_log_state(std::function<void(RemoteApp&)> const& f) { on_log_state_signal.connect(f); }
 
   /** Called when the state to which we backtrack was not checkpointed state, forcing us to restore the initial state
    * before replaying some transitions */
