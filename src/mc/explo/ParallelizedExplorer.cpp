@@ -205,6 +205,7 @@ void ParallelizedExplorer::Explorer()
       Exploration::check_deadlock();
 
       if (state->get_actor_count() == 0) {
+        // Compute the race when reaching a leaf, and pass them to the Reductor through the dedicated queue
         std::shared_ptr<Reduction::RaceUpdate> todo_updates =
             reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
         std::unique_lock<std::mutex> lock_ru(race_updates_lock_);

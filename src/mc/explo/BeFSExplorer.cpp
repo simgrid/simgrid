@@ -123,6 +123,11 @@ void BeFSExplorer::run()
       Exploration::check_deadlock();
 
       if (state->get_actor_count() == 0) {
+        // Compute the race when reaching a leaf, and apply them immediately
+        std::shared_ptr<Reduction::RaceUpdate> todo_updates =
+            reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
+        reduction_algo_->apply_race_update(std::move(todo_updates), &opened_states_);
+
         explored_traces_++;
         get_remote_app().finalize_app();
         XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
@@ -193,10 +198,6 @@ void BeFSExplorer::run()
 
     stack_.emplace_back(std::move(next_state));
     execution_seq_.push_transition(std::move(executed_transition));
-
-    std::shared_ptr<Reduction::RaceUpdate> todo_updates =
-        reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
-    reduction_algo_->apply_race_update(std::move(todo_updates), &opened_states_);
 
     dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
                state->get_transition_out()->dot_string().c_str());
