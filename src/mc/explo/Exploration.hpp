@@ -104,7 +104,7 @@ public:
 
   virtual stack_t get_stack()
   {
-    xbt_die("You asked for a combination of feature that is not yet supported by SimgridMC (most likely a combination "
+    xbt_die("You asked for a combination of feature that is not yet supported by Mc Simgrid (most likely a combination "
             "of exploration algorithm + another special feature). If you really want to try this combination, reach "
             "out to us so we can cover those.");
   }

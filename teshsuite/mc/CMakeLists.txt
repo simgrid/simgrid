@@ -86,7 +86,7 @@ foreach(x
   if(${enable_testsuite_McMini} AND (NOT ("${CMAKE_SYSTEM}" MATCHES "Linux")))
     message(STATUS "McMini tests cannot be executed on this system (${CMAKE_SYSTEM}) because it requires Linux.")
   endif()
-  if(${enable_testsuite_McMini} AND SIMGRID_HAVE_MC)
+  if(${enable_testsuite_McMini} AND (NOT SIMGRID_HAVE_MC))
     message(STATUS "McMini tests cannot be executed when MC is disabled.")
   endif()
 endforeach()
