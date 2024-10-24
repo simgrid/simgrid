@@ -682,6 +682,7 @@ Querying info
 
       .. autofunction:: simgrid.this_actor.get_host
       .. autofunction:: simgrid.this_actor.set_host
+      .. autofunction:: simgrid.this_actor.get_name
 
       .. autofunction:: simgrid.this_actor.get_pid
       .. autofunction:: simgrid.this_actor.get_ppid
@@ -914,6 +915,10 @@ Retrieving actors
       .. doxygenfunction:: simgrid::s4u::Engine::get_actor_count
       .. doxygenfunction:: simgrid::s4u::Engine::get_all_actors
       .. doxygenfunction:: simgrid::s4u::Engine::get_filtered_actors
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Engine.all_actors
 
    .. group-tab:: C
 
@@ -1467,6 +1472,7 @@ Retrieving components
 
    .. group-tab:: Python
 
+      .. autoattribute:: simgrid.Engine.all_actors
       .. automethod:: simgrid.Host.get_disks
 
    .. group-tab:: C
@@ -1686,6 +1692,7 @@ Querying info
    .. group-tab:: Python
 
       .. autoattribute:: simgrid.Link.name
+      .. autoattribute:: simgrid.Link.load
 
    .. group-tab:: C
 
@@ -1751,6 +1758,10 @@ User data and properties
 
       .. doxygenfunction:: simgrid::s4u::Link::get_property(const std::string &key) const
       .. doxygenfunction:: simgrid::s4u::Link::set_property(const std::string &key, const std::string &value)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Link.get_property
 
    .. group-tab:: C
 
