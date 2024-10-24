@@ -371,6 +371,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("pstate_speed", &Host::get_pstate_speed, "Retrieve the maximal speed at the given pstate")
       .def_property_readonly("netpoint", &Host::get_netpoint, "Retrieve the netpoint associated to this zone")
       .def_property_readonly("disks", &Host::get_disks, "The list of disks on this host (read-only).")
+      .def_property_readonly("all_actors", &Host::get_all_actors, "Returns the list of all actors on the host")
       .def("get_disks", &Host::get_disks, "Retrieve the list of disks in this host")
       .def_property("core_count", &Host::get_core_count,
                     py::cpp_function(&Host::set_core_count, py::call_guard<py::gil_scoped_release>()),
@@ -563,6 +564,7 @@ PYBIND11_MODULE(simgrid, m)
                              "The bandwidth (in bytes per second) (read-only property).")
       .def_property_readonly("latency", &Link::get_latency, "The latency (in seconds) (read-only property).")
       .def_property_readonly("load", &Link::get_load, "Returns the current load (in bytes per second) (read-only property).")
+      .def("get_property", &Link::get_property, "Retrieve link property.")
       .def(
           "__repr__", [](const Link* l) { return "Link(" + l->get_name() + ")"; },
           "Textual representation of the Link");
