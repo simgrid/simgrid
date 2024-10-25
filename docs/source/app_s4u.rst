@@ -1669,7 +1669,7 @@ Retrieving links
       See also :py:attr:`simgrid.Engine.all_links`.
 
       .. automethod:: simgrid.Link.by_name
-      .. autoattribute:: simgrid.Link.name
+      .. automethod:: simgrid.Link.by_name_or_null
 
    .. group-tab:: C
 
@@ -1693,6 +1693,7 @@ Querying info
 
       .. autoattribute:: simgrid.Link.name
       .. autoattribute:: simgrid.Link.load
+      .. automethod:: simgrid.Link.is_used
 
    .. group-tab:: C
 
@@ -1743,7 +1744,9 @@ Model policy
 
    .. group-tab:: Python
 
+      .. autoattribute:: simgrid.Link.concurrency_limit
       .. automethod:: simgrid.Link.set_concurrency_limit
+      .. automethod:: simgrid.Link.get_sharing_policy
       .. automethod:: simgrid.Link.set_sharing_policy
 
    .. group-tab:: C
@@ -1757,11 +1760,14 @@ User data and properties
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Link::get_property(const std::string &key) const
+      .. doxygenfunction:: simgrid::s4u::Link::get_properties() const
       .. doxygenfunction:: simgrid::s4u::Link::set_property(const std::string &key, const std::string &value)
 
    .. group-tab:: Python
 
       .. automethod:: simgrid.Link.get_property
+      .. automethod:: simgrid.Link.get_properties
+      .. automethod:: simgrid.Link.set_property
 
    .. group-tab:: C
 

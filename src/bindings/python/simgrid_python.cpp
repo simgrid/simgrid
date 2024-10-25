@@ -162,7 +162,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("get_pid", &simgrid::s4u::this_actor::get_pid, "Retrieves PID of the current actor")
       .def("get_ppid", &simgrid::s4u::this_actor::get_ppid,
            "Retrieves PPID of the current actor (i.e., the PID of its parent).")
-      .def("get_name", &simgrid::s4u::this_actor::get_cname, "The name of this actor (read-only property).");
+      .def("get_name", &simgrid::s4u::this_actor::get_cname, "Retrieves the name of this actor.");
 
   /* Class Engine */
   py::class_<Engine>(m, "Engine", "Simulation Engine")
@@ -550,14 +550,21 @@ PYBIND11_MODULE(simgrid, m)
       .def("turn_on", &Link::turn_on, py::call_guard<py::gil_scoped_release>(), "Turns the link on.")
       .def("turn_off", &Link::turn_off, py::call_guard<py::gil_scoped_release>(), "Turns the link off.")
       .def("is_on", &Link::is_on, "Check whether the link is on.")
-
+      .def("is_used", &Link::is_used, "Check if the link is used (at least one flow uses the link).")
+      .def("get_sharing_policy", &Link::get_sharing_policy, "Retrieve link sharing policy.")
       .def("set_sharing_policy", &Link::set_sharing_policy, py::call_guard<py::gil_scoped_release>(),
            "Set sharing policy for this link")
+      .def_property("concurrency_limit", &Link::get_concurrency_limit,
+                    py::cpp_function(&Link::set_concurrency_limit, py::call_guard<py::gil_scoped_release>()),
+                    "Concurrency limit (read/write property).")
+      // Keep `set_concurrency_limit` method for backward compatibility.
       .def("set_concurrency_limit", &Link::set_concurrency_limit, py::call_guard<py::gil_scoped_release>(),
            "Set concurrency limit for this link")
       .def("set_host_wifi_rate", &Link::set_host_wifi_rate, py::call_guard<py::gil_scoped_release>(),
            "Set level of communication speed of given host on this Wi-Fi link")
       .def_static("by_name", &Link::by_name, "Retrieves a Link from its name, or dies")
+      .def_static("by_name_or_null", &Link::by_name_or_null,
+                 "Retrieve a Link by its name, or None if it does not exist in the platform.")
       .def("seal", &Link::seal, py::call_guard<py::gil_scoped_release>(), "Seal this link")
       .def_property_readonly("name", &Link::get_name, "The name of this link")
       .def_property_readonly("bandwidth", &Link::get_bandwidth,
@@ -565,6 +572,8 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("latency", &Link::get_latency, "The latency (in seconds) (read-only property).")
       .def_property_readonly("load", &Link::get_load, "Returns the current load (in bytes per second) (read-only property).")
       .def("get_property", &Link::get_property, "Retrieve link property.")
+      .def("get_properties", &Link::get_properties, "Retrieve link all properties.")
+      .def("set_property", &Link::set_property, "Set link property.")
       .def(
           "__repr__", [](const Link* l) { return "Link(" + l->get_name() + ")"; },
           "Textual representation of the Link");
