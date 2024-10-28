@@ -298,6 +298,8 @@ PYBIND11_MODULE(simgrid, m)
       .def("seal", &simgrid::s4u::NetZone::seal, "Seal this NetZone")
       .def_property_readonly("name", &simgrid::s4u::NetZone::get_name,
                              "The name of this network zone (read-only property).")
+      .def_property_readonly("all_hosts", &simgrid::s4u::NetZone::get_all_hosts, "Retrieve all NetZone hosts (read-only property).")
+      .def_property_readonly("host_count", &simgrid::s4u::NetZone::get_host_count, "Get NetZone host count (read-only property).")
       .def(
           "__repr__", [](const simgrid::s4u::NetZone net) { return "NetZone(" + net.get_name() + ")"; },
           "Textual representation of the NetZone");
@@ -490,6 +492,7 @@ PYBIND11_MODULE(simgrid, m)
            "units: w (week), d (day), h, s, ms, us, ns, ps.")
       .def("set_latency", py::overload_cast<double>(&Link::set_latency), py::call_guard<py::gil_scoped_release>(),
            "Set the latency as a float (in seconds).")
+      // Keep `set_bandwidth` for backward compatibility.
       .def("set_bandwidth", &Link::set_bandwidth, py::call_guard<py::gil_scoped_release>(),
            "Set the bandwidth (in byte per second).")
       .def(
@@ -550,7 +553,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("turn_on", &Link::turn_on, py::call_guard<py::gil_scoped_release>(), "Turns the link on.")
       .def("turn_off", &Link::turn_off, py::call_guard<py::gil_scoped_release>(), "Turns the link off.")
       .def("is_on", &Link::is_on, "Check whether the link is on.")
-      .def("is_used", &Link::is_used, "Check if the link is used (at least one flow uses the link).")
+      .def_property_readonly("is_used", &Link::is_used, "Check if the link is used (at least one flow uses the link).")
       .def("get_sharing_policy", &Link::get_sharing_policy, "Retrieve link sharing policy.")
       .def("set_sharing_policy", &Link::set_sharing_policy, py::call_guard<py::gil_scoped_release>(),
            "Set sharing policy for this link")
@@ -567,13 +570,15 @@ PYBIND11_MODULE(simgrid, m)
                  "Retrieve a Link by its name, or None if it does not exist in the platform.")
       .def("seal", &Link::seal, py::call_guard<py::gil_scoped_release>(), "Seal this link")
       .def_property_readonly("name", &Link::get_name, "The name of this link")
-      .def_property_readonly("bandwidth", &Link::get_bandwidth,
-                             "The bandwidth (in bytes per second) (read-only property).")
+      .def_property("bandwidth", &Link::get_bandwidth,
+                    py::cpp_function(&Link::set_bandwidth, py::call_guard<py::gil_scoped_release>()),
+                    "The bandwidth (in bytes per second) (r/w property).")
       .def_property_readonly("latency", &Link::get_latency, "The latency (in seconds) (read-only property).")
       .def_property_readonly("load", &Link::get_load, "Returns the current load (in bytes per second) (read-only property).")
       .def("get_property", &Link::get_property, "Retrieve link property.")
       .def("get_properties", &Link::get_properties, "Retrieve link all properties.")
       .def("set_property", &Link::set_property, "Set link property.")
+      .def("set_properties", &Link::set_properties, "Set multiple properties.")
       .def(
           "__repr__", [](const Link* l) { return "Link(" + l->get_name() + ")"; },
           "Textual representation of the Link");

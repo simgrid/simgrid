@@ -1693,7 +1693,7 @@ Querying info
 
       .. autoattribute:: simgrid.Link.name
       .. autoattribute:: simgrid.Link.load
-      .. automethod:: simgrid.Link.is_used
+      .. autoattribute:: simgrid.Link.is_used
 
    .. group-tab:: C
 
@@ -1762,12 +1762,14 @@ User data and properties
       .. doxygenfunction:: simgrid::s4u::Link::get_property(const std::string &key) const
       .. doxygenfunction:: simgrid::s4u::Link::get_properties() const
       .. doxygenfunction:: simgrid::s4u::Link::set_property(const std::string &key, const std::string &value)
+      .. doxygenfunction:: simgrid::s4u::Link::set_properties(const std::unordered_map< std::string, std::string > &properties)
 
    .. group-tab:: Python
 
       .. automethod:: simgrid.Link.get_property
       .. automethod:: simgrid.Link.get_properties
       .. automethod:: simgrid.Link.set_property
+      .. automethod:: simgrid.Link.set_properties
 
    .. group-tab:: C
 
@@ -1961,6 +1963,11 @@ Retrieving components
       .. doxygenfunction:: simgrid::s4u::NetZone::get_all_hosts() const
       .. doxygenfunction:: simgrid::s4u::NetZone::get_host_count() const
 
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.NetZone.all_hosts
+      .. autoattribute:: simgrid.NetZone.host_count
+
    .. group-tab:: C
 
       .. doxygenfunction:: sg_zone_get_hosts(const_sg_netzone_t zone, xbt_dynar_t whereto)
@@ -1977,14 +1984,21 @@ Routing data
       .. doxygenfunction:: simgrid::s4u::NetZone::add_route(const Host *src, const Host *dst, const std::vector< const Link * > &links)
       .. doxygenfunction:: simgrid::s4u::NetZone::add_route(const NetZone *src, const NetZone *dst, const std::vector< LinkInRoute > &link_list, bool symmetrical=true)
       .. doxygenfunction:: simgrid::s4u::NetZone::add_route(const NetZone *src, const NetZone *dst, const std::vector< const Link * > &links)
+      .. doxygenfunction:: simgrid::s4u::NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst, const std::vector<LinkInRoute>& link_list)
       .. doxygenfunction:: simgrid::s4u::NetZone::get_children() const
       .. doxygenfunction:: simgrid::s4u::NetZone::get_parent() const
       .. doxygenfunction:: simgrid::s4u::NetZone::set_parent(const NetZone* parent)
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_gateway() const
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_gateway(const std::string& name) const
+      .. doxygenfunction:: simgrid::s4u::NetZone::set_gateway(kernel::routing::NetPoint* router)
+      .. doxygenfunction:: simgrid::s4u::NetZone::set_gateway(const std::string& name, kernel::routing::NetPoint* router)
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_network_model() const
 
    .. group-tab:: Python
 
       .. automethod:: simgrid.NetZone.add_route
       .. automethod:: simgrid.NetZone.set_parent
+      .. automethod:: simgrid.NetZone.set_gateway
 
    .. group-tab:: C
 
