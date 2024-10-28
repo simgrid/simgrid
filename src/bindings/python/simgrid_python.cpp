@@ -242,6 +242,7 @@ PYBIND11_MODULE(simgrid, m)
       .def_static("create_vivaldi_zone", &simgrid::s4u::create_vivaldi_zone, "Creates a zone of type Vivaldi")
       .def_static("create_empty_zone", &simgrid::s4u::create_empty_zone, "Creates a zone of type Empty")
       .def_static("create_wifi_zone", &simgrid::s4u::create_wifi_zone, "Creates a zone of type Wi-Fi")
+      .def("add_component", &simgrid::s4u::NetZone::add_component, "Add NetPoint component to NetZone")
       .def("add_route",
            py::overload_cast<const simgrid::s4u::Host*, const simgrid::s4u::Host*,
                              const std::vector<simgrid::s4u::LinkInRoute>&, bool>(&simgrid::s4u::NetZone::add_route),
@@ -258,6 +259,7 @@ PYBIND11_MODULE(simgrid, m)
            py::overload_cast<const simgrid::s4u::NetZone*, const simgrid::s4u::NetZone*,
                              const std::vector<const simgrid::s4u::Link*>&>(&simgrid::s4u::NetZone::add_route),
            "Add a route between 2 netzones. The gateway of each zone gets used.")
+      .def("add_bypass_route", &simgrid::s4u::NetZone::add_bypass_route, "Add bypass route to NetZone.")
       .def("create_host", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_host),
            "Creates a host")
       .def("create_host",
@@ -287,7 +289,12 @@ PYBIND11_MODULE(simgrid, m)
            py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::create_split_duplex_link),
            "Creates a split-duplex link")
       .def("create_router", &simgrid::s4u::NetZone::create_router, "Create a router")
-      .def("set_parent", &simgrid::s4u::NetZone::set_parent, "Set the parent of this zone")
+      .def_property("parent", &simgrid::s4u::NetZone::get_parent, &simgrid::s4u::NetZone::set_parent, "NetZone parent (r/w property).")
+      // Keep `set_parent` method for backward compatibility.
+      .def("set_parent", &simgrid::s4u::NetZone::set_parent, "Set the parent of this zone.")
+      .def("get_children", &simgrid::s4u::NetZone::get_children, "Get all children of this zone.")
+      .def("get_property", &simgrid::s4u::NetZone::get_property, "Retrieve NetZone property.")
+      .def("get_properties", &simgrid::s4u::NetZone::get_properties, "Retrieve NetZone all properties.")
       .def("set_property", &simgrid::s4u::NetZone::set_property, "Add a property to this zone")
       .def("set_gateway", py::overload_cast<const simgrid::s4u::Host*>(&simgrid::s4u::NetZone::set_gateway),
            "Specify the gateway of this zone, to be used for inter-zone routes")

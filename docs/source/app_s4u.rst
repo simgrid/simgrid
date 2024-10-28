@@ -1947,6 +1947,9 @@ User data and properties
    .. group-tab:: Python
 
       .. automethod:: simgrid.NetZone.set_property
+      .. automethod:: simgrid.NetZone.get_property
+      .. automethod:: simgrid.NetZone.get_properties
+
 
    .. group-tab:: C
 
@@ -1996,9 +1999,13 @@ Routing data
 
    .. group-tab:: Python
 
+      .. automethod:: simgrid.NetZone.add_component
       .. automethod:: simgrid.NetZone.add_route
+      .. automethod:: simgrid.NetZone.add_bypass_route
       .. automethod:: simgrid.NetZone.set_parent
       .. automethod:: simgrid.NetZone.set_gateway
+      .. automethod:: simgrid.NetZone.get_children
+      .. autoattribute:: simgrid.NetZone.parent
 
    .. group-tab:: C
 
