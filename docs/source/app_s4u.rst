@@ -1380,6 +1380,7 @@ Retrieving hosts
       See also :py:attr:`simgrid.Engine.all_hosts`.
 
       .. automethod:: simgrid.Host.by_name
+      .. automethod:: simgrid.Host.by_name_or_null
       .. automethod:: simgrid.Host.current
 
    .. group-tab:: C
@@ -1398,7 +1399,7 @@ Modifying characteristics
       .. doxygenfunction:: simgrid::s4u::Host::set_core_count(int core_count)
       .. doxygenfunction:: simgrid::s4u::Host::set_coordinates(const std::string& coords)
       .. doxygenfunction:: simgrid::s4u::Host::set_sharing_policy
-      .. doxygenfunction:: simgrid::s4u::Host::set_concurrency_limit
+      .. doxygenfunction:: simgrid::s4u::Host::set_concurrency_limit(int limit)
 
    .. group-tab:: Python
 
@@ -1406,7 +1407,7 @@ Modifying characteristics
          :noindex:
       .. automethod:: simgrid.Host.set_coordinates
       .. automethod:: simgrid.Host.set_sharing_policy
-      .. automethod:: simgrid.Host.set_concurrency_limit
+      .. autoattribute:: simgrid.Host.concurrency_limit
 
 Querying info
 -------------
@@ -1421,6 +1422,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Host::get_available_speed() const
       .. doxygenfunction:: simgrid::s4u::Host::get_load() const
       .. doxygenfunction:: simgrid::s4u::Host::get_speed() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_concurrency_limit() const
 
    .. group-tab:: Python
 
@@ -1449,6 +1451,13 @@ User data and properties
       .. doxygenfunction:: simgrid::s4u::Host::set_properties(const std::unordered_map< std::string, std::string > &properties)
       .. doxygenfunction:: simgrid::s4u::Host::set_property(const std::string &key, const std::string &value)
 
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Host.get_properties
+      .. automethod:: simgrid.Host.get_property
+      .. automethod:: simgrid.Host.set_properties
+      .. automethod:: simgrid.Host.set_property
+
    .. group-tab:: C
 
       .. doxygenfunction:: sg_host_set_property_value(sg_host_t host, const char *name, const char *value)
@@ -1468,12 +1477,15 @@ Retrieving components
       .. doxygenfunction:: simgrid::s4u::Host::get_actor_count() const
       .. doxygenfunction:: simgrid::s4u::Host::get_all_actors() const
       .. doxygenfunction:: simgrid::s4u::Host::get_disks() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_disk_by_name(const std::string& name) const
       .. doxygenfunction:: simgrid::s4u::Host::remove_disk(const std::string &disk_name)
 
    .. group-tab:: Python
 
-      .. autoattribute:: simgrid.Engine.all_actors
+      .. autoattribute:: simgrid.Host.all_actors
+      .. autoattribute:: simgrid.Host.actor_count
       .. automethod:: simgrid.Host.get_disks
+      .. automethod:: simgrid.Host.get_disk_by_name
 
    .. group-tab:: C
 
@@ -1489,6 +1501,10 @@ On/Off
       .. doxygenfunction:: simgrid::s4u::Host::is_on() const
       .. doxygenfunction:: simgrid::s4u::Host::turn_off()
       .. doxygenfunction:: simgrid::s4u::Host::turn_on()
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Host.is_on
 
    .. group-tab:: C
 

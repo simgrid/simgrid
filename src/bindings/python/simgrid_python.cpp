@@ -331,6 +331,8 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>> host(
       m, "Host", "Simulated host. See the C++ documentation for details.");
   host.def_static("by_name", &Host::by_name, py::arg("name"), "Retrieves a host from its name, or die")
+      .def_static("by_name_or_null", &Host::by_name_or_null, py::arg("name"),
+                  "Retrieves a host from its name or None if there is no such host")
       .def(
           "route_to",
           [](const simgrid::s4u::Host* h, const simgrid::s4u::Host* to) {
@@ -382,6 +384,7 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("disks", &Host::get_disks, "The list of disks on this host (read-only).")
       .def_property_readonly("all_actors", &Host::get_all_actors, "Returns the list of all actors on the host")
       .def("get_disks", &Host::get_disks, "Retrieve the list of disks in this host")
+      .def("get_disk_by_name", &Host::get_disk_by_name, "Retrieve the disk in this host by it's name")
       .def_property("core_count", &Host::get_core_count,
                     py::cpp_function(&Host::set_core_count, py::call_guard<py::gil_scoped_release>()),
                     "Manage the number of cores in the CPU")
@@ -394,6 +397,13 @@ PYBIND11_MODULE(simgrid, m)
       .def("create_disk",
            py::overload_cast<const std::string&, const std::string&, const std::string&>(&Host::create_disk),
            py::call_guard<py::gil_scoped_release>(), "Create a disk")
+      .def("get_property", &Host::get_property, "Get Host property")
+      .def("get_properties", &Host::get_properties, "Get all Host properties")
+      .def("set_property", &Host::set_property, "Set Host property")
+      .def("set_properties", &Host::set_properties, "Set Host properties")
+      .def_property("concurrency_limit", &Host::get_concurrency_limit,
+                    py::cpp_function(&Host::set_concurrency_limit, py::call_guard<py::gil_scoped_release>()),
+                    "Concurrency limit (read/write property).")
       .def("seal", &Host::seal, py::call_guard<py::gil_scoped_release>(), "Seal this host")
       .def("turn_off", &Host::turn_off, py::call_guard<py::gil_scoped_release>(), "Turn off this host")
       .def("turn_on", &Host::turn_on, py::call_guard<py::gil_scoped_release>(), "Turn on this host")
@@ -402,6 +412,8 @@ PYBIND11_MODULE(simgrid, m)
                     "The current pstate (read/write property).")
       .def_static("current", &Host::current, py::call_guard<py::gil_scoped_release>(),
                   "Retrieves the host on which the running actor is located.")
+      .def_property_readonly("is_on", &Host::is_on, "Returns if that host is currently up and running (read-only property).")
+      .def_property_readonly("actor_count", &Host::get_actor_count, "Returns actor count placed on this Host (read-only property).")
       .def_property_readonly("name", &Host::get_name, "The name of this host (read-only property).")
       .def_property_readonly("load", &Host::get_load,
                              "Returns the current computation load (in flops per second), NOT taking the external load "
