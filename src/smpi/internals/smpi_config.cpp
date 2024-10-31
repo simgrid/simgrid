@@ -43,7 +43,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_config, smpi, "Logging specific to SMPI (co
 simgrid::config::Flag<std::string> _smpi_cfg_host_speed_string{
     "smpi/host-speed", "Speed of the host running the simulation (in flop/s). Used to bench the operations.", "20000f",
     [](const std::string& str) {
-      _smpi_cfg_host_speed = xbt_parse_get_speed("smpi/host-speed", 1, str, "option smpi/host-speed");
+      if (str == "auto")
+        _smpi_cfg_host_speed = smpi_autobench();
+      else
+        _smpi_cfg_host_speed = xbt_parse_get_speed("smpi/host-speed", 1, str, "option smpi/host-speed");
       xbt_assert(_smpi_cfg_host_speed > 0.0, "Invalid value (%s) for 'smpi/host-speed': it must be positive.",
                  str.c_str());
     }};
@@ -303,12 +306,13 @@ void smpi_check_options()
              smpi_cfg_detached_send_thresh());
 
   if (simgrid::config::is_default("smpi/host-speed") && not MC_is_active()) {
-    XBT_INFO("You did not set the power of the host running the simulation.  "
-             "The timings will certainly not be accurate.  "
-             "Use the option \"--cfg=smpi/host-speed:<flops>\" to set its value.  "
-             "Check "
-             "https://simgrid.org/doc/latest/Configuring_SimGrid.html#automatic-benchmarking-of-smpi-code for more "
-             "information.");
+    XBT_INFO(
+        "You did not set the power of the host running the simulation.  "
+        "The timings will certainly not be accurate.  "
+        "Use the option \"--cfg=smpi/host-speed:<flops>\" to set its value, or \"--cfg=smpi/host-speed:auto\" to "
+        "request an automatic benchmark of the correct value on your machine. "
+        "Check https://simgrid.org/doc/latest/Configuring_SimGrid.html#automatic-benchmarking-of-smpi-code for more "
+        "information.");
   }
 
   simgrid::smpi::colls::set_collectives();

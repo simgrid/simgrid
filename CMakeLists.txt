@@ -228,6 +228,8 @@ if(enable_ns3)
       message(STATUS "Activating C++20 for NS3 ${NS3_VERSION}")
       set_source_files_properties(src/kernel/resource/models/network_ns3.cpp
                                   PROPERTIES COMPILE_FLAGS -std=gnu++20)
+      set_source_files_properties(src/kernel/resource/models/ns3/ns3_simulator.cpp
+                                  PROPERTIES COMPILE_FLAGS -std=gnu++20)
     else()
       message(STATUS "ns3 v${NS3_VERSION} does not require C++20.")
     endif()

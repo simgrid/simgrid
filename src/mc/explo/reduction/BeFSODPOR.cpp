@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/explo/reduction/BFSODPOR.hpp"
-#include "src/mc/api/states/BFSWutState.hpp"
+#include "src/mc/explo/reduction/BeFSODPOR.hpp"
+#include "src/mc/api/states/BeFSWutState.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 
@@ -16,24 +16,20 @@
 #include "src/mc/api/states/State.hpp"
 #include <string>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_bfsodpor, mc_reduction, "Logging specific to the odpor reduction");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_befsodpor, mc_reduction, "Logging specific to the BeFS ODPOR reduction");
 
 namespace simgrid::mc {
 
-std::shared_ptr<Reduction::RaceUpdate> BFSODPOR::races_computation(odpor::Execution& E, stack_t* S,
-                                                                   std::vector<StatePtr>* opened_states)
+std::shared_ptr<Reduction::RaceUpdate> BeFSODPOR::races_computation(odpor::Execution& E, stack_t* S,
+                                                                    std::vector<StatePtr>* opened_states)
 {
   if (opened_states == nullptr)
-    XBT_VERB("calling BFSODPOR outside of BFS algorithm: the only case this should happen is if you are looking for "
+    XBT_VERB("calling BeFSODPOR outside of BeFS algorithm: the only case this should happen is if you are looking for "
              "the critical transition");
 
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
   if (not s->get_enabled_actors().empty()) {
-    auto s_cast = static_cast<BFSWutState*>(S->back().get());
-    xbt_assert(s != nullptr, "BFSODPOR should use BFSWutState. Fix me");
-    if (s_cast->direct_children() > 1 and opened_states != nullptr)
-      opened_states->emplace_back(S->back());
     return std::make_shared<RaceUpdate>();
   }
 
@@ -57,7 +53,7 @@ std::shared_ptr<Reduction::RaceUpdate> BFSODPOR::races_computation(odpor::Execut
       XBT_DEBUG("... race between event `%u`:%s and event `%u`:%s", e_prime,
                 E.get_transition_for_handle(e_prime)->to_string().c_str(), e,
                 E.get_transition_for_handle(e)->to_string().c_str());
-      BFSWutState* prev_state = static_cast<BFSWutState*>((*S)[e].get());
+      BeFSWutState* prev_state = static_cast<BeFSWutState*>((*S)[e].get());
       xbt_assert(prev_state != nullptr, "ODPOR should use WutState. Fix me");
 
       if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state, prev_state->get_transition_out()->aid_);
@@ -72,32 +68,35 @@ std::shared_ptr<Reduction::RaceUpdate> BFSODPOR::races_computation(odpor::Execut
   return updates;
 }
 
-void BFSODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates, std::vector<StatePtr>* opened_states)
+unsigned long BeFSODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
+                                           std::vector<StatePtr>* opened_states)
 {
   if (opened_states == nullptr)
-    XBT_VERB("calling BFSODPOR outside of BFS algorithm: the only case this should happen is if you are looking for "
+    XBT_VERB("calling BeFS ODPOR outside of BeFS algorithm: the only case this should happen is if you are looking for "
              "the critical transition");
 
-  auto bfsodpor_updates = static_cast<RaceUpdate*>(updates.get());
-
-  for (auto& [raw_state, v] : bfsodpor_updates->get_value()) {
-    auto state         = static_cast<BFSWutState*>(raw_state.get());
+  auto befsodpor_updates   = static_cast<RaceUpdate*>(updates.get());
+  unsigned long nb_updates = 0;
+  for (auto& [raw_state, v] : befsodpor_updates->get_value()) {
+    auto state         = static_cast<BeFSWutState*>(raw_state.get());
     const auto v_prime = state->insert_into_final_wakeup_tree(v);
     XBT_DEBUG("... after insertion final_wut looks like this: %s", state->get_string_of_final_wut().c_str());
     if (not v_prime.empty()) {
       state->compare_final_and_wut();
-      state->force_insert_into_wakeup_tree(v_prime);
-      if (opened_states != nullptr)
-        opened_states->push_back(raw_state);
+      auto modified_state = state->force_insert_into_wakeup_tree(v_prime);
+      if (opened_states != nullptr and modified_state != nullptr)
+        opened_states->push_back(modified_state);
+      nb_updates++;
       state->compare_final_and_wut();
     }
   }
+  return nb_updates;
 }
 
-aid_t BFSODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
+aid_t BeFSODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 {
-  auto s = static_cast<BFSWutState*>(S->back().get());
-  xbt_assert(s != nullptr, "BFSODPOR should use BFSWutState. Fix me");
+  auto s = static_cast<BeFSWutState*>(S->back().get());
+  xbt_assert(s != nullptr, "BeFS ODPOR should use BeFSWutState. Fix me");
   const aid_t next = s->next_transition();
 
   if (next == -1)
@@ -106,7 +105,7 @@ aid_t BFSODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
   XBT_DEBUG("Picking actor %ld among this WuT: %s", next, s->string_of_wut().c_str());
 
   if (not s->is_actor_enabled(next)) {
-    XBT_DEBUG("BFSODPOR wants to execute a disabled transition %s.",
+    XBT_DEBUG("BeFS ODPOR wants to execute a disabled transition %s.",
               s->get_actors_list().at(next).get_transition()->to_string(true).c_str());
     s->remove_subtree_at_aid(next);
     s->add_sleep_set(s->get_actors_list().at(next).get_transition());
@@ -116,15 +115,15 @@ aid_t BFSODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
   return next;
 }
 
-StatePtr BFSODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
+StatePtr BeFSODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
 {
   if (parent_state == nullptr)
-    return StatePtr(new BFSWutState(remote_app), true);
+    return StatePtr(new BeFSWutState(remote_app), true);
   else {
-    BFSWutState* bfswut_state = static_cast<BFSWutState*>(parent_state.get());
-    if (auto existing_state = bfswut_state->get_children_state_of_aid(parent_state->get_transition_out()->aid_);
+    BeFSWutState* befswut_state = static_cast<BeFSWutState*>(parent_state.get());
+    if (auto existing_state = befswut_state->get_children_state_of_aid(parent_state->get_transition_out()->aid_);
         existing_state != nullptr) {
-      auto wut_state = static_cast<BFSWutState*>(existing_state.get());
+      auto wut_state = static_cast<BeFSWutState*>(existing_state.get());
       XBT_DEBUG("Found an existing state. Its WuT: %s\n finalWut: %s", wut_state->string_of_wut().c_str(),
                 wut_state->get_string_of_final_wut().c_str());
       wut_state->unwind_wakeup_tree_from_parent();
@@ -132,8 +131,8 @@ StatePtr BFSODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
                 wut_state->get_string_of_final_wut().c_str());
       return existing_state;
     }
-    auto new_state = StatePtr(new BFSWutState(remote_app, bfswut_state), true);
-    bfswut_state->record_child_state(new_state);
+    auto new_state = StatePtr(new BeFSWutState(remote_app, befswut_state), true);
+    befswut_state->record_child_state(new_state);
     return new_state;
   }
 }

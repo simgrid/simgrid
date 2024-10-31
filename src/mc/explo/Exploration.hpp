@@ -104,7 +104,7 @@ public:
 
   virtual stack_t get_stack()
   {
-    xbt_die("You asked for a combination of feature that is not yet supported by SimgridMC (most likely a combination "
+    xbt_die("You asked for a combination of feature that is not yet supported by Mc Simgrid (most likely a combination "
             "of exploration algorithm + another special feature). If you really want to try this combination, reach "
             "out to us so we can cover those.");
   }
@@ -114,6 +114,28 @@ public:
   static xbt::signal<void(State&, RemoteApp&)> on_restore_state_signal;
   static xbt::signal<void(Transition*, RemoteApp&)> on_transition_replay_signal;
   static xbt::signal<void(RemoteApp&)> on_backtracking_signal;
+  static xbt::signal<void(RemoteApp&)> on_exploration_start_signal;
+  static xbt::signal<void(State*, RemoteApp&)> on_state_creation_signal;
+  static xbt::signal<void(Transition*, RemoteApp&)> on_transition_execute_signal;
+  static xbt::signal<void(RemoteApp&)> on_log_state_signal;
+
+  /** Called once when the exploration starts */
+  static void on_exploration_start(std::function<void(RemoteApp& remote_app)> const& f)
+  {
+    on_exploration_start_signal.connect(f);
+  }
+  /** Called each time that a new state is create */
+  static void on_state_creation(std::function<void(State*, RemoteApp& remote_app)> const& f)
+  {
+    on_state_creation_signal.connect(f);
+  }
+  /** Called when executing a new transition */
+  static void on_transition_execute(std::function<void(Transition*, RemoteApp& remote_app)> const& f)
+  {
+    on_transition_execute_signal.connect(f);
+  }
+  /** Called when displaying the statistics at the end of the exploration */
+  static void on_log_state(std::function<void(RemoteApp&)> const& f) { on_log_state_signal.connect(f); }
 
   /** Called when the state to which we backtrack was not checkpointed state, forcing us to restore the initial state
    * before replaying some transitions */
@@ -149,7 +171,8 @@ public:
 
 // External constructors so that the types (and the types of their content) remain hidden
 XBT_PUBLIC Exploration* create_dfs_exploration(const std::vector<char*>& args, ReductionMode mode);
-XBT_PUBLIC Exploration* create_out_of_order_exploration(const std::vector<char*>& args, ReductionMode mode);
+XBT_PUBLIC Exploration* create_befs_exploration(const std::vector<char*>& args, ReductionMode mode);
+XBT_PUBLIC Exploration* create_parallelized_exploration(const std::vector<char*>& args, ReductionMode mode);
 XBT_PUBLIC Exploration* create_critical_transition_exploration(std::unique_ptr<RemoteApp> remote_app,
                                                                ReductionMode mode, stack_t* stack);
 

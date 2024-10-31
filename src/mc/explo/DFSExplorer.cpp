@@ -7,7 +7,7 @@
 #include "simgrid/forward.h"
 #include "src/mc/api/states/SoftLockedState.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
-#include "src/mc/explo/reduction/BFSODPOR.hpp"
+#include "src/mc/explo/reduction/BeFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
 #include "src/mc/explo/reduction/ODPOR.hpp"
@@ -37,14 +37,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dfs, mc, "DFS exploration algorithm of the model-checker");
 
 namespace simgrid::mc {
-
-xbt::signal<void(RemoteApp&)> DFSExplorer::on_exploration_start_signal;
-
-xbt::signal<void(State*, RemoteApp&)> DFSExplorer::on_state_creation_signal;
-
-xbt::signal<void(Transition*, RemoteApp&)> DFSExplorer::on_transition_execute_signal;
-
-xbt::signal<void(RemoteApp&)> DFSExplorer::on_log_state_signal;
 
 RecordTrace DFSExplorer::get_record_trace() // override
 {
@@ -194,15 +186,15 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 
   State* s = state_stack.back().get();
 
-  std::shared_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, &state_stack);
-  reduction_algo_->apply_race_update(std::move(todo_updates));
-
   aid_t next_to_explore;
 
   while ((next_to_explore = reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
 
     simgrid_wrapper_explore(S, next_to_explore, state_stack);
   }
+
+  std::shared_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, &state_stack);
+  reduction_algo_->apply_race_update(std::move(todo_updates));
 
   XBT_DEBUG("%lu actors remain, but none of them need to be interleaved (depth %zu).", s->get_actor_count(),
             state_stack.size() + 1);
@@ -250,8 +242,8 @@ DFSExplorer::DFSExplorer(std::unique_ptr<RemoteApp> remote_app, ReductionMode mo
     reduction_algo_ = std::make_unique<SDPOR>();
   else if (reduction_mode_ == ReductionMode::odpor and _sg_mc_explore_algo == "DFS")
     reduction_algo_ = std::make_unique<ODPOR>();
-  else if (reduction_mode_ == ReductionMode::odpor and _sg_mc_explore_algo == "BFS")
-    reduction_algo_ = std::make_unique<BFSODPOR>();
+  else if (reduction_mode_ == ReductionMode::odpor and _sg_mc_explore_algo == "BeFS")
+    reduction_algo_ = std::make_unique<BeFSODPOR>();
   else {
     xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
                to_c_str(reduction_mode_));

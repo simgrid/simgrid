@@ -70,9 +70,11 @@ simgrid::config::Flag<std::string> _sg_mc_explore_algo{
     "DFS",
     {{"DFS",
       "Depth First Search order: this search politic is the one following the best the classical reduction algorithm."},
-     {"BFS",
+     {"BeFS",
       "Best First Search: this search politic allows for a better use of the strategy by augmenting the number of "
-      "state choices available at runtime."}}};
+      "state choices available at runtime."},
+     {"parallel",
+      "parallel search: this work-in-progress aims at leveraging BeFS algorithm to heavily parallelize the search."}}};
 
 simgrid::config::Flag<std::string> _sg_mc_strategy{
     "model-check/strategy",
@@ -119,12 +121,11 @@ simgrid::config::Flag<int> _sg_mc_max_errors{
     "model-check/max-errors",
     "Maximal amount of errors to accept before stopping the exploration (negative value for no maximum).", 0};
 
-simgrid::config::Flag<int> _sg_mc_bfs_threshold{
-    "model-check/bfs-threshold",
+simgrid::config::Flag<int> _sg_mc_befs_threshold{
+    "model-check/befs-threshold",
     "Percentage of deviation from the best option allowed for the best first search. "
     "The algorithm switches if current * threshold / 100 > best. Use 100 to follow strict strategy and 0 to always "
-    "fully "
-    "explore traces before backtracking."
+    "fully explore traces before backtracking."
     "Must be a floating point value between 0 and 100",
     0, [](int val) { xbt_assert(0 <= val and val <= 100); }};
 

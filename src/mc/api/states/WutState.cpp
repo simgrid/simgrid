@@ -24,7 +24,7 @@ WutState::WutState(RemoteApp& remote_app) : SleepSetState(remote_app)
 WutState::WutState(RemoteApp& remote_app, StatePtr parent_state, bool initialize_wut)
     : SleepSetState(remote_app, parent_state)
 {
-  if (not initialize_wut) // We don't initialize the WUT when running in BFS order
+  if (not initialize_wut) // We don't initialize the WUT when running in BeFS order
     return;
 
   auto parent = static_cast<WutState*>(parent_state.get());

@@ -15,7 +15,7 @@ namespace simgrid::mc {
  *  it will follow a depth first search politics to minize the number of opened states. */
 class BasicStrategy : public StratLocalInfo {
   int depth_ = _sg_mc_max_depth; // Arbitrary starting point. next_transition must return a positive value to work with
-                                 // threshold in BFSExplorer
+                                 // threshold in BeFSExplorer
 
 public:
   void copy_from(const StratLocalInfo* strategy) override;

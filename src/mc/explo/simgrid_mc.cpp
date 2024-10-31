@@ -63,8 +63,10 @@ int main(int argc, char** argv)
     explo = std::unique_ptr<Exploration>(create_udpor_checker(argv_copy));
   else if (_sg_mc_explore_algo == "DFS")
     explo = std::unique_ptr<Exploration>(create_dfs_exploration(argv_copy, get_model_checking_reduction()));
+  else if (_sg_mc_explore_algo == "parallel")
+    explo = std::unique_ptr<Exploration>(create_parallelized_exploration(argv_copy, get_model_checking_reduction()));
   else
-    explo = std::unique_ptr<Exploration>(create_out_of_order_exploration(argv_copy, get_model_checking_reduction()));
+    explo = std::unique_ptr<Exploration>(create_befs_exploration(argv_copy, get_model_checking_reduction()));
 
   ExitStatus status;
   try {

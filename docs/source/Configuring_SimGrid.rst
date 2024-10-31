@@ -1183,6 +1183,10 @@ automatically injected in the simulator. As a result, the execution
 time of the whole application will probably be overestimated until you
 use a realistic value.
 
+You can request SimGrid to compute a rough estimate of the correct value by providing ``auto`` as a value. It will benchmark a
+little matrix multiplication for which the flop amount is known, and get a correct estimate of your computer's speed. This value
+remains an estimate, as the flops speed achieved by a machine greatly depends on the code it execute.
+
 When the code consists of numerous consecutive MPI calls, the
 previous mechanism feeds the simulation kernel with numerous tiny
 computations. The ``smpi/cpu-threshold`` item becomes handy when this

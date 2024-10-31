@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/explo/OutOfOrderExplorer.hpp"
-#include "src/mc/api/states/BFSWutState.hpp"
+#include "src/mc/explo/ParallelizedExplorer.hpp"
+#include "src/mc/api/states/BeFSWutState.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -14,7 +14,7 @@
 #include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"
 
-#include "src/mc/explo/reduction/BFSODPOR.hpp"
+#include "src/mc/explo/reduction/BeFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
@@ -29,25 +29,20 @@
 #include <cstdio>
 
 #include <algorithm>
+#include <exception>
 #include <limits>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <thread>
 #include <unordered_set>
 #include <vector>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_bfs, mc, "BFS exploration algorithm of the model-checker");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_parallel, mc, "Parallel exploration algorithm of the model-checker");
 
 namespace simgrid::mc {
 
-xbt::signal<void(RemoteApp&)> OutOfOrderExplorer::on_exploration_start_signal;
-
-xbt::signal<void(State*, RemoteApp&)> OutOfOrderExplorer::on_state_creation_signal;
-
-xbt::signal<void(Transition*, RemoteApp&)> OutOfOrderExplorer::on_transition_execute_signal;
-
-xbt::signal<void(RemoteApp&)> OutOfOrderExplorer::on_log_state_signal;
-
-RecordTrace OutOfOrderExplorer::get_record_trace() // override
+RecordTrace ParallelizedExplorer::get_record_trace() // override
 {
   RecordTrace res;
 
@@ -60,7 +55,7 @@ RecordTrace OutOfOrderExplorer::get_record_trace() // override
   return res;
 }
 
-void OutOfOrderExplorer::restore_stack(StatePtr state)
+void ParallelizedExplorer::restore_stack(StatePtr state)
 {
   XBT_DEBUG("Going to restore stack. Current depth is %lu; chosen state is #%ld", stack_.size(), state->get_num());
   stack_.clear();
@@ -81,10 +76,10 @@ void OutOfOrderExplorer::restore_stack(StatePtr state)
   }
 }
 
-void OutOfOrderExplorer::log_state() // override
+void ParallelizedExplorer::log_state() // override
 {
   on_log_state_signal(get_remote_app());
-  XBT_INFO("BFS exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, "
+  XBT_INFO("BeFS exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, "
            "%lu states "
            "visited overall)",
            State::get_expanded_states(), explored_traces_, Transition::get_replayed_transitions(),
@@ -92,13 +87,92 @@ void OutOfOrderExplorer::log_state() // override
   Exploration::log_state();
 }
 
-void OutOfOrderExplorer::run()
+void ParallelizedExplorer::run()
 {
   on_exploration_start_signal(get_remote_app());
   /* This function runs the Best First Search algorithm the state space.
    * We do so iteratively instead of recursively, dealing with the call stack manually.
    * This allows one to explore the call stack at will. */
+  try {
+    Explorer();
+  } catch (McError& error) {
+    XBT_CRITICAL("Going to kill the reducer");
+    reducer.std::thread::~thread();
+    throw error;
+  }
+  log_state();
+}
 
+StatePtr ParallelizedExplorer::best_opened_state()
+{
+  int best_prio = 0; // cache the value for the best priority found so far (initialized to silence gcc)
+  auto best     = end(opened_states_);   // iterator to the state to explore having the best priority
+  auto valid    = begin(opened_states_); // iterator marking the limit between states still to explore, and already
+                                         // explored ones
+
+  // Keep only still non-explored states (aid != -1), and record the one with the best (greater) priority.
+  for (auto current = begin(opened_states_); current != end(opened_states_); ++current) {
+    aid_t aid;
+    int prio;
+    if (current->get() == nullptr) {
+      aid  = 0;
+      prio = std::numeric_limits<int>::max();
+    } else {
+      aid  = (*current)->next_transition_guided().first;
+      prio = (*current)->next_transition_guided().second;
+    }
+    if (aid == -1)
+      continue;
+    if (valid != current) {
+      *valid = std::move(*current);
+    }
+    if (best == end(opened_states_) || prio <= best_prio) {
+      best_prio = prio;
+      best      = valid;
+    }
+    ++valid;
+  }
+
+  StatePtr best_state;
+  if (best < valid) {
+    // There are non-explored states, and one of them has the best priority.  Remove it from opened_states_ before
+    // returning.
+    best_state = std::move(*best);
+    --valid;
+    if (best != valid)
+      *best = std::move(*valid);
+  }
+  opened_states_.erase(valid, end(opened_states_));
+
+  return best_state;
+}
+
+void ParallelizedExplorer::backtrack()
+{
+  XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
+  XBT_DEBUG("%lu alternatives are yet to be explored:", opened_states_.size());
+
+  Exploration::check_deadlock();
+
+  // Take the point with smallest distance
+  std::unique_lock<std::mutex> lock_oh(opened_heads_lock_);
+  opened_heads_cv_.wait(lock_oh, [&] { return opened_states_.size() > 1; });
+  auto backtracking_point = best_opened_state();
+  lock_oh.unlock();
+
+  // if no backtracking point, then set the stack_ to empty so we can end the exploration
+  if (not backtracking_point) {
+    XBT_DEBUG("No more opened point of exploration, the search will end");
+    stack_.clear();
+    return;
+  }
+  // We found a backtracking point, let's go to it
+  backtrack_to_state(backtracking_point.get());
+  this->restore_stack(backtracking_point);
+}
+
+void ParallelizedExplorer::Explorer()
+{
   while (not stack_.empty()) {
     /* Get current state */
     auto state = stack_.back();
@@ -131,6 +205,14 @@ void OutOfOrderExplorer::run()
       Exploration::check_deadlock();
 
       if (state->get_actor_count() == 0) {
+        // Compute the race when reaching a leaf, and pass them to the Reductor through the dedicated queue
+        std::shared_ptr<Reduction::RaceUpdate> todo_updates =
+            reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
+        std::unique_lock<std::mutex> lock_ru(race_updates_lock_);
+        race_updates_.emplace_back(std::move(todo_updates));
+        lock_ru.unlock();
+        race_updates_cv_.notify_one();
+
         explored_traces_++;
         get_remote_app().finalize_app();
         XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
@@ -144,23 +226,8 @@ void OutOfOrderExplorer::run()
 
     xbt_assert(state->is_actor_enabled(next));
 
-    if (_sg_mc_bfs_threshold != 0) {
-      auto dist = state->get_actor_strategy_valuation(next);
-      auto best = best_opened_state();
-      if (best != nullptr) {
-        int best_dist = best->next_transition_guided().second;
-        opened_states_.emplace_back(std::move(best));
-        if ((float)(dist * _sg_mc_bfs_threshold) / 100.0 > (float)best_dist) {
-          XBT_VERB("current selected dist:%d vs. best*rate:%d", dist, best_dist);
-          opened_states_.emplace_back(std::move(state));
-          this->backtrack();
-          continue;
-        }
-      }
-    }
-
     // If we use a state containing a sleep state, display it during debug
-    if (XBT_LOG_ISENABLED(mc_bfs, xbt_log_priority_verbose)) {
+    if (XBT_LOG_ISENABLED(mc_parallel, xbt_log_priority_verbose)) {
       auto sleep_state = dynamic_cast<SleepSetState*>(state.get());
       if (sleep_state != nullptr and not sleep_state->get_sleep_set().empty()) {
         XBT_VERB("Sleep set actually containing:");
@@ -196,81 +263,38 @@ void OutOfOrderExplorer::run()
 
     // Before leaving that state, if the transition we just took can be taken multiple times, we
     // need to give it to the opened states
-    if (stack_.back()->has_more_to_be_explored() > 0)
+    if (stack_.back()->has_more_to_be_explored() > 0) {
+      std::unique_lock<std::mutex> lock_oh(opened_heads_lock_);
       opened_states_.emplace_back(state);
+      lock_oh.unlock();
+    }
 
     stack_.emplace_back(std::move(next_state));
     execution_seq_.push_transition(std::move(executed_transition));
-
-    std::shared_ptr<Reduction::RaceUpdate> todo_updates =
-        reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
-    reduction_algo_->apply_race_update(std::move(todo_updates), &opened_states_);
-
-    dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
-               state->get_transition_out()->dot_string().c_str());
   }
-  log_state();
 }
 
-StatePtr OutOfOrderExplorer::best_opened_state()
+void ParallelizedExplorer::Reducter()
 {
-  int best_prio = 0; // cache the value for the best priority found so far (initialized to silence gcc)
-  auto best     = end(opened_states_);   // iterator to the state to explore having the best priority
-  auto valid    = begin(opened_states_); // iterator marking the limit between states still to explore, and already
-                                         // explored ones
+  unsigned long possible_remaining_explo = 1;
+  while (true) {
+    std::unique_lock<std::mutex> lock_ru(race_updates_lock_);
+    race_updates_cv_.wait(lock_ru, [&] { return race_updates_.size() > 0; });
+    auto update = race_updates_.back();
+    race_updates_.pop_back();
+    lock_ru.unlock();
 
-  // Keep only still non-explored states (aid != -1), and record the one with the best (greater) priority.
-  for (auto current = begin(opened_states_); current != end(opened_states_); ++current) {
-    xbt_assert(current->get() != nullptr);
-    auto [aid, prio] = (*current)->next_transition_guided();
-    if (aid == -1)
-      continue;
-    if (valid != current) {
-      *valid = std::move(*current);
+    std::unique_lock<std::mutex> lock_oh(opened_heads_lock_);
+    possible_remaining_explo = reduction_algo_->apply_race_update(update, &opened_states_) - 1;
+    if (possible_remaining_explo == 0) {
+      opened_states_.emplace_back();
     }
-    if (best == end(opened_states_) || prio <= best_prio) {
-      best_prio = prio;
-      best      = valid;
-    }
-    ++valid;
+    lock_oh.unlock();
+    opened_heads_cv_.notify_one();
   }
-
-  StatePtr best_state;
-  if (best < valid) {
-    // There are non-explored states, and one of them has the best priority.  Remove it from opened_states_ before
-    // returning.
-    best_state = std::move(*best);
-    --valid;
-    if (best != valid)
-      *best = std::move(*valid);
-  }
-  opened_states_.erase(valid, end(opened_states_));
-
-  return best_state;
 }
 
-void OutOfOrderExplorer::backtrack()
-{
-  XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
-  XBT_DEBUG("%lu alternatives are yet to be explored:", opened_states_.size());
-
-  Exploration::check_deadlock();
-
-  // Take the point with smallest distance
-  auto backtracking_point = best_opened_state();
-
-  // if no backtracking point, then set the stack_ to empty so we can end the exploration
-  if (not backtracking_point) {
-    XBT_DEBUG("No more opened point of exploration, the search will end");
-    stack_.clear();
-    return;
-  }
-  // We found a backtracking point, let's go to it
-  backtrack_to_state(backtracking_point.get());
-  this->restore_stack(backtracking_point);
-}
-
-OutOfOrderExplorer::OutOfOrderExplorer(const std::vector<char*>& args, ReductionMode mode)
+ParallelizedExplorer::ParallelizedExplorer(const std::vector<char*>& args, ReductionMode mode)
     : Exploration(args), reduction_mode_(mode)
 {
 
@@ -279,14 +303,15 @@ OutOfOrderExplorer::OutOfOrderExplorer(const std::vector<char*>& args, Reduction
   else if (reduction_mode_ == ReductionMode::sdpor)
     reduction_algo_ = std::make_unique<SDPOR>();
   else if (reduction_mode_ == ReductionMode::odpor)
-    reduction_algo_ = std::make_unique<BFSODPOR>();
+    reduction_algo_ = std::make_unique<BeFSODPOR>();
   else {
-    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by BFS explorer",
+    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by BeFS explorer",
                to_c_str(reduction_mode_));
     reduction_algo_ = std::make_unique<NoReduction>();
   }
 
-  XBT_INFO("Start a BFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
+  reducer = std::thread([&] { this->Reducter(); });
+  XBT_INFO("Start a parallelized exploration. Reduction is: %s.", to_c_str(reduction_mode_));
 
   auto initial_state = reduction_algo_->state_create(get_remote_app());
 
@@ -301,9 +326,9 @@ OutOfOrderExplorer::OutOfOrderExplorer(const std::vector<char*>& args, Reduction
   opened_states_.emplace_back(stack_.back());
 }
 
-Exploration* create_out_of_order_exploration(const std::vector<char*>& args, ReductionMode mode)
+Exploration* create_parallelized_exploration(const std::vector<char*>& args, ReductionMode mode)
 {
-  return new OutOfOrderExplorer(args, mode);
+  return new ParallelizedExplorer(args, mode);
 }
 
 } // namespace simgrid::mc

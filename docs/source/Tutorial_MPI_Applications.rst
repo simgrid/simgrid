@@ -59,7 +59,7 @@ communication calls are implemented using SimGrid: data is exchanged
 through memory copy, while the simulator's performance models are used
 to predict the time taken by each communication. Any computations
 occurring between two MPI calls are benchmarked, and the corresponding
-time is reported into the simulator.
+time is reported into the simulator. Please refer to :ref:`SMPI_doc` for further information.
 
 .. image:: /tuto_smpi/img/big-picture.svg
    :align: center

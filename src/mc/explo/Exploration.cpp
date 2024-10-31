@@ -32,6 +32,11 @@ xbt::signal<void(State&, RemoteApp&)> Exploration::on_restore_state_signal;
 xbt::signal<void(Transition*, RemoteApp&)> Exploration::on_transition_replay_signal;
 xbt::signal<void(RemoteApp&)> Exploration::on_backtracking_signal;
 
+xbt::signal<void(RemoteApp&)> Exploration::on_exploration_start_signal;
+xbt::signal<void(State*, RemoteApp&)> Exploration::on_state_creation_signal;
+xbt::signal<void(Transition*, RemoteApp&)> Exploration::on_transition_execute_signal;
+xbt::signal<void(RemoteApp&)> Exploration::on_log_state_signal;
+
 Exploration::Exploration(std::unique_ptr<RemoteApp> remote_app) : remote_app_(std::move(remote_app))
 {
   // This awfull code should only be called when trying to create a critical transition explorer in the middle of

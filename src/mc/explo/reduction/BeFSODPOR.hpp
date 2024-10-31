@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_MC_BFSODPOR_HPP
-#define SIMGRID_MC_BFSODPOR_HPP
+#ifndef SIMGRID_MC_BeFSODPOR_HPP
+#define SIMGRID_MC_BeFSODPOR_HPP
 
 #include "simgrid/forward.h"
 #include "src/mc/explo/odpor/Execution.hpp"
@@ -12,11 +12,11 @@
 
 namespace simgrid::mc {
 
-class BFSODPOR : public Reduction {
+class BeFSODPOR : public Reduction {
 
 public:
-  BFSODPOR()  = default;
-  ~BFSODPOR() = default;
+  BeFSODPOR()  = default;
+  ~BeFSODPOR() = default;
 
   class RaceUpdate : public Reduction::RaceUpdate {
     std::vector<std::pair<StatePtr, odpor::PartialExecution>> state_and_exec_;
@@ -29,8 +29,8 @@ public:
 
   std::shared_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
                                                            std::vector<StatePtr>* opened_states) override;
-  void apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
-                         std::vector<StatePtr>* opened_states = nullptr) override;
+  unsigned long apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
+                                  std::vector<StatePtr>* opened_states = nullptr) override;
   aid_t next_to_explore(odpor::Execution& E, stack_t* S) override;
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override;
   void on_backtrack(State* s) override {}

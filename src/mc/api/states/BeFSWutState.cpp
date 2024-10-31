@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/api/states/BFSWutState.hpp"
+#include "src/mc/api/states/BeFSWutState.hpp"
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/api/states/WutState.hpp"
@@ -17,19 +17,19 @@
 #include <limits>
 #include <memory>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_bfswutstate, mc_state,
-                                "Model-checker state dedicated to the BFS version of ODPOR algorithm");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_befswutstate, mc_state,
+                                "Model-checker state dedicated to the BeFS version of ODPOR algorithm");
 
 namespace simgrid::mc {
 
-void BFSWutState::compare_final_and_wut()
+void BeFSWutState::compare_final_and_wut()
 {
 
   xbt_assert(wakeup_tree_.is_contained_in(final_wakeup_tree_), "final_wut: %s\n versus curren wut: %s",
              get_string_of_final_wut().c_str(), string_of_wut().c_str());
 }
 
-BFSWutState::BFSWutState(RemoteApp& remote_app) : WutState(remote_app)
+BeFSWutState::BeFSWutState(RemoteApp& remote_app) : WutState(remote_app)
 {
   aid_t chosen_actor = wakeup_tree_.get_min_single_process_actor().value();
   auto actor_state   = get_actors_list().at(chosen_actor);
@@ -40,9 +40,9 @@ BFSWutState::BFSWutState(RemoteApp& remote_app) : WutState(remote_app)
   }
 }
 
-BFSWutState::BFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutState(remote_app, parent_state, false)
+BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutState(remote_app, parent_state, false)
 {
-  auto parent = static_cast<BFSWutState*>(parent_state.get());
+  auto parent = static_cast<BeFSWutState*>(parent_state.get());
   for (const aid_t actor : parent->done_) {
     auto transition_in_done_set = parent->get_actors_list().at(actor).get_transition();
     if (not get_transition_in()->depends(transition_in_done_set.get()))
@@ -64,7 +64,7 @@ BFSWutState::BFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutStat
       XBT_CRITICAL("%s", curr_state->get_string_of_final_wut().c_str());
       XBT_CRITICAL("Current WuT at state %ld:", curr_state->get_num());
       XBT_CRITICAL("%s", curr_state->string_of_wut().c_str());
-      curr_state = static_cast<BFSWutState*>(curr_state->get_parent_state());
+      curr_state = static_cast<BeFSWutState*>(curr_state->get_parent_state());
     }
 
     xbt_die("Find the culprit and fix me!");
@@ -96,13 +96,13 @@ BFSWutState::BFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutStat
   compare_final_and_wut();
 }
 
-void BFSWutState::record_child_state(StatePtr child)
+void BeFSWutState::record_child_state(StatePtr child)
 {
   aid_t child_aid = outgoing_transition_->aid_;
   children_states_.emplace(child_aid, child);
 }
 
-std::pair<aid_t, int> BFSWutState::next_transition_guided() const
+std::pair<aid_t, int> BeFSWutState::next_transition_guided() const
 {
 
   aid_t best_actor = this->next_transition();
@@ -111,9 +111,9 @@ std::pair<aid_t, int> BFSWutState::next_transition_guided() const
   return std::make_pair(best_actor, strategy_->get_actor_valuation(best_actor));
 }
 
-void BFSWutState::unwind_wakeup_tree_from_parent()
+void BeFSWutState::unwind_wakeup_tree_from_parent()
 {
-  auto parent = static_cast<BFSWutState*>(get_parent_state());
+  auto parent = static_cast<BeFSWutState*>(get_parent_state());
 
   // For each leaf of the parent WuT corresponding to this actor,
   // try to insert the corresponding sequence. If it still correponds to a new
@@ -138,7 +138,7 @@ void BFSWutState::unwind_wakeup_tree_from_parent()
   compare_final_and_wut();
 }
 
-aid_t BFSWutState::next_transition() const
+aid_t BeFSWutState::next_transition() const
 {
   int best_valuation = std::numeric_limits<int>::max();
   int best_actor     = -1;
@@ -153,7 +153,7 @@ aid_t BFSWutState::next_transition() const
   return best_actor;
 }
 
-std::shared_ptr<Transition> BFSWutState::execute_next(aid_t next, RemoteApp& app)
+std::shared_ptr<Transition> BeFSWutState::execute_next(aid_t next, RemoteApp& app)
 {
   if (children_states_.find(next) != children_states_.end()) {
     outgoing_transition_ = get_actors_list().at(next).get_transition();
@@ -165,7 +165,7 @@ std::shared_ptr<Transition> BFSWutState::execute_next(aid_t next, RemoteApp& app
   return State::execute_next(next, app);
 }
 
-std::unordered_set<aid_t> BFSWutState::get_sleeping_actors(aid_t after_actor) const
+std::unordered_set<aid_t> BeFSWutState::get_sleeping_actors(aid_t after_actor) const
 {
   std::unordered_set<aid_t> actors;
   for (const auto& [aid, _] : get_sleep_set()) {
@@ -179,14 +179,29 @@ std::unordered_set<aid_t> BFSWutState::get_sleeping_actors(aid_t after_actor) co
   return actors;
 }
 
-odpor::PartialExecution BFSWutState::insert_into_final_wakeup_tree(const odpor::PartialExecution& pe)
+odpor::PartialExecution BeFSWutState::insert_into_final_wakeup_tree(const odpor::PartialExecution& pe)
 {
   return this->final_wakeup_tree_.insert_and_get_inserted_seq(pe);
 }
 
-void BFSWutState::force_insert_into_wakeup_tree(const odpor::PartialExecution& pe)
+StatePtr BeFSWutState::force_insert_into_wakeup_tree(const odpor::PartialExecution& pe)
 {
+  if (pe.size() == 0)
+    return nullptr;
+
+  // If the start of the sequence corresponds to an already explored state
+  final_wakeup_tree_.force_insert(pe);
+
+  auto first_actor = pe.front()->aid_;
+  if (StatePtr children = get_children_state_of_aid(first_actor); children != nullptr) {
+    odpor::PartialExecution suffix = pe;
+    suffix.pop_front();
+    return static_cast<BeFSWutState*>(children.get())->force_insert_into_wakeup_tree(std::move(suffix));
+  }
+
   this->wakeup_tree_.force_insert(pe);
+  compare_final_and_wut();
+  return this;
 }
 
 } // namespace simgrid::mc

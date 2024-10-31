@@ -515,8 +515,10 @@ set(MC_SRC_STATELESS
   src/mc/explo/Exploration.cpp
   src/mc/explo/Exploration.hpp
   src/mc/explo/CommunicationDeterminismChecker.cpp
-  src/mc/explo/OutOfOrderExplorer.cpp
-  src/mc/explo/OutOfOrderExplorer.hpp
+  src/mc/explo/ParallelizedExplorer.cpp
+  src/mc/explo/ParallelizedExplorer.hpp
+  src/mc/explo/BeFSExplorer.cpp
+  src/mc/explo/BeFSExplorer.hpp
 
   src/mc/explo/UdporChecker.cpp
   src/mc/explo/UdporChecker.hpp
@@ -556,8 +558,8 @@ set(MC_SRC_STATELESS
   src/mc/remote/CheckerSide.hpp
   src/mc/remote/mc_protocol.h
 
-  src/mc/api/states/BFSWutState.cpp
-  src/mc/api/states/BFSWutState.hpp
+  src/mc/api/states/BeFSWutState.cpp
+  src/mc/api/states/BeFSWutState.hpp
   src/mc/api/states/SleepSetState.cpp
   src/mc/api/states/SleepSetState.hpp
   src/mc/api/states/SoftLockedState.hpp
@@ -598,8 +600,8 @@ set(MC_SRC_STATELESS
   src/mc/api/strategy/UniformStrategy.cpp
   src/mc/api/strategy/UniformStrategy.hpp
 
-  src/mc/explo/reduction/BFSODPOR.cpp
-  src/mc/explo/reduction/BFSODPOR.hpp
+  src/mc/explo/reduction/BeFSODPOR.cpp
+  src/mc/explo/reduction/BeFSODPOR.hpp
   src/mc/explo/reduction/Reduction.cpp
   src/mc/explo/reduction/Reduction.hpp
   src/mc/explo/reduction/NoReduction.hpp
