@@ -682,6 +682,7 @@ Querying info
 
       .. autofunction:: simgrid.this_actor.get_host
       .. autofunction:: simgrid.this_actor.set_host
+      .. autofunction:: simgrid.this_actor.get_name
 
       .. autofunction:: simgrid.this_actor.get_pid
       .. autofunction:: simgrid.this_actor.get_ppid
@@ -914,6 +915,10 @@ Retrieving actors
       .. doxygenfunction:: simgrid::s4u::Engine::get_actor_count
       .. doxygenfunction:: simgrid::s4u::Engine::get_all_actors
       .. doxygenfunction:: simgrid::s4u::Engine::get_filtered_actors
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Engine.all_actors
 
    .. group-tab:: C
 
@@ -1375,6 +1380,7 @@ Retrieving hosts
       See also :py:attr:`simgrid.Engine.all_hosts`.
 
       .. automethod:: simgrid.Host.by_name
+      .. automethod:: simgrid.Host.by_name_or_null
       .. automethod:: simgrid.Host.current
 
    .. group-tab:: C
@@ -1393,7 +1399,7 @@ Modifying characteristics
       .. doxygenfunction:: simgrid::s4u::Host::set_core_count(int core_count)
       .. doxygenfunction:: simgrid::s4u::Host::set_coordinates(const std::string& coords)
       .. doxygenfunction:: simgrid::s4u::Host::set_sharing_policy
-      .. doxygenfunction:: simgrid::s4u::Host::set_concurrency_limit
+      .. doxygenfunction:: simgrid::s4u::Host::set_concurrency_limit(int limit)
 
    .. group-tab:: Python
 
@@ -1401,7 +1407,7 @@ Modifying characteristics
          :noindex:
       .. automethod:: simgrid.Host.set_coordinates
       .. automethod:: simgrid.Host.set_sharing_policy
-      .. automethod:: simgrid.Host.set_concurrency_limit
+      .. autoattribute:: simgrid.Host.concurrency_limit
 
 Querying info
 -------------
@@ -1416,6 +1422,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Host::get_available_speed() const
       .. doxygenfunction:: simgrid::s4u::Host::get_load() const
       .. doxygenfunction:: simgrid::s4u::Host::get_speed() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_concurrency_limit() const
 
    .. group-tab:: Python
 
@@ -1444,6 +1451,13 @@ User data and properties
       .. doxygenfunction:: simgrid::s4u::Host::set_properties(const std::unordered_map< std::string, std::string > &properties)
       .. doxygenfunction:: simgrid::s4u::Host::set_property(const std::string &key, const std::string &value)
 
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Host.get_properties
+      .. automethod:: simgrid.Host.get_property
+      .. automethod:: simgrid.Host.set_properties
+      .. automethod:: simgrid.Host.set_property
+
    .. group-tab:: C
 
       .. doxygenfunction:: sg_host_set_property_value(sg_host_t host, const char *name, const char *value)
@@ -1463,11 +1477,15 @@ Retrieving components
       .. doxygenfunction:: simgrid::s4u::Host::get_actor_count() const
       .. doxygenfunction:: simgrid::s4u::Host::get_all_actors() const
       .. doxygenfunction:: simgrid::s4u::Host::get_disks() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_disk_by_name(const std::string& name) const
       .. doxygenfunction:: simgrid::s4u::Host::remove_disk(const std::string &disk_name)
 
    .. group-tab:: Python
 
+      .. autoattribute:: simgrid.Host.all_actors
+      .. autoattribute:: simgrid.Host.actor_count
       .. automethod:: simgrid.Host.get_disks
+      .. automethod:: simgrid.Host.get_disk_by_name
 
    .. group-tab:: C
 
@@ -1483,6 +1501,10 @@ On/Off
       .. doxygenfunction:: simgrid::s4u::Host::is_on() const
       .. doxygenfunction:: simgrid::s4u::Host::turn_off()
       .. doxygenfunction:: simgrid::s4u::Host::turn_on()
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Host.is_on
 
    .. group-tab:: C
 
@@ -1663,7 +1685,7 @@ Retrieving links
       See also :py:attr:`simgrid.Engine.all_links`.
 
       .. automethod:: simgrid.Link.by_name
-      .. autoattribute:: simgrid.Link.name
+      .. automethod:: simgrid.Link.by_name_or_null
 
    .. group-tab:: C
 
@@ -1686,6 +1708,8 @@ Querying info
    .. group-tab:: Python
 
       .. autoattribute:: simgrid.Link.name
+      .. autoattribute:: simgrid.Link.load
+      .. autoattribute:: simgrid.Link.is_used
 
    .. group-tab:: C
 
@@ -1736,7 +1760,9 @@ Model policy
 
    .. group-tab:: Python
 
+      .. autoattribute:: simgrid.Link.concurrency_limit
       .. automethod:: simgrid.Link.set_concurrency_limit
+      .. automethod:: simgrid.Link.get_sharing_policy
       .. automethod:: simgrid.Link.set_sharing_policy
 
    .. group-tab:: C
@@ -1750,7 +1776,16 @@ User data and properties
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Link::get_property(const std::string &key) const
+      .. doxygenfunction:: simgrid::s4u::Link::get_properties() const
       .. doxygenfunction:: simgrid::s4u::Link::set_property(const std::string &key, const std::string &value)
+      .. doxygenfunction:: simgrid::s4u::Link::set_properties(const std::unordered_map< std::string, std::string > &properties)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Link.get_property
+      .. automethod:: simgrid.Link.get_properties
+      .. automethod:: simgrid.Link.set_property
+      .. automethod:: simgrid.Link.set_properties
 
    .. group-tab:: C
 
@@ -1928,6 +1963,9 @@ User data and properties
    .. group-tab:: Python
 
       .. automethod:: simgrid.NetZone.set_property
+      .. automethod:: simgrid.NetZone.get_property
+      .. automethod:: simgrid.NetZone.get_properties
+
 
    .. group-tab:: C
 
@@ -1943,6 +1981,11 @@ Retrieving components
 
       .. doxygenfunction:: simgrid::s4u::NetZone::get_all_hosts() const
       .. doxygenfunction:: simgrid::s4u::NetZone::get_host_count() const
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.NetZone.all_hosts
+      .. autoattribute:: simgrid.NetZone.host_count
 
    .. group-tab:: C
 
@@ -1960,14 +2003,25 @@ Routing data
       .. doxygenfunction:: simgrid::s4u::NetZone::add_route(const Host *src, const Host *dst, const std::vector< const Link * > &links)
       .. doxygenfunction:: simgrid::s4u::NetZone::add_route(const NetZone *src, const NetZone *dst, const std::vector< LinkInRoute > &link_list, bool symmetrical=true)
       .. doxygenfunction:: simgrid::s4u::NetZone::add_route(const NetZone *src, const NetZone *dst, const std::vector< const Link * > &links)
+      .. doxygenfunction:: simgrid::s4u::NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst, const std::vector<LinkInRoute>& link_list)
       .. doxygenfunction:: simgrid::s4u::NetZone::get_children() const
       .. doxygenfunction:: simgrid::s4u::NetZone::get_parent() const
       .. doxygenfunction:: simgrid::s4u::NetZone::set_parent(const NetZone* parent)
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_gateway() const
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_gateway(const std::string& name) const
+      .. doxygenfunction:: simgrid::s4u::NetZone::set_gateway(kernel::routing::NetPoint* router)
+      .. doxygenfunction:: simgrid::s4u::NetZone::set_gateway(const std::string& name, kernel::routing::NetPoint* router)
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_network_model() const
 
    .. group-tab:: Python
 
+      .. automethod:: simgrid.NetZone.add_component
       .. automethod:: simgrid.NetZone.add_route
+      .. automethod:: simgrid.NetZone.add_bypass_route
       .. automethod:: simgrid.NetZone.set_parent
+      .. automethod:: simgrid.NetZone.set_gateway
+      .. automethod:: simgrid.NetZone.get_children
+      .. autoattribute:: simgrid.NetZone.parent
 
    .. group-tab:: C
 
