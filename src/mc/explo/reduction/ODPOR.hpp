@@ -24,7 +24,7 @@ public:
 
   public:
     RaceUpdate() = default;
-    void add_element(StatePtr state, odpor::PartialExecution v) { state_and_seq_.push_back(std::make_pair(state, v)); }
+    void add_element(StatePtr state, odpor::PartialExecution v) { state_and_seq_.emplace_back(state, v); }
     std::vector<std::pair<StatePtr, odpor::PartialExecution>> get_value() { return state_and_seq_; }
   };
 

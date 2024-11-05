@@ -28,7 +28,7 @@ public:
     RaceUpdate() = default;
     void add_element(StatePtr state, std::unordered_set<aid_t> choices)
     {
-      state_and_choices_.push_back(std::make_pair(state, choices));
+      state_and_choices_.emplace_back(state, choices);
     }
     std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>> get_value() { return state_and_choices_; }
   };
