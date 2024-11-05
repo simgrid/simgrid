@@ -26,6 +26,7 @@ public:
     ++capa_;
     condition_.notify_one();
   }
+  unsigned int size() { return capa_; }
 
 private:
   unsigned int capa_;
