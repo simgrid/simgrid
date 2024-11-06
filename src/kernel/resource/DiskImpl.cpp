@@ -113,6 +113,18 @@ void DiskImpl::seal()
   turn_on();
 }
 
+void DiskImpl::on_read_bandwidth_change() const
+{
+  s4u::Disk::on_read_bandwidth_change(piface_);
+  piface_.on_this_read_bandwidth_change(piface_);
+}
+
+void DiskImpl::on_write_bandwidth_change() const
+{
+  s4u::Disk::on_write_bandwidth_change(piface_);
+  piface_.on_this_write_bandwidth_change(piface_);
+}
+
 constexpr kernel::lmm::Constraint::SharingPolicy to_maxmin_policy(s4u::Disk::SharingPolicy policy)
 {
   kernel::lmm::Constraint::SharingPolicy lmm_policy = kernel::lmm::Constraint::SharingPolicy::SHARED;

@@ -73,9 +73,11 @@ void DiskS19::apply_event(kernel::profile::Event* triggered, double value)
   /* Find out which of my iterators was triggered, and react accordingly */
   if (triggered == get_read_event()) {
     set_read_bandwidth(value);
+    DiskImpl::on_read_bandwidth_change();
     unref_read_event();
   } else if (triggered == get_write_event()) {
     set_write_bandwidth(value);
+    DiskImpl::on_write_bandwidth_change();
     unref_write_event();
   } else if (triggered == get_state_event()) {
     if (value > 0)

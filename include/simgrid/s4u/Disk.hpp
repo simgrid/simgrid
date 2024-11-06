@@ -137,10 +137,6 @@ public:
   /* The signals */
   /** @brief \static Add a callback fired when a new Disk is created */
   static void on_creation_cb(const std::function<void(Disk&)>& cb) { on_creation.connect(cb); }
-  /** @brief \static Add a callback fired when any Disk is destroyed */
-  static void on_destruction_cb(const std::function<void(Disk const&)>& cb) { on_destruction.connect(cb); }
-  /** @brief Add a callback fired when this specific Disk is destroyed */
-  void on_this_destruction_cb(const std::function<void(Disk const&)>& cb) { on_this_destruction.connect(cb); }
   /** @brief \static Add a callback fired when any Disk is turned on or off */
   static void on_onoff_cb(const std::function<void(Disk const&)>& cb)
   {
@@ -151,13 +147,43 @@ public:
   {
     on_this_onoff.connect(cb);
   }
+  /** \static @brief Add a callback fired when the read bandwidth of any Disk changes */
+  static void on_read_bandwidth_change_cb(const std::function<void(Disk const&)>& cb)
+  {
+    on_read_bandwidth_change.connect(cb);
+  }
+  /** @brief Add a callback fired when the read bandwidth of this specific Disk changes */
+  void on_this_read_bandwidth_change_cb(const std::function<void(Disk const&)>& cb)
+  {
+    on_this_read_bandwidth_change.connect(cb);
+  }
+  /** \static @brief Add a callback fired when the write bandwidth of any Disk changes */
+  static void on_write_bandwidth_change_cb(const std::function<void(Disk const&)>& cb)
+  {
+    on_write_bandwidth_change.connect(cb);
+  }
+  /** @brief Add a callback fired when the read bandwidth of this specific Disk changes */
+  void on_this_write_bandwidth_change_cb(const std::function<void(Disk const&)>& cb)
+  {
+    on_this_write_bandwidth_change.connect(cb);
+  }
+  /** @brief \static Add a callback fired when any Disk is destroyed */
+  static void on_destruction_cb(const std::function<void(Disk const&)>& cb) { on_destruction.connect(cb); }
+  /** @brief Add a callback fired when this specific Disk is destroyed */
+  void on_this_destruction_cb(const std::function<void(Disk const&)>& cb) { on_this_destruction.connect(cb); }
 
 private:
+#ifndef DOXYGEN
   static xbt::signal<void(Disk&)> on_creation;
-  static xbt::signal<void(Disk const&)> on_destruction;
-  xbt::signal<void(Disk const&)> on_this_destruction;
   static xbt::signal<void(Disk const&)> on_onoff;
   xbt::signal<void(Disk const&)> on_this_onoff;
+  static xbt::signal<void(Disk const&)> on_read_bandwidth_change;
+  xbt::signal<void(Disk const&)> on_this_read_bandwidth_change;
+  static xbt::signal<void(Disk const&)> on_write_bandwidth_change;
+  xbt::signal<void(Disk const&)> on_this_write_bandwidth_change;
+  static xbt::signal<void(Disk const&)> on_destruction;
+  xbt::signal<void(Disk const&)> on_this_destruction;
+#endif
 };
 
 } // namespace s4u

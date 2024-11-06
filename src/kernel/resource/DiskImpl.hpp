@@ -112,6 +112,9 @@ public:
   void turn_on() override;
   void turn_off() override;
 
+  void on_read_bandwidth_change() const;
+  void on_write_bandwidth_change() const;
+
   void seal() override;
   void destroy(); // Must be called instead of the destructor
 
