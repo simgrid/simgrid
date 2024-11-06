@@ -124,7 +124,7 @@ std::vector<std::string> Exploration::get_textual_trace(int max_elements)
   return trace;
 }
 
-void Exploration::run_critical_exploration(ExitStatus error)
+void Exploration::run_critical_exploration_on_need(ExitStatus error)
 {
   if (_sg_mc_max_errors == 0 && _sg_mc_search_critical_transition && not is_looking_for_critical) {
     is_looking_for_critical = true;
@@ -216,7 +216,7 @@ void Exploration::check_deadlock()
       return;
 
     errors_++;
-    run_critical_exploration(ExitStatus::DEADLOCK);
+    run_critical_exploration_on_need(ExitStatus::DEADLOCK);
 
     if (_sg_mc_max_errors >= 0 && errors_ > _sg_mc_max_errors) {
       throw McError(ExitStatus::DEADLOCK);

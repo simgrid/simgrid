@@ -47,8 +47,10 @@ public:
   stack_t get_stack() override { return *stack_; }
 
 protected:
+  /// Recursively explore the transtions provided by the reduction
   void explore(odpor::Execution& S, stack_t& state_stack);
-  void simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor, stack_t& state_stack);
+  /// Do one step in the exploration: execute a transition, create a state and deal with failures
+  void step_exploration(odpor::Execution& S, aid_t next_actor, stack_t& state_stack);
 };
 
 } // namespace simgrid::mc

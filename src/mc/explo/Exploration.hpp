@@ -161,7 +161,7 @@ public:
    * A McError of value @param error is thrown after that exploration to get the correct output at the end of execution.
    */
 
-  void run_critical_exploration(ExitStatus error);
+  void run_critical_exploration_on_need(ExitStatus error);
 
   /** Print something to the dot output file*/
   void dot_output(const char* fmt, ...) XBT_ATTRIB_PRINTF(2, 3);

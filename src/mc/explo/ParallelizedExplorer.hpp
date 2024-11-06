@@ -74,11 +74,6 @@ private:
   std::vector<StatePtr> opened_states_;
   StatePtr best_opened_state();
 
-  /** If we're running ODPOR, picks the corresponding state in the stack
-   * (opened_states_ are ignored)
-   */
-  StatePtr next_odpor_state();
-
   /** Change current stack_ value to correspond to the one we would have
    *  had if we executed transition to get to state. This is required when
    *  backtracking, and achieved thanks to the fact states save their parent.*/

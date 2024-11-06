@@ -61,7 +61,7 @@ void DFSExplorer::log_state() // override
   Exploration::log_state();
 }
 
-void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor, stack_t& state_stack)
+void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_t& state_stack)
 {
 
   // This means the exploration asked us to visit a parallel history
@@ -122,7 +122,7 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
     reduction_algo_->apply_race_update(std::move(todo_updates));
 
     // ... If we are not already doing it, start critical exploration
-    run_critical_exploration(error.value);
+    run_critical_exploration_on_need(error.value);
 
     // ... Unwind the addition of this fake state and prepare to let the algo keep going
     reduction_algo_->on_backtrack(state_stack.back().get());
@@ -187,7 +187,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 
   while ((next_to_explore = reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
 
-    simgrid_wrapper_explore(S, next_to_explore, state_stack);
+    step_exploration(S, next_to_explore, state_stack);
   }
 
   std::shared_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, &state_stack);
