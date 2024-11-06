@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/BeFSExplorer.hpp"
-#include "src/mc/api/states/BeFSWutState.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -157,9 +156,9 @@ void BeFSExplorer::run()
     }
 
     // If we use a state containing a sleep state, display it during debug
-    if (XBT_LOG_ISENABLED(mc_befs, xbt_log_priority_verbose)) {
-      auto sleep_state = dynamic_cast<SleepSetState*>(state.get());
-      if (sleep_state != nullptr and not sleep_state->get_sleep_set().empty()) {
+    if (XBT_LOG_ISENABLED(mc_befs, xbt_log_priority_verbose) && reduction_mode_ != ReductionMode::none) {
+      auto sleep_state = static_cast<SleepSetState*>(state.get());
+      if (not sleep_state->get_sleep_set().empty()) {
         XBT_VERB("Sleep set actually containing:");
 
         for (const auto& [aid, transition] : sleep_state->get_sleep_set())

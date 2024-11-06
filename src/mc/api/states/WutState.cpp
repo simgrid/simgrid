@@ -5,7 +5,6 @@
 
 #include "src/mc/api/states/WutState.hpp"
 #include "src/mc/api/RemoteApp.hpp"
-#include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "src/mc/mc_forward.hpp"

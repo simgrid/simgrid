@@ -75,9 +75,9 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
   auto state = state_stack.back();
 
   // If we use a state containing a sleep state, display it during debug
-  if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose)) {
-    auto sleep_state = dynamic_cast<SleepSetState*>(state.get());
-    if (sleep_state != nullptr and not sleep_state->get_sleep_set().empty()) {
+  if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose) && reduction_mode_ != ReductionMode::none) {
+    auto sleep_state = static_cast<SleepSetState*>(state.get());
+    if (not sleep_state->get_sleep_set().empty()) {
       XBT_VERB("Sleep set actually containing:");
 
       for (const auto& [aid, transition] : sleep_state->get_sleep_set())
