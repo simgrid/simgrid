@@ -122,10 +122,7 @@ void DFSExplorer::simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor,
     reduction_algo_->apply_race_update(std::move(todo_updates));
 
     // ... If we are not already doing it, start critical exploration
-    if (try_to_launch_critical_exploration())
-      // This will be executed after the first (and only) critical exploration:
-      // we raise the same error, so the checker can return the correct failure code in the end
-      throw McError(error.value);
+    run_critical_exploration(error.value);
 
     // ... Unwind the addition of this fake state and prepare to let the algo keep going
     reduction_algo_->on_backtrack(state_stack.back().get());

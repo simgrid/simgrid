@@ -124,15 +124,17 @@ std::vector<std::string> Exploration::get_textual_trace(int max_elements)
   return trace;
 }
 
-bool Exploration::try_to_launch_critical_exploration()
+void Exploration::run_critical_exploration(ExitStatus error)
 {
   if (_sg_mc_max_errors == 0 && _sg_mc_search_critical_transition && not is_looking_for_critical) {
     is_looking_for_critical = true;
     stack_t stack           = get_stack();
     create_critical_transition_exploration(std::move(remote_app_), get_model_checking_reduction(), &stack);
-    return true;
+
+    // This will be executed after the first (and only) critical exploration:
+    // we raise the same error, so the checker can return the correct failure code in the end
+    throw McError(error);
   }
-  return false;
 }
 
 XBT_ATTRIB_NORETURN void Exploration::report_crash(int status)
@@ -214,8 +216,8 @@ void Exploration::check_deadlock()
       return;
 
     errors_++;
-    if (try_to_launch_critical_exploration())
-      throw McError(ExitStatus::DEADLOCK);
+    run_critical_exploration(ExitStatus::DEADLOCK);
+
     if (_sg_mc_max_errors >= 0 && errors_ > _sg_mc_max_errors) {
       throw McError(ExitStatus::DEADLOCK);
     }

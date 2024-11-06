@@ -154,16 +154,14 @@ public:
     on_backtracking_signal.connect(f);
   }
 
-  /** @brief If the exploration is not already looking for a critical transition,
-   *  start a critical transition explorer.
+  /** @brief Search for the critical transition on need
    *
-   *
-   *  @return If a critical exploration has already started, this function call returns
-   *  false without any effect. Else, it starts a critical transition explorer, runs it,
-   *  and returns true when it has finished.
+   * Do nothing if we are already searching for that critical transition, or if the user disabled this beavior.
+   * Otherwise, start a critical transition explorer and run it until its end.
+   * A McError of value @param error is thrown after that exploration to get the correct output at the end of execution.
    */
 
-  bool try_to_launch_critical_exploration();
+  void run_critical_exploration(ExitStatus error);
 
   /** Print something to the dot output file*/
   void dot_output(const char* fmt, ...) XBT_ATTRIB_PRINTF(2, 3);
