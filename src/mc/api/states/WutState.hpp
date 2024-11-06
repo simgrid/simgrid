@@ -44,7 +44,7 @@ public:
    * the wakeup tree is already not empty
    *
    * @param prior The sequence of steps leading up to this state
-   * with respec to which the tree associated with this state should be
+   * with respect to which the tree associated with this state should be
    * a wakeup tree (wakeup trees are defined relative to an execution)
    *
    * @invariant: You should not manipulate a wakeup tree with respect

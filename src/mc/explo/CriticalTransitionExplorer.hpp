@@ -42,10 +42,6 @@ private:
 public:
   explicit CriticalTransitionExplorer(std::unique_ptr<RemoteApp> remote_app, ReductionMode mode, stack_t* stack);
   void run() override;
-
-private:
-  void explore(odpor::Execution& S, stack_t& state_stack);
-  void simgrid_wrapper_explore(odpor::Execution& S, aid_t next_actor, stack_t& state_stack);
 };
 
 } // namespace simgrid::mc
