@@ -196,7 +196,7 @@ void DiskAction::set_state(Action::State new_state)
   Action::State previous_state = get_state();
   if (new_state != previous_state) { // Trigger only if the state changed
     Action::set_state(new_state);
-    on_state_change(*this, previous_state, new_state);
+    s4u::Disk::on_io_state_change(*this, previous_state);
   }
 }
 

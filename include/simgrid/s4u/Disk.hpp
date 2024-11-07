@@ -7,6 +7,7 @@
 #define INCLUDE_SIMGRID_S4U_DISK_HPP_
 
 #include <simgrid/disk.h>
+#include <simgrid/kernel/resource/Action.hpp>
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Io.hpp>
 #include <xbt/Extendable.hpp>
@@ -41,6 +42,11 @@ class XBT_PUBLIC Disk : public xbt::Extendable<Disk> {
 
   // The private implementation, that never changes
   kernel::resource::DiskImpl* const pimpl_;
+
+protected:
+#ifndef DOXYGEN
+  friend kernel::resource::DiskAction; // signal on_io_state_change
+#endif
 
 public:
 #ifndef DOXYGEN
@@ -167,6 +173,13 @@ public:
   {
     on_this_write_bandwidth_change.connect(cb);
   }
+  /** \static @brief Add a callback fired when an I/O changes it state (ready/done/cancel) */
+  static void on_io_state_change_cb(
+      const std::function<void(kernel::resource::DiskAction&, kernel::resource::Action::State)>& cb)
+  {
+    on_io_state_change.connect(cb);
+  }
+
   /** @brief \static Add a callback fired when any Disk is destroyed */
   static void on_destruction_cb(const std::function<void(Disk const&)>& cb) { on_destruction.connect(cb); }
   /** @brief Add a callback fired when this specific Disk is destroyed */
@@ -181,6 +194,7 @@ private:
   xbt::signal<void(Disk const&)> on_this_read_bandwidth_change;
   static xbt::signal<void(Disk const&)> on_write_bandwidth_change;
   xbt::signal<void(Disk const&)> on_this_write_bandwidth_change;
+  static xbt::signal<void(kernel::resource::DiskAction&, kernel::resource::Action::State)> on_io_state_change;
   static xbt::signal<void(Disk const&)> on_destruction;
   xbt::signal<void(Disk const&)> on_this_destruction;
 #endif

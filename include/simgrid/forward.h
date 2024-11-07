@@ -228,6 +228,7 @@ class NetworkAction;
 class DiskImpl;
 using DiskImplPtr = boost::intrusive_ptr<DiskImpl>;
 class DiskModel;
+class DiskAction;
 class VirtualMachineImpl;
 class VMModel;
 }
