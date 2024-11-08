@@ -152,18 +152,6 @@ aid_t BeFSWutState::next_transition() const
   return best_actor;
 }
 
-std::shared_ptr<Transition> BeFSWutState::execute_next(aid_t next, RemoteApp& app)
-{
-  if (children_states_.find(next) != children_states_.end()) {
-    outgoing_transition_ = get_actors_list().at(next).get_transition();
-    XBT_DEBUG("Found an existing transition for actor %ld", next);
-    outgoing_transition_->replay(app);
-    // TODO: Fix me! Need to add the count for statistics
-    return outgoing_transition_;
-  }
-  return State::execute_next(next, app);
-}
-
 std::unordered_set<aid_t> BeFSWutState::get_sleeping_actors(aid_t after_actor) const
 {
   std::unordered_set<aid_t> actors;

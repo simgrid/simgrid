@@ -44,15 +44,6 @@ public:
 
   std::pair<aid_t, int> next_transition_guided() const override;
 
-  /**
-   * @brief Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
-   * next_to_explore()
-   *
-   * In practice, if the child resulting of the execution of next has already been visited, we do not create a new
-   * transition object, nor ask the remote app.
-   */
-  std::shared_ptr<Transition> execute_next(aid_t next, RemoteApp& app) override;
-
   StatePtr get_children_state_of_aid(aid_t next)
   {
     if (auto children_state = children_states_.find(next); children_state != children_states_.end())

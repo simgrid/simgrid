@@ -62,13 +62,10 @@ public:
   int get_actor_strategy_valuation(aid_t actor) const { return strategy_->get_actor_valuation(actor); }
 
   /**
-   * @brief Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
+   * Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
    * next_transition()
-   *
-   * Some algorithm may sometimes require to not really explore a new state; hence the real behavior is dependent
-   * of the currently used state and strategy
    */
-  virtual std::shared_ptr<Transition> execute_next(aid_t next, RemoteApp& app);
+  std::shared_ptr<Transition> execute_next(aid_t next, RemoteApp& app);
 
   long get_num() const { return num_; }
   std::size_t count_todo() const;
