@@ -113,6 +113,18 @@ void DiskImpl::seal()
   turn_on();
 }
 
+void DiskImpl::on_read_bandwidth_change() const
+{
+  s4u::Disk::on_read_bandwidth_change(piface_);
+  piface_.on_this_read_bandwidth_change(piface_);
+}
+
+void DiskImpl::on_write_bandwidth_change() const
+{
+  s4u::Disk::on_write_bandwidth_change(piface_);
+  piface_.on_this_write_bandwidth_change(piface_);
+}
+
 constexpr kernel::lmm::Constraint::SharingPolicy to_maxmin_policy(s4u::Disk::SharingPolicy policy)
 {
   kernel::lmm::Constraint::SharingPolicy lmm_policy = kernel::lmm::Constraint::SharingPolicy::SHARED;
@@ -184,7 +196,7 @@ void DiskAction::set_state(Action::State new_state)
   Action::State previous_state = get_state();
   if (new_state != previous_state) { // Trigger only if the state changed
     Action::set_state(new_state);
-    on_state_change(*this, previous_state, new_state);
+    s4u::Disk::on_io_state_change(*this, previous_state);
   }
 }
 

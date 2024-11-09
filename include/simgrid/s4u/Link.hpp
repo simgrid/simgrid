@@ -41,7 +41,7 @@ protected:
   // The implementation that never changes
   kernel::resource::LinkImpl* const pimpl_;
 #ifndef DOXYGEN
-  friend kernel::resource::NetworkAction; // signal comm_state_changed
+  friend kernel::resource::NetworkAction; // signal on_communication_state_change
 #endif
 
 public:

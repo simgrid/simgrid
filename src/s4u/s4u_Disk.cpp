@@ -16,8 +16,11 @@ template class xbt::Extendable<s4u::Disk>;
 namespace s4u {
 
 xbt::signal<void(Disk&)> Disk::on_creation;
-xbt::signal<void(Disk const&)> Disk::on_destruction;
 xbt::signal<void(Disk const&)> Disk::on_onoff;
+xbt::signal<void(Disk const&)> Disk::on_read_bandwidth_change;
+xbt::signal<void(Disk const&)> Disk::on_write_bandwidth_change;
+xbt::signal<void(kernel::resource::DiskAction&, kernel::resource::Action::State)> Disk::on_io_state_change;
+xbt::signal<void(Disk const&)> Disk::on_destruction;
 
 const std::string& Disk::get_name() const
 {

@@ -637,19 +637,19 @@ Signals
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Actor::on_creation_cb
-      .. doxygenfunction:: simgrid::s4u::Actor::on_suspend_cb
-      .. doxygenfunction:: simgrid::s4u::Actor::on_this_suspend_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_host_change_cb
-      .. doxygenfunction:: simgrid::s4u::Actor::on_this_host_change_cb
-      .. doxygenfunction:: simgrid::s4u::Actor::on_resume_cb
-      .. doxygenfunction:: simgrid::s4u::Actor::on_this_resume_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_sleep_cb
-      .. doxygenfunction:: simgrid::s4u::Actor::on_this_sleep_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_resume_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_wake_up_cb
-      .. doxygenfunction:: simgrid::s4u::Actor::on_this_wake_up_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_termination_cb
-      .. doxygenfunction:: simgrid::s4u::Actor::on_this_termination_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_destruction_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_this_host_change_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_this_sleep_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_this_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_this_resume_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_this_wake_up_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_this_termination_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_this_destruction_cb
 
 .. _API_s4u_this_actor:
@@ -990,12 +990,12 @@ Signals
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::Engine::on_deadlock_cb
       .. doxygenfunction:: simgrid::s4u::Engine::on_platform_created_cb
       .. doxygenfunction:: simgrid::s4u::Engine::on_platform_creation_cb
       .. doxygenfunction:: simgrid::s4u::Engine::on_simulation_start_cb
       .. doxygenfunction:: simgrid::s4u::Engine::on_simulation_end_cb
       .. doxygenfunction:: simgrid::s4u::Engine::on_time_advance_cb
+      .. doxygenfunction:: simgrid::s4u::Engine::on_deadlock_cb
 
 .. _API_s4u_Mailbox:
 
@@ -1303,12 +1303,15 @@ Signals
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Disk::on_creation_cb
-      .. doxygenfunction:: simgrid::s4u::Disk::on_destruction_cb
-      .. doxygenfunction:: simgrid::s4u::Disk::on_this_destruction_cb
       .. doxygenfunction:: simgrid::s4u::Disk::on_onoff_cb
+      .. doxygenfunction:: simgrid::s4u::Disk::on_destruction_cb
+      .. doxygenfunction:: simgrid::s4u::Disk::on_read_bandwidth_change_cb
+      .. doxygenfunction:: simgrid::s4u::Disk::on_write_bandwidth_change_cb
       .. doxygenfunction:: simgrid::s4u::Disk::on_this_onoff_cb
-
-
+      .. doxygenfunction:: simgrid::s4u::Disk::on_this_destruction_cb
+      .. doxygenfunction:: simgrid::s4u::Disk::on_this_read_bandwidth_change_cb
+      .. doxygenfunction:: simgrid::s4u::Disk::on_this_write_bandwidth_change_cb
+      .. doxygenfunction:: simgrid::s4u::Disk::on_io_state_change_cb
 .. _API_s4u_Host:
 
 =============
@@ -1607,12 +1610,12 @@ Signals
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Host::on_creation_cb
-      .. doxygenfunction:: simgrid::s4u::Host::on_destruction_cb
-      .. doxygenfunction:: simgrid::s4u::Host::on_this_destruction_cb
-      .. doxygenfunction:: simgrid::s4u::Host::on_speed_change_cb
-      .. doxygenfunction:: simgrid::s4u::Host::on_this_speed_change_cb
       .. doxygenfunction:: simgrid::s4u::Host::on_onoff_cb
+      .. doxygenfunction:: simgrid::s4u::Host::on_destruction_cb
+      .. doxygenfunction:: simgrid::s4u::Host::on_speed_change_cb
       .. doxygenfunction:: simgrid::s4u::Host::on_this_onoff_cb
+      .. doxygenfunction:: simgrid::s4u::Host::on_this_destruction_cb
+      .. doxygenfunction:: simgrid::s4u::Host::on_this_speed_change_cb
       .. doxygenfunction:: simgrid::s4u::Host::on_exec_state_change_cb
 
 .. _API_s4u_Link:
@@ -1852,14 +1855,14 @@ Signals
 
    .. group-tab:: C++
 
+      .. doxygenfunction:: simgrid::s4u::Link::on_creation_cb
+      .. doxygenfunction:: simgrid::s4u::Link::on_onoff_cb
+      .. doxygenfunction:: simgrid::s4u::Link::on_destruction_cb
       .. doxygenfunction:: simgrid::s4u::Link::on_bandwidth_change_cb
+      .. doxygenfunction:: simgrid::s4u::Link::on_this_onoff_cb
+      .. doxygenfunction:: simgrid::s4u::Link::on_this_destruction_cb
       .. doxygenfunction:: simgrid::s4u::Link::on_this_bandwidth_change_cb
       .. doxygenfunction:: simgrid::s4u::Link::on_communication_state_change_cb
-      .. doxygenfunction:: simgrid::s4u::Link::on_creation_cb
-      .. doxygenfunction:: simgrid::s4u::Link::on_destruction_cb
-      .. doxygenfunction:: simgrid::s4u::Link::on_this_destruction_cb
-      .. doxygenfunction:: simgrid::s4u::Link::on_onoff_cb
-      .. doxygenfunction:: simgrid::s4u::Link::on_this_onoff_cb
 
 .. _API_s4u_NetZone:
 
@@ -2319,6 +2322,24 @@ Suspending and resuming an activity
       .. doxygenfunction:: simgrid::s4u::Activity::resume
       .. doxygenfunction:: simgrid::s4u::Activity::is_suspended
 
+Signals
+-------
+
+.. tabs::
+
+   .. group-tab:: C++
+      .. doxygenfunction:: simgrid::s4u::Activity::on_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Activity::on_start_cb
+      .. doxygenfunction:: simgrid::s4u::Activity::on_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Activity::on_resume_cb
+      .. doxygenfunction:: simgrid::s4u::Activity::on_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Activity::on_this_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Activity::on_this_start_cb
+      .. doxygenfunction:: simgrid::s4u::Activity::on_this_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Activity::on_this_resume_cb
+      .. doxygenfunction:: simgrid::s4u::Activity::on_this_completion_cb
+
+
 .. _API_s4u_Comm:
 
 =============
@@ -2466,22 +2487,10 @@ Signals
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::Comm::on_completion_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_start_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_recv_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_send_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_suspended_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_suspend_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_resume_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_resumed_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_veto_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_this_completion_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_this_recv_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_this_resume_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_this_send_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_this_start_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_this_suspended_cb
-      .. doxygenfunction:: simgrid::s4u::Comm::on_this_veto_cb
 
 .. _API_s4u_Exec:
 
@@ -2605,23 +2614,6 @@ Suspending and resuming an execution
       .. automethod:: simgrid.Exec.resume
       .. autoattribute:: simgrid.Exec.is_suspended
 
-Signals
--------
-
-.. tabs::
-
-   .. group-tab:: C++
-
-      .. doxygenfunction:: simgrid::s4u::Exec::on_start_cb
-      .. doxygenfunction:: simgrid::s4u::Exec::on_this_start_cb
-      .. doxygenfunction:: simgrid::s4u::Exec::on_completion_cb
-      .. doxygenfunction:: simgrid::s4u::Exec::on_this_completion_cb
-
-      .. doxygenfunction:: simgrid::s4u::Exec::on_suspended_cb
-      .. doxygenfunction:: simgrid::s4u::Exec::on_resumed_cb
-      .. doxygenfunction:: simgrid::s4u::Exec::on_veto_cb
-      .. doxygenfunction:: simgrid::s4u::Exec::on_this_veto_cb
-
 .. _API_s4u_Io:
 
 ===========
@@ -2678,22 +2670,6 @@ Life cycle
       .. automethod:: simgrid.Io.test
       .. automethod:: simgrid.Io.wait
 
-Signals
--------
-
-.. tabs::
-
-   .. group-tab:: C++
-
-      .. doxygenfunction:: simgrid::s4u::Io::on_start_cb
-      .. doxygenfunction:: simgrid::s4u::Io::on_this_start_cb
-      .. doxygenfunction:: simgrid::s4u::Io::on_completion_cb
-      .. doxygenfunction:: simgrid::s4u::Io::on_this_completion_cb
-
-      .. doxygenfunction:: simgrid::s4u::Io::on_suspended_cb
-      .. doxygenfunction:: simgrid::s4u::Io::on_resumed_cb
-      .. doxygenfunction:: simgrid::s4u::Io::on_veto_cb
-      .. doxygenfunction:: simgrid::s4u::Io::on_this_veto_cb
 
 .. _API_s4u_ActivitySet:
 
