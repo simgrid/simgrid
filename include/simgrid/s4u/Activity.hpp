@@ -19,7 +19,9 @@
 #include <xbt/signal.hpp>
 #include <xbt/utility.hpp>
 
+#ifndef DOXYGEN
 XBT_LOG_EXTERNAL_CATEGORY(s4u_activity);
+#endif
 
 namespace simgrid {
 

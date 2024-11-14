@@ -333,6 +333,7 @@ struct ClusterCallbacks {
                    const std::function<ClusterLinkCb>& set_loopback, const std::function<ClusterLinkCb>& set_limiter)
       :  host(set_host), loopback(set_loopback), limiter(set_limiter){/* nothing to do */};
 
+#ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v339("Please use callback with either a Host/NetZone creation function as first parameter")
   explicit ClusterCallbacks(const std::function<ClusterNetPointCb>& set_netpoint)
       : by_netpoint_(true), netpoint(set_netpoint){/* nothing to do */};
@@ -340,6 +341,7 @@ struct ClusterCallbacks {
   ClusterCallbacks(const std::function<ClusterNetPointCb>& set_netpoint,
                    const std::function<ClusterLinkCb>& set_loopback, const std::function<ClusterLinkCb>& set_limiter)
       : by_netpoint_(true), netpoint(set_netpoint), loopback(set_loopback), limiter(set_limiter){/* nothing to do */};
+#endif
 };
 /**
  * @brief Create a torus zone
