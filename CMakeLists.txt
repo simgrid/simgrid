@@ -754,6 +754,8 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeLib.cmake)
 
 if(enable_java)
   include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Java.cmake)
+else()
+  message(STATUS "Java disabled by user request. Use -Denable_java=ON to activate it.")
 endif()
 
 # Python binding (with pybind11)

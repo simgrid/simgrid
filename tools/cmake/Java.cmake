@@ -256,4 +256,6 @@ endif(APPLE)
   )
 endif(enable_lib_in_jar)
 
+add_dependencies(tests simgrid_jar)
+
 include_directories(${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
