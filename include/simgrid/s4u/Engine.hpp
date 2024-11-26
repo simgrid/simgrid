@@ -33,8 +33,9 @@ public:
   explicit Engine(std::string name);
   /** Constructor, taking the command line parameters of your main function */
   explicit Engine(int* argc, char** argv);
-  /* Currently, only one instance is allowed to exist. This is why you can't copy or move it */
+
 #ifndef DOXYGEN
+  /* Currently, only one instance is allowed to exist. This is why you can't copy or move it */
   Engine(const Engine&) = delete;
   Engine(Engine&&)      = delete;
   ~Engine();
@@ -143,25 +144,25 @@ public:
    * The order is generally different from the creation/declaration order in the XML platform because we use a hash
    * table internally.
    */
-  std::vector<Host*> get_all_hosts() const;
-  std::vector<Host*> get_filtered_hosts(const std::function<bool(Host*)>& filter) const;
-  std::vector<Host*> get_hosts_from_MPI_hostfile(const std::string& hostfile) const;
-  Host* host_by_name(const std::string& name) const;
-  Host* host_by_name_or_null(const std::string& name) const;
+  std::vector<s4u::Host*> get_all_hosts() const;
+  std::vector<s4u::Host*> get_filtered_hosts(const std::function<bool(s4u::Host*)>& filter) const;
+  std::vector<s4u::Host*> get_hosts_from_MPI_hostfile(const std::string& hostfile) const;
+  s4u::Host* host_by_name(const std::string& name) const;
+  s4u::Host* host_by_name_or_null(const std::string& name) const;
 
   size_t get_link_count() const;
-  std::vector<Link*> get_all_links() const;
-  std::vector<Link*> get_filtered_links(const std::function<bool(Link*)>& filter) const;
-  Link* link_by_name(const std::string& name) const;
+  std::vector<s4u::Link*> get_all_links() const;
+  std::vector<s4u::Link*> get_filtered_links(const std::function<bool(s4u::Link*)>& filter) const;
+  s4u::Link* link_by_name(const std::string& name) const;
   /**
    * @brief Find a split-duplex link from its name.
    * @throw std::invalid_argument if the searched link does not exist.
    */
   SplitDuplexLink* split_duplex_link_by_name(const std::string& name) const;
-  Link* link_by_name_or_null(const std::string& name) const;
+  s4u::Link* link_by_name_or_null(const std::string& name) const;
 
-  Mailbox* mailbox_by_name_or_create(const std::string& name) const;
-  MessageQueue* message_queue_by_name_or_create(const std::string& name) const;
+  s4u::Mailbox* mailbox_by_name_or_create(const std::string& name) const;
+  s4u::MessageQueue* message_queue_by_name_or_create(const std::string& name) const;
 
   size_t get_actor_count() const;
   std::vector<ActorPtr> get_all_actors() const;
@@ -177,10 +178,10 @@ public:
    */
   kernel::routing::NetPoint* netpoint_by_name(const std::string& name) const;
 
-  NetZone* get_netzone_root() const;
-  std::vector<NetZone*> get_all_netzones() const;
+  s4u::NetZone* get_netzone_root() const;
+  std::vector<s4u::NetZone*> get_all_netzones() const;
 
-  NetZone* netzone_by_name_or_null(const std::string& name) const;
+  s4u::NetZone* netzone_by_name_or_null(const std::string& name) const;
 
   /**
    * @brief Add a model to engine list

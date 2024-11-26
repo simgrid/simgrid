@@ -69,6 +69,7 @@ if(enable_compile_warnings)
   elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all")
   endif()
+  set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
 
   # makecontext takes a pointer to function of non-matching type, and we cannot do otherwise
   CHECK_CXX_COMPILER_FLAG(-Wno-cast-function-type-strict _have_flag)

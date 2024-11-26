@@ -79,8 +79,8 @@ public:
   Disk* set_property(const std::string&, const std::string& value);
   Disk* set_properties(const std::unordered_map<std::string, std::string>& properties);
 
-  Disk* set_host(Host* host);
-  Host* get_host() const;
+  Disk* set_host(s4u::Host* host);
+  s4u::Host* get_host() const;
 
   Disk* set_state_profile(kernel::profile::Profile* profile);
   Disk* set_read_bandwidth_profile(kernel::profile::Profile* profile);

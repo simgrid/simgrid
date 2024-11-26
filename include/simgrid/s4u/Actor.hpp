@@ -133,7 +133,7 @@ XBT_PUBLIC std::string get_name();
 XBT_PUBLIC const char* get_cname();
 
 /** @brief Returns the name of the host on which the current actor is running. */
-XBT_PUBLIC Host* get_host();
+XBT_PUBLIC s4u::Host* get_host();
 
 /** @brief Suspend the current actor, that is blocked until resume()ed by another actor. */
 XBT_PUBLIC void suspend();
@@ -161,7 +161,7 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void exit();
 XBT_PUBLIC void on_exit(const std::function<void(bool)>& fun);
 
 /** @brief Migrate the current actor to a new host. */
-XBT_PUBLIC void set_host(Host* new_host);
+XBT_PUBLIC void set_host(s4u::Host* new_host);
 } // namespace this_actor
 
 /** An actor is an independent stream of execution in your distributed application.
@@ -208,7 +208,6 @@ public:
   /** Retrieve the amount of references on that object. Useful to debug the automatic refcounting */
   int get_refcount() const;
 
-  // ***** Actor creation *****
   /** \static
    * Retrieve a reference to myself
    */
@@ -362,7 +361,7 @@ public:
   /** Retrieves the name of that actor as a C string */
   const char* get_cname() const;
   /** Retrieves the host on which that actor is running */
-  Host* get_host() const;
+  s4u::Host* get_host() const;
   /** Retrieves the actor ID of that actor */
   aid_t get_pid() const;
   /** Retrieves the actor ID of that actor's creator */
@@ -419,7 +418,7 @@ public:
    * Asynchronous activities started by the actor are not migrated automatically, so you have
    * to take care of this yourself (only you knows which ones should be migrated).
    */
-  void set_host(Host* new_host);
+  void set_host(s4u::Host* new_host);
 
   /** Ask the actor to die.
    *

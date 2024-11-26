@@ -60,8 +60,8 @@ public:
   /** @brief Change the host on which this activity takes place.
    *
    * This cannot be done once the activity is terminated, but it can be done on started executions. */
-  ExecPtr set_host(Host* host);
-  ExecPtr set_hosts(const std::vector<Host*>& hosts);
+  ExecPtr set_host(s4u::Host* host);
+  ExecPtr set_hosts(const std::vector<s4u::Host*>& hosts);
   ExecPtr unset_host();
   ExecPtr unset_hosts() { return unset_host(); }
 
@@ -86,7 +86,7 @@ public:
 
   /** @brief Retrieve the host on which this activity takes place.
    *  If it runs on more than one host, only the first host is returned. */
-  Host* get_host() const;
+  s4u::Host* get_host() const;
   unsigned int get_host_number() const;
   int get_thread_count() const;
   double get_cost() const;

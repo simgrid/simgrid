@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <csignal>
 #include <simgrid/Exception.hpp>
 #include <simgrid/kernel/Timer.hpp>
 #include <simgrid/kernel/routing/NetPoint.hpp>
@@ -123,8 +124,14 @@ static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
   std::raise(signum);
 }
 
+// Allow java and others to request to not install our signal handlers (Java's ones are better)
+bool do_install_signal_handlers = true;
+
 static void install_signal_handlers()
 {
+  if (not do_install_signal_handlers)
+    return;
+
   /* Install signal handler for SIGINT */
   std::signal(SIGINT, inthandler);
 
@@ -232,6 +239,11 @@ void EngineImpl::context_mod_init() const
   }
 #endif
 
+  /* select the context factory that will create the contexts */
+  if (context::ContextFactory::initializer) { // Give Java a chance to hijack the factory mechanism
+    instance_->set_context_factory(context::ContextFactory::initializer());
+    return;
+  }
   /* use the factory specified by --cfg=contexts/factory:value */
   for (auto const& [factory_name, factory] : context_factories)
     if (context_factory_name == factory_name) {

@@ -38,6 +38,9 @@ https
 inlining
 ingroup
 int
+java
+Java
+JNI
 kcachegrind
 KILLME
 lat

@@ -2099,6 +2099,9 @@ include include/xbt/xbt_os_time.h
 include setup.py
 include src/3rd-party/catch.hpp
 include src/bindings/python/simgrid_python.cpp
+include src/bindings/swig/defs/pargc_argv.i
+include src/bindings/swig/defs/std_function.i
+include src/bindings/swig/simgrid-java.i
 include src/dag/dax.dtd
 include src/dag/dax_dtd.c
 include src/dag/dax_dtd.h
@@ -2161,6 +2164,8 @@ include src/kernel/context/Context.cpp
 include src/kernel/context/Context.hpp
 include src/kernel/context/ContextBoost.cpp
 include src/kernel/context/ContextBoost.hpp
+include src/kernel/context/ContextJava.cpp
+include src/kernel/context/ContextJava.hpp
 include src/kernel/context/ContextRaw.cpp
 include src/kernel/context/ContextRaw.hpp
 include src/kernel/context/ContextSwapped.cpp
@@ -2711,6 +2716,7 @@ include tools/cmake/DefinePackages.cmake
 include tools/cmake/Distrib.cmake
 include tools/cmake/Documentation.cmake
 include tools/cmake/Flags.cmake
+include tools/cmake/Java.cmake
 include tools/cmake/MaintainerMode.cmake
 include tools/cmake/MakeLib.cmake
 include tools/cmake/Modules/FindGraphviz.cmake

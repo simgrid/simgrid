@@ -33,6 +33,9 @@ public:
 
   virtual void run_all(std::vector<actor::ActorImpl*> const& actors_list) = 0;
 
+  /* This allows Java to hijack the context factory (Java induces factories of factory :) */
+  static std::function<ContextFactory*(void)> initializer;
+
 protected:
   template <class T, class... Args> T* new_context(Args&&... args)
   {

@@ -33,3 +33,6 @@
 + tools/jenkins/.*
 
 + doc/simix_network\.tla
+
+# temp file -- to be killed once some Java examples are added
++ src/bindings/swig/simgrid_runme.java

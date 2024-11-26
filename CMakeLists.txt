@@ -19,11 +19,13 @@ message(STATUS "Configuring SimGrid v${release_version}")
 set(SIMGRID_VERSION_STRING "SimGrid version ${release_version}")
 
 set(libsimgrid_version "${release_version}")
+set(libsimgrid-java_version "${release_version}")
 
 # Basic checks on cmake
 cmake_minimum_required(VERSION 3.12)
 # once we move CMake to >= 3.13, we should use target_link_option in examples/sthread
 # once we move CMake to >= 3.13.1, we could get rid of _Boost_STACKTRACE_BACKTRACE_HEADERS
+# When updating, try to remove some cmake_policy() to see if it's OK or if it generates a warning
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules)
 
@@ -293,7 +295,7 @@ set(_Boost_STACKTRACE_HEADERS           "boost/stacktrace.hpp")
 set(_Boost_STACKTRACE_BACKTRACE_HEADERS "boost/stacktrace.hpp")
 set(_Boost_STACKTRACE_ADDR2LINE_HEADERS "boost/stacktrace.hpp")
 
-  if(minimal-bindings) # When we want a minimal python library, don't even search for boost optional components
+  if(minimal-bindings) # When we want a minimal python or Java library, don't even search for boost optional components
     message(STATUS "Don't even look for boost optional components, as we build minimal binding libraries.")
     find_package(Boost 1.48)
   else()
@@ -750,6 +752,10 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MaintainerMode.cmake)
 ### Make Libs
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeLib.cmake)
 
+if(enable_java)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Java.cmake)
+endif()
+
 # Python binding (with pybind11)
 ################
 if((NOT DEFINED enable_python) OR enable_python)
@@ -897,6 +903,13 @@ message("                version .............: ${CMAKE_C_COMPILER_VERSION}")
 message("                is gnu ..............: ${CMAKE_COMPILER_IS_GNUCC}")
 message("        Compiler: C++ ...............: ${CMAKE_CXX_COMPILER} (id: ${CMAKE_CXX_COMPILER_ID})")
 message("                version .............: ${CMAKE_CXX_COMPILER_VERSION}")
+if(${Java_FOUND})
+  message("        Compiler: Javac .............: ${Java_JAVAC_EXECUTABLE}")
+  message("                version .............: ${Java_VERSION_STRING}")
+  message("                runtime .............: ${Java_JAVA_EXECUTABLE}")
+else()
+  message("        Compiler: Javac .............: (java disabled or not found -- check the logs)")
+endif()
 if(CMAKE_Fortran_COMPILER)
   message("        Compiler: Fortran ...........: ${SMPI_Fortran_COMPILER} (id: ${CMAKE_Fortran_COMPILER_ID})")
   message("                version .............: ${CMAKE_Fortran_COMPILER_VERSION}")

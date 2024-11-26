@@ -23,20 +23,19 @@ option(enable_debug                 "Turn this off to remove all debug messages 
 option(enable_documentation "Whether to produce documentation" off)
 
 option(enable_ns3            "Whether ns-3 model is activated." off)
+option(enable_java           "Whether the Java bindings are activated." off)
 option(enable_msg            "Java was removed from SimGrid v3.33. Please do not enable it here." off)
 mark_as_advanced(enable_msg)
 if (enable_msg)
   message(FATAL_ERROR "MSG was removed from SimGrid v3.33. Please stick to v3.32 or earlier if you need Java.")
 endif()
-
-option(enable_java            "Java was removed from SimGrid v3.33. Please do not enable it here." off)
-mark_as_advanced(enable_java)
-if (enable_java)
-  message(FATAL_ERROR "Java was removed from SimGrid v3.33. Please stick to v3.32 or earlier if you need Java.")
-endif()
+option(enable_lib_in_jar     "Whether the native libraries are bundled in a Java jar file" on)
 
 option(minimal-bindings      "Whether to compile the Python bindings libraries with the minimal dependency set" off)
 mark_as_advanced(minimal-bindings)
+if(minimal-bindings)
+  set(enable_lib_in_jar on)
+endif()
 
 option(enable_model-checking "Turn this on to experiment with our prototype of model-checker" on)
 option(enable-model-checking "Please set 'enable_model-checking' instead" off)

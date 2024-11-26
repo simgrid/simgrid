@@ -18,6 +18,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_context, kernel, "Context switching mechanis
 
 namespace simgrid::kernel::context {
 
+std::function<ContextFactory*(void)> ContextFactory::initializer;
+
 void Context::set_nthreads(int nb_threads)
 {
   if (nb_threads <= 0) {

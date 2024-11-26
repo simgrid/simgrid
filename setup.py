@@ -50,6 +50,7 @@ class CMakeBuild(build_ext):
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable,
                       '-Denable_smpi=OFF',
+                      '-Denable_java=OFF',
                       '-Denable_python=ON',
                       '-Dminimal-bindings=ON',
                       '-Dpybind11_DIR=' + get_cmake_dir()
@@ -104,6 +105,7 @@ setup(
         "Programming Language :: C++",
         "Programming Language :: C",
         "Programming Language :: Fortran",
+        "Programming Language :: Java",
         "Topic :: System :: Distributed Computing",
         "Topic :: System :: Systems Administration",
     ],

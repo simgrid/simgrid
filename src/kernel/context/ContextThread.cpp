@@ -87,6 +87,7 @@ void ThreadContext::wrapper(ThreadContext* context)
   // Tell the caller (normally the maestro) we are starting, and wait for its green light
   context->end_.release();
   context->start();
+  context->initialized();
 
   try {
     (*context)();
@@ -105,6 +106,7 @@ void ThreadContext::wrapper(ThreadContext* context)
   install_sigsegv_stack(false);
   XBT_DEBUG("Terminating");
   Context::set_current(nullptr);
+  context->finalizing();
 }
 
 void ThreadContext::release()

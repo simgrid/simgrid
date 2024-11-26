@@ -70,12 +70,12 @@ public:
 
   ~Comm() override;
 
-  static void send(kernel::actor::ActorImpl* sender, const Mailbox* mbox, double task_size, double rate, void* src_buff,
-                   size_t src_buff_size,
+  static void send(kernel::actor::ActorImpl* sender, const s4u::Mailbox* mbox, double task_size, double rate,
+                   void* src_buff, size_t src_buff_size,
                    const std::function<bool(void*, void*, simgrid::kernel::activity::CommImpl*)>& match_fun,
                    const std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)>& copy_data_fun,
                    void* data, double timeout);
-  static void recv(kernel::actor::ActorImpl* receiver, const Mailbox* mbox, void* dst_buff, size_t* dst_buff_size,
+  static void recv(kernel::actor::ActorImpl* receiver, const s4u::Mailbox* mbox, void* dst_buff, size_t* dst_buff_size,
                    const std::function<bool(void*, void*, simgrid::kernel::activity::CommImpl*)>& match_fun,
                    const std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)>& copy_data_fun,
                    void* data, double timeout, double rate);
@@ -87,19 +87,19 @@ public:
    * involved hosts! Enjoy the comfort of the simulator :)
    */
   static CommPtr sendto_init(); /* Source and Destination hosts have to be set before the communication can start */
-  static CommPtr sendto_init(Host* from, Host* to);
-  static CommPtr sendto_async(Host* from, Host* to, uint64_t simulated_size_in_bytes);
-  static void sendto(Host* from, Host* to, uint64_t simulated_size_in_bytes);
+  static CommPtr sendto_init(s4u::Host* from, s4u::Host* to);
+  static CommPtr sendto_async(s4u::Host* from, s4u::Host* to, uint64_t simulated_size_in_bytes);
+  static void sendto(s4u::Host* from, s4u::Host* to, uint64_t simulated_size_in_bytes);
 
-  CommPtr set_source(Host* from);
-  Host* get_source() const;
-  CommPtr set_destination(Host* to);
-  Host* get_destination() const;
+  CommPtr set_source(s4u::Host* from);
+  s4u::Host* get_source() const;
+  CommPtr set_destination(s4u::Host* to);
+  s4u::Host* get_destination() const;
 
   /* Mailbox-based communications */
-  CommPtr set_mailbox(Mailbox* mailbox);
+  CommPtr set_mailbox(s4u::Mailbox* mailbox);
   /** Retrieve the mailbox on which this comm acts. This is nullptr if the comm was created through sendto() */
-  Mailbox* get_mailbox() const { return mailbox_; }
+  s4u::Mailbox* get_mailbox() const { return mailbox_; }
 
   /** Specify the data to send.
    *

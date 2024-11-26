@@ -776,6 +776,18 @@ else()
   set(EXTRA_DIST ${EXTRA_DIST} include/simgrid/plugins/ns3.hpp)
 endif()
 
+set(SIMGRID_JAVA_C_SOURCES
+    src/kernel/context/ContextJava.cpp
+    src/kernel/context/ContextJava.hpp
+    )
+set(SIMGRID_JAVA_SWIG_SOURCES
+    src/bindings/swig/defs/pargc_argv.i
+    src/bindings/swig/defs/std_function.i
+    src/bindings/swig/simgrid-java.i)
+if(NOT Java_FOUND)
+  set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_C_SOURCES} ${SIMGRID_JAVA_SWIG_SOURCES})
+endif()
+
 set(DOC_SOURCES
   doc/doxygen/FAQ.doc
   doc/doxygen/inside_extending.doc
@@ -1037,6 +1049,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Distrib.cmake
   tools/cmake/Documentation.cmake
   tools/cmake/Flags.cmake
+  tools/cmake/Java.cmake
   tools/cmake/MaintainerMode.cmake
   tools/cmake/MakeLib.cmake
   tools/cmake/Modules/FindGraphviz.cmake
