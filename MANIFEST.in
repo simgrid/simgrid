@@ -2101,6 +2101,7 @@ include src/3rd-party/catch.hpp
 include src/bindings/python/simgrid_python.cpp
 include src/bindings/swig/defs/pargc_argv.i
 include src/bindings/swig/defs/std_function.i
+include src/bindings/swig/org/simgrid/NativeLib.java
 include src/bindings/swig/simgrid-java.i
 include src/dag/dax.dtd
 include src/dag/dax_dtd.c

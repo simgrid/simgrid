@@ -74,81 +74,10 @@ set(MANIFEST_FILE "${CMAKE_BINARY_DIR}/src/bindings/java/MANIFEST.MF")
 set(LIBSIMGRID_SO       libsimgrid${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(LIBSIMGRID_JAVA_SO  ${CMAKE_SHARED_LIBRARY_PREFIX}simgrid-java${CMAKE_SHARED_LIBRARY_SUFFIX})
 
-## Build simgrid.jar. We cannot use add_jar to compile our sources as they are generated
+## Build simgrid.jar. We cannot use add_jar to compile most of our sources as they are generated. They are added later
 ##
-set(SIMGRID_JAVA_NOPE_SOURCES org/simgrid/s4u/Activity.java
-                         org/simgrid/s4u/ActorCMainImpl.java
-                         org/simgrid/s4u/ActorCMain.java
-                         org/simgrid/s4u/Actor.java
-                         org/simgrid/s4u/ActorMain.java
-                         org/simgrid/s4u/Barrier.java
-                         org/simgrid/s4u/ClusterCallbacks.java
-                         org/simgrid/s4u/Comm.java
-                         org/simgrid/s4u/ConditionVariable.java
-                         org/simgrid/s4u/Disk.java
-                         org/simgrid/s4u/DragonflyParams.java
-                         org/simgrid/s4u/Engine.java
-                         org/simgrid/s4u/Exec.java
-                         org/simgrid/s4u/FatTreeParams.java
-                         org/simgrid/s4u/Host.java
-                         org/simgrid/s4u/Io.java
-                         org/simgrid/s4u/LinkInRoute.java
-                         org/simgrid/s4u/Link.java
-                         org/simgrid/s4u/Mailbox.java
-                         org/simgrid/s4u/MessageQueue.java
-                         org/simgrid/s4u/MsgWrapper.java
-                         org/simgrid/s4u/Mutex.java
-                         org/simgrid/s4u/NetZone.java
-                         org/simgrid/s4u/Semaphore.java
-                         org/simgrid/s4u/simgrid.java
-                         org/simgrid/s4u/simgridJNI.java
-                         org/simgrid/s4u/SWIGTYPE_p_f_int_p_p_char__void.java
-                         org/simgrid/s4u/SWIGTYPE_p_MessPtr.java
-                         org/simgrid/s4u/SWIGTYPE_p_p_char.java
-                         org/simgrid/s4u/SWIGTYPE_p_p_void.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__cv_status.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fboost__intrusive_ptrT_simgrid__s4u__Actor_tF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Host_pF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Link_pF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_fdouble_simgrid__s4u__Host_const_p_simgrid__s4u__Host_const_p_std__vectorT_simgrid__s4u__Link_p_t_const_R_std__unordered_setT_simgrid__s4u__NetZone_p_t_const_RF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_simgrid__s4u__Host_p_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_simgrid__s4u__Link_p_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_simgrid__s4u__NetZone_p_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_std__pairT_kernel__routing__NetPoint_p_kernel__routing__NetPoint_p_t_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fboolF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fdoubleF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_R_Host_const_RF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__NetZone_const_RF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fstd__vectorT_std__string_tF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fvoidF_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__pairT_unsigned_int_unsigned_int_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__setT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__unique_lockT_simgrid__s4u__Mutex_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__unordered_mapT_std__string_std__string_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__vectorT_double_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__vectorT_long_long_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__Link_p_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__vectorT_std__string_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__vectorT_unsigned_int_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_std__vectorT_unsigned_long_t.java
-                         org/simgrid/s4u/SWIGTYPE_p_void.java
-                         org/simgrid/s4u/VirtualMachine.java
-   )
-   
 add_jar(simgrid_jar
-        SOURCES src/bindings/swig/org/simgrid/NativeLib.java
+        SOURCES ${SIMGRID_JAVA_JAVA_SOURCES}
         OUTPUT_NAME simgrid)
 
 # Add the classes of the generated sources later, as they do not exist at configure time when add_jar computes its arguments

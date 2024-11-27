@@ -780,13 +780,17 @@ set(SIMGRID_JAVA_C_SOURCES
     src/kernel/context/ContextJava.cpp
     src/kernel/context/ContextJava.hpp
     )
+set(SIMGRID_JAVA_JAVA_SOURCES
+    src/bindings/swig/org/simgrid/NativeLib.java)
 set(SIMGRID_JAVA_SWIG_SOURCES
     src/bindings/swig/defs/pargc_argv.i
     src/bindings/swig/defs/std_function.i
     src/bindings/swig/simgrid-java.i)
 if(NOT Java_FOUND)
-  set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_C_SOURCES} ${SIMGRID_JAVA_SWIG_SOURCES})
+  set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_C_SOURCES})
 endif()
+# Not sure that our Java rules add these files to the target, so let's play safe and add them anyway
+set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_JAVA_SOURCES} ${SIMGRID_JAVA_SWIG_SOURCES})
 
 set(DOC_SOURCES
   doc/doxygen/FAQ.doc
