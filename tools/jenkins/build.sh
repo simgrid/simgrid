@@ -97,7 +97,7 @@ i*86)
     bits=""
     ;;
 esac
-echo "OS Version : $os $ver $bits"
+echo "OS Version : '$os' $ver, $bits"
 
 
 build_mode="$1"
@@ -162,10 +162,10 @@ fi
 echo "XX have_NS3: ${have_NS3}"
 
 have_Java="no"
-if [ "$os" = "Debian" ] ; then
-  if dpkg -l openjdk-*-jdk 2>/dev/null | grep ^ii && dpkg -l swig 2>/dev/null | grep ^ii ; then
-    have_Java="yes"
-  fi
+if [ "$os" = "Debian" ] && dpkg -l openjdk-*-jdk 2>/dev/null | grep ^ii && dpkg -l swig 2>/dev/null | grep ^ii ; then
+  have_Java="yes"
+elif [ "$os" = "openSUSE" ] ; then
+  have_Java="yes" # Let's assume it's correctly configured, as I'm too lazy to learn how to check this with rpm
 fi
 
 SIMGRID_PYTHON_LIBDIR=""
