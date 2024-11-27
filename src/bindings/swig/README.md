@@ -3,7 +3,7 @@
 ## Dependencies: SWIG and Open JDK
 
 ```
-apt install swig openjdk-21-jdk-headless
+apt install swig openjdk-21-jdk
 ```
 
 ## Configuring SimGrid
