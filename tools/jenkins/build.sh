@@ -161,6 +161,13 @@ if [ "$os" = "nixos" ] ; then
 fi
 echo "XX have_NS3: ${have_NS3}"
 
+have_Java="no"
+if [ "$os" = "Debian" ] ; then
+  if dpkg -l openjdk-*-jdk 2>/dev/null | grep ^ii && dpkg -l swig 2>/dev/null | grep ^ii ; then
+    have_Java="yes"
+  fi
+fi
+
 SIMGRID_PYTHON_LIBDIR=""
 if [ "$os" = "nixos" ] ; then
   SIMGRID_PYTHON_LIBDIR="/home/ci/simgrid_install/lib64"
@@ -218,6 +225,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
   -Denable_compile_warnings=$(onoff test "$GENERATOR" != "MSYS Makefiles") -Denable_smpi=ON \
   -Denable_ns3=$(onoff test "$have_NS3" = "yes" -a "$build_mode" = "Debug") \
+  -Denable_java=$(onoff test "$have_Java" = "yes") \
   -DSIMGRID_PYTHON_LIBDIR=${SIMGRID_PYTHON_LIBDIR} \
   -DCMAKE_DISABLE_SOURCE_CHANGES=ON ${MAY_DISABLE_LTO} \
   -DLTO_EXTRA_FLAG="auto" \

@@ -23,7 +23,7 @@ option(enable_debug                 "Turn this off to remove all debug messages 
 option(enable_documentation "Whether to produce documentation" off)
 
 option(enable_ns3            "Whether ns-3 model is activated." off)
-option(enable_java           "Whether the Java bindings are activated." on)
+option(enable_java           "Whether the Java bindings are activated." off)
 option(enable_msg            "Java was removed from SimGrid v3.33. Please do not enable it here." off)
 mark_as_advanced(enable_msg)
 if (enable_msg)
