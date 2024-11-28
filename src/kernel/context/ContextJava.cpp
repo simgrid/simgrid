@@ -43,27 +43,17 @@ void JavaContext::initialized()
 
   // Attach the thread to the JVM
   JNIEnv* env;
-  JavaVMAttachArgs args;
-  args.version = JNI_EVERSION;
-  args.name    = strdup(get_actor()->get_cname());
-  args.group   = NULL;
-  xbt_assert(simgrid_cached_jvm->AttachCurrentThread((void**)&env, &args) == JNI_OK,
+  xbt_assert(simgrid_cached_jvm->AttachCurrentThread((void**)&env, NULL) == JNI_OK,
              "The thread could not be attached to the JVM");
-  XBT_CRITICAL("Attach thread %p (%s)", this, get_actor()->get_cname());
-  // xbt_backtrace_display_current();
+  XBT_DEBUG("Attach thread %p (%s)", this, get_actor()->get_cname());
   this->jenv_ = env;
 }
 
 void JavaContext::stop()
 {
-  XBT_CRITICAL("(not really) Stopping %s", get_actor()->get_cname());
-#if 0
+  XBT_DEBUG("Stopping %s", get_actor()->get_cname());
   this->get_actor()->cleanup_from_self();
  // sthread_disable();
-
-
- // JNIEnv* env = this->jenv_;
-//  env->DeleteGlobalRef(this->jprocess_);
 
   /* Unregister the thread from the JVM */
   jint error = simgrid_cached_jvm->DetachCurrentThread();
@@ -79,7 +69,6 @@ void JavaContext::stop()
   }
 
   simgrid::ForcefulKillException::do_throw(); // clean RAII variables with the dedicated exception
-#endif
 }
 
 } // namespace simgrid::kernel::context

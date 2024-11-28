@@ -206,15 +206,6 @@ struct ActorMain {
     return $jnicall;
 }
 
-%inline %{
-  struct MsgWrapper {
-    jobject payload;
-    jobject ref;
-    MsgWrapper(jobject obj, jobject ref) : payload(obj), ref(ref) {
-      XBT_CCRITICAL(root, "Creating wrapper %p to object %p", this, payload);
-    }
-  };
-%}
 %typemap(in,numinputs=0) JNIEnv *jenv "$1 = jenv;" // Pass the JNI environment to extensions asking for it
 %ignore simgrid::s4u::Mailbox::front;
 %ignore simgrid::s4u::Mailbox::iprobe;
@@ -227,20 +218,17 @@ struct ActorMain {
 %include <simgrid/s4u/Mailbox.hpp>
 %extend simgrid::s4u::Mailbox { // Here is the code of the extensions. These functions will be injected in the generated class
   void put_java(JNIEnv *jenv, jobject payload, uint64_t simulated_size_in_bytes) {
-    self->put(new MsgWrapper(payload, jenv->NewGlobalRef(payload)), simulated_size_in_bytes);    
+    self->put(jenv->NewGlobalRef(payload), simulated_size_in_bytes);
   }
   void put_java(JNIEnv *jenv, jobject payload, uint64_t simulated_size_in_bytes, double timeout) {
-    self->put(new MsgWrapper(payload, jenv->NewGlobalRef(payload)), simulated_size_in_bytes, timeout);    
+    self->put(jenv->NewGlobalRef(payload), simulated_size_in_bytes, timeout);
   }
   jobject get_java(JNIEnv *jenv) {
-    MsgWrapper* wrapper = self->get<MsgWrapper>();
-    XBT_CCRITICAL(root, "Retrieving wrapper %p to object %p", wrapper, wrapper->payload);
+    jobject glob = self->get<_jobject>();
+    auto loc = jenv->NewLocalRef(glob);
+    jenv->DeleteGlobalRef(glob);
 
-    auto res = wrapper->payload;
-    jenv->DeleteGlobalRef(wrapper->ref);
-    delete wrapper;
-
-    return res;
+    return loc;
   }
 }
 

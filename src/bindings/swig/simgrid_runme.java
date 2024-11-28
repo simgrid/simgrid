@@ -42,30 +42,7 @@ public class simgrid_runme {
     Actor.create("sender", e.host_by_name("Ginette"), new Sender());
     Actor.create("receiver", e.host_by_name("Fafard"), new Receiver());
     e.run();
-    System.err.println(Engine.get_clock());
+    System.err.println("The simulation is terminating at time "+Engine.get_clock());
   }
 
 }
-/*
-class Sender extends ActorMain {
-  	private static final double COMM_SIZE_LAT = 1;
-    
-  	public void main(String[] args) {
-  		//Msg.info("Host count: " + args.length);
-  
-  		for (int i = 0 ; i<10; i++) {
-  
-  			for(int pos = 0; pos < args.length ; pos++) {
-  				String hostname = Engine.get_instance().host_by_name(args[pos]).get_cname(); // Make sure that this host exists
-  
-  				//double time = Msg.getClock();
-  				//Msg.info("sender time: " + time);
-  
-  				PingPongTask task = new PingPongTask("no name", 0, COMM_SIZE_LAT, time); // Duration: 0
-  				task.send(hostname);
-  			}
-  		}
-  		//Msg.info("Done.");
-  	}
-  }
-  */
