@@ -422,6 +422,7 @@ include examples/cpp/trace-process-migration/s4u-trace-process-migration.cpp
 include examples/cpp/trace-process-migration/s4u-trace-process-migration.tesh
 include examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.cpp
 include examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.tesh
+include examples/java/comm_pingpong/comm_pingpong.java
 include examples/java/comm_pingpong/comm_pingpong.java.tesh
 include examples/python/activityset-testany/activityset-testany.py
 include examples/python/activityset-testany/activityset-testany.tesh
@@ -1741,7 +1742,6 @@ include MANIFEST.in
 include MANIFEST.in.in
 include NEWS
 include README.md
-include comm_pingpong/comm_pingpong.java
 include doc/doxygen/FAQ.doc
 include doc/doxygen/inside_extending.doc
 include doc/doxygen/inside_release.doc

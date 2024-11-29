@@ -8,7 +8,7 @@ foreach (example comm_pingpong)
   
   # Use default source file unless specified otherwise
   if(NOT DEFINED _${example}_sources)
-    set(_${example}_sources ${example}/${example}.java)
+    set(_${example}_sources ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java)
   endif()
   # Use default tesh file unless specified otherwise
   if(NOT DEFINED _${example}_teshfile)
@@ -23,6 +23,7 @@ foreach (example comm_pingpong)
     add_dependencies(java-all java-${example})
     ADD_TESH(java-${example}  --setenv javacmd=${Java_JAVA_EXECUTABLE} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
   endif()
+
   set(examples_src  ${examples_src}  ${_${example}_sources})
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
 endforeach()
