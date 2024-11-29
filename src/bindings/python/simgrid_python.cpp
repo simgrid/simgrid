@@ -482,6 +482,16 @@ PYBIND11_MODULE(simgrid, m)
            "Non-blocking read data from disk")
       .def("write_async", &simgrid::s4u::Disk::write_async, py::call_guard<py::gil_scoped_release>(),
            "Non-blocking write data in disk")
+      .def_property("read_bandwidth", &simgrid::s4u::Disk::get_read_bandwidth, &simgrid::s4u::Disk::set_read_bandwidth,
+                    py::call_guard<py::gil_scoped_release>(),
+                    "The read bandwidth of this disk is the max speed at which read operations progress")
+      .def_property("write_bandwidth", &simgrid::s4u::Disk::get_write_bandwidth,
+                    &simgrid::s4u::Disk::set_write_bandwidth, py::call_guard<py::gil_scoped_release>(),
+                    "The write bandwidth of this disk is the max speed at which write operations progress")
+      .def_property(
+          "concurrency_limit", &simgrid::s4u::Disk::get_concurrency_limit, &simgrid::s4u::Disk::set_concurrency_limit,
+          py::call_guard<py::gil_scoped_release>(),
+          "The concurrency limit of this disk is the max amound of concurrent accesses (extra ones are queued)")
       .def("set_sharing_policy", &simgrid::s4u::Disk::set_sharing_policy, py::call_guard<py::gil_scoped_release>(),
            "Set sharing policy for this disk", py::arg("op"), py::arg("policy"),
            py::arg("cb") = simgrid::s4u::NonLinearResourceCb())

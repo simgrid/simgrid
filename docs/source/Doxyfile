@@ -10,6 +10,7 @@ INPUT                 += ../../include/simgrid/comm.h
 INPUT                 += ../../include/simgrid/cond.h
 INPUT                 += ../../include/simgrid/engine.h
 INPUT                 += ../../include/simgrid/exec.h
+INPUT                 += ../../include/simgrid/disk.h
 INPUT                 += ../../include/simgrid/Exception.hpp
 INPUT                 += ../../include/simgrid/host.h
 INPUT                 += ../../src/s4u/s4u_Host.cpp

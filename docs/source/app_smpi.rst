@@ -803,7 +803,8 @@ easiest approach for newcomers. It is probably easier to simply start your MPI a
 :cpp:ref:`SMPI_app_instance_register`, as shown in the example below. Compile it as usual (with gcc or g++, **not** smpicc) and
 execute it directly (**not** with smpirun).
 
-.. doxygenfunction:: SMPI_app_instance_start
+.. doxygenfunction:: template<class F> SMPI_app_instance_start(const char *name, F code, std::vector<simgrid::s4u::Host*> const &hosts)
+.. doxygenfunction:: SMPI_app_instance_start(const char *name, std::function<void()> const &code, std::vector<simgrid::s4u::Host*> const &hosts)
 
 .. tabs::
 

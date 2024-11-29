@@ -676,7 +676,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::this_actor::is_maestro()
 
       .. doxygenfunction:: simgrid::s4u::this_actor::get_host()
-      .. doxygenfunction:: simgrid::s4u::this_actor::set_host(Host *new_host)
+      .. doxygenfunction:: simgrid::s4u::this_actor::set_host(s4u::Host *new_host)
 
    .. group-tab:: Python
 
@@ -1109,7 +1109,7 @@ Receiving data
       .. doxygenfunction:: simgrid::s4u::Mailbox::get(double timeout)
       .. doxygenfunction:: simgrid::s4u::Mailbox::get_async(T **data)
       .. doxygenfunction:: simgrid::s4u::Mailbox::get_init()
-      .. doxygenfunction:: simgrid::s4u::Mailbox::iprobe(int type, const std::function<bool(void *, void *, kernel::activity::CommImpl *)>& match_fun, void *data)
+      .. doxygenfunction:: simgrid::s4u::Mailbox::iprobe
       .. doxygenfunction:: simgrid::s4u::Mailbox::listen
       .. doxygenfunction:: simgrid::s4u::Mailbox::ready
 
@@ -1225,8 +1225,6 @@ Performance
 
       .. autoattribute:: simgrid.Disk.read_bandwidth
       .. autoattribute:: simgrid.Disk.write_bandwidth
-      .. automethod:: simgrid.Disk.set_read_bandwidth
-      .. automethod:: simgrid.Disk.set_write_bandwidth
 
    .. group-tab:: C
 
@@ -1242,7 +1240,7 @@ Model policy
 
       .. doxygenenum:: simgrid::s4u::Disk::SharingPolicy
 
-      .. doxygenfunction:: simgrid::s4u::Disk::get_sharing_policy() const
+      .. doxygenfunction:: simgrid::s4u::Disk::get_sharing_policy
       .. doxygenfunction:: simgrid::s4u::Disk::set_sharing_policy
 
       .. doxygenfunction:: simgrid::s4u::Disk::get_concurrency_limit() const
@@ -1250,7 +1248,7 @@ Model policy
 
    .. group-tab:: Python
 
-      .. automethod:: simgrid.Disk.set_concurrency_limit
+      .. autoattribute:: simgrid.Disk.concurrency_limit
       .. automethod:: simgrid.Disk.set_sharing_policy
       .. autoclass:: simgrid.Disk.SharingPolicy
 
@@ -2084,10 +2082,6 @@ Hosts
      .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, double speed)
      .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate)
      .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::string& speed)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string &name, const std::string &speed)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string &name, const std::vector< double > &speed_per_pstate)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string &name, const std::vector< std::string > &speed_per_pstate)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string &name, double speed)
 
   .. group-tab:: Python
 
@@ -2426,7 +2420,7 @@ also start direct communications as shown below. See also the
 
       .. doxygenfunction:: simgrid::s4u::Comm::sendto
       .. doxygenfunction:: simgrid::s4u::Comm::sendto_init()
-      .. doxygenfunction:: simgrid::s4u::Comm::sendto_init(Host *from, Host *to)
+      .. doxygenfunction:: simgrid::s4u::Comm::sendto_init(s4u::Host *from, s4u::Host *to)
       .. doxygenfunction:: simgrid::s4u::Comm::sendto_async
 
    .. group-tab:: Python
@@ -2783,8 +2777,8 @@ Dealing with failed activities
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::ActivitySet::get_failed_activity() const
-      .. doxygenfunction:: simgrid::s4u::ActivitySet::has_failed_activities()
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::get_failed_activity()
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::has_failed_activities() const
 
 .. _API_s4u_Tasks:
 
@@ -2841,7 +2835,7 @@ Life cycle
    .. group-tab:: C++
       .. doxygenfunction:: simgrid::s4u::Task::enqueue_firings(int n)
       .. doxygenfunction:: simgrid::s4u::Task::set_amount(double amount, std::string instance)
-      .. doxygenfunction:: simgrid::s4u::Task::set_parallelism_degree(int n, std::string instance)
+      .. doxygenfunction:: simgrid::s4u::Task::set_parallelism_degree(int n, const std::string & instance = "all")
 
 Managing Dependencies
 ---------------------
