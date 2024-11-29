@@ -1,0 +1,12 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:comm_pingpong.jar comm_pingpong ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Using regular java threads.
+> [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
+> [  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
+> [  0.019014] (2:ponger@Jupiter) Payload received : small communication (latency bound)
+> [  0.019014] (2:ponger@Jupiter) Ping time (latency bound) 0.019014486310327584
+> [  0.019014] (2:ponger@Jupiter) payload = 0.019014486310327584
+> [150.178356] (1:pinger@Tremblay) Payload received : large communication (bandwidth bound)
+> [150.178356] (1:pinger@Tremblay) Pong time (bandwidth bound): 150.15934192091615
+> [150.178356] (0:maestro@) The simulation is terminating.

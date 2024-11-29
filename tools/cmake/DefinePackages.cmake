@@ -983,6 +983,7 @@ set(txt_files
 set(CMAKEFILES_TXT
   examples/c/CMakeLists.txt
   examples/cpp/CMakeLists.txt
+  examples/java/CMakeLists.txt
   examples/platforms/CMakeLists.txt
   examples/python/CMakeLists.txt
   examples/smpi/CMakeLists.txt
