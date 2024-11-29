@@ -119,6 +119,7 @@ XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
 XBT_PUBLIC ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                              const std::vector<double>& bytes_amounts);
 
+/** Initialize and start a sequential execution */
 XBT_PUBLIC ExecPtr exec_async(double flops_amounts);
 
 /** @brief Returns the actor ID of the current actor. */
@@ -132,8 +133,10 @@ XBT_PUBLIC std::string get_name();
 /** @brief Returns the name of the current actor as a C string. */
 XBT_PUBLIC const char* get_cname();
 
-/** @brief Returns the name of the host on which the current actor is running. */
+/** Returns the name of the host on which the current actor is running. */
 XBT_PUBLIC s4u::Host* get_host();
+/** Migrate the current actor to a new host. */
+XBT_PUBLIC void set_host(s4u::Host* new_host);
 
 /** @brief Suspend the current actor, that is blocked until resume()ed by another actor. */
 XBT_PUBLIC void suspend();
@@ -160,8 +163,6 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void exit();
 
 XBT_PUBLIC void on_exit(const std::function<void(bool)>& fun);
 
-/** @brief Migrate the current actor to a new host. */
-XBT_PUBLIC void set_host(s4u::Host* new_host);
 } // namespace this_actor
 
 /** An actor is an independent stream of execution in your distributed application.

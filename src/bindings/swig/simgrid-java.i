@@ -15,6 +15,7 @@ using namespace simgrid::s4u;
 #pragma GCC diagnostic ignored "-Wunused-variable"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
+using namespace simgrid;
 %}
 %include <typemaps.i>
 %include <stl.i>
@@ -121,6 +122,68 @@ struct ActorMain {
   virtual ~ActorMain() = default;
 };
 %}
+%extend ActorMain {
+  /** Block the current actor sleeping for that amount of seconds */
+  void sleep_for(double duration) { simgrid::s4u::this_actor::sleep_for(duration); }
+  /** Block the current actor sleeping until the specified timestamp */
+  void sleep_until(double wakeup_time) { simgrid::s4u::this_actor::sleep_until(wakeup_time); }
+  /** Block the current actor, computing the given amount of flops */
+  void execute(double flop) { simgrid::s4u::this_actor::execute(flop); }
+  /** Block the current actor, computing the given amount of flops at the given priority.
+   *  An execution of priority 2 computes twice as fast as an execution at priority 1. */
+  void execute(double flop, double priority) { simgrid::s4u::this_actor::execute(flop, priority); }
+  /** Block the current actor until the built multi-thread execution completes. */
+  void thread_execute(s4u::Host* host, double flop_amounts, int thread_count)
+    { simgrid::s4u::this_actor::thread_execute(host, flop_amounts, thread_count); }
+
+  /** Initialize a sequential execution that must then be started manually */
+  ExecPtr exec_init(double flops_amounts) { return simgrid::s4u::this_actor::exec_init(flops_amounts); }
+  /** Initialize a parallel execution that must then be started manually */
+  //ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
+  //                  const std::vector<double>& bytes_amounts);
+
+  /** Initialize and start a sequential execution */
+  ExecPtr exec_async(double flops_amounts) { return simgrid::s4u::this_actor::exec_async(flops_amounts); }
+
+  /** Returns the actor ID of the current actor. */
+  long get_pid() { return simgrid::s4u::this_actor::get_pid(); }
+
+  /** Returns the ancestor's actor ID of the current actor. */
+  long get_ppid() { return simgrid::s4u::this_actor::get_ppid(); }
+
+  /** Returns the name of the current actor. */
+  std::string get_name() { return simgrid::s4u::this_actor::get_name(); }
+
+  /** Returns the name of the host on which the current actor is running. */
+  s4u::Host* get_host() { return simgrid::s4u::this_actor::get_host(); }
+  /** Migrate the current actor to a new host. */
+  void set_host(s4u::Host* new_host)  { simgrid::s4u::this_actor::set_host(new_host); }
+  /** Suspend the current actor, that is blocked until resume()ed by another actor. */
+  void suspend() { return simgrid::s4u::this_actor::suspend(); }
+  /** Yield the current actor. */
+  void yield() { return simgrid::s4u::this_actor::yield(); }
+  /** kill the current actor. */
+  void exit() { return simgrid::s4u::this_actor::exit(); }
+
+}
+
+%ignore simgrid::s4u::this_actor::is_maestro;
+%ignore simgrid::s4u::this_actor::sleep_for;
+%ignore simgrid::s4u::this_actor::sleep_until;
+%ignore simgrid::s4u::this_actor::execute;
+%ignore simgrid::s4u::this_actor::thread_execute;
+%ignore simgrid::s4u::this_actor::exec_init;
+%ignore simgrid::s4u::this_actor::exec_async;
+%ignore simgrid::s4u::this_actor::get_pid;
+%ignore simgrid::s4u::this_actor::get_ppid;
+%ignore simgrid::s4u::this_actor::get_name;
+%ignore simgrid::s4u::this_actor::get_cname;
+%ignore simgrid::s4u::this_actor::get_host;
+%ignore simgrid::s4u::this_actor::set_host;
+%ignore simgrid::s4u::this_actor::suspend;
+%ignore simgrid::s4u::this_actor::yield;
+%ignore simgrid::s4u::this_actor::exit;
+
 
 %ignore Actor::set_stacksize;
 %ignore simgrid::s4u::Actor::create;
