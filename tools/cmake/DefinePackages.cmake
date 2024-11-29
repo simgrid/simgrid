@@ -781,7 +781,7 @@ set(SIMGRID_JAVA_C_SOURCES
     src/kernel/context/ContextJava.hpp
     )
 set(SIMGRID_JAVA_JAVA_SOURCES
-    src/bindings/swig/org/simgrid/NativeLib.java)
+    src/bindings/swig/org/simgrid/s4u/NativeLib.java)
 set(SIMGRID_JAVA_SWIG_SOURCES
     src/bindings/swig/defs/pargc_argv.i
     src/bindings/swig/defs/std_function.i

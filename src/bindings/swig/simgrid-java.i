@@ -13,6 +13,8 @@ using namespace simgrid::s4u;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wunused-variable"
+
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 %}
 %include <typemaps.i>
 %include <stl.i>
@@ -45,8 +47,6 @@ using namespace simgrid::s4u;
     return names[static_cast<int>(value)];                                                                             \
   }                                                                                                                    \
   enum class EnumType { __VA_ARGS__ } /* defined here to handle trailing semicolon */
-
-//%std_function(ActorCb, void, simgrid::s4u::Actor&);
 
 %ignore "on_creation_cb";
 %ignore "on_suspend_cb";
@@ -106,7 +106,7 @@ using namespace simgrid::s4u;
   #include "src/kernel/context/ContextJava.hpp"
   static struct SimGridJavaInit { SimGridJavaInit() { 
     simgrid::kernel::context::ContextFactory::initializer = []() {
-      XBT_CINFO(root, "Using regular java threads.");
+      XBT_INFO("Using regular java threads.");
       return new simgrid::kernel::context::JavaContextFactory();
     };
 
@@ -164,6 +164,50 @@ struct ActorMain {
 %ignore get_all_models;
 %ignore set_default_comm_data_copy_callback;
 %include <simgrid/s4u/Engine.hpp>
+%extend simgrid::s4u::Engine {
+  static void critical(const char* msg) {
+    XBT_CRITICAL("%s", msg);
+  }
+  static void error(const char* msg) {
+    XBT_ERROR("%s", msg);
+  }
+  static void warn(const char* msg) {
+    XBT_WARN("%s", msg);
+  }
+  static void info(const char* msg) {
+    XBT_INFO("%s", msg);
+  }
+  static void verbose(const char* msg) {
+    XBT_VERB("%s", msg);
+  }
+  static void debug(const char* msg) {
+    XBT_DEBUG("%s", msg);
+  }
+  %proxycode %{
+	/** Example launcher. You can use it or provide your own launcher, as you wish */
+	public static void main(String[]args) {
+  
+		/* initialize the SimGrid simulation. Must be done before anything else */
+		Engine e = Engine.get_instance(args);
+
+		if (args.length < 2) {
+			e.info("Usage: org.simgrid.s4u.Engine platform_file deployment_file");
+			System.exit(1);
+		}
+
+		/* Load the platform and deploy the application */
+		e.load_platform(args[0]);
+		e.load_deployment(args[1]);
+		/* Execute the simulation */
+		e.run();
+	}
+
+	/* Class initializer, to initialize various JNI stuff */
+	static {
+		org.simgrid.s4u.NativeLib.nativeInit();
+	}
+  %}
+}
 
 %include <simgrid/s4u/Exec.hpp>
 %include <simgrid/s4u/Io.hpp>

@@ -85,7 +85,7 @@ ADD_CUSTOM_COMMAND(TARGET simgrid_jar
         POST_BUILD
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND mkdir -p org/simgrid/s4u
-        COMMAND ${Java_JAVAC_EXECUTABLE} src/org/simgrid/s4u/*java -s org/simgrid/s4u 
+        COMMAND ${Java_JAVAC_EXECUTABLE} -cp simgrid.jar:. src/org/simgrid/s4u/*java -s org/simgrid/s4u 
         COMMAND ${CMAKE_COMMAND} -E copy src/org/simgrid/s4u/*class org/simgrid/s4u
         COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR} org
 )
@@ -181,7 +181,7 @@ endif(APPLE)
     COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  ${JAVA_NATIVE_PATH}
 
     COMMAND ${CMAKE_COMMAND} -E echo "-- CMake puts the native code in ${JAVA_NATIVE_PATH}"
-    COMMAND "${Java_JAVA_EXECUTABLE}" -classpath "${SIMGRID_JAR}" org.simgrid.NativeLib
+    COMMAND "${Java_JAVA_EXECUTABLE}" -classpath "${SIMGRID_JAR}" org.simgrid.s4u.NativeLib
   )
 endif(enable_lib_in_jar)
 

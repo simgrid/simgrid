@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package org.simgrid;
+package org.simgrid.s4u;
 
 import java.io.InputStream;
 import java.io.IOException;
