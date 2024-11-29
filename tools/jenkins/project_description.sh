@@ -25,6 +25,11 @@ get_json(){
   sed -n 's/.* JSON library \.\+: \([^ ]*\) in .*/\1/p;T;q' ./consoleText
 }
 
+get_java(){
+  # Found Java: /usr/bin/java (found suitable version "17.0.13", minimum required is "1.8") found components: Runtime Development
+  sed -n 's/.* Found Java: [^"]*"\([^"]*\)".*/\1/p;T;q' ./consoleText
+}
+
 get_ns3(){
   sed -n 's/.*-- ns-3 found (v\(3[-.0-9a-z]\+\).*/\1/p;T;q' ./consoleText
 }
@@ -140,6 +145,7 @@ function sortTable(n, type) {
     <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">JSON</td>
     <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">ns-3</td>
     <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">Python</td>
+    <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">Java</td>
   </tr>
 EOF
 
@@ -167,6 +173,7 @@ do
     json=$(get_json)
     ns3=$(get_ns3)
     py=$(get_python)
+    java=$(get_java)
     os=$(grep -m 1 "OS Version" ./consoleText| sed "s/OS Version : \(.*\)/\1/g")
 
     color1=""
@@ -205,6 +212,7 @@ do
     <td class="matrix-cell" style="text-align:center">$json</td>
     <td class="matrix-cell" style="text-align:left">$ns3</td>
     <td class="matrix-cell" style="text-align:left">$py</td>
+    <td class="matrix-cell" style="text-align:left">$java</td>
   </tr>
 EOF
     rm consoleText
