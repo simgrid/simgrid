@@ -16,7 +16,7 @@ SimGrid is a framework for developing simulators of distributed application exec
 be used to prototype, evaluate and compare relevant platform configurations, system designs, and algorithmic approaches.
 
 What SimGrid allows you to do
-----------------------------
+-----------------------------
 
 Here are some objectives for which SimGrid is particularly relevant and has been used extensively:
 

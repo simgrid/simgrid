@@ -20,7 +20,9 @@
 
 namespace simgrid {
 
+#ifndef SWIG
 extern template class XBT_PUBLIC xbt::Extendable<s4u::Disk>;
+#endif
 
 namespace s4u {
 

@@ -81,8 +81,11 @@ class ExampleTabDirective(Directive):
         elif filename[-4:] == '.xml':
             language = 'XML'
             langcode = 'xml'
+        elif filename[-5:] == '.java':
+            language = 'Java'
+            langcode = 'java'
         else:
-            raise Exception("Unknown language '{}'. Please choose '.cpp', '.py', '.c' or '.xml'".format(language))
+            raise Exception("Unknown language '{}'. Please choose '.cpp', '.py', '.c', '.java' or '.xml'".format(language))
 
         for idx, line in enumerate(self.content.data):
             self.content.data[idx] = '   ' + line

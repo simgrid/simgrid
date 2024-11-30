@@ -16,7 +16,9 @@
 
 namespace simgrid {
 
+#ifndef SWIG
 extern template class XBT_PUBLIC xbt::Extendable<s4u::Host>;
+#endif
 
 namespace s4u {
 /** @ingroup s4u_api

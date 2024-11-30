@@ -84,6 +84,7 @@ add_jar(simgrid_jar
 ADD_CUSTOM_COMMAND(TARGET simgrid_jar 
         POST_BUILD
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/src/org/simgrid/s4u/Actor.java
         COMMAND mkdir -p org/simgrid/s4u
         COMMAND ${Java_JAVAC_EXECUTABLE} -cp simgrid.jar:. src/org/simgrid/s4u/*java -s org/simgrid/s4u 
         COMMAND ${CMAKE_COMMAND} -E copy src/org/simgrid/s4u/*class org/simgrid/s4u

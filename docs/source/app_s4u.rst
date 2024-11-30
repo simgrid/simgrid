@@ -604,6 +604,40 @@ Specifying when actors should terminate
       .. doxygenfunction:: sg_actor_daemonize(sg_actor_t actor)
       .. doxygenfunction:: sg_actor_is_daemon
 
+   .. group-tab:: java
+
+      .. js::method:: void org.simgrid.s4u.Actor.kill()
+
+         Ask the actor to die.
+
+         Any blocking activity will be canceled, and it will be rescheduled to free its memory.<br>
+         Being killed is not something that actors can defer or avoid.
+
+      .. js::method:: void org.simgrid.s4u.Actor.kill_all()
+
+         Kill all actors (but the issuer). Being killed is not something that actors can delay or avoid.
+
+      .. js::method:: void org.simgrid.s4u.Actor.set_kill_time(double time)
+
+         Sets the time at which that actor should be killed.
+
+      .. js::method:: double org.simgrid.s4u.Actor.set_kill_time()
+
+         Retrieves the time at which that actor will be killed (or -1 if not set)
+
+      .. js:method:: Actor org.simgrid.s4u.Actor.daemonize()
+
+         Change this actor into a daemon. Daemons are killed as soon as the last regular actor disappears. If another regular
+         actor gets restarted later on by a timer or when its host reboots, the daemons do not get restarted.
+
+      .. js::method:: boolean org.simgrid.s4u.Actor.is_daemon()
+
+         Returns whether or not this actor has been daemonized or not.
+
+      .. js::method:: Actor org.simgrid.s4u.Actor.restart()
+
+         Kill that actor and restart it from start.
+
 .. _API_s4u_Actor_end:
 
 Reacting to the end of actors
@@ -676,7 +710,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::this_actor::is_maestro()
 
       .. doxygenfunction:: simgrid::s4u::this_actor::get_host()
-      .. doxygenfunction:: simgrid::s4u::this_actor::set_host(s4u::Host *new_host)
+      .. doxygenfunction:: simgrid::s4u::this_actor::set_host(Host *new_host)
 
    .. group-tab:: Python
 

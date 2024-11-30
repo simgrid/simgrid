@@ -25,7 +25,9 @@ XBT_LOG_EXTERNAL_CATEGORY(s4u_activity);
 
 namespace simgrid {
 
+#ifndef SWIG
 extern template class XBT_PUBLIC xbt::Extendable<s4u::Activity>;
+#endif
 
 namespace s4u {
 
