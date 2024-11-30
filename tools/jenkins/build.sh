@@ -161,12 +161,19 @@ if [ "$os" = "nixos" ] ; then
 fi
 echo "XX have_NS3: ${have_NS3}"
 
-have_Java="no"
-if [ "$os" = "Debian" ] && dpkg -l openjdk-*-jdk 2>/dev/null | grep ^ii && dpkg -l swig 2>/dev/null | grep ^ii ; then
-  have_Java="yes"
-elif [ "$os" = "openSUSE" ] ; then
-  have_Java="yes" # Let's assume it's correctly configured, as I'm too lazy to learn how to check this with rpm
+have_Java="yes"
+echo "Search for Java"
+if javac --version ; then : else
+  have_Java="no"
 fi
+if swig -version ; then : else
+  have_Java="no"
+fi
+#if [ "$os" = "Debian" ] && dpkg -l openjdk-*-jdk 2>/dev/null | grep ^ii && dpkg -l swig 2>/dev/null | grep ^ii ; then
+#  have_Java="yes"
+#elif [ "$os" = "opensuse" ] ; then
+#  have_Java="yes" # Let's assume it's correctly configured, as I'm too lazy to learn how to check this with rpm
+#fi
 
 SIMGRID_PYTHON_LIBDIR=""
 if [ "$os" = "nixos" ] ; then
