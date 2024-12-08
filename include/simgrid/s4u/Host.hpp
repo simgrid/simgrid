@@ -73,8 +73,8 @@ public:
   xbt::signal<void(Host const&)> on_this_speed_change;
   static xbt::signal<void(Host const&)> on_onoff;
   xbt::signal<void(Host const&)> on_this_onoff;
-
 #endif
+
   /** \static Add a callback fired on each newly created host */
   static void on_creation_cb(const std::function<void(Host&)>& cb) { on_creation.connect(cb); }
   /** \static Add a callback fired when any machine is turned on or off (called AFTER the change) */

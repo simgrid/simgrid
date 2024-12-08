@@ -110,7 +110,7 @@ ADD_CUSTOM_COMMAND(TARGET simgrid_jar
         COMMAND mkdir -p org/simgrid/s4u
         COMMAND mkdir -p src/org/simgrid/s4u
         COMMAND echo "Rerun SWIG just to be sure"
-#        COMMAND rm -f src/org/simgrid/s4u/*java && swig -java -Wall -package org.simgrid.s4u -outdir ${CMAKE_CURRENT_BINARY_DIR}/src/org/simgrid/s4u -c++ -I${CMAKE_CURRENT_BINARY_DIR}/include -I${CMAKE_HOME_DIRECTORY}/include -o ${CMAKE_CURRENT_BINARY_DIR}/src/org/simgrid/s4u/simgrid-javaJAVA_wrap.cxx ${CMAKE_HOME_DIRECTORY}/src/bindings/swig/simgrid-java.i
+        COMMAND rm -f src/org/simgrid/s4u/*java && swig -java -Wall -Wextra -package org.simgrid.s4u -outdir ${CMAKE_CURRENT_BINARY_DIR}/src/org/simgrid/s4u -c++ -I${CMAKE_CURRENT_BINARY_DIR}/include -I${CMAKE_HOME_DIRECTORY}/include -o ${CMAKE_CURRENT_BINARY_DIR}/src/org/simgrid/s4u/simgrid-javaJAVA_wrap.cxx ${CMAKE_HOME_DIRECTORY}/src/bindings/swig/simgrid-java.i
         COMMAND ${Java_JAVAC_EXECUTABLE} -cp simgrid.jar:. src/org/simgrid/s4u/*java -s org/simgrid/s4u 
         COMMAND mv src/org/simgrid/s4u/*class org/simgrid/s4u
         COMMAND echo "Add the SWIG-generated classes to the jar."

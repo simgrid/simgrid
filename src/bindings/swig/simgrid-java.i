@@ -50,34 +50,26 @@ using namespace simgrid;
   enum class EnumType { __VA_ARGS__ } /* defined here to handle trailing semicolon */
 
 %feature("director") Actor;
-
+%feature("director") simgrid::s4u::Host;
 
 %ignore "on_creation_cb";
 %ignore "on_suspend_cb";
+%ignore "on_resume_cb";
 %ignore "on_sleep_cb";
 %ignore "on_wake_up_cb";
 %ignore "on_host_change_cb";
-%ignore "on_resume_cb";
 
 /// Take care of our intrusive pointers
-
 %include <boost_intrusive_ptr.i>
 %ignore intrusive_ptr_add_ref;
 %ignore intrusive_ptr_release;
 %ignore get_refcount;
 
 %define %sg_intrusive(Klass) // A macro for each of our intrusives
-//  %feature("director") Klass; // All these classes must be wrapped into Java, but it does not work
-
   #define Klass##Ptr boost::intrusive_ptr< simgrid::s4u::Klass > /* Our C++ code uses an alias that disturbs SWIG */
   %intrusive_ptr(simgrid::s4u::Klass) // Basic handling
   %apply simgrid::s4u::Klass {Klass} ; // Deal with aliasing within namespaces
 %enddef
-
-%sg_intrusive(Activity)
-%sg_intrusive(Comm)
-%sg_intrusive(Exec)
-%sg_intrusive(Io)
 
 %sg_intrusive(Actor)
 %sg_intrusive(Disk)
@@ -158,12 +150,14 @@ struct ActorMain {
     { simgrid::s4u::this_actor::thread_execute(host, flop_amounts, thread_count); }
 
   /** Initialize a sequential execution that must then be started manually */
-  ExecPtr exec_init(double flops_amounts) { return simgrid::s4u::this_actor::exec_init(flops_amounts); }
+  //boost::intrusive_ptr<simgrid::s4u::Exec>
+  simgrid::s4u::ExecPtr exec_init(double flops_amounts) { return simgrid::s4u::this_actor::exec_init(flops_amounts); }
   /** Initialize a parallel execution that must then be started manually */
   //ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
   //                  const std::vector<double>& bytes_amounts);
 
   /** Initialize and start a sequential execution */
+  //boost::intrusive_ptr<simgrid::s4u::Exec>
   ExecPtr exec_async(double flops_amounts) { return simgrid::s4u::this_actor::exec_async(flops_amounts); }
 
   /** Returns the actor ID of the current actor. */
@@ -176,7 +170,7 @@ struct ActorMain {
   std::string get_name() { return simgrid::s4u::this_actor::get_name(); }
 
   /** Returns the name of the host on which the current actor is running. */
-  s4u::Host* get_host() { return simgrid::s4u::this_actor::get_host(); }
+  simgrid::s4u::Host* get_host() { return simgrid::s4u::this_actor::get_host(); }
   /** Migrate the current actor to a new host. */
   void set_host(s4u::Host* new_host)  { simgrid::s4u::this_actor::set_host(new_host); }
   /** Suspend the current actor, that is blocked until resume()ed by another actor. */
@@ -234,7 +228,26 @@ struct ActorMain {
 }
 /////////////////// Load each class, along with the local rewritings
 
+%ignore simgrid::s4u::Activity::start;
+
+%sg_intrusive(Activity)
+
+// "Class Activity_T<X> might be abstract, no constructors generated"
+#pragma SWIG nowarn=403
+%intrusive_ptr(simgrid::s4u::Activity_T< simgrid::s4u::Comm >);
+%intrusive_ptr(simgrid::s4u::Activity_T< simgrid::s4u::Exec >);
+%intrusive_ptr(simgrid::s4u::Activity_T< simgrid::s4u::Io >);
+
 %include <simgrid/s4u/Activity.hpp>
+
+%template(InternalActivityComm) simgrid::s4u::Activity_T< simgrid::s4u::Comm >;
+%template(InternalActivityExec) simgrid::s4u::Activity_T< simgrid::s4u::Exec >;
+%template(InternalctivityIo) simgrid::s4u::Activity_T< simgrid::s4u::Io >;
+
+%sg_intrusive(Comm)
+%sg_intrusive(Exec)
+%sg_intrusive(Io)
+//#pragma SWIG nowarn=+403 // Reactivate this warning
 
 %include <simgrid/s4u/Barrier.hpp>
 
