@@ -64,7 +64,7 @@ void JavaContext::stop()
      * We should not even try to detach such threads. Instead, we throw a Java exception that will raise up
      * until run_jprocess(), IIUC.
      */
-    xbt_die("Cannot detach the current thread");
+    XBT_WARN("Cannot detach the current thread");
     //TODO: jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
   }
 

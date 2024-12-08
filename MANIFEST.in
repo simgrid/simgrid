@@ -422,6 +422,8 @@ include examples/cpp/trace-process-migration/s4u-trace-process-migration.cpp
 include examples/cpp/trace-process-migration/s4u-trace-process-migration.tesh
 include examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.cpp
 include examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.tesh
+include examples/java/actor_exiting/actor_exiting.java
+include examples/java/actor_exiting/actor_exiting.java.tesh
 include examples/java/comm_pingpong/comm_pingpong.java
 include examples/java/comm_pingpong/comm_pingpong.java.tesh
 include examples/python/activityset-testany/activityset-testany.py

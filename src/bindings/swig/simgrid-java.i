@@ -49,13 +49,14 @@ using namespace simgrid;
   }                                                                                                                    \
   enum class EnumType { __VA_ARGS__ } /* defined here to handle trailing semicolon */
 
+%feature("director") Actor;
+
+
 %ignore "on_creation_cb";
 %ignore "on_suspend_cb";
 %ignore "on_sleep_cb";
 %ignore "on_wake_up_cb";
 %ignore "on_host_change_cb";
-%ignore "on_termination_cb";
-%ignore "on_destruction_cb";
 %ignore "on_resume_cb";
 
 /// Take care of our intrusive pointers
@@ -66,6 +67,8 @@ using namespace simgrid;
 %ignore get_refcount;
 
 %define %sg_intrusive(Klass) // A macro for each of our intrusives
+//  %feature("director") Klass; // All these classes must be wrapped into Java, but it does not work
+
   #define Klass##Ptr boost::intrusive_ptr< simgrid::s4u::Klass > /* Our C++ code uses an alias that disturbs SWIG */
   %intrusive_ptr(simgrid::s4u::Klass) // Basic handling
   %apply simgrid::s4u::Klass {Klass} ; // Deal with aliasing within namespaces
@@ -87,12 +90,12 @@ using namespace simgrid;
 %sg_intrusive(Mutex)
 %sg_intrusive(Semaphore)
 
-///////// The kind of magic we need to declare the body of actors in Java
 
 #include <functional>
 %include <defs/std_function.i>
-%std_function(ActorCMain, void, int, char**);
+//%std_function(ActorCMain, void, int, char**);
 
+///////////// Initialize the java bindings when the library is loaded within the JVM
 %init %{
   JavaVM* simgrid_cached_jvm = NULL;
   extern bool do_install_signal_handlers;
@@ -114,6 +117,24 @@ using namespace simgrid;
   } } sgJavaInit;
 %}
 
+%feature("director") BooleanCallback;
+%inline %{
+struct BooleanCallback {
+  virtual void run(bool b) = 0;
+  virtual ~BooleanCallback() = default;
+};
+%}
+
+%feature("director") ActorCallback;
+%inline %{
+struct ActorCallback {
+  virtual void run(simgrid::s4u::Actor* a) = 0;
+  virtual ~ActorCallback() = default;
+};
+%}
+
+
+///////// The kind of magic we need to declare the body of actors in Java
 %feature("director") ActorMain;
 
 %inline %{
@@ -165,6 +186,13 @@ struct ActorMain {
   /** kill the current actor. */
   void exit() { return simgrid::s4u::this_actor::exit(); }
 
+  static void on_termination_cb(ActorCallback* code) {
+    XBT_CRITICAL("Install on termination");
+    Actor::on_termination_cb([code](s4u::Actor const& a){XBT_CRITICAL("Term %p %s", &a, a.get_cname());code->run((Actor*)&a);});
+  }
+  static void on_destruction_cb(ActorCallback* code) {
+    Actor::on_destruction_cb([code](s4u::Actor const& a){XBT_CRITICAL("Dtor %p %s", &a, a.get_cname());code->run(&const_cast<Actor&>(a));});
+  }
 }
 
 %ignore simgrid::s4u::this_actor::is_maestro;
@@ -196,6 +224,14 @@ struct ActorMain {
   }
 }
 
+// Mapping this_actor::on_exit
+%ignore simgrid::s4u::this_actor::on_exit;
+%ignore simgrid::s4u::Actor::on_termination_cb;
+%extend ActorMain {
+  void on_exit(BooleanCallback* code) {
+    simgrid::s4u::this_actor::on_exit([code](bool b){code->run(b);}); 
+  }
+}
 /////////////////// Load each class, along with the local rewritings
 
 %include <simgrid/s4u/Activity.hpp>
@@ -228,6 +264,9 @@ struct ActorMain {
 %ignore set_default_comm_data_copy_callback;
 %include <simgrid/s4u/Engine.hpp>
 %extend simgrid::s4u::Engine {
+  static void die(const char* msg) {
+    xbt_die("%s", msg);
+  }
   static void critical(const char* msg) {
     XBT_CRITICAL("%s", msg);
   }

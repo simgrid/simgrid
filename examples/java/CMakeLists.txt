@@ -1,8 +1,14 @@
 if(enable_java)
   add_custom_target(java-all COMMENT "Building all Java examples...")
   add_dependencies(tests java-all)
+  add_dependencies(java-all simgrid_jar)
   add_dependencies(java-all simgrid-java) # useful when the libs are not included in the jar
+  add_dependencies(java-all simgrid)      # useful when the libs are not included in the jar
 endif()
+
+# actor_exiting is not working yet
+set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/actor_exiting/actor_exiting.java)
+set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor_exiting/actor_exiting.java.tesh)
 
 foreach (example comm_pingpong)
   
