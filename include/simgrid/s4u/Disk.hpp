@@ -32,7 +32,12 @@ namespace s4u {
  * only computes the time taken by the corresponding data movement.
  */
 
+#ifdef SWIG
+class Disk { // Swig cannot cope with our extension mechanism, and don't need it anyway
+#else
 class XBT_PUBLIC Disk : public xbt::Extendable<Disk> {
+#endif
+
 #ifndef DOXYGEN
   friend Engine;
   friend Io;

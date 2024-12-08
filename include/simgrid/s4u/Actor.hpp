@@ -184,7 +184,12 @@ XBT_PUBLIC void on_exit(const std::function<void(bool)>& fun);
  *
  * @endrst
  */
+#ifdef SWIG 
+class XBT_PUBLIC Actor { // Swig cannot cope with our extension mechanism, and don't need it anyway
+#else
 class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<s4u::Actor> {
+#endif
+
 #ifndef DOXYGEN
   friend Exec;
   friend Mailbox;

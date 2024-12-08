@@ -31,7 +31,12 @@ namespace s4u {
  * A Link represents the network facilities between :cpp:class:`hosts <simgrid::s4u::Host>`.
  * @endrst
  */
+#ifdef SWIG 
+class XBT_PUBLIC Link { // Swig cannot cope with our extension mechanism, and don't need it anyway
+#else
 class XBT_PUBLIC Link : public xbt::Extendable<Link> {
+#endif
+
 #ifndef DOXYGEN
   friend kernel::resource::StandardLinkImpl;
 #endif

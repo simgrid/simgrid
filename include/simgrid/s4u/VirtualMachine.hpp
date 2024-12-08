@@ -30,7 +30,12 @@ public:
  * The total computing power that the contained actors can get is constrained to the virtual machine size.
  *
  */
+#ifdef SWIG 
+class XBT_PUBLIC VirtualMachine { // Pretend to Swig that VirtualMachine does not inherit from Host, to see if it helps
+#else
 class XBT_PUBLIC VirtualMachine : public s4u::Host {
+#endif
+
   kernel::resource::VirtualMachineImpl* const pimpl_vm_;
 
   /* Signals about the life cycle of the VM */

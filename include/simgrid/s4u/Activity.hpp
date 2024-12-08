@@ -36,7 +36,12 @@ namespace s4u {
  * This class is the ancestor of every activities that an actor can undertake.
  * That is, activities are all the things that do take time to the actor in the simulated world.
  */
+#ifdef SWIG 
+class XBT_PUBLIC Activity { // Swig cannot cope with our extension mechanism, and don't need it anyway
+#else
 class XBT_PUBLIC Activity : public xbt::Extendable<Activity> {
+#endif
+
 #ifndef DOXYGEN
   friend ActivitySet;
   friend Comm;
