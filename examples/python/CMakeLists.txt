@@ -15,7 +15,7 @@ foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate ac
         plugin-host-load
         mc-failing-assert mc-centralized-mutex
         network-nonlinear clusters-multicpu io-degradation exec-cpu-nonlinear
-        synchro-barrier synchro-mutex synchro-semaphore)
+        synchro-barrier synchro-mutex synchro-semaphore smpi_all2all)
   set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.py)
 
