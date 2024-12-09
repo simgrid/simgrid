@@ -49,7 +49,7 @@ class CMakeBuild(build_ext):
             self.get_ext_fullpath(ext.name)))
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable,
-                      '-Denable_smpi=OFF',
+                      '-Denable_smpi=ON',
                       '-Denable_java=OFF',
                       '-Denable_python=ON',
                       '-Dminimal-bindings=ON',
