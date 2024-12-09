@@ -606,6 +606,8 @@ include examples/python/platform-profile/platform-profile.py
 include examples/python/platform-profile/platform-profile.tesh
 include examples/python/plugin-host-load/plugin-host-load.py
 include examples/python/plugin-host-load/plugin-host-load.tesh
+include examples/python/smpi_all2all/smpi_all2all.py
+include examples/python/smpi_all2all/smpi_all2all.tesh
 include examples/python/synchro-barrier/synchro-barrier.py
 include examples/python/synchro-barrier/synchro-barrier.tesh
 include examples/python/synchro-mutex/synchro-mutex.py

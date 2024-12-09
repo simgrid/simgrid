@@ -35,6 +35,7 @@ def pinger():
     input_size = 10
     half = input_size // 2
     root = 0
+    np.random.seed(5)
     np_in = np.random.randint(100, size=input_size, dtype=np.int32)
     np_out = np.zeros(half, dtype=np.int32)
     this_actor.info(f"input buffer {np_in}")

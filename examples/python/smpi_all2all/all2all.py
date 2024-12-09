@@ -34,6 +34,7 @@ def pinger():
     this_actor.info(f"ping {rank}")
     input_size = 10
     half_size = input_size // 2
+    np.random.seed(5)
     np_in = np.random.randint(100, size=input_size, dtype=np.int32)
     np_out = np.zeros(input_size, dtype=np.int32)
     simgrid.smpi.MPI.Alltoall(np_in, half_size, simgrid.smpi.MPI.Datatype.INT, np_out, half_size, simgrid.smpi.MPI.Datatype.INT, MPI_COMM_WORLD)
@@ -42,10 +43,6 @@ def pinger():
 
     this_actor.info(f"output first half {np_out[:half_size]}")
     this_actor.info(f"output second half {np_out[half_size:]}")
-    new_out = simgrid.smpi.MPI.Alltoall(np_in, half_size, simgrid.smpi.MPI.Datatype.INT, half_size, simgrid.smpi.MPI.Datatype.INT, MPI_COMM_WORLD)
-
-    this_actor.info(f"second output first half {new_out[:half_size]}")
-    this_actor.info(f"second output second halft {new_out[half_size:]}")
     simgrid.smpi.MPI.Finalize()
 
 def main():
