@@ -165,6 +165,7 @@ public:
   s4u::MessageQueue* message_queue_by_name_or_create(const std::string& name) const;
 
   size_t get_actor_count() const;
+  aid_t get_actor_max_pid() const;
   std::vector<ActorPtr> get_all_actors() const;
   std::vector<ActorPtr> get_filtered_actors(const std::function<bool(ActorPtr)>& filter) const;
 

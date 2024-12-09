@@ -11,12 +11,14 @@
 #     Kill the host #1 after 42 seconds (using a kernel::Timer so that no actor gets involved in the killing)
 #   * --cfg=plugin:cmonkey --cfg=cmonkey/time:42 --cfg=cmonkey/link:0
 #     Kill the link #0 after 42 seconds (using a kernel::Timer)
+#   * --cfg=plugin:cmonkey --cfg=cmonkey/time:42 --cfg=cmonkey/pid:0
+#     Kill the actor of PID 0 after 42 seconds (using a kernel::Timer). Make sure that your actors are autorestarted.
 # 
 # * a python script: tools/simgrid-monkey (this file)
 #   * It takes a regular SimGrid simulation as a parameter, use the cmonkey plugin to get the information about it, 
 #     and then restart many runs, with one resource being turn_off() + turn_on() in each run.
 #   * Each resource gets killed between each timestamps, and on each timestamp.
-#   * So the amount of simulations is: 1 + (host_c+link_c) * timestamps * 2
+#   * So the amount of simulations is: 1 + (host_c+link_c+actor_c) * timestamps * 2
 # 
 # * Test program, written to resist these extreme conditions:
 #   * teshsuite/s4u/monkey-masterworkers: tests synchronous comms and execs (C++ and python)
@@ -50,8 +52,12 @@ def get_info(cmd):
 
     host_count=0
     link_count=0
+    actor_count=0
     timestamps=[]
     for line in str(first_run.stdout, errors='replace').split("\n"):
+        if re.match("^ACTOR_COUNT=(.*)", line):
+            m = re.match("^ACTOR_COUNT=(.*)", line)
+            actor_count = int(m.group(1))
         if re.match("^HOST_COUNT=(.*)", line):
             m = re.match("^HOST_COUNT=(.*)", line)
             host_count = int(m.group(1))
@@ -63,16 +69,16 @@ def get_info(cmd):
             timestamps.append(float(m.group(1)))
 
     #print(f"hosts:{host_count} links:{link_count} timestamps:{' '.join(([str(i) for i in timestamps]))}")
-    return (host_count,  link_count,  timestamps)
+    return (actor_count, host_count,  link_count,  timestamps)
 
 parser = argparse.ArgumentParser(description='Run a SimGrid simulation, and turn off/on resources at random.')
 parser.add_argument('--valgrind', help="Run the simulations in valgrind")
 parser.add_argument('command', nargs='*')
 args = parser.parse_args()
 
-(host_count,  link_count,  timestamps) = get_info(args.command)
+(actor_count, host_count,  link_count,  timestamps) = get_info(args.command)
 timestamps = sorted([*{*timestamps}]) # kill duplicates
-print(f"Monkey informations: hosts:{host_count} links:{link_count} timestamps:{' '.join(([str(i) for i in timestamps]))}")
+print(f"Monkey informations: actors:{actor_count} hosts:{host_count} links:{link_count} timestamps:{' '.join(([str(i) for i in timestamps]))}")
 
 error_count = 0
 test_count = 0
@@ -110,13 +116,18 @@ def do_run(cmd, extra_params, test_todo):
 
 def doit():
     prev_time = 0
-    test_todo = 2 * len(timestamps) * (host_count + link_count)
+    test_todo = 2 * len(timestamps) * (actor_count + host_count + link_count)
     for pos in range(len(timestamps)):
         now = timestamps[pos]
+        for actor in range(actor_count):
+            do_run(args.command, [f"--cfg=cmonkey/time:{(now-prev_time)/2}", f"--cfg=cmonkey/pid:{actor}"], test_todo)
         for host in range(host_count):
             do_run(args.command, [f"--cfg=cmonkey/time:{(now-prev_time)/2}", f"--cfg=cmonkey/host:{host}"], test_todo)
         for link in range(link_count):
             do_run(args.command, [f"--cfg=cmonkey/time:{(now-prev_time)/2}", f"--cfg=cmonkey/link:{link}"], test_todo)
+
+        for actor in range(actor_count):
+            do_run(args.command, [f"--cfg=cmonkey/time:{now}", f"--cfg=cmonkey/pid:{actor}"], test_todo)
         for host in range(host_count):
             do_run(args.command, [f"--cfg=cmonkey/time:{now}", f"--cfg=cmonkey/host:{host}"], test_todo)
         for link in range(link_count):

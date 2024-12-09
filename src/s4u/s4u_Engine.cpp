@@ -10,8 +10,10 @@
 #include <simgrid/modelchecker.h>
 #include <simgrid/s4u/Engine.hpp>
 
+#include "simgrid/forward.h"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/resource/HostImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
@@ -607,6 +609,10 @@ std::vector<Link*> Engine::get_filtered_links(const std::function<bool(Link*)>& 
 size_t Engine::get_actor_count() const
 {
   return pimpl_->get_actor_count();
+}
+aid_t Engine::get_actor_max_pid() const
+{
+  return kernel::actor::ActorImpl::get_maxpid() - 1; // maxpid_ is post-incremented
 }
 
 std::vector<ActorPtr> Engine::get_all_actors() const

@@ -6,6 +6,9 @@ SMPI:
 Python:
  - Add many missing bindings [Sergey Teryoshkin].
 
+Chaos Monkey plugin:
+ - Allow to restart the actors by pid at a given time.
+
 ----------------------------------------------------------------------------
 
 
