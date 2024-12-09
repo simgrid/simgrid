@@ -34,6 +34,7 @@ def pinger():
     this_actor.info(f"ping {rank}")
     input_size = 10
     root = 0
+    np.random.seed(5)
     np_in = np.random.randint(100, size=input_size, dtype=np.int32)
     np_out = np.zeros(input_size * size, dtype=np.int32)
     this_actor.info(f"input buffer {np_in}")

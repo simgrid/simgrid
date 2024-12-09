@@ -83,67 +83,58 @@ std::string get_simgrid_version()
 }
 
 template <typename T>
-std::vector<T>* wrap_returned_mpi_alltoall(std::vector<T> data, int sendcount, MPI_Datatype sendtype, int recvcount,
-                                           MPI_Datatype recvtype, MPI_Comm comm)
+int wrap_mpi_alltoall(py::array_t<T> senddata, int sendcount, MPI_Datatype sendtype, py::array_t<T>& recvdata,
+                      int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
-  auto new_list = new std::vector<T>();
-  new_list->resize(recvcount * comm->size());
-  MPI_Alltoall(data.data(), sendcount, sendtype, new_list->data(), recvcount, recvtype, comm);
-  return new_list;
+  py::buffer_info out_buffer = recvdata.request();
+  auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
+  return MPI_Alltoall(senddata.data(), sendcount, sendtype, output_ptr, recvcount, recvtype, comm);
+}
+template <typename T> int wrap_mpi_bcast(py::array_t<T> output, int count, MPI_Datatype type, int root, MPI_Comm comm)
+{
+  py::buffer_info out_buffer = output.request();
+  auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
+  return MPI_Bcast(output_ptr, count, type, root, comm);
 }
 template <typename T>
-void wrap_mpi_alltoall(py::array_t<T> data, int sendcount, MPI_Datatype sendtype, py::array_t<T>& output, int recvcount,
-                       MPI_Datatype recvtype, MPI_Comm comm)
+int wrap_mpi_reduce_scatter(py::array_t<T> input, py::array_t<T> output, std::vector<int> count, MPI_Datatype type,
+                            MPI_Op op, MPI_Comm comm)
 {
   py::buffer_info out_buffer = output.request();
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
-  MPI_Alltoall(data.data(), sendcount, sendtype, output_ptr, recvcount, recvtype, comm);
-}
-template <typename T> void wrap_mpi_bcast(py::array_t<T> output, int count, MPI_Datatype type, int root, MPI_Comm comm)
-{
-  py::buffer_info out_buffer = output.request();
-  auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
-  MPI_Bcast(output_ptr, count, type, root, comm);
+  return MPI_Reduce_scatter(input.data(), output_ptr, count.data(), type, op, comm);
 }
 template <typename T>
-void wrap_mpi_reduce_scatter(py::array_t<T> input, py::array_t<T> output, std::vector<int> count, MPI_Datatype type,
-                             MPI_Op op, MPI_Comm comm)
+int wrap_mpi_reduce_scatter_block(py::array_t<T> input, py::array_t<T> output, int count, MPI_Datatype type, MPI_Op op,
+                                  MPI_Comm comm)
 {
   py::buffer_info out_buffer = output.request();
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
-  MPI_Reduce_scatter(input.data(), output_ptr, count.data(), type, op, comm);
+  return MPI_Reduce_scatter_block(input.data(), output_ptr, count, type, op, comm);
 }
 template <typename T>
-void wrap_mpi_reduce_scatter_block(py::array_t<T> input, py::array_t<T> output, int count, MPI_Datatype type, MPI_Op op,
-                                   MPI_Comm comm)
+int wrap_mpi_reduce(py::array_t<T> input, py::array_t<T> output, int count, MPI_Datatype type, MPI_Op op, int root,
+                    MPI_Comm comm)
 {
   py::buffer_info out_buffer = output.request();
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
-  MPI_Reduce_scatter_block(input.data(), output_ptr, count, type, op, comm);
+  return MPI_Reduce(input.data(), output_ptr, count, type, op, root, comm);
 }
 template <typename T>
-void wrap_mpi_reduce(py::array_t<T> input, py::array_t<T> output, int count, MPI_Datatype type, MPI_Op op, int root,
-                     MPI_Comm comm)
+int wrap_mpi_allreduce(py::array_t<T> input, py::array_t<T> output, int count, MPI_Datatype type, MPI_Op op,
+                       MPI_Comm comm)
 {
   py::buffer_info out_buffer = output.request();
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
-  MPI_Reduce(input.data(), output_ptr, count, type, op, root, comm);
+  return MPI_Allreduce(input.data(), output_ptr, count, type, op, comm);
 }
 template <typename T>
-void wrap_mpi_allreduce(py::array_t<T> input, py::array_t<T> output, int count, MPI_Datatype type, MPI_Op op,
-                        MPI_Comm comm)
+int wrap_mpi_allgather(py::array_t<T> input, int send_count, MPI_Datatype send_type, py::array_t<T> output,
+                       int output_count, MPI_Datatype output_type, MPI_Comm comm)
 {
   py::buffer_info out_buffer = output.request();
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
-  MPI_Allreduce(input.data(), output_ptr, count, type, op, comm);
-}
-template <typename T>
-void wrap_mpi_allgather(py::array_t<T> input, int send_count, MPI_Datatype send_type, py::array_t<T> output,
-                        int output_count, MPI_Datatype output_type, MPI_Comm comm)
-{
-  py::buffer_info out_buffer = output.request();
-  auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
-  MPI_Allgather(input.data(), send_count, send_type, output_ptr, output_count, output_type, comm);
+  return MPI_Allgather(input.data(), send_count, send_type, output_ptr, output_count, output_type, comm);
 }
 } // namespace
 
@@ -336,7 +327,15 @@ PYBIND11_MODULE(simgrid, m)
             MPI_Comm_rank(comm, &rank);
             return rank;
           },
-          "Get the rank within the communicator");
+          "Get the rank within the communicator")
+      .def(
+          "split",
+          [](simgrid::smpi::Comm* comm, int color, int key) {
+            MPI_Comm newcomm;
+            MPI_Comm_split(comm, color, key, &newcomm);
+            return newcomm;
+          },
+          "Split the communicator in several groups");
   mpi_comm.def_property_readonly_static("WORLD",
                                         [](py::object /* self */) { return (simgrid::smpi::Comm*)MPI_COMM_WORLD; });
   mpi_comm.def_property_readonly_static("SELF",
@@ -345,12 +344,6 @@ PYBIND11_MODULE(simgrid, m)
   mpi_m.def("Alltoall", wrap_mpi_alltoall<int>, py::call_guard<py::gil_scoped_release>(), "Alltoall operation");
   mpi_m.def("Alltoall", wrap_mpi_alltoall<double>, py::call_guard<py::gil_scoped_release>(), "Alltoall operation");
   mpi_m.def("Alltoall", wrap_mpi_alltoall<float>, py::call_guard<py::gil_scoped_release>(), "Alltoall operation");
-  mpi_m.def("Alltoall", wrap_returned_mpi_alltoall<int>, py::call_guard<py::gil_scoped_release>(),
-            "Alltoall operation");
-  mpi_m.def("Alltoall", wrap_returned_mpi_alltoall<double>, py::call_guard<py::gil_scoped_release>(),
-            "Alltoall operation");
-  mpi_m.def("Alltoall", wrap_returned_mpi_alltoall<float>, py::call_guard<py::gil_scoped_release>(),
-            "Alltoall operation");
   mpi_m.def("Bcast", wrap_mpi_bcast<int>, py::call_guard<py::gil_scoped_release>(), "Bcast operation");
   mpi_m.def("Bcast", wrap_mpi_bcast<double>, py::call_guard<py::gil_scoped_release>(), "Bcast operation");
   mpi_m.def("Bcast", wrap_mpi_bcast<float>, py::call_guard<py::gil_scoped_release>(), "Bcast operation");
