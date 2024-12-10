@@ -12,14 +12,14 @@
 # twine upload dist/simgrid-*.tar.gz
 
 import os
-import re
-import sys
 import platform
+import re
 import subprocess
-
-from setuptools import setup, Extension
-from setuptools.command.build_ext import build_ext
+import sys
 from distutils.version import LooseVersion
+
+from setuptools import Extension, setup
+from setuptools.command.build_ext import build_ext
 
 
 class CMakeExtension(Extension):
@@ -65,12 +65,14 @@ class CMakeBuild(build_ext):
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
                                                               self.distribution.get_version())
+        env['LDFLAGS'] = '{} -L{}'.format(env.get('LDFLAGS', ''), extdir)
+
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
         subprocess.check_call(['cmake', ext.sourcedir] +
                               cmake_args, cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] +
-                              build_args, cwd=self.build_temp)
+                              build_args, cwd=self.build_temp, env=env)
 
 
 setup(
