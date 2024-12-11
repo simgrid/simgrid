@@ -7,7 +7,9 @@
   </config>
 
   <zone id="zone0" routing="Full">
-    <host id="host0" speed="100Mf"/>
+    <host id="host0" speed="100Mf">
+      <disk id="disk0" read_bw="100MBps" write_bw="50MBps"/>
+    </host>
     <host id="host1" speed="100Mf"/>
     <host id="host2" speed="100Mf"/>
 

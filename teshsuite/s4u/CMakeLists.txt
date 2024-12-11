@@ -1,6 +1,6 @@
 # Specify the source files of multi-files tests
 set(activity-lifecycle_sources ../catch_simgrid.cpp)
-foreach(x sleep exec comm comm_direct test-wait)
+foreach(x sleep exec io comm comm_direct test-wait)
   set(activity-lifecycle_sources ${activity-lifecycle_sources} activity-lifecycle/testing_${x}.cpp)
 endforeach()
 
