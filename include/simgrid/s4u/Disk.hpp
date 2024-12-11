@@ -81,6 +81,14 @@ public:
    */
   Disk* set_readwrite_bandwidth(double bw);
 
+  /** Turns that disk on if it was previously off. This call does nothing if the disk is already on. */
+  void turn_on();
+  /** Turns that disk off. All I/O activites are forcefully stopped. */
+  void turn_off();
+  /** Returns if that disk is currently up and running */
+  bool is_on() const;
+
+
   const std::unordered_map<std::string, std::string>* get_properties() const;
   const char* get_property(const std::string& key) const;
   Disk* set_property(const std::string&, const std::string& value);
