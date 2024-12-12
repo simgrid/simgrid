@@ -811,6 +811,7 @@ include teshsuite/s4u/activity-lifecycle/activity-lifecycle.tesh
 include teshsuite/s4u/activity-lifecycle/testing_comm.cpp
 include teshsuite/s4u/activity-lifecycle/testing_comm_direct.cpp
 include teshsuite/s4u/activity-lifecycle/testing_exec.cpp
+include teshsuite/s4u/activity-lifecycle/testing_io.cpp
 include teshsuite/s4u/activity-lifecycle/testing_platform.xml
 include teshsuite/s4u/activity-lifecycle/testing_sleep.cpp
 include teshsuite/s4u/activity-lifecycle/testing_test-wait.cpp
