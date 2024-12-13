@@ -1,0 +1,8 @@
+
+$ ./host-on-off-disks
+> [host1:I/O manager:(1) 0.000000] [s4u_test/INFO] Starting I/O manager on 'host1'
+> [host2:host_killer:(2) 1.000000] [s4u_test/INFO] Turning off 'host1'
+> [host2:host_killer:(2) 2.000000] [s4u_test/INFO] Turning 'host1' back on
+> [host1:I/O manager:(3) 2.000000] [s4u_test/INFO] Starting I/O manager on 'host1'
+> [host1:I/O manager:(3) 4.000000] [s4u_test/INFO] All I/Os are complete. Exit now.
+> [4.000000] [s4u_test/INFO] Simulation time 4
