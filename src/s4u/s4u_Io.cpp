@@ -37,7 +37,10 @@ IoPtr Io::streamto_init(Host* from, const Disk* from_disk, Host* to, const Disk*
 IoPtr Io::streamto_async(Host* from, const Disk* from_disk, Host* to, const Disk* to_disk,
                          uint64_t simulated_size_in_bytes)
 {
-  return Io::init()->set_size(simulated_size_in_bytes)->set_source(from, from_disk)->set_destination(to, to_disk);
+  auto io = Io::init()->set_size(simulated_size_in_bytes)->set_source(from, from_disk)->set_destination(to, to_disk);
+  if (simulated_size_in_bytes == 0) // a zero-size I/O stream is explicitely asked for, start it!
+    io->start();
+  return io;
 }
 
 void Io::streamto(Host* from, const Disk* from_disk, Host* to, const Disk* to_disk, uint64_t simulated_size_in_bytes)

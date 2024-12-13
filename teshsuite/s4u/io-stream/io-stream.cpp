@@ -82,6 +82,12 @@ static void streamer(size_t size)
   clock = sg4::Engine::get_clock();
   sg4::Io::streamto(bob, bob_disk, bob, bob_disk, size);
   XBT_INFO("    Total : %.6f seconds", sg4::Engine::get_clock() - clock);
+
+  XBT_INFO("[Bob -> Alice] Streaming \"from memory to disk of size 0\" (no read)");
+  clock = sg4::Engine::get_clock();
+  sg4::Io::streamto(bob, nullptr, alice, alice_disk, 0);
+  XBT_INFO("    Total : %.6f seconds", sg4::Engine::get_clock() - clock);
+
 }
 
 static void background_send() {
