@@ -116,9 +116,10 @@ void IoImpl::finish()
           set_state(State::SRC_HOST_FAILURE);
         else if (not dst_host_->is_on())
           set_state(State::DST_HOST_FAILURE);
-      } else if ((disk_ && not disk_->is_on()) || (dst_disk_ && not dst_disk_->is_on()))
+      } else if ((disk_ && not disk_->is_on()) || (dst_disk_ && not dst_disk_->is_on())) {
         set_state(State::FAILED);
-      else
+        static_cast<s4u::Io*>(get_iface())->complete(s4u::Activity::State::FAILED);
+      } else
         set_state(State::CANCELED);
     } else {
       set_state(State::DONE);
