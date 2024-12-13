@@ -140,9 +140,9 @@ TEST_CASE("Activity lifecycle: io activities")
     END_SECTION;
   }
 
-  BEGIN_SECTION("read restarted in middle")
+  BEGIN_SECTION("read stopped in middle")
   {
-    XBT_INFO("Launch an read(5s), and restart its disk right after 2 secs");
+    XBT_INFO("Launch an read(5s), and turn off its disk after 2 secs");
     auto disk = all_hosts[0]->get_disks().front();
     simgrid::s4u::ActorPtr io_read5 = simgrid::s4u::Actor::create("io_read_restarted", all_hosts[0], [disk]() {
       assert_exit(false, 2);
@@ -156,9 +156,9 @@ TEST_CASE("Activity lifecycle: io activities")
     END_SECTION;
   }
 
-  BEGIN_SECTION("write restarted in middle")
+  BEGIN_SECTION("write stopped in middle")
   {
-    XBT_INFO("Launch an write(5s), and restart its disk right after 2 secs");
+    XBT_INFO("Launch an write(5s), and turn off its disk after 2 secs");
     auto disk = all_hosts[0]->get_disks().front();
     simgrid::s4u::ActorPtr io_write5 = simgrid::s4u::Actor::create("io_write_restarted", all_hosts[0], [disk]() {
       assert_exit(false, 2);
@@ -179,7 +179,7 @@ TEST_CASE("Activity lifecycle: io activities")
     bool read_done = false;
     auto disk = all_hosts[0]->get_disks().front();
 
-    simgrid::s4u::Actor::create("io_read5_restarted", all_hosts[1], [&read_done, disk]() {
+    simgrid::s4u::Actor::create("io_read5_restarted", all_hosts[0], [&read_done, disk]() {
       assert_exit(true, 5);
       disk->read(500000000);
       read_done = true;
@@ -206,7 +206,7 @@ TEST_CASE("Activity lifecycle: io activities")
     bool write_done = false;
     auto disk = all_hosts[0]->get_disks().front();
 
-    simgrid::s4u::Actor::create("io_write5_restarted", all_hosts[1], [&write_done, disk]() {
+    simgrid::s4u::Actor::create("io_write5_restarted", all_hosts[0], [&write_done, disk]() {
       assert_exit(true, 5);
         disk->write(250000000);
       write_done = true;
@@ -222,6 +222,23 @@ TEST_CASE("Activity lifecycle: io activities")
     simgrid::s4u::this_actor::sleep_for(9);
     INFO("Was restarted actor already dead in the scheduling round during which the turn_off simcall was issued?");
     REQUIRE(write_done);
+
+    END_SECTION;
+  }
+
+  BEGIN_SECTION("asynchronous read stopped in middle")
+  {
+    XBT_INFO("Launch an read(5s), and restart its disk after 2 secs");
+    auto disk = all_hosts[0]->get_disks().front();
+
+    simgrid::s4u::Actor::create("io_read5_restarted", all_hosts[0], [disk]() {
+      assert_exit(true, 2);
+      auto read = disk->read_async(500000000);
+      disk->turn_off();
+      simgrid::s4u::this_actor::sleep_for(2);
+      REQUIRE_STORAGE_FAILURE({read->wait();});
+      disk->turn_on();
+    });
 
     END_SECTION;
   }
