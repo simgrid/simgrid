@@ -211,7 +211,7 @@ StatePtr BeFSExplorer::best_opened_state()
   auto valid    = begin(opened_states_); // iterator marking the limit between states still to explore, and already
                                          // explored ones
 
-  // Keep only still non-explored states (aid != -1), and record the one with the best (greater) priority.
+  // Keep only still non-explored states (aid != -1), and record the one with the best (smaller) priority.
   for (auto current = begin(opened_states_); current != end(opened_states_); ++current) {
     xbt_assert(current->get() != nullptr);
     auto [aid, prio] = (*current)->next_transition_guided();
