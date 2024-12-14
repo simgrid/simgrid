@@ -323,6 +323,8 @@ the simulators (as detailed in Section :ref:`options`).
 
    .. example-tab:: examples/c/comm-pingpong/comm-pingpong.c
 
+   .. example-tab:: examples/java/comm_pingpong/comm_pingpong.java
+
 Basic asynchronous communications
 ---------------------------------
 

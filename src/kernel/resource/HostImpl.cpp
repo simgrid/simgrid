@@ -97,6 +97,10 @@ void HostImpl::destroy()
  */
 void HostImpl::turn_on() const
 {
+  /* turn_on the disks attached to this host */
+  for (const auto& [_, disk] : disks_)
+    disk->turn_on();
+
   for (auto const& arg : actors_at_boot_) {
     XBT_DEBUG("Booting Actor %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
     actor::ActorImplPtr actor = actor::ActorImpl::create(arg);
@@ -112,6 +116,11 @@ void HostImpl::turn_off(const actor::ActorImpl* issuer)
     vm->get_iface()->shutdown();
     vm->get_iface()->turn_off();
   }
+
+  /* turn_off the disks attached to this host */
+  for (const auto& [_, disk] : disks_)
+    disk->turn_off();
+
   for (auto& actor : actor_list_) {
     XBT_DEBUG("Killing Actor %s@%s on behalf of %s which turned off that host.", actor.get_cname(),
               actor.get_host()->get_cname(), issuer->get_cname());

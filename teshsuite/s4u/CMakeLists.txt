@@ -1,6 +1,6 @@
 # Specify the source files of multi-files tests
 set(activity-lifecycle_sources ../catch_simgrid.cpp)
-foreach(x sleep exec comm comm_direct test-wait)
+foreach(x sleep exec io comm comm_direct test-wait)
   set(activity-lifecycle_sources ${activity-lifecycle_sources} activity-lifecycle/testing_${x}.cpp)
 endforeach()
 
@@ -11,7 +11,7 @@ foreach(x actor actor-autorestart actor-suspend
       	monkey-masterworkers monkey-semaphore
         concurrent_rw
         dag-incomplete-simulation dependencies
-        host-on-off host-on-off-actors host-on-off-recv host-multicore-speed-file
+        host-on-off host-on-off-actors host-on-off-disks host-on-off-recv host-multicore-speed-file
         io-set-bw io-stream
         basic-link-test basic-parsing-test evaluate-get-route-time evaluate-parse-time is-router
         storage_client_server listen_async pid
@@ -46,7 +46,8 @@ foreach(x actor actor-autorestart actor-suspend activity-lifecycle comm-get-send
   ADD_TESH_FACTORIES(tesh-s4u-${x} "*" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
 endforeach()
 
-foreach(x basic-link-test basic-parsing-test host-on-off host-on-off-actors host-on-off-recv comm-fault-scenarios host-multicore-speed-file is-router listen_async
+foreach(x basic-link-test basic-parsing-test host-on-off host-on-off-actors host-on-off-disks host-on-off-recv
+        comm-fault-scenarios host-multicore-speed-file is-router listen_async
         monkey-masterworkers monkey-semaphore
         pid storage_client_server trace-integration seal-platform issue71)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)

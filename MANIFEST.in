@@ -422,6 +422,8 @@ include examples/cpp/trace-process-migration/s4u-trace-process-migration.cpp
 include examples/cpp/trace-process-migration/s4u-trace-process-migration.tesh
 include examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.cpp
 include examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.tesh
+include examples/java/actor_exiting/actor_exiting.java
+include examples/java/actor_exiting/actor_exiting.java.tesh
 include examples/java/comm_pingpong/comm_pingpong.java
 include examples/java/comm_pingpong/comm_pingpong.java.tesh
 include examples/python/activityset-testany/activityset-testany.py
@@ -809,6 +811,7 @@ include teshsuite/s4u/activity-lifecycle/activity-lifecycle.tesh
 include teshsuite/s4u/activity-lifecycle/testing_comm.cpp
 include teshsuite/s4u/activity-lifecycle/testing_comm_direct.cpp
 include teshsuite/s4u/activity-lifecycle/testing_exec.cpp
+include teshsuite/s4u/activity-lifecycle/testing_io.cpp
 include teshsuite/s4u/activity-lifecycle/testing_platform.xml
 include teshsuite/s4u/activity-lifecycle/testing_sleep.cpp
 include teshsuite/s4u/activity-lifecycle/testing_test-wait.cpp
@@ -847,6 +850,8 @@ include teshsuite/s4u/host-multicore-speed-file/host-multicore-speed-file.cpp
 include teshsuite/s4u/host-multicore-speed-file/host-multicore-speed-file.tesh
 include teshsuite/s4u/host-on-off-actors/host-on-off-actors.cpp
 include teshsuite/s4u/host-on-off-actors/host-on-off-actors.tesh
+include teshsuite/s4u/host-on-off-disks/host-on-off-disks.cpp
+include teshsuite/s4u/host-on-off-disks/host-on-off-disks.tesh
 include teshsuite/s4u/host-on-off-recv/host-on-off-recv.cpp
 include teshsuite/s4u/host-on-off-recv/host-on-off-recv.tesh
 include teshsuite/s4u/host-on-off/host-on-off.cpp

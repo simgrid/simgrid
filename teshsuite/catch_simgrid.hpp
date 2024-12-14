@@ -44,4 +44,14 @@ extern void assert_cleanup();
     }                                                                                                                  \
   } while (0)
 
+#define REQUIRE_STORAGE_FAILURE(...)                                                                                   \
+  do {                                                                                                                 \
+    try {                                                                                                              \
+      __VA_ARGS__;                                                                                                     \
+      FAIL("Expected exception StorageFailureException not caught");                                                   \
+    } catch (simgrid::StorageFailureException const&) {                                                                \
+      XBT_VERB("got expected StorageFailureException");                                                                \
+    }                                                                                                                  \
+  } while (0)
+
 #endif // ACTIVITY_LIFECYCLE_HPP

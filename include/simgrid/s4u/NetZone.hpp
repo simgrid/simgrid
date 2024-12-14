@@ -392,8 +392,8 @@ struct XBT_PUBLIC FatTreeParams {
  * - uplinks: for each level, how nodes are connected, e.g. 1, 2
  * - link count: for each level, number of links connecting the nodes, e.g. 1, 1
  *
- * The best way to understand it is looking to the doc available in: <a
- * href="https://simgrid.org/doc/latest/Platform_examples.html#fat-tree-cluster">Fat Tree Cluster</a>
+ * The best way to understand it is looking to the doc available in:
+ * <a href="https://simgrid.org/doc/latest/Platform_examples.html#fat-tree-cluster">Fat Tree Cluster</a>
  *
  * Moreover, this method accepts 3 callbacks to populate the cluster: set_netpoint, set_loopback and set_limiter .
  *
@@ -434,8 +434,8 @@ struct XBT_PUBLIC DragonflyParams {
  *
  * In total, the cluster will have groups * chassis * routers * nodes elements/leaves.
  *
- * The best way to understand it is looking to the doc available in: <a
- * href="https://simgrid.org/doc/latest/Platform_examples.html#dragonfly-cluster">Dragonfly Cluster</a>
+ * The best way to understand it is looking to the doc available in:
+ * <a href="https://simgrid.org/doc/latest/Platform_examples.html#dragonfly-cluster">Dragonfly Cluster</a>
  *
  * Moreover, this method accepts 3 callbacks to populate the cluster: set_netpoint, set_loopback and set_limiter .
  *

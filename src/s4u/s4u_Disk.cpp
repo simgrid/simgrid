@@ -71,6 +71,36 @@ Host* Disk::get_host() const
   return pimpl_->get_host();
 }
 
+void Disk::turn_on()
+{
+  if (not is_on()) {
+    kernel::actor::simcall_answered([this] {
+      this->pimpl_->turn_on();
+      on_onoff(*this);
+      on_this_onoff(*this);
+    });
+  }
+}
+
+void Disk::turn_off()
+{
+  if (is_on()) {
+    kernel::actor::simcall_answered([this] {
+      this->pimpl_->turn_off();
+
+      on_onoff(*this);
+      on_this_onoff(*this);
+    });
+  }
+}
+
+bool Disk::is_on() const
+{
+  return this->pimpl_->is_on();
+}
+
+
+
 const std::unordered_map<std::string, std::string>* Disk::get_properties() const
 {
   return pimpl_->get_properties();

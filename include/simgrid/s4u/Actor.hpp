@@ -17,7 +17,9 @@
 
 namespace simgrid {
 
+#ifndef SWIG
 extern template class XBT_PUBLIC xbt::Extendable<s4u::Actor>;
+#endif
 
 namespace s4u {
 
@@ -182,7 +184,12 @@ XBT_PUBLIC void on_exit(const std::function<void(bool)>& fun);
  *
  * @endrst
  */
-class XBT_PUBLIC Actor : public xbt::Extendable<Actor> {
+#ifdef SWIG 
+class XBT_PUBLIC Actor { // Swig cannot cope with our extension mechanism, and don't need it anyway
+#else
+class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<s4u::Actor> {
+#endif
+
 #ifndef DOXYGEN
   friend Exec;
   friend Mailbox;
@@ -467,7 +474,6 @@ public:
   /** Set a property (old values will be overwritten) */
   void set_property(const std::string& key, const std::string& value);
 };
-
 }} // namespace simgrid::s4u
 
 

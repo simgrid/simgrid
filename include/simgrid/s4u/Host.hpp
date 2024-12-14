@@ -16,7 +16,9 @@
 
 namespace simgrid {
 
+#ifndef SWIG
 extern template class XBT_PUBLIC xbt::Extendable<s4u::Host>;
+#endif
 
 namespace s4u {
 /** @ingroup s4u_api
@@ -35,7 +37,12 @@ namespace s4u {
  * :cpp:func:`simgrid::s4u::this_actor::get_host()`
  * @endrst
  */
+#ifdef SWIG 
+class XBT_PUBLIC Host { // Swig cannot cope with our extension mechanism, and don't need it anyway
+#else
 class XBT_PUBLIC Host : public xbt::Extendable<Host> {
+#endif
+
 #ifndef DOXYGEN
   friend kernel::resource::VMModel;            // Use the pimpl_cpu to compute the VM sharing
   friend kernel::resource::VirtualMachineImpl; // creates the the pimpl_cpu
@@ -66,8 +73,8 @@ public:
   xbt::signal<void(Host const&)> on_this_speed_change;
   static xbt::signal<void(Host const&)> on_onoff;
   xbt::signal<void(Host const&)> on_this_onoff;
-
 #endif
+
   /** \static Add a callback fired on each newly created host */
   static void on_creation_cb(const std::function<void(Host&)>& cb) { on_creation.connect(cb); }
   /** \static Add a callback fired when any machine is turned on or off (called AFTER the change) */

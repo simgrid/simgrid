@@ -20,7 +20,9 @@
 
 namespace simgrid {
 
+#ifndef SWIG
 extern template class XBT_PUBLIC xbt::Extendable<s4u::Disk>;
+#endif
 
 namespace s4u {
 
@@ -30,7 +32,12 @@ namespace s4u {
  * only computes the time taken by the corresponding data movement.
  */
 
+#ifdef SWIG
+class Disk { // Swig cannot cope with our extension mechanism, and don't need it anyway
+#else
 class XBT_PUBLIC Disk : public xbt::Extendable<Disk> {
+#endif
+
 #ifndef DOXYGEN
   friend Engine;
   friend Io;
@@ -73,6 +80,14 @@ public:
    * @param bw New bandwidth for the disk
    */
   Disk* set_readwrite_bandwidth(double bw);
+
+  /** Turns that disk on if it was previously off. This call does nothing if the disk is already on. */
+  void turn_on();
+  /** Turns that disk off. All I/O activites are forcefully stopped. */
+  void turn_off();
+  /** Returns if that disk is currently up and running */
+  bool is_on() const;
+
 
   const std::unordered_map<std::string, std::string>* get_properties() const;
   const char* get_property(const std::string& key) const;

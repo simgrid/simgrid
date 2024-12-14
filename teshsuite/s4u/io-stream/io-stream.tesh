@@ -23,6 +23,8 @@ $ ${bindir:=.}/io-stream --cfg=network/model:CM02 --cfg=network/crosstraffic:0 "
 > [ 51.000300]     Total : 2.000050 seconds
 > [ 51.000300] [Bob -> Bob] Disk to disk (no transfer)
 > [ 59.000300]     Total : 8.000000 seconds
+> [ 59.000300] [Bob -> Alice] Streaming "from memory to disk of size 0" (no read)
+> [ 59.000350]     Total : 0.000050 seconds
 
 $ ${bindir:=.}/io-stream  "--log=root.fmt:[%10.6r]%e%m%n"
 > [  0.000000] [Bob -> Alice] Store and Forward (1 block)
@@ -45,3 +47,5 @@ $ ${bindir:=.}/io-stream  "--log=root.fmt:[%10.6r]%e%m%n"
 > [ 53.026411]     Total : 2.165599 seconds
 > [ 53.026411] [Bob -> Bob] Disk to disk (no transfer)
 > [ 61.026411]     Total : 8.000000 seconds
+> [ 61.026411] [Bob -> Alice] Streaming "from memory to disk of size 0" (no read)
+> [ 61.027061]     Total : 0.000650 seconds

@@ -16,6 +16,8 @@
 #include "src/kernel/resource/HostImpl.hpp"
 #include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
+#include "xbt/backtrace.hpp"
+#include "xbt/log.h"
 
 #include <algorithm>
 

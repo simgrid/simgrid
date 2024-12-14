@@ -6,6 +6,7 @@
 // Chaos Monkey plugin: See the simgrid-monkey script for more information
 
 #include <simgrid/kernel/Timer.hpp>
+#include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
 #include <xbt/config.hpp>
@@ -16,6 +17,7 @@ namespace sg4 = simgrid::s4u;
 static simgrid::config::Flag<bool> cfg_tell{"cmonkey/tell", "Request the Chaos Monkey to display all timestamps",
                                             false};
 static simgrid::config::Flag<double> cfg_time{"cmonkey/time", "When should the chaos monkey kill a resource", -1.};
+static simgrid::config::Flag<int> cfg_pid{"cmonkey/pid", "Which actor should be killed (pid number)", -1};
 static simgrid::config::Flag<int> cfg_link{"cmonkey/link", "Which link should be killed (number)", -1};
 static simgrid::config::Flag<int> cfg_host{"cmonkey/host", "Which host should be killed (number)", -1};
 
@@ -53,7 +55,8 @@ static void sg_chaos_monkey_plugin_run()
   if (cfg_time >= 0) {
     int host = cfg_host;
     int link = cfg_link;
-    xbt_assert(host >= 0 || link >= 0,
+    int pid  = cfg_pid;
+    xbt_assert(host >= 0 || link >= 0 || pid >= 0,
                "If a kill time is given, you must also specify a resource to kill (either a link or an host)");
     xbt_assert(host < 0 || link < 0, "Cannot specify both a link and an host to kill");
     if (host >= 0) {
@@ -78,9 +81,22 @@ static void sg_chaos_monkey_plugin_run()
         l->turn_on();
       });
     }
+    if (pid >= 0) {
+      simgrid::kernel::timer::Timer::set(cfg_time, [pid]() {
+        auto a = sg4::Actor::by_pid(pid);
+        if (a != sg4::ActorPtr()) {
+          XBT_INFO("Restart actor %s", a->get_cname());
+          a->restart();
+        }
+      });
+    }
   }
 
-  sg4::Engine::on_simulation_end_cb([]() { XBT_INFO("Chaos Monkey done!"); });
+  sg4::Engine::on_simulation_end_cb([]() {
+    if (cfg_tell)
+      XBT_INFO("ACTOR_COUNT=%ld", sg4::Engine::get_instance()->get_actor_max_pid());
+    XBT_INFO("Chaos Monkey done!");
+  });
 }
 
 // Makes sure that this plugin can be activated from the command line with ``--cfg=plugin:cmonkey``
