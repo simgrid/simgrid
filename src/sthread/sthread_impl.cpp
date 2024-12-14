@@ -174,7 +174,6 @@ int sthread_mutexattr_settype(sthread_mutexattr_t* attr, int type)
       break;
     case PTHREAD_MUTEX_ERRORCHECK:
       attr->errorcheck = 1;
-      THROW_UNIMPLEMENTED;
       break;
   }
   return 0;
@@ -208,6 +207,8 @@ int sthread_mutex_init(sthread_mutex_t* mutex, const sthread_mutexattr_t* attr)
   intrusive_ptr_add_ref(m.get());
 
   mutex->mutex = m.get();
+  if (attr)
+    mutex->errorcheck = attr->errorcheck;
   return 0;
 }
 
@@ -218,6 +219,9 @@ int sthread_mutex_lock(sthread_mutex_t* mutex)
     sthread_mutex_init(mutex, nullptr);
 
   XBT_DEBUG("%s(%p)", __func__, mutex);
+  if (mutex->errorcheck && static_cast<sg4::Mutex*>(mutex->mutex)->get_owner() != nullptr &&
+      static_cast<sg4::Mutex*>(mutex->mutex)->get_owner()->get_pid() == simgrid::s4u::this_actor::get_pid())
+    return EDEADLK;
   static_cast<sg4::Mutex*>(mutex->mutex)->lock();
   return 0;
 }
@@ -241,6 +245,10 @@ int sthread_mutex_unlock(sthread_mutex_t* mutex)
     sthread_mutex_init(mutex, nullptr);
 
   XBT_DEBUG("%s(%p)", __func__, mutex);
+  if (mutex->errorcheck &&
+      (static_cast<sg4::Mutex*>(mutex->mutex)->get_owner() == nullptr ||
+       static_cast<sg4::Mutex*>(mutex->mutex)->get_owner()->get_pid() != simgrid::s4u::this_actor::get_pid()))
+    return EPERM;
   static_cast<sg4::Mutex*>(mutex->mutex)->unlock();
   return 0;
 }
