@@ -65,6 +65,16 @@ std::string ActorSleepSimcall::to_string() const
   return "ActorSleep()";
 }
 
+void ActorCreateSimcall::serialize(std::stringstream& stream) const
+{
+  stream << (short)mc::Transition::Type::ACTOR_CREATE << ' ' << child_;
+}
+
+std::string ActorCreateSimcall::to_string() const
+{
+  return "ActorCreate(" + std::to_string(child_) + ")";
+}
+
 void ObjectAccessSimcallObserver::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::OBJECT_ACCESS << ' ';

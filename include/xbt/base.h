@@ -140,7 +140,8 @@
 #define _XBT_STRINGIFY_A_27_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_28_, __VA_ARGS__)(__VA_ARGS__)
 #define _XBT_STRINGIFY_A_28_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_29_, __VA_ARGS__)(__VA_ARGS__)
 #define _XBT_STRINGIFY_A_29_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_30_, __VA_ARGS__)(__VA_ARGS__)
-#define _XBT_STRINGIFY_A_30_(...) error_maximum_size_of_XBT_STRINGIFY_ARGS_reached
+#define _XBT_STRINGIFY_A_30_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_31_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_31_(...) error_maximum_size_of_XBT_STRINGIFY_ARGS_reached
 
 /* Rationale of XBT_PUBLIC:
  *   * This is for library symbols visible from the application-land.

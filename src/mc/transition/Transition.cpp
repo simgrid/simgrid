@@ -101,6 +101,8 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
     case Transition::Type::CONDVAR_WAIT:
       return new CondvarTransition(issuer, times_considered, simcall, stream);
 
+    case Transition::Type::ACTOR_CREATE:
+      return new ActorCreateTransition(issuer, times_considered, stream);
     case Transition::Type::ACTOR_JOIN:
       return new ActorJoinTransition(issuer, times_considered, stream);
     case Transition::Type::ACTOR_SLEEP:

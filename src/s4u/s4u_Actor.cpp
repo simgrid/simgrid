@@ -13,6 +13,7 @@
 
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/kernel/resource/HostImpl.hpp"
 #include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
@@ -73,9 +74,15 @@ ActorPtr Actor::start(const std::function<void()>& code)
 
 ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::function<void()>& code)
 {
-  const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
-  kernel::actor::ActorImpl* actor =
-      kernel::actor::simcall_answered([self, &name, host, &code] { return self->init(name, host)->start(code); });
+  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
+  kernel::actor::ActorCreateSimcall observer{self};
+  kernel::actor::ActorImpl* actor = kernel::actor::simcall_answered(
+      [self, &name, host, &code, &observer] {
+        auto child = self->init(name, host)->start(code);
+        observer.set_child(child->get_pid());
+        return child;
+      },
+      &observer);
 
   return actor->get_iface();
 }

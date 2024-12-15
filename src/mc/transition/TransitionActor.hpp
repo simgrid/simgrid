@@ -40,6 +40,20 @@ public:
   bool reversible_race(const Transition* other) const override;
 };
 
+class ActorCreateTransition : public Transition {
+  aid_t child_;
+
+public:
+  ActorCreateTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  std::string to_string(bool verbose) const override;
+  bool depends(const Transition* other) const override;
+  bool can_be_co_enabled(const Transition* other) const override;
+  bool reversible_race(const Transition* other) const override;
+
+  /** ID of the created actor */
+  aid_t get_child() const { return child_; }
+};
+
 } // namespace simgrid::mc
 
 #endif

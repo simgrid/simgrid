@@ -6,13 +6,14 @@
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/stdobject "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" --log=no_loc
 > starting two helpers...
-> waiting for helpers to finish...
 > [   0.000000] (maestro@) Start a DFS exploration. Reduction is: dpor.
+> waiting for helpers to finish...
 > [   0.000000] (maestro@) thread 1 takes &v
 > [   0.000000] (maestro@) thread 1 releases &v
 > [   0.000000] (maestro@) thread 2 takes &v
 > [   0.000000] (maestro@) thread 2 releases &v
 > v = { 1, 2, 3, 5, 8, 13, 21, 21, }; 
+> waiting for helpers to finish...
 > [   0.000000] (maestro@) thread 1 takes &v
 > [   0.000000] (maestro@) thread 2 takes &v
 > [   0.000000] (maestro@) Unprotected concurent access to &v: thread 1 from 1 location vs thread 2 (locations hidden because of --log=no_loc).
@@ -20,16 +21,21 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [   0.000000] (maestro@) *** PROPERTY NOT VALID ***
 > [   0.000000] (maestro@) **************************
 > [   0.000000] (maestro@) Counter-example execution trace:
+> [   0.000000] (maestro@)   Actor 1 in simcall ActorCreate(child 2)
+> [   0.000000] (maestro@)   Actor 1 in simcall ActorCreate(child 3)
 > [   0.000000] (maestro@)   Actor 2 in simcall BeginObjectAccess(&v)
 > [   0.000000] (maestro@)   Actor 3 in simcall BeginObjectAccess(&v)
-> [   0.000000] (maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;3'
-> [   0.000000] (maestro@) DFS exploration ended. 7 unique states visited; 1 explored traces (1 transition replays, 8 states visited overall)
+> [   0.000000] (maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;2;3'
+> [   0.000000] (maestro@) DFS exploration ended. 9 unique states visited; 1 explored traces (3 transition replays, 12 states visited overall)
+> waiting for helpers to finish...
 > [   0.000000] (maestro@) thread 1 takes &v
 > [   0.000000] (maestro@) Start the critical transition detection phase.
 > [   0.000000] (maestro@) *********************************
 > [   0.000000] (maestro@) *** CRITICAL TRANSITION FOUND ***
 > [   0.000000] (maestro@) *********************************
 > [   0.000000] (maestro@) Current knowledge of explored stack:
+> [   0.000000] (maestro@)   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 2)
+> [   0.000000] (maestro@)   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 3)
 > [   0.000000] (maestro@)   (  CORRECT) Actor 2 in  ==> simcall: BeginObjectAccess(&v)
 > [   0.000000] (maestro@)   (  CORRECT) Actor 3 in  ==> simcall: BeginObjectAccess(&v)
 > [   0.000000] (maestro@) Found the critical transition: Actor 3 ==> simcall: BeginObjectAccess(&v)

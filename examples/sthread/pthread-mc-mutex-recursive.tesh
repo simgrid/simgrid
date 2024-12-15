@@ -7,4 +7,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > Failed to relock the default mutex.
 > Got the lock on the recursive mutex.
 > Got the lock again on the recursive mutex.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 12 unique states visited; 1 explored traces (0 transition replays, 12 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 14 unique states visited; 1 explored traces (0 transition replays, 14 states visited overall)
