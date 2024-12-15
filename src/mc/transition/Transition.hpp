@@ -109,6 +109,10 @@ public:
 
     @note: It is safe to assume that there is indeed a race between the two events in the execution;
      indeed, the question the method answers is only sensible in the context of a race
+
+     @note: Be carefull when implementing new transition, this method is NOT symmetrical (meaning that
+     this.reversible_race(other) may be different from other.reversible_race(this)). Be sure to implement
+     both way or the reduction might fail.
   */
   virtual bool reversible_race(const Transition* other) const
   {
