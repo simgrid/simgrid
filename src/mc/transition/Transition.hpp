@@ -36,6 +36,8 @@ public:
       Type,
       /* First because indep with anybody including themselves */
       RANDOM, ACTOR_JOIN, ACTOR_SLEEP,
+      /* high priority because indep with everybody but the local actions of the child */
+      ACTOR_CREATE,
       /* high priority because indep with almost everybody */
       OBJECT_ACCESS,
       /* high priority because they can rewrite themselves to *_WAIT */

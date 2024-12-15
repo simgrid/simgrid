@@ -138,6 +138,17 @@ public:
   std::string to_string() const override;
 };
 
+class ActorCreateSimcall final : public SimcallObserver {
+  aid_t child_ = -1;
+
+public:
+  explicit ActorCreateSimcall(ActorImpl* actor) : SimcallObserver(actor) {}
+  void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
+
+  void set_child(aid_t child) { child_ = child; }
+};
+
 class ObjectAccessSimcallObserver final : public SimcallObserver {
   ObjectAccessSimcallItem* const object_;
 

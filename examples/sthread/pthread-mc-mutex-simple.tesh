@@ -3,12 +3,13 @@
 ! ignore .*LD_PRELOAD.*
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/pthread-mutex-simple
-> All threads are started.
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> All threads are started.
 > The thread 0 is terminating.
 > The thread 1 is terminating.
 > User's main is terminating.
+> All threads are started.
 > The thread 1 is terminating.
 > The thread 0 is terminating.
 > User's main is terminating.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 17 unique states visited; 2 explored traces (0 transition replays, 17 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 19 unique states visited; 2 explored traces (2 transition replays, 21 states visited overall)

@@ -52,7 +52,7 @@ bool ActorJoinTransition::can_be_co_enabled(const Transition* other) const
   if (other->type_ < type_)
     return other->can_be_co_enabled(this);
 
-  // Tansitions of a same actor have no chance at being co-enabled
+  // Transitions of a same actor have no chance at being co-enabled
   if (other->aid_ == aid_)
     return false;
 
@@ -65,28 +65,17 @@ bool ActorJoinTransition::can_be_co_enabled(const Transition* other) const
 
   bool ActorJoinTransition::reversible_race(const Transition* other) const
   {
-    switch (type_) {
-      case Type::ACTOR_JOIN:
-        // ActorJoin races with another event iff its target `T` is the same as
-        // the actor executing the other transition. Clearly, then, we could not join
-        // on that actor `T` and then run a transition by `T`, so no race is reversible
-        return false;
-      default:
-        xbt_die("Unexpected transition type %s", to_c_str(type_));
-    }
+  xbt_assert(type_ == Type::ACTOR_JOIN, "Unexpected transition type %s", to_c_str(type_));
 
-    xbt_assert(type_ == Type::ACTOR_JOIN, "Unexpected transition type %s", to_c_str(type_));
-
-    // ActorJoin races with another event iff its target `T` is the same as  the actor executing the other transition.
-    // Clearly, then, we could not join on that actor `T` and then run a transition by `T`, so no race is reversible
-    return false;
+  // ActorJoin races with another event iff its target `T` is the same as  the actor executing the other transition.
+  // Clearly, then, we could not join on that actor `T` and then run a transition by `T`, so no race is reversible
+  return false;
   }
 
   ActorSleepTransition::ActorSleepTransition(aid_t issuer, int times_considered, std::stringstream&)
-
       : Transition(Type::ACTOR_SLEEP, issuer, times_considered)
   {
-    XBT_DEBUG("ActorSleepTransition()");
+  XBT_DEBUG("ActorSleepTransition()");
   }
 std::string ActorSleepTransition::to_string(bool verbose) const
 {
@@ -107,6 +96,61 @@ bool ActorSleepTransition::reversible_race(const Transition* other) const
   xbt_assert(type_ == Type::ACTOR_SLEEP, "Unexpected transition type %s", to_c_str(type_));
 
   return true; // Always enabled
+}
+
+ActorCreateTransition::ActorCreateTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+    : Transition(Type::ACTOR_CREATE, issuer, times_considered)
+{
+  xbt_assert(stream >> child_);
+  XBT_DEBUG("ActorCreateTransition child:%ld", child_);
+}
+std::string ActorCreateTransition::to_string(bool verbose) const
+{
+  return xbt::string_printf("ActorCreate(child %ld)", child_);
+}
+bool ActorCreateTransition::depends(const Transition* other) const
+{
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
+
+  // Creation is dependent with any transition of the created actor (it's a local event to the created actor too)
+  if (other->aid_ == child_)
+    return true;
+
+  // Creations are dependent with each other, as they compete for the given PID to each childs, so the interleavings
+  // produce different results
+  if (other->type_ == type_)
+    return true;
+
+  // Otherwise, creation is indep with any other transitions
+  return false;
+}
+
+bool ActorCreateTransition::can_be_co_enabled(const Transition* other) const
+{
+  if (other->type_ < type_)
+    return other->can_be_co_enabled(this);
+
+  // Transitions of a same actor have no chance at being co-enabled
+  if (other->aid_ == aid_)
+    return false;
+
+  // An actor join isn't enabled if the target can still act
+  if (other->aid_ == child_)
+    return false;
+
+  return true;
+}
+
+bool ActorCreateTransition::reversible_race(const Transition* other) const
+{
+  // FIXME: Please review this code, MLaurent :)
+  xbt_assert(type_ == Type::ACTOR_CREATE, "Unexpected transition type %s", to_c_str(type_));
+
+  // ActorJoin races with another event iff its target `T` is the same as  the actor executing the other transition.
+  // Clearly, then, we could not join on that actor `T` and then run a transition by `T`, so no race is reversible
+  return false;
 }
 
 } // namespace simgrid::mc
