@@ -12,6 +12,7 @@
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/string.hpp"
+#include <cerrno>
 #include <simgrid/actor.h>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Engine.hpp>
@@ -360,7 +361,12 @@ int sthread_cond_timedwait(sthread_cond_t* cond, sthread_mutex_t* mutex, const s
              "not work with such a dangerous code.",
              cond, cond->mutex, mutex->mutex);
 
-  THROW_UNIMPLEMENTED;
+  std::cv_status res = static_cast<sg4::ConditionVariable*>(cond->cond)
+                           ->wait_until(static_cast<sg4::Mutex*>(mutex->mutex),
+                                        abs_timeout->tv_sec + ((double)abs_timeout->tv_nsec) / 1000000);
+  if (res == std::cv_status::timeout)
+    return ETIMEDOUT;
+  return 0;
 }
 int sthread_cond_destroy(sthread_cond_t* cond)
 {
@@ -422,6 +428,11 @@ int sthread_gettimeofday(struct timeval* tv)
     tv->tv_usec  = static_cast<decltype(tv->tv_usec)>(usecs); // suseconds_t
   }
   return 0;
+}
+
+time_t sthread_time(time_t*)
+{
+  return trunc(simgrid::s4u::Engine::get_clock());
 }
 
 unsigned int sthread_sleep(double seconds)

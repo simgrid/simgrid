@@ -47,6 +47,7 @@ static int (*raw_pthread_cond_destroy)(pthread_cond_t*);
 
 static unsigned int (*raw_sleep)(unsigned int);
 static int (*raw_usleep)(useconds_t);
+static int (*raw_time)(time_t*);
 static int (*raw_gettimeofday)(struct timeval*, void*);
 
 static sem_t* (*raw_sem_open)(const char*, int);
@@ -86,6 +87,7 @@ static void intercepter_init()
 
   raw_sleep        = dlsym(RTLD_NEXT, "sleep");
   raw_usleep       = dlsym(RTLD_NEXT, "usleep");
+  raw_time         = dlsym(RTLD_NEXT, "time");
   raw_gettimeofday = dlsym(RTLD_NEXT, "gettimeofday");
 
   raw_sem_open = dlsym(RTLD_NEXT, "sem_open");
@@ -192,6 +194,7 @@ intercepted_call(int, sem_timedwait, (sem_t * sem, const struct timespec* abs_ti
 #define TIMEZONE_TYPE void
 #endif
 intercepted_call(int, gettimeofday, (struct timeval * tv, XBT_ATTRIB_UNUSED TIMEZONE_TYPE* tz), (tv, tz), (tv));
+intercepted_call(time_t, time, (time_t * t), (t), (t));
 intercepted_call(unsigned int, sleep, (unsigned int seconds), (seconds), (seconds));
 intercepted_call(int, usleep, (useconds_t usec), (usec), (((double)usec) / 1000000.));
 

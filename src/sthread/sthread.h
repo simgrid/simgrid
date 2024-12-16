@@ -89,6 +89,7 @@ int sthread_sem_trywait(sthread_sem_t* sem);
 int sthread_sem_timedwait(sthread_sem_t* sem, const struct timespec* abs_timeout);
 
 int sthread_gettimeofday(struct timeval* tv);
+time_t sthread_time(time_t* time);
 unsigned int sthread_sleep(double seconds);
 int sthread_usleep(double seconds);
 

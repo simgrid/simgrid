@@ -113,7 +113,8 @@ public:
                             activity::MutexImpl* mutex, double timeout = -1.0)
       : DelayedSimcallObserver(actor, false), type_(type), cond_(cond), mutex_(mutex), timeout_(timeout)
   {
-    xbt_assert(type == mc::Transition::Type::CONDVAR_ASYNC_LOCK || type == mc::Transition::Type::CONDVAR_NOMC);
+    xbt_assert(type == mc::Transition::Type::CONDVAR_ASYNC_LOCK || type == mc::Transition::Type::CONDVAR_NOMC,
+               "With no acquisition, that must be a lock or a noMC");
   }
   ConditionVariableObserver(ActorImpl* actor, mc::Transition::Type type,
                             activity::ConditionVariableAcquisitionImpl* acqui, double timeout = -1.0)
@@ -124,7 +125,7 @@ public:
       , acquisition_(acqui)
       , timeout_(timeout)
   {
-    xbt_assert(type == mc::Transition::Type::CONDVAR_WAIT);
+    xbt_assert(type == mc::Transition::Type::CONDVAR_WAIT, "If you provide an acquisition, that must be a wait");
   }
   ConditionVariableObserver(ActorImpl* actor, mc::Transition::Type type, activity::ConditionVariableImpl* cond)
       : DelayedSimcallObserver(actor, false), type_(type), cond_(cond)

@@ -267,7 +267,7 @@ CondvarTransition::CondvarTransition(aid_t issuer, int times_considered, Type ty
   if (type == Type::CONDVAR_ASYNC_LOCK)
     xbt_assert(stream >> condvar_ >> mutex_, "type: %d %s", (int)type, to_c_str(type));
   else if (type == Type::CONDVAR_WAIT)
-    xbt_assert(stream >> condvar_ >> mutex_ >> granted_, "type: %d %s", (int)type, to_c_str(type));
+    xbt_assert(stream >> condvar_ >> mutex_ >> granted_ >> timeout_, "type: %d %s", (int)type, to_c_str(type));
   else if (type == Type::CONDVAR_SIGNAL || type == Type::CONDVAR_BROADCAST)
     xbt_assert(stream >> condvar_, "type: %d %s", (int)type, to_c_str(type));
   else
@@ -281,8 +281,8 @@ std::string CondvarTransition::to_string(bool verbose) const
   if (type_ == Type::CONDVAR_SIGNAL || type_ == Type::CONDVAR_BROADCAST)
     return xbt::string_printf("%s(cond: %u)", Transition::to_c_str(type_), condvar_);
   if (type_ == Type::CONDVAR_WAIT)
-    return xbt::string_printf("%s(cond: %u, mutex: %u, granted: %s)", Transition::to_c_str(type_), condvar_, mutex_,
-                              granted_ ? "yes" : "no");
+    return xbt::string_printf("%s(cond: %u, mutex: %u, granted: %s, timeout: %s)", Transition::to_c_str(type_),
+                              condvar_, mutex_, granted_ ? "yes" : "no", timeout_ ? "yes" : "none");
   THROW_IMPOSSIBLE;
 }
 bool CondvarTransition::depends(const Transition* o) const

@@ -4,10 +4,12 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
+#include "simgrid/modelchecker.h"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SynchroObserver.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
+#include "src/mc/mc_replay.hpp"
 #include <cmath> // std::isfinite
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_condition, ker_synchro, "Condition variables kernel-space implementation");
@@ -34,8 +36,13 @@ void ConditionVariableAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double
   if (granted_) {
     finish();
   } else if (timeout > 0) {
-    model_action_ = get_issuer()->get_host()->get_cpu()->sleep(timeout);
-    model_action_->set_activity(this);
+    if (MC_is_active() || MC_record_replay_is_active()) {
+      mc_timeout_ = true;
+      finish(); // If there is a timeout and the acquisition is not OK, then let's timeout
+    } else {
+      model_action_ = get_issuer()->get_host()->get_cpu()->sleep(timeout);
+      model_action_->set_activity(this);
+    }
   }
   // Already in the queue
 }
@@ -58,6 +65,10 @@ void ConditionVariableAcquisitionImpl::finish()
     }
     model_action_->unref();
     model_action_ = nullptr;
+  }
+  if (mc_timeout_) { // A timeout was declared in MC mode, and it cannot be granted right away
+    cancel();        // Unregister the acquisition from the condvar
+    observer->set_result(true);
   }
 
   xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
@@ -160,7 +171,8 @@ void intrusive_ptr_release(ConditionVariableImpl* cond)
 {
   if (cond->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
     std::atomic_thread_fence(std::memory_order_acquire);
-    xbt_assert(cond->ongoing_acquisitions_.empty(), "Cannot destroy conditional since someone is still using it");
+    xbt_assert(cond->ongoing_acquisitions_.empty(),
+               "Cannot destroy conditional since it still has ongoing acquisitions");
     delete cond;
   }
 }

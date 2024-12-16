@@ -19,6 +19,7 @@ class XBT_PUBLIC ConditionVariableAcquisitionImpl : public ActivityImpl_T<Condit
   MutexImpl* mutex_            = nullptr;
   ConditionVariableImpl* cond_ = nullptr;
   bool granted_                = false;
+  bool mc_timeout_             = false; // Whether we are in MC mode && a timeout was declared
 
   friend ConditionVariableImpl;
 

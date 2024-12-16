@@ -56,6 +56,7 @@ class CondvarTransition : public Transition {
   unsigned int condvar_;
   unsigned int mutex_;
   bool granted_;
+  bool timeout_;
 
 public:
   std::string to_string(bool verbose) const override;

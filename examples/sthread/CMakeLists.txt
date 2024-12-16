@@ -5,8 +5,9 @@ find_package(Threads REQUIRED)
 #########################################################################
 
 foreach(x
+        cond-timedwait_ok
         mutex-simple mutex-recursive
-	producer-consumer)
+      	producer-consumer)
 
   if("${CMAKE_SYSTEM}" MATCHES "Linux")
     add_executable       (pthread-${x} EXCLUDE_FROM_ALL pthread-${x}.c)

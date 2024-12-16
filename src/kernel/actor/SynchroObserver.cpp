@@ -144,14 +144,14 @@ bool BarrierObserver::is_enabled()
 
 bool ConditionVariableObserver::is_enabled()
 {
-  return type_ != mc::Transition::Type::CONDVAR_WAIT || acquisition_->is_granted();
+  return type_ != mc::Transition::Type::CONDVAR_WAIT || timeout_ > 0 || acquisition_->is_granted();
 }
 void ConditionVariableObserver::serialize(std::stringstream& stream) const
 {
   switch (type_) {
     case mc::Transition::Type::CONDVAR_WAIT:
       stream << (short)type_ << ' ' << acquisition_->get_cond()->get_id() << ' ' << acquisition_->get_mutex()->get_id()
-             << ' ' << acquisition_->is_granted();
+             << ' ' << acquisition_->is_granted() << ' ' << (timeout_ > 0);
       break;
     case mc::Transition::Type::CONDVAR_ASYNC_LOCK:
       stream << (short)type_ << ' ' << cond_->get_id() << ' ' << mutex_;

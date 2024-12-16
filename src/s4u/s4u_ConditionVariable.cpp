@@ -90,7 +90,7 @@ std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& l
   return timed_out ? std::cv_status::timeout : std::cv_status::no_timeout;
 }
 
-std::cv_status ConditionVariable::wait_until(const std::unique_lock<Mutex>& lock, double timeout_time)
+std::cv_status ConditionVariable::wait_until(s4u::MutexPtr lock, double timeout_time)
 {
   double now = Engine::get_clock();
   double timeout;
@@ -99,9 +99,13 @@ std::cv_status ConditionVariable::wait_until(const std::unique_lock<Mutex>& lock
   else
     timeout = timeout_time - now;
 
-  bool timed_out = do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock.mutex()->pimpl_, timeout);
+  bool timed_out = do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock->pimpl_, timeout);
 
   return timed_out ? std::cv_status::timeout : std::cv_status::no_timeout;
+}
+std::cv_status ConditionVariable::wait_until(const std::unique_lock<Mutex>& lock, double timeout_time)
+{
+  return wait_until(lock.mutex(), timeout_time);
 }
 
 /**
