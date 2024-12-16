@@ -6,6 +6,7 @@
 #include "src/mc/transition/TransitionSynchro.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
+#include "src/mc/transition/TransitionActor.hpp"
 #include "src/mc/transition/TransitionObjectAccess.hpp"
 #include "xbt/asserts.h"
 #include "xbt/ex.h"
@@ -55,6 +56,12 @@ bool BarrierTransition::depends(const Transition* o) const
 }
 bool BarrierTransition::reversible_race(const Transition* other) const
 {
+  if (other->type_ == Type::ACTOR_CREATE) {
+    const ActorCreateTransition* ctransition = static_cast<const ActorCreateTransition*>(other);
+    xbt_assert(aid_ == ctransition->get_child());
+    return false;
+  }
+
   switch (type_) {
     case Type::BARRIER_ASYNC_LOCK:
       return true; // BarrierAsyncLock is always enabled
@@ -175,6 +182,12 @@ bool MutexTransition::can_be_co_enabled(const Transition* o) const
 
 bool SemaphoreTransition::reversible_race(const Transition* other) const
 {
+  if (other->type_ == Type::ACTOR_CREATE) {
+    const ActorCreateTransition* ctransition = static_cast<const ActorCreateTransition*>(other);
+    xbt_assert(aid_ == ctransition->get_child());
+    return false;
+  }
+
   switch (type_) {
     case Type::SEM_ASYNC_LOCK:
       return true; // SemAsyncLock is always enabled
@@ -241,6 +254,12 @@ bool SemaphoreTransition::depends(const Transition* o) const
 
 bool MutexTransition::reversible_race(const Transition* other) const
 {
+  if (other->type_ == Type::ACTOR_CREATE) {
+    const ActorCreateTransition* ctransition = static_cast<const ActorCreateTransition*>(other);
+    xbt_assert(aid_ == ctransition->get_child());
+    return false;
+  }
+
   switch (type_) {
     case Type::MUTEX_ASYNC_LOCK:
       return true; // MutexAsyncLock is always enabled
@@ -309,6 +328,12 @@ bool CondvarTransition::depends(const Transition* o) const
 }
 bool CondvarTransition::reversible_race(const Transition* other) const
 {
+  if (other->type_ == Type::ACTOR_CREATE) {
+    const ActorCreateTransition* ctransition = static_cast<const ActorCreateTransition*>(other);
+    xbt_assert(aid_ == ctransition->get_child());
+    return false;
+  }
+
   switch (type_) {
     case Type::CONDVAR_ASYNC_LOCK:
       switch (other->type_) {

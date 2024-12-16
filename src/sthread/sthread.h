@@ -45,6 +45,7 @@ int sthread_mutexattr_setrobust(sthread_mutexattr_t* attr, int robustness);
 
 typedef struct {
   void* mutex;
+  unsigned errorcheck : 1;
 } sthread_mutex_t;
 int sthread_mutex_init(sthread_mutex_t* mutex, const sthread_mutexattr_t* attr);
 int sthread_mutex_lock(sthread_mutex_t* mutex);

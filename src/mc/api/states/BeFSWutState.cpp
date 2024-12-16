@@ -13,6 +13,7 @@
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/log.h"
 #include <algorithm>
+#include <cassert>
 #include <limits>
 #include <memory>
 
@@ -142,6 +143,18 @@ aid_t BeFSWutState::next_transition() const
   int best_valuation = std::numeric_limits<int>::max();
   int best_actor     = -1;
   for (const aid_t aid : wakeup_tree_.get_direct_children_actors()) {
+    if (get_actors_list().find(aid) ==
+        get_actors_list().end()) { // the tree is asking to execute someone that doesn't exist in the actor list!
+      XBT_CRITICAL("Find a tree pretending that it could execute %ld while this actor is not a possibility (%lu "
+                   "existing actors from this state). Find the culprit, and Fix Me. Error @state %ld",
+                   aid, get_actors_list().size(), this->get_num());
+      XBT_CRITICAL("The existing actors are:");
+      for (auto& [aid, astate] : get_actors_list()) {
+        XBT_CRITICAL("Actor %ld: %s", aid, astate.get_transition()->to_string().c_str());
+      }
+      XBT_CRITICAL("While the WuT is:\n%s\n", wakeup_tree_.string_of_whole_tree().c_str());
+      xbt_die("Fix me!");
+    }
     if (strategy_->get_actor_valuation(aid) < best_valuation) {
       best_valuation = strategy_->get_actor_valuation(aid);
       best_actor     = aid;

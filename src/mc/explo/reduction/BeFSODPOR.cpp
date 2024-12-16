@@ -80,7 +80,8 @@ unsigned long BeFSODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate
   for (auto& [raw_state, v] : befsodpor_updates->get_value()) {
     auto state         = static_cast<BeFSWutState*>(raw_state.get());
     const auto v_prime = state->insert_into_final_wakeup_tree(v);
-    XBT_DEBUG("... after insertion final_wut looks like this: %s", state->get_string_of_final_wut().c_str());
+    XBT_DEBUG("... after insertion final_wut looks like this @state %ld: %s", state->get_num(),
+              state->get_string_of_final_wut().c_str());
     if (not v_prime.empty()) {
       state->compare_final_and_wut();
       auto modified_state = state->force_insert_into_wakeup_tree(v_prime);
