@@ -22,6 +22,16 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [ker_engine/INFO]  - pid 10 (thread 9@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
 > [0.000000] [ker_engine/INFO]  - pid 11 (thread 10@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 2)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 3)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 4)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 5)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 6)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 7)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 8)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 9)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 10)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 11)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall SEM_ASYNC_LOCK(semaphore: 0, capacity: 2)
@@ -52,5 +62,5 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 9 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 10 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 11 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
-> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;2;2;2;2;2;2;2;2;2;2;2;2;2;2;2;2;2;2;2;3;4;5;6;7;8;9;10;11'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 31 unique states visited; 0 explored traces (0 transition replays, 31 states visited overall)
+> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;1;1;1;1;1;1;1;2;2;2;2;2;2;2;2;2;2;2;2;2;2;2;2;2;2;2;2;2;3;4;5;6;7;8;9;10;11'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 41 unique states visited; 0 explored traces (0 transition replays, 41 states visited overall)
