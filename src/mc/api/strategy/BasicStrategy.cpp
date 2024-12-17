@@ -45,13 +45,9 @@ std::pair<aid_t, int> BasicStrategy::best_transition(bool must_be_todo) const
 void BasicStrategy::consider_best_among_set(std::unordered_set<aid_t> E)
 {
   if (std::any_of(begin(E), end(E), [this](const auto& aid) {
-        // FIXME: I fail to undestand why E contains actors that are not to run yet. It appeared when I added the
-        // ActorCreate transition, and I have the feeling that E contains an actor that is yet to be created, but I
-        // don't understand SDPOR enough to be definitive here. -- Mt So, the following lines survive the fact that E
-        // contains invalid AIDs. It used to simply be ``actors_to_run_.at(aid)``
         auto search = actors_to_run_.find(aid);
-        if (search == actors_to_run_.end())
-          return false;
+        xbt_assert(search != actors_to_run_.end(),
+                   "Internal bug detected: the candidate set contains aid %ld, but it's not in actors_to_run_", aid);
         return search->second.is_todo();
       }))
     return;
