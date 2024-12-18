@@ -4,8 +4,13 @@ stages:
  - build
  - deploy
 
-# Grunt job building the dist and testing the base
-.build_and_test: &build_and_test
+# On framagit, we only run the tests for merge requests
+build-MR:
+  stage: build
+  only:
+  - merge_requests
+  except:
+  - stable
   script:
   #- apt-get --allow-releaseinfo-change update
   #- apt install -y binutils xsltproc
@@ -20,49 +25,10 @@ stages:
     expire_in: 1 week
     when: always
 
-# On Inria, we run the base build all the time 
-build-base:
-  stage: build
-  except:
-  - stable
-  tags:
-    - large  # Inria infra
-  <<: *build_and_test
-  
-# On framagit, we only run the tests for merge requests
-build-MR:
-  stage: build
-  only:
-  - merge_requests
-  except:
-  - stable
-  tags:
-    - Debian # framagit
-  <<: *build_and_test
-
-# Ensure that the produced tarball is OK
-distcheck-inria:
-  stage: build
-  tags:
-    - small  # Inria infra
-  script:
-  - cmake .
-  - make distcheck-configure
-# Ensure that the produced tarball is OK
-distcheck-framagit:
-  stage: build
-  tags:
-    - Debian # framagit
-  script:
-  - cmake .
-  - make distcheck-configure
-
 # Build the doc and the webpage 
 pages:
   stage: deploy
   needs: [] # no dependency
-  tags: # Select a runner
-    - Debian # framagit infrastructure
   script:
   - echo "Building the python bindings (the doc needs them)"
   - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=OFF -Denable_smpi=ON .
@@ -89,8 +55,6 @@ release-tgz:
   stage: build
   only:
   - stable
-  tags: # Select a runner
-    - small # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y binutils wget unzip zip
@@ -99,15 +63,3 @@ release-tgz:
   artifacts:
     paths:
     - simgrid-*.tar.gz
-
-# Test the Python build
-build-pip:
-  stage: build
-  except:
-  - stable
-  tags: # Select a runner
-    - small # Inria infra
-  script:
-  - apt-get --allow-releaseinfo-change update
-  - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3.11-venv
-  - python3 -m build --outdir dist
