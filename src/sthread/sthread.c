@@ -22,6 +22,7 @@
 /* We don't want to intercept pthread within SimGrid. Instead we should provide the real implem to SimGrid */
 static int (*raw_pthread_create)(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*);
 static int (*raw_pthread_join)(pthread_t, void**);
+static void (*raw_pthread_exit)(void*);
 static int (*raw_pthread_mutex_init)(pthread_mutex_t*, const pthread_mutexattr_t*);
 static int (*raw_pthread_mutex_lock)(pthread_mutex_t*);
 static int (*raw_pthread_mutex_trylock)(pthread_mutex_t*);
@@ -137,6 +138,15 @@ intercepted_pthcall(mutexattr_getrobust, (const pthread_mutexattr_t* attr, int* 
 intercepted_pthcall(create, (pthread_t * thread, const pthread_attr_t* attr, void* (*start_routine)(void*), void* arg),
                     (thread, attr, start_routine, arg), ((sthread_t*)thread, attr, start_routine, arg));
 intercepted_pthcall(join, (pthread_t thread, void** retval), (thread, retval), ((sthread_t)thread, retval));
+void pthread_exit(void* retval)
+{ // our macros do not cope properly with void non-returning functions
+  if (raw_pthread_exit == NULL)
+    intercepter_init();
+  if (sthread_inside_simgrid)
+    raw_pthread_exit(retval);
+  sthread_disable();
+  sthread_exit(retval);
+}
 
 intercepted_pthcall(mutex_init, (pthread_mutex_t * mutex, const pthread_mutexattr_t* attr), (mutex, attr),
                     ((sthread_mutex_t*)mutex, (sthread_mutexattr_t*)attr));

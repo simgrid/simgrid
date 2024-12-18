@@ -5,7 +5,7 @@ find_package(Threads REQUIRED)
 #########################################################################
 
 foreach(x
-        cond-timedwait_ok
+        cond-timedwait_ok exit
         mutex-simple mutex-recursive
       	producer-consumer)
 
