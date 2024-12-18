@@ -8,6 +8,9 @@ ctest-debug:
   stage: build
   except:
   - stable
+  tags: # Select a runner
+    - linux
+    - large
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y binutils xsltproc
@@ -28,6 +31,9 @@ ctest-modelchecking:
   stage: build
   except:
   - stable
+  tags: # Select a runner
+    - linux
+    - large
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y binutils xsltproc clang
@@ -48,6 +54,9 @@ ctest-distcheck:
   stage: build
   only:
   - merge_requests
+  tags: # Select a runner
+    - linux
+    - large
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y binutils
@@ -58,6 +67,9 @@ release:
   stage: build
   only:
   - stable
+  tags: # Select a runner
+    - linux
+    - small
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y binutils wget unzip zip
@@ -71,6 +83,9 @@ pip:
   stage: build
   except:
   - stable
+  tags: # Select a runner
+    - linux
+    - small
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3.11-venv
@@ -78,6 +93,9 @@ pip:
 
 pages:
   stage: deploy
+  tags: # Select a runner
+    - linux
+    - small
   script:
   - apt install -y python3-breathe python3-sphinx python3-sphinx-rtd-theme python3-sphinx-copybutton python3-sphinx-tabs
  # - pip3 install --requirement docs/requirements.txt # Forbidden in Debian:12
