@@ -4,101 +4,65 @@ stages:
  - build
  - deploy
 
-ctest-debug:
-  stage: build
-  except:
-  - stable
-  tags: # Select a runner
-    - linux
-    - large
+# Grunt job building the dist and testing the base
+.build_and_test: &build_and_test
   script:
-  - apt-get --allow-releaseinfo-change update
-  - apt install -y binutils xsltproc
-  - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
-  - make -j$(nproc) VERBOSE=1 all tests
+  #- apt-get --allow-releaseinfo-change update
+  #- apt install -y binutils xsltproc
+  - cmake -Denable_model-checking=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - make -j$(nproc) VERBOSE=1 all tests distcheck-configure
   - ctest -T Test -j$(nproc) --output-on-failure
-  - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml
+  - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml  
   artifacts:
-    paths:
-    - lib/
     reports:
       junit:
       - CTestResults.xml
     expire_in: 1 week
     when: always
 
-ctest-modelchecking:
+# On Inria, we run the base build all the time 
+build-base:
   stage: build
   except:
   - stable
-  tags: # Select a runner
-    - linux
-    - large
-  script:
-  - apt-get --allow-releaseinfo-change update
-  - apt install -y binutils xsltproc clang
-  - cmake -Denable_model-checking=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_testsuite_smpi_MPICH3=OFF -Denable_testsuite_McMini=OFF -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" -DCMAKE_C_COMPILER=/usr/bin/clang  -DCMAKE_CXX_COMPILER=/usr/bin/clang++ .
-  - make -j$(nproc) VERBOSE=1 all tests
-  - ctest -T Test -j$(nproc) --output-on-failure
-  - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml
-  artifacts:
-    paths:
-    - lib/
-    reports:
-      junit:
-      - CTestResults.xml
-    expire_in: 1 week
-    when: always
-
-ctest-distcheck:
+  tags:
+    - large  # Inria infra
+  <<: *build_and_test
+  
+# On framagit, we only run the tests for merge requests
+build-MR:
   stage: build
   only:
   - merge_requests
-  tags: # Select a runner
-    - linux
-    - large
+  except:
+  - stable
+  tags:
+    - Debian # framagit
+  <<: *build_and_test
+
+# Ensure that the produced tarball is OK
+distcheck:
+  stage: build
+  tags:
+    - large  # Inria infra
+    - Debian # framagit
   script:
-  - apt-get --allow-releaseinfo-change update
-  - apt install -y binutils
   - cmake .
   - make distcheck-configure
 
-release:
-  stage: build
-  only:
-  - stable
-  tags: # Select a runner
-    - linux
-    - small
-  script:
-  - apt-get --allow-releaseinfo-change update
-  - apt install -y binutils wget unzip zip
-  - cmake -Denable_documentation=OFF -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF -DLTO_EXTRA_FLAG="auto" .
-  - make VERBOSE=1 -j$(nproc) dist
-  artifacts:
-    paths:
-    - simgrid-*.tar.gz
-
-pip:
-  stage: build
-  except:
-  - stable
-  tags: # Select a runner
-    - linux
-    - small
-  script:
-  - apt-get --allow-releaseinfo-change update
-  - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3.11-venv
-  - python3 -m build --outdir dist
-
+# Build the doc and the webpage 
 pages:
-  stage: deploy
+  stage: release
+  needs: [] # no dependency
   tags: # Select a runner
-    - linux
-    - small
+    - Debian # framagit infrastructure
   script:
+  - echo "Building the python bindings (the doc needs them)"
+  - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=OFF -Denable_smpi=ON .
+  - make -j$(nproc) VERBOSE=1 python-bindings
+
+  - echo "Building the doc"
   - apt install -y python3-breathe python3-sphinx python3-sphinx-rtd-theme python3-sphinx-copybutton python3-sphinx-tabs
- # - pip3 install --requirement docs/requirements.txt # Forbidden in Debian:12
   - cd docs
   - LC_ALL=C.UTF-8 ./Build.sh
   - mv build/html ../public
@@ -112,4 +76,31 @@ pages:
     - public
   only:
   - master
-  needs: ["ctest-debug"]
+
+# Build a valid tar.gz
+release-tgz:
+  stage: build
+  only:
+  - stable
+  tags: # Select a runner
+    - small # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y binutils wget unzip zip
+  - cmake -Denable_documentation=OFF -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF -DLTO_EXTRA_FLAG="auto" .
+  - make VERBOSE=1 -j$(nproc) dist
+  artifacts:
+    paths:
+    - simgrid-*.tar.gz
+
+# Test the Python build
+build-pip:
+  stage: build
+  except:
+  - stable
+  tags: # Select a runner
+    - small # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3.11-venv
+  - python3 -m build --outdir dist
