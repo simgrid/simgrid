@@ -52,7 +52,7 @@ distcheck:
 
 # Build the doc and the webpage 
 pages:
-  stage: release
+  stage: deploy
   needs: [] # no dependency
   tags: # Select a runner
     - Debian # framagit infrastructure
