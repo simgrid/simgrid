@@ -41,10 +41,17 @@ build-MR:
   <<: *build_and_test
 
 # Ensure that the produced tarball is OK
-distcheck:
+distcheck-inria:
   stage: build
   tags:
     - large  # Inria infra
+  script:
+  - cmake .
+  - make distcheck-configure
+
+distcheck-framagit:
+  stage: build
+  tags:
     - Debian # framagit
   script:
   - cmake .
