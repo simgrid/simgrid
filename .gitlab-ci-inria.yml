@@ -26,10 +26,10 @@ build-base:
     when: always
   
 # Ensure that the produced tarball is OK
-distcheck-inria:
+distcheck:
   stage: build
   tags:
-    - small  # Inria infra
+    - linux  # any runner will do
   script:
   - cmake .
   - make distcheck-configure

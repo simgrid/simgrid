@@ -14,7 +14,8 @@
 + \.circleci/.*
 + \.clang-format
 + \.editorconfig
-+ \.gitlab-ci\.yml
++ \.gitlab-ci-framasoft\.yml
++ \.gitlab-ci-inria\.yml
 + \.readthedocs.yml
 + sonar-project\.properties
 

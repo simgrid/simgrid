@@ -647,7 +647,10 @@ include examples/smpi/trace_simple/trace_simple.c
 include examples/smpi/trace_simple/trace_simple.tesh
 include examples/sthread/pthread-cond-timedwait_ok.c
 include examples/sthread/pthread-cond-timedwait_ok.tesh
+include examples/sthread/pthread-exit.c
+include examples/sthread/pthread-exit.tesh
 include examples/sthread/pthread-mc-cond-timedwait_ok.tesh
+include examples/sthread/pthread-mc-exit.tesh
 include examples/sthread/pthread-mc-mutex-recursive.tesh
 include examples/sthread/pthread-mc-mutex-simple.tesh
 include examples/sthread/pthread-mc-mutex-simpledeadlock.tesh
