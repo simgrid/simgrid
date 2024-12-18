@@ -1,12 +1,7 @@
 image: simgrid/build-deps
 
-stages:
- - build
- - deploy
-
 # On Inria, we run the base build all the time 
 build-base:
-  stage: build
   except:
   - stable
   tags:
@@ -14,8 +9,9 @@ build-base:
   script:
   #- apt-get --allow-releaseinfo-change update
   #- apt install -y binutils xsltproc
+  - rm -rf CMakeFiles CMakeCache.txt
   - cmake -Denable_model-checking=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
-  - make -j$(nproc) VERBOSE=1 all tests
+  - make -j$(nproc) all tests
   - ctest -T Test -j$(nproc) --output-on-failure
   - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml  
   artifacts:
@@ -27,7 +23,6 @@ build-base:
   
 # Ensure that the produced tarball is OK
 distcheck:
-  stage: build
   tags:
     - linux  # any runner will do
   script:
@@ -36,7 +31,6 @@ distcheck:
 
 # Test the Python build
 build-pip:
-  stage: build
   except:
   - stable
   tags: # Select a runner
