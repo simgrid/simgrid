@@ -44,11 +44,11 @@ build-MR:
 distcheck-inria:
   stage: build
   tags:
-    - large  # Inria infra
+    - small  # Inria infra
   script:
   - cmake .
   - make distcheck-configure
-
+# Ensure that the produced tarball is OK
 distcheck-framagit:
   stage: build
   tags:

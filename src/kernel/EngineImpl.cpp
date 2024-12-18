@@ -284,7 +284,7 @@ void EngineImpl::shutdown()
     if (smpi_process() && smpi_process()->initialized()) {
       xbt_die("Process exited without calling MPI_Finalize - Killing simulation");
     } else {
-      XBT_WARN("Process called exit when leaving - Skipping cleanups");
+      fprintf(stderr, "Process called exit when leaving - Skipping cleanups\n");
       return;
     }
   }
