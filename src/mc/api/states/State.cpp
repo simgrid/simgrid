@@ -113,12 +113,17 @@ std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
   // 2. Execute the actor according to the preparation above
   Transition::executed_transitions_++;
   auto* just_executed = app.handle_simcall(next, times_considered, true);
-  xbt_assert(just_executed->type_ == expected_executed_transition->type_,
-             "The transition that was just executed by actor %ld, viz:\n"
-             "%s\n"
-             "is not what was purportedly scheduled to execute, which was:\n"
-             "%s\n",
-             next, just_executed->to_string().c_str(), expected_executed_transition->to_string().c_str());
+  xbt_assert(
+      just_executed->type_ == expected_executed_transition->type_,
+      "The transition that was just executed by actor %ld, viz:\n"
+      "%s\n"
+      "is not what was purportedly scheduled to execute, which was:\n"
+      "%s\n"
+      "If adding the --cfg=model-check/cached-states-interval:1 parameter solves this problem, then your application "
+      "is not purely data dependent (its outcome does not only depends on its input). McSimGrid may miss bugs in such "
+      "applications, as they cannot be exhaustively explored with Mc SimGrid.\n\n"
+      "If adding this parameter does not help, then it's probably a bug in Mc SimGrid itself. Please report it.\n",
+      next, just_executed->to_string().c_str(), expected_executed_transition->to_string().c_str());
   // 3. Update the state with the newest information. This means recording
   // both
   //  1. what action was last taken from this state (viz. `executed_transition`)
