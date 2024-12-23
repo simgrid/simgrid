@@ -8586,6 +8586,20 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Exec(JNIEnv* jen
   (void)arg1;
   delete smartarg1;
 }
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1name(JNIEnv* jenv, jclass jcls, jlong jarg1,
+                                                                           jobject jarg1_)
+{
+  const char* result = ((simgrid::s4u::Host*)jarg1)->get_cname();
+  if (result)
+    return jenv->NewStringUTF(result);
+  return nullptr;
+}
+
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1speed(JNIEnv* jenv, jclass jcls, jlong jarg1,
+                                                                            jobject jarg1_)
+{
+  return (jdouble)((simgrid::s4u::Host*)jarg1)->get_speed();
+}
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1init(JNIEnv* jenv, jclass jcls)
 {
@@ -8988,12 +9002,6 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1destination(JN
   boost::shared_ptr<simgrid::s4u::Disk const>* smartarg3 = 0;
   boost::intrusive_ptr<simgrid::s4u::Io> result;
 
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  (void)jarg2_;
-  (void)jarg3_;
-
   // plain pointer
   smartarg1 = *(boost::shared_ptr<simgrid::s4u::Io>**)&jarg1;
   arg1      = (simgrid::s4u::Io*)(smartarg1 ? smartarg1->get() : 0);
@@ -9213,34 +9221,17 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1by_1name_1or_1nul
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1name(JNIEnv* jenv, jclass jcls, jlong jarg1,
                                                                            jobject jarg1_)
 {
-  jstring jresult          = 0;
-  simgrid::s4u::Link* arg1 = (simgrid::s4u::Link*)0;
-  char* result             = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1   = *(simgrid::s4u::Link**)&jarg1;
-  result = (char*)((simgrid::s4u::Link const*)arg1)->get_cname();
+  simgrid::s4u::Link* arg1 = (simgrid::s4u::Link*)jarg1;
+  const char* result       = (arg1)->get_cname();
   if (result)
-    jresult = jenv->NewStringUTF((const char*)result);
-  return jresult;
+    return jenv->NewStringUTF(result);
+  return nullptr;
 }
 
 XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1bandwidth(JNIEnv* jenv, jclass jcls, jlong jarg1,
                                                                                 jobject jarg1_)
 {
-  jdouble jresult          = 0;
-  simgrid::s4u::Link* arg1 = (simgrid::s4u::Link*)0;
-  double result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1    = *(simgrid::s4u::Link**)&jarg1;
-  result  = (double)((simgrid::s4u::Link const*)arg1)->get_bandwidth();
-  jresult = (jdouble)result;
-  return jresult;
+  return (jdouble)((simgrid::s4u::Link*)jarg1)->get_bandwidth();
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1bandwidth(JNIEnv* jenv, jclass jcls, jlong jarg1,

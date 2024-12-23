@@ -34,4 +34,11 @@ public class Host {
     swigCPtr = 0;
   }
 
+  public String get_name() {
+    return simgridJNI.Host_get_name(swigCPtr, this);
+  }
+
+  public double get_speed() {
+    return simgridJNI.Host_get_speed(swigCPtr, this);
+  }
 }

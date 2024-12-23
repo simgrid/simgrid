@@ -340,6 +340,8 @@ public class simgridJNI {
   public final static native boolean Exec_is_parallel(long jarg1, Exec jarg1_);
   public final static native boolean Exec_is_assigned(long jarg1, Exec jarg1_);
   public final static native void delete_Exec(long jarg1);
+  public final static native String Host_get_name(long jarg1, Host jarg1_);
+  public final static native double Host_get_speed(long jarg1, Host jarg1_);
   public final static native long Io_init();
   public final static native double Io_get_remaining(long jarg1, Io jarg1_);
   public final static native int Io_get_performed_ioops(long jarg1, Io jarg1_);
