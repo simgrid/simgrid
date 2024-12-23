@@ -801,7 +801,7 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/Host.java
     src/bindings/java/org/simgrid/s4u/InternalActivityComm.java
     src/bindings/java/org/simgrid/s4u/InternalActivityExec.java
-    src/bindings/java/org/simgrid/s4u/InternalctivityIo.java
+    src/bindings/java/org/simgrid/s4u/InternalActivityIo.java
     src/bindings/java/org/simgrid/s4u/Io.java
     src/bindings/java/org/simgrid/s4u/LinkInRoute.java
     src/bindings/java/org/simgrid/s4u/Link.java

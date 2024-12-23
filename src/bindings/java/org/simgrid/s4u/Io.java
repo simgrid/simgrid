@@ -8,7 +8,7 @@
 
 package org.simgrid.s4u;
 
-public class Io extends InternalctivityIo {
+public class Io extends InternalActivityIo {
   private transient long swigCPtr;
   private transient boolean swigCMemOwnDerived;
 

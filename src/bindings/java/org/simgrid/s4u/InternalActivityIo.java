@@ -8,17 +8,17 @@
 
 package org.simgrid.s4u;
 
-public class InternalctivityIo extends Activity {
+public class InternalActivityIo extends Activity {
   private transient long swigCPtr;
   private transient boolean swigCMemOwnDerived;
 
-  protected InternalctivityIo(long cPtr, boolean cMemoryOwn) {
-    super(simgridJNI.InternalctivityIo_SWIGSmartPtrUpcast(cPtr), true);
+  protected InternalActivityIo(long cPtr, boolean cMemoryOwn) {
+    super(simgridJNI.InternalActivityIo_SWIGSmartPtrUpcast(cPtr), true);
     swigCMemOwnDerived = cMemoryOwn;
     swigCPtr = cPtr;
   }
 
-  protected static long getCPtr(InternalctivityIo obj) {
+  protected static long getCPtr(InternalActivityIo obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 
@@ -30,93 +30,93 @@ public class InternalctivityIo extends Activity {
   public synchronized void delete() {
     if(swigCPtr != 0 && swigCMemOwnDerived) {
       swigCMemOwnDerived = false;
-      simgridJNI.delete_InternalctivityIo(swigCPtr);
+      simgridJNI.delete_InternalActivityIo(swigCPtr);
     }
     swigCPtr = 0;
     super.delete();
   }
 
   public static void on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t cb) {
-    simgridJNI.InternalctivityIo_on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
+    simgridJNI.InternalActivityIo_on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
   }
 
   public void on_this_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t cb) {
-    simgridJNI.InternalctivityIo_on_this_start_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
+    simgridJNI.InternalActivityIo_on_this_start_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
   }
 
   public static void on_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t cb) {
-    simgridJNI.InternalctivityIo_on_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
+    simgridJNI.InternalActivityIo_on_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
   }
 
   public void on_this_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t cb) {
-    simgridJNI.InternalctivityIo_on_this_completion_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
+    simgridJNI.InternalActivityIo_on_this_completion_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
   }
 
   public void on_this_suspend_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t cb) {
-    simgridJNI.InternalctivityIo_on_this_suspend_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
+    simgridJNI.InternalActivityIo_on_this_suspend_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
   }
 
   public void on_this_resume_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t cb) {
-    simgridJNI.InternalctivityIo_on_this_resume_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
+    simgridJNI.InternalActivityIo_on_this_resume_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
   }
 
   public static void on_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_RF_t cb) {
-    simgridJNI.InternalctivityIo_on_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_RF_t.getCPtr(cb));
+    simgridJNI.InternalActivityIo_on_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_RF_t.getCPtr(cb));
   }
 
   public void on_this_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_RF_t cb) {
-    simgridJNI.InternalctivityIo_on_this_veto_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_RF_t.getCPtr(cb));
+    simgridJNI.InternalActivityIo_on_this_veto_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_RF_t.getCPtr(cb));
   }
 
   public Io add_successor(Activity a) {
-    long cPtr = simgridJNI.InternalctivityIo_add_successor(swigCPtr, this, Activity.getCPtr(a), a);
+    long cPtr = simgridJNI.InternalActivityIo_add_successor(swigCPtr, this, Activity.getCPtr(a), a);
     return (cPtr == 0) ? null : new Io(cPtr, false);
   }
 
   public Io remove_successor(Activity a) {
-    long cPtr = simgridJNI.InternalctivityIo_remove_successor(swigCPtr, this, Activity.getCPtr(a), a);
+    long cPtr = simgridJNI.InternalActivityIo_remove_successor(swigCPtr, this, Activity.getCPtr(a), a);
     return (cPtr == 0) ? null : new Io(cPtr, false);
   }
 
   public Io set_name(String name) {
-    long cPtr = simgridJNI.InternalctivityIo_set_name(swigCPtr, this, name);
+    long cPtr = simgridJNI.InternalActivityIo_set_name(swigCPtr, this, name);
     return (cPtr == 0) ? null : new Io(cPtr, false);
   }
 
   public String get_name() {
-    return simgridJNI.InternalctivityIo_get_name(swigCPtr, this);
+    return simgridJNI.InternalActivityIo_get_name(swigCPtr, this);
   }
 
   public Io set_tracing_category(String category) {
-    long cPtr = simgridJNI.InternalctivityIo_set_tracing_category(swigCPtr, this, category);
+    long cPtr = simgridJNI.InternalActivityIo_set_tracing_category(swigCPtr, this, category);
     return (cPtr == 0) ? null : new Io(cPtr, false);
   }
 
   public String get_tracing_category() {
-    return simgridJNI.InternalctivityIo_get_tracing_category(swigCPtr, this);
+    return simgridJNI.InternalActivityIo_get_tracing_category(swigCPtr, this);
   }
 
   public SWIGTYPE_p_std__functionT_void_fvoid_pF_t get_clean_function() {
-    return new SWIGTYPE_p_std__functionT_void_fvoid_pF_t(simgridJNI.InternalctivityIo_get_clean_function(swigCPtr, this), false);
+    return new SWIGTYPE_p_std__functionT_void_fvoid_pF_t(simgridJNI.InternalActivityIo_get_clean_function(swigCPtr, this), false);
   }
 
   public Io detach() {
-    long cPtr = simgridJNI.InternalctivityIo_detach__SWIG_0(swigCPtr, this);
+    long cPtr = simgridJNI.InternalActivityIo_detach__SWIG_0(swigCPtr, this);
     return (cPtr == 0) ? null : new Io(cPtr, false);
   }
 
   public Io detach(SWIGTYPE_p_std__functionT_void_fvoid_pF_t clean_function) {
-    long cPtr = simgridJNI.InternalctivityIo_detach__SWIG_1(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fvoid_pF_t.getCPtr(clean_function));
+    long cPtr = simgridJNI.InternalActivityIo_detach__SWIG_1(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fvoid_pF_t.getCPtr(clean_function));
     return (cPtr == 0) ? null : new Io(cPtr, false);
   }
 
   public Io cancel() {
-    long cPtr = simgridJNI.InternalctivityIo_cancel(swigCPtr, this);
+    long cPtr = simgridJNI.InternalActivityIo_cancel(swigCPtr, this);
     return (cPtr == 0) ? null : new Io(cPtr, false);
   }
 
   public Io wait_for(double timeout) {
-    long cPtr = simgridJNI.InternalctivityIo_wait_for(swigCPtr, this, timeout);
+    long cPtr = simgridJNI.InternalActivityIo_wait_for(swigCPtr, this, timeout);
     return (cPtr == 0) ? null : new Io(cPtr, false);
   }
 
