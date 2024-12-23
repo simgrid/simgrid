@@ -129,9 +129,9 @@ public class simgridJNI {
   public final static native void InternalActivityComm_on_this_veto_cb(long jarg1, InternalActivityComm jarg1_, long jarg2);
   public final static native long InternalActivityComm_add_successor(long jarg1, InternalActivityComm jarg1_, long jarg2, Activity jarg2_);
   public final static native long InternalActivityComm_remove_successor(long jarg1, InternalActivityComm jarg1_, long jarg2, Activity jarg2_);
-  public final static native long InternalActivityComm_set_name(long jarg1, InternalActivityComm jarg1_, long jarg2);
+  public final static native long InternalActivityComm_set_name(long jarg1, InternalActivityComm jarg1_, String jarg2);
   public final static native String InternalActivityComm_get_name(long jarg1, InternalActivityComm jarg1_);
-  public final static native long InternalActivityComm_set_tracing_category(long jarg1, InternalActivityComm jarg1_, long jarg2);
+  public final static native long InternalActivityComm_set_tracing_category(long jarg1, InternalActivityComm jarg1_, String jarg2);
   public final static native String InternalActivityComm_get_tracing_category(long jarg1, InternalActivityComm jarg1_);
   public final static native long InternalActivityComm_get_clean_function(long jarg1, InternalActivityComm jarg1_);
   public final static native long InternalActivityComm_detach__SWIG_0(long jarg1, InternalActivityComm jarg1_);
@@ -149,9 +149,9 @@ public class simgridJNI {
   public final static native void InternalActivityExec_on_this_veto_cb(long jarg1, InternalActivityExec jarg1_, long jarg2);
   public final static native long InternalActivityExec_add_successor(long jarg1, InternalActivityExec jarg1_, long jarg2, Activity jarg2_);
   public final static native long InternalActivityExec_remove_successor(long jarg1, InternalActivityExec jarg1_, long jarg2, Activity jarg2_);
-  public final static native long InternalActivityExec_set_name(long jarg1, InternalActivityExec jarg1_, long jarg2);
+  public final static native long InternalActivityExec_set_name(long jarg1, InternalActivityExec jarg1_, String jarg2);
   public final static native String InternalActivityExec_get_name(long jarg1, InternalActivityExec jarg1_);
-  public final static native long InternalActivityExec_set_tracing_category(long jarg1, InternalActivityExec jarg1_, long jarg2);
+  public final static native long InternalActivityExec_set_tracing_category(long jarg1, InternalActivityExec jarg1_, String jarg2);
   public final static native String InternalActivityExec_get_tracing_category(long jarg1, InternalActivityExec jarg1_);
   public final static native long InternalActivityExec_get_clean_function(long jarg1, InternalActivityExec jarg1_);
   public final static native long InternalActivityExec_detach__SWIG_0(long jarg1, InternalActivityExec jarg1_);
@@ -169,9 +169,9 @@ public class simgridJNI {
   public final static native void InternalctivityIo_on_this_veto_cb(long jarg1, InternalctivityIo jarg1_, long jarg2);
   public final static native long InternalctivityIo_add_successor(long jarg1, InternalctivityIo jarg1_, long jarg2, Activity jarg2_);
   public final static native long InternalctivityIo_remove_successor(long jarg1, InternalctivityIo jarg1_, long jarg2, Activity jarg2_);
-  public final static native long InternalctivityIo_set_name(long jarg1, InternalctivityIo jarg1_, long jarg2);
+  public final static native long InternalctivityIo_set_name(long jarg1, InternalctivityIo jarg1_, String jarg2);
   public final static native String InternalctivityIo_get_name(long jarg1, InternalctivityIo jarg1_);
-  public final static native long InternalctivityIo_set_tracing_category(long jarg1, InternalctivityIo jarg1_, long jarg2);
+  public final static native long InternalctivityIo_set_tracing_category(long jarg1, InternalctivityIo jarg1_, String jarg2);
   public final static native String InternalctivityIo_get_tracing_category(long jarg1, InternalctivityIo jarg1_);
   public final static native long InternalctivityIo_get_clean_function(long jarg1, InternalctivityIo jarg1_);
   public final static native long InternalctivityIo_detach__SWIG_0(long jarg1, InternalctivityIo jarg1_);

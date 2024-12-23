@@ -78,8 +78,8 @@ public class InternalActivityComm extends Activity {
     return (cPtr == 0) ? null : new Comm(cPtr, false);
   }
 
-  public Comm set_name(SWIGTYPE_p_std__string_view name) {
-    long cPtr = simgridJNI.InternalActivityComm_set_name(swigCPtr, this, SWIGTYPE_p_std__string_view.getCPtr(name));
+  public Comm set_name(String name) {
+    long cPtr = simgridJNI.InternalActivityComm_set_name(swigCPtr, this, name);
     return (cPtr == 0) ? null : new Comm(cPtr, false);
   }
 
@@ -87,8 +87,8 @@ public class InternalActivityComm extends Activity {
     return simgridJNI.InternalActivityComm_get_name(swigCPtr, this);
   }
 
-  public Comm set_tracing_category(SWIGTYPE_p_std__string_view category) {
-    long cPtr = simgridJNI.InternalActivityComm_set_tracing_category(swigCPtr, this, SWIGTYPE_p_std__string_view.getCPtr(category));
+  public Comm set_tracing_category(String category) {
+    long cPtr = simgridJNI.InternalActivityComm_set_tracing_category(swigCPtr, this, category);
     return (cPtr == 0) ? null : new Comm(cPtr, false);
   }
 

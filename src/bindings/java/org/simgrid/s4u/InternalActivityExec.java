@@ -78,8 +78,8 @@ public class InternalActivityExec extends Activity {
     return (cPtr == 0) ? null : new Exec(cPtr, false);
   }
 
-  public Exec set_name(SWIGTYPE_p_std__string_view name) {
-    long cPtr = simgridJNI.InternalActivityExec_set_name(swigCPtr, this, SWIGTYPE_p_std__string_view.getCPtr(name));
+  public Exec set_name(String name) {
+    long cPtr = simgridJNI.InternalActivityExec_set_name(swigCPtr, this, name);
     return (cPtr == 0) ? null : new Exec(cPtr, false);
   }
 
@@ -87,8 +87,8 @@ public class InternalActivityExec extends Activity {
     return simgridJNI.InternalActivityExec_get_name(swigCPtr, this);
   }
 
-  public Exec set_tracing_category(SWIGTYPE_p_std__string_view category) {
-    long cPtr = simgridJNI.InternalActivityExec_set_tracing_category(swigCPtr, this, SWIGTYPE_p_std__string_view.getCPtr(category));
+  public Exec set_tracing_category(String category) {
+    long cPtr = simgridJNI.InternalActivityExec_set_tracing_category(swigCPtr, this, category);
     return (cPtr == 0) ? null : new Exec(cPtr, false);
   }
 

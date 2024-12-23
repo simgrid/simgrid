@@ -309,7 +309,7 @@ public class Engine {
 		Engine e = Engine.get_instance(args);
 
 		if (args.length < 2) {
-			e.info("Usage: org.simgrid.s4u.Engine platform_file deployment_file");
+			Engine.info("Usage: org.simgrid.s4u.Engine platform_file deployment_file");
 			System.exit(1);
 		}
 
