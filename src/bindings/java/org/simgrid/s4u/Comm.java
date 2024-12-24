@@ -8,7 +8,7 @@
 
 package org.simgrid.s4u;
 
-public class Comm extends InternalActivityComm {
+public class Comm extends Activity {
   private transient long swigCPtr;
   private transient boolean swigCMemOwnDerived;
 
@@ -162,6 +162,85 @@ public class Comm extends InternalActivityComm {
   public Actor get_receiver() {
     long cPtr = simgridJNI.Comm_get_receiver(swigCPtr, this);
     return (cPtr == 0) ? null : new Actor(cPtr, true);
+  }
+
+  public static void on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
+    simgridJNI.Comm_on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
+  }
+
+  public void on_this_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
+    simgridJNI.Comm_on_this_start_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
+  }
+
+  public static void on_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
+    simgridJNI.Comm_on_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
+  }
+
+  public void on_this_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
+    simgridJNI.Comm_on_this_completion_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
+  }
+
+  public void on_this_suspend_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
+    simgridJNI.Comm_on_this_suspend_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
+  }
+
+  public void on_this_resume_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
+    simgridJNI.Comm_on_this_resume_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
+  }
+
+  public static void on_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_RF_t cb) {
+    simgridJNI.Comm_on_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_RF_t.getCPtr(cb));
+  }
+
+  public void on_this_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_RF_t cb) {
+    simgridJNI.Comm_on_this_veto_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_RF_t.getCPtr(cb));
+  }
+
+  public Comm add_successor(Activity a) {
+    long cPtr = simgridJNI.Comm_add_successor(swigCPtr, this, Activity.getCPtr(a), a);
+    return (cPtr == 0) ? null : new Comm(cPtr, false);
+  }
+
+  public Comm remove_successor(Activity a) {
+    long cPtr = simgridJNI.Comm_remove_successor(swigCPtr, this, Activity.getCPtr(a), a);
+    return (cPtr == 0) ? null : new Comm(cPtr, false);
+  }
+
+  public Comm set_name(String name) {
+    long cPtr = simgridJNI.Comm_set_name(swigCPtr, this, name);
+    return (cPtr == 0) ? null : new Comm(cPtr, false);
+  }
+
+  public String get_name() {
+    return simgridJNI.Comm_get_name(swigCPtr, this);
+  }
+
+  public Comm set_tracing_category(String category) {
+    long cPtr = simgridJNI.Comm_set_tracing_category(swigCPtr, this, category);
+    return (cPtr == 0) ? null : new Comm(cPtr, false);
+  }
+
+  public String get_tracing_category() {
+    return simgridJNI.Comm_get_tracing_category(swigCPtr, this);
+  }
+
+  public SWIGTYPE_p_std__functionT_void_fvoid_pF_t get_clean_function() {
+    return new SWIGTYPE_p_std__functionT_void_fvoid_pF_t(simgridJNI.Comm_get_clean_function(swigCPtr, this), false);
+  }
+
+  public Comm detach() {
+    long cPtr = simgridJNI.Comm_detach__SWIG_0(swigCPtr, this);
+    return (cPtr == 0) ? null : new Comm(cPtr, false);
+  }
+
+  public Comm detach(SWIGTYPE_p_std__functionT_void_fvoid_pF_t clean_function) {
+    long cPtr = simgridJNI.Comm_detach__SWIG_1(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fvoid_pF_t.getCPtr(clean_function));
+    return (cPtr == 0) ? null : new Comm(cPtr, false);
+  }
+
+  public Comm cancel() {
+    long cPtr = simgridJNI.Comm_cancel(swigCPtr, this);
+    return (cPtr == 0) ? null : new Comm(cPtr, false);
   }
 
   public Comm wait_for(double timeout) {
