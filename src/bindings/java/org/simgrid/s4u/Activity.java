@@ -72,8 +72,8 @@ public class Activity {
   }
 
   public Activity do_start() {
-    long cPtr = simgridJNI.Activity_do_start(swigCPtr, this);
-    return (cPtr == 0) ? null : new Activity(cPtr, true);
+    simgridJNI.Activity_do_start(swigCPtr, this);
+    return this;
   }
 
   public boolean test() {
@@ -81,13 +81,13 @@ public class Activity {
   }
 
   public Activity wait_for(double timeout) {
-    long cPtr = simgridJNI.Activity_wait_for(swigCPtr, this, timeout);
-    return (cPtr == 0) ? null : new Activity(cPtr, true);
+    simgridJNI.Activity_wait_for(swigCPtr, this, timeout);
+    return this;
   }
 
   public Activity wait_for_or_cancel(double timeout) {
-    long cPtr = simgridJNI.Activity_wait_for_or_cancel(swigCPtr, this, timeout);
-    return (cPtr == 0) ? null : new Activity(cPtr, true);
+    simgridJNI.Activity_wait_for_or_cancel(swigCPtr, this, timeout);
+    return this;
   }
 
   public void wait_until(double time_limit) {
@@ -95,8 +95,8 @@ public class Activity {
   }
 
   public Activity cancel() {
-    long cPtr = simgridJNI.Activity_cancel(swigCPtr, this);
-    return (cPtr == 0) ? null : new Activity(cPtr, true);
+    simgridJNI.Activity_cancel(swigCPtr, this);
+    return this;
   }
 
   public Activity.State get_state() {
