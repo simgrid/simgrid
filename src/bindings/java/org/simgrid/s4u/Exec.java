@@ -50,58 +50,58 @@ public class Exec extends InternalActivityExec {
   }
 
   public Exec set_host(Host host) {
-    long cPtr = simgridJNI.Exec_set_host(swigCPtr, this, Host.getCPtr(host), host);
-    return (cPtr == 0) ? null : new Exec(cPtr, true);
+    simgridJNI.Exec_set_host(swigCPtr, this, Host.getCPtr(host), host);
+    return this;
   }
 
   public Exec set_hosts(SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t hosts) {
-    long cPtr = simgridJNI.Exec_set_hosts(swigCPtr, this, SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t.getCPtr(hosts));
-    return (cPtr == 0) ? null : new Exec(cPtr, true);
+    simgridJNI.Exec_set_hosts(swigCPtr, this, SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t.getCPtr(hosts));
+    return this;
   }
 
   public Exec unset_host() {
-    long cPtr = simgridJNI.Exec_unset_host(swigCPtr, this);
-    return (cPtr == 0) ? null : new Exec(cPtr, true);
+    simgridJNI.Exec_unset_host(swigCPtr, this);
+    return this;
   }
 
   public Exec unset_hosts() {
-    long cPtr = simgridJNI.Exec_unset_hosts(swigCPtr, this);
-    return (cPtr == 0) ? null : new Exec(cPtr, true);
+    simgridJNI.Exec_unset_hosts(swigCPtr, this);
+    return this;
   }
 
   public Exec set_flops_amount(double flops_amount) {
-    long cPtr = simgridJNI.Exec_set_flops_amount(swigCPtr, this, flops_amount);
-    return (cPtr == 0) ? null : new Exec(cPtr, true);
+    simgridJNI.Exec_set_flops_amount(swigCPtr, this, flops_amount);
+    return this;
   }
 
   public Exec set_flops_amounts(SWIGTYPE_p_std__vectorT_double_t flops_amounts) {
-    long cPtr = simgridJNI.Exec_set_flops_amounts(swigCPtr, this, SWIGTYPE_p_std__vectorT_double_t.getCPtr(flops_amounts));
-    return (cPtr == 0) ? null : new Exec(cPtr, true);
+    simgridJNI.Exec_set_flops_amounts(swigCPtr, this, SWIGTYPE_p_std__vectorT_double_t.getCPtr(flops_amounts));
+    return this;
   }
 
   public Exec set_bytes_amounts(SWIGTYPE_p_std__vectorT_double_t bytes_amounts) {
-    long cPtr = simgridJNI.Exec_set_bytes_amounts(swigCPtr, this, SWIGTYPE_p_std__vectorT_double_t.getCPtr(bytes_amounts));
-    return (cPtr == 0) ? null : new Exec(cPtr, true);
+    simgridJNI.Exec_set_bytes_amounts(swigCPtr, this, SWIGTYPE_p_std__vectorT_double_t.getCPtr(bytes_amounts));
+    return this;
   }
 
   public Exec set_thread_count(int thread_count) {
-    long cPtr = simgridJNI.Exec_set_thread_count(swigCPtr, this, thread_count);
-    return (cPtr == 0) ? null : new Exec(cPtr, true);
+    simgridJNI.Exec_set_thread_count(swigCPtr, this, thread_count);
+    return this;
   }
 
   public Exec set_bound(double bound) {
-    long cPtr = simgridJNI.Exec_set_bound(swigCPtr, this, bound);
-    return (cPtr == 0) ? null : new Exec(cPtr, true);
+    simgridJNI.Exec_set_bound(swigCPtr, this, bound);
+    return this;
   }
 
   public Exec set_priority(double priority) {
-    long cPtr = simgridJNI.Exec_set_priority(swigCPtr, this, priority);
-    return (cPtr == 0) ? null : new Exec(cPtr, true);
+    simgridJNI.Exec_set_priority(swigCPtr, this, priority);
+    return this;
   }
 
   public Exec update_priority(double priority) {
-    long cPtr = simgridJNI.Exec_update_priority(swigCPtr, this, priority);
-    return (cPtr == 0) ? null : new Exec(cPtr, true);
+    simgridJNI.Exec_update_priority(swigCPtr, this, priority);
+    return this;
   }
 
   public Host get_host() {
