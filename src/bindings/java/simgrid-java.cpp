@@ -807,14 +807,6 @@ static void ActorMain_thread_execute(ActorMain* self, s4u::Host* host, double fl
 {
   simgrid::s4u::this_actor::thread_execute(host, flop_amounts, thread_count);
 }
-static simgrid::s4u::ExecPtr ActorMain_exec_init(ActorMain* self, double flops_amounts)
-{
-  return simgrid::s4u::this_actor::exec_init(flops_amounts);
-}
-static ExecPtr ActorMain_exec_async(ActorMain* self, double flops_amounts)
-{
-  return simgrid::s4u::this_actor::exec_async(flops_amounts);
-}
 static long ActorMain_get_pid(ActorMain* self)
 {
   return simgrid::s4u::this_actor::get_pid();
@@ -822,10 +814,6 @@ static long ActorMain_get_pid(ActorMain* self)
 static long ActorMain_get_ppid(ActorMain* self)
 {
   return simgrid::s4u::this_actor::get_ppid();
-}
-static simgrid::s4u::Host* ActorMain_get_host(ActorMain* self)
-{
-  return simgrid::s4u::this_actor::get_host();
 }
 static void ActorMain_set_host(ActorMain* self, s4u::Host* new_host)
 {
@@ -1246,29 +1234,15 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1thread_1execu
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1exec_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                               jobject jthis, jdouble jarg2)
+                                                                               jobject jthis, jdouble flops_amounts)
 {
-  jlong jresult   = 0;
-  ActorMain* arg1 = (ActorMain*)0;
-  double arg2;
-  simgrid::s4u::ExecPtr result;
-
-  arg1                               = *(ActorMain**)&cthis;
-  arg2                               = (double)jarg2;
-  result                             = ActorMain_exec_init(arg1, arg2);
-  *(simgrid::s4u::ExecPtr**)&jresult = new simgrid::s4u::ExecPtr(result);
-  return jresult;
+  return (jlong) new simgrid::s4u::ExecPtr(simgrid::s4u::this_actor::exec_init(flops_amounts));
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1exec_1async(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                jobject jthis, jdouble jarg2)
+                                                                                jobject jthis, jdouble flops_amounts)
 {
-  jlong jresult   = 0;
-  ActorMain* arg1      = *(ActorMain**)&cthis;
-  double arg2          = (double)jarg2;
-  ExecPtr result       = ActorMain_exec_async(arg1, arg2);
-  *(ExecPtr**)&jresult = new ExecPtr(result);
-  return jresult;
+  return (jlong) new simgrid::s4u::ExecPtr(simgrid::s4u::this_actor::exec_async(flops_amounts));
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1get_1pid(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -1306,31 +1280,7 @@ XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1get_1ppid(JNI
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1get_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                               jobject jthis)
 {
-  jlong jresult              = 0;
-  ActorMain* arg1            = (ActorMain*)0;
-  simgrid::s4u::Host* result = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1   = *(ActorMain**)&cthis;
-  result = (simgrid::s4u::Host*)ActorMain_get_host(arg1);
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Host>(result, SWIG_intrusive_deleter<simgrid::s4u::Host>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Host>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  return (jlong)simgrid::s4u::this_actor::get_host();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1set_1host(JNIEnv* jenv, jclass jcls, jlong cthis,

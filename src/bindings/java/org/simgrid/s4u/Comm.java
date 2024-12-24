@@ -169,4 +169,8 @@ public class Comm extends InternalActivityComm {
     return (cPtr == 0) ? null : new Comm(cPtr, true);
   }
 
+  public Comm await() {
+    wait_for(-1);
+    return this;
+  }
 }

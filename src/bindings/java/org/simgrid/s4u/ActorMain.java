@@ -87,12 +87,12 @@ public class ActorMain {
     simgridJNI.ActorMain_thread_execute(swigCPtr, this, SWIGTYPE_p_s4u__Host.getCPtr(host), flop_amounts, thread_count);
   }
 
-  public SWIGTYPE_p_simgrid__s4u__ExecPtr exec_init(double flops_amounts) {
-    return new SWIGTYPE_p_simgrid__s4u__ExecPtr(simgridJNI.ActorMain_exec_init(swigCPtr, this, flops_amounts), true);
+  public Exec exec_init(double flops_amounts) {
+    return new Exec(simgridJNI.ActorMain_exec_init(swigCPtr, this, flops_amounts), true);
   }
 
-  public SWIGTYPE_p_ExecPtr exec_async(double flops_amounts) {
-    return new SWIGTYPE_p_ExecPtr(simgridJNI.ActorMain_exec_async(swigCPtr, this, flops_amounts), true);
+  public Exec exec_async(double flops_amounts) {
+    return new Exec(simgridJNI.ActorMain_exec_async(swigCPtr, this, flops_amounts), true);
   }
 
   public int get_pid() {

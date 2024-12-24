@@ -128,5 +128,9 @@ public class Exec extends InternalActivityExec {
   public boolean is_assigned() {
     return simgridJNI.Exec_is_assigned(swigCPtr, this);
   }
-
+  
+  public Exec await() {
+    wait_for(-1);
+    return this;
+  }
 }
