@@ -8,7 +8,7 @@
 
 package org.simgrid.s4u;
 
-public class Exec extends InternalActivityExec {
+public class Exec extends Activity {
   private transient long swigCPtr;
   private transient boolean swigCMemOwnDerived;
 
@@ -132,5 +132,89 @@ public class Exec extends InternalActivityExec {
   public Exec await() {
     wait_for(-1);
     return this;
+  }
+
+  public static void on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t cb) {
+    simgridJNI.Exec_on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t.getCPtr(cb));
+  }
+
+  public void on_this_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t cb) {
+    simgridJNI.Exec_on_this_start_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t.getCPtr(cb));
+  }
+
+  public static void on_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t cb) {
+    simgridJNI.Exec_on_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t.getCPtr(cb));
+  }
+
+  public void on_this_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t cb) {
+    simgridJNI.Exec_on_this_completion_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t.getCPtr(cb));
+  }
+
+  public void on_this_suspend_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t cb) {
+    simgridJNI.Exec_on_this_suspend_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t.getCPtr(cb));
+  }
+
+  public void on_this_resume_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t cb) {
+    simgridJNI.Exec_on_this_resume_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t.getCPtr(cb));
+  }
+
+  public static void on_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_RF_t cb) {
+    simgridJNI.Exec_on_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_RF_t.getCPtr(cb));
+  }
+
+  public void on_this_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_RF_t cb) {
+    simgridJNI.Exec_on_this_veto_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_RF_t.getCPtr(cb));
+  }
+
+  public Exec add_successor(Activity a) {
+    long cPtr = simgridJNI.Exec_add_successor(swigCPtr, this, Activity.getCPtr(a), a);
+    return (cPtr == 0) ? null : new Exec(cPtr, false);
+  }
+
+  public Exec remove_successor(Activity a) {
+    long cPtr = simgridJNI.Exec_remove_successor(swigCPtr, this, Activity.getCPtr(a), a);
+    return (cPtr == 0) ? null : new Exec(cPtr, false);
+  }
+
+  public Exec set_name(String name) {
+    long cPtr = simgridJNI.Exec_set_name(swigCPtr, this, name);
+    return (cPtr == 0) ? null : new Exec(cPtr, false);
+  }
+
+  public String get_name() {
+    return simgridJNI.Exec_get_name(swigCPtr, this);
+  }
+
+  public Exec set_tracing_category(String category) {
+    long cPtr = simgridJNI.Exec_set_tracing_category(swigCPtr, this, category);
+    return (cPtr == 0) ? null : new Exec(cPtr, false);
+  }
+
+  public String get_tracing_category() {
+    return simgridJNI.Exec_get_tracing_category(swigCPtr, this);
+  }
+
+  public SWIGTYPE_p_std__functionT_void_fvoid_pF_t get_clean_function() {
+    return new SWIGTYPE_p_std__functionT_void_fvoid_pF_t(simgridJNI.Exec_get_clean_function(swigCPtr, this), false);
+  }
+
+  public Exec detach() {
+    long cPtr = simgridJNI.Exec_detach__SWIG_0(swigCPtr, this);
+    return (cPtr == 0) ? null : new Exec(cPtr, false);
+  }
+
+  public Exec detach(SWIGTYPE_p_std__functionT_void_fvoid_pF_t clean_function) {
+    long cPtr = simgridJNI.Exec_detach__SWIG_1(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fvoid_pF_t.getCPtr(clean_function));
+    return (cPtr == 0) ? null : new Exec(cPtr, false);
+  }
+
+  public Exec cancel() {
+    long cPtr = simgridJNI.Exec_cancel(swigCPtr, this);
+    return (cPtr == 0) ? null : new Exec(cPtr, false);
+  }
+
+  public Exec wait_for(double timeout) {
+    long cPtr = simgridJNI.Exec_wait_for(swigCPtr, this, timeout);
+    return (cPtr == 0) ? null : new Exec(cPtr, false);
   }
 }
