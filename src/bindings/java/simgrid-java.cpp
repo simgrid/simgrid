@@ -699,12 +699,6 @@ template <typename T> T SwigValueInit()
   return T();
 }
 
-#if __cplusplus >= 201103L
-#define SWIG_STD_MOVE(OBJ) std::move(OBJ)
-#else
-#define SWIG_STD_MOVE(OBJ) OBJ
-#endif
-
 #endif
 
 #include "simgrid/s4u.hpp"
@@ -900,16 +894,6 @@ static void simgrid_s4u_Engine_verbose(char const* msg)
 static void simgrid_s4u_Engine_debug(char const* msg)
 {
   XBT_DEBUG("%s", msg);
-}
-static void simgrid_s4u_Mailbox_put_java__SWIG_0(simgrid::s4u::Mailbox* self, JNIEnv* jenv, jobject payload,
-                                                 uint64_t simulated_size_in_bytes)
-{
-  self->put(jenv->NewGlobalRef(payload), simulated_size_in_bytes);
-}
-static void simgrid_s4u_Mailbox_put_java__SWIG_1(simgrid::s4u::Mailbox* self, JNIEnv* jenv, jobject payload,
-                                                 uint64_t simulated_size_in_bytes, double timeout)
-{
-  self->put(jenv->NewGlobalRef(payload), simulated_size_in_bytes, timeout);
 }
 static jobject simgrid_s4u_Mailbox_get_java(simgrid::s4u::Mailbox* self, JNIEnv* jenv)
 {
@@ -2317,7 +2301,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1by_1pid(JNIEnv* 
   (void)jenv;
   (void)jcls;
   arg1   = (aid_t)jarg1;
-  result = simgrid::s4u::Actor::by_pid(SWIG_STD_MOVE(arg1));
+  result = simgrid::s4u::Actor::by_pid(std::move(arg1));
 
   if (result) {
     intrusive_ptr_add_ref(result.get());
@@ -4910,7 +4894,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1sendto_1async(JNI
   arg2      = (simgrid::s4u::Host*)(smartarg2 ? smartarg2->get() : 0);
 
   arg3   = (uint64_t)jarg3;
-  result = simgrid::s4u::Comm::sendto_async(arg1, arg2, SWIG_STD_MOVE(arg3));
+  result = simgrid::s4u::Comm::sendto_async(arg1, arg2, std::move(arg3));
 
   if (result) {
     intrusive_ptr_add_ref(result.get());
@@ -4947,7 +4931,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1sendto(JNIEnv* jen
   arg2      = (simgrid::s4u::Host*)(smartarg2 ? smartarg2->get() : 0);
 
   arg3 = (uint64_t)jarg3;
-  simgrid::s4u::Comm::sendto(arg1, arg2, SWIG_STD_MOVE(arg3));
+  simgrid::s4u::Comm::sendto(arg1, arg2, std::move(arg3));
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1source(JNIEnv* jenv, jclass jcls, jlong jarg1,
@@ -8888,7 +8872,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1streamto_1async(JNI
 
   arg5   = (uint64_t)jarg5;
   result = simgrid::s4u::Io::streamto_async(arg1, (simgrid::s4u::Disk const*)arg2, arg3,
-                                            (simgrid::s4u::Disk const*)arg4, SWIG_STD_MOVE(arg5));
+                                            (simgrid::s4u::Disk const*)arg4, std::move(arg5));
 
   if (result) {
     intrusive_ptr_add_ref(result.get());
@@ -8941,7 +8925,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1streamto(JNIEnv* jen
 
   arg5 = (uint64_t)jarg5;
   simgrid::s4u::Io::streamto(arg1, (simgrid::s4u::Disk const*)arg2, arg3, (simgrid::s4u::Disk const*)arg4,
-                             SWIG_STD_MOVE(arg5));
+                             std::move(arg5));
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1source(JNIEnv* jenv, jclass jcls, jlong jarg1,
@@ -11622,61 +11606,36 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1init_1_1S
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1init_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
                                                                                        jlong jarg1, jobject jarg1_,
-                                                                                       jlong jarg2, jlong jarg3)
+                                                                                       jobject payload,
+                                                                                       jlong simulated_size_in_bytes)
 {
-  jlong jresult               = 0;
-  simgrid::s4u::Mailbox* arg1 = (simgrid::s4u::Mailbox*)0;
-  void* arg2                  = (void*)0;
-  uint64_t arg3;
-  boost::shared_ptr<simgrid::s4u::Mailbox>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Comm> result;
+  auto self = *(boost::shared_ptr<simgrid::s4u::Mailbox>*)jarg1;
 
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Mailbox>**)&jarg1;
-  arg1      = (simgrid::s4u::Mailbox*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = *(void**)&jarg2;
-  arg3   = (uint64_t)jarg3;
-  result = (arg1)->put_init(arg2, arg3);
+  CommPtr result = self->put_init(jenv->NewGlobalRef(payload), simulated_size_in_bytes);
 
   if (result) {
     intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Comm>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Comm>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Comm>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Comm>**)&jresult = 0;
+    return (jlong) new boost::shared_ptr<simgrid::s4u::Comm>(result.get(),
+                                                             SWIG_intrusive_deleter<simgrid::s4u::Comm>());
   }
-
-  return jresult;
+  return 0;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1async(JNIEnv* jenv, jclass jcls, jlong jarg1,
-                                                                             jobject jarg1_, jlong jarg2, jlong jarg3)
+                                                                             jobject jarg1_, jobject payload,
+                                                                             jlong simulated_size_in_bytes)
 {
-  jlong jresult               = 0;
-  simgrid::s4u::Mailbox* arg1 = (simgrid::s4u::Mailbox*)0;
-  void* arg2                  = (void*)0;
-  uint64_t arg3;
-  boost::shared_ptr<simgrid::s4u::Mailbox>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Comm> result;
+  auto self = *(boost::shared_ptr<simgrid::s4u::Mailbox>*)jarg1;
 
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Mailbox>**)&jarg1;
-  arg1      = (simgrid::s4u::Mailbox*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = *(void**)&jarg2;
-  arg3   = (uint64_t)jarg3;
-  result = (arg1)->put_async(arg2, arg3);
+  CommPtr result = self->put_async(jenv->NewGlobalRef(payload), simulated_size_in_bytes);
 
   if (result) {
     intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Comm>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Comm>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Comm>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Comm>**)&jresult = 0;
+    return (jlong) new boost::shared_ptr<simgrid::s4u::Comm>(result.get(),
+                                                             SWIG_intrusive_deleter<simgrid::s4u::Comm>());
   }
 
-  return jresult;
+  return 0;
 }
 
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1to_1c_1str(JNIEnv* jenv, jclass jcls, jint jarg1)
@@ -11747,46 +11706,23 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1clear(JNIEnv* j
 
   (arg1)->clear();
 }
-
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1_1SWIG_10(JNIEnv* jenv, jclass jcls, jlong jarg1,
-                                                                                jobject jarg1_, jobject jarg3,
-                                                                                jlong jarg4)
+                                                                                jobject jarg1_, jobject payload,
+                                                                                jlong simulated_size_in_bytes)
 {
-  simgrid::s4u::Mailbox* arg1 = (simgrid::s4u::Mailbox*)0;
-  jobject arg3;
-  uint64_t arg4;
-  boost::shared_ptr<simgrid::s4u::Mailbox>* smartarg1 = 0;
+  auto self = *(boost::shared_ptr<simgrid::s4u::Mailbox>*)jarg1;
 
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Mailbox>**)&jarg1;
-  arg1      = (simgrid::s4u::Mailbox*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg3 = jarg3;
-  arg4 = (uint64_t)jarg4;
-  simgrid_s4u_Mailbox_put_java__SWIG_0(arg1, jenv, SWIG_STD_MOVE(arg3), SWIG_STD_MOVE(arg4));
+  self->put(jenv->NewGlobalRef(payload), (uint64_t)simulated_size_in_bytes);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1_1SWIG_11(JNIEnv* jenv, jclass jcls, jlong jarg1,
-                                                                                jobject jarg1_, jobject jarg3,
-                                                                                jlong jarg4, jdouble jarg5)
+                                                                                jobject jarg1_, jobject payload,
+                                                                                jlong simulated_size_in_bytes,
+                                                                                jdouble timeout)
 {
-  simgrid::s4u::Mailbox* arg1 = (simgrid::s4u::Mailbox*)0;
-  JNIEnv* arg2                = (JNIEnv*)0;
-  jobject arg3;
-  uint64_t arg4;
-  double arg5;
-  boost::shared_ptr<simgrid::s4u::Mailbox>* smartarg1 = 0;
+  auto self = *(boost::shared_ptr<simgrid::s4u::Mailbox>*)jarg1;
 
-  arg2 = jenv;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Mailbox>**)&jarg1;
-  arg1      = (simgrid::s4u::Mailbox*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg3 = jarg3;
-  arg4 = (uint64_t)jarg4;
-  arg5 = (double)jarg5;
-  simgrid_s4u_Mailbox_put_java__SWIG_1(arg1, arg2, SWIG_STD_MOVE(arg3), SWIG_STD_MOVE(arg4), arg5);
+  self->put(jenv->NewGlobalRef(payload), simulated_size_in_bytes, timeout);
 }
 
 XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get(JNIEnv* jenv, jclass jcls, jlong jarg1,
@@ -11949,38 +11885,14 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1_1SWI
                                                                                      jlong jarg1, jobject jarg1_,
                                                                                      jlong jarg2)
 {
-  simgrid::s4u::MessageQueue* arg1 = (simgrid::s4u::MessageQueue*)0;
-  void* arg2                       = (void*)0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(simgrid::s4u::MessageQueue**)&jarg1;
-  {
-    // From JNI to C++
-    arg2 = (void*)jarg2;
-  }
-  (arg1)->put(arg2);
+  ((simgrid::s4u::MessageQueue*)jarg1)->put((void*)jarg2);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
                                                                                      jlong jarg1, jobject jarg1_,
                                                                                      jlong jarg2, jdouble jarg3)
 {
-  simgrid::s4u::MessageQueue* arg1 = (simgrid::s4u::MessageQueue*)0;
-  void* arg2                       = (void*)0;
-  double arg3;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(simgrid::s4u::MessageQueue**)&jarg1;
-  {
-    // From JNI to C++
-    arg2 = (void*)jarg2;
-  }
-  arg3 = (double)jarg3;
-  (arg1)->put(arg2, arg3);
+  ((simgrid::s4u::MessageQueue*)jarg1)->put((void*)jarg2, jarg3);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1init(JNIEnv* jenv, jclass jcls, jlong jarg1,

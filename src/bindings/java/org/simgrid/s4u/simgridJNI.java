@@ -482,14 +482,14 @@ public class simgridJNI {
   public final static native void Mailbox_set_receiver(long jarg1, Mailbox jarg1_, long jarg2, Actor jarg2_);
   public final static native long Mailbox_get_receiver(long jarg1, Mailbox jarg1_);
   public final static native long Mailbox_put_init__SWIG_0(long jarg1, Mailbox jarg1_);
-  public final static native long Mailbox_put_init__SWIG_1(long jarg1, Mailbox jarg1_, long jarg2, long jarg3);
-  public final static native long Mailbox_put_async(long jarg1, Mailbox jarg1_, long jarg2, long jarg3);
+  public final static native long Mailbox_put_init__SWIG_1(long jarg1, Mailbox jarg1_, Object jarg2, long jarg3);
+  public final static native long Mailbox_put_async(long jarg1, Mailbox jarg1_, Object jarg2, long jarg3);
   public final static native String Mailbox_to_c_str(int jarg1);
   public final static native long Mailbox_get_init(long jarg1, Mailbox jarg1_);
   public final static native long Mailbox_get_async(long jarg1, Mailbox jarg1_);
   public final static native void Mailbox_clear(long jarg1, Mailbox jarg1_);
-  public final static native void Mailbox_put__SWIG_0(long jarg1, Mailbox jarg1_, java.lang.Object jarg3, long jarg4);
-  public final static native void Mailbox_put__SWIG_1(long jarg1, Mailbox jarg1_, java.lang.Object jarg3, long jarg4, double jarg5);
+  public final static native void Mailbox_put__SWIG_0(long jarg1, Mailbox jarg1_, Object jarg3, long jarg4);
+  public final static native void Mailbox_put__SWIG_1(long jarg1, Mailbox jarg1_, Object jarg3, long jarg4, double jarg5);
   public final static native java.lang.Object Mailbox_get(long jarg1, Mailbox jarg1_);
   public final static native String MessageQueue_get_name(long jarg1, MessageQueue jarg1_);
   public final static native long MessageQueue_by_name(String jarg1);

@@ -77,13 +77,16 @@ public class Mailbox {
     return (cPtr == 0) ? null : new Comm(cPtr, true);
   }
 
-  public Comm put_init(SWIGTYPE_p_void data, long simulated_size_in_bytes) {
-    long cPtr = simgridJNI.Mailbox_put_init__SWIG_1(swigCPtr, this, SWIGTYPE_p_void.getCPtr(data), simulated_size_in_bytes);
+  public Comm put_init(Object data, long simulated_size_in_bytes) {
+    long cPtr = simgridJNI.Mailbox_put_init__SWIG_1(swigCPtr, this, data, simulated_size_in_bytes);
     return (cPtr == 0) ? null : new Comm(cPtr, true);
   }
+  public Comm put_init(Object data, double simulated_size_in_bytes) {
+    return put_init(data, (long)simulated_size_in_bytes);
+  }
 
-  public Comm put_async(SWIGTYPE_p_void data, long simulated_size_in_bytes) {
-    long cPtr = simgridJNI.Mailbox_put_async(swigCPtr, this, SWIGTYPE_p_void.getCPtr(data), simulated_size_in_bytes);
+  public Comm put_async(Object data, long simulated_size_in_bytes) {
+    long cPtr = simgridJNI.Mailbox_put_async(swigCPtr, this, data, simulated_size_in_bytes);
     return (cPtr == 0) ? null : new Comm(cPtr, true);
   }
 
@@ -105,11 +108,11 @@ public class Mailbox {
     simgridJNI.Mailbox_clear(swigCPtr, this);
   }
 
-  public void put(java.lang.Object payload, long simulated_size_in_bytes) {
+  public void put(Object payload, long simulated_size_in_bytes) {
     simgridJNI.Mailbox_put__SWIG_0(swigCPtr, this, payload, simulated_size_in_bytes);
   }
 
-  public void put(java.lang.Object payload, long simulated_size_in_bytes, double timeout) {
+  public void put(Object payload, long simulated_size_in_bytes, double timeout) {
     simgridJNI.Mailbox_put__SWIG_1(swigCPtr, this, payload, simulated_size_in_bytes, timeout);
   }
 
