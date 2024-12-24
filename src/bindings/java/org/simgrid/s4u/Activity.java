@@ -71,8 +71,8 @@ public class Activity {
     simgridJNI.Activity_set_vetoed_activities(SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.getCPtr(whereto));
   }
 
-  public Activity do_start() {
-    simgridJNI.Activity_do_start(swigCPtr, this);
+  public Activity start() {
+    simgridJNI.Activity_start(swigCPtr, this);
     return this;
   }
 

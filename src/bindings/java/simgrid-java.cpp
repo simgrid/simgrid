@@ -2715,12 +2715,12 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1set_1vetoed_1a
   simgrid::s4u::Activity::set_vetoed_activities(arg1);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1do_1start(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                            jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1start(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                        jobject jthis)
 {
   ActivityPtr self = *(ActivityPtr*)cthis;
 
-  self->do_start();
+  self->start();
 }
 
 XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1test(JNIEnv* jenv, jclass jcls, jlong cthis,

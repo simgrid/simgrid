@@ -94,7 +94,7 @@ public class simgridJNI {
   public final static native void Activity_complete(long jarg1, Activity jarg1_, int jarg2);
   public final static native long Activity_get_vetoed_activities();
   public final static native void Activity_set_vetoed_activities(long jarg1);
-  public final static native void Activity_do_start(long jarg1, Activity jarg1_);
+  public final static native void Activity_start(long jarg1, Activity jarg1_);
   public final static native boolean Activity_test(long jarg1, Activity jarg1_);
   public final static native void Activity_wait_for(long jarg1, Activity jarg1_, double jarg2);
   public final static native void Activity_wait_for_or_cancel(long jarg1, Activity jarg1_, double jarg2);
