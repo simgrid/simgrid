@@ -21,6 +21,12 @@ from distutils.version import LooseVersion
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
 
+ENABLE_SMPI = False
+
+if "--enable-smpi" in sys.argv:
+    ENABLE_SMPI = True
+    sys.argv.remove("--enable-smpi")
+
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
@@ -47,9 +53,10 @@ class CMakeBuild(build_ext):
         from pybind11 import get_cmake_dir
         extdir = os.path.abspath(os.path.dirname(
             self.get_ext_fullpath(ext.name)))
+        enable_smpi = 'ON' if ENABLE_SMPI else 'OFF'
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable,
-                      '-Denable_smpi=ON',
+                      '-Denable_smpi=' + enable_smpi,
                       '-Denable_java=OFF',
                       '-Denable_python=ON',
                       '-Dminimal-bindings=ON',
