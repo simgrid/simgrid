@@ -13,8 +13,6 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/modelchecker.h"
 #include "simgrid/plugins/load.h"
-#include <algorithm>
-#include <memory>
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/ActivitySet.hpp>
 #include <simgrid/s4u/Actor.hpp>
@@ -33,6 +31,8 @@
 #include <simgrid/s4u/Task.hpp>
 #include <simgrid/version.h>
 
+#include <algorithm>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -81,7 +81,6 @@ std::string get_simgrid_version()
   sg_version_get(&major, &minor, &patch);
   return simgrid::xbt::string_printf("%i.%i.%i", major, minor, patch);
 }
-
 } // namespace
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, boost::intrusive_ptr<T>)
