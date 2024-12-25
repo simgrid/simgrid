@@ -20,6 +20,15 @@
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Host.hpp>
 
+#define BIND_ALL_TYPES(module, name, function, ...)                                                                    \
+  module.def(name, function<uint8_t>, ##__VA_ARGS__);                                                                  \
+  module.def(name, function<uint16_t>, ##__VA_ARGS__);                                                                 \
+  module.def(name, function<int>, ##__VA_ARGS__);                                                                      \
+  module.def(name, function<double>, ##__VA_ARGS__);                                                                   \
+  module.def(name, function<float>, ##__VA_ARGS__);                                                                    \
+  module.def(name, function<long>, ##__VA_ARGS__);                                                                     \
+  module.def(name, function<long long>, ##__VA_ARGS__);
+
 namespace py = pybind11;
 using simgrid::s4u::Host;
 XBT_LOG_NEW_DEFAULT_CATEGORY(smpi_python, "python");
@@ -205,39 +214,32 @@ void SMPI_bindings(py::module& m)
   mpi_comm.def_property_readonly_static("SELF",
                                         [](py::object /* self */) { return (simgrid::smpi::Comm*)MPI_COMM_SELF; });
 
-  mpi_m.def("Alltoall", wrap_mpi_alltoall<int>, py::call_guard<py::gil_scoped_release>(), "Alltoall operation");
-  mpi_m.def("Alltoall", wrap_mpi_alltoall<double>, py::call_guard<py::gil_scoped_release>(), "Alltoall operation");
-  mpi_m.def("Alltoall", wrap_mpi_alltoall<float>, py::call_guard<py::gil_scoped_release>(), "Alltoall operation");
-  mpi_m.def("Alltoall", wrap_returned_mpi_alltoall<int>, py::call_guard<py::gil_scoped_release>(),
-            "Alltoall operation");
-  mpi_m.def("Alltoall", wrap_returned_mpi_alltoall<double>, py::call_guard<py::gil_scoped_release>(),
-            "Alltoall operation");
-  mpi_m.def("Alltoall", wrap_returned_mpi_alltoall<float>, py::call_guard<py::gil_scoped_release>(),
-            "Alltoall operation");
-  mpi_m.def("Bcast", wrap_mpi_bcast<int>, py::call_guard<py::gil_scoped_release>(), "Bcast operation");
-  mpi_m.def("Bcast", wrap_mpi_bcast<double>, py::call_guard<py::gil_scoped_release>(), "Bcast operation");
-  mpi_m.def("Bcast", wrap_mpi_bcast<float>, py::call_guard<py::gil_scoped_release>(), "Bcast operation");
-  mpi_m.def("Allreduce", wrap_mpi_allreduce<int>, py::call_guard<py::gil_scoped_release>(), "Allreduce operation");
-  mpi_m.def("Allreduce", wrap_mpi_allreduce<double>, py::call_guard<py::gil_scoped_release>(), "Allreduce operation");
-  mpi_m.def("Allreduce", wrap_mpi_allreduce<float>, py::call_guard<py::gil_scoped_release>(), "Allreduce operation");
-  mpi_m.def("Allgather", wrap_mpi_allgather<int>, py::call_guard<py::gil_scoped_release>(), "Allgather operation");
-  mpi_m.def("Allgather", wrap_mpi_allgather<double>, py::call_guard<py::gil_scoped_release>(), "Allgather operation");
-  mpi_m.def("Allgather", wrap_mpi_allgather<float>, py::call_guard<py::gil_scoped_release>(), "Allgather operation");
-  mpi_m.def("Reduce", wrap_mpi_reduce<int>, py::call_guard<py::gil_scoped_release>(), "Reduce operation");
-  mpi_m.def("Reduce", wrap_mpi_reduce<double>, py::call_guard<py::gil_scoped_release>(), "Reduce operation");
-  mpi_m.def("Reduce", wrap_mpi_reduce<float>, py::call_guard<py::gil_scoped_release>(), "Reduce operation");
-  mpi_m.def("Reduce_scatter", wrap_mpi_reduce_scatter<int>, py::call_guard<py::gil_scoped_release>(),
-            "Reduce scatter operation");
-  mpi_m.def("Reduce_scatter", wrap_mpi_reduce_scatter<double>, py::call_guard<py::gil_scoped_release>(),
-            "Reduce scatter operation");
-  mpi_m.def("Reduce_scatter", wrap_mpi_reduce_scatter<float>, py::call_guard<py::gil_scoped_release>(),
-            "Reduce scatter operation");
-  mpi_m.def("Reduce_scatter_block", wrap_mpi_reduce_scatter_block<int>, py::call_guard<py::gil_scoped_release>(),
-            "Reduce scatter block operation");
-  mpi_m.def("Reduce_scatter_block", wrap_mpi_reduce_scatter_block<double>, py::call_guard<py::gil_scoped_release>(),
-            "Reduce scatter block operation");
-  mpi_m.def("Reduce_scatter_block", wrap_mpi_reduce_scatter_block<float>, py::call_guard<py::gil_scoped_release>(),
-            "Reduce scatter block operation");
+  BIND_ALL_TYPES(mpi_m, "Alltoall", wrap_mpi_alltoall, py::arg("data"), py::arg("sendcount"), py::arg("sendtype"),
+                 py::arg("output"), py::arg("recvcount"), py::arg("recvtype"), py::arg("comm"),
+                 py::call_guard<py::gil_scoped_release>(), "Alltoall operation");
+
+  BIND_ALL_TYPES(mpi_m, "Bcast", wrap_mpi_bcast, py::arg("output"), py::arg("count"), py::arg("type"), py::arg("root"),
+                 py::arg("comm"), py::call_guard<py::gil_scoped_release>(), "Bcast operation");
+
+  BIND_ALL_TYPES(mpi_m, "Allreduce", wrap_mpi_allreduce, py::arg("input"), py::arg("output"), py::arg("count"),
+                 py::arg("type"), py::arg("op"), py::arg("comm"), py::call_guard<py::gil_scoped_release>(),
+                 "Allreduce operation");
+
+  BIND_ALL_TYPES(mpi_m, "Allgather", wrap_mpi_allgather, py::arg("input"), py::arg("send_count"), py::arg("send_type"),
+                 py::arg("output"), py::arg("output_count"), py::arg("output_type"), py::arg("comm"),
+                 py::call_guard<py::gil_scoped_release>(), "Allgather operation");
+
+  BIND_ALL_TYPES(mpi_m, "Reduce", wrap_mpi_reduce, py::arg("input"), py::arg("output"), py::arg("count"),
+                 py::arg("type"), py::arg("op"), py::arg("root"), py::arg("comm"),
+                 py::call_guard<py::gil_scoped_release>(), "Reduce operation");
+
+  BIND_ALL_TYPES(mpi_m, "Reduce_scatter", wrap_mpi_reduce_scatter, py::arg("input"), py::arg("output"),
+                 py::arg("count"), py::arg("type"), py::arg("op"), py::arg("comm"),
+                 py::call_guard<py::gil_scoped_release>(), "Reduce scatter operation");
+
+  BIND_ALL_TYPES(mpi_m, "Reduce_scatter_block", wrap_mpi_reduce_scatter_block, py::arg("input"), py::arg("output"),
+                 py::arg("count"), py::arg("type"), py::arg("op"), py::arg("comm"),
+                 py::call_guard<py::gil_scoped_release>(), "Reduce scatter block operation");
 
   py::class_<simgrid::smpi::Op, std::unique_ptr<simgrid::smpi::Op, py::nodelete>> mpi_op(
       mpi_m, "Op", "Simulated host. See the C++ documentation for details.");
