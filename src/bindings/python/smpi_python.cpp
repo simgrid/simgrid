@@ -272,7 +272,7 @@ void SMPI_bindings(py::module& m)
           "Return a new group excluding the specified ranks");
 
   py::class_<simgrid::smpi::Comm, std::unique_ptr<simgrid::smpi::Comm, py::nodelete>> mpi_comm(
-      mpi_m, "Comm", "Simulated host. See the C++ documentation for details.");
+      mpi_m, "Comm", "MPI Communicator object. See the C++ documentation for details.");
 
   mpi_comm
       .def(
@@ -327,7 +327,7 @@ void SMPI_bindings(py::module& m)
         MPI_Comm_group(comm, &group);
         return group;
       },
-      "Get the group of the communicator");
+      "Create a group link to the communicator");
   mpi_comm.def(
       "compare",
       [](simgrid::smpi::Comm* comm1, simgrid::smpi::Comm* comm2) {
