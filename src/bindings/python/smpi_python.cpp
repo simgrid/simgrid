@@ -189,6 +189,88 @@ void SMPI_bindings(py::module& m)
               },
               "Initialize the MPI interface")
           .def("Finalize", &MPI_Finalize, py::call_guard<py::gil_scoped_release>(), "Finalize the MPI interface");
+
+  py::class_<simgrid::smpi::Info, std::unique_ptr<simgrid::smpi::Info, py::nodelete>> mpi_info(
+      mpi_m, "Info", "MPI Info object. See the C++ documentation for details.");
+  py::class_<simgrid::smpi::Group, std::unique_ptr<simgrid::smpi::Group, py::nodelete>> mpi_group(
+      mpi_m, "Group", "MPI Group object. See the C++ documentation for details.");
+
+  mpi_group
+      .def(
+          "free", [](simgrid::smpi::Group* group) { return MPI_Group_free(&group); }, "Free the group")
+      .def(
+          "size",
+          [](simgrid::smpi::Group* group) {
+            int size;
+            MPI_Group_size(group, &size);
+            return size;
+          },
+          "Get the group size")
+      .def(
+          "rank",
+          [](simgrid::smpi::Group* group) {
+            int rank;
+            MPI_Group_rank(group, &rank);
+            return rank;
+          },
+          "Get the rank within the group")
+      .def(
+          "translate_ranks",
+          [](simgrid::smpi::Group* group1, std::vector<int> ranks, simgrid::smpi::Group* group2) {
+            std::vector<int> ranks2(ranks.size());
+            MPI_Group_translate_ranks(group1, ranks.size(), ranks.data(), group2, ranks2.data());
+            return ranks2;
+          },
+          "translate ranks from one group to another")
+      .def(
+          "compare",
+          [](simgrid::smpi::Group* group, simgrid::smpi::Group* group2) {
+            int result;
+            int status = MPI_Group_compare(group, group2, &result);
+            return result;
+          },
+          "Compare two groups")
+      .def(
+          "union",
+          [](simgrid::smpi::Group* group, simgrid::smpi::Group* group2) {
+            MPI_Group newgroup;
+            MPI_Group_union(group, group2, &newgroup);
+            return newgroup;
+          },
+          "Return the union of two groups")
+      .def(
+          "intersection",
+          [](simgrid::smpi::Group* group, simgrid::smpi::Group* group2) {
+            MPI_Group newgroup;
+            MPI_Group_intersection(group, group2, &newgroup);
+            return newgroup;
+          },
+          "Return the intersection of two groups")
+      .def(
+          "difference",
+          [](simgrid::smpi::Group* group, simgrid::smpi::Group* group2) {
+            MPI_Group newgroup;
+            MPI_Group_difference(group, group2, &newgroup);
+            return newgroup;
+          },
+          "Return the difference of two groups")
+      .def(
+          "incl",
+          [](simgrid::smpi::Group* group, std::vector<int> ranks) {
+            MPI_Group newgroup;
+            MPI_Group_incl(group, ranks.size(), ranks.data(), &newgroup);
+            return newgroup;
+          },
+          "Return a new group containing the specified ranks")
+      .def(
+          "excl",
+          [](simgrid::smpi::Group* group, std::vector<int> ranks) {
+            MPI_Group newgroup;
+            MPI_Group_excl(group, ranks.size(), ranks.data(), &newgroup);
+            return newgroup;
+          },
+          "Return a new group excluding the specified ranks");
+
   py::class_<simgrid::smpi::Comm, std::unique_ptr<simgrid::smpi::Comm, py::nodelete>> mpi_comm(
       mpi_m, "Comm", "Simulated host. See the C++ documentation for details.");
 
@@ -209,6 +291,98 @@ void SMPI_bindings(py::module& m)
             return rank;
           },
           "Get the rank within the communicator");
+
+  mpi_comm.def(
+      "get_name",
+      [](simgrid::smpi::Comm* comm) {
+        char name[MPI_MAX_OBJECT_NAME];
+        int len;
+        MPI_Comm_get_name(comm, name, &len);
+        return std::string(name);
+      },
+      "Get the name of the communicator");
+  mpi_comm.def(
+      "set_name", [](simgrid::smpi::Comm* comm, const std::string& name) { MPI_Comm_set_name(comm, name.c_str()); },
+      "Set the name of the communicator");
+  mpi_comm.def(
+      "dup",
+      [](simgrid::smpi::Comm* comm) {
+        MPI_Comm newcomm;
+        MPI_Comm_dup(comm, &newcomm);
+        return newcomm;
+      },
+      "Duplicate the communicator");
+  mpi_comm.def(
+      "dup_with_info",
+      [](simgrid::smpi::Comm* comm, MPI_Info info) {
+        MPI_Comm newcomm;
+        MPI_Comm_dup_with_info(comm, info, &newcomm);
+        return newcomm;
+      },
+      "Duplicate the communicator with info");
+  mpi_comm.def(
+      "group",
+      [](simgrid::smpi::Comm* comm) {
+        MPI_Group group;
+        MPI_Comm_group(comm, &group);
+        return group;
+      },
+      "Get the group of the communicator");
+  mpi_comm.def(
+      "compare",
+      [](simgrid::smpi::Comm* comm1, simgrid::smpi::Comm* comm2) {
+        int result;
+        MPI_Comm_compare(comm1, comm2, &result);
+        return result;
+      },
+      "Compare two communicators");
+  mpi_comm.def(
+      "create",
+      [](simgrid::smpi::Comm* comm, MPI_Group group) {
+        MPI_Comm newcomm;
+        MPI_Comm_create(comm, group, &newcomm);
+        return newcomm;
+      },
+      "Create a new communicator");
+  mpi_comm.def(
+      "create_group",
+      [](simgrid::smpi::Comm* comm, MPI_Group group, int tag) {
+        MPI_Comm newcomm;
+        MPI_Comm_create_group(comm, group, tag, &newcomm);
+        return newcomm;
+      },
+      "Create a new communicator with a tag");
+  mpi_comm.def(
+      "free", [](simgrid::smpi::Comm* comm) { MPI_Comm_free(&comm); }, "Free the communicator");
+  mpi_comm.def(
+      "disconnect", [](simgrid::smpi::Comm* comm) { MPI_Comm_disconnect(&comm); }, "Disconnect the communicator");
+  mpi_comm.def(
+      "split",
+      [](simgrid::smpi::Comm* comm, int color, int key) {
+        MPI_Comm newcomm;
+        MPI_Comm_split(comm, color, key, &newcomm);
+        return newcomm;
+      },
+      "Split the communicator");
+  mpi_comm.def(
+      "set_info", [](simgrid::smpi::Comm* comm, MPI_Info info) { MPI_Comm_set_info(comm, info); },
+      "Set the info of the communicator");
+  mpi_comm.def(
+      "get_info",
+      [](simgrid::smpi::Comm* comm) {
+        MPI_Info info;
+        MPI_Comm_get_info(comm, &info);
+        return info;
+      },
+      "Get the info of the communicator");
+  mpi_comm.def(
+      "split_type",
+      [](simgrid::smpi::Comm* comm, int split_type, int key, MPI_Info info) {
+        MPI_Comm newcomm;
+        MPI_Comm_split_type(comm, split_type, key, info, &newcomm);
+        return newcomm;
+      },
+      "Split the communicator by type");
   mpi_comm.def_property_readonly_static("WORLD",
                                         [](py::object /* self */) { return (simgrid::smpi::Comm*)MPI_COMM_WORLD; });
   mpi_comm.def_property_readonly_static("SELF",
@@ -268,6 +442,72 @@ void SMPI_bindings(py::module& m)
 
   py::class_<simgrid::smpi::Datatype, std::unique_ptr<simgrid::smpi::Datatype, py::nodelete>> mpi_datatype(
       mpi_m, "Datatype", "Simulated host. See the C++ documentation for details.");
-  mpi_datatype.def_property_readonly_static("DOUBLE", [](py::object /* self */) { return MPI_DOUBLE; })
-      .def_property_readonly_static("INT", [](py::object /* self */) { return MPI_INT; });
+  mpi_datatype
+      .def_property_readonly_static("DATATYPE_NULL;              ",
+                                    [](py::object /* self */) { return MPI_DATATYPE_NULL; })
+      .def_property_readonly_static("CHAR;                       ", [](py::object /* self */) { return MPI_CHAR; })
+      .def_property_readonly_static("SHORT;                      ", [](py::object /* self */) { return MPI_SHORT; })
+      .def_property_readonly_static("INT;                        ", [](py::object /* self */) { return MPI_INT; })
+      .def_property_readonly_static("LONG;                       ", [](py::object /* self */) { return MPI_LONG; })
+      .def_property_readonly_static("LONG_LONG;                  ", [](py::object /* self */) { return MPI_LONG_LONG; })
+      .def_property_readonly_static("SIGNED_CHAR;                ",
+                                    [](py::object /* self */) { return MPI_SIGNED_CHAR; })
+      .def_property_readonly_static("UNSIGNED_CHAR;              ",
+                                    [](py::object /* self */) { return MPI_UNSIGNED_CHAR; })
+      .def_property_readonly_static("UNSIGNED_SHORT;             ",
+                                    [](py::object /* self */) { return MPI_UNSIGNED_SHORT; })
+      .def_property_readonly_static("UNSIGNED;                   ", [](py::object /* self */) { return MPI_UNSIGNED; })
+      .def_property_readonly_static("UNSIGNED_LONG;              ",
+                                    [](py::object /* self */) { return MPI_UNSIGNED_LONG; })
+      .def_property_readonly_static("UNSIGNED_LONG_LONG;         ",
+                                    [](py::object /* self */) { return MPI_UNSIGNED_LONG_LONG; })
+      .def_property_readonly_static("FLOAT;                      ", [](py::object /* self */) { return MPI_FLOAT; })
+      .def_property_readonly_static("DOUBLE;                     ", [](py::object /* self */) { return MPI_DOUBLE; })
+      .def_property_readonly_static("LONG_DOUBLE;                ",
+                                    [](py::object /* self */) { return MPI_LONG_DOUBLE; })
+      .def_property_readonly_static("WCHAR;                      ", [](py::object /* self */) { return MPI_WCHAR; })
+      .def_property_readonly_static("C_BOOL;                     ", [](py::object /* self */) { return MPI_C_BOOL; })
+      .def_property_readonly_static("INT8_T;                     ", [](py::object /* self */) { return MPI_INT8_T; })
+      .def_property_readonly_static("INT16_T;                    ", [](py::object /* self */) { return MPI_INT16_T; })
+      .def_property_readonly_static("INT32_T;                    ", [](py::object /* self */) { return MPI_INT32_T; })
+      .def_property_readonly_static("INT64_T;                    ", [](py::object /* self */) { return MPI_INT64_T; })
+      .def_property_readonly_static("UINT8_T;                    ", [](py::object /* self */) { return MPI_UINT8_T; })
+      .def_property_readonly_static("BYTE;                       ", [](py::object /* self */) { return MPI_BYTE; })
+      .def_property_readonly_static("UINT16_T;                   ", [](py::object /* self */) { return MPI_UINT16_T; })
+      .def_property_readonly_static("UINT32_T;                   ", [](py::object /* self */) { return MPI_UINT32_T; })
+      .def_property_readonly_static("UINT64_T;                   ", [](py::object /* self */) { return MPI_UINT64_T; })
+      .def_property_readonly_static("C_FLOAT_COMPLEX;            ",
+                                    [](py::object /* self */) { return MPI_C_FLOAT_COMPLEX; })
+      .def_property_readonly_static("C_DOUBLE_COMPLEX;           ",
+                                    [](py::object /* self */) { return MPI_C_DOUBLE_COMPLEX; })
+      .def_property_readonly_static("C_LONG_DOUBLE_COMPLEX;      ",
+                                    [](py::object /* self */) { return MPI_C_LONG_DOUBLE_COMPLEX; })
+      .def_property_readonly_static("AINT;                       ", [](py::object /* self */) { return MPI_AINT; })
+      .def_property_readonly_static("OFFSET;                     ", [](py::object /* self */) { return MPI_OFFSET; })
+      .def_property_readonly_static("LB;                         ", [](py::object /* self */) { return MPI_LB; })
+      .def_property_readonly_static("UB;                         ", [](py::object /* self */) { return MPI_UB; })
+      .def_property_readonly_static("FLOAT_INT;                  ", [](py::object /* self */) { return MPI_FLOAT_INT; })
+      .def_property_readonly_static("LONG_INT;                   ", [](py::object /* self */) { return MPI_LONG_INT; })
+      .def_property_readonly_static("DOUBLE_INT;                 ",
+                                    [](py::object /* self */) { return MPI_DOUBLE_INT; })
+      .def_property_readonly_static("SHORT_INT;                  ", [](py::object /* self */) { return MPI_SHORT_INT; })
+      .def_property_readonly_static("2INT;                       ", [](py::object /* self */) { return MPI_2INT; })
+      .def_property_readonly_static("LONG_DOUBLE_INT;            ",
+                                    [](py::object /* self */) { return MPI_LONG_DOUBLE_INT; })
+      .def_property_readonly_static("2FLOAT;                     ", [](py::object /* self */) { return MPI_2FLOAT; })
+      .def_property_readonly_static("2DOUBLE;                    ", [](py::object /* self */) { return MPI_2DOUBLE; })
+      .def_property_readonly_static("2LONG;                      ", [](py::object /* self */) { return MPI_2LONG; })
+      .def_property_readonly_static("REAL;                       ", [](py::object /* self */) { return MPI_REAL; })
+      .def_property_readonly_static("REAL4;                      ", [](py::object /* self */) { return MPI_REAL4; })
+      .def_property_readonly_static("REAL8;                      ", [](py::object /* self */) { return MPI_REAL8; })
+      .def_property_readonly_static("REAL16;                     ", [](py::object /* self */) { return MPI_REAL16; })
+      .def_property_readonly_static("COMPLEX8;                   ", [](py::object /* self */) { return MPI_COMPLEX8; })
+      .def_property_readonly_static("COMPLEX16;                  ", [](py::object /* self */) { return MPI_COMPLEX16; })
+      .def_property_readonly_static("COMPLEX32;                  ", [](py::object /* self */) { return MPI_COMPLEX32; })
+      .def_property_readonly_static("INTEGER1;                   ", [](py::object /* self */) { return MPI_INTEGER1; })
+      .def_property_readonly_static("INTEGER2;                   ", [](py::object /* self */) { return MPI_INTEGER2; })
+      .def_property_readonly_static("INTEGER4;                   ", [](py::object /* self */) { return MPI_INTEGER4; })
+      .def_property_readonly_static("INTEGER8;                   ", [](py::object /* self */) { return MPI_INTEGER8; })
+      .def_property_readonly_static("INTEGER16;                  ", [](py::object /* self */) { return MPI_INTEGER16; })
+      .def_property_readonly_static("COUNT;                      ", [](py::object /* self */) { return MPI_COUNT; });
 }
