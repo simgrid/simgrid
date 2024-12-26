@@ -135,18 +135,18 @@ public class Io extends Activity {
   }
 
   public Io add_successor(Activity a) {
-    long cPtr = simgridJNI.Io_add_successor(swigCPtr, this, Activity.getCPtr(a), a);
-    return (cPtr == 0) ? null : new Io(cPtr, false);
+    simgridJNI.Io_add_successor(swigCPtr, this, Activity.getCPtr(a), a);
+    return this;
   }
 
   public Io remove_successor(Activity a) {
-    long cPtr = simgridJNI.Io_remove_successor(swigCPtr, this, Activity.getCPtr(a), a);
-    return (cPtr == 0) ? null : new Io(cPtr, false);
+    simgridJNI.Io_remove_successor(swigCPtr, this, Activity.getCPtr(a), a);
+    return this;
   }
 
   public Io set_name(String name) {
-    long cPtr = simgridJNI.Io_set_name(swigCPtr, this, name);
-    return (cPtr == 0) ? null : new Io(cPtr, false);
+    simgridJNI.Io_set_name(swigCPtr, this, name);
+    return this;
   }
 
   public String get_name() {
@@ -154,8 +154,8 @@ public class Io extends Activity {
   }
 
   public Io set_tracing_category(String category) {
-    long cPtr = simgridJNI.Io_set_tracing_category(swigCPtr, this, category);
-    return (cPtr == 0) ? null : new Io(cPtr, false);
+    simgridJNI.Io_set_tracing_category(swigCPtr, this, category);
+    return this;
   }
 
   public String get_tracing_category() {
@@ -177,13 +177,13 @@ public class Io extends Activity {
   }
 
   public Io cancel() {
-    long cPtr = simgridJNI.Io_cancel(swigCPtr, this);
-    return (cPtr == 0) ? null : new Io(cPtr, false);
+    simgridJNI.Io_cancel(swigCPtr, this);
+    return this;
   }
 
   public Io wait_for(double timeout) {
-    long cPtr = simgridJNI.Io_wait_for(swigCPtr, this, timeout);
-    return (cPtr == 0) ? null : new Io(cPtr, false);
+    simgridJNI.Io_wait_for(swigCPtr, this, timeout);
+    return this;
   }
 
   public final static class OpType {

@@ -5,6 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/forward.h"
 #define SWIG_VERSION 0x040201
 
 #include "xbt/base.h"
@@ -3579,8 +3580,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1wait_1for(JNIEnv*
   return jresult;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1start_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1start_1cb(JNIEnv* jenv, jclass jcls, jlong cthis)
 {
   std::function<void(simgrid::s4u::Io const&)>* arg1 = 0;
 
@@ -3595,8 +3595,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1
   simgrid::s4u::Activity_T<simgrid::s4u::Io>::on_start_cb((std::function<void(simgrid::s4u::Io const&)> const&)*arg1);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1this_1start_1cb(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jlong jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1start_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                                jobject jthis, jlong jarg2)
 {
   simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1   = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
   std::function<void(simgrid::s4u::Io const&)>* arg2 = 0;
@@ -3619,8 +3619,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1
   (arg1)->on_this_start_cb((std::function<void(simgrid::s4u::Io const&)> const&)*arg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1completion_1cb(JNIEnv* jenv,
-                                                                                               jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1completion_1cb(JNIEnv* jenv, jclass jcls, jlong cthis)
 {
   std::function<void(simgrid::s4u::Io const&)>* arg1 = 0;
 
@@ -3636,8 +3635,9 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1
       (std::function<void(simgrid::s4u::Io const&)> const&)*arg1);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1this_1completion_1cb(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jlong jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1completion_1cb(JNIEnv* jenv, jclass jcls,
+                                                                                     jlong cthis, jobject jthis,
+                                                                                     jlong jarg2)
 {
   simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1   = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
   std::function<void(simgrid::s4u::Io const&)>* arg2 = 0;
@@ -3660,8 +3660,9 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1
   (arg1)->on_this_completion_cb((std::function<void(simgrid::s4u::Io const&)> const&)*arg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1this_1suspend_1cb(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jlong jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass jcls,
+                                                                                  jlong cthis, jobject jthis,
+                                                                                  jlong jarg2)
 {
   simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1   = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
   std::function<void(simgrid::s4u::Io const&)>* arg2 = 0;
@@ -3684,8 +3685,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1
   (arg1)->on_this_suspend_cb((std::function<void(simgrid::s4u::Io const&)> const&)*arg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1this_1resume_1cb(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jlong jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1resume_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                                 jobject jthis, jlong jarg2)
 {
   simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1   = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
   std::function<void(simgrid::s4u::Io const&)>* arg2 = 0;
@@ -3708,8 +3709,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1
   (arg1)->on_this_resume_cb((std::function<void(simgrid::s4u::Io const&)> const&)*arg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1veto_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                         jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1veto_1cb(JNIEnv* jenv, jclass jcls, jlong cthis)
 {
   std::function<void(simgrid::s4u::Io&)>* arg1 = 0;
 
@@ -3724,10 +3724,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1
   simgrid::s4u::Activity_T<simgrid::s4u::Io>::on_veto_cb((std::function<void(simgrid::s4u::Io&)> const&)*arg1);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1this_1veto_1cb(JNIEnv* jenv,
-                                                                                               jclass jcls, jlong cthis,
-                                                                                               jobject jthis,
-                                                                                               jlong jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1veto_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                               jobject jthis, jlong jarg2)
 {
   simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1 = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
   std::function<void(simgrid::s4u::Io&)>* arg2     = 0;
@@ -3750,133 +3748,49 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1on_1
   (arg1)->on_this_veto_cb((std::function<void(simgrid::s4u::Io&)> const&)*arg2);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1add_1successor(JNIEnv* jenv, jclass jcls,
-                                                                                            jlong cthis, jobject jthis,
-                                                                                            jlong jarg2, jobject jarg2_)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1add_1successor(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                           jobject jthis, jlong jarg2, jobject jarg2_)
 {
-  jlong jresult                                    = 0;
-  simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1 = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
-  boost::intrusive_ptr<simgrid::s4u::Activity> arg2;
-  boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>* smartarg1 = 0;
-  boost::shared_ptr<simgrid::s4u::Activity>* smartarg2;
-  simgrid::s4u::Io* result = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  (void)jarg2_;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>**)&cthis;
-  arg1      = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)(smartarg1 ? smartarg1->get() : 0);
-
-  // intrusive_ptr by value
-  smartarg2 = *(boost::shared_ptr<simgrid::s4u::Activity>**)&jarg2;
-  if (smartarg2) {
-    arg2 = boost::intrusive_ptr<simgrid::s4u::Activity>(smartarg2->get(), true);
-  }
-
-  result                        = (simgrid::s4u::Io*)(arg1)->add_successor(arg2);
-  *(simgrid::s4u::Io**)&jresult = result;
-  return jresult;
+  IoPtr self = *(IoPtr*)cthis;
+  self->add_successor(*(ActivityPtr*)jarg2);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1remove_1successor(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jlong jarg2, jobject jarg2_)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1remove_1successor(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                              jobject jthis, jlong jarg2,
+                                                                              jobject jarg2_)
 {
-  jlong jresult                                    = 0;
-  simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1 = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
-  boost::intrusive_ptr<simgrid::s4u::Activity> arg2;
-  boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>* smartarg1 = 0;
-  boost::shared_ptr<simgrid::s4u::Activity>* smartarg2;
-  simgrid::s4u::Io* result = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  (void)jarg2_;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>**)&cthis;
-  arg1      = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)(smartarg1 ? smartarg1->get() : 0);
-
-  // intrusive_ptr by value
-  smartarg2 = *(boost::shared_ptr<simgrid::s4u::Activity>**)&jarg2;
-  if (smartarg2) {
-    arg2 = boost::intrusive_ptr<simgrid::s4u::Activity>(smartarg2->get(), true);
-  }
-
-  result                        = (simgrid::s4u::Io*)(arg1)->remove_successor(arg2);
-  *(simgrid::s4u::Io**)&jresult = result;
-  return jresult;
+  IoPtr self = *(IoPtr*)cthis;
+  self->remove_successor(*(ActivityPtr*)jarg2);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1set_1name(JNIEnv* jenv, jclass jcls,
-                                                                                       jlong cthis, jobject jthis,
-                                                                                       jstring jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                      jobject jthis, jstring jarg2)
 {
-  jlong jresult = 0;
-  boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>* smartarg1 =
-      *(boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>**)&cthis;
-  simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1 =
-      (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)(smartarg1 ? smartarg1->get() : 0);
-
-  simgrid::s4u::Io* result      = (simgrid::s4u::Io*)(arg1)->set_name(java_string_to_std_string(jenv, jarg2));
-  *(simgrid::s4u::Io**)&jresult = result;
-  return jresult;
+  IoPtr self = *(IoPtr*)cthis;
+  self->set_name(java_string_to_std_string(jenv, jarg2));
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1get_1name(JNIEnv* jenv, jclass jcls,
-                                                                                         jlong cthis, jobject jthis)
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                         jobject jthis)
 {
-  jstring jresult                                  = 0;
-  simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1 = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
-  boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io> const>* smartarg1 = 0;
-  char* result                                                                   = 0;
+  IoPtr self         = *(IoPtr*)cthis;
+  const char* result = self->get_cname();
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Activity_T<simgrid::s4u::Io>>**)&cthis;
-  arg1      = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (char*)((simgrid::s4u::Activity_T<simgrid::s4u::Io> const*)arg1)->get_cname();
   if (result)
-    jresult = jenv->NewStringUTF((const char*)result);
-  return jresult;
+    return jenv->NewStringUTF(result);
+  return 0;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1set_1tracing_1category(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jstring jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1tracing_1category(JNIEnv* jenv, jclass jcls,
+                                                                                   jlong cthis, jobject jthis,
+                                                                                   jstring jarg2)
 {
-  jlong jresult                                    = 0;
-  simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1 = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
-  std::string_view arg2;
-  boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>* smartarg1 = 0;
-  std::string_view* argp2;
-  simgrid::s4u::Io* result = 0;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>**)&cthis;
-  arg1      = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)(smartarg1 ? smartarg1->get() : 0);
-
-  argp2 = *(std::string_view**)&jarg2;
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null std::string_view");
-    return 0;
-  }
-  arg2                          = *argp2;
-  result                        = (simgrid::s4u::Io*)(arg1)->set_tracing_category(arg2);
-  *(simgrid::s4u::Io**)&jresult = result;
-  return jresult;
+  IoPtr self = *(IoPtr*)cthis;
+  self->set_tracing_category(java_string_to_std_string(jenv, jarg2));
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1get_1tracing_1category(JNIEnv* jenv,
-                                                                                                      jclass jcls,
-                                                                                                      jlong cthis,
-                                                                                                      jobject jthis)
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1get_1tracing_1category(JNIEnv* jenv, jclass jcls,
+                                                                                      jlong cthis, jobject jthis)
 {
   jstring jresult                                  = 0;
   simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1 = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
@@ -3896,10 +3810,8 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1g
   return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1get_1clean_1function(JNIEnv* jenv,
-                                                                                                  jclass jcls,
-                                                                                                  jlong cthis,
-                                                                                                  jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1get_1clean_1function(JNIEnv* jenv, jclass jcls,
+                                                                                  jlong cthis, jobject jthis)
 {
   jlong jresult                                    = 0;
   simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1 = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
@@ -3920,9 +3832,8 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1get
   return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1detach_1_1SWIG_10(JNIEnv* jenv,
-                                                                                               jclass jcls, jlong cthis,
-                                                                                               jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1detach_1_1SWIG_10(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                               jobject jthis)
 {
   jlong jresult                                    = 0;
   simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1 = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
@@ -3942,10 +3853,8 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1det
   return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1detach_1_1SWIG_11(JNIEnv* jenv,
-                                                                                               jclass jcls, jlong cthis,
-                                                                                               jobject jthis,
-                                                                                               jlong jarg2)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1detach_1_1SWIG_11(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                               jobject jthis, jlong jarg2)
 {
   jlong jresult                                    = 0;
   simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1 = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
@@ -3971,65 +3880,25 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1det
   return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1cancel(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1cancel(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                   jobject jthis)
 {
-  jlong jresult                                    = 0;
-  simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1 = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
-  boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>* smartarg1 = 0;
-  simgrid::s4u::Io* result                                                 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>**)&cthis;
-  arg1      = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)(smartarg1 ? smartarg1->get() : 0);
-
-  result                        = (simgrid::s4u::Io*)(arg1)->cancel();
-  *(simgrid::s4u::Io**)&jresult = result;
-  return jresult;
+  IoPtr self = *(IoPtr*)cthis;
+  self->cancel();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1wait_1for(JNIEnv* jenv, jclass jcls,
-                                                                                       jlong cthis, jobject jthis,
-                                                                                       jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1wait_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                      jobject jthis, jdouble jarg2)
 {
-  jlong jresult                                    = 0;
-  simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1 = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
-  double arg2;
-  boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>* smartarg1 = 0;
-  simgrid::s4u::Io* result                                                 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>**)&cthis;
-  arg1      = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2                          = (double)jarg2;
-  result                        = (simgrid::s4u::Io*)(arg1)->wait_for(arg2);
-  *(simgrid::s4u::Io**)&jresult = result;
-  return jresult;
+  IoPtr self = *(IoPtr*)cthis;
+  self->wait_for(jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1InternalActivityIo(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Io(JNIEnv* jenv, jclass jcls, jlong cthis)
 {
-  simgrid::s4u::Activity_T<simgrid::s4u::Io>* arg1 = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)0;
-  boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>* smartarg1 = 0;
+  boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>* smartarg1 =
+      *(boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>**)&cthis;
 
-  (void)jenv;
-  (void)jcls;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>**)&cthis;
-  arg1      = (simgrid::s4u::Activity_T<simgrid::s4u::Io>*)(smartarg1 ? smartarg1->get() : 0);
-
-  (void)arg1;
   delete smartarg1;
 }
 
@@ -8540,22 +8409,6 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1is_1assigned(JNI
   return jresult;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Io(JNIEnv* jenv, jclass jcls, jlong cthis)
-{
-  simgrid::s4u::Io* arg1                         = (simgrid::s4u::Io*)0;
-  boost::shared_ptr<simgrid::s4u::Io>* smartarg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Io>**)&cthis;
-  arg1      = (simgrid::s4u::Io*)(smartarg1 ? smartarg1->get() : 0);
-
-  (void)arg1;
-  delete smartarg1;
-}
-
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Host(JNIEnv* jenv, jclass jcls, jlong cthis)
 {
   simgrid::s4u::Host* arg1                         = (simgrid::s4u::Host*)0;
@@ -12335,20 +12188,6 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1VirtualMachine(J
 
   (void)arg1;
   delete smartarg1;
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_InternalActivityIo_1SWIGSmartPtrUpcast(JNIEnv* jenv,
-                                                                                                jclass jcls,
-                                                                                                jlong cthis)
-{
-  jlong baseptr = 0;
-  boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>* argp1;
-  (void)jenv;
-  (void)jcls;
-  argp1 = *(boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Io>>**)&cthis;
-  *(boost::shared_ptr<simgrid::s4u::Activity>**)&baseptr =
-      argp1 ? new boost::shared_ptr<simgrid::s4u::Activity>(*argp1) : 0;
-  return baseptr;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1SWIGSmartPtrUpcast(JNIEnv* jenv, jclass jcls,
