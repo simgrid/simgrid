@@ -135,9 +135,8 @@ public class Comm extends Activity {
     return simgridJNI.Comm_get_dst_data_size(swigCPtr, this);
   }
 
-  public SWIGTYPE_p_void get_payload() {
-    long cPtr = simgridJNI.Comm_get_payload(swigCPtr, this);
-    return (cPtr == 0) ? null : new SWIGTYPE_p_void(cPtr, false);
+  public Object get_payload() {
+    return simgridJNI.Comm_get_payload(swigCPtr, this);
   }
 
   public Comm set_payload_size(long bytes) {

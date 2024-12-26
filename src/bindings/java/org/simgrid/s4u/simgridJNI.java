@@ -200,7 +200,7 @@ public class simgridJNI {
   public final static native long Comm_set_dst_data__SWIG_1(long jarg1, Comm jarg1_, long jarg2, long jarg3);
   public final static native long Comm_get_dst_data(long jarg1, Comm jarg1_);
   public final static native long Comm_get_dst_data_size(long jarg1, Comm jarg1_);
-  public final static native long Comm_get_payload(long jarg1, Comm jarg1_);
+  public final static native Object Comm_get_payload(long jarg1, Comm jarg1_);
   public final static native long Comm_set_payload_size(long jarg1, Comm jarg1_, long jarg2);
   public final static native long Comm_set_rate(long jarg1, Comm jarg1_, double jarg2);
   public final static native boolean Comm_is_assigned(long jarg1, Comm jarg1_);
@@ -486,7 +486,7 @@ public class simgridJNI {
   public final static native void Mailbox_clear(long jarg1, Mailbox jarg1_);
   public final static native void Mailbox_put__SWIG_0(long jarg1, Mailbox jarg1_, Object jarg3, long jarg4);
   public final static native void Mailbox_put__SWIG_1(long jarg1, Mailbox jarg1_, Object jarg3, long jarg4, double jarg5);
-  public final static native java.lang.Object Mailbox_get(long jarg1, Mailbox jarg1_);
+  public final static native Object Mailbox_get(long jarg1, Mailbox jarg1_);
   public final static native String MessageQueue_get_name(long jarg1, MessageQueue jarg1_);
   public final static native long MessageQueue_by_name(String jarg1);
   public final static native boolean MessageQueue_empty(long jarg1, MessageQueue jarg1_);
