@@ -167,18 +167,18 @@ public class Exec extends Activity {
   }
 
   public Exec add_successor(Activity a) {
-    long cPtr = simgridJNI.Exec_add_successor(swigCPtr, this, Activity.getCPtr(a), a);
-    return (cPtr == 0) ? null : new Exec(cPtr, false);
+    simgridJNI.Exec_add_successor(swigCPtr, this, Activity.getCPtr(a), a);
+    return this;
   }
 
   public Exec remove_successor(Activity a) {
-    long cPtr = simgridJNI.Exec_remove_successor(swigCPtr, this, Activity.getCPtr(a), a);
-    return (cPtr == 0) ? null : new Exec(cPtr, false);
+    simgridJNI.Exec_remove_successor(swigCPtr, this, Activity.getCPtr(a), a);
+    return this;
   }
 
   public Exec set_name(String name) {
-    long cPtr = simgridJNI.Exec_set_name(swigCPtr, this, name);
-    return (cPtr == 0) ? null : new Exec(cPtr, false);
+    simgridJNI.Exec_set_name(swigCPtr, this, name);
+    return this;
   }
 
   public String get_name() {
@@ -186,8 +186,8 @@ public class Exec extends Activity {
   }
 
   public Exec set_tracing_category(String category) {
-    long cPtr = simgridJNI.Exec_set_tracing_category(swigCPtr, this, category);
-    return (cPtr == 0) ? null : new Exec(cPtr, false);
+    simgridJNI.Exec_set_tracing_category(swigCPtr, this, category);
+    return this;
   }
 
   public String get_tracing_category() {
@@ -209,12 +209,12 @@ public class Exec extends Activity {
   }
 
   public Exec cancel() {
-    long cPtr = simgridJNI.Exec_cancel(swigCPtr, this);
-    return (cPtr == 0) ? null : new Exec(cPtr, false);
+    simgridJNI.Exec_cancel(swigCPtr, this);
+    return this;
   }
 
   public Exec wait_for(double timeout) {
-    long cPtr = simgridJNI.Exec_wait_for(swigCPtr, this, timeout);
-    return (cPtr == 0) ? null : new Exec(cPtr, false);
+    simgridJNI.Exec_wait_for(swigCPtr, this, timeout);
+    return this;
   }
 }
