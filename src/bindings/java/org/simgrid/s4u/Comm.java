@@ -197,18 +197,18 @@ public class Comm extends Activity {
   }
 
   public Comm add_successor(Activity a) {
-    long cPtr = simgridJNI.Comm_add_successor(swigCPtr, this, Activity.getCPtr(a), a);
-    return (cPtr == 0) ? null : new Comm(cPtr, false);
+    simgridJNI.Comm_add_successor(swigCPtr, this, Activity.getCPtr(a), a);
+    return this;
   }
 
   public Comm remove_successor(Activity a) {
-    long cPtr = simgridJNI.Comm_remove_successor(swigCPtr, this, Activity.getCPtr(a), a);
-    return (cPtr == 0) ? null : new Comm(cPtr, false);
+    simgridJNI.Comm_remove_successor(swigCPtr, this, Activity.getCPtr(a), a);
+    return this;
   }
 
   public Comm set_name(String name) {
-    long cPtr = simgridJNI.Comm_set_name(swigCPtr, this, name);
-    return (cPtr == 0) ? null : new Comm(cPtr, false);
+    simgridJNI.Comm_set_name(swigCPtr, this, name);
+    return this;
   }
 
   public String get_name() {
@@ -216,8 +216,8 @@ public class Comm extends Activity {
   }
 
   public Comm set_tracing_category(String category) {
-    long cPtr = simgridJNI.Comm_set_tracing_category(swigCPtr, this, category);
-    return (cPtr == 0) ? null : new Comm(cPtr, false);
+    simgridJNI.Comm_set_tracing_category(swigCPtr, this, category);
+    return this;
   }
 
   public String get_tracing_category() {
@@ -229,18 +229,18 @@ public class Comm extends Activity {
   }
 
   public Comm detach() {
-    long cPtr = simgridJNI.Comm_detach__SWIG_0(swigCPtr, this);
-    return (cPtr == 0) ? null : new Comm(cPtr, false);
+    simgridJNI.Comm_detach__SWIG_0(swigCPtr, this);
+    return this;
   }
 
   public Comm detach(SWIGTYPE_p_std__functionT_void_fvoid_pF_t clean_function) {
-    long cPtr = simgridJNI.Comm_detach__SWIG_1(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fvoid_pF_t.getCPtr(clean_function));
-    return (cPtr == 0) ? null : new Comm(cPtr, false);
+    simgridJNI.Comm_detach__SWIG_1(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fvoid_pF_t.getCPtr(clean_function));
+    return this;
   }
 
   public Comm cancel() {
-    long cPtr = simgridJNI.Comm_cancel(swigCPtr, this);
-    return (cPtr == 0) ? null : new Comm(cPtr, false);
+    simgridJNI.Comm_cancel(swigCPtr, this);
+    return this;
   }
 
   public Comm wait_for(double timeout) {
