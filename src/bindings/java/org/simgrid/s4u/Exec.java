@@ -199,13 +199,13 @@ public class Exec extends Activity {
   }
 
   public Exec detach() {
-    long cPtr = simgridJNI.Exec_detach__SWIG_0(swigCPtr, this);
-    return (cPtr == 0) ? null : new Exec(cPtr, false);
+    simgridJNI.Exec_detach__SWIG_0(swigCPtr, this);
+    return this;
   }
 
   public Exec detach(SWIGTYPE_p_std__functionT_void_fvoid_pF_t clean_function) {
-    long cPtr = simgridJNI.Exec_detach__SWIG_1(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fvoid_pF_t.getCPtr(clean_function));
-    return (cPtr == 0) ? null : new Exec(cPtr, false);
+    simgridJNI.Exec_detach__SWIG_1(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fvoid_pF_t.getCPtr(clean_function));
+    return this;
   }
 
   public Exec cancel() {

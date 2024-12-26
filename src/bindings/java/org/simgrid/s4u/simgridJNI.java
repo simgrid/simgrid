@@ -152,8 +152,8 @@ public class simgridJNI {
   public final static native void Exec_set_tracing_category(long jarg1, Exec jarg1_, String jarg2);
   public final static native String Exec_get_tracing_category(long jarg1, Exec jarg1_);
   public final static native long Exec_get_clean_function(long jarg1, Exec jarg1_);
-  public final static native long Exec_detach__SWIG_0(long jarg1, Exec jarg1_);
-  public final static native long Exec_detach__SWIG_1(long jarg1, Exec jarg1_, long jarg2);
+  public final static native void Exec_detach__SWIG_0(long jarg1, Exec jarg1_);
+  public final static native void Exec_detach__SWIG_1(long jarg1, Exec jarg1_, long jarg2);
   public final static native void Exec_cancel(long jarg1, Exec jarg1_);
   public final static native void Exec_wait_for(long jarg1, Exec jarg1_, double jarg2);
   public final static native void Io_on_start_cb(long jarg1);
@@ -171,8 +171,8 @@ public class simgridJNI {
   public final static native void Io_set_tracing_category(long jarg1, Io jarg1_, String jarg2);
   public final static native String Io_get_tracing_category(long jarg1, Io jarg1_);
   public final static native long Io_get_clean_function(long jarg1, Io jarg1_);
-  public final static native long Io_detach__SWIG_0(long jarg1, Io jarg1_);
-  public final static native long Io_detach__SWIG_1(long jarg1, Io jarg1_, long jarg2);
+  public final static native void Io_detach__SWIG_0(long jarg1, Io jarg1_);
+  public final static native void Io_detach__SWIG_1(long jarg1, Io jarg1_, long jarg2);
   public final static native void Io_cancel(long jarg1, Io jarg1_);
   public final static native void Io_wait_for(long jarg1, Io jarg1_, double jarg2);
   public final static native long Barrier_create(long jarg1);
