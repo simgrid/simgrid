@@ -14,7 +14,6 @@ public class Exec extends Activity {
 
   protected Exec(long cPtr, boolean cMemoryOwn) {
     super(cPtr, true);
-    System.err.println("Creating a java exec out of "+String.format("%x", cPtr));
     swigCMemOwnDerived = cMemoryOwn;
     swigCPtr = cPtr;
   }

@@ -1231,7 +1231,6 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1exec_1init(J
 {
   auto result = simgrid::s4u::this_actor::exec_init(flops_amounts);
   intrusive_ptr_add_ref(result.get());
-  XBT_CRITICAL("exec_init returned %p", (void*)result.get());
   return (jlong)result.get();
 }
 
@@ -3095,10 +3094,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1add_1successor(JNI
                                                                              jobject jother)
 {
   ActivityPtr other = reinterpret_cast<Activity*>(cother);
-  XBT_CRITICAL("Adding %p(%p) as a successor to the exec %p", (void*)cother, other.get(), (void*)cthis);
   auto self = (Exec*)cthis;
   self->add_successor(other);
-  XBT_CRITICAL("OK");
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1remove_1successor(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -3866,9 +3863,8 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1mailbox(JNIE
   return jresult;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1src_1data_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
-                                                                                        jlong cthis, jobject jthis,
-                                                                                        jlong jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1src_1data(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                             jobject jthis, jlong jarg2)
 {
   simgrid::s4u::Comm* arg1                         = (simgrid::s4u::Comm*)0;
   void* arg2                                       = (void*)0;
@@ -3887,161 +3883,13 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1src_1data_1_1
   (arg1)->set_src_data(arg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1src_1data_1size(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis,
-                                                                                   jlong jarg2)
-{
-  ((Comm*)cthis)->set_src_data_size(jarg2);
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1src_1data_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
-                                                                                         jlong cthis, jobject jthis,
-                                                                                         jlong jarg2, jlong jarg3)
-{
-  jlong jresult            = 0;
-  simgrid::s4u::Comm* arg1 = (simgrid::s4u::Comm*)0;
-  void* arg2               = (void*)0;
-  size_t arg3;
-  boost::shared_ptr<simgrid::s4u::Comm>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Comm> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Comm>**)&cthis;
-  arg1      = (simgrid::s4u::Comm*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = *(void**)&jarg2;
-  arg3   = (size_t)jarg3;
-  result = (arg1)->set_src_data(arg2, arg3);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Comm>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Comm>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Comm>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Comm>**)&jresult = 0;
-  }
-
-  return jresult;
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1dst_1data_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
-                                                                                         jlong cthis, jobject jthis,
-                                                                                         jlong jarg2)
-{
-  jlong jresult                                    = 0;
-  simgrid::s4u::Comm* arg1                         = (simgrid::s4u::Comm*)0;
-  void** arg2                                      = (void**)0;
-  boost::shared_ptr<simgrid::s4u::Comm>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Comm> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Comm>**)&cthis;
-  arg1      = (simgrid::s4u::Comm*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = *(void***)&jarg2;
-  result = (arg1)->set_dst_data(arg2);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Comm>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Comm>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Comm>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Comm>**)&jresult = 0;
-  }
-
-  return jresult;
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1dst_1data_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
-                                                                                         jlong cthis, jobject jthis,
-                                                                                         jlong jarg2, jlong jarg3)
-{
-  jlong jresult            = 0;
-  simgrid::s4u::Comm* arg1 = (simgrid::s4u::Comm*)0;
-  void** arg2              = (void**)0;
-  size_t arg3;
-  boost::shared_ptr<simgrid::s4u::Comm>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Comm> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Comm>**)&cthis;
-  arg1      = (simgrid::s4u::Comm*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = *(void***)&jarg2;
-  arg3   = (size_t)jarg3;
-  result = (arg1)->set_dst_data(arg2, arg3);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Comm>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Comm>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Comm>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Comm>**)&jresult = 0;
-  }
-
-  return jresult;
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1dst_1data(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                              jobject jthis)
-{
-  jlong jresult                                          = 0;
-  simgrid::s4u::Comm* arg1                               = (simgrid::s4u::Comm*)0;
-  boost::shared_ptr<simgrid::s4u::Comm const>* smartarg1 = 0;
-  void* result                                           = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Comm>**)&cthis;
-  arg1      = (simgrid::s4u::Comm*)(smartarg1 ? smartarg1->get() : 0);
-
-  result            = (void*)((simgrid::s4u::Comm const*)arg1)->get_dst_data();
-  *(void**)&jresult = result;
-  return jresult;
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1dst_1data_1size(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis)
-{
-  jlong jresult                                          = 0;
-  simgrid::s4u::Comm* arg1                               = (simgrid::s4u::Comm*)0;
-  boost::shared_ptr<simgrid::s4u::Comm const>* smartarg1 = 0;
-  size_t result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Comm>**)&cthis;
-  arg1      = (simgrid::s4u::Comm*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = ((simgrid::s4u::Comm const*)arg1)->get_dst_data_size();
-  jresult = (jlong)result;
-  return jresult;
-}
-
 XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1payload(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                               jobject jthis)
 {
   auto self    = (Comm*)cthis;
   jobject glob = (jobject)self->get_payload();
   auto local   = jenv->NewLocalRef(glob);
+  XBT_CRITICAL("%p->get_payload(%p|%p)", self, glob, local);
   jenv->DeleteGlobalRef(glob);
 
   return local;
@@ -10010,11 +9858,12 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1init_1_1S
                                                                                        jlong simulated_size_in_bytes)
 {
   auto self = (Mailbox*)cthis;
+  auto glob = jenv->NewGlobalRef(payload);
 
-  CommPtr result = self->put_init(jenv->NewGlobalRef(payload), simulated_size_in_bytes);
+  CommPtr result = self->put_init(glob, simulated_size_in_bytes);
   intrusive_ptr_add_ref(result.get());
 
-  XBT_CRITICAL("put_init returned %p", (void*)result.get());
+  XBT_CRITICAL("put_init(%p|%p) returned %p", payload, glob, (void*)result.get());
   return (jlong)result.get();
 }
 
@@ -10045,6 +9894,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1init(JNIE
 
   CommPtr result = self->get_init();
   intrusive_ptr_add_ref(result.get());
+  XBT_CRITICAL("get_init() returned %p", result.get());
   return (jlong)result.get();
 }
 

@@ -14,7 +14,6 @@ public class Comm extends Activity {
 
   protected Comm(long cPtr, boolean cMemoryOwn) {
     super(cPtr, true);
-    System.err.println("Creating a java Comm out of "+String.format("%x", cPtr));
     swigCMemOwnDerived = cMemoryOwn;
     swigCPtr = cPtr;
   }
@@ -103,37 +102,8 @@ public class Comm extends Activity {
   }
 
   public Comm set_src_data(SWIGTYPE_p_void buff) {
-    simgridJNI.Comm_set_src_data__SWIG_0(swigCPtr, this, SWIGTYPE_p_void.getCPtr(buff));
+    simgridJNI.Comm_set_src_data(swigCPtr, this, SWIGTYPE_p_void.getCPtr(buff));
     return this;
-  }
-
-  public Comm set_src_data_size(long size) {
-    simgridJNI.Comm_set_src_data_size(swigCPtr, this, size);
-    return this;
-  }
-
-  public Comm set_src_data(SWIGTYPE_p_void buff, long size) {
-    simgridJNI.Comm_set_src_data__SWIG_1(swigCPtr, this, SWIGTYPE_p_void.getCPtr(buff), size);
-    return this;
-  }
-
-  public Comm set_dst_data(SWIGTYPE_p_p_void buff) {
-    simgridJNI.Comm_set_dst_data__SWIG_0(swigCPtr, this, SWIGTYPE_p_p_void.getCPtr(buff));
-    return this;
-  }
-
-  public Comm set_dst_data(SWIGTYPE_p_p_void buff, long size) {
-    simgridJNI.Comm_set_dst_data__SWIG_1(swigCPtr, this, SWIGTYPE_p_p_void.getCPtr(buff), size);
-    return this;
-  }
-
-  public SWIGTYPE_p_void get_dst_data() {
-    long cPtr = simgridJNI.Comm_get_dst_data(swigCPtr, this);
-    return (cPtr == 0) ? null : new SWIGTYPE_p_void(cPtr, false);
-  }
-
-  public long get_dst_data_size() {
-    return simgridJNI.Comm_get_dst_data_size(swigCPtr, this);
   }
 
   public Object get_payload() {
