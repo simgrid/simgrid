@@ -13,7 +13,8 @@ public class Exec extends Activity {
   private transient boolean swigCMemOwnDerived;
 
   protected Exec(long cPtr, boolean cMemoryOwn) {
-    super(simgridJNI.Exec_SWIGSmartPtrUpcast(cPtr), true);
+    super(cPtr, true);
+    System.err.println("Creating a java exec out of "+String.format("%x", cPtr));
     swigCMemOwnDerived = cMemoryOwn;
     swigCPtr = cPtr;
   }

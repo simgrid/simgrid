@@ -13,7 +13,7 @@ public class Io extends Activity {
   private transient boolean swigCMemOwnDerived;
 
   protected Io(long cPtr, boolean cMemoryOwn) {
-    super(simgridJNI.Io_SWIGSmartPtrUpcast(cPtr), true);
+    super(cPtr, true);
     swigCMemOwnDerived = cMemoryOwn;
     swigCPtr = cPtr;
   }

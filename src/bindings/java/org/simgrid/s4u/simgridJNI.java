@@ -91,7 +91,6 @@ public class simgridJNI {
   public final static native long Activity_get_dependencies(long jarg1, Activity jarg1_);
   public final static native long Activity_get_successors(long jarg1, Activity jarg1_);
   public final static native void delete_Activity(long jarg1);
-  public final static native void Activity_complete(long jarg1, Activity jarg1_, int jarg2);
   public final static native long Activity_get_vetoed_activities();
   public final static native void Activity_set_vetoed_activities(long jarg1);
   public final static native void Activity_start(long jarg1, Activity jarg1_);
@@ -193,20 +192,20 @@ public class simgridJNI {
   public final static native long Comm_get_destination(long jarg1, Comm jarg1_);
   public final static native long Comm_set_mailbox(long jarg1, Comm jarg1_, long jarg2, Mailbox jarg2_);
   public final static native long Comm_get_mailbox(long jarg1, Comm jarg1_);
-  public final static native long Comm_set_src_data__SWIG_0(long jarg1, Comm jarg1_, long jarg2);
-  public final static native long Comm_set_src_data_size(long jarg1, Comm jarg1_, long jarg2);
-  public final static native long Comm_set_src_data__SWIG_1(long jarg1, Comm jarg1_, long jarg2, long jarg3);
-  public final static native long Comm_set_dst_data__SWIG_0(long jarg1, Comm jarg1_, long jarg2);
-  public final static native long Comm_set_dst_data__SWIG_1(long jarg1, Comm jarg1_, long jarg2, long jarg3);
+  public final static native void Comm_set_src_data__SWIG_0(long jarg1, Comm jarg1_, long jarg2);
+  public final static native void Comm_set_src_data_size(long jarg1, Comm jarg1_, long jarg2);
+  public final static native void Comm_set_src_data__SWIG_1(long jarg1, Comm jarg1_, long jarg2, long jarg3);
+  public final static native void Comm_set_dst_data__SWIG_0(long jarg1, Comm jarg1_, long jarg2);
+  public final static native void Comm_set_dst_data__SWIG_1(long jarg1, Comm jarg1_, long jarg2, long jarg3);
   public final static native long Comm_get_dst_data(long jarg1, Comm jarg1_);
   public final static native long Comm_get_dst_data_size(long jarg1, Comm jarg1_);
   public final static native Object Comm_get_payload(long jarg1, Comm jarg1_);
-  public final static native long Comm_set_payload_size(long jarg1, Comm jarg1_, long jarg2);
-  public final static native long Comm_set_rate(long jarg1, Comm jarg1_, double jarg2);
+  public final static native void Comm_set_payload_size(long jarg1, Comm jarg1_, long jarg2);
+  public final static native void Comm_set_rate(long jarg1, Comm jarg1_, double jarg2);
   public final static native boolean Comm_is_assigned(long jarg1, Comm jarg1_);
   public final static native long Comm_get_sender(long jarg1, Comm jarg1_);
   public final static native long Comm_get_receiver(long jarg1, Comm jarg1_);
-  public final static native long Comm_wait_for(long jarg1, Comm jarg1_, double jarg2);
+  public final static native void Comm_wait_for(long jarg1, Comm jarg1_, double jarg2);
   public final static native void delete_ConditionVariable(long jarg1);
   public final static native long ConditionVariable_create();
   public final static native long ConditionVariable_wait_until(long jarg1, ConditionVariable jarg1_, long jarg2, double jarg3);
@@ -541,9 +540,6 @@ public class simgridJNI {
   public final static native void VirtualMachine_on_migration_end_cb(long jarg1);
   public final static native void VirtualMachine_on_this_migration_end_cb(long jarg1, VirtualMachine jarg1_, long jarg2);
   public final static native void delete_VirtualMachine(long jarg1);
-  public final static native long Comm_SWIGSmartPtrUpcast(long jarg1);
-  public final static native long Exec_SWIGSmartPtrUpcast(long jarg1);
-  public final static native long Io_SWIGSmartPtrUpcast(long jarg1);
 
   public static void SwigDirector_BooleanCallback_run(BooleanCallback jself, boolean b) {
     jself.run(b);

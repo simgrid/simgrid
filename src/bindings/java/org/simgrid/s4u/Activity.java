@@ -58,10 +58,6 @@ public class Activity {
     return new SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t(simgridJNI.Activity_get_successors(swigCPtr, this), false);
   }
 
-  public void complete(Activity.State state) {
-    simgridJNI.Activity_complete(swigCPtr, this, state.swigValue());
-  }
-
   public static SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t get_vetoed_activities() {
     long cPtr = simgridJNI.Activity_get_vetoed_activities();
     return (cPtr == 0) ? null : new SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t(cPtr, false);
