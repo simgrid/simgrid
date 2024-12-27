@@ -101,8 +101,8 @@ public class Comm extends Activity {
     return (cPtr == 0) ? null : new Mailbox(cPtr, true);
   }
 
-  public Comm set_src_data(SWIGTYPE_p_void buff) {
-    simgridJNI.Comm_set_src_data(swigCPtr, this, SWIGTYPE_p_void.getCPtr(buff));
+  public Comm set_src_data(Object payload) {
+    simgridJNI.Comm_set_src_data(swigCPtr, this, payload);
     return this;
   }
 

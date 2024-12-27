@@ -3864,23 +3864,14 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1mailbox(JNIE
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1src_1data(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                             jobject jthis, jlong jarg2)
+                                                                             jobject jthis, jobject payload)
 {
-  simgrid::s4u::Comm* arg1                         = (simgrid::s4u::Comm*)0;
-  void* arg2                                       = (void*)0;
-  boost::shared_ptr<simgrid::s4u::Comm>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Comm> result;
+  auto self = (Comm*)cthis;
+  auto glob = jenv->NewGlobalRef(payload);
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
+  self->set_src_data(glob);
 
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Comm>**)&cthis;
-  arg1      = (simgrid::s4u::Comm*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = *(void**)&jarg2;
-  (arg1)->set_src_data(arg2);
+  XBT_CRITICAL("set_src_data(%p|%p)", payload, glob);
 }
 
 XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1payload(JNIEnv* jenv, jclass jcls, jlong cthis,

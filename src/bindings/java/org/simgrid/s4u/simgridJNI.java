@@ -192,7 +192,7 @@ public class simgridJNI {
   public final static native long Comm_get_destination(long jarg1, Comm jarg1_);
   public final static native long Comm_set_mailbox(long jarg1, Comm jarg1_, long jarg2, Mailbox jarg2_);
   public final static native long Comm_get_mailbox(long jarg1, Comm jarg1_);
-  public final static native void Comm_set_src_data(long jarg1, Comm jarg1_, long jarg2);
+  public final static native void Comm_set_src_data(long jarg1, Comm jarg1_, Object payload);
   public final static native Object Comm_get_payload(long jarg1, Comm jarg1_);
   public final static native void Comm_set_payload_size(long jarg1, Comm jarg1_, long jarg2);
   public final static native void Comm_set_rate(long jarg1, Comm jarg1_, double jarg2);
