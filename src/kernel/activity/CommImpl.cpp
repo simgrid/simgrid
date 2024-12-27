@@ -130,8 +130,8 @@ CommImpl* CommImpl::start()
     set_start_time(model_action_->get_start_time());
     set_state(State::RUNNING);
 
-    XBT_DEBUG("Starting communication %p from '%s' to '%s' (model action: %p; state: %s)", this, from_->get_cname(),
-              to_->get_cname(), model_action_, get_state_str());
+    XBT_DEBUG("Starting communication %p (s4u:%p) from '%s' to '%s' (model action: %p; state: %s)", this, piface_,
+              from_->get_cname(), to_->get_cname(), model_action_, get_state_str());
 
     /* If a link is failed, detect it immediately */
     if (model_action_->get_state() == resource::Action::State::FAILED) {
@@ -189,6 +189,8 @@ void CommImpl::copy_data()
     /* Update the receiver's buffer size to the copied amount */
     *dst_buff_size_ = buff_size;
   }
+
+  payload_ = src_buff_; // Setup what will be retrieved by s4u::Comm::get_payload()
 
   if (buff_size > 0) {
     if (copy_data_fun)
