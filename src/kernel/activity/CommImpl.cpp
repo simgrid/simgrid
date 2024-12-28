@@ -29,7 +29,6 @@ std::function<void(CommImpl*, void*, size_t)> CommImpl::copy_data_callback_ = []
   xbt_assert((buff_size == sizeof(void*)), "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
   if (comm->dst_buff_ != nullptr) // get_async provided a buffer
     *(void**)(comm->dst_buff_) = buff;
-  comm->payload_ = buff; // Setup what will be retrieved by s4u::Comm::get_payload()
 };
 
 void CommImpl::set_copy_data_callback(const std::function<void(CommImpl*, void*, size_t)>& callback)

@@ -145,7 +145,7 @@ public:
   /** Retrieve the size of the received data. Not to be mixed with @ref Activity::get_remaining()  */
   size_t get_dst_data_size() const { return dst_buff_size_; }
   /** Retrieve the payload associated to the communication. You can only do that once the comm is (gracefully)
-   * terminated, and it is only setup by the default copy_data callback (not the SMPI one) */
+   * terminated. */
   void* get_payload() const;
 
   /* Common functions */
