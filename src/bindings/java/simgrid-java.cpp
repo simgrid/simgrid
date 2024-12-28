@@ -847,10 +847,6 @@ static void ActorMain_on_destruction_cb(ActorCallback* code)
     code->run(&const_cast<Actor&>(a));
   });
 }
-static void ActorMain_on_exit(ActorMain* self, BooleanCallback* code)
-{
-  simgrid::s4u::this_actor::on_exit([code](bool b) { code->run(b); });
-}
 static boost::intrusive_ptr<simgrid::s4u::Actor>
 simgrid_s4u_Actor_create_java(std::string const& name, simgrid::s4u::Host* host, ActorMain* code)
 {
@@ -1352,16 +1348,9 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1on_1destructi
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1on_1exit(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                             jobject jthis, jlong jarg2, jobject jarg2_)
 {
-  ActorMain* arg1       = (ActorMain*)0;
-  BooleanCallback* arg2 = (BooleanCallback*)0;
+  auto code = (BooleanCallback*)jarg2;
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  (void)jarg2_;
-  arg1 = *(ActorMain**)&cthis;
-  arg2 = *(BooleanCallback**)&jarg2;
-  ActorMain_on_exit(arg1, arg2);
+  simgrid::s4u::this_actor::on_exit([code](bool b) { code->run(b); });
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1ActorMain(JNIEnv* jenv, jclass jcls)
