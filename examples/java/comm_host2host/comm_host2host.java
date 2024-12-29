@@ -19,71 +19,73 @@ import org.simgrid.s4u.*;
 
 class sender extends ActorMain {
   Host h1, h2, h3, h4;
-  sender(Host host1, Host host2, Host host3, Host host4) {
+  sender(Host host1, Host host2, Host host3, Host host4)
+  {
     h1 = host1;
     h2 = host2;
     h3 = host3;
     h4 = host4;
   }
-  public void run() {
-    Engine.info("Send c12 with sendto_async("+h1.get_name()+" -> "+h2.get_name()+"), and c34 with sendto_init("+
-      h3.get_name()+" -> "+h4.get_name()+")");
+  public void run()
+  {
+    Engine.info("Send c12 with sendto_async(" + h1.get_name() + " -> " + h2.get_name() +
+                "), and c34 with sendto_init(" + h3.get_name() + " -> " + h4.get_name() + ")");
 
-      var c12 = Comm.sendto_async(h1, h2, 1.5e7); // Creates and start a direct communication
-      var c34 = Comm.sendto_init(h3, h4); // Creates but do not start another direct communication
-      c34.set_payload_size(1e7);                // Specify the amount of bytes to exchange in this comm
-      
-      // You can also detach() communications that you never plan to test() or wait().
-      // Here we create a communication that only slows down the other ones
-      var noise = Comm.sendto_init(h1, h2);
-      noise.set_payload_size(10000);
-      noise.detach();
-      
-      Engine.info("After creation,  c12 is "+c12.get_state_str()+" (remaining: "+String.format("%.2e", c12.get_remaining())+
-      " bytes); c34 is "+ c34.get_state_str()+
-      " (remaining: "+String.format("%.2e", c34.get_remaining())+" bytes)");
-      
-      sleep_for(1);
-Engine.info("One sec later,   c12 is "+c12.get_state_str()+" (remaining: "+String.format("%.2e", c12.get_remaining())+
-" bytes); c34 is "+ c34.get_state_str()+
-" (remaining: "+String.format("%.2e", c34.get_remaining())+" bytes)");
+    var c12 = Comm.sendto_async(h1, h2, 1.5e7); // Creates and start a direct communication
+    var c34 = Comm.sendto_init(h3, h4);         // Creates but do not start another direct communication
+    c34.set_payload_size(1e7);                  // Specify the amount of bytes to exchange in this comm
 
-c34.start();
-Engine.info("After c34.start, c12 is "+c12.get_state_str()+" (remaining: "+String.format("%.2e", c12.get_remaining())+
-" bytes); c34 is "+ c34.get_state_str()+
-" (remaining: "+String.format("%.2e", c34.get_remaining())+" bytes)");
+    // You can also detach() communications that you never plan to test() or wait().
+    // Here we create a communication that only slows down the other ones
+    var noise = Comm.sendto_init(h1, h2);
+    noise.set_payload_size(10000);
+    noise.detach();
 
-c12.await();
-Engine.info("After c12.await, c12 is "+c12.get_state_str()+" (remaining: "+String.format("%.2e", c12.get_remaining())+
-" bytes); c34 is "+ c34.get_state_str()+
-" (remaining: "+String.format("%.2e", c34.get_remaining())+" bytes)");
+    Engine.info("After creation,  c12 is " + c12.get_state_str() +
+                " (remaining: " + String.format("%.2e", c12.get_remaining()) + " bytes); c34 is " +
+                c34.get_state_str() + " (remaining: " + String.format("%.2e", c34.get_remaining()) + " bytes)");
 
-c34.await();
-Engine.info("After c34.await, c12 is "+c12.get_state_str()+" (remaining: "+String.format("%.2e", c12.get_remaining())+
-" bytes); c34 is "+ c34.get_state_str()+
-" (remaining: "+String.format("%.2e", c34.get_remaining())+" bytes)");
+    sleep_for(1);
+    Engine.info("One sec later,   c12 is " + c12.get_state_str() +
+                " (remaining: " + String.format("%.2e", c12.get_remaining()) + " bytes); c34 is " +
+                c34.get_state_str() + " (remaining: " + String.format("%.2e", c34.get_remaining()) + " bytes)");
 
-/* As usual, you don't have to explicitly start communications that were just init()ed.
-   The await() will start it automatically. */
-var c14 = Comm.sendto_init(h1, h4);
-c14.set_payload_size(100).await(); // Chaining 2 operations on this new communication
+    c34.start();
+    Engine.info("After c34.start, c12 is " + c12.get_state_str() +
+                " (remaining: " + String.format("%.2e", c12.get_remaining()) + " bytes); c34 is " +
+                c34.get_state_str() + " (remaining: " + String.format("%.2e", c34.get_remaining()) + " bytes)");
 
-}
+    c12.await();
+    Engine.info("After c12.await, c12 is " + c12.get_state_str() +
+                " (remaining: " + String.format("%.2e", c12.get_remaining()) + " bytes); c34 is " +
+                c34.get_state_str() + " (remaining: " + String.format("%.2e", c34.get_remaining()) + " bytes)");
+
+    c34.await();
+    Engine.info("After c34.await, c12 is " + c12.get_state_str() +
+                " (remaining: " + String.format("%.2e", c12.get_remaining()) + " bytes); c34 is " +
+                c34.get_state_str() + " (remaining: " + String.format("%.2e", c34.get_remaining()) + " bytes)");
+
+    /* As usual, you don't have to explicitly start communications that were just init()ed.
+       The await() will start it automatically. */
+    var c14 = Comm.sendto_init(h1, h4);
+    c14.set_payload_size(100).await(); // Chaining 2 operations on this new communication
+  }
 }
 
 public class comm_host2host {
 
-  public static void main(String[] args) {
+  public static void main(String[] args)
+  {
     var e = Engine.get_instance(args);
-    
+
     e.load_platform(args[0]);
-    
-    Actor.create("sender",e.host_by_name("Boivin"), new sender(e.host_by_name("Tremblay"), e.host_by_name("Jupiter"),
-    e.host_by_name("Fafard"), e.host_by_name("Ginette")));
-    
+
+    Actor.create("sender", e.host_by_name("Boivin"),
+                 new sender(e.host_by_name("Tremblay"), e.host_by_name("Jupiter"), e.host_by_name("Fafard"),
+                            e.host_by_name("Ginette")));
+
     e.run();
-    
+
     Engine.info("Simulation ends");
   }
 }
-

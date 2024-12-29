@@ -7,15 +7,14 @@ import org.simgrid.s4u.*;
 
 class Sender extends ActorMain {
   Mailbox mailbox;
-  public Sender(Mailbox mb) {
-    mailbox = mb;
-  } 
-  public void run() {
+  public Sender(Mailbox mb) { mailbox = mb; }
+  public void run()
+  {
     Double computation_amount = get_host().get_speed();
 
     Exec exec = exec_init(2 * computation_amount);
     Comm comm = mailbox.put_init(computation_amount, 7e6);
-    
+
     exec.set_name("exec on sender").add_successor(comm).start();
     comm.set_name("comm to receiver").start();
     exec.await();
@@ -24,39 +23,39 @@ class Sender extends ActorMain {
 }
 class Receiver extends ActorMain {
   Mailbox mailbox;
-  public Receiver(Mailbox mb) {
-    mailbox = mb;
-  } 
-  public void run() {
+  public Receiver(Mailbox mb) { mailbox = mb; }
+  public void run()
+  {
     Double computation_amount = get_host().get_speed();
 
     Exec exec = exec_init(2 * computation_amount);
     Comm comm = mailbox.get_init();
-  
+
     comm.set_name("comm from sender").add_successor(exec).start();
     exec.set_name("exec on receiver").start();
-  
+
     comm.await();
     exec.await();
     var received = (double)comm.get_payload();
-    Engine.info("Received: "+(int)received+" flops were computed on sender");
+    Engine.info("Received: " + (int)received + " flops were computed on sender");
   }
 }
 
 public class comm_dependent {
 
-  public static void main(String[] args) {
+  public static void main(String[] args)
+  {
     var e = Engine.get_instance(args);
-    
+
     e.load_platform(args[0]);
-    
+
     var mbox = e.mailbox_by_name_or_create("Mailbox");
-    
+
     Actor.create("sender", e.host_by_name("Tremblay"), new Sender(mbox));
     Actor.create("receiver", e.host_by_name("Jupiter"), new Receiver(mbox));
-    
+
     e.run();
-    
+
     Engine.info("Simulation ends");
   }
 }
