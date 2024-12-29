@@ -10,7 +10,7 @@ endif()
 set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/actor_exiting/actor_exiting.java)
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor_exiting/actor_exiting.java.tesh)
 #comm_dependent
-foreach (example comm_dependent comm_pingpong)
+foreach (example comm_dependent comm_host2host comm_pingpong)
   
   # Use default source file unless specified otherwise
   if(NOT DEFINED _${example}_sources)
@@ -27,7 +27,7 @@ foreach (example comm_dependent comm_pingpong)
             OUTPUT_NAME ${example}
             OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${example_dir})
     add_dependencies(java-all java-${example})
-    ADD_TESH(java-${example}  --setenv javacmd=${Java_JAVA_EXECUTABLE} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
+    ADD_TESH(java-${example}  --setenv LC_CTYPE=C --setenv javacmd=${Java_JAVA_EXECUTABLE} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
   endif()
 
   set(examples_src  ${examples_src}  ${_${example}_sources})

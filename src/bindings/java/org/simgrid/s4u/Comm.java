@@ -62,6 +62,9 @@ public class Comm extends Activity {
     return (cPtr == 0) ? null : new Comm(cPtr, true);
   }
 
+  public static Comm sendto_async(Host from, Host to, double simulated_size_in_bytes) {
+    return sendto_async(from, to, (long)simulated_size_in_bytes);
+  }
   public static Comm sendto_async(Host from, Host to, long simulated_size_in_bytes) {
     long cPtr = simgridJNI.Comm_sendto_async(Host.getCPtr(from), from, Host.getCPtr(to), to, simulated_size_in_bytes);
     return (cPtr == 0) ? null : new Comm(cPtr, true);
@@ -110,8 +113,11 @@ public class Comm extends Activity {
     return simgridJNI.Comm_get_payload(swigCPtr, this);
   }
 
+  public Comm set_payload_size(double bytes) {
+    return set_payload_size((long)bytes);
+  }
   public Comm set_payload_size(long bytes) {
-    simgridJNI.Comm_set_payload_size(swigCPtr, this, bytes);
+      simgridJNI.Comm_set_payload_size(swigCPtr, this, bytes);
     return this;
   }
 

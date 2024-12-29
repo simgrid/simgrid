@@ -1,7 +1,5 @@
 #!/usr/bin/env tesh
 
-p Testing with default compound
-
 $ ${javacmd} -cp ../../simgrid.jar:comm_dependent.jar comm_dependent ${platfdir}/small_platform.xml --log=s4u_activity.t:verbose "--log=root.fmt:[%6.2r]%e(%i:%a@%h)%e%m%n"
 > [  0.00] (0:maestro@) Using regular java threads.
 > [  0.00] (1:sender@Tremblay) 'exec on sender' is assigned to a resource and all dependencies are solved. Let's start
