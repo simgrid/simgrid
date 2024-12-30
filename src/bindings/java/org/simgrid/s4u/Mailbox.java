@@ -108,6 +108,10 @@ public class Mailbox {
     simgridJNI.Mailbox_clear(swigCPtr, this);
   }
 
+  public void put(Object payload, double simulated_size_in_bytes)
+  {
+    simgridJNI.Mailbox_put__SWIG_0(swigCPtr, this, payload, (long)simulated_size_in_bytes);
+  }
   public void put(Object payload, long simulated_size_in_bytes) {
     simgridJNI.Mailbox_put__SWIG_0(swigCPtr, this, payload, simulated_size_in_bytes);
   }

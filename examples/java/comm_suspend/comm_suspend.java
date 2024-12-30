@@ -41,7 +41,6 @@ class sender extends ActorMain {
 class receiver extends ActorMain {
   public void run()
   {
-
     Mailbox mbox = Mailbox.by_name("receiver");
     Engine.info("Wait for the message.");
     String received = (String)mbox.get();
