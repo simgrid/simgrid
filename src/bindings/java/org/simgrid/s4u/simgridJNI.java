@@ -116,8 +116,6 @@ public class simgridJNI {
   public final static native double Activity_get_finish_time(long jarg1, Activity jarg1_);
   public final static native void Activity_mark(long jarg1, Activity jarg1_);
   public final static native boolean Activity_is_marked(long jarg1, Activity jarg1_);
-  public final static native long Activity_add_ref(long jarg1, Activity jarg1_);
-  public final static native void Activity_unref(long jarg1, Activity jarg1_);
 
   public final static native long new_ActivitySet();
   public final static native void delete_ActivitySet(long jarg1);

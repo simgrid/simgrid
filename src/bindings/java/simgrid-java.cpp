@@ -2625,58 +2625,6 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1marked
   return ((Activity*)cthis)->is_marked();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1add_1ref(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                            jobject jthis)
-{
-  jlong jresult                                        = 0;
-  simgrid::s4u::Activity* arg1                         = (simgrid::s4u::Activity*)0;
-  boost::shared_ptr<simgrid::s4u::Activity>* smartarg1 = 0;
-  simgrid::s4u::Activity* result                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Activity>**)&cthis;
-  arg1      = (simgrid::s4u::Activity*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (simgrid::s4u::Activity*)(arg1)->add_ref();
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Activity>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Activity>(result, SWIG_intrusive_deleter<simgrid::s4u::Activity>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Activity>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Activity>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Activity>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1unref(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis)
-{
-  simgrid::s4u::Activity* arg1                         = (simgrid::s4u::Activity*)0;
-  boost::shared_ptr<simgrid::s4u::Activity>* smartarg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Activity>**)&cthis;
-  arg1      = (simgrid::s4u::Activity*)(smartarg1 ? smartarg1->get() : 0);
-
-  (arg1)->unref();
-}
-
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1ActivitySet(JNIEnv* jenv, jclass jcls)
 {
   ActivitySetPtr result(new ActivitySet());

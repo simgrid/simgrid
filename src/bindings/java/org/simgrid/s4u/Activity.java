@@ -165,15 +165,6 @@ public class Activity {
     return simgridJNI.Activity_is_marked(swigCPtr, this);
   }
 
-  public Activity add_ref() {
-    long cPtr = simgridJNI.Activity_add_ref(swigCPtr, this);
-    return (cPtr == 0) ? null : new Activity(cPtr, true);
-  }
-
-  public void unref() {
-    simgridJNI.Activity_unref(swigCPtr, this);
-  }
-
   public final static class State {
     public final static Activity.State INITED = new Activity.State("INITED");
     public final static Activity.State STARTING = new Activity.State("STARTING");
