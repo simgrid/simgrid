@@ -10,7 +10,7 @@ endif()
 set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/actor_exiting/actor_exiting.java)
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor_exiting/actor_exiting.java.tesh)
 #comm_dependent
-foreach (example comm_dependent comm_host2host comm_pingpong)
+foreach (example comm_dependent comm_host2host comm_pingpong comm_ready)
   
   # Use default source file unless specified otherwise
   if(NOT DEFINED _${example}_sources)

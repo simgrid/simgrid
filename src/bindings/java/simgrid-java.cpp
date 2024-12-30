@@ -1428,28 +1428,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_on_1exit(JNIEnv* jenv, j
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1self(JNIEnv* jenv, jclass jcls)
 {
-  jlong jresult               = 0;
-  simgrid::s4u::Actor* result = 0;
-
-  (void)jenv;
-  (void)jcls;
-  result = (simgrid::s4u::Actor*)simgrid::s4u::Actor::self();
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Actor>(result, SWIG_intrusive_deleter<simgrid::s4u::Actor>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Actor>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  return (jlong)simgrid::s4u::Actor::self();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass jcls,
@@ -2809,39 +2788,13 @@ XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1finish
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1mark(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                        jobject jthis)
 {
-  simgrid::s4u::Activity* arg1                         = (simgrid::s4u::Activity*)0;
-  boost::shared_ptr<simgrid::s4u::Activity>* smartarg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Activity>**)&cthis;
-  arg1      = (simgrid::s4u::Activity*)(smartarg1 ? smartarg1->get() : 0);
-
-  (arg1)->mark();
+  ((Activity*)cthis)->mark();
 }
 
 XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1marked(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                  jobject jthis)
 {
-  jboolean jresult                                           = 0;
-  simgrid::s4u::Activity* arg1                               = (simgrid::s4u::Activity*)0;
-  boost::shared_ptr<simgrid::s4u::Activity const>* smartarg1 = 0;
-  bool result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Activity>**)&cthis;
-  arg1      = (simgrid::s4u::Activity*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = (bool)((simgrid::s4u::Activity const*)arg1)->is_marked();
-  jresult = (jboolean)result;
-  return jresult;
+  return ((Activity*)cthis)->is_marked();
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1add_1ref(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -2894,6 +2847,108 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1unref(JNIEnv* 
   arg1      = (simgrid::s4u::Activity*)(smartarg1 ? smartarg1->get() : 0);
 
   (arg1)->unref();
+}
+
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1ActivitySet(JNIEnv* jenv, jclass jcls)
+{
+  ActivitySetPtr result(new ActivitySet());
+  intrusive_ptr_add_ref(result.get());
+  return (jlong)result.get();
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1ActivitySet(JNIEnv* jenv, jclass jcls, jlong cthis)
+{
+  auto self = (ActivitySet*)cthis;
+  intrusive_ptr_release(self);
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1push(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                          jobject jthis, jlong cactivity,
+                                                                          jobject jactivity)
+{
+  auto self = (ActivitySet*)cthis;
+  ActivityPtr act((Activity*)cactivity);
+  self->push(act);
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1erase(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                           jobject jthis, jlong cactivity,
+                                                                           jobject jactivity)
+{
+  auto self = (ActivitySet*)cthis;
+  ActivityPtr act((Activity*)cactivity);
+  self->erase(act);
+}
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1size(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                          jobject jthis)
+{
+  auto self = (ActivitySet*)cthis;
+  return self->size();
+}
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1empty(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                               jobject jthis)
+{
+  auto self = (ActivitySet*)cthis;
+  return self->empty();
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1clear(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                           jobject jthis)
+{
+  auto self = (ActivitySet*)cthis;
+  self->clear();
+}
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1at(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                         jobject jthis, int index)
+{
+  auto self       = (ActivitySet*)cthis;
+  ActivityPtr act = self->at(index);
+  return (jlong)act.get();
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1wait_1all_1for(JNIEnv* jenv, jclass jcls,
+                                                                                    jlong cthis, jobject jthis,
+                                                                                    jdouble timeout)
+{
+  auto self = (ActivitySet*)cthis;
+  self->wait_all_for(timeout);
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1wait_1all(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                               jobject jthis)
+{
+  auto self = (ActivitySet*)cthis;
+  self->wait_all();
+}
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1test_1any(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                                jobject jthis)
+{
+  auto self       = (ActivitySet*)cthis;
+  ActivityPtr act = self->test_any();
+  return (jlong)act.get();
+}
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1wait_1any_1for(JNIEnv* jenv, jclass jcls,
+                                                                                     jlong cthis, jobject jthis,
+                                                                                     jdouble timeout)
+{
+  auto self       = (ActivitySet*)cthis;
+  ActivityPtr act = self->wait_any_for(timeout);
+  return (jlong)act.get();
+}
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1wait_1any(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                                jobject jthis)
+{
+  auto self       = (ActivitySet*)cthis;
+  ActivityPtr act = self->wait_any();
+  return (jlong)act.get();
+}
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1get_1failed_1activity(JNIEnv* jenv, jclass jcls,
+                                                                                            jlong cthis, jobject jthis)
+{
+  auto self       = (ActivitySet*)cthis;
+  ActivityPtr act = self->get_failed_activity();
+  return (jlong)act.get();
+}
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1has_1failed_1activity(JNIEnv* jenv,
+                                                                                               jclass jcls, jlong cthis,
+                                                                                               jobject jthis)
+{
+  auto self = (ActivitySet*)cthis;
+  return self->has_failed_activities();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1start_1cb(JNIEnv* jenv, jclass jcls, jlong cthis)

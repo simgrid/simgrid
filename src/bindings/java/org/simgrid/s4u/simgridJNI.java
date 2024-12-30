@@ -118,6 +118,23 @@ public class simgridJNI {
   public final static native boolean Activity_is_marked(long jarg1, Activity jarg1_);
   public final static native long Activity_add_ref(long jarg1, Activity jarg1_);
   public final static native void Activity_unref(long jarg1, Activity jarg1_);
+
+  public final static native long new_ActivitySet();
+  public final static native void delete_ActivitySet(long jarg1);
+  public final static native void ActivitySet_push(long jarg1, ActivitySet jarg1_, long cactivity, Activity a);
+  public final static native void ActivitySet_erase(long jarg1, ActivitySet jarg1_, long cactivity, Activity a);
+  public final static native int ActivitySet_size(long jarg1, ActivitySet jarg1_);
+  public final static native boolean ActivitySet_empty(long jarg1, ActivitySet jarg1_);
+  public final static native void ActivitySet_clear(long jarg1, ActivitySet jarg1_);
+  public final static native long ActivitySet_at(long jarg1, ActivitySet jarg1_, int index);
+  public final static native void ActivitySet_wait_all_for(long jarg1, ActivitySet jarg1_, double timeout);
+  public final static native void ActivitySet_wait_all(long jarg1, ActivitySet jarg1_);
+  public final static native long ActivitySet_test_any(long jarg1, ActivitySet jarg1_);
+  public final static native long ActivitySet_wait_any_for(long jarg1, ActivitySet jarg1_, double timeout);
+  public final static native long ActivitySet_wait_any(long jarg1, ActivitySet jarg1_);
+  public final static native long ActivitySet_get_failed_activity(long jarg1, ActivitySet jarg1_);
+  public final static native boolean ActivitySet_has_failed_activity(long jarg1, ActivitySet jarg1_);
+
   public final static native void Comm_on_start_cb(long jarg1);
   public final static native void Comm_on_this_start_cb(long jarg1, Comm jarg1_, long jarg2);
   public final static native void Comm_on_completion_cb(long jarg1);
