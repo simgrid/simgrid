@@ -128,13 +128,13 @@ public class Activity {
   }
 
   public Activity suspend() {
-    long cPtr = simgridJNI.Activity_suspend(swigCPtr, this);
-    return (cPtr == 0) ? null : new Activity(cPtr, true);
+    simgridJNI.Activity_suspend(swigCPtr, this);
+    return this;
   }
 
   public Activity resume() {
-    long cPtr = simgridJNI.Activity_resume(swigCPtr, this);
-    return (cPtr == 0) ? null : new Activity(cPtr, true);
+    simgridJNI.Activity_resume(swigCPtr, this);
+    return this;
   }
 
   public boolean is_suspended() {

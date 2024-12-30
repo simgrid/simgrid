@@ -107,8 +107,8 @@ public class simgridJNI {
   public final static native void Activity_set_state(long jarg1, Activity jarg1_, int jarg2);
   public final static native void Activity_set_detached(long jarg1, Activity jarg1_, boolean jarg2);
   public final static native boolean Activity_is_detached(long jarg1, Activity jarg1_);
-  public final static native long Activity_suspend(long jarg1, Activity jarg1_);
-  public final static native long Activity_resume(long jarg1, Activity jarg1_);
+  public final static native void Activity_suspend(long jarg1, Activity jarg1_);
+  public final static native void Activity_resume(long jarg1, Activity jarg1_);
   public final static native boolean Activity_is_suspended(long jarg1, Activity jarg1_);
   public final static native String Activity_get_name(long jarg1, Activity jarg1_);
   public final static native double Activity_get_remaining(long jarg1, Activity jarg1_);
