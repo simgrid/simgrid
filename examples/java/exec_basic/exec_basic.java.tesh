@@ -1,0 +1,6 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:exec_basic.jar exec_basic ${platfdir}/small_platform.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [Tremblay:privileged:(2) 0.001500] [java/INFO] Done.
+> [Tremblay:executor:(1) 0.002000] [java/INFO] Done.
