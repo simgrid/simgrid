@@ -53,7 +53,7 @@ static void sender(int messages_count, size_t payload_size)
   mbox->put(new std::string("finalize"), 0);
 }
 
-/* Receiver actor expects 1 argument: its ID */
+/* Receiver actor expects no argument */
 static void receiver()
 {
   double sleep_start_time = 1.0;

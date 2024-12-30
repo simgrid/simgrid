@@ -274,25 +274,15 @@ public class Engine {
     simgridJNI.Engine_on_deadlock_cb(SWIGTYPE_p_std__functionT_void_fvoidF_t.getCPtr(cb));
   }
 
-  public static void die(String msg) {
-    simgridJNI.Engine_die(msg);
-  }
+  public static void die(String fmt, Object... args) { simgridJNI.Engine_die(String.format(fmt, args)); }
 
-  public static void critical(String msg) {
-    simgridJNI.Engine_critical(msg);
-  }
+  public static void critical(String fmt, Object... args) { simgridJNI.Engine_critical(String.format(fmt, args)); }
 
-  public static void error(String msg) {
-    simgridJNI.Engine_error(msg);
-  }
+  public static void error(String fmt, Object... args) { simgridJNI.Engine_error(String.format(fmt, args)); }
 
-  public static void warn(String msg) {
-    simgridJNI.Engine_warn(msg);
-  }
+  public static void warn(String fmt, Object... args) { simgridJNI.Engine_warn(String.format(fmt, args)); }
 
-  public static void info(String msg) {
-    simgridJNI.Engine_info(msg);
-  }
+  public static void info(String fmt, Object... args) { simgridJNI.Engine_info(String.format(fmt, args)); }
 
   public static void verbose(String msg) {
     simgridJNI.Engine_verbose(msg);
