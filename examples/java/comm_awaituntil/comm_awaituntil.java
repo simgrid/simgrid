@@ -51,7 +51,7 @@ class sender extends ActorMain {
     /* Now that all message exchanges were initiated, wait for their completion, in order of creation. */
     while (pending_comms.size() > 0) {
       Comm comm = pending_comms.removeFirst();
-      comm.wait_for(1);
+      comm.await_for(1);
     }
 
     Engine.info("Goodbye now!");

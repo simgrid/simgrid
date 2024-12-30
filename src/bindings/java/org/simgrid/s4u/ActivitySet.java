@@ -59,7 +59,7 @@ public class ActivitySet {
    *
    * In any case, the completed activities remain in the set. Use test_any() to retrieve them.
    */
-  public void wait_all_for(double timeout) { simgridJNI.ActivitySet_wait_all_for(swigCPtr, this, timeout); }
+  public void wait_all_for(double timeout) { simgridJNI.ActivitySet_await_all_for(swigCPtr, this, timeout); }
   /** Wait for the completion of all activities in the set. The set is NOT emptied afterward. */
   public void wait_all() { wait_all_for(-1); }
   /** Returns the first terminated activity if any, or ActivityPtr(nullptr) if no activity is terminated */
@@ -79,7 +79,7 @@ public class ActivitySet {
 
   public Activity wait_any_for(double timeout)
   {
-    long cPtr = simgridJNI.ActivitySet_wait_any_for(swigCPtr, this, timeout);
+    long cPtr = simgridJNI.ActivitySet_await_any_for(swigCPtr, this, timeout);
     return (cPtr == 0) ? null : new Activity(cPtr, true);
   }
   /**

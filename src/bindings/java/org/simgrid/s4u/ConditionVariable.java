@@ -40,11 +40,17 @@ public class ConditionVariable {
   }
 
   public SWIGTYPE_p_std__cv_status wait_until(SWIGTYPE_p_std__unique_lockT_simgrid__s4u__Mutex_t lock, double timeout_time) {
-    return new SWIGTYPE_p_std__cv_status(simgridJNI.ConditionVariable_wait_until(swigCPtr, this, SWIGTYPE_p_std__unique_lockT_simgrid__s4u__Mutex_t.getCPtr(lock), timeout_time), true);
+    return new SWIGTYPE_p_std__cv_status(
+        simgridJNI.ConditionVariable_await_until(
+            swigCPtr, this, SWIGTYPE_p_std__unique_lockT_simgrid__s4u__Mutex_t.getCPtr(lock), timeout_time),
+        true);
   }
 
   public SWIGTYPE_p_std__cv_status wait_for(SWIGTYPE_p_std__unique_lockT_simgrid__s4u__Mutex_t lock, double duration) {
-    return new SWIGTYPE_p_std__cv_status(simgridJNI.ConditionVariable_wait_for(swigCPtr, this, SWIGTYPE_p_std__unique_lockT_simgrid__s4u__Mutex_t.getCPtr(lock), duration), true);
+    return new SWIGTYPE_p_std__cv_status(
+        simgridJNI.ConditionVariable_await_for(
+            swigCPtr, this, SWIGTYPE_p_std__unique_lockT_simgrid__s4u__Mutex_t.getCPtr(lock), duration),
+        true);
   }
 
   public void notify_one() {

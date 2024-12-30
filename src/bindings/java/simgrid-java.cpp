@@ -707,10 +707,6 @@ template <typename T> T SwigValueInit()
 
 using namespace simgrid::s4u;
 
-/* Don't whine about the missing declarations in this file, they are useless anyway in JNI */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmissing-declarations"
-
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 using namespace simgrid;
 
@@ -1642,7 +1638,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1destruc
   (arg1)->on_this_destruction_cb((std::function<void(simgrid::s4u::Actor const&)> const&)*arg2);
 }
 
-std::string java_string_to_std_string(JNIEnv* jenv, jstring jstr)
+static std::string java_string_to_std_string(JNIEnv* jenv, jstring jstr)
 {
   if (!jstr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
@@ -2365,21 +2361,21 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1test(JNIEn
   return ((Activity*)cthis)->test();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1wait_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                            jobject jthis, jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1await_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                             jobject jthis, jdouble jarg2)
 {
   ((Activity*)cthis)->wait_for(jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1wait_1for_1or_1cancel(JNIEnv* jenv, jclass jcls,
-                                                                                        jlong cthis, jobject jthis,
-                                                                                        jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1await_1for_1or_1cancel(JNIEnv* jenv, jclass jcls,
+                                                                                         jlong cthis, jobject jthis,
+                                                                                         jdouble jarg2)
 {
   ((Activity*)cthis)->wait_for(jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1wait_1until(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                              jobject jthis, jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1await_1until(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                               jobject jthis, jdouble jarg2)
 {
   ((Activity*)cthis)->wait_until(jarg2);
 }
@@ -2673,15 +2669,15 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1at(JNIEnv*
   ActivityPtr act = self->at(index);
   return (jlong)act.get();
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1wait_1all_1for(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis,
-                                                                                    jdouble timeout)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1all_1for(JNIEnv* jenv, jclass jcls,
+                                                                                     jlong cthis, jobject jthis,
+                                                                                     jdouble timeout)
 {
   auto self = (ActivitySet*)cthis;
   self->wait_all_for(timeout);
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1wait_1all(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                               jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1all(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                                jobject jthis)
 {
   auto self = (ActivitySet*)cthis;
   self->wait_all();
@@ -2693,16 +2689,16 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1test_1any(
   ActivityPtr act = self->test_any();
   return (jlong)act.get();
 }
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1wait_1any_1for(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis,
-                                                                                     jdouble timeout)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1any_1for(JNIEnv* jenv, jclass jcls,
+                                                                                      jlong cthis, jobject jthis,
+                                                                                      jdouble timeout)
 {
   auto self       = (ActivitySet*)cthis;
   ActivityPtr act = self->wait_any_for(timeout);
   return (jlong)act.get();
 }
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1wait_1any(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1any(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                                 jobject jthis)
 {
   auto self       = (ActivitySet*)cthis;
   ActivityPtr act = self->wait_any();
@@ -2926,8 +2922,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1cancel(JNIEnv* jen
   self->cancel();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1wait_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis, jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1await_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                         jobject jthis, jdouble jarg2)
 {
   auto* self = (Exec*)cthis;
   self->wait_for(jarg2);
@@ -3113,8 +3109,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1cancel(JNIEnv* jenv,
   self->cancel();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1wait_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                      jobject jthis, jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1await_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                       jobject jthis, jdouble jarg2)
 {
   auto* self = (Io*)cthis;
   self->wait_for(jarg2);
@@ -3623,8 +3619,8 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1receiver(JNI
   return jresult;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1wait_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis, jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1await_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                         jobject jthis, jdouble jarg2)
 {
   ((Comm*)cthis)->wait_for(jarg2);
 }
@@ -3887,9 +3883,9 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1crea
   return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1wait_1until(JNIEnv* jenv, jclass jcls,
-                                                                                        jlong cthis, jobject jthis,
-                                                                                        jlong jarg2, jdouble jarg3)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await_1until(JNIEnv* jenv, jclass jcls,
+                                                                                         jlong cthis, jobject jthis,
+                                                                                         jlong jarg2, jdouble jarg3)
 {
   jlong jresult                               = 0;
   simgrid::s4u::ConditionVariable* arg1       = (simgrid::s4u::ConditionVariable*)0;
@@ -3918,9 +3914,9 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1wait
   return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1wait_1for(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis,
-                                                                                      jlong jarg2, jdouble jarg3)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await_1for(JNIEnv* jenv, jclass jcls,
+                                                                                       jlong cthis, jobject jthis,
+                                                                                       jlong jarg2, jdouble jarg3)
 {
   jlong jresult                               = 0;
   simgrid::s4u::ConditionVariable* arg1       = (simgrid::s4u::ConditionVariable*)0;
@@ -10591,6 +10587,3 @@ static struct SimGridJavaInit {
     };
   }
 } sgJavaInit;
-
-/* Restore our compilation flags, requesting declarations */
-#pragma GCC diagnostic pop

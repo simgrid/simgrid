@@ -130,7 +130,7 @@ public class Exec extends Activity {
   }
   
   public Exec await() {
-    wait_for(-1);
+    await_for(-1);
     return this;
   }
 
@@ -213,8 +213,9 @@ public class Exec extends Activity {
     return this;
   }
 
-  public Exec wait_for(double timeout) {
-    simgridJNI.Exec_wait_for(swigCPtr, this, timeout);
+  public Exec await_for(double timeout)
+  {
+    simgridJNI.Exec_await_for(swigCPtr, this, timeout);
     return this;
   }
 }

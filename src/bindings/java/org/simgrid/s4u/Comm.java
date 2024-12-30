@@ -219,13 +219,14 @@ public class Comm extends Activity {
     return this;
   }
 
-  public Comm wait_for(double timeout) {
-    simgridJNI.Comm_wait_for(swigCPtr, this, timeout);
+  public Comm await_for(double timeout)
+  {
+    simgridJNI.Comm_await_for(swigCPtr, this, timeout);
     return this;
   }
 
   public Comm await() {
-    wait_for(-1);
+    await_for(-1);
     return this;
   }
 }

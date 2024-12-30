@@ -95,9 +95,9 @@ public class simgridJNI {
   public final static native void Activity_set_vetoed_activities(long jarg1);
   public final static native void Activity_start(long jarg1, Activity jarg1_);
   public final static native boolean Activity_test(long jarg1, Activity jarg1_);
-  public final static native void Activity_wait_for(long jarg1, Activity jarg1_, double jarg2);
-  public final static native void Activity_wait_for_or_cancel(long jarg1, Activity jarg1_, double jarg2);
-  public final static native void Activity_wait_until(long jarg1, Activity jarg1_, double jarg2);
+  public final static native void Activity_await_for(long jarg1, Activity jarg1_, double jarg2);
+  public final static native void Activity_await_for_or_cancel(long jarg1, Activity jarg1_, double jarg2);
+  public final static native void Activity_await_until(long jarg1, Activity jarg1_, double jarg2);
   public final static native void Activity_cancel(long jarg1, Activity jarg1_);
   public final static native int Activity_get_state(long jarg1, Activity jarg1_);
   public final static native String Activity_get_state_str(long jarg1, Activity jarg1_);
@@ -127,11 +127,11 @@ public class simgridJNI {
   public final static native boolean ActivitySet_empty(long jarg1, ActivitySet jarg1_);
   public final static native void ActivitySet_clear(long jarg1, ActivitySet jarg1_);
   public final static native long ActivitySet_at(long jarg1, ActivitySet jarg1_, int index);
-  public final static native void ActivitySet_wait_all_for(long jarg1, ActivitySet jarg1_, double timeout);
-  public final static native void ActivitySet_wait_all(long jarg1, ActivitySet jarg1_);
+  public final static native void ActivitySet_await_all_for(long jarg1, ActivitySet jarg1_, double timeout);
+  public final static native void ActivitySet_await_all(long jarg1, ActivitySet jarg1_);
   public final static native long ActivitySet_test_any(long jarg1, ActivitySet jarg1_);
-  public final static native long ActivitySet_wait_any_for(long jarg1, ActivitySet jarg1_, double timeout);
-  public final static native long ActivitySet_wait_any(long jarg1, ActivitySet jarg1_);
+  public final static native long ActivitySet_await_any_for(long jarg1, ActivitySet jarg1_, double timeout);
+  public final static native long ActivitySet_await_any(long jarg1, ActivitySet jarg1_);
   public final static native long ActivitySet_get_failed_activity(long jarg1, ActivitySet jarg1_);
   public final static native boolean ActivitySet_has_failed_activity(long jarg1, ActivitySet jarg1_);
 
@@ -171,7 +171,7 @@ public class simgridJNI {
   public final static native void Exec_detach__SWIG_0(long jarg1, Exec jarg1_);
   public final static native void Exec_detach__SWIG_1(long jarg1, Exec jarg1_, long jarg2);
   public final static native void Exec_cancel(long jarg1, Exec jarg1_);
-  public final static native void Exec_wait_for(long jarg1, Exec jarg1_, double jarg2);
+  public final static native void Exec_await_for(long jarg1, Exec jarg1_, double jarg2);
   public final static native void Io_on_start_cb(long jarg1);
   public final static native void Io_on_this_start_cb(long jarg1, Io jarg1_, long jarg2);
   public final static native void Io_on_completion_cb(long jarg1);
@@ -190,7 +190,7 @@ public class simgridJNI {
   public final static native void Io_detach__SWIG_0(long jarg1, Io jarg1_);
   public final static native void Io_detach__SWIG_1(long jarg1, Io jarg1_, long jarg2);
   public final static native void Io_cancel(long jarg1, Io jarg1_);
-  public final static native void Io_wait_for(long jarg1, Io jarg1_, double jarg2);
+  public final static native void Io_await_for(long jarg1, Io jarg1_, double jarg2);
   public final static native long Barrier_create(long jarg1);
   public final static native String Barrier_to_string(long jarg1, Barrier jarg1_);
   public final static native void delete_Barrier(long jarg1);
@@ -216,11 +216,13 @@ public class simgridJNI {
   public final static native boolean Comm_is_assigned(long jarg1, Comm jarg1_);
   public final static native long Comm_get_sender(long jarg1, Comm jarg1_);
   public final static native long Comm_get_receiver(long jarg1, Comm jarg1_);
-  public final static native void Comm_wait_for(long jarg1, Comm jarg1_, double jarg2);
+  public final static native void Comm_await_for(long jarg1, Comm jarg1_, double jarg2);
   public final static native void delete_ConditionVariable(long jarg1);
   public final static native long ConditionVariable_create();
-  public final static native long ConditionVariable_wait_until(long jarg1, ConditionVariable jarg1_, long jarg2, double jarg3);
-  public final static native long ConditionVariable_wait_for(long jarg1, ConditionVariable jarg1_, long jarg2, double jarg3);
+  public final static native long ConditionVariable_await_until(long jarg1, ConditionVariable jarg1_, long jarg2,
+                                                                double jarg3);
+  public final static native long ConditionVariable_await_for(long jarg1, ConditionVariable jarg1_, long jarg2,
+                                                              double jarg3);
   public final static native void ConditionVariable_notify_one(long jarg1, ConditionVariable jarg1_);
   public final static native void ConditionVariable_notify_all(long jarg1, ConditionVariable jarg1_);
   public final static native void delete_Disk(long jarg1);

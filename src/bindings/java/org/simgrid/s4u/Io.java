@@ -181,8 +181,9 @@ public class Io extends Activity {
     return this;
   }
 
-  public Io wait_for(double timeout) {
-    simgridJNI.Io_wait_for(swigCPtr, this, timeout);
+  public Io await_for(double timeout)
+  {
+    simgridJNI.Io_await_for(swigCPtr, this, timeout);
     return this;
   }
 

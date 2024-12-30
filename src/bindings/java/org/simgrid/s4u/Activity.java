@@ -76,19 +76,19 @@ public class Activity {
     return simgridJNI.Activity_test(swigCPtr, this);
   }
 
-  public Activity wait_for(double timeout) {
-    simgridJNI.Activity_wait_for(swigCPtr, this, timeout);
+  public Activity await_for(double timeout)
+  {
+    simgridJNI.Activity_await_for(swigCPtr, this, timeout);
     return this;
   }
 
-  public Activity wait_for_or_cancel(double timeout) {
-    simgridJNI.Activity_wait_for_or_cancel(swigCPtr, this, timeout);
+  public Activity await_for_or_cancel(double timeout)
+  {
+    simgridJNI.Activity_await_for_or_cancel(swigCPtr, this, timeout);
     return this;
   }
 
-  public void wait_until(double time_limit) {
-    simgridJNI.Activity_wait_until(swigCPtr, this, time_limit);
-  }
+  public void await_until(double time_limit) { simgridJNI.Activity_await_until(swigCPtr, this, time_limit); }
 
   public Activity cancel() {
     simgridJNI.Activity_cancel(swigCPtr, this);

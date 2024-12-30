@@ -29,6 +29,12 @@ set_target_properties(simgrid-java PROPERTIES SKIP_BUILD_RPATH ON)
 target_link_libraries(simgrid-java PUBLIC simgrid)
 add_dependencies(tests simgrid-java)
 
+# Generate the header file ensuring that the C++ and Java versions of the JNI bindings match
+add_custom_target(java_native_headers
+                  COMMAND javac -cp ${CMAKE_HOME_DIRECTORY}/src/bindings/java/ -h ${CMAKE_CURRENT_BINARY_DIR}/include/ ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/s4u/simgridJNI.java
+                  BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/include/org_simgrid_s4u_simgridJNI.h)
+add_dependencies(simgrid-java java_native_headers)
+
 get_target_property(CHECK_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
 message(STATUS "[Java] simgrid-java includes: ${CHECK_INCLUDES}")
 
@@ -68,12 +74,7 @@ endif()
 ##
 add_jar(simgrid_jar
         SOURCES ${SIMGRID_JAVA_JAVA_SOURCES}
-        GENERATE_NATIVE_HEADERS simgridJNI-native
         OUTPUT_NAME simgrid)
-
-# Where the generated header file is located. If we had CMake v3.20, we could use the DESTINATION part of GENERATE_NATIVE_HEADERS      
-set_property(TARGET simgrid-java
-            APPEND PROPERTY INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/simgrid_jar.dir/native_headers")
 
 # Add the classes of the generated sources later, as they do not exist at configure time when add_jar computes its arguments
 ADD_CUSTOM_COMMAND(TARGET simgrid_jar 
