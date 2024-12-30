@@ -25,6 +25,7 @@ set(libsimgrid-java_version "${release_version}")
 cmake_minimum_required(VERSION 3.12)
 # once we move CMake to >= 3.13, we should use target_link_option in examples/sthread
 # once we move CMake to >= 3.13.1, we could get rid of _Boost_STACKTRACE_BACKTRACE_HEADERS
+# once we move CMake to >= 3.20, we could use the DESTINATION part of GENERATE_NATIVE_HEADERS in Java
 # When updating, try to remove some cmake_policy() to see if it's OK or if it generates a warning
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules)

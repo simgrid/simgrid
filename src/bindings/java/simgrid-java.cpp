@@ -1062,6 +1062,10 @@ extern "C" {
  * Then, all classical parameters to the method follow, using stupid naming conventions inherited from swig.
  * *****************************************************************************************************************/
 
+/* The following header file contains the prototypes of all JNI calls, generated with `javac -h` by cmake
+   and located somewhere under simgrid_jar.dir/native_headers/org_simgrid_s4u_simgridJNI.h */
+#include "org_simgrid_s4u_simgridJNI.h"
+
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_BooleanCallback_1run(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                              jobject jthis, jboolean jarg2)
 {
@@ -9773,60 +9777,39 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1init
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1init_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
                                                                                             jlong cthis, jobject jthis,
-                                                                                            jlong jarg2)
+                                                                                            jobject payload)
 {
-  jlong jresult                    = 0;
-  simgrid::s4u::MessageQueue* arg1 = (simgrid::s4u::MessageQueue*)0;
-  void* arg2                       = (void*)0;
-  MessPtr result;
+  auto self = (MessageQueue*)cthis;
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1 = *(simgrid::s4u::MessageQueue**)&cthis;
-  {
-    // From JNI to C++
-    arg2 = (void*)jarg2;
-  }
-  result               = (arg1)->put_init(arg2);
-  *(MessPtr**)&jresult = new MessPtr(result);
-  return jresult;
+  MessPtr result = self->put_init(jenv->NewGlobalRef(payload));
+  intrusive_ptr_add_ref(result.get());
+  return (jlong)result.get();
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1async(JNIEnv* jenv, jclass jcls,
                                                                                   jlong cthis, jobject jthis,
-                                                                                  jlong jarg2)
+                                                                                  jobject payload)
 {
-  jlong jresult                    = 0;
-  simgrid::s4u::MessageQueue* arg1 = (simgrid::s4u::MessageQueue*)0;
-  void* arg2                       = (void*)0;
-  MessPtr result;
+  auto self = (MessageQueue*)cthis;
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1 = *(simgrid::s4u::MessageQueue**)&cthis;
-  {
-    // From JNI to C++
-    arg2 = (void*)jarg2;
-  }
-  result               = (arg1)->put_async(arg2);
-  *(MessPtr**)&jresult = new MessPtr(result);
-  return jresult;
+  MessPtr result = self->put_async(jenv->NewGlobalRef(payload));
+  intrusive_ptr_add_ref(result.get());
+  return (jlong)result.get();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
                                                                                      jlong cthis, jobject jthis,
-                                                                                     jlong jarg2)
+                                                                                     jobject payload)
 {
-  ((simgrid::s4u::MessageQueue*)cthis)->put((void*)jarg2);
+  auto self = (MessageQueue*)cthis;
+  self->put(jenv->NewGlobalRef(payload));
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
                                                                                      jlong cthis, jobject jthis,
-                                                                                     jlong jarg2, jdouble jarg3)
+                                                                                     jobject payload, jdouble jarg3)
 {
-  ((simgrid::s4u::MessageQueue*)cthis)->put((void*)jarg2, jarg3);
+  ((simgrid::s4u::MessageQueue*)cthis)->put(jenv->NewGlobalRef(payload), jarg3);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
