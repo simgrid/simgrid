@@ -3,13 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This example shows how to use simgrid::s4u::this_actor::wait() to wait for a given communication.
- *
- * As for the other asynchronous examples, the sender initiate all the messages it wants to send and
- * pack the resulting simgrid::s4u::CommPtr objects in a vector. All messages thus occurs concurrently.
- *
- * The sender then loops until there is no ongoing communication.
- */
+/* This example shows how to use Activity.await() to wait for a given communication. */
 
 import org.simgrid.s4u.*;
 
