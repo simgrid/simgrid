@@ -6,12 +6,73 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/forward.h"
+#include "src/kernel/context/ContextJava.hpp"
+
 #define SWIG_VERSION 0x040201
 
-#include "xbt/base.h"
 #include <jni.h>
 #include <stdlib.h>
 #include <string.h>
+
+/* For the interactions with the other parts of simgrid */
+JavaVM* simgrid_cached_jvm = nullptr;
+JNIEnv* maestro_jenv       = nullptr;
+extern bool do_install_signal_handlers;
+
+/* For upcalls, from the C++ to the JVM */
+static jmethodID CallbackExec_methodId = 0;
+
+static void handle_exception(JNIEnv* jenv)
+{
+  if (jenv->ExceptionCheck()) {
+    jenv->ExceptionDescribe();
+    jenv->ExceptionClear();
+  }
+}
+static jmethodID init_methodId(JNIEnv* jenv, const char* name)
+{
+  char buff[1024];
+  snprintf(buff, 1023, "org/simgrid/s4u/%s", name);
+  jclass klass = jenv->FindClass(buff);
+  handle_exception(jenv);
+  xbt_assert(klass, "Cannot find class %s", name);
+
+  jmethodID methodId = jenv->GetMethodID(klass, "run", "(J)V"); // void run(long e)
+  handle_exception(jenv);
+  xbt_assert(methodId, "Cannot find the method run() in the class %s", name);
+  return methodId;
+}
+
+/* *********************************************************************************** */
+/* Initialize the Java bindings                                                        */
+/* *********************************************************************************** */
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved)
+{
+  simgrid_cached_jvm = jvm;
+  setlocale(LC_NUMERIC, "C");
+  do_install_signal_handlers = false;
+  return JNI_VERSION_1_2;
+}
+
+static struct SimGridJavaInit {
+  SimGridJavaInit()
+  {
+    simgrid::kernel::context::ContextFactory::initializer = []() {
+      XBT_INFO("Using regular java threads.");
+
+      xbt_assert(simgrid_cached_jvm->AttachCurrentThread((void**)&maestro_jenv, NULL) == JNI_OK,
+                 "The maestro thread could not be attached to the JVM");
+
+      // Initialize the upcall mechanism
+      CallbackExec_methodId = init_methodId(maestro_jenv, "CallbackExec");
+
+      // Initialize the factory mechanism
+      return new simgrid::kernel::context::JavaContextFactory();
+    };
+  }
+} sgJavaInit;
 
 /* Support for throwing Java exceptions */
 typedef enum {
@@ -707,7 +768,6 @@ template <typename T> T SwigValueInit()
 
 using namespace simgrid::s4u;
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 using namespace simgrid;
 
 #include <stdexcept>
@@ -2718,112 +2778,70 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1has_1fa
   auto self = (ActivitySet*)cthis;
   return self->has_failed_activities();
 }
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1start_1cb(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1start_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
 {
-  std::function<void(simgrid::s4u::Exec const&)>* arg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(std::function<void(simgrid::s4u::Exec const&)>**)&cthis;
-  if (!arg1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Exec const &) > const & is null");
-    return;
-  }
-  simgrid::s4u::Activity_T<simgrid::s4u::Exec>::on_start_cb(
-      (std::function<void(simgrid::s4u::Exec const&)> const&)*arg1);
+  cb = jenv->NewGlobalRef(cb);
+  simgrid::s4u::Exec::on_start_cb([cb](Exec const& e) { maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e); });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1start_1cb(JNIEnv* jenv, jclass jcls,
                                                                                   jlong cthis, jobject jthis,
-                                                                                  jlong jarg2)
+                                                                                  jobject cb)
 {
-  std::function<void(simgrid::s4u::Exec const&)>* arg2 = *(std::function<void(simgrid::s4u::Exec const&)>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Exec const &) > const & is null");
-    return;
-  }
-  ((Exec*)cthis)->on_this_start_cb((std::function<void(simgrid::s4u::Exec const&)> const&)*arg2);
+  cb = jenv->NewGlobalRef(cb);
+  ((Exec*)cthis)->on_this_start_cb([cb](Exec const& e) {
+    maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e);
+  });
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1completion_1cb(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1completion_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
 {
-  std::function<void(simgrid::s4u::Exec const&)>* arg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(std::function<void(simgrid::s4u::Exec const&)>**)&cthis;
-  if (!arg1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Exec const &) > const & is null");
-    return;
-  }
-  simgrid::s4u::Activity_T<simgrid::s4u::Exec>::on_completion_cb(
-      (std::function<void(simgrid::s4u::Exec const&)> const&)*arg1);
+  cb = jenv->NewGlobalRef(cb);
+  simgrid::s4u::Exec::on_completion_cb(
+      [cb](Exec const& e) { maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e); });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1completion_1cb(JNIEnv* jenv, jclass jcls,
                                                                                        jlong cthis, jobject jthis,
-                                                                                       jlong jarg2)
+                                                                                       jobject cb)
 {
-  std::function<void(simgrid::s4u::Exec const&)>* arg2 = *(std::function<void(simgrid::s4u::Exec const&)>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Exec const &) > const & is null");
-    return;
-  }
-  ((Exec*)cthis)->on_this_completion_cb((std::function<void(simgrid::s4u::Exec const&)> const&)*arg2);
+  cb = jenv->NewGlobalRef(cb);
+  ((Exec*)cthis)->on_this_completion_cb([cb](Exec const& e) {
+    maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e);
+  });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass jcls,
                                                                                     jlong cthis, jobject jthis,
-                                                                                    jlong jarg2)
+                                                                                    jobject cb)
 {
-  std::function<void(simgrid::s4u::Exec const&)>* arg2 = *(std::function<void(simgrid::s4u::Exec const&)>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Exec const &) > const & is null");
-    return;
-  }
-  ((Exec*)cthis)->on_this_suspend_cb((std::function<void(simgrid::s4u::Exec const&)> const&)*arg2);
+  cb = jenv->NewGlobalRef(cb);
+  ((Exec*)cthis)->on_this_suspend_cb([cb](Exec const& e) {
+    maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e);
+  });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1resume_1cb(JNIEnv* jenv, jclass jcls,
                                                                                    jlong cthis, jobject jthis,
-                                                                                   jlong jarg2)
+                                                                                   jobject cb)
 {
-  std::function<void(simgrid::s4u::Exec const&)>* arg2 = *(std::function<void(simgrid::s4u::Exec const&)>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Exec const &) > const & is null");
-    return;
-  }
-  ((Exec*)cthis)->on_this_resume_cb((std::function<void(simgrid::s4u::Exec const&)> const&)*arg2);
+  cb = jenv->NewGlobalRef(cb);
+  ((Exec*)cthis)->on_this_resume_cb([cb](Exec const& e) {
+    maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e);
+  });
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1veto_1cb(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1veto_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
 {
-  std::function<void(simgrid::s4u::Exec&)>* arg1 = *(std::function<void(simgrid::s4u::Exec&)>**)&cthis;
-  if (!arg1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Exec &) > const & is null");
-    return;
-  }
-  simgrid::s4u::Activity_T<simgrid::s4u::Exec>::on_veto_cb((std::function<void(simgrid::s4u::Exec&)> const&)*arg1);
+  cb = jenv->NewGlobalRef(cb);
+  simgrid::s4u::Exec::on_veto_cb([cb](Exec const& e) { maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e); });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1veto_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                 jobject jthis, jlong jarg2)
+                                                                                 jobject jthis, jobject cb)
 {
-  std::function<void(simgrid::s4u::Exec&)>* arg2 = *(std::function<void(simgrid::s4u::Exec&)>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Exec &) > const & is null");
-    return;
-  }
-  ((Exec*)cthis)->on_this_veto_cb((std::function<void(simgrid::s4u::Exec&)> const&)*arg2);
+  cb = jenv->NewGlobalRef(cb);
+  ((Exec*)cthis)->on_this_veto_cb([cb](Exec const& e) { maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e); });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1add_1successor(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -6216,64 +6234,21 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1from_1json
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1init(JNIEnv* jenv, jclass jcls)
 {
-  jlong jresult = 0;
-  boost::intrusive_ptr<simgrid::s4u::Exec> result;
-
-  (void)jenv;
-  (void)jcls;
-  result = simgrid::s4u::Exec::init();
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Exec>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Exec>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Exec>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Exec>**)&jresult = 0;
-  }
-
-  return jresult;
+  ExecPtr result = simgrid::s4u::Exec::init();
+  intrusive_ptr_add_ref(result.get());
+  return (jlong)result.get();
 }
 
 XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1remaining(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                 jobject jthis)
 {
-  jdouble jresult                                        = 0;
-  simgrid::s4u::Exec* arg1                               = (simgrid::s4u::Exec*)0;
-  boost::shared_ptr<simgrid::s4u::Exec const>* smartarg1 = 0;
-  double result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Exec>**)&cthis;
-  arg1      = (simgrid::s4u::Exec*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = (double)((simgrid::s4u::Exec const*)arg1)->get_remaining();
-  jresult = (jdouble)result;
-  return jresult;
+  return ((Exec*)cthis)->get_remaining();
 }
 
 XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1remaining_1ratio(JNIEnv* jenv, jclass jcls,
                                                                                        jlong cthis, jobject jthis)
 {
-  jdouble jresult                                        = 0;
-  simgrid::s4u::Exec* arg1                               = (simgrid::s4u::Exec*)0;
-  boost::shared_ptr<simgrid::s4u::Exec const>* smartarg1 = 0;
-  double result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Exec>**)&cthis;
-  arg1      = (simgrid::s4u::Exec*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = (double)((simgrid::s4u::Exec const*)arg1)->get_remaining_ratio();
-  jresult = (jdouble)result;
-  return jresult;
+  return ((Exec*)cthis)->get_remaining_ratio();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -10565,25 +10540,3 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_swig_1module_1init(JNIEn
 #ifdef __cplusplus
 }
 #endif
-
-JavaVM* simgrid_cached_jvm = NULL;
-extern bool do_install_signal_handlers;
-
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved)
-{
-  simgrid_cached_jvm = jvm;
-  setlocale(LC_NUMERIC, "C");
-  do_install_signal_handlers = false;
-  return JNI_VERSION_1_2;
-}
-
-#include "src/kernel/context/ContextJava.hpp"
-static struct SimGridJavaInit {
-  SimGridJavaInit()
-  {
-    simgrid::kernel::context::ContextFactory::initializer = []() {
-      XBT_INFO("Using regular java threads.");
-      return new simgrid::kernel::context::JavaContextFactory();
-    };
-  }
-} sgJavaInit;

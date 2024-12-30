@@ -134,37 +134,21 @@ public class Exec extends Activity {
     return this;
   }
 
-  public static void on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t cb) {
-    simgridJNI.Exec_on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t.getCPtr(cb));
-  }
+  public static void on_start_cb(CallbackExec cb) { simgridJNI.Exec_on_start_cb(cb); }
 
-  public void on_this_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t cb) {
-    simgridJNI.Exec_on_this_start_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_start_cb(CallbackExec cb) { simgridJNI.Exec_on_this_start_cb(swigCPtr, this, cb); }
 
-  public static void on_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t cb) {
-    simgridJNI.Exec_on_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t.getCPtr(cb));
-  }
+  public static void on_completion_cb(CallbackExec cb) { simgridJNI.Exec_on_completion_cb(cb); }
 
-  public void on_this_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t cb) {
-    simgridJNI.Exec_on_this_completion_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_completion_cb(CallbackExec cb) { simgridJNI.Exec_on_this_completion_cb(swigCPtr, this, cb); }
 
-  public void on_this_suspend_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t cb) {
-    simgridJNI.Exec_on_this_suspend_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_suspend_cb(CallbackExec cb) { simgridJNI.Exec_on_this_suspend_cb(swigCPtr, this, cb); }
 
-  public void on_this_resume_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t cb) {
-    simgridJNI.Exec_on_this_resume_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_resume_cb(CallbackExec cb) { simgridJNI.Exec_on_this_resume_cb(swigCPtr, this, cb); }
 
-  public static void on_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_RF_t cb) {
-    simgridJNI.Exec_on_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_RF_t.getCPtr(cb));
-  }
+  public static void on_veto_cb(CallbackExec cb) { simgridJNI.Exec_on_veto_cb(cb); }
 
-  public void on_this_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_RF_t cb) {
-    simgridJNI.Exec_on_this_veto_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_RF_t.getCPtr(cb));
-  }
+  public void on_this_veto_cb(CallbackExec cb) { simgridJNI.Exec_on_this_veto_cb(swigCPtr, this, cb); }
 
   public Exec add_successor(Activity a) {
     simgridJNI.Exec_add_successor(swigCPtr, this, Activity.getCPtr(a), a);

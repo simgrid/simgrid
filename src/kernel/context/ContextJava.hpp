@@ -36,6 +36,7 @@ public:
 class JavaContextFactory : public ContextFactory {
 public:
   JavaContextFactory() = default;
+  ~JavaContextFactory();
   Context* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
   void run_all(std::vector<actor::ActorImpl*> const& actors) override;
   const char* get_name() const override { return "Java"; }

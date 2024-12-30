@@ -9,8 +9,9 @@ endif()
 # actor_exiting is not working yet
 set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/actor_exiting/actor_exiting.java)
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor_exiting/actor_exiting.java.tesh)
-#comm_dependent
-foreach (example comm_await comm_awaituntil comm_dependent comm_host2host comm_pingpong comm_ready comm_suspend comm_throttling)
+# comm_failure needs both exceptions and platform creation
+foreach (example exec_async
+                 comm_await comm_awaituntil comm_dependent comm_host2host comm_pingpong comm_ready comm_suspend comm_throttling)
   
   # Use default source file unless specified otherwise
   if(NOT DEFINED _${example}_sources)

@@ -791,6 +791,7 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/ActorMain.java
     src/bindings/java/org/simgrid/s4u/Barrier.java
     src/bindings/java/org/simgrid/s4u/BooleanCallback.java
+    src/bindings/java/org/simgrid/s4u/CallbackExec.java
     src/bindings/java/org/simgrid/s4u/ClusterCallbacks.java
     src/bindings/java/org/simgrid/s4u/Comm.java
     src/bindings/java/org/simgrid/s4u/ConditionVariable.java

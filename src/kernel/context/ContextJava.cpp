@@ -21,6 +21,11 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(java, "SimGrid for Java(TM)");
 
 namespace simgrid::kernel::context {
 
+JavaContextFactory::~JavaContextFactory()
+{
+  simgrid_cached_jvm->DetachCurrentThread(); // Maestro needs to be detached
+}
+
 Context* JavaContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor)
 {
   return this->new_context<JavaContext>(std::move(code), actor);
@@ -45,7 +50,7 @@ void JavaContext::initialized()
   JNIEnv* env;
   xbt_assert(simgrid_cached_jvm->AttachCurrentThread((void**)&env, NULL) == JNI_OK,
              "The thread could not be attached to the JVM");
-  XBT_DEBUG("Attach thread %p (%s)", this, get_actor()->get_cname());
+  XBT_DEBUG("Attach thread %p (%s)", this, get_actor()->get_cname()); // Maestro does not take this execution path
   this->jenv_ = env;
 }
 
