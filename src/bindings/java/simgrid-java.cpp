@@ -2546,23 +2546,10 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1suspen
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                jobject jthis)
 {
-  jstring jresult                                            = 0;
-  simgrid::s4u::Activity* arg1                               = (simgrid::s4u::Activity*)0;
-  boost::shared_ptr<simgrid::s4u::Activity const>* smartarg1 = 0;
-  char* result                                               = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Activity>**)&cthis;
-  arg1      = (simgrid::s4u::Activity*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (char*)((simgrid::s4u::Activity const*)arg1)->get_cname();
-  if (result)
-    jresult = jenv->NewStringUTF((const char*)result);
-  return jresult;
+  const char* cname = ((Activity*)cthis)->get_cname();
+  if (cname)
+    return jenv->NewStringUTF(cname);
+  return 0;
 }
 
 XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1remaining(JNIEnv* jenv, jclass jcls,
@@ -2782,7 +2769,11 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1resume_1
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1veto_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
 {
   cb = jenv->NewGlobalRef(cb);
-  simgrid::s4u::Exec::on_veto_cb([cb](Exec const& e) { maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e); });
+  simgrid::s4u::Exec::on_veto_cb([cb](Exec const& e) {
+    XBT_CRITICAL("Calling callback %p", CallbackExec_methodId);
+    maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e);
+    XBT_CRITICAL("Done with the callback");
+  });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1veto_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,

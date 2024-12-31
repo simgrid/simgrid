@@ -87,7 +87,7 @@ class peer extends ActorMain {
     }
 
     Engine.info("I'm done, just waiting for my peers to receive the messages before exiting");
-    pending_comms.wait_all();
+    pending_comms.await_all();
 
     Engine.info("Goodbye now!");
   }
