@@ -1,0 +1,7 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:synchro_condition_variable.jar synchro_condition_variable ${platfdir}/two_hosts.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [Jupiter:worker:(2) 0.000000] [java/INFO] Start processing data which is 'Example data'.
+> [Jupiter:worker:(2) 0.000000] [java/INFO] Signal to master that the data processing is completed, and exit.
+> [Tremblay:main:(1) 0.000000] [java/INFO] data is now 'Example data after processing'.

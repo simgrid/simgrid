@@ -814,7 +814,6 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/simgridJNI.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_MessPtr.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_s4u__Host.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__cv_status.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fboost__intrusive_ptrT_simgrid__s4u__Actor_tF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Host_pF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Link_pF_t.java
@@ -844,7 +843,6 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__pairT_unsigned_int_unsigned_int_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__unique_lockT_simgrid__s4u__Mutex_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__unordered_mapT_std__string_std__string_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t.java

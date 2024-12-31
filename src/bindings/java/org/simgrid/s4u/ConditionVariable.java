@@ -39,18 +39,22 @@ public class ConditionVariable {
     return (cPtr == 0) ? null : new ConditionVariable(cPtr, true);
   }
 
-  public SWIGTYPE_p_std__cv_status wait_until(SWIGTYPE_p_std__unique_lockT_simgrid__s4u__Mutex_t lock, double timeout_time) {
-    return new SWIGTYPE_p_std__cv_status(
-        simgridJNI.ConditionVariable_await_until(
-            swigCPtr, this, SWIGTYPE_p_std__unique_lockT_simgrid__s4u__Mutex_t.getCPtr(lock), timeout_time),
-        true);
+  /** Blocks until awaken, no timeout possible */
+  public void await(Mutex lock)
+  {
+    simgridJNI.ConditionVariable_await_for(swigCPtr, this, Mutex.getCPtr(lock), lock, -1);
   }
 
-  public SWIGTYPE_p_std__cv_status wait_for(SWIGTYPE_p_std__unique_lockT_simgrid__s4u__Mutex_t lock, double duration) {
-    return new SWIGTYPE_p_std__cv_status(
-        simgridJNI.ConditionVariable_await_for(
-            swigCPtr, this, SWIGTYPE_p_std__unique_lockT_simgrid__s4u__Mutex_t.getCPtr(lock), duration),
-        true);
+  /** Returns true if the wait timeouted */
+  public boolean await_until(Mutex lock, double timeout_time)
+  {
+    return simgridJNI.ConditionVariable_await_until(swigCPtr, this, Mutex.getCPtr(lock), lock, timeout_time);
+  }
+
+  /** Returns true if the wait timeouted */
+  public boolean wait_for(Mutex lock, double duration)
+  {
+    return simgridJNI.ConditionVariable_await_for(swigCPtr, this, Mutex.getCPtr(lock), lock, duration);
   }
 
   public void notify_one() {

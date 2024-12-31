@@ -213,10 +213,10 @@ public class simgridJNI {
   public final static native boolean Barrier_await(long jarg1, Barrier jarg1_);
   public final static native void delete_ConditionVariable(long jarg1);
   public final static native long ConditionVariable_create();
-  public final static native long ConditionVariable_await_until(long jarg1, ConditionVariable jarg1_, long jarg2,
-                                                                double jarg3);
-  public final static native long ConditionVariable_await_for(long jarg1, ConditionVariable jarg1_, long jarg2,
-                                                              double jarg3);
+  public final static native boolean ConditionVariable_await_until(long jarg1, ConditionVariable jarg1_, long cmutex,
+                                                                   Mutex jmutex, double jarg3);
+  public final static native boolean ConditionVariable_await_for(long jarg1, ConditionVariable jarg1_, long cmutex,
+                                                                 Mutex jmutex, double jarg3);
   public final static native void ConditionVariable_notify_one(long jarg1, ConditionVariable jarg1_);
   public final static native void ConditionVariable_notify_all(long jarg1, ConditionVariable jarg1_);
   public final static native void delete_Disk(long jarg1);

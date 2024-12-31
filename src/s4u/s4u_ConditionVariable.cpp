@@ -79,15 +79,19 @@ void ConditionVariable::wait(const std::unique_lock<Mutex>& lock)
   do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock.mutex()->pimpl_, -1);
 }
 
-std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& lock, double timeout)
+std::cv_status s4u::ConditionVariable::wait_for(MutexPtr lock, double timeout)
 {
   // The simcall uses -1 for "any timeout" but we don't want this:
   if (timeout < 0)
     timeout = 0.0;
 
-  bool timed_out = do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock.mutex()->pimpl_, timeout);
+  bool timed_out = do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock->pimpl_, timeout);
 
   return timed_out ? std::cv_status::timeout : std::cv_status::no_timeout;
+}
+std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& lock, double timeout)
+{
+  return wait_for(lock.mutex(), timeout);
 }
 
 std::cv_status ConditionVariable::wait_until(s4u::MutexPtr lock, double timeout_time)
