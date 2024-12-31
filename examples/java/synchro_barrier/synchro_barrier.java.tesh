@@ -1,0 +1,49 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:synchro_barrier.jar synchro_barrier 1 ${platfdir}/two_hosts.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [Tremblay:master:(1) 0.000000] [java/INFO] Spawning 0 workers
+> [Tremblay:master:(1) 0.000000] [java/INFO] Waiting on the barrier
+> [Tremblay:master:(1) 0.000000] [java/INFO] Bye from the last to enter
+
+$ ${javacmd} -cp ../../simgrid.jar:synchro_barrier.jar synchro_barrier 2 ${platfdir}/two_hosts.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [Tremblay:master:(1) 0.000000] [java/INFO] Spawning 1 workers
+> [Jupiter:worker:(2) 0.000000] [java/INFO] Waiting on the barrier
+> [Tremblay:master:(1) 0.000000] [java/INFO] Waiting on the barrier
+> [Jupiter:worker:(2) 0.000000] [java/INFO] Bye
+> [Tremblay:master:(1) 0.000000] [java/INFO] Bye from the last to enter
+
+$ ${javacmd} -cp ../../simgrid.jar:synchro_barrier.jar synchro_barrier 3 ${platfdir}/two_hosts.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [Tremblay:master:(1) 0.000000] [java/INFO] Spawning 2 workers
+> [Jupiter:worker:(2) 0.000000] [java/INFO] Waiting on the barrier
+> [Jupiter:worker:(3) 0.000000] [java/INFO] Waiting on the barrier
+> [Tremblay:master:(1) 0.000000] [java/INFO] Waiting on the barrier
+> [Jupiter:worker:(2) 0.000000] [java/INFO] Bye
+> [Jupiter:worker:(3) 0.000000] [java/INFO] Bye
+> [Tremblay:master:(1) 0.000000] [java/INFO] Bye from the last to enter
+
+$ ${javacmd} -cp ../../simgrid.jar:synchro_barrier.jar synchro_barrier 10 ${platfdir}/two_hosts.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [Tremblay:master:(1) 0.000000] [java/INFO] Spawning 9 workers
+> [Jupiter:worker:(2) 0.000000] [java/INFO] Waiting on the barrier
+> [Jupiter:worker:(3) 0.000000] [java/INFO] Waiting on the barrier
+> [Jupiter:worker:(4) 0.000000] [java/INFO] Waiting on the barrier
+> [Jupiter:worker:(5) 0.000000] [java/INFO] Waiting on the barrier
+> [Jupiter:worker:(6) 0.000000] [java/INFO] Waiting on the barrier
+> [Jupiter:worker:(7) 0.000000] [java/INFO] Waiting on the barrier
+> [Jupiter:worker:(8) 0.000000] [java/INFO] Waiting on the barrier
+> [Jupiter:worker:(9) 0.000000] [java/INFO] Waiting on the barrier
+> [Jupiter:worker:(10) 0.000000] [java/INFO] Waiting on the barrier
+> [Tremblay:master:(1) 0.000000] [java/INFO] Waiting on the barrier
+> [Jupiter:worker:(2) 0.000000] [java/INFO] Bye
+> [Jupiter:worker:(3) 0.000000] [java/INFO] Bye
+> [Jupiter:worker:(4) 0.000000] [java/INFO] Bye
+> [Jupiter:worker:(5) 0.000000] [java/INFO] Bye
+> [Jupiter:worker:(6) 0.000000] [java/INFO] Bye
+> [Jupiter:worker:(7) 0.000000] [java/INFO] Bye
+> [Jupiter:worker:(8) 0.000000] [java/INFO] Bye
+> [Jupiter:worker:(9) 0.000000] [java/INFO] Bye
+> [Jupiter:worker:(10) 0.000000] [java/INFO] Bye
+> [Tremblay:master:(1) 0.000000] [java/INFO] Bye from the last to enter

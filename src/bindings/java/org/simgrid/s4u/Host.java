@@ -41,4 +41,10 @@ public class Host {
   public double get_speed() {
     return simgridJNI.Host_get_speed(swigCPtr, this);
   }
+
+  public static Host by_name(String name)
+  {
+    long cPtr = simgridJNI.Host_by_name(name);
+    return (cPtr == 0) ? null : new Host(cPtr, true);
+  }
 }

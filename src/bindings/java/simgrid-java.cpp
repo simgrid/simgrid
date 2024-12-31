@@ -2332,20 +2332,8 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1successo
                                                                                    jlong cthis, jobject jthis)
 {
   jlong jresult                                                     = 0;
-  simgrid::s4u::Activity* arg1                                      = (simgrid::s4u::Activity*)0;
-  boost::shared_ptr<simgrid::s4u::Activity const>* smartarg1        = 0;
-  std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>* result = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Activity>**)&cthis;
-  arg1      = (simgrid::s4u::Activity*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>*)&((simgrid::s4u::Activity const*)arg1)
-               ->get_successors();
+  std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>* result =
+      (std::vector<ActivityPtr>*)&((Activity*)cthis)->get_successors();
   *(std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>**)&jresult = result;
   return jresult;
 }
@@ -2490,43 +2478,13 @@ XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1remain
 XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1start_1time(JNIEnv* jenv, jclass jcls,
                                                                                       jlong cthis, jobject jthis)
 {
-  jdouble jresult                                            = 0;
-  simgrid::s4u::Activity* arg1                               = (simgrid::s4u::Activity*)0;
-  boost::shared_ptr<simgrid::s4u::Activity const>* smartarg1 = 0;
-  double result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Activity>**)&cthis;
-  arg1      = (simgrid::s4u::Activity*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = (double)((simgrid::s4u::Activity const*)arg1)->get_start_time();
-  jresult = (jdouble)result;
-  return jresult;
+  return ((Activity*)cthis)->get_start_time();
 }
 
 XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1finish_1time(JNIEnv* jenv, jclass jcls,
                                                                                        jlong cthis, jobject jthis)
 {
-  jdouble jresult                                            = 0;
-  simgrid::s4u::Activity* arg1                               = (simgrid::s4u::Activity*)0;
-  boost::shared_ptr<simgrid::s4u::Activity const>* smartarg1 = 0;
-  double result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Activity>**)&cthis;
-  arg1      = (simgrid::s4u::Activity*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = (double)((simgrid::s4u::Activity const*)arg1)->get_finish_time();
-  jresult = (jdouble)result;
-  return jresult;
+  return ((Activity*)cthis)->get_finish_time();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1mark(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -2963,47 +2921,24 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Io(JNIEnv* jenv,
   intrusive_ptr_release((Io*)cthis);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Barrier_1create(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Barrier_1create(JNIEnv* jenv, jclass jcls, jlong size)
 {
-  jlong jresult = 0;
-  unsigned int arg1;
-  boost::intrusive_ptr<simgrid::s4u::Barrier> result;
-
-  (void)jenv;
-  (void)jcls;
-  arg1   = (unsigned int)cthis;
-  result = simgrid::s4u::Barrier::create(arg1);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Barrier>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Barrier>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Barrier>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Barrier>**)&jresult = 0;
-  }
-
-  return jresult;
+  BarrierPtr result = simgrid::s4u::Barrier::create(size);
+  intrusive_ptr_add_ref(result.get());
+  return (jlong)result.get();
 }
 
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Barrier_1to_1string(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                jobject jthis)
 {
-  jstring jresult                                           = 0;
-  simgrid::s4u::Barrier* arg1                               = (simgrid::s4u::Barrier*)0;
-  boost::shared_ptr<simgrid::s4u::Barrier const>* smartarg1 = 0;
-  std::string result;
+  std::string result = ((Barrier*)cthis)->to_string();
+  return jenv->NewStringUTF(result.c_str());
+}
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Barrier>**)&cthis;
-  arg1      = (simgrid::s4u::Barrier*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = ((simgrid::s4u::Barrier const*)arg1)->to_string();
-  jresult = jenv->NewStringUTF((&result)->c_str());
-  return jresult;
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Barrier_1await(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                           jobject jthis)
+{
+  return ((Barrier*)cthis)->wait();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Barrier(JNIEnv* jenv, jclass jcls, jlong cthis)
@@ -6254,6 +6189,19 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Exec(JNIEnv* jen
 {
   intrusive_ptr_release((Exec*)cthis);
 }
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1by_1name(JNIEnv* jenv, jclass jcls, jstring jname)
+{
+  if (!jname) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "No host has 'null' as a name");
+    return 0;
+  }
+  const char* cname = jenv->GetStringUTFChars(jname, 0);
+  jlong result      = (jlong)Host::by_name(cname);
+  jenv->ReleaseStringUTFChars(jname, cname);
+
+  return result;
+}
+
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                            jobject jthis)
 {

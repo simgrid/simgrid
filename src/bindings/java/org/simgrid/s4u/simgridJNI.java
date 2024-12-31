@@ -210,6 +210,7 @@ public class simgridJNI {
   public final static native long Barrier_create(long jarg1);
   public final static native String Barrier_to_string(long jarg1, Barrier jarg1_);
   public final static native void delete_Barrier(long jarg1);
+  public final static native boolean Barrier_await(long jarg1, Barrier jarg1_);
   public final static native void delete_ConditionVariable(long jarg1);
   public final static native long ConditionVariable_create();
   public final static native long ConditionVariable_await_until(long jarg1, ConditionVariable jarg1_, long jarg2,
@@ -342,7 +343,9 @@ public class simgridJNI {
   public final static native boolean Exec_is_assigned(long jarg1, Exec jarg1_);
   public final static native void delete_Exec(long jarg1);
   public final static native String Host_get_name(long jarg1, Host jarg1_);
+  public final static native long Host_by_name(String name);
   public final static native double Host_get_speed(long jarg1, Host jarg1_);
+  public final static native void delete_Host(long jarg1);
   public final static native long Io_init();
   public final static native double Io_get_remaining(long jarg1, Io jarg1_);
   public final static native int Io_get_performed_ioops(long jarg1, Io jarg1_);
@@ -358,7 +361,6 @@ public class simgridJNI {
   public final static native long Io_update_priority(long jarg1, Io jarg1_, double jarg2);
   public final static native boolean Io_is_assigned(long jarg1, Io jarg1_);
   public final static native void delete_Io(long jarg1);
-  public final static native void delete_Host(long jarg1);
   public final static native int Link_SharingPolicy_NONLINEAR_get();
   public final static native int Link_SharingPolicy_WIFI_get();
   public final static native int Link_SharingPolicy_SPLITDUPLEX_get();

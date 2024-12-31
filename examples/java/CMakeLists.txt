@@ -12,7 +12,9 @@ set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor_exiting/act
 # comm_failure needs both exceptions and platform creation
 # exec_dependent does not trigger the veto
 foreach (example exec_async exec_basic # exec_dependent
-                 comm_await comm_awaituntil comm_dependent comm_host2host comm_pingpong comm_ready comm_suspend comm_throttling)
+                 comm_await comm_awaituntil comm_dependent comm_host2host comm_pingpong comm_ready comm_suspend comm_throttling
+                 synchro_barrier
+                 )
   
   # Use default source file unless specified otherwise
   if(NOT DEFINED _${example}_sources)

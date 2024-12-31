@@ -43,4 +43,5 @@ public class Barrier {
     return simgridJNI.Barrier_to_string(swigCPtr, this);
   }
 
+  public boolean await() { return simgridJNI.Barrier_await(swigCPtr, this); }
 }
