@@ -813,7 +813,6 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/simgrid.java
     src/bindings/java/org/simgrid/s4u/simgridJNI.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_MessPtr.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_p_void.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_s4u__Host.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__cv_status.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fboost__intrusive_ptrT_simgrid__s4u__Actor_tF_t.java
@@ -834,8 +833,6 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_const_RF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Exec_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t.java
