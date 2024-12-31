@@ -21,6 +21,7 @@ include(UseJava)
 # Generate the native part of the bindings
 ##########################################
 add_library(simgrid-java SHARED
+            ${CMAKE_CURRENT_BINARY_DIR}/include/org_simgrid_s4u_simgridJNI.h
             ${SIMGRID_JAVA_C_SOURCES})
 set_property(TARGET simgrid-java
              APPEND PROPERTY INCLUDE_DIRECTORIES ${JNI_INCLUDE_DIRS} "${INTERNAL_INCLUDES}")
@@ -30,10 +31,9 @@ target_link_libraries(simgrid-java PUBLIC simgrid)
 add_dependencies(tests simgrid-java)
 
 # Generate the header file ensuring that the C++ and Java versions of the JNI bindings match
-add_custom_target(java_native_headers
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/include/org_simgrid_s4u_simgridJNI.h
                   COMMAND javac -cp ${CMAKE_HOME_DIRECTORY}/src/bindings/java/ -h ${CMAKE_CURRENT_BINARY_DIR}/include/ ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/s4u/simgridJNI.java
-                  BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/include/org_simgrid_s4u_simgridJNI.h)
-add_dependencies(simgrid-java java_native_headers)
+                  DEPENDS ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/s4u/simgridJNI.java)
 
 get_target_property(CHECK_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
 message(STATUS "[Java] simgrid-java includes: ${CHECK_INCLUDES}")
@@ -76,6 +76,7 @@ add_jar(simgrid_jar
         SOURCES ${SIMGRID_JAVA_JAVA_SOURCES}
         OUTPUT_NAME simgrid)
 
+if (enable_lib_in_jar)
 # Add the classes of the generated sources later, as they do not exist at configure time when add_jar computes its arguments
 ADD_CUSTOM_COMMAND(TARGET simgrid_jar 
         COMMENT "Pack the native code into simgrid.jar if asked to (not doing so speedups builds when hacking on Java)."
@@ -87,6 +88,7 @@ ADD_CUSTOM_COMMAND(TARGET simgrid_jar
         COMMAND ${CMAKE_COMMAND} -E echo "-- CMake puts the native code in ${JAVA_NATIVE_PATH}"
         COMMAND "${Java_JAVA_EXECUTABLE}" -classpath "${SIMGRID_JAR}" org.simgrid.s4u.NativeLib
     )
+endif()
 
 if (enable_documentation)
   add_custom_command(
@@ -149,11 +151,11 @@ if(enable_lib_in_jar)
   endif(APPLE)
 
 else()
-  add_custom_target(NATIVE
-    COMMENT "Faking the addition of native libraries in the jar, as requested by enable_lib_in_jar"
-    COMMAND rm -rf NATIVE
-    COMMAND mkdir NATIVE
-  )
+#  add_custom_target(NATIVE
+#    COMMENT "Faking the addition of native libraries in the jar, as requested by enable_lib_in_jar"
+#    COMMAND rm -rf NATIVE
+#    COMMAND mkdir NATIVE
+#  )
 
 endif(enable_lib_in_jar)
 
