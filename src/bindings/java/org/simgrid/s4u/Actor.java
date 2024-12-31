@@ -80,11 +80,6 @@ public class Actor {
     return (cPtr == 0) ? null : new Actor(cPtr, true);
   }
 
-  public Actor set_stacksize(long stacksize) {
-    long cPtr = simgridJNI.Actor_set_stacksize(swigCPtr, this, stacksize);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
-
   public Actor start(SWIGTYPE_p_std__functionT_void_fF_t code) {
     long cPtr = simgridJNI.Actor_start__SWIG_0(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fF_t.getCPtr(code));
     return (cPtr == 0) ? null : new Actor(cPtr, true);

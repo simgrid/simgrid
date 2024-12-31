@@ -178,10 +178,6 @@ public class Exec extends Activity {
     return simgridJNI.Exec_get_tracing_category(swigCPtr, this);
   }
 
-  public SWIGTYPE_p_std__functionT_void_fvoid_pF_t get_clean_function() {
-    return new SWIGTYPE_p_std__functionT_void_fvoid_pF_t(simgridJNI.Exec_get_clean_function(swigCPtr, this), false);
-  }
-
   public Exec detach() {
     simgridJNI.Exec_detach__SWIG_0(swigCPtr, this);
     return this;

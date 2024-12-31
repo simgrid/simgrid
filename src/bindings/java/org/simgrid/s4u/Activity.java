@@ -115,14 +115,6 @@ public class Activity {
     return simgridJNI.Activity_is_done(swigCPtr, this);
   }
 
-  public void set_state(Activity.State state) {
-    simgridJNI.Activity_set_state(swigCPtr, this, state.swigValue());
-  }
-
-  public void set_detached(boolean detached) {
-    simgridJNI.Activity_set_detached(swigCPtr, this, detached);
-  }
-
   public boolean is_detached() {
     return simgridJNI.Activity_is_detached(swigCPtr, this);
   }

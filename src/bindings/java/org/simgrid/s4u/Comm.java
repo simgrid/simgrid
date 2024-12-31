@@ -200,10 +200,6 @@ public class Comm extends Activity {
     return simgridJNI.Comm_get_tracing_category(swigCPtr, this);
   }
 
-  public SWIGTYPE_p_std__functionT_void_fvoid_pF_t get_clean_function() {
-    return new SWIGTYPE_p_std__functionT_void_fvoid_pF_t(simgridJNI.Comm_get_clean_function(swigCPtr, this), false);
-  }
-
   public Comm detach() {
     simgridJNI.Comm_detach__SWIG_0(swigCPtr, this);
     return this;

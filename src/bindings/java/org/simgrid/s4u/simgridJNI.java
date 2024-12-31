@@ -54,7 +54,6 @@ public class simgridJNI {
   public final static native void Actor_on_destruction_cb(long jarg1);
   public final static native void Actor_on_this_destruction_cb(long jarg1, Actor jarg1_, long jarg2);
   public final static native long Actor_init(String jarg1, long jarg2, Host jarg2_);
-  public final static native long Actor_set_stacksize(long jarg1, Actor jarg1_, long jarg2);
   public final static native long Actor_start__SWIG_0(long jarg1, Actor jarg1_, long jarg2);
   public final static native long Actor_start__SWIG_1(long jarg1, Actor jarg1_, long jarg2, String[] jarg3);
   public final static native long Actor_daemonize(long jarg1, Actor jarg1_);
@@ -104,8 +103,6 @@ public class simgridJNI {
   public final static native boolean Activity_is_canceled(long jarg1, Activity jarg1_);
   public final static native boolean Activity_is_failed(long jarg1, Activity jarg1_);
   public final static native boolean Activity_is_done(long jarg1, Activity jarg1_);
-  public final static native void Activity_set_state(long jarg1, Activity jarg1_, int jarg2);
-  public final static native void Activity_set_detached(long jarg1, Activity jarg1_, boolean jarg2);
   public final static native boolean Activity_is_detached(long jarg1, Activity jarg1_);
   public final static native void Activity_suspend(long jarg1, Activity jarg1_);
   public final static native void Activity_resume(long jarg1, Activity jarg1_);
@@ -147,7 +144,6 @@ public class simgridJNI {
   public final static native String Comm_get_name(long jarg1, Comm jarg1_);
   public final static native void Comm_set_tracing_category(long jarg1, Comm jarg1_, String jarg2);
   public final static native String Comm_get_tracing_category(long jarg1, Comm jarg1_);
-  public final static native long Comm_get_clean_function(long jarg1, Comm jarg1_);
   public final static native void Comm_detach__SWIG_0(long jarg1, Comm jarg1_);
   public final static native void Comm_detach__SWIG_1(long jarg1, Comm jarg1_, long jarg2);
   public final static native void Comm_cancel(long jarg1, Comm jarg1_);
@@ -189,7 +185,6 @@ public class simgridJNI {
   public final static native String Exec_get_name(long jarg1, Exec jarg1_);
   public final static native void Exec_set_tracing_category(long jarg1, Exec jarg1_, String jarg2);
   public final static native String Exec_get_tracing_category(long jarg1, Exec jarg1_);
-  public final static native long Exec_get_clean_function(long jarg1, Exec jarg1_);
   public final static native void Exec_detach__SWIG_0(long jarg1, Exec jarg1_);
   public final static native void Exec_detach__SWIG_1(long jarg1, Exec jarg1_, long jarg2);
   public final static native void Exec_cancel(long jarg1, Exec jarg1_);
@@ -208,7 +203,6 @@ public class simgridJNI {
   public final static native String Io_get_name(long jarg1, Io jarg1_);
   public final static native void Io_set_tracing_category(long jarg1, Io jarg1_, String jarg2);
   public final static native String Io_get_tracing_category(long jarg1, Io jarg1_);
-  public final static native long Io_get_clean_function(long jarg1, Io jarg1_);
   public final static native void Io_detach__SWIG_0(long jarg1, Io jarg1_);
   public final static native void Io_detach__SWIG_1(long jarg1, Io jarg1_, long jarg2);
   public final static native void Io_cancel(long jarg1, Io jarg1_);

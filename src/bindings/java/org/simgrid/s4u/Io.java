@@ -162,10 +162,6 @@ public class Io extends Activity {
     return simgridJNI.Io_get_tracing_category(swigCPtr, this);
   }
 
-  public SWIGTYPE_p_std__functionT_void_fvoid_pF_t get_clean_function() {
-    return new SWIGTYPE_p_std__functionT_void_fvoid_pF_t(simgridJNI.Io_get_clean_function(swigCPtr, this), false);
-  }
-
   public Io detach() {
     simgridJNI.Io_detach__SWIG_0(swigCPtr, this);
     return this;
