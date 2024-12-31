@@ -1,0 +1,34 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:synchro_mutex.jar synchro_mutex ${platfdir}/two_hosts.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [Jupiter:worker:(1) 0.000000] [java/INFO] Hello Java, I'm ready to compute after locking.
+> [Jupiter:worker:(1) 0.000000] [java/INFO] I'm done, good bye
+> [Jupiter:worker:(3) 0.000000] [java/INFO] Hello Java, I'm ready to compute after locking.
+> [Jupiter:worker:(3) 0.000000] [java/INFO] I'm done, good bye
+> [Jupiter:worker:(5) 0.000000] [java/INFO] Hello Java, I'm ready to compute after locking.
+> [Jupiter:worker:(5) 0.000000] [java/INFO] I'm done, good bye
+> [Jupiter:worker:(7) 0.000000] [java/INFO] Hello Java, I'm ready to compute after locking.
+> [Jupiter:worker:(7) 0.000000] [java/INFO] I'm done, good bye
+> [Jupiter:worker:(9) 0.000000] [java/INFO] Hello Java, I'm ready to compute after locking.
+> [Jupiter:worker:(9) 0.000000] [java/INFO] I'm done, good bye
+> [Jupiter:worker:(11) 0.000000] [java/INFO] Hello Java, I'm ready to compute after locking.
+> [Jupiter:worker:(11) 0.000000] [java/INFO] I'm done, good bye
+> [Tremblay:worker:(2) 0.000000] [java/INFO] Hello Java, I'm ready to compute after locking.
+> [Tremblay:worker:(2) 0.000000] [java/INFO] I'm done, good bye
+> [Tremblay:worker:(4) 0.000000] [java/INFO] Hello Java, I'm ready to compute after locking.
+> [Tremblay:worker:(4) 0.000000] [java/INFO] I'm done, good bye
+> [Tremblay:worker:(6) 0.000000] [java/INFO] Hello Java, I'm ready to compute after locking.
+> [Tremblay:worker:(6) 0.000000] [java/INFO] I'm done, good bye
+> [Tremblay:worker:(8) 0.000000] [java/INFO] Hello Java, I'm ready to compute after locking.
+> [Tremblay:worker:(8) 0.000000] [java/INFO] I'm done, good bye
+> [Tremblay:worker:(10) 0.000000] [java/INFO] Hello Java, I'm ready to compute after locking.
+> [Tremblay:worker:(10) 0.000000] [java/INFO] I'm done, good bye
+> [Tremblay:worker:(12) 0.000000] [java/INFO] Hello Java, I'm ready to compute after locking.
+> [Tremblay:worker:(12) 0.000000] [java/INFO] I'm done, good bye
+> [0.000000] [java/INFO] Result[0] -> 2
+> [0.000000] [java/INFO] Result[1] -> 2
+> [0.000000] [java/INFO] Result[2] -> 2
+> [0.000000] [java/INFO] Result[3] -> 2
+> [0.000000] [java/INFO] Result[4] -> 2
+> [0.000000] [java/INFO] Result[5] -> 2

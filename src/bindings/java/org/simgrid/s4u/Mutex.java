@@ -35,14 +35,11 @@ public class Mutex {
   }
 
   public static Mutex create(boolean recursive) {
-    long cPtr = simgridJNI.Mutex_create__SWIG_0(recursive);
+    long cPtr = simgridJNI.Mutex_create(recursive);
     return (cPtr == 0) ? null : new Mutex(cPtr, true);
   }
 
-  public static Mutex create() {
-    long cPtr = simgridJNI.Mutex_create__SWIG_1();
-    return (cPtr == 0) ? null : new Mutex(cPtr, true);
-  }
+  public static Mutex create() { return create(false); }
 
   public void lock() {
     simgridJNI.Mutex_lock(swigCPtr, this);

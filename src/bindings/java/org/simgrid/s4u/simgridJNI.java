@@ -506,8 +506,7 @@ public class simgridJNI {
   public final static native long MessageQueue_get_init(long jarg1, MessageQueue jarg1_);
   public final static native long MessageQueue_get_async(long jarg1, MessageQueue jarg1_);
   public final static native void delete_Mutex(long jarg1);
-  public final static native long Mutex_create__SWIG_0(boolean jarg1);
-  public final static native long Mutex_create__SWIG_1();
+  public final static native long Mutex_create(boolean recursive);
   public final static native void Mutex_lock(long jarg1, Mutex jarg1_);
   public final static native void Mutex_unlock(long jarg1, Mutex jarg1_);
   public final static native boolean Mutex_try_lock(long jarg1, Mutex jarg1_);
