@@ -54,11 +54,9 @@ public class simgridJNI {
   public final static native void Actor_on_destruction_cb(long jarg1);
   public final static native void Actor_on_this_destruction_cb(long jarg1, Actor jarg1_, long jarg2);
   public final static native long Actor_init(String jarg1, long jarg2, Host jarg2_);
-  public final static native long Actor_start__SWIG_0(long jarg1, Actor jarg1_, long jarg2);
-  public final static native long Actor_start__SWIG_1(long jarg1, Actor jarg1_, long jarg2, String[] jarg3);
-  public final static native long Actor_daemonize(long jarg1, Actor jarg1_);
+  public final static native void Actor_start(long jarg1, Actor jarg1_, long jarg2);
+  public final static native void Actor_daemonize(long jarg1, Actor jarg1_);
   public final static native boolean Actor_is_daemon(long jarg1, Actor jarg1_);
-  public final static native boolean Actor_is_maestro();
   public final static native String Actor_get_name(long jarg1, Actor jarg1_);
   public final static native long Actor_get_host(long jarg1, Actor jarg1_);
   public final static native int Actor_get_pid(long jarg1, Actor jarg1_);
@@ -66,8 +64,7 @@ public class simgridJNI {
   public final static native void Actor_suspend(long jarg1, Actor jarg1_);
   public final static native void Actor_resume(long jarg1, Actor jarg1_);
   public final static native boolean Actor_is_suspended(long jarg1, Actor jarg1_);
-  public final static native long Actor_set_auto_restart__SWIG_0(long jarg1, Actor jarg1_, boolean jarg2);
-  public final static native long Actor_set_auto_restart__SWIG_1(long jarg1, Actor jarg1_);
+  public final static native void Actor_set_auto_restart(long jarg1, Actor jarg1_, boolean jarg2);
   public final static native int Actor_get_restart_count(long jarg1, Actor jarg1_);
   public final static native void Actor_on_exit(long jarg1, Actor jarg1_, long jarg2);
   public final static native void Actor_set_kill_time(long jarg1, Actor jarg1_, double jarg2);
@@ -344,7 +341,9 @@ public class simgridJNI {
   public final static native void delete_Exec(long jarg1);
   public final static native String Host_get_name(long jarg1, Host jarg1_);
   public final static native long Host_by_name(String name);
+  public final static native long Host_current();
   public final static native double Host_get_speed(long jarg1, Host jarg1_);
+  public final static native boolean Host_is_on(long jarg1, Host jarg1_);
   public final static native void delete_Host(long jarg1);
   public final static native long Io_init();
   public final static native double Io_get_remaining(long jarg1, Io jarg1_);

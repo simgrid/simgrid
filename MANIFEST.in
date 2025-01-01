@@ -424,6 +424,8 @@ include examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.c
 include examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.tesh
 include examples/java/actor_exiting/actor_exiting.java
 include examples/java/actor_exiting/actor_exiting.java.tesh
+include examples/java/actor_join/actor_join.java
+include examples/java/actor_join/actor_join.java.tesh
 include examples/java/comm_await/comm_await.java
 include examples/java/comm_await/comm_await.java.tesh
 include examples/java/comm_awaituntil/comm_awaituntil.java
@@ -2154,6 +2156,7 @@ include src/bindings/java/org/simgrid/s4u/DragonflyParams.java
 include src/bindings/java/org/simgrid/s4u/Engine.java
 include src/bindings/java/org/simgrid/s4u/Exec.java
 include src/bindings/java/org/simgrid/s4u/FatTreeParams.java
+include src/bindings/java/org/simgrid/s4u/ForcefulKillException.java
 include src/bindings/java/org/simgrid/s4u/Host.java
 include src/bindings/java/org/simgrid/s4u/Io.java
 include src/bindings/java/org/simgrid/s4u/Link.java

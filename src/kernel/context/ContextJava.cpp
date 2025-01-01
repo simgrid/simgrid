@@ -69,8 +69,14 @@ void JavaContext::stop()
      * We should not even try to detach such threads. Instead, we throw a Java exception that will raise up
      * until run_jprocess(), IIUC.
      */
-    XBT_WARN("Cannot detach the current thread");
-    //TODO: jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
+    // Cache the exception class
+    static jclass klass = 0;
+    if (klass == 0) {
+      klass = jenv_->FindClass("org/simgrid/s4u/ForcefulKillException");
+      xbt_assert(klass, "Class not found");
+    }
+
+    jenv_->ThrowNew(klass, "Actor killed");
   }
 
   simgrid::ForcefulKillException::do_throw(); // clean RAII variables with the dedicated exception

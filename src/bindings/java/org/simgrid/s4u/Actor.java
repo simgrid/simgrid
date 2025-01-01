@@ -81,26 +81,17 @@ public class Actor {
   }
 
   public Actor start(SWIGTYPE_p_std__functionT_void_fF_t code) {
-    long cPtr = simgridJNI.Actor_start__SWIG_0(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fF_t.getCPtr(code));
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
-
-  public Actor start(SWIGTYPE_p_std__functionT_void_fF_t code, String[] args) {
-    long cPtr = simgridJNI.Actor_start__SWIG_1(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fF_t.getCPtr(code), args);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
+    simgridJNI.Actor_start(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fF_t.getCPtr(code));
+    return this;
   }
 
   public Actor daemonize() {
-    long cPtr = simgridJNI.Actor_daemonize(swigCPtr, this);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
+    simgridJNI.Actor_daemonize(swigCPtr, this);
+    return this;
   }
 
   public boolean is_daemon() {
     return simgridJNI.Actor_is_daemon(swigCPtr, this);
-  }
-
-  public static boolean is_maestro() {
-    return simgridJNI.Actor_is_maestro();
   }
 
   public String get_name() {
@@ -133,13 +124,13 @@ public class Actor {
   }
 
   public Actor set_auto_restart(boolean autorestart) {
-    long cPtr = simgridJNI.Actor_set_auto_restart__SWIG_0(swigCPtr, this, autorestart);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
+    simgridJNI.Actor_set_auto_restart(swigCPtr, this, autorestart);
+    return this;
   }
 
   public Actor set_auto_restart() {
-    long cPtr = simgridJNI.Actor_set_auto_restart__SWIG_1(swigCPtr, this);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
+    simgridJNI.Actor_set_auto_restart(swigCPtr, this, true);
+    return this;
   }
 
   public int get_restart_count() {

@@ -1766,250 +1766,54 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1init(JNIEnv* jen
   return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1start_1_1SWIG_10(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                 jobject jthis, jlong jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1start(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                     jobject jthis, jlong jarg2)
 {
-  jlong jresult                                     = 0;
-  simgrid::s4u::Actor* arg1                         = (simgrid::s4u::Actor*)0;
-  std::function<void()>* arg2                       = 0;
-  boost::shared_ptr<simgrid::s4u::Actor>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Actor> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2 = *(std::function<void()>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::function< void () > const & is null");
-    return 0;
+  if (!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Actor_start() cannot accept null arguments");
+    return;
   }
-  result = (arg1)->start((std::function<void()> const&)*arg2);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Actor>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Actor>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult = 0;
-  }
-
-  return jresult;
+  std::function<void()>* arg2 = *(std::function<void()>**)&jarg2;
+  ((Actor*)cthis)->start(*arg2);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1start_1_1SWIG_11(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                 jobject jthis, jlong jarg2,
-                                                                                 jobjectArray jarg3)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1daemonize(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                         jobject jthis)
 {
-  jlong jresult               = 0;
-  simgrid::s4u::Actor* arg1   = (simgrid::s4u::Actor*)0;
-  std::function<void()>* arg2 = 0;
-  SwigValueWrapper<std::vector<std::string>> arg3;
-  boost::shared_ptr<simgrid::s4u::Actor>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Actor> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2 = *(std::function<void()>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::function< void () > const & is null");
-    return 0;
-  }
-  {
-    int len = (int)jenv->GetArrayLength(jarg3);
-    (&arg3)->reserve(len);
-    for (jsize i = 0; i < len; ++i) {
-      jstring j_string     = (jstring)jenv->GetObjectArrayElement(jarg3, i);
-      const char* c_string = jenv->GetStringUTFChars(j_string, 0);
-      (&arg3)->push_back(c_string);
-      jenv->ReleaseStringUTFChars(j_string, c_string);
-      jenv->DeleteLocalRef(j_string);
-    }
-  }
-  result = (arg1)->start((std::function<void()> const&)*arg2, arg3);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Actor>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Actor>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult = 0;
-  }
-
-  return jresult;
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1daemonize(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                          jobject jthis)
-{
-  jlong jresult                                     = 0;
-  simgrid::s4u::Actor* arg1                         = (simgrid::s4u::Actor*)0;
-  boost::shared_ptr<simgrid::s4u::Actor>* smartarg1 = 0;
-  simgrid::s4u::Actor* result                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (simgrid::s4u::Actor*)(arg1)->daemonize();
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Actor>(result, SWIG_intrusive_deleter<simgrid::s4u::Actor>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Actor>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  ((Actor*)cthis)->daemonize();
 }
 
 XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1is_1daemon(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                               jobject jthis)
 {
-  jboolean jresult                                        = 0;
-  simgrid::s4u::Actor* arg1                               = (simgrid::s4u::Actor*)0;
-  boost::shared_ptr<simgrid::s4u::Actor const>* smartarg1 = 0;
-  bool result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = (bool)((simgrid::s4u::Actor const*)arg1)->is_daemon();
-  jresult = (jboolean)result;
-  return jresult;
-}
-
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1is_1maestro(JNIEnv* jenv, jclass jcls)
-{
-  jboolean jresult = 0;
-  bool result;
-
-  (void)jenv;
-  (void)jcls;
-  result  = (bool)simgrid::s4u::Actor::is_maestro();
-  jresult = (jboolean)result;
-  return jresult;
+  return ((Actor*)cthis)->is_daemon();
 }
 
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                             jobject jthis)
 {
-  jstring jresult                                         = 0;
-  simgrid::s4u::Actor* arg1                               = (simgrid::s4u::Actor*)0;
-  boost::shared_ptr<simgrid::s4u::Actor const>* smartarg1 = 0;
-  char* result                                            = 0;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (char*)((simgrid::s4u::Actor const*)arg1)->get_cname();
+  const char* result = ((Actor*)cthis)->get_cname();
   if (result)
-    jresult = jenv->NewStringUTF((const char*)result);
-  return jresult;
+    return jenv->NewStringUTF(result);
+  return 0;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                           jobject jthis)
 {
-  jlong jresult                                           = 0;
-  simgrid::s4u::Actor* arg1                               = (simgrid::s4u::Actor*)0;
-  boost::shared_ptr<simgrid::s4u::Actor const>* smartarg1 = 0;
-  simgrid::s4u::Host* result                              = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (simgrid::s4u::Host*)((simgrid::s4u::Actor const*)arg1)->get_host();
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Host>(result, SWIG_intrusive_deleter<simgrid::s4u::Host>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Host>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  return (jlong)((Actor*)cthis)->get_host();
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1pid(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                         jobject jthis)
 {
-  jint jresult                                            = 0;
-  simgrid::s4u::Actor* arg1                               = (simgrid::s4u::Actor*)0;
-  boost::shared_ptr<simgrid::s4u::Actor const>* smartarg1 = 0;
-  aid_t result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = ((simgrid::s4u::Actor const*)arg1)->get_pid();
-  jresult = (jint)result;
-  return jresult;
+  return ((Actor*)cthis)->get_pid();
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1ppid(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                          jobject jthis)
 {
-  jint jresult                                            = 0;
-  simgrid::s4u::Actor* arg1                               = (simgrid::s4u::Actor*)0;
-  boost::shared_ptr<simgrid::s4u::Actor const>* smartarg1 = 0;
-  aid_t result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = ((simgrid::s4u::Actor const*)arg1)->get_ppid();
-  jresult = (jint)result;
-  return jresult;
+  return ((Actor*)cthis)->get_ppid();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1suspend(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -2030,79 +1834,11 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1is_1suspended
   return ((Actor*)cthis)->is_suspended();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1auto_1restart_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
-                                                                                              jlong cthis,
-                                                                                              jobject jthis,
-                                                                                              jboolean jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1auto_1restart(JNIEnv* jenv, jclass jcls,
+                                                                                  jlong cthis, jobject jthis,
+                                                                                  jboolean jarg2)
 {
-  jlong jresult             = 0;
-  simgrid::s4u::Actor* arg1 = (simgrid::s4u::Actor*)0;
-  bool arg2;
-  boost::shared_ptr<simgrid::s4u::Actor>* smartarg1 = 0;
-  simgrid::s4u::Actor* result                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = jarg2 ? true : false;
-  result = (simgrid::s4u::Actor*)(arg1)->set_auto_restart(arg2);
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Actor>(result, SWIG_intrusive_deleter<simgrid::s4u::Actor>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Actor>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1auto_1restart_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
-                                                                                              jlong cthis,
-                                                                                              jobject jthis)
-{
-  jlong jresult                                     = 0;
-  simgrid::s4u::Actor* arg1                         = (simgrid::s4u::Actor*)0;
-  boost::shared_ptr<simgrid::s4u::Actor>* smartarg1 = 0;
-  simgrid::s4u::Actor* result                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (simgrid::s4u::Actor*)(arg1)->set_auto_restart();
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Actor>(result, SWIG_intrusive_deleter<simgrid::s4u::Actor>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Actor>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  ((Actor*)cthis)->set_auto_restart(jarg2);
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1restart_1count(JNIEnv* jenv, jclass jcls,
@@ -6167,6 +5903,10 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1by_1name(JNIEnv* 
 
   return result;
 }
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1current(JNIEnv* jenv, jclass jcls)
+{
+  return (jlong)Host::current();
+}
 
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                            jobject jthis)
@@ -6181,6 +5921,11 @@ XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1speed(JNIE
                                                                             jobject jthis)
 {
   return (jdouble)((simgrid::s4u::Host*)cthis)->get_speed();
+}
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1is_1on(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                         jobject jthis)
+{
+  return ((simgrid::s4u::Host*)cthis)->is_on();
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1init(JNIEnv* jenv, jclass jcls)

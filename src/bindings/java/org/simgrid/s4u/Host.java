@@ -42,9 +42,16 @@ public class Host {
     return simgridJNI.Host_get_speed(swigCPtr, this);
   }
 
+  public boolean is_on() { return simgridJNI.Host_is_on(swigCPtr, this); }
+
   public static Host by_name(String name)
   {
     long cPtr = simgridJNI.Host_by_name(name);
+    return (cPtr == 0) ? null : new Host(cPtr, true);
+  }
+  public static Host current()
+  {
+    long cPtr = simgridJNI.Host_current();
     return (cPtr == 0) ? null : new Host(cPtr, true);
   }
 }

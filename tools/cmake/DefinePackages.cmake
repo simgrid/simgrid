@@ -799,6 +799,7 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/DragonflyParams.java
     src/bindings/java/org/simgrid/s4u/Engine.java
     src/bindings/java/org/simgrid/s4u/Exec.java
+    src/bindings/java/org/simgrid/s4u/ForcefulKillException.java
     src/bindings/java/org/simgrid/s4u/FatTreeParams.java
     src/bindings/java/org/simgrid/s4u/Host.java
     src/bindings/java/org/simgrid/s4u/Io.java
