@@ -29,8 +29,11 @@
  * a callback is passed, we save it in a lambda that is used as a C++ callback.
  */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/forward.h"
+#include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextJava.hpp"
+#include "xbt/log.h"
 
 #define SWIG_VERSION 0x040201
 
@@ -54,17 +57,17 @@ static void handle_exception(JNIEnv* jenv)
     jenv->ExceptionClear();
   }
 }
-static jmethodID init_methodId(JNIEnv* jenv, const char* name, const char* signature)
+static jmethodID init_methodId(JNIEnv* jenv, const char* klassname, const char* methname, const char* signature)
 {
   char buff[1024];
-  snprintf(buff, 1023, "org/simgrid/s4u/%s", name);
+  snprintf(buff, 1023, "org/simgrid/s4u/%s", klassname);
   jclass klass = jenv->FindClass(buff);
   handle_exception(jenv);
-  xbt_assert(klass, "Cannot find class %s", name);
+  xbt_assert(klass, "Cannot find class %s", klassname);
 
-  jmethodID methodId = jenv->GetMethodID(klass, "run", signature); // void run(long e)
+  jmethodID methodId = jenv->GetMethodID(klass, methname, signature); // void run(long e)
   handle_exception(jenv);
-  xbt_assert(methodId, "Cannot find the method run() in the class %s", name);
+  xbt_assert(methodId, "Cannot find the method %s in the class %s", methname, klassname);
   return methodId;
 }
 
@@ -91,8 +94,8 @@ static struct SimGridJavaInit {
                  "The maestro thread could not be attached to the JVM");
 
       // Initialize the upcall mechanism
-      CallbackExec_methodId = init_methodId(maestro_jenv, "CallbackExec", "(J)V");
-      ActorMain_methodId    = init_methodId(maestro_jenv, "ActorMain", "()V");
+      CallbackExec_methodId = init_methodId(maestro_jenv, "CallbackExec", "run", "(J)V");
+      ActorMain_methodId    = init_methodId(maestro_jenv, "ActorMain", "run", "()V");
 
       // Initialize the factory mechanism
       return new simgrid::kernel::context::JavaContextFactory();
@@ -1247,8 +1250,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorCallback_1change_1o
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1run(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                        jobject jthis)
 {
-  ActorMain* arg1 = *(ActorMain**)&cthis;
-  (arg1)->run();
+  ((ActorMain*)cthis)->run();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1ActorMain(JNIEnv* jenv, jclass jcls, jlong cthis)
@@ -2019,13 +2021,22 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1property(JNI
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1create(JNIEnv* jenv, jclass jcls, jstring jname,
                                                                        jlong chost, jobject jhost, jlong ccode,
-                                                                       jobject jcode_)
+                                                                       jobject jcode)
 {
   std::string name = java_string_to_std_string(jenv, jname);
   Host* host       = (Host*)chost;
-  ActorMain* code  = (ActorMain*)ccode;
 
-  ActorPtr result = Actor::create(name, host, [code]() { code->run(); });
+  jcode           = jenv->NewGlobalRef(jcode);
+  ActorPtr result = Actor::create(name, host, [jcode]() {
+    auto jenv = ((simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self())->jenv_;
+
+    try {
+      jenv->CallVoidMethod(jcode, ActorMain_methodId);
+    } catch (ForcefulKillException const&) {
+      XBT_CRITICAL("Got killed");
+    }
+    handle_exception(jenv);
+  });
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
