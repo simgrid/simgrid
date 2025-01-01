@@ -38,9 +38,6 @@ public class simgridJNI {
   public final static native void ActorMain_on_termination_cb(long jarg1, ActorCallback jarg1_);
   public final static native void ActorMain_on_destruction_cb(long jarg1, ActorCallback jarg1_);
   public final static native void ActorMain_on_exit(long jarg1, ActorMain jarg1_, long jarg2, BooleanCallback jarg2_);
-  public final static native long new_ActorMain();
-  public final static native void ActorMain_director_connect(ActorMain obj, long cptr, boolean mem_own, boolean weak_global);
-  public final static native void ActorMain_change_ownership(ActorMain obj, long cptr, boolean take_or_release);
   public final static native void parallel_execute(long jarg1, long jarg2, long jarg3);
   public final static native void on_exit(long jarg1);
   public final static native long Actor_self();

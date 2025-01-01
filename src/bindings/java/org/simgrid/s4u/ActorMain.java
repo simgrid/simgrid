@@ -53,16 +53,6 @@ public class ActorMain {
     delete();
   }
 
-  public void swigReleaseOwnership() {
-    swigCMemOwn = false;
-    simgridJNI.ActorMain_change_ownership(this, swigCPtr, false);
-  }
-
-  public void swigTakeOwnership() {
-    swigCMemOwn = true;
-    simgridJNI.ActorMain_change_ownership(this, swigCPtr, true);
-  }
-
   public void run() {
     simgridJNI.ActorMain_run(swigCPtr, this);
   }
@@ -136,9 +126,5 @@ public class ActorMain {
     simgridJNI.ActorMain_on_exit(swigCPtr, this, BooleanCallback.getCPtr(code), code);
   }
 
-  public ActorMain() {
-    this(simgridJNI.new_ActorMain(), true);
-    simgridJNI.ActorMain_director_connect(this, swigCPtr, true, true);
-  }
-
+  public ActorMain() { this(0, false); }
 }

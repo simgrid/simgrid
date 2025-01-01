@@ -1079,60 +1079,6 @@ void SwigDirector_ActorCallback::swig_connect_director(JNIEnv* jenv, jobject jse
   }
 }
 
-SwigDirector_ActorMain::SwigDirector_ActorMain(JNIEnv* jenv) : ActorMain(), Swig::Director(jenv) {}
-
-void SwigDirector_ActorMain::run()
-{
-  JNIEnvWrapper swigjnienv(this);
-  JNIEnv* jenv     = swigjnienv.getJNIEnv();
-  jobject swigjobj = (jobject)NULL;
-
-  if (!swig_override[0]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual,
-                            "Attempted to invoke pure virtual method ActorMain::run.");
-    return;
-  }
-  swigjobj = swig_get_self(jenv);
-  if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    jenv->CallStaticVoidMethod(Swig::jclass_simgridJNI, Swig::director_method_ids[2], swigjobj);
-    jthrowable swigerror = jenv->ExceptionOccurred();
-    if (swigerror) {
-      Swig::DirectorException::raise(jenv, swigerror);
-    }
-
-  } else {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object in ActorMain::run ");
-  }
-  if (swigjobj)
-    jenv->DeleteLocalRef(swigjobj);
-}
-
-SwigDirector_ActorMain::~SwigDirector_ActorMain()
-{
-  swig_disconnect_director_self("swigDirectorDisconnect");
-}
-
-void SwigDirector_ActorMain::swig_connect_director(JNIEnv* jenv, jobject jself, jclass jcls, bool swig_mem_own,
-                                                   bool weak_global)
-{
-  static jclass baseclass = swig_new_global_ref(jenv, "org/simgrid/s4u/ActorMain");
-  if (!baseclass)
-    return;
-  static SwigDirectorMethod methods[] = {SwigDirectorMethod(jenv, baseclass, "run", "()V")};
-
-  if (swig_set_self(jenv, jself, swig_mem_own, weak_global)) {
-    bool derived = (jenv->IsSameObject(baseclass, jcls) ? false : true);
-    for (int i = 0; i < 1; ++i) {
-      swig_override[i] = false;
-      if (derived) {
-        jmethodID methid = jenv->GetMethodID(jcls, methods[i].name, methods[i].desc);
-        swig_override[i] = methods[i].methid && (methid != methods[i].methid);
-        jenv->ExceptionClear();
-      }
-    }
-  }
-}
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -1434,42 +1380,6 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1on_1exit(JNIE
   auto code = (BooleanCallback*)jarg2;
 
   simgrid::s4u::this_actor::on_exit([code](bool b) { code->run(b); });
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1ActorMain(JNIEnv* jenv, jclass jcls)
-{
-  jlong jresult     = 0;
-  ActorMain* result = 0;
-
-  (void)jenv;
-  (void)jcls;
-  result                 = (ActorMain*)new SwigDirector_ActorMain(jenv);
-  *(ActorMain**)&jresult = result;
-  return jresult;
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1director_1connect(JNIEnv* jenv, jclass jcls,
-                                                                                     jobject jself, jlong objarg,
-                                                                                     jboolean jswig_mem_own,
-                                                                                     jboolean jweak_global)
-{
-  ActorMain* obj = *((ActorMain**)&objarg);
-  (void)jcls;
-  SwigDirector_ActorMain* director = static_cast<SwigDirector_ActorMain*>(obj);
-  director->swig_connect_director(jenv, jself, jenv->GetObjectClass(jself), (jswig_mem_own == JNI_TRUE),
-                                  (jweak_global == JNI_TRUE));
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1change_1ownership(JNIEnv* jenv, jclass jcls,
-                                                                                     jobject jself, jlong objarg,
-                                                                                     jboolean jtake_or_release)
-{
-  ActorMain* obj                   = *((ActorMain**)&objarg);
-  SwigDirector_ActorMain* director = dynamic_cast<SwigDirector_ActorMain*>(obj);
-  (void)jcls;
-  if (director) {
-    director->swig_java_change_ownership(jenv, jself, jtake_or_release ? true : false);
-  }
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_parallel_1execute(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -9790,9 +9700,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_swig_1module_1init(JNIEn
   static struct {
     const char* method;
     const char* signature;
-  } methods[3]            = {{"SwigDirector_BooleanCallback_run", "(Lorg/simgrid/s4u/BooleanCallback;Z)V"},
-                             {"SwigDirector_ActorCallback_run", "(Lorg/simgrid/s4u/ActorCallback;J)V"},
-                             {"SwigDirector_ActorMain_run", "(Lorg/simgrid/s4u/ActorMain;)V"}};
+  } methods[2]            = {{"SwigDirector_BooleanCallback_run", "(Lorg/simgrid/s4u/BooleanCallback;Z)V"},
+                             {"SwigDirector_ActorCallback_run", "(Lorg/simgrid/s4u/ActorCallback;J)V"}};
   Swig::jclass_simgridJNI = (jclass)jenv->NewGlobalRef(jcls);
   if (!Swig::jclass_simgridJNI)
     return;

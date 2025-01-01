@@ -38,19 +38,4 @@ protected:
   Swig::BoolArray<1> swig_override;
 };
 
-struct SwigDirector_ActorMain : public ActorMain, public Swig::Director {
-
-public:
-  void swig_connect_director(JNIEnv* jenv, jobject jself, jclass jcls, bool swig_mem_own, bool weak_global);
-  SwigDirector_ActorMain(JNIEnv* jenv);
-  virtual void run();
-  virtual ~SwigDirector_ActorMain();
-
-public:
-  bool swig_overrides(int n) { return (n < 1 ? swig_override[n] : false); }
-
-protected:
-  Swig::BoolArray<1> swig_override;
-};
-
 #endif
