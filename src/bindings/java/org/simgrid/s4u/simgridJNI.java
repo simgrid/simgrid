@@ -19,7 +19,6 @@ public class simgridJNI {
   public final static native long new_ActorCallback();
   public final static native void ActorCallback_director_connect(ActorCallback obj, long cptr, boolean mem_own, boolean weak_global);
   public final static native void ActorCallback_change_ownership(ActorCallback obj, long cptr, boolean take_or_release);
-  public final static native void ActorMain_run(long jarg1, ActorMain jarg1_);
   public final static native void delete_ActorMain(long jarg1);
   public final static native void ActorMain_sleep_for(long jarg1, ActorMain jarg1_, double jarg2);
   public final static native void ActorMain_sleep_until(long jarg1, ActorMain jarg1_, double jarg2);
@@ -550,10 +549,6 @@ public class simgridJNI {
   public static void SwigDirector_ActorCallback_run(ActorCallback jself, long a) {
     jself.run((a == 0) ? null : new Actor(a, false));
   }
-  public static void SwigDirector_ActorMain_run(ActorMain jself) {
-    jself.run();
-  }
-
   private final static native void swig_module_init();
   static {
     swig_module_init();

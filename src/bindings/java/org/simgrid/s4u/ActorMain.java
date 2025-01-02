@@ -8,7 +8,10 @@
 
 package org.simgrid.s4u;
 
-public class ActorMain {
+public abstract class ActorMain {
+  /** this is the method you should implement in your actor. */
+  public abstract void run();
+
   private transient long swigCPtr;
   protected transient boolean swigCMemOwn;
 
@@ -53,8 +56,14 @@ public class ActorMain {
     delete();
   }
 
-  public void run() {
-    simgridJNI.ActorMain_run(swigCPtr, this);
+  /* Internal method executing your code, and catching the actor-killing exception */
+  public void do_run()
+  {
+    try {
+      run();
+    } catch (org.simgrid.s4u.ForcefulKillException e) {
+      /* Actor killed, this is fine. */
+    }
   }
 
   public void sleep_for(double duration) {
