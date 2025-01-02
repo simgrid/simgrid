@@ -5,7 +5,8 @@
 
 import org.simgrid.s4u.*;
 
-class sleeper extends ActorMain {
+class sleeper extends Actor {
+  public sleeper(String name, Host location) { super(name, location); }
   public void run()
   {
     Engine.info("Sleeper started");
@@ -14,28 +15,29 @@ class sleeper extends ActorMain {
   }
 }
 
-class master extends ActorMain {
+class master extends Actor {
+  public master(String name, Host location) { super(name, location); }
   public void run()
   {
     Actor actor;
 
     Engine.info("Start sleeper");
-    actor = Actor.create("sleeper from master", Host.current(), new sleeper());
+    actor = new sleeper("sleeper from master", Host.current()).start();
     Engine.info("Join the sleeper (timeout 2)");
     actor.join(2);
 
     Engine.info("Start sleeper");
-    actor = Actor.create("sleeper from master", Host.current(), new sleeper());
+    actor = new sleeper("sleeper from master", Host.current()).start();
     Engine.info("Join the sleeper (timeout 4)");
     actor.join(4);
 
     Engine.info("Start sleeper");
-    actor = Actor.create("sleeper from master", Host.current(), new sleeper());
+    actor = new sleeper("sleeper from master", Host.current()).start();
     Engine.info("Join the sleeper (timeout 2)");
     actor.join(2);
 
     Engine.info("Start sleeper");
-    actor = Actor.create("sleeper from master", Host.current(), new sleeper());
+    actor = new sleeper("sleeper from master", Host.current()).start();
     Engine.info("Waiting 4");
     sleep_for(4);
     Engine.info("Join the sleeper after its end (timeout 1)");
@@ -56,7 +58,7 @@ public class actor_join {
 
     e.load_platform(args[0]);
 
-    Actor.create("master", e.host_by_name("Tremblay"), new master());
+    new master("master", e.host_by_name("Tremblay")).start();
 
     e.run();
 

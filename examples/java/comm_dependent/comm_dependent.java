@@ -5,9 +5,13 @@
 
 import org.simgrid.s4u.*;
 
-class Sender extends ActorMain {
+class Sender extends Actor {
   Mailbox mailbox;
-  public Sender(Mailbox mb) { mailbox = mb; }
+  public Sender(String name, Host location, Mailbox mb)
+  {
+    super(name, location);
+    mailbox = mb;
+  }
   public void run()
   {
     Double computation_amount = get_host().get_speed();
@@ -21,9 +25,13 @@ class Sender extends ActorMain {
     comm.await();
   }
 }
-class Receiver extends ActorMain {
+class Receiver extends Actor {
   Mailbox mailbox;
-  public Receiver(Mailbox mb) { mailbox = mb; }
+  public Receiver(String name, Host location, Mailbox mb)
+  {
+    super(name, location);
+    mailbox = mb;
+  }
   public void run()
   {
     Double computation_amount = get_host().get_speed();
@@ -51,8 +59,8 @@ public class comm_dependent {
 
     var mbox = e.mailbox_by_name_or_create("Mailbox");
 
-    Actor.create("sender", e.host_by_name("Tremblay"), new Sender(mbox));
-    Actor.create("receiver", e.host_by_name("Jupiter"), new Receiver(mbox));
+    new Sender("sender", e.host_by_name("Tremblay"), mbox).start();
+    new Receiver("receiver", e.host_by_name("Jupiter"), mbox).start();
 
     e.run();
 

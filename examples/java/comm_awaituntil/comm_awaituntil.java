@@ -13,12 +13,14 @@
 import java.util.Vector;
 import org.simgrid.s4u.*;
 
-class sender extends ActorMain {
+class sender extends Actor {
   int messages_count;
   int payload_size;
 
-  sender(int messages_count_, int payload_size_)
+  public sender(String name, Host location, int messages_count_, int payload_size_)
   {
+    super(name, location);
+
     messages_count = messages_count_;
     payload_size   = payload_size_;
   }
@@ -57,7 +59,8 @@ class sender extends ActorMain {
     Engine.info("Goodbye now!");
   }
 }
-class receiver extends ActorMain {
+class receiver extends Actor {
+  public receiver(String name, Host location) { super(name, location); }
   public void run()
   {
     Mailbox mbox = Mailbox.by_name("receiver-0");
@@ -79,8 +82,8 @@ public class comm_awaituntil {
 
     e.load_platform(args[0]);
 
-    Actor.create("sender", e.host_by_name("Tremblay"), new sender(3, (int)5e7));
-    Actor.create("receiver", e.host_by_name("Ruby"), new receiver());
+    new sender("sender", e.host_by_name("Tremblay"), 3, (int)5e7).start();
+    new receiver("receiver", e.host_by_name("Ruby")).start();
 
     e.run();
   }

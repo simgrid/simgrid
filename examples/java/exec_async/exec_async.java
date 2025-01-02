@@ -6,7 +6,8 @@
 import org.simgrid.s4u.*;
 
 /* This actor simply starts an activity in a fire and forget (a.k.a. detached) mode and quit.*/
-class detached extends ActorMain {
+class detached extends Actor {
+  public detached(String name, Host location) { super(name, location); }
   public void run()
   {
     double computation_amount = get_host().get_speed();
@@ -28,7 +29,8 @@ class detached extends ActorMain {
 
 /* This actor simply waits for its activity completion after starting it.
  * That's exactly equivalent to synchronous execution. */
-class waiter extends ActorMain {
+class waiter extends Actor {
+  public waiter(String name, Host location) { super(name, location); }
   public void run()
   {
     double computation_amount = get_host().get_speed();
@@ -42,7 +44,8 @@ class waiter extends ActorMain {
 }
 
 /* This actor tests the ongoing execution until its completion, and don't wait before it's terminated. */
-class monitor extends ActorMain {
+class monitor extends Actor {
+  public monitor(String name, Host location) { super(name, location); }
   public void run()
   {
     double computation_amount = get_host().get_speed();
@@ -61,7 +64,8 @@ class monitor extends ActorMain {
 }
 
 /* This actor cancels the ongoing execution after a while. */
-class canceller extends ActorMain {
+class canceller extends Actor {
+  public canceller(String name, Host location) { super(name, location); }
   public void run()
   {
     double computation_amount = get_host().get_speed();
@@ -87,10 +91,10 @@ public class exec_async {
     Host boivin   = e.host_by_name("Boivin");
     Host tremblay = e.host_by_name("Tremblay");
 
-    Actor.create("wait", fafard, new waiter());
-    Actor.create("monitor", ginette, new monitor());
-    Actor.create("cancel", boivin, new canceller());
-    Actor.create("detach", tremblay, new detached());
+    new waiter("wait", fafard).start();
+    new monitor("monitor", ginette).start();
+    new canceller("cancel", boivin).start();
+    new detached("detach", tremblay).start();
 
     e.run();
 

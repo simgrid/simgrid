@@ -7,11 +7,13 @@ import java.util.Vector;
 import org.simgrid.s4u.*;
 
 /* This worker uses a classical mutex */
-class worker extends ActorMain {
+class worker extends Actor {
   Mutex mutex;
   int idx;
-  worker(Mutex mutex, int idx)
+  public worker(String name, Host location, Mutex mutex, int idx)
   {
+    super(name, location);
+
     this.mutex = mutex;
     this.idx   = idx;
   }
@@ -44,8 +46,8 @@ public class synchro_mutex {
     for (int i = 0; i < cfg_actor_count; i++) {
       result.add(0);
       Mutex mutex = Mutex.create();
-      Actor.create("worker", Host.by_name("Jupiter"), new worker(mutex, i));
-      Actor.create("worker", Host.by_name("Tremblay"), new worker(mutex, i));
+      new worker("worker", Host.by_name("Jupiter"), mutex, i).start();
+      new worker("worker", Host.by_name("Tremblay"), mutex, i).start();
     }
 
     e.run();

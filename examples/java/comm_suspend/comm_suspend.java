@@ -7,7 +7,8 @@
 
 import org.simgrid.s4u.*;
 
-class sender extends ActorMain {
+class sender extends Actor {
+  public sender(String name, Host location) { super(name, location); }
   public void run()
   {
     Mailbox mbox = Mailbox.by_name("receiver");
@@ -38,7 +39,8 @@ class sender extends ActorMain {
   }
 }
 
-class receiver extends ActorMain {
+class receiver extends Actor {
+  public receiver(String name, Host location) { super(name, location); }
   public void run()
   {
     Mailbox mbox = Mailbox.by_name("receiver");
@@ -56,8 +58,8 @@ public class comm_suspend {
 
     e.load_platform(args[0]);
 
-    Actor.create("sender", e.host_by_name("Tremblay"), new sender());
-    Actor.create("receiver", e.host_by_name("Jupiter"), new receiver());
+    new sender("sender", e.host_by_name("Tremblay")).start();
+    new receiver("receiver", e.host_by_name("Jupiter")).start();
 
     e.run();
   }

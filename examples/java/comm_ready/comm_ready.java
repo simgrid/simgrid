@@ -19,13 +19,14 @@
  */
 import org.simgrid.s4u.*;
 
-class peer extends ActorMain {
+class peer extends Actor {
   int my_id;
   int messages_count;
   int payload_size;
   int peers_count;
-  peer(int my_id_, int messages_count_, double payload_size_, int peers_count_)
+  peer(String name, Host location, int my_id_, int messages_count_, double payload_size_, int peers_count_)
   {
+    super(name, location);
     my_id          = my_id_;
     messages_count = messages_count_;
     payload_size   = (int)payload_size_;
@@ -99,9 +100,9 @@ class comm_ready {
     var e = Engine.get_instance(args);
     e.load_platform(args[0]);
 
-    Actor.create("peer", e.host_by_name("Tremblay"), new peer(0, 2, 5e7, 3));
-    Actor.create("peer", e.host_by_name("Ruby"), new peer(1, 6, 2.5e5, 3));
-    Actor.create("peer", e.host_by_name("Perl"), new peer(2, 0, 5e7, 3));
+    new peer("peer", e.host_by_name("Tremblay"), 0, 2, 5e7, 3).start();
+    new peer("peer", e.host_by_name("Ruby"), 1, 6, 2.5e5, 3).start();
+    new peer("peer", e.host_by_name("Perl"), 2, 0, 5e7, 3).start();
 
     e.run();
   }

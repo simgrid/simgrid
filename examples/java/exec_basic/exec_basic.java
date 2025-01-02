@@ -5,7 +5,8 @@
 
 import org.simgrid.s4u.*;
 
-class executor extends ActorMain {
+class executor extends Actor {
+  public executor(String name, Host location) { super(name, location); }
   public void run()
   {
     /* execute() tells SimGrid to pause the calling actor
@@ -17,7 +18,8 @@ class executor extends ActorMain {
   }
 }
 
-class privileged extends ActorMain {
+class privileged extends Actor {
+  public privileged(String name, Host location) { super(name, location); }
   public void run()
   {
     /* This version of execute() specifies that this execution gets a larger share of the resource.
@@ -43,8 +45,8 @@ public class exec_basic {
 
     e.load_platform(args[0]);
 
-    Actor.create("executor", e.host_by_name("Tremblay"), new executor());
-    Actor.create("privileged", e.host_by_name("Tremblay"), new privileged());
+    new executor("executor", e.host_by_name("Tremblay")).start();
+    new privileged("privileged", e.host_by_name("Tremblay")).start();
 
     e.run();
   }

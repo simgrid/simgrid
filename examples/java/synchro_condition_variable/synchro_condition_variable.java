@@ -5,11 +5,12 @@
 
 import org.simgrid.s4u.*;
 
-class worker extends ActorMain {
+class worker extends Actor {
   ConditionVariable cv;
   Mutex mutex;
-  worker(ConditionVariable cv, Mutex mutex)
+  public worker(String name, Host location, ConditionVariable cv, Mutex mutex)
   {
+    super(name, location);
     this.cv    = cv;
     this.mutex = mutex;
   }
@@ -29,7 +30,8 @@ class worker extends ActorMain {
   }
 }
 
-class master extends ActorMain {
+class master extends Actor {
+  public master(String name, Host location) { super(name, location); }
   static String data  = "Example data";
   static boolean done = false;
   public void run()
@@ -38,7 +40,7 @@ class master extends ActorMain {
     var cv    = ConditionVariable.create();
 
     mutex.lock();
-    var worker = Actor.create("worker", Host.by_name("Jupiter"), new worker(cv, mutex));
+    var worker = new worker("worker", Host.by_name("Jupiter"), cv, mutex).start();
 
     // wait for the worker
     cv.await(mutex);
@@ -54,7 +56,7 @@ public class synchro_condition_variable {
   {
     var e = Engine.get_instance(args);
     e.load_platform(args[0]);
-    Actor.create("main", e.host_by_name("Tremblay"), new master());
+    new master("main", e.host_by_name("Tremblay")).start();
     e.run();
   }
 }

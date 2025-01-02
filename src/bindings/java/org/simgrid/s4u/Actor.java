@@ -9,6 +9,33 @@
 package org.simgrid.s4u;
 
 public class Actor {
+  /**
+   * this is the method you should implement in your actor (it's the main of your actor).
+   * @todo: make this abstract
+   */
+  public void run() { /* your code here */ }
+
+  protected Actor(String name, Host host)
+  {
+    swigCPtr        = simgridJNI.Actor_create(name, Host.getCPtr(host), host);
+    swigCMemOwnBase = true;
+  }
+  public Actor start()
+  {
+    simgridJNI.Actor_start(swigCPtr, this);
+    return this;
+  }
+
+  /* Internal method executing your code, and catching the actor-killing exception */
+  public void do_run()
+  {
+    try {
+      run();
+    } catch (org.simgrid.s4u.ForcefulKillException e) {
+      /* Actor killed, this is fine. */
+    }
+  }
+
   private transient long swigCPtr;
   private transient boolean swigCMemOwnBase;
 
@@ -78,11 +105,6 @@ public class Actor {
   public static Actor init(String name, Host host) {
     long cPtr = simgridJNI.Actor_init(name, Host.getCPtr(host), host);
     return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
-
-  public Actor start(SWIGTYPE_p_std__functionT_void_fF_t code) {
-    simgridJNI.Actor_start(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fF_t.getCPtr(code));
-    return this;
   }
 
   public Actor daemonize() {
@@ -186,10 +208,53 @@ public class Actor {
   public void set_property(String key, String value) {
     simgridJNI.Actor_set_property(swigCPtr, this, key, value);
   }
+  public void sleep_for(double duration) { simgridJNI.ActorMain_sleep_for(swigCPtr, this, duration); }
 
-  public static Actor create(String name, Host host, ActorMain code) {
-    long cPtr = simgridJNI.Actor_create(name, Host.getCPtr(host), host, ActorMain.getCPtr(code), code);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
+  public void sleep_until(double wakeup_time) { simgridJNI.ActorMain_sleep_until(swigCPtr, this, wakeup_time); }
+
+  public void execute(double flop) { simgridJNI.ActorMain_execute__SWIG_0(swigCPtr, this, flop); }
+
+  public void execute(double flop, double priority)
+  {
+    simgridJNI.ActorMain_execute__SWIG_1(swigCPtr, this, flop, priority);
   }
 
+  public void thread_execute(SWIGTYPE_p_s4u__Host host, double flop_amounts, int thread_count)
+  {
+    simgridJNI.ActorMain_thread_execute(swigCPtr, this, SWIGTYPE_p_s4u__Host.getCPtr(host), flop_amounts, thread_count);
+  }
+
+  public Exec exec_init(double flops_amounts)
+  {
+    return new Exec(simgridJNI.ActorMain_exec_init(swigCPtr, this, flops_amounts), true);
+  }
+
+  public Exec exec_async(double flops_amounts)
+  {
+    return new Exec(simgridJNI.ActorMain_exec_async(swigCPtr, this, flops_amounts), true);
+  }
+
+  public void set_host(SWIGTYPE_p_s4u__Host new_host)
+  {
+    simgridJNI.ActorMain_set_host(swigCPtr, this, SWIGTYPE_p_s4u__Host.getCPtr(new_host));
+  }
+
+  public void yield() { simgridJNI.ActorMain_yield(swigCPtr, this); }
+
+  public void exit() { simgridJNI.ActorMain_exit(swigCPtr, this); }
+
+  public static void on_termination_cb(ActorCallback code)
+  {
+    simgridJNI.ActorMain_on_termination_cb(ActorCallback.getCPtr(code), code);
+  }
+
+  public static void on_destruction_cb(ActorCallback code)
+  {
+    simgridJNI.ActorMain_on_destruction_cb(ActorCallback.getCPtr(code), code);
+  }
+
+  public void on_exit(BooleanCallback code)
+  {
+    simgridJNI.ActorMain_on_exit(swigCPtr, this, BooleanCallback.getCPtr(code), code);
+  }
 }
