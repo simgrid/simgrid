@@ -19,21 +19,20 @@ public class simgridJNI {
   public final static native long new_ActorCallback();
   public final static native void ActorCallback_director_connect(ActorCallback obj, long cptr, boolean mem_own, boolean weak_global);
   public final static native void ActorCallback_change_ownership(ActorCallback obj, long cptr, boolean take_or_release);
-  public final static native void delete_ActorMain(long jarg1);
-  public final static native void ActorMain_sleep_for(long jarg1, Actor jarg1_, double jarg2);
-  public final static native void ActorMain_sleep_until(long jarg1, Actor jarg1_, double jarg2);
-  public final static native void ActorMain_execute__SWIG_0(long jarg1, Actor jarg1_, double jarg2);
-  public final static native void ActorMain_execute__SWIG_1(long jarg1, Actor jarg1_, double jarg2, double jarg3);
-  public final static native void ActorMain_thread_execute(long jarg1, Actor jarg1_, long jarg2, double jarg3,
-                                                           int jarg4);
-  public final static native long ActorMain_exec_init(long jarg1, Actor jarg1_, double jarg2);
-  public final static native long ActorMain_exec_async(long jarg1, Actor jarg1_, double jarg2);
-  public final static native void ActorMain_set_host(long jarg1, Actor jarg1_, long jarg2);
-  public final static native void ActorMain_yield(long jarg1, Actor jarg1_);
-  public final static native void ActorMain_exit(long jarg1, Actor jarg1_);
-  public final static native void ActorMain_on_termination_cb(long jarg1, ActorCallback jarg1_);
-  public final static native void ActorMain_on_destruction_cb(long jarg1, ActorCallback jarg1_);
-  public final static native void ActorMain_on_exit(long jarg1, Actor jarg1_, long jarg2, BooleanCallback jarg2_);
+  public final static native void Actor_sleep_for(long jarg1, Actor jarg1_, double jarg2);
+  public final static native void Actor_sleep_until(long jarg1, Actor jarg1_, double jarg2);
+  public final static native void Actor_execute__SWIG_0(long jarg1, Actor jarg1_, double jarg2);
+  public final static native void Actor_execute__SWIG_1(long jarg1, Actor jarg1_, double jarg2, double jarg3);
+  public final static native void Actor_thread_execute(long jarg1, Actor jarg1_, long jarg2, double jarg3, int jarg4);
+  public final static native long Actor_exec_init(long jarg1, Actor jarg1_, double jarg2);
+  public final static native long Actor_exec_async(long jarg1, Actor jarg1_, double jarg2);
+  public final static native void Actor_yield(long jarg1, Actor jarg1_);
+  public final static native void Actor_exit(long jarg1, Actor jarg1_);
+  public final static native void Actor_on_this_termination_cb(long cthis, Actor jthis, long ccode,
+                                                               ActorCallback jcode);
+  public final static native void Actor_on_termination_cb(long ccode, ActorCallback jcode);
+  public final static native void Actor_on_destruction_cb(long ccode, ActorCallback jcode);
+  public final static native void Actor_on_exit(long jarg1, Actor jarg1_, long jarg2, BooleanCallback jarg2_);
   public final static native void parallel_execute(long jarg1, long jarg2, long jarg3);
   public final static native void on_exit(long jarg1);
   public final static native long Actor_self();
@@ -42,10 +41,8 @@ public class simgridJNI {
   public final static native void Actor_on_this_sleep_cb(long jarg1, Actor jarg1_, long jarg2);
   public final static native void Actor_on_this_wake_up_cb(long jarg1, Actor jarg1_, long jarg2);
   public final static native void Actor_on_this_host_change_cb(long jarg1, Actor jarg1_, long jarg2);
-  public final static native void Actor_on_termination_cb(long jarg1);
-  public final static native void Actor_on_this_termination_cb(long jarg1, Actor jarg1_, long jarg2);
-  public final static native void Actor_on_destruction_cb(long jarg1);
-  public final static native void Actor_on_this_destruction_cb(long jarg1, Actor jarg1_, long jarg2);
+  public final static native void Actor_on_this_destruction_cb(long cthis, Actor jthis, long ccode,
+                                                               ActorCallback jcode);
   public final static native long Actor_init(String jarg1, long jarg2, Host jarg2_);
   public final static native void Actor_daemonize(long jarg1, Actor jarg1_);
   public final static native boolean Actor_is_daemon(long jarg1, Actor jarg1_);
@@ -58,10 +55,9 @@ public class simgridJNI {
   public final static native boolean Actor_is_suspended(long jarg1, Actor jarg1_);
   public final static native void Actor_set_auto_restart(long jarg1, Actor jarg1_, boolean jarg2);
   public final static native int Actor_get_restart_count(long jarg1, Actor jarg1_);
-  public final static native void Actor_on_exit(long jarg1, Actor jarg1_, long jarg2);
   public final static native void Actor_set_kill_time(long jarg1, Actor jarg1_, double jarg2);
   public final static native double Actor_get_kill_time(long jarg1, Actor jarg1_);
-  public final static native void Actor_set_host(long jarg1, Actor jarg1_, long jarg2, Host jarg2_);
+  public final static native void Actor_set_host(long cthis, Actor jthis, long chost, Host jhost);
   public final static native void Actor_kill(long jarg1, Actor jarg1_);
   public final static native long Actor_by_pid(int jarg1);
   public final static native void Actor_join__SWIG_0(long jarg1, Actor jarg1_);

@@ -31,7 +31,7 @@
  *
  * The idea is that when an actor needs to be forcefully killed, it was launched from:
  *   - (C++) Actor_create(), does a JNI call to:
- *   - (Java) ActorMain.run()
+ *   - (Java) Actor.run()
  * The decision to kill the actor is taken from C++ again (in another thread) at a point where
  * the victim is blocked in a Java->C++ call (any call is possible, even if blocking ones are
  * more probable). From C++, we set a Java exception in the Java actor and raise a  C++
@@ -39,7 +39,7 @@
  * is blocked.
  * At this point, we swallow that exception and give back the control to the Java code.
  * Upon wakeup, the Java code raises the requested Java exception, that is catch in
- * ActorMain.run().
+ * Actor.run().
  *
  * This is how the actor jumps to the end of its execution in both C++/Java words.
  */
@@ -56,8 +56,10 @@
 #include "simgrid/s4u/Activity.hpp"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Barrier.hpp"
+#include "src/dag/dax_dtd.h"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextJava.hpp"
+#include "xbt/asserts.h"
 #include "xbt/log.h"
 
 #define SWIG_VERSION 0x040201
@@ -918,11 +920,6 @@ struct SWIG_null_deleter {
 #define SWIG_NO_NULL_DELETER_0 , SWIG_null_deleter()
 #define SWIG_NO_NULL_DELETER_1
 
-struct ActorMain {
-  virtual void run()   = 0;
-  virtual ~ActorMain() = default;
-};
-
 /* ---------------------------------------------------
  * C++ director class methods
  * --------------------------------------------------- */
@@ -1155,100 +1152,109 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorCallback_1change_1o
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1ActorMain(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1sleep_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                          jobject jthis, jdouble duration)
 {
-  ActorMain* arg1 = *(ActorMain**)&cthis;
-  delete arg1;
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1sleep_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                              jobject jthis, jdouble duration)
-{
+  xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
+             "You cannot call sleep_for() on a remote actor, only on the currently executing actor.");
   try {
     simgrid::s4u::this_actor::sleep_for(duration);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1sleep_1until(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                jobject jthis, jdouble wakeup_time)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1sleep_1until(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                            jobject jthis, jdouble wakeup_time)
 {
+  xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
+             "You cannot call sleep_until() on a remote actor, only on the currently executing actor.");
   try {
     simgrid::s4u::this_actor::sleep_until(wakeup_time);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1execute_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis,
-                                                                                      jdouble flop)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1execute_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
+                                                                                  jlong cthis, jobject jthis,
+                                                                                  jdouble flop)
 {
+  xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
+             "You cannot call execute() on a remote actor, only on the currently executing actor.");
   try {
     simgrid::s4u::this_actor::execute(flop);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1execute_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis,
-                                                                                      jdouble flop, jdouble priority)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1execute_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
+                                                                                  jlong cthis, jobject jthis,
+                                                                                  jdouble flop, jdouble priority)
 {
+  xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
+             "You cannot call execute() on a remote actor, only on the currently executing actor.");
   try {
     simgrid::s4u::this_actor::execute(flop, priority);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1thread_1execute(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis,
-                                                                                   jlong host, jdouble flop_amounts,
-                                                                                   jint thread_count)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1thread_1execute(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                               jobject jthis, jlong host,
+                                                                               jdouble flop_amounts, jint thread_count)
 {
+  xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
+             "You cannot call thread_execute() on a remote actor, only on the currently executing actor.");
   try {
     simgrid::s4u::this_actor::thread_execute((Host*)host, flop_amounts, thread_count);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1exec_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                               jobject jthis, jdouble flops_amounts)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                           jobject jthis, jdouble flops_amounts)
 {
+  xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
+             "You cannot call exec_init() on a remote actor, only on the currently executing actor.");
   auto result = simgrid::s4u::this_actor::exec_init(flops_amounts);
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1exec_1async(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                jobject jthis, jdouble flops_amounts)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1async(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                            jobject jthis, jdouble flops_amounts)
 {
+  xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
+             "You cannot call exec_async() on a remote actor, only on the currently executing actor.");
   auto result = simgrid::s4u::this_actor::exec_async(flops_amounts);
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1set_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                             jobject jthis, jlong chost)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                         jobject jthis, jlong chost, jobject jhost)
 {
-  simgrid::s4u::this_actor::set_host((Host*)chost);
+  ((Actor*)cthis)->set_host((Host*)chost);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1yield(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1yield(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                     jobject jthis)
 {
+  xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
+             "You cannot call yield() on a remote actor, only on the currently executing actor.");
   try {
     simgrid::s4u::this_actor::yield();
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1exit(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exit(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                    jobject jthis)
 {
-  simgrid::s4u::this_actor::exit();
+  ((Actor*)cthis)->kill();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1on_1termination_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                       jlong ccode, jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1termination_1cb(JNIEnv* jenv, jclass jcls,
+                                                                                   jlong ccode, jobject jthis)
 {
   ActorCallback* code = *(ActorCallback**)&ccode;
   XBT_CRITICAL("Install on termination");
@@ -1258,8 +1264,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1on_1terminati
   });
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1on_1destruction_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                       jlong ccode, jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1destruction_1cb(JNIEnv* jenv, jclass jcls,
+                                                                                   jlong ccode, jobject jthis)
 {
   ActorCallback* code = (ActorCallback*)ccode;
   Actor::on_destruction_cb([code](s4u::Actor const& a) {
@@ -1268,8 +1274,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1on_1destructi
   });
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorMain_1on_1exit(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                            jobject jthis, jlong jarg2, jobject jarg2_)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1exit(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                        jobject jthis, jlong jarg2, jobject jarg2_)
 {
   auto code = (BooleanCallback*)jarg2;
 
@@ -1448,86 +1454,31 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1host_1c
   (arg1)->on_this_host_change_cb((std::function<void(simgrid::s4u::Actor const&, Host const&)> const&)*arg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1termination_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis)
-{
-  std::function<void(simgrid::s4u::Actor const&)>* arg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(std::function<void(simgrid::s4u::Actor const&)>**)&cthis;
-  if (!arg1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Actor const &) > const & is null");
-    return;
-  }
-  simgrid::s4u::Actor::on_termination_cb((std::function<void(simgrid::s4u::Actor const&)> const&)*arg1);
-}
-
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1termination_1cb(JNIEnv* jenv, jclass jcls,
                                                                                          jlong cthis, jobject jthis,
-                                                                                         jlong jarg2)
+                                                                                         jlong ccode, jobject jcode)
 {
-  simgrid::s4u::Actor* arg1                             = (simgrid::s4u::Actor*)0;
+  if (!jcode) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
+                            "on_this_termination was provided with a null callback");
+    return;
+  }
   std::function<void(simgrid::s4u::Actor const&)>* arg2 = 0;
-  boost::shared_ptr<simgrid::s4u::Actor>* smartarg1     = 0;
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2 = *(std::function<void(simgrid::s4u::Actor const&)>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Actor const &) > const & is null");
-    return;
-  }
-  (arg1)->on_this_termination_cb((std::function<void(simgrid::s4u::Actor const&)> const&)*arg2);
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1destruction_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis)
-{
-  std::function<void(simgrid::s4u::Actor const&)>* arg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(std::function<void(simgrid::s4u::Actor const&)>**)&cthis;
-  if (!arg1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Actor const &) > const & is null");
-    return;
-  }
-  simgrid::s4u::Actor::on_destruction_cb((std::function<void(simgrid::s4u::Actor const&)> const&)*arg1);
+  arg2 = *(std::function<void(simgrid::s4u::Actor const&)>**)&ccode;
+  ((Actor*)cthis)->on_this_termination_cb((std::function<void(simgrid::s4u::Actor const&)> const&)*arg2);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1destruction_1cb(JNIEnv* jenv, jclass jcls,
                                                                                          jlong cthis, jobject jthis,
-                                                                                         jlong jarg2)
+                                                                                         jlong ccode, jobject jcode)
 {
-  simgrid::s4u::Actor* arg1                             = (simgrid::s4u::Actor*)0;
-  std::function<void(simgrid::s4u::Actor const&)>* arg2 = 0;
-  boost::shared_ptr<simgrid::s4u::Actor>* smartarg1     = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2 = *(std::function<void(simgrid::s4u::Actor const&)>**)&jarg2;
-  if (!arg2) {
+  if (!jcode) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Actor const &) > const & is null");
+                            "on_this_destruction was provided with a null callback");
     return;
   }
-  (arg1)->on_this_destruction_cb((std::function<void(simgrid::s4u::Actor const&)> const&)*arg2);
+  ((Actor*)cthis)->on_this_destruction_cb((std::function<void(simgrid::s4u::Actor const&)> const&)*jcode);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1init(JNIEnv* jenv, jclass jcls, jstring cthis,
@@ -1638,29 +1589,6 @@ XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1restart_1cou
   return ((Actor*)cthis)->get_restart_count();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1exit(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis, jlong jarg2)
-{
-  simgrid::s4u::Actor* arg1                               = (simgrid::s4u::Actor*)0;
-  std::function<void(bool)>* arg2                         = 0;
-  boost::shared_ptr<simgrid::s4u::Actor const>* smartarg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2 = *(std::function<void(bool)>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::function< void (bool) > const & is null");
-    return;
-  }
-  ((simgrid::s4u::Actor const*)arg1)->on_exit((std::function<void(bool)> const&)*arg2);
-}
-
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1kill_1time(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                jobject jthis, jdouble jarg2)
 {
@@ -1671,30 +1599,6 @@ XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1kill_1tim
                                                                                   jlong cthis, jobject jthis)
 {
   return ((Actor*)cthis)->get_kill_time();
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis, jlong jarg2, jobject jarg2_)
-{
-  simgrid::s4u::Actor* arg1                         = (simgrid::s4u::Actor*)0;
-  simgrid::s4u::Host* arg2                          = (simgrid::s4u::Host*)0;
-  boost::shared_ptr<simgrid::s4u::Actor>* smartarg1 = 0;
-  boost::shared_ptr<simgrid::s4u::Host>* smartarg2  = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  (void)jarg2_;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  // plain pointer
-  smartarg2 = *(boost::shared_ptr<simgrid::s4u::Host>**)&jarg2;
-  arg2      = (simgrid::s4u::Host*)(smartarg2 ? smartarg2->get() : 0);
-
-  (arg1)->set_host(arg2);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1kill(JNIEnv* jenv, jclass jcls, jlong cthis,

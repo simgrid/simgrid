@@ -81,20 +81,24 @@ public class Actor {
     simgridJNI.Actor_on_this_host_change_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_R_Host_const_RF_t.getCPtr(cb));
   }
 
-  public static void on_termination_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t cb) {
-    simgridJNI.Actor_on_termination_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t.getCPtr(cb));
+  public static void on_termination_cb(ActorCallback cb)
+  {
+    simgridJNI.Actor_on_termination_cb(ActorCallback.getCPtr(cb), cb);
   }
 
-  public void on_this_termination_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t cb) {
-    simgridJNI.Actor_on_this_termination_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t.getCPtr(cb));
+  public void on_this_termination_cb(ActorCallback cb)
+  {
+    simgridJNI.Actor_on_this_termination_cb(swigCPtr, this, ActorCallback.getCPtr(cb), cb);
   }
 
-  public static void on_destruction_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t cb) {
-    simgridJNI.Actor_on_destruction_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t.getCPtr(cb));
+  public static void on_destruction_cb(ActorCallback cb)
+  {
+    simgridJNI.Actor_on_destruction_cb(ActorCallback.getCPtr(cb), cb);
   }
 
-  public void on_this_destruction_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t cb) {
-    simgridJNI.Actor_on_this_destruction_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t.getCPtr(cb));
+  public void on_this_destruction_cb(ActorCallback cb)
+  {
+    simgridJNI.Actor_on_this_destruction_cb(swigCPtr, this, ActorCallback.getCPtr(cb), cb);
   }
 
   public static Actor init(String name, Host host) {
@@ -154,10 +158,6 @@ public class Actor {
     return simgridJNI.Actor_get_restart_count(swigCPtr, this);
   }
 
-  public void on_exit(SWIGTYPE_p_std__functionT_void_fboolF_t fun) {
-    simgridJNI.Actor_on_exit(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fboolF_t.getCPtr(fun));
-  }
-
   public void set_kill_time(double time) {
     simgridJNI.Actor_set_kill_time(swigCPtr, this, time);
   }
@@ -203,53 +203,38 @@ public class Actor {
   public void set_property(String key, String value) {
     simgridJNI.Actor_set_property(swigCPtr, this, key, value);
   }
-  public void sleep_for(double duration) { simgridJNI.ActorMain_sleep_for(swigCPtr, this, duration); }
-
-  public void sleep_until(double wakeup_time) { simgridJNI.ActorMain_sleep_until(swigCPtr, this, wakeup_time); }
-
-  public void execute(double flop) { simgridJNI.ActorMain_execute__SWIG_0(swigCPtr, this, flop); }
-
+  /** Only call this on the current thread (on `this`) */
+  protected void sleep_for(double duration) { simgridJNI.Actor_sleep_for(swigCPtr, this, duration); }
+  /** Only call this on the current thread (on `this`) */
+  public void sleep_until(double wakeup_time) { simgridJNI.Actor_sleep_until(swigCPtr, this, wakeup_time); }
+  /** Only call this on the current thread (on `this`) */
+  public void execute(double flop) { simgridJNI.Actor_execute__SWIG_0(swigCPtr, this, flop); }
+  /** Only call this on the current thread (on `this`) */
   public void execute(double flop, double priority)
   {
-    simgridJNI.ActorMain_execute__SWIG_1(swigCPtr, this, flop, priority);
+    simgridJNI.Actor_execute__SWIG_1(swigCPtr, this, flop, priority);
   }
-
+  /** Only call this on the current thread (on `this`) */
   public void thread_execute(SWIGTYPE_p_s4u__Host host, double flop_amounts, int thread_count)
   {
-    simgridJNI.ActorMain_thread_execute(swigCPtr, this, SWIGTYPE_p_s4u__Host.getCPtr(host), flop_amounts, thread_count);
+    simgridJNI.Actor_thread_execute(swigCPtr, this, SWIGTYPE_p_s4u__Host.getCPtr(host), flop_amounts, thread_count);
   }
-
+  /** Only call this on the current thread (on `this`) */
   public Exec exec_init(double flops_amounts)
   {
-    return new Exec(simgridJNI.ActorMain_exec_init(swigCPtr, this, flops_amounts), true);
+    return new Exec(simgridJNI.Actor_exec_init(swigCPtr, this, flops_amounts), true);
   }
-
   public Exec exec_async(double flops_amounts)
   {
-    return new Exec(simgridJNI.ActorMain_exec_async(swigCPtr, this, flops_amounts), true);
+    return new Exec(simgridJNI.Actor_exec_async(swigCPtr, this, flops_amounts), true);
   }
 
-  public void set_host(SWIGTYPE_p_s4u__Host new_host)
-  {
-    simgridJNI.ActorMain_set_host(swigCPtr, this, SWIGTYPE_p_s4u__Host.getCPtr(new_host));
-  }
+  public void yield() { simgridJNI.Actor_yield(swigCPtr, this); }
 
-  public void yield() { simgridJNI.ActorMain_yield(swigCPtr, this); }
-
-  public void exit() { simgridJNI.ActorMain_exit(swigCPtr, this); }
-
-  public static void on_termination_cb(ActorCallback code)
-  {
-    simgridJNI.ActorMain_on_termination_cb(ActorCallback.getCPtr(code), code);
-  }
-
-  public static void on_destruction_cb(ActorCallback code)
-  {
-    simgridJNI.ActorMain_on_destruction_cb(ActorCallback.getCPtr(code), code);
-  }
+  public void exit() { simgridJNI.Actor_exit(swigCPtr, this); }
 
   public void on_exit(BooleanCallback code)
   {
-    simgridJNI.ActorMain_on_exit(swigCPtr, this, BooleanCallback.getCPtr(code), code);
+    simgridJNI.Actor_on_exit(swigCPtr, this, BooleanCallback.getCPtr(code), code);
   }
 }
