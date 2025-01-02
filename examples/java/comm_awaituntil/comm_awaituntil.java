@@ -82,8 +82,8 @@ public class comm_awaituntil {
 
     e.load_platform(args[0]);
 
-    new sender("sender", e.host_by_name("Tremblay"), 3, (int)5e7).start();
-    new receiver("receiver", e.host_by_name("Ruby")).start();
+    new sender("sender", e.host_by_name("Tremblay"), 3, (int)5e7);
+    new receiver("receiver", e.host_by_name("Ruby"));
 
     e.run();
   }

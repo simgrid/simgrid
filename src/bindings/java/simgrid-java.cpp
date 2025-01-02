@@ -54,6 +54,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/forward.h"
 #include "simgrid/s4u/Activity.hpp"
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Barrier.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextJava.hpp"
@@ -1556,22 +1557,6 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1init(JNIEnv* jen
   return jresult;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1start(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                     jobject jcode)
-{
-  jcode = jenv->NewGlobalRef(jcode);
-  ((Actor*)cthis)->start([jcode]() {
-    auto jenv = ((simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self())->jenv_;
-
-    try {
-      jenv->CallVoidMethod(jcode, Actor_methodId);
-    } catch (ForcefulKillException const&) {
-      XBT_CRITICAL("Got killed");
-    }
-    handle_exception(jenv);
-  });
-}
-
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1daemonize(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                          jobject jthis)
 {
@@ -1836,12 +1821,24 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1property(JNI
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1create(JNIEnv* jenv, jclass jcls, jstring jname,
-                                                                       jlong chost, jobject jhost)
+                                                                       jlong chost, jobject jhost, jobject jcode)
 {
   std::string name = java_string_to_std_string(jenv, jname);
   Host* host       = (Host*)chost;
 
-  ActorPtr result = Actor::init(name, host);
+  jcode           = jenv->NewGlobalRef(jcode);
+  ActorPtr result = Actor::create(name, host, [jcode]() {
+    auto jenv = ((simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self())->jenv_;
+
+    this_actor::yield(); // Delay my execution to the next scheduling round, to let my parent complete my ctor
+
+    try {
+      jenv->CallVoidMethod(jcode, Actor_methodId);
+    } catch (ForcefulKillException const&) {
+      XBT_CRITICAL("Got killed");
+    }
+    handle_exception(jenv);
+  });
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }

@@ -39,8 +39,8 @@ public class actor_daemon {
     var e = Engine.get_instance(args);
 
     e.load_platform(args[0]);
-    new worker("worker", e.host_by_name("Boivin")).start();
-    new my_daemon("daemon", e.host_by_name("Tremblay")).start();
+    new worker("worker", e.host_by_name("Boivin"));
+    new my_daemon("daemon", e.host_by_name("Tremblay"));
 
     e.run();
   }

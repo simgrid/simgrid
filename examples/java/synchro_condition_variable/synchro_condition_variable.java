@@ -40,7 +40,7 @@ class master extends Actor {
     var cv    = ConditionVariable.create();
 
     mutex.lock();
-    var worker = new worker("worker", Host.by_name("Jupiter"), cv, mutex).start();
+    var worker = new worker("worker", Host.by_name("Jupiter"), cv, mutex);
 
     // wait for the worker
     cv.await(mutex);
@@ -56,7 +56,7 @@ public class synchro_condition_variable {
   {
     var e = Engine.get_instance(args);
     e.load_platform(args[0]);
-    new master("main", e.host_by_name("Tremblay")).start();
+    new master("main", e.host_by_name("Tremblay"));
     e.run();
   }
 }

@@ -59,8 +59,8 @@ public class comm_dependent {
 
     var mbox = e.mailbox_by_name_or_create("Mailbox");
 
-    new Sender("sender", e.host_by_name("Tremblay"), mbox).start();
-    new Receiver("receiver", e.host_by_name("Jupiter"), mbox).start();
+    new Sender("sender", e.host_by_name("Tremblay"), mbox);
+    new Receiver("receiver", e.host_by_name("Jupiter"), mbox);
 
     e.run();
 

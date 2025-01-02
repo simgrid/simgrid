@@ -100,9 +100,9 @@ class comm_ready {
     var e = Engine.get_instance(args);
     e.load_platform(args[0]);
 
-    new peer("peer", e.host_by_name("Tremblay"), 0, 2, 5e7, 3).start();
-    new peer("peer", e.host_by_name("Ruby"), 1, 6, 2.5e5, 3).start();
-    new peer("peer", e.host_by_name("Perl"), 2, 0, 5e7, 3).start();
+    new peer("peer", e.host_by_name("Tremblay"), 0, 2, 5e7, 3);
+    new peer("peer", e.host_by_name("Ruby"), 1, 6, 2.5e5, 3);
+    new peer("peer", e.host_by_name("Perl"), 2, 0, 5e7, 3);
 
     e.run();
   }

@@ -46,8 +46,8 @@ public class synchro_mutex {
     for (int i = 0; i < cfg_actor_count; i++) {
       result.add(0);
       Mutex mutex = Mutex.create();
-      new worker("worker", Host.by_name("Jupiter"), mutex, i).start();
-      new worker("worker", Host.by_name("Tremblay"), mutex, i).start();
+      new worker("worker", Host.by_name("Jupiter"), mutex, i);
+      new worker("worker", Host.by_name("Tremblay"), mutex, i);
     }
 
     e.run();

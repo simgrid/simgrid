@@ -73,8 +73,8 @@ public class synchro_semaphore {
     var sem_empty = Semaphore.create(1); /* indicates whether the buffer is empty */
     var sem_full  = Semaphore.create(0); /* indicates whether the buffer is full */
 
-    new producer("producer", e.host_by_name("Tremblay"), sem_empty, sem_full, params).start();
-    new consumer("consumer", e.host_by_name("Jupiter"), sem_empty, sem_full).start();
+    new producer("producer", e.host_by_name("Tremblay"), sem_empty, sem_full, params);
+    new consumer("consumer", e.host_by_name("Jupiter"), sem_empty, sem_full);
     e.run();
   }
 }

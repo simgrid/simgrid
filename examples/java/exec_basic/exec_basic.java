@@ -45,8 +45,8 @@ public class exec_basic {
 
     e.load_platform(args[0]);
 
-    new executor("executor", e.host_by_name("Tremblay")).start();
-    new privileged("privileged", e.host_by_name("Tremblay")).start();
+    new executor("executor", e.host_by_name("Tremblay"));
+    new privileged("privileged", e.host_by_name("Tremblay"));
 
     e.run();
   }

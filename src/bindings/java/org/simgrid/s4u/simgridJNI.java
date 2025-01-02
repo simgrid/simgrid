@@ -47,7 +47,6 @@ public class simgridJNI {
   public final static native void Actor_on_destruction_cb(long jarg1);
   public final static native void Actor_on_this_destruction_cb(long jarg1, Actor jarg1_, long jarg2);
   public final static native long Actor_init(String jarg1, long jarg2, Host jarg2_);
-  public final static native void Actor_start(long cthis, Actor jthis);
   public final static native void Actor_daemonize(long jarg1, Actor jarg1_);
   public final static native boolean Actor_is_daemon(long jarg1, Actor jarg1_);
   public final static native String Actor_get_name(long jarg1, Actor jarg1_);
@@ -71,7 +70,7 @@ public class simgridJNI {
   public final static native void Actor_kill_all();
   public final static native String Actor_get_property(long jarg1, Actor jarg1_, String jarg2);
   public final static native void Actor_set_property(long jarg1, Actor jarg1_, String jarg2, String jarg3);
-  public final static native long Actor_create(String jarg1, long chost, Host jhost);
+  public final static native long Actor_create(String jarg1, long chost, Host jhost, Actor jcode);
   public final static native void delete_Actor(long jarg1);
   public final static native String Activity_to_c_str(int jarg1);
   public final static native boolean Activity_is_assigned(long jarg1, Activity jarg1_);

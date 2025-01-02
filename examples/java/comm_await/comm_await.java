@@ -87,8 +87,8 @@ public class comm_await {
 
     e.load_platform(args[0]);
 
-    new sender("sender", e.host_by_name("Tremblay"), 3, 482117300).start();
-    new receiver("receiver", e.host_by_name("Ruby")).start();
+    new sender("sender", e.host_by_name("Tremblay"), 3, 482117300);
+    new receiver("receiver", e.host_by_name("Ruby"));
 
     e.run();
   }

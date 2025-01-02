@@ -22,22 +22,22 @@ class master extends Actor {
     Actor actor;
 
     Engine.info("Start sleeper");
-    actor = new sleeper("sleeper from master", Host.current()).start();
+    actor = new sleeper("sleeper from master", Host.current());
     Engine.info("Join the sleeper (timeout 2)");
     actor.join(2);
 
     Engine.info("Start sleeper");
-    actor = new sleeper("sleeper from master", Host.current()).start();
+    actor = new sleeper("sleeper from master", Host.current());
     Engine.info("Join the sleeper (timeout 4)");
     actor.join(4);
 
     Engine.info("Start sleeper");
-    actor = new sleeper("sleeper from master", Host.current()).start();
+    actor = new sleeper("sleeper from master", Host.current());
     Engine.info("Join the sleeper (timeout 2)");
     actor.join(2);
 
     Engine.info("Start sleeper");
-    actor = new sleeper("sleeper from master", Host.current()).start();
+    actor = new sleeper("sleeper from master", Host.current());
     Engine.info("Waiting 4");
     sleep_for(4);
     Engine.info("Join the sleeper after its end (timeout 1)");
@@ -58,7 +58,7 @@ public class actor_join {
 
     e.load_platform(args[0]);
 
-    new master("master", e.host_by_name("Tremblay")).start();
+    new master("master", e.host_by_name("Tremblay"));
 
     e.run();
 

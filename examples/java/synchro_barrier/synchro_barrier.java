@@ -17,9 +17,10 @@ class worker extends Actor {
   public void run()
   {
     Engine.info("Waiting on the barrier");
-    barrier.await();
-
-    Engine.info("Bye");
+    if (barrier.await())
+      Engine.info("Bye from the last to enter");
+    else
+      Engine.info("Bye");
   }
 }
 
@@ -36,9 +37,8 @@ class master extends Actor {
     Barrier barrier = Barrier.create(actor_count);
 
     Engine.info("Spawning %d workers", actor_count - 1);
-    for (int i = 0; i < actor_count - 1; i++) {
-      new worker("worker", Host.by_name("Jupiter"), barrier).start();
-    }
+    for (int i = 0; i < actor_count - 1; i++)
+      new worker("worker", Host.by_name("Jupiter"), barrier);
 
     Engine.info("Waiting on the barrier");
     if (barrier.await())
@@ -61,7 +61,7 @@ public class synchro_barrier {
       Engine.die("<actor-count> must be greater than 0");
 
     e.load_platform(args.length >= 2 ? args[1] : "../platforms/two_hosts.xml");
-    new master("master", e.host_by_name("Tremblay"), actor_count).start();
+    new master("master", e.host_by_name("Tremblay"), actor_count);
     e.run();
   }
 }

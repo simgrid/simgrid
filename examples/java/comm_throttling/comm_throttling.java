@@ -61,8 +61,8 @@ public class comm_throttling {
 
     Mailbox mbox = e.mailbox_by_name_or_create("Mailbox");
 
-    new sender("sender", e.host_by_name("node-0.simgrid.org"), mbox).start();
-    new receiver("receiver", e.host_by_name("node-1.simgrid.org"), mbox).start();
+    new sender("sender", e.host_by_name("node-0.simgrid.org"), mbox);
+    new receiver("receiver", e.host_by_name("node-1.simgrid.org"), mbox);
 
     e.run();
   }

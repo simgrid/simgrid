@@ -83,8 +83,7 @@ public class comm_host2host {
     e.load_platform(args[0]);
 
     new sender("sender", e.host_by_name("Boivin"), e.host_by_name("Tremblay"), e.host_by_name("Jupiter"),
-               e.host_by_name("Fafard"), e.host_by_name("Ginette"))
-        .start();
+               e.host_by_name("Fafard"), e.host_by_name("Ginette"));
 
     e.run();
 

@@ -58,8 +58,8 @@ public class comm_suspend {
 
     e.load_platform(args[0]);
 
-    new sender("sender", e.host_by_name("Tremblay")).start();
-    new receiver("receiver", e.host_by_name("Jupiter")).start();
+    new sender("sender", e.host_by_name("Tremblay"));
+    new receiver("receiver", e.host_by_name("Jupiter"));
 
     e.run();
   }

@@ -91,10 +91,10 @@ public class exec_async {
     Host boivin   = e.host_by_name("Boivin");
     Host tremblay = e.host_by_name("Tremblay");
 
-    new waiter("wait", fafard).start();
-    new monitor("monitor", ginette).start();
-    new canceller("cancel", boivin).start();
-    new detached("detach", tremblay).start();
+    new waiter("wait", fafard);
+    new monitor("monitor", ginette);
+    new canceller("cancel", boivin);
+    new detached("detach", tremblay);
 
     e.run();
 

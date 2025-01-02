@@ -17,13 +17,8 @@ public class Actor {
 
   protected Actor(String name, Host host)
   {
-    swigCPtr        = simgridJNI.Actor_create(name, Host.getCPtr(host), host);
+    swigCPtr        = simgridJNI.Actor_create(name, Host.getCPtr(host), host, this);
     swigCMemOwnBase = true;
-  }
-  public Actor start()
-  {
-    simgridJNI.Actor_start(swigCPtr, this);
-    return this;
   }
 
   /* Internal method executing your code, and catching the actor-killing exception */
