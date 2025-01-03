@@ -49,6 +49,8 @@ int main(int argc, char* argv[])
   xbt_assert(argc > 1, "Usage: %s platform_file\n \tExample: %s small_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
+  // Have to seal the platform before declaring new tracing variables
+  e.seal_platform();
 
   // declaring link user variables (one without, another with an RGB color)
   simgrid::instr::declare_link_variable("Link_Capacity");
