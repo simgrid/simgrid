@@ -319,6 +319,9 @@ void EngineImpl::seal_platform() const
 
   /* seal netzone root, recursively seal children netzones, hosts and disks */
   netzone_root_->seal();
+
+  // Now the platform is officially sealed and thus completely created
+  simgrid::s4u::Engine::on_platform_sealed();
 }
 
 void EngineImpl::load_platform(const std::string& platf)
