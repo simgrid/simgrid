@@ -106,7 +106,7 @@ public class Exec extends Activity {
 
   public Host get_host() {
     long cPtr = simgridJNI.Exec_get_host(swigCPtr, this);
-    return (cPtr == 0) ? null : new Host(cPtr, true);
+    return (cPtr == 0) ? null : new Host(cPtr);
   }
 
   public long get_host_number() {

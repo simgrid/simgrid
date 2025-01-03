@@ -10,28 +10,11 @@ package org.simgrid.s4u;
 
 public class Mailbox {
   private transient long swigCPtr;
-  private transient boolean swigCMemOwnBase;
 
-  protected Mailbox(long cPtr, boolean cMemoryOwn) {
-    swigCMemOwnBase = cMemoryOwn;
-    swigCPtr = cPtr;
-  }
+  protected Mailbox(long cPtr) { swigCPtr = cPtr; }
 
   protected static long getCPtr(Mailbox obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  @SuppressWarnings({"deprecation", "removal"})
-  protected void finalize() {
-    delete();
-  }
-
-  public synchronized void delete() {
-    if(swigCPtr != 0 && swigCMemOwnBase) {
-      swigCMemOwnBase = false;
-      simgridJNI.delete_Mailbox(swigCPtr);
-    }
-    swigCPtr = 0;
   }
 
   public String get_name() {
@@ -40,7 +23,7 @@ public class Mailbox {
 
   public static Mailbox by_name(String name) {
     long cPtr = simgridJNI.Mailbox_by_name(name);
-    return (cPtr == 0) ? null : new Mailbox(cPtr, true);
+    return (cPtr == 0) ? null : new Mailbox(cPtr);
   }
 
   public boolean empty() {

@@ -60,7 +60,7 @@ public class VirtualMachine {
 
   public Host get_pm() {
     long cPtr = simgridJNI.VirtualMachine_get_pm(swigCPtr, this);
-    return (cPtr == 0) ? null : new Host(cPtr, true);
+    return (cPtr == 0) ? null : new Host(cPtr);
   }
 
   public VirtualMachine set_pm(Host pm) {

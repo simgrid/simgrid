@@ -786,9 +786,9 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/NativeLib.java
     src/bindings/java/org/simgrid/s4u/Activity.java
     src/bindings/java/org/simgrid/s4u/ActivitySet.java
-    src/bindings/java/org/simgrid/s4u/ActorCallback.java
     src/bindings/java/org/simgrid/s4u/Actor.java
     src/bindings/java/org/simgrid/s4u/Barrier.java
+    src/bindings/java/org/simgrid/s4u/CallbackActor.java
     src/bindings/java/org/simgrid/s4u/CallbackBoolean.java
     src/bindings/java/org/simgrid/s4u/CallbackExec.java
     src/bindings/java/org/simgrid/s4u/ClusterCallbacks.java

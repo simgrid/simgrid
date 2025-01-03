@@ -6,12 +6,9 @@ if(enable_java)
   add_dependencies(java-all simgrid)      # useful when the libs are not included in the jar
 endif()
 
-# actor_exiting is not working yet
-set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/actor_exiting/actor_exiting.java)
-set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor_exiting/actor_exiting.java.tesh)
 # comm_failure needs both exceptions and platform creation
 # exec_dependent does not trigger the veto
-foreach (example actor_daemon actor_join # actor_exiting actor_kill
+foreach (example actor_daemon actor_exiting actor_join # actor_kill
                  exec_async exec_basic exec_dependent
                  comm_await comm_awaituntil comm_dependent comm_host2host comm_pingpong comm_ready comm_suspend comm_throttling
                  synchro_barrier synchro_condition_variable synchro_mutex synchro_semaphore

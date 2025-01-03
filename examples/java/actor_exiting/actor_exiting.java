@@ -83,14 +83,22 @@ class actor_exiting {
     e.load_platform(args[0]); /* - Load the platform description */
 
     /* Register a callback in the Actor::on_termination signal. It will be called for every terminated actors */
-    //    ActorMain.on_termination_cb(new ActorCallback() {@Override public void run(Actor a) {
-    //      Engine.info("Actor "+a.get_name()+" terminates now.");
-    //    }});
+    Actor.on_termination_cb(new CallbackActor() {
+      @Override public void run(Actor a)
+      {
+        Engine.info("Actor " + a.get_name() + " terminates now.");
+      }
+    });
 
-    /* Register a callback in the Actor::on_destruction signal. It will be called for every destructed actors */
-    //    ActorMain.on_destruction_cb(new ActorCallback() {public void run(Actor a) {
-    //          Engine.info("Actor "+a.get_name()+" gets destroyed now.");
-    //    }});
+    /* Register a callback in the Actor::on_destruction signal. It will be called for every destructed actors
+     * Unfortunately, this example is too small to get the GC to actually destroy the actors :(
+     */
+    Actor.on_destruction_cb(new CallbackActor() {
+      public void run(Actor a)
+      {
+        Engine.info("Actor " + a.get_name() + " gets destroyed now.");
+      }
+    });
 
     /* Create some actors */
     new ActorA("A", e.host_by_name("Tremblay"));
@@ -98,6 +106,8 @@ class actor_exiting {
     new ActorC("C", e.host_by_name("Ginette"));
 
     e.run(); /* Run the simulation */
+    Engine.info("Run the garbage collector now in the hope to get the actors destroyed. In vain :(");
+    System.gc();
   }
 }
 

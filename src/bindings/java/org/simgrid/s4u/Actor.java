@@ -81,25 +81,13 @@ public class Actor {
     simgridJNI.Actor_on_this_host_change_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_R_Host_const_RF_t.getCPtr(cb));
   }
 
-  public static void on_termination_cb(ActorCallback cb)
-  {
-    simgridJNI.Actor_on_termination_cb(ActorCallback.getCPtr(cb), cb);
-  }
+  public static void on_termination_cb(CallbackActor cb) { simgridJNI.Actor_on_termination_cb(cb); }
 
-  public void on_this_termination_cb(ActorCallback cb)
-  {
-    simgridJNI.Actor_on_this_termination_cb(swigCPtr, this, ActorCallback.getCPtr(cb), cb);
-  }
+  public void on_this_termination_cb(CallbackActor cb) { simgridJNI.Actor_on_this_termination_cb(swigCPtr, this, cb); }
 
-  public static void on_destruction_cb(ActorCallback cb)
-  {
-    simgridJNI.Actor_on_destruction_cb(ActorCallback.getCPtr(cb), cb);
-  }
+  public static void on_destruction_cb(CallbackActor cb) { simgridJNI.Actor_on_destruction_cb(cb); }
 
-  public void on_this_destruction_cb(ActorCallback cb)
-  {
-    simgridJNI.Actor_on_this_destruction_cb(swigCPtr, this, ActorCallback.getCPtr(cb), cb);
-  }
+  public void on_this_destruction_cb(CallbackActor cb) { simgridJNI.Actor_on_this_destruction_cb(swigCPtr, this, cb); }
 
   public static Actor init(String name, Host host) {
     long cPtr = simgridJNI.Actor_init(name, Host.getCPtr(host), host);
@@ -121,7 +109,7 @@ public class Actor {
 
   public Host get_host() {
     long cPtr = simgridJNI.Actor_get_host(swigCPtr, this);
-    return (cPtr == 0) ? null : new Host(cPtr, true);
+    return (cPtr == 0) ? null : new Host(cPtr);
   }
 
   public int get_pid() {

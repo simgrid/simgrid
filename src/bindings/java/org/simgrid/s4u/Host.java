@@ -10,28 +10,11 @@ package org.simgrid.s4u;
 
 public class Host {
   private transient long swigCPtr;
-  private transient boolean swigCMemOwnBase;
 
-  protected Host(long cPtr, boolean cMemoryOwn) {
-    swigCMemOwnBase = cMemoryOwn;
-    swigCPtr = cPtr;
-  }
+  protected Host(long cPtr) { swigCPtr = cPtr; }
 
   protected static long getCPtr(Host obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  @SuppressWarnings({"deprecation", "removal"})
-  protected void finalize() {
-    delete();
-  }
-
-  public synchronized void delete() {
-    if(swigCPtr != 0 && swigCMemOwnBase) {
-      swigCMemOwnBase = false;
-      simgridJNI.delete_Host(swigCPtr);
-    }
-    swigCPtr = 0;
   }
 
   public String get_name() {
@@ -47,11 +30,11 @@ public class Host {
   public static Host by_name(String name)
   {
     long cPtr = simgridJNI.Host_by_name(name);
-    return (cPtr == 0) ? null : new Host(cPtr, true);
+    return (cPtr == 0) ? null : new Host(cPtr);
   }
   public static Host current()
   {
     long cPtr = simgridJNI.Host_current();
-    return (cPtr == 0) ? null : new Host(cPtr, true);
+    return (cPtr == 0) ? null : new Host(cPtr);
   }
 }

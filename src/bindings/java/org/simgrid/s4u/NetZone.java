@@ -88,22 +88,22 @@ public class NetZone {
 
   public Host create_host(String name, SWIGTYPE_p_std__vectorT_double_t speed_per_pstate) {
     long cPtr = simgridJNI.NetZone_create_host__SWIG_0(swigCPtr, this, name, SWIGTYPE_p_std__vectorT_double_t.getCPtr(speed_per_pstate));
-    return (cPtr == 0) ? null : new Host(cPtr, true);
+    return (cPtr == 0) ? null : new Host(cPtr);
   }
 
   public Host create_host(String name, double speed) {
     long cPtr = simgridJNI.NetZone_create_host__SWIG_1(swigCPtr, this, name, speed);
-    return (cPtr == 0) ? null : new Host(cPtr, true);
+    return (cPtr == 0) ? null : new Host(cPtr);
   }
 
   public Host create_host(String name, SWIGTYPE_p_std__vectorT_std__string_t speed_per_pstate) {
     long cPtr = simgridJNI.NetZone_create_host__SWIG_2(swigCPtr, this, name, SWIGTYPE_p_std__vectorT_std__string_t.getCPtr(speed_per_pstate));
-    return (cPtr == 0) ? null : new Host(cPtr, true);
+    return (cPtr == 0) ? null : new Host(cPtr);
   }
 
   public Host create_host(String name, String speed) {
     long cPtr = simgridJNI.NetZone_create_host__SWIG_3(swigCPtr, this, name, speed);
-    return (cPtr == 0) ? null : new Host(cPtr, true);
+    return (cPtr == 0) ? null : new Host(cPtr);
   }
 
   public Link create_link(String name, SWIGTYPE_p_std__vectorT_double_t bandwidths) {

@@ -82,7 +82,7 @@ public class Disk {
 
   public Host get_host() {
     long cPtr = simgridJNI.Disk_get_host(swigCPtr, this);
-    return (cPtr == 0) ? null : new Host(cPtr, true);
+    return (cPtr == 0) ? null : new Host(cPtr);
   }
 
   public Disk set_concurrency_limit(int limit) {

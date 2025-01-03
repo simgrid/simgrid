@@ -74,6 +74,7 @@ JNIEnv* maestro_jenv       = nullptr;
 extern bool do_install_signal_handlers;
 
 /* For upcalls, from the C++ to the JVM */
+static jmethodID CallbackActor_methodId   = 0;
 static jmethodID CallbackBoolean_methodId = 0;
 static jmethodID CallbackExec_methodId = 0;
 static jmethodID Actor_methodId        = 0;
@@ -129,6 +130,7 @@ static struct SimGridJavaInit {
                  "The maestro thread could not be attached to the JVM");
 
       // Initialize the upcall mechanism
+      CallbackActor_methodId   = init_methodId(maestro_jenv, "CallbackActor", "run", "(J)V");
       CallbackBoolean_methodId = init_methodId(maestro_jenv, "CallbackBoolean", "run", "(Z)V");
       CallbackExec_methodId = init_methodId(maestro_jenv, "CallbackExec", "run", "(J)V");
       Actor_methodId        = init_methodId(maestro_jenv, "Actor", "do_run", "()V");
@@ -1065,58 +1067,6 @@ extern "C" {
    and located somewhere under simgrid_jar.dir/native_headers/org_simgrid_s4u_simgridJNI.h */
 #include "org_simgrid_s4u_simgridJNI.h"
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorCallback_1run(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis, jlong jarg2, jobject jarg2_)
-{
-  ActorCallback* arg1                               = (ActorCallback*)0;
-  simgrid::s4u::Actor* arg2                         = (simgrid::s4u::Actor*)0;
-  boost::shared_ptr<simgrid::s4u::Actor>* smartarg2 = 0;
-
-  arg1 = *(ActorCallback**)&cthis;
-
-  // plain pointer
-  smartarg2 = *(boost::shared_ptr<simgrid::s4u::Actor>**)&jarg2;
-  arg2      = (simgrid::s4u::Actor*)(smartarg2 ? smartarg2->get() : 0);
-
-  (arg1)->run(arg2);
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1ActorCallback(JNIEnv* jenv, jclass jcls, jlong cthis)
-{
-  ActorCallback* arg1 = *(ActorCallback**)&cthis;
-  delete arg1;
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1ActorCallback(JNIEnv* jenv, jclass jcls)
-{
-  jlong jresult         = 0;
-  ActorCallback* result      = (ActorCallback*)new SwigDirector_ActorCallback(jenv);
-  *(ActorCallback**)&jresult = result;
-  return jresult;
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorCallback_1director_1connect(JNIEnv* jenv, jclass jcls,
-                                                                                         jobject jself, jlong objarg,
-                                                                                         jboolean jswig_mem_own,
-                                                                                         jboolean jweak_global)
-{
-  ActorCallback* obj                   = *((ActorCallback**)&objarg);
-  SwigDirector_ActorCallback* director = static_cast<SwigDirector_ActorCallback*>(obj);
-  director->swig_connect_director(jenv, jself, jenv->GetObjectClass(jself), (jswig_mem_own == JNI_TRUE),
-                                  (jweak_global == JNI_TRUE));
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorCallback_1change_1ownership(JNIEnv* jenv, jclass jcls,
-                                                                                         jobject jself, jlong objarg,
-                                                                                         jboolean jtake_or_release)
-{
-  ActorCallback* obj                   = *((ActorCallback**)&objarg);
-  SwigDirector_ActorCallback* director = dynamic_cast<SwigDirector_ActorCallback*>(obj);
-  if (director) {
-    director->swig_java_change_ownership(jenv, jself, jtake_or_release ? true : false);
-  }
-}
-
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1sleep_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                           jobject jthis, jdouble duration)
 {
@@ -1224,23 +1174,19 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exit(JNIEnv* jenv
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1termination_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong ccode, jobject jthis)
+                                                                                   jobject cb)
 {
-  ActorCallback* code = *(ActorCallback**)&ccode;
-  XBT_CRITICAL("Install on termination");
-  Actor::on_termination_cb([code](s4u::Actor const& a) {
-    XBT_CRITICAL("Term %p %s", &a, a.get_cname());
-    code->run((Actor*)&a);
-  });
+  cb = jenv->NewGlobalRef(cb);
+  Actor::on_termination_cb([cb](Actor const& a) { get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, &a); });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1destruction_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong ccode, jobject jthis)
+                                                                                   jobject cb)
 {
-  ActorCallback* code = (ActorCallback*)ccode;
-  Actor::on_destruction_cb([code](s4u::Actor const& a) {
+  cb = jenv->NewGlobalRef(cb);
+  Actor::on_destruction_cb([cb](Actor const& a) {
     XBT_CRITICAL("Dtor %p %s", &a, a.get_cname());
-    code->run(&const_cast<Actor&>(a));
+    get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, &a);
   });
 }
 
@@ -1411,29 +1357,32 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1host_1c
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1termination_1cb(JNIEnv* jenv, jclass jcls,
                                                                                          jlong cthis, jobject jthis,
-                                                                                         jlong ccode, jobject jcode)
+                                                                                         jobject cb)
 {
-  if (!jcode) {
+  if (!cb) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
                             "on_this_termination was provided with a null callback");
     return;
   }
-  std::function<void(simgrid::s4u::Actor const&)>* arg2 = 0;
-
-  arg2 = *(std::function<void(simgrid::s4u::Actor const&)>**)&ccode;
-  ((Actor*)cthis)->on_this_termination_cb((std::function<void(simgrid::s4u::Actor const&)> const&)*arg2);
+  cb = jenv->NewGlobalRef(cb);
+  ((Actor*)cthis)->on_this_termination_cb([cb](Actor const& a) {
+    get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, &a);
+  });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1destruction_1cb(JNIEnv* jenv, jclass jcls,
                                                                                          jlong cthis, jobject jthis,
-                                                                                         jlong ccode, jobject jcode)
+                                                                                         jobject cb)
 {
-  if (!jcode) {
+  if (!cb) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
                             "on_this_destruction was provided with a null callback");
     return;
   }
-  ((Actor*)cthis)->on_this_destruction_cb((std::function<void(simgrid::s4u::Actor const&)> const&)*jcode);
+  cb = jenv->NewGlobalRef(cb);
+  ((Actor*)cthis)->on_this_destruction_cb([cb](Actor const& a) {
+    get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, &a);
+  });
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1init(JNIEnv* jenv, jclass jcls, jstring cthis,
@@ -6034,22 +5983,6 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1is_1assigned(JNI
   return jresult;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Host(JNIEnv* jenv, jclass jcls, jlong cthis)
-{
-  simgrid::s4u::Host* arg1                         = (simgrid::s4u::Host*)0;
-  boost::shared_ptr<simgrid::s4u::Host>* smartarg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Host>**)&cthis;
-  arg1      = (simgrid::s4u::Host*)(smartarg1 ? smartarg1->get() : 0);
-
-  (void)arg1;
-  delete smartarg1;
-}
-
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1NONLINEAR_1get(JNIEnv* jenv, jclass jcls)
 {
   jint jresult = 0;
@@ -8348,12 +8281,6 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_create_1dragonfly_1zone
   return jresult;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Mailbox(JNIEnv* jenv, jclass jcls, jlong cthis)
-{
-  boost::shared_ptr<simgrid::s4u::Mailbox>* smartarg1 = *(boost::shared_ptr<simgrid::s4u::Mailbox>**)&cthis;
-  delete smartarg1;
-}
-
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                               jobject jthis)
 {
@@ -9452,24 +9379,6 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1VirtualMachine(J
 
   (void)arg1;
   delete smartarg1;
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_swig_1module_1init(JNIEnv* jenv, jclass jcls)
-{
-  int i;
-
-  static struct {
-    const char* method;
-    const char* signature;
-  } methods[1]            = {{"SwigDirector_ActorCallback_run", "(Lorg/simgrid/s4u/ActorCallback;J)V"}};
-  Swig::jclass_simgridJNI = (jclass)jenv->NewGlobalRef(jcls);
-  if (!Swig::jclass_simgridJNI)
-    return;
-  for (i = 0; i < (int)(sizeof(methods) / sizeof(methods[0])); ++i) {
-    Swig::director_method_ids[i] = jenv->GetStaticMethodID(jcls, methods[i].method, methods[i].signature);
-    if (!Swig::director_method_ids[i])
-      return;
-  }
 }
 
 #ifdef __cplusplus

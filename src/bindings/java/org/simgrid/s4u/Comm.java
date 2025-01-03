@@ -81,7 +81,7 @@ public class Comm extends Activity {
 
   public Host get_source() {
     long cPtr = simgridJNI.Comm_get_source(swigCPtr, this);
-    return (cPtr == 0) ? null : new Host(cPtr, true);
+    return (cPtr == 0) ? null : new Host(cPtr);
   }
 
   public Comm set_destination(Host to) {
@@ -91,7 +91,7 @@ public class Comm extends Activity {
 
   public Host get_destination() {
     long cPtr = simgridJNI.Comm_get_destination(swigCPtr, this);
-    return (cPtr == 0) ? null : new Host(cPtr, true);
+    return (cPtr == 0) ? null : new Host(cPtr);
   }
 
   public Comm set_mailbox(Mailbox mailbox) {
@@ -101,7 +101,7 @@ public class Comm extends Activity {
 
   public Mailbox get_mailbox() {
     long cPtr = simgridJNI.Comm_get_mailbox(swigCPtr, this);
-    return (cPtr == 0) ? null : new Mailbox(cPtr, true);
+    return (cPtr == 0) ? null : new Mailbox(cPtr);
   }
 
   public Comm set_src_data(Object payload) {

@@ -156,12 +156,12 @@ public class Engine {
 
   public Host host_by_name(String name) {
     long cPtr = simgridJNI.Engine_host_by_name(swigCPtr, this, name);
-    return (cPtr == 0) ? null : new Host(cPtr, true);
+    return (cPtr == 0) ? null : new Host(cPtr);
   }
 
   public Host host_by_name_or_null(String name) {
     long cPtr = simgridJNI.Engine_host_by_name_or_null(swigCPtr, this, name);
-    return (cPtr == 0) ? null : new Host(cPtr, true);
+    return (cPtr == 0) ? null : new Host(cPtr);
   }
 
   public long get_link_count() {
@@ -188,7 +188,7 @@ public class Engine {
 
   public Mailbox mailbox_by_name_or_create(String name) {
     long cPtr = simgridJNI.Engine_mailbox_by_name_or_create(swigCPtr, this, name);
-    return (cPtr == 0) ? null : new Mailbox(cPtr, true);
+    return (cPtr == 0) ? null : new Mailbox(cPtr);
   }
 
   public MessageQueue message_queue_by_name_or_create(String name) {
