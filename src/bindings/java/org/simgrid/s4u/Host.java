@@ -8,6 +8,8 @@
 
 package org.simgrid.s4u;
 
+import java.util.Vector;
+
 public class Host {
   private transient long swigCPtr;
 
@@ -37,4 +39,5 @@ public class Host {
     long cPtr = simgridJNI.Host_current();
     return (cPtr == 0) ? null : new Host(cPtr);
   }
+  public Disk[] get_disks() { return simgridJNI.Host_get_disks(swigCPtr, this); }
 }

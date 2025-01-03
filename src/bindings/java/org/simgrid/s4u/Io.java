@@ -50,23 +50,23 @@ public class Io extends Activity {
   }
 
   public Io set_disk(Disk disk) {
-    long cPtr = simgridJNI.Io_set_disk(swigCPtr, this, Disk.getCPtr(disk), disk);
-    return (cPtr == 0) ? null : new Io(cPtr, true);
+    simgridJNI.Io_set_disk(swigCPtr, this, Disk.getCPtr(disk), disk);
+    return this;
   }
 
   public Io set_priority(double priority) {
-    long cPtr = simgridJNI.Io_set_priority(swigCPtr, this, priority);
-    return (cPtr == 0) ? null : new Io(cPtr, true);
+    simgridJNI.Io_set_priority(swigCPtr, this, priority);
+    return this;
   }
 
   public Io set_size(int size) {
-    long cPtr = simgridJNI.Io_set_size(swigCPtr, this, size);
-    return (cPtr == 0) ? null : new Io(cPtr, true);
+    simgridJNI.Io_set_size(swigCPtr, this, size);
+    return this;
   }
 
   public Io set_op_type(Io.OpType type) {
-    long cPtr = simgridJNI.Io_set_op_type(swigCPtr, this, type.swigValue());
-    return (cPtr == 0) ? null : new Io(cPtr, true);
+    simgridJNI.Io_set_op_type(swigCPtr, this, type.swigValue());
+    return this;
   }
 
   public static Io streamto_init(Host from, Disk from_disk, Host to, Disk to_disk) {
@@ -84,55 +84,39 @@ public class Io extends Activity {
   }
 
   public Io set_source(Host from, Disk from_disk) {
-    long cPtr = simgridJNI.Io_set_source(swigCPtr, this, Host.getCPtr(from), from, Disk.getCPtr(from_disk), from_disk);
-    return (cPtr == 0) ? null : new Io(cPtr, true);
+    simgridJNI.Io_set_source(swigCPtr, this, Host.getCPtr(from), from, Disk.getCPtr(from_disk), from_disk);
+    return this;
   }
 
   public Io set_destination(Host to, Disk to_disk) {
-    long cPtr = simgridJNI.Io_set_destination(swigCPtr, this, Host.getCPtr(to), to, Disk.getCPtr(to_disk), to_disk);
-    return (cPtr == 0) ? null : new Io(cPtr, true);
+    simgridJNI.Io_set_destination(swigCPtr, this, Host.getCPtr(to), to, Disk.getCPtr(to_disk), to_disk);
+    return this;
   }
 
   public Io update_priority(double priority) {
-    long cPtr = simgridJNI.Io_update_priority(swigCPtr, this, priority);
-    return (cPtr == 0) ? null : new Io(cPtr, true);
+    simgridJNI.Io_update_priority(swigCPtr, this, priority);
+    return this;
   }
 
   public boolean is_assigned() {
     return simgridJNI.Io_is_assigned(swigCPtr, this);
   }
 
-  public static void on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t cb) {
-    simgridJNI.Io_on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
-  }
+  public static void on_start_cb(CallbackIo cb) { simgridJNI.Io_on_start_cb(cb); }
 
-  public void on_this_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t cb) {
-    simgridJNI.Io_on_this_start_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_start_cb(CallbackIo cb) { simgridJNI.Io_on_this_start_cb(swigCPtr, this, cb); }
 
-  public static void on_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t cb) {
-    simgridJNI.Io_on_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
-  }
+  public static void on_completion_cb(CallbackIo cb) { simgridJNI.Io_on_completion_cb(cb); }
 
-  public void on_this_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t cb) {
-    simgridJNI.Io_on_this_completion_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_completion_cb(CallbackIo cb) { simgridJNI.Io_on_this_completion_cb(swigCPtr, this, cb); }
 
-  public void on_this_suspend_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t cb) {
-    simgridJNI.Io_on_this_suspend_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_suspend_cb(CallbackIo cb) { simgridJNI.Io_on_this_suspend_cb(swigCPtr, this, cb); }
 
-  public void on_this_resume_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t cb) {
-    simgridJNI.Io_on_this_resume_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_resume_cb(CallbackIo cb) { simgridJNI.Io_on_this_resume_cb(swigCPtr, this, cb); }
 
-  public static void on_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_RF_t cb) {
-    simgridJNI.Io_on_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_RF_t.getCPtr(cb));
-  }
+  public static void on_veto_cb(CallbackIo cb) { simgridJNI.Io_on_veto_cb(cb); }
 
-  public void on_this_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_RF_t cb) {
-    simgridJNI.Io_on_this_veto_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_RF_t.getCPtr(cb));
-  }
+  public void on_this_veto_cb(CallbackIo cb) { simgridJNI.Io_on_this_veto_cb(swigCPtr, this, cb); }
 
   public Io add_successor(Activity a) {
     simgridJNI.Io_add_successor(swigCPtr, this, Activity.getCPtr(a), a);
@@ -167,8 +151,9 @@ public class Io extends Activity {
     return this;
   }
 
-  public Io detach(SWIGTYPE_p_std__functionT_void_fvoid_pF_t clean_function) {
-    simgridJNI.Io_detach__SWIG_1(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fvoid_pF_t.getCPtr(clean_function));
+  public Io detach(CallbackIo clean_function)
+  {
+    simgridJNI.Io_detach__SWIG_1(swigCPtr, this, clean_function);
     return this;
   }
 
@@ -177,7 +162,8 @@ public class Io extends Activity {
     return this;
   }
 
-  public Io await_for(double timeout)
+  public Io await() throws TimeoutException { return await_for(-1); }
+  public Io await_for(double timeout) throws TimeoutException
   {
     simgridJNI.Io_await_for(swigCPtr, this, timeout);
     return this;

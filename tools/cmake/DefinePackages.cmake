@@ -791,6 +791,7 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/CallbackActor.java
     src/bindings/java/org/simgrid/s4u/CallbackBoolean.java
     src/bindings/java/org/simgrid/s4u/CallbackExec.java
+    src/bindings/java/org/simgrid/s4u/CallbackIo.java
     src/bindings/java/org/simgrid/s4u/ClusterCallbacks.java
     src/bindings/java/org/simgrid/s4u/Comm.java
     src/bindings/java/org/simgrid/s4u/ConditionVariable.java
@@ -812,6 +813,7 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/NetZone.java
     src/bindings/java/org/simgrid/s4u/Semaphore.java
     src/bindings/java/org/simgrid/s4u/simgrid.java
+    src/bindings/java/org/simgrid/s4u/SimgridException.java
     src/bindings/java/org/simgrid/s4u/simgridJNI.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_s4u__Host.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fboost__intrusive_ptrT_simgrid__s4u__Actor_tF_t.java
@@ -854,6 +856,7 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_std__string_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_unsigned_int_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_unsigned_long_t.java
+    src/bindings/java/org/simgrid/s4u/TimeoutException.java
     src/bindings/java/org/simgrid/s4u/VirtualMachine.java
 )
 if(NOT Java_FOUND)

@@ -6,12 +6,13 @@ if(enable_java)
   add_dependencies(java-all simgrid)      # useful when the libs are not included in the jar
 endif()
 
-# comm_failure needs both exceptions and platform creation
-# exec_dependent does not trigger the veto
+# comm_failure: needs both exceptions and platform creation
+# io_dependent io_file_system: need a plugin
 foreach (example actor_daemon actor_exiting actor_join # actor_kill
                  actor_lifetime actor_migrate actor_suspend actor_yield
                  exec_async exec_basic exec_dependent
                  comm_await comm_awaituntil comm_dependent comm_host2host comm_pingpong comm_ready comm_suspend comm_throttling
+                 io_async #io_degradation io_disk_raw io_file_remote io_priority
                  mess_await
                  synchro_barrier synchro_condition_variable synchro_mutex synchro_semaphore
                  )

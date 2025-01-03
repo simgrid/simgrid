@@ -39,8 +39,8 @@ public class Disk {
   }
 
   public Disk set_read_bandwidth(double read_bw) {
-    long cPtr = simgridJNI.Disk_set_read_bandwidth(swigCPtr, this, read_bw);
-    return (cPtr == 0) ? null : new Disk(cPtr, true);
+    simgridJNI.Disk_set_read_bandwidth(swigCPtr, this, read_bw);
+    return this;
   }
 
   public double get_read_bandwidth() {
@@ -48,8 +48,8 @@ public class Disk {
   }
 
   public Disk set_write_bandwidth(double write_bw) {
-    long cPtr = simgridJNI.Disk_set_write_bandwidth(swigCPtr, this, write_bw);
-    return (cPtr == 0) ? null : new Disk(cPtr, true);
+    simgridJNI.Disk_set_write_bandwidth(swigCPtr, this, write_bw);
+    return this;
   }
 
   public double get_write_bandwidth() {
@@ -57,8 +57,8 @@ public class Disk {
   }
 
   public Disk set_readwrite_bandwidth(double bw) {
-    long cPtr = simgridJNI.Disk_set_readwrite_bandwidth(swigCPtr, this, bw);
-    return (cPtr == 0) ? null : new Disk(cPtr, true);
+    simgridJNI.Disk_set_readwrite_bandwidth(swigCPtr, this, bw);
+    return this;
   }
 
   public String get_property(String key) {
@@ -66,18 +66,13 @@ public class Disk {
   }
 
   public Disk set_property(String arg0, String value) {
-    long cPtr = simgridJNI.Disk_set_property(swigCPtr, this, arg0, value);
-    return (cPtr == 0) ? null : new Disk(cPtr, true);
-  }
-
-  public Disk set_properties(SWIGTYPE_p_std__unordered_mapT_std__string_std__string_t properties) {
-    long cPtr = simgridJNI.Disk_set_properties(swigCPtr, this, SWIGTYPE_p_std__unordered_mapT_std__string_std__string_t.getCPtr(properties));
-    return (cPtr == 0) ? null : new Disk(cPtr, true);
+    simgridJNI.Disk_set_property(swigCPtr, this, arg0, value);
+    return this;
   }
 
   public Disk set_host(Host host) {
-    long cPtr = simgridJNI.Disk_set_host(swigCPtr, this, Host.getCPtr(host), host);
-    return (cPtr == 0) ? null : new Disk(cPtr, true);
+    simgridJNI.Disk_set_host(swigCPtr, this, Host.getCPtr(host), host);
+    return this;
   }
 
   public Host get_host() {
@@ -86,8 +81,8 @@ public class Disk {
   }
 
   public Disk set_concurrency_limit(int limit) {
-    long cPtr = simgridJNI.Disk_set_concurrency_limit(swigCPtr, this, limit);
-    return (cPtr == 0) ? null : new Disk(cPtr, true);
+    simgridJNI.Disk_set_concurrency_limit(swigCPtr, this, limit);
+    return this;
   }
 
   public int get_concurrency_limit() {
@@ -130,13 +125,13 @@ public class Disk {
   }
 
   public Disk set_factor_cb(SWIGTYPE_p_std__functionT_double_t cb) {
-    long cPtr = simgridJNI.Disk_set_factor_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_double_t.getCPtr(cb));
-    return (cPtr == 0) ? null : new Disk(cPtr, true);
+    simgridJNI.Disk_set_factor_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_double_t.getCPtr(cb));
+    return this;
   }
 
   public Disk seal() {
-    long cPtr = simgridJNI.Disk_seal(swigCPtr, this);
-    return (cPtr == 0) ? null : new Disk(cPtr, true);
+    simgridJNI.Disk_seal(swigCPtr, this);
+    return this;
   }
 
   public static void on_onoff_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t cb) {

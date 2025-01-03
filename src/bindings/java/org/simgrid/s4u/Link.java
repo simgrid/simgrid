@@ -88,11 +88,6 @@ public class Link {
     return simgridJNI.Link_get_property(swigCPtr, this, key);
   }
 
-  public Link set_properties(SWIGTYPE_p_std__unordered_mapT_std__string_std__string_t properties) {
-    long cPtr = simgridJNI.Link_set_properties(swigCPtr, this, SWIGTYPE_p_std__unordered_mapT_std__string_std__string_t.getCPtr(properties));
-    return (cPtr == 0) ? null : new Link(cPtr, false);
-  }
-
   public Link set_property(String key, String value) {
     long cPtr = simgridJNI.Link_set_property(swigCPtr, this, key, value);
     return (cPtr == 0) ? null : new Link(cPtr, false);

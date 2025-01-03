@@ -75,8 +75,8 @@ public class Comm extends Activity {
   }
 
   public Comm set_source(Host from) {
-    long cPtr = simgridJNI.Comm_set_source(swigCPtr, this, Host.getCPtr(from), from);
-    return (cPtr == 0) ? null : new Comm(cPtr, true);
+    simgridJNI.Comm_set_source(swigCPtr, this, Host.getCPtr(from), from);
+    return this;
   }
 
   public Host get_source() {

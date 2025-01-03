@@ -8,6 +8,8 @@
 
 package org.simgrid.s4u;
 
+import java.util.Vector;
+
 public class simgridJNI {
   public final static native void Actor_sleep_for(long jarg1, Actor jarg1_, double jarg2);
   public final static native void Actor_sleep_until(long jarg1, Actor jarg1_, double jarg2);
@@ -128,7 +130,7 @@ public class simgridJNI {
   public final static native long Comm_sendto_init__SWIG_1(long jarg1, Host jarg1_, long jarg2, Host jarg2_);
   public final static native long Comm_sendto_async(long jarg1, Host jarg1_, long jarg2, Host jarg2_, long jarg3);
   public final static native void Comm_sendto(long jarg1, Host jarg1_, long jarg2, Host jarg2_, long jarg3);
-  public final static native long Comm_set_source(long jarg1, Comm jarg1_, long jarg2, Host jarg2_);
+  public final static native void Comm_set_source(long jarg1, Comm jarg1_, long jarg2, Host jarg2_);
   public final static native long Comm_get_source(long jarg1, Comm jarg1_);
   public final static native long Comm_set_destination(long jarg1, Comm jarg1_, long jarg2, Host jarg2_);
   public final static native long Comm_get_destination(long jarg1, Comm jarg1_);
@@ -161,14 +163,14 @@ public class simgridJNI {
   public final static native void Exec_detach__SWIG_1(long jarg1, Exec jarg1_, long jarg2);
   public final static native void Exec_cancel(long jarg1, Exec jarg1_);
   public final static native void Exec_await_for(long jarg1, Exec jarg1_, double jarg2);
-  public final static native void Io_on_start_cb(long jarg1);
-  public final static native void Io_on_this_start_cb(long jarg1, Io jarg1_, long jarg2);
-  public final static native void Io_on_completion_cb(long jarg1);
-  public final static native void Io_on_this_completion_cb(long jarg1, Io jarg1_, long jarg2);
-  public final static native void Io_on_this_suspend_cb(long jarg1, Io jarg1_, long jarg2);
-  public final static native void Io_on_this_resume_cb(long jarg1, Io jarg1_, long jarg2);
-  public final static native void Io_on_veto_cb(long jarg1);
-  public final static native void Io_on_this_veto_cb(long jarg1, Io jarg1_, long jarg2);
+  public final static native void Io_on_start_cb(CallbackIo cb);
+  public final static native void Io_on_this_start_cb(long jarg1, Io jarg1_, CallbackIo cb);
+  public final static native void Io_on_completion_cb(CallbackIo cb);
+  public final static native void Io_on_this_completion_cb(long jarg1, Io jarg1_, CallbackIo cb);
+  public final static native void Io_on_this_suspend_cb(long jarg1, Io jarg1_, CallbackIo cb);
+  public final static native void Io_on_this_resume_cb(long jarg1, Io jarg1_, CallbackIo cb);
+  public final static native void Io_on_veto_cb(CallbackIo cb);
+  public final static native void Io_on_this_veto_cb(long jarg1, Io jarg1_, CallbackIo cb);
   public final static native void Io_add_successor(long jarg1, Io jarg1_, long jarg2, Activity jarg2_);
   public final static native void Io_remove_successor(long jarg1, Io jarg1_, long jarg2, Activity jarg2_);
   public final static native void Io_set_name(long jarg1, Io jarg1_, String jarg2);
@@ -176,7 +178,7 @@ public class simgridJNI {
   public final static native void Io_set_tracing_category(long jarg1, Io jarg1_, String jarg2);
   public final static native String Io_get_tracing_category(long jarg1, Io jarg1_);
   public final static native void Io_detach__SWIG_0(long jarg1, Io jarg1_);
-  public final static native void Io_detach__SWIG_1(long jarg1, Io jarg1_, long jarg2);
+  public final static native void Io_detach__SWIG_1(long jarg1, Io jarg1_, CallbackIo cb);
   public final static native void Io_cancel(long jarg1, Io jarg1_);
   public final static native void Io_await_for(long jarg1, Io jarg1_, double jarg2);
   public final static native long Barrier_create(long jarg1);
@@ -193,17 +195,16 @@ public class simgridJNI {
   public final static native void ConditionVariable_notify_all(long jarg1, ConditionVariable jarg1_);
   public final static native void delete_Disk(long jarg1);
   public final static native String Disk_get_name(long jarg1, Disk jarg1_);
-  public final static native long Disk_set_read_bandwidth(long jarg1, Disk jarg1_, double jarg2);
+  public final static native void Disk_set_read_bandwidth(long jarg1, Disk jarg1_, double jarg2);
   public final static native double Disk_get_read_bandwidth(long jarg1, Disk jarg1_);
-  public final static native long Disk_set_write_bandwidth(long jarg1, Disk jarg1_, double jarg2);
+  public final static native void Disk_set_write_bandwidth(long jarg1, Disk jarg1_, double jarg2);
   public final static native double Disk_get_write_bandwidth(long jarg1, Disk jarg1_);
-  public final static native long Disk_set_readwrite_bandwidth(long jarg1, Disk jarg1_, double jarg2);
+  public final static native void Disk_set_readwrite_bandwidth(long jarg1, Disk jarg1_, double jarg2);
   public final static native String Disk_get_property(long jarg1, Disk jarg1_, String jarg2);
-  public final static native long Disk_set_property(long jarg1, Disk jarg1_, String jarg2, String jarg3);
-  public final static native long Disk_set_properties(long jarg1, Disk jarg1_, long jarg2);
-  public final static native long Disk_set_host(long jarg1, Disk jarg1_, long jarg2, Host jarg2_);
+  public final static native void Disk_set_property(long jarg1, Disk jarg1_, String jarg2, String jarg3);
+  public final static native void Disk_set_host(long jarg1, Disk jarg1_, long jarg2, Host jarg2_);
   public final static native long Disk_get_host(long jarg1, Disk jarg1_);
-  public final static native long Disk_set_concurrency_limit(long jarg1, Disk jarg1_, int jarg2);
+  public final static native void Disk_set_concurrency_limit(long jarg1, Disk jarg1_, int jarg2);
   public final static native int Disk_get_concurrency_limit(long jarg1, Disk jarg1_);
   public final static native long Disk_io_init(long jarg1, Disk jarg1_, int jarg2, int jarg3);
   public final static native long Disk_read_async(long jarg1, Disk jarg1_, int jarg2);
@@ -218,8 +219,8 @@ public class simgridJNI {
   public final static native int Disk_Operation_WRITE_get();
   public final static native int Disk_Operation_READWRITE_get();
   public final static native int Disk_get_sharing_policy(long jarg1, Disk jarg1_, int jarg2);
-  public final static native long Disk_set_factor_cb(long jarg1, Disk jarg1_, long jarg2);
-  public final static native long Disk_seal(long jarg1, Disk jarg1_);
+  public final static native void Disk_set_factor_cb(long jarg1, Disk jarg1_, long jarg2);
+  public final static native void Disk_seal(long jarg1, Disk jarg1_);
   public final static native void Disk_on_onoff_cb(long jarg1);
   public final static native void Disk_on_this_onoff_cb(long jarg1, Disk jarg1_, long jarg2);
   public final static native void Disk_on_read_bandwidth_change_cb(long jarg1);
@@ -314,6 +315,7 @@ public class simgridJNI {
   public final static native boolean Exec_is_parallel(long jarg1, Exec jarg1_);
   public final static native boolean Exec_is_assigned(long jarg1, Exec jarg1_);
   public final static native void delete_Exec(long jarg1);
+  public final static native Disk[] Host_get_disks(long jarg1, Host jarg1_);
   public final static native String Host_get_name(long jarg1, Host jarg1_);
   public final static native long Host_by_name(String name);
   public final static native long Host_current();
@@ -322,16 +324,18 @@ public class simgridJNI {
   public final static native long Io_init();
   public final static native double Io_get_remaining(long jarg1, Io jarg1_);
   public final static native int Io_get_performed_ioops(long jarg1, Io jarg1_);
-  public final static native long Io_set_disk(long jarg1, Io jarg1_, long jarg2, Disk jarg2_);
-  public final static native long Io_set_priority(long jarg1, Io jarg1_, double jarg2);
-  public final static native long Io_set_size(long jarg1, Io jarg1_, int jarg2);
-  public final static native long Io_set_op_type(long jarg1, Io jarg1_, int jarg2);
+  public final static native void Io_set_disk(long jarg1, Io jarg1_, long jarg2, Disk jarg2_);
+  public final static native void Io_set_priority(long jarg1, Io jarg1_, double jarg2);
+  public final static native void Io_set_size(long jarg1, Io jarg1_, int jarg2);
+  public final static native void Io_set_op_type(long jarg1, Io jarg1_, int jarg2);
   public final static native long Io_streamto_init(long jarg1, Host jarg1_, long jarg2, Disk jarg2_, long jarg3, Host jarg3_, long jarg4, Disk jarg4_);
   public final static native long Io_streamto_async(long jarg1, Host jarg1_, long jarg2, Disk jarg2_, long jarg3, Host jarg3_, long jarg4, Disk jarg4_, long jarg5);
   public final static native void Io_streamto(long jarg1, Host jarg1_, long jarg2, Disk jarg2_, long jarg3, Host jarg3_, long jarg4, Disk jarg4_, long jarg5);
-  public final static native long Io_set_source(long jarg1, Io jarg1_, long jarg2, Host jarg2_, long jarg3, Disk jarg3_);
-  public final static native long Io_set_destination(long jarg1, Io jarg1_, long jarg2, Host jarg2_, long jarg3, Disk jarg3_);
-  public final static native long Io_update_priority(long jarg1, Io jarg1_, double jarg2);
+  public final static native void Io_set_source(long jarg1, Io jarg1_, long jarg2, Host jarg2_, long jarg3,
+                                                Disk jarg3_);
+  public final static native void Io_set_destination(long jarg1, Io jarg1_, long jarg2, Host jarg2_, long jarg3,
+                                                     Disk jarg3_);
+  public final static native void Io_update_priority(long jarg1, Io jarg1_, double jarg2);
   public final static native boolean Io_is_assigned(long jarg1, Io jarg1_);
   public final static native void delete_Io(long jarg1);
   public final static native int Link_SharingPolicy_NONLINEAR_get();
@@ -349,7 +353,6 @@ public class simgridJNI {
   public final static native long Link_set_latency__SWIG_1(long jarg1, Link jarg1_, String jarg2);
   public final static native int Link_get_sharing_policy(long jarg1, Link jarg1_);
   public final static native String Link_get_property(long jarg1, Link jarg1_, String jarg2);
-  public final static native long Link_set_properties(long jarg1, Link jarg1_, long jarg2);
   public final static native long Link_set_property(long jarg1, Link jarg1_, String jarg2, String jarg3);
   public final static native long Link_set_concurrency_limit(long jarg1, Link jarg1_, int jarg2);
   public final static native int Link_get_concurrency_limit(long jarg1, Link jarg1_);

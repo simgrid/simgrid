@@ -13,7 +13,7 @@ public class Actor {
    * this is the method you should implement in your actor (it's the main of your actor).
    * @todo: make this abstract
    */
-  public void run() { /* your code here */ }
+  public void run() throws SimgridException { /* your code here */ }
 
   protected Actor(String name, Host host)
   {
@@ -28,6 +28,9 @@ public class Actor {
       run();
     } catch (org.simgrid.s4u.ForcefulKillException e) {
       /* Actor killed, this is fine. */
+    } catch (SimgridException e) {
+      Engine.error("Actor killed by a %s exception: %s", e.getClass().getName(), e.getCause());
+      e.printStackTrace();
     }
   }
 

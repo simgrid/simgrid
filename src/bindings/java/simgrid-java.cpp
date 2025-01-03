@@ -62,7 +62,9 @@
 #include "simgrid/s4u/Activity.hpp"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Barrier.hpp"
+#include "simgrid/s4u/Disk.hpp"
 #include "simgrid/s4u/MessageQueue.hpp"
+#include "simgrid/s4u/NetZone.hpp"
 #include "src/dag/dax_dtd.h"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextJava.hpp"
@@ -84,6 +86,7 @@ extern bool do_install_signal_handlers;
 static jmethodID CallbackActor_methodId   = 0;
 static jmethodID CallbackBoolean_methodId = 0;
 static jmethodID CallbackExec_methodId = 0;
+static jmethodID CallbackIo_methodId      = 0;
 static jmethodID Actor_methodId        = 0;
 
 static void handle_exception(JNIEnv* jenv)
@@ -140,6 +143,7 @@ static struct SimGridJavaInit {
       CallbackActor_methodId   = init_methodId(maestro_jenv, "CallbackActor", "run", "(J)V");
       CallbackBoolean_methodId = init_methodId(maestro_jenv, "CallbackBoolean", "run", "(Z)V");
       CallbackExec_methodId = init_methodId(maestro_jenv, "CallbackExec", "run", "(J)V");
+      CallbackIo_methodId      = init_methodId(maestro_jenv, "CallbackIo", "run", "(J)V");
       Actor_methodId        = init_methodId(maestro_jenv, "Actor", "do_run", "()V");
 
       // Initialize the factory mechanism
@@ -1567,36 +1571,13 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1kill_1all(JNIEnv*
 }
 
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                jobject jthis, jstring jarg2)
+                                                                                jobject jthis, jstring jprop)
 {
-  jstring jresult                                         = 0;
-  simgrid::s4u::Actor* arg1                               = (simgrid::s4u::Actor*)0;
-  std::string* arg2                                       = 0;
-  boost::shared_ptr<simgrid::s4u::Actor const>* smartarg1 = 0;
-  char* result                                            = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Actor>**)&cthis;
-  arg1      = (simgrid::s4u::Actor*)(smartarg1 ? smartarg1->get() : 0);
-
-  if (!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
-    return 0;
-  }
-  const char* arg2_pstr = (const char*)jenv->GetStringUTFChars(jarg2, 0);
-  if (!arg2_pstr)
-    return 0;
-  std::string arg2_str(arg2_pstr);
-  arg2 = &arg2_str;
-  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr);
-  result = (char*)((simgrid::s4u::Actor const*)arg1)->get_property((std::string const&)*arg2);
+  std::string cprop  = java_string_to_std_string(jenv, jprop);
+  const char* result = ((Actor*)cthis)->get_property(cprop);
   if (result)
-    jresult = jenv->NewStringUTF((const char*)result);
-  return jresult;
+    return jenv->NewStringUTF(result);
+  return 0;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -2172,91 +2153,83 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1await_1for(JNIEnv*
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1start_1cb(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1start_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
 {
-  std::function<void(simgrid::s4u::Io const&)>* arg1 = *(std::function<void(simgrid::s4u::Io const&)>**)&cthis;
-  if (arg1)
-    simgrid::s4u::Io::on_start_cb((std::function<void(simgrid::s4u::Io const&)> const&)*arg1);
-  else
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Io const &) > const & is null");
+  if (cb) {
+    cb = jenv->NewGlobalRef(cb);
+    Io::on_start_cb([cb](Io const& i) { get_jenv()->CallVoidMethod(cb, CallbackIo_methodId, &i); });
+  } else
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1start_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                jobject jthis, jlong jarg2)
+                                                                                jobject jthis, jobject cb)
 {
-  std::function<void(simgrid::s4u::Io const&)>* arg2 = *(std::function<void(simgrid::s4u::Io const&)>**)&jarg2;
-  if (arg2)
-    ((Io*)cthis)->on_this_start_cb(*arg2);
-  else
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Io const &) > const & is null");
+  if (cb) {
+    cb = jenv->NewGlobalRef(cb);
+    ((Io*)cthis)->on_this_start_cb([cb](Io const& i) { get_jenv()->CallVoidMethod(cb, CallbackIo_methodId, &i); });
+  } else
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1completion_1cb(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1completion_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
 {
-  std::function<void(simgrid::s4u::Io const&)>* arg1 = *(std::function<void(simgrid::s4u::Io const&)>**)&cthis;
-  if (arg1)
-    simgrid::s4u::Io::on_completion_cb(*arg1);
-  else
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Io const &) > const & is null");
+  if (cb) {
+    cb = jenv->NewGlobalRef(cb);
+    Io::on_completion_cb([cb](Io const& i) { get_jenv()->CallVoidMethod(cb, CallbackIo_methodId, &i); });
+  } else
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1completion_1cb(JNIEnv* jenv, jclass jcls,
                                                                                      jlong cthis, jobject jthis,
-                                                                                     jlong jarg2)
+                                                                                     jobject cb)
 {
-  std::function<void(simgrid::s4u::Io const&)>* arg2 = *(std::function<void(simgrid::s4u::Io const&)>**)&jarg2;
-  if (arg2)
-    ((Io*)cthis)->on_this_completion_cb((std::function<void(simgrid::s4u::Io const&)> const&)*arg2);
-  else
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Io const &) > const & is null");
+  if (cb) {
+    cb = jenv->NewGlobalRef(cb);
+    ((Io*)cthis)->on_this_completion_cb([cb](Io const& i) { get_jenv()->CallVoidMethod(cb, CallbackIo_methodId, &i); });
+  } else
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass jcls,
                                                                                   jlong cthis, jobject jthis,
-                                                                                  jlong jarg2)
+                                                                                  jobject cb)
 {
-  std::function<void(simgrid::s4u::Io const&)>* arg2 = *(std::function<void(simgrid::s4u::Io const&)>**)&jarg2;
-  if (arg2)
-    ((Io*)cthis)->on_this_suspend_cb((std::function<void(simgrid::s4u::Io const&)> const&)*arg2);
-  else
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Io const &) > const & is null");
+  if (cb) {
+    cb = jenv->NewGlobalRef(cb);
+    ((Io*)cthis)->on_this_suspend_cb([cb](Io const& i) { get_jenv()->CallVoidMethod(cb, CallbackIo_methodId, &i); });
+  } else
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1resume_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                 jobject jthis, jlong jarg2)
+                                                                                 jobject jthis, jobject cb)
 {
-  std::function<void(simgrid::s4u::Io const&)>* arg2 = *(std::function<void(simgrid::s4u::Io const&)>**)&jarg2;
-  if (arg2)
-    ((Io*)cthis)->on_this_resume_cb((std::function<void(simgrid::s4u::Io const&)> const&)*arg2);
-  else
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Io const &) > const & is null");
+  if (cb) {
+    cb = jenv->NewGlobalRef(cb);
+    ((Io*)cthis)->on_this_resume_cb([cb](Io const& i) { get_jenv()->CallVoidMethod(cb, CallbackIo_methodId, &i); });
+  } else
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1veto_1cb(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1veto_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
 {
-  std::function<void(simgrid::s4u::Io&)>* arg1 = *(std::function<void(simgrid::s4u::Io&)>**)&cthis;
-  if (arg1)
-    simgrid::s4u::Io::on_veto_cb((std::function<void(simgrid::s4u::Io&)> const&)*arg1);
-  else
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Io &) > const & is null");
+  if (cb) {
+    cb = jenv->NewGlobalRef(cb);
+    Io::on_veto_cb([cb](Io const& i) { get_jenv()->CallVoidMethod(cb, CallbackIo_methodId, &i); });
+  } else
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1veto_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                               jobject jthis, jlong jarg2)
+                                                                               jobject jthis, jobject cb)
 {
-  std::function<void(simgrid::s4u::Io&)>* arg2 = *(std::function<void(simgrid::s4u::Io&)>**)&jarg2;
-  if (arg2)
-    ((Io*)cthis)->on_this_veto_cb((std::function<void(simgrid::s4u::Io&)> const&)*arg2);
-  else
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< void (simgrid::s4u::Io &) > const & is null");
+  if (cb) {
+    cb = jenv->NewGlobalRef(cb);
+    ((Io*)cthis)->on_this_veto_cb([cb](Io const& i) { get_jenv()->CallVoidMethod(cb, CallbackIo_methodId, &i); });
+  } else
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1add_1successor(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -2314,13 +2287,16 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1detach_1_1SWIG_10(JN
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1detach_1_1SWIG_11(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                              jobject jthis, jlong jarg2)
+                                                                              jobject jthis, jobject cb)
 {
-  std::function<void(void*)>* arg2 = *(std::function<void(void*)>**)&jarg2;
-  if (!arg2)
-    ((Io*)cthis)->detach((std::function<void(void*)> const&)*arg2);
-  else
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::function< void (void *) > const & is null");
+  if (cb) {
+    cb = jenv->NewGlobalRef(cb);
+    ((Io*)cthis)->detach([cb](void* i) {
+      Io* io = (Io*)i;
+      get_jenv()->CallVoidMethod(cb, CallbackIo_methodId, io);
+    });
+  } else
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1cancel(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -2337,6 +2313,14 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1await_1for(JNIEnv* j
   try {
     self->wait_for(jarg2);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (TimeoutException const& e) {
+    static jclass klass = 0;
+    if (klass == 0) {
+      klass = jenv->FindClass("org/simgrid/s4u/TimeoutException");
+      xbt_assert(klass, "Class TimeoutException not found");
+    }
+
+    jenv->ThrowNew(klass, e.what());
   }
 }
 
@@ -2493,75 +2477,16 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1sendto(JNIEnv* jen
   }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1source(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis, jlong jarg2, jobject jarg2_)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1source(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                          jobject jthis, jlong chost, jobject jhost)
 {
-  jlong jresult                                    = 0;
-  simgrid::s4u::Comm* arg1                         = (simgrid::s4u::Comm*)0;
-  simgrid::s4u::Host* arg2                         = (simgrid::s4u::Host*)0;
-  boost::shared_ptr<simgrid::s4u::Comm>* smartarg1 = 0;
-  boost::shared_ptr<simgrid::s4u::Host>* smartarg2 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Comm> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  (void)jarg2_;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Comm>**)&cthis;
-  arg1      = (simgrid::s4u::Comm*)(smartarg1 ? smartarg1->get() : 0);
-
-  // plain pointer
-  smartarg2 = *(boost::shared_ptr<simgrid::s4u::Host>**)&jarg2;
-  arg2      = (simgrid::s4u::Host*)(smartarg2 ? smartarg2->get() : 0);
-
-  result = (arg1)->set_source(arg2);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Comm>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Comm>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Comm>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Comm>**)&jresult = 0;
-  }
-
-  return jresult;
+  ((Comm*)cthis)->set_source((Host*)chost);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1source(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                            jobject jthis)
 {
-  jlong jresult                                          = 0;
-  simgrid::s4u::Comm* arg1                               = (simgrid::s4u::Comm*)0;
-  boost::shared_ptr<simgrid::s4u::Comm const>* smartarg1 = 0;
-  simgrid::s4u::Host* result                             = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Comm>**)&cthis;
-  arg1      = (simgrid::s4u::Comm*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (simgrid::s4u::Host*)((simgrid::s4u::Comm const*)arg1)->get_source();
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Host>(result, SWIG_intrusive_deleter<simgrid::s4u::Host>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Host>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  return (jlong)((Comm*)cthis)->get_source();
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1destination(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -3057,808 +2982,237 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Disk(JNIEnv* jen
   (void)arg1;
   delete smartarg1;
 }
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1disks(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                                 jobject jthis)
+{
+  // The JVM segfaults in NewObjectArray if I cache the class and method ID :(
+  jclass disk_class = jenv->FindClass("org/simgrid/s4u/Disk");
+  xbt_assert(disk_class);
+
+  jmethodID disk_ctor = jenv->GetMethodID(disk_class, "<init>", "(JZ)V");
+  xbt_assert(disk_ctor);
+
+  auto cres = ((Host*)cthis)->get_disks();
+
+  jobjectArray jres = jenv->NewObjectArray(cres.size(), disk_class, nullptr);
+  for (unsigned int i = 0; i < cres.size(); i++)
+    jenv->SetObjectArrayElement(jres, i, jenv->NewObject(disk_class, disk_ctor, cres.at(i), false));
+
+  return jres;
+}
 
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                            jobject jthis)
 {
-  jstring jresult                                        = 0;
-  simgrid::s4u::Disk* arg1                               = (simgrid::s4u::Disk*)0;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg1 = 0;
-  char* result                                           = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (char*)((simgrid::s4u::Disk const*)arg1)->get_cname();
+  const char* result = ((Disk*)cthis)->get_cname();
   if (result)
-    jresult = jenv->NewStringUTF((const char*)result);
-  return jresult;
+    return jenv->NewStringUTF(result);
+  return nullptr;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1read_1bandwidth(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis,
-                                                                                    jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1read_1bandwidth(JNIEnv* jenv, jclass jcls,
+                                                                                   jlong cthis, jobject jthis,
+                                                                                   jdouble jarg2)
 {
-  jlong jresult            = 0;
-  simgrid::s4u::Disk* arg1 = (simgrid::s4u::Disk*)0;
-  double arg2;
-  boost::shared_ptr<simgrid::s4u::Disk>* smartarg1 = 0;
-  simgrid::s4u::Disk* result                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = (double)jarg2;
-  result = (simgrid::s4u::Disk*)(arg1)->set_read_bandwidth(arg2);
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Disk>(result, SWIG_intrusive_deleter<simgrid::s4u::Disk>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Disk>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  ((Disk*)cthis)->set_read_bandwidth(jarg2);
 }
 
 XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1read_1bandwidth(JNIEnv* jenv, jclass jcls,
                                                                                       jlong cthis, jobject jthis)
 {
-  jdouble jresult                                        = 0;
-  simgrid::s4u::Disk* arg1                               = (simgrid::s4u::Disk*)0;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg1 = 0;
-  double result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = (double)((simgrid::s4u::Disk const*)arg1)->get_read_bandwidth();
-  jresult = (jdouble)result;
-  return jresult;
+  return ((Disk*)cthis)->get_read_bandwidth();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1write_1bandwidth(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis,
-                                                                                     jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1write_1bandwidth(JNIEnv* jenv, jclass jcls,
+                                                                                    jlong cthis, jobject jthis,
+                                                                                    jdouble jarg2)
 {
-  jlong jresult            = 0;
-  simgrid::s4u::Disk* arg1 = (simgrid::s4u::Disk*)0;
-  double arg2;
-  boost::shared_ptr<simgrid::s4u::Disk>* smartarg1 = 0;
-  simgrid::s4u::Disk* result                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = (double)jarg2;
-  result = (simgrid::s4u::Disk*)(arg1)->set_write_bandwidth(arg2);
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Disk>(result, SWIG_intrusive_deleter<simgrid::s4u::Disk>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Disk>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  ((Disk*)cthis)->set_write_bandwidth(jarg2);
 }
 
 XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1write_1bandwidth(JNIEnv* jenv, jclass jcls,
                                                                                        jlong cthis, jobject jthis)
 {
-  jdouble jresult                                        = 0;
-  simgrid::s4u::Disk* arg1                               = (simgrid::s4u::Disk*)0;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg1 = 0;
-  double result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = (double)((simgrid::s4u::Disk const*)arg1)->get_write_bandwidth();
-  jresult = (jdouble)result;
-  return jresult;
+  return ((Disk*)cthis)->get_write_bandwidth();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1readwrite_1bandwidth(JNIEnv* jenv, jclass jcls,
-                                                                                         jlong cthis, jobject jthis,
-                                                                                         jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1readwrite_1bandwidth(JNIEnv* jenv, jclass jcls,
+                                                                                        jlong cthis, jobject jthis,
+                                                                                        jdouble jarg2)
 {
-  jlong jresult            = 0;
-  simgrid::s4u::Disk* arg1 = (simgrid::s4u::Disk*)0;
-  double arg2;
-  boost::shared_ptr<simgrid::s4u::Disk>* smartarg1 = 0;
-  simgrid::s4u::Disk* result                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = (double)jarg2;
-  result = (simgrid::s4u::Disk*)(arg1)->set_readwrite_bandwidth(arg2);
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Disk>(result, SWIG_intrusive_deleter<simgrid::s4u::Disk>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Disk>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  ((Disk*)cthis)->set_readwrite_bandwidth(jarg2);
 }
 
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                               jobject jthis, jstring jarg2)
+                                                                               jobject jthis, jstring jprop)
 {
-  jstring jresult                                        = 0;
-  simgrid::s4u::Disk* arg1                               = (simgrid::s4u::Disk*)0;
-  std::string* arg2                                      = 0;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg1 = 0;
-  char* result                                           = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  if (!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
-    return 0;
-  }
-  const char* arg2_pstr = (const char*)jenv->GetStringUTFChars(jarg2, 0);
-  if (!arg2_pstr)
-    return 0;
-  std::string arg2_str(arg2_pstr);
-  arg2 = &arg2_str;
-  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr);
-  result = (char*)((simgrid::s4u::Disk const*)arg1)->get_property((std::string const&)*arg2);
+  std::string cprop  = java_string_to_std_string(jenv, jprop);
+  const char* result = ((Disk*)cthis)->get_property(cprop);
   if (result)
-    jresult = jenv->NewStringUTF((const char*)result);
-  return jresult;
+    return jenv->NewStringUTF(result);
+  return 0;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                             jobject jthis, jstring jarg2,
-                                                                             jstring jarg3)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                            jobject jthis, jstring jprop, jstring jval)
 {
-  jlong jresult                                    = 0;
-  simgrid::s4u::Disk* arg1                         = (simgrid::s4u::Disk*)0;
-  std::string* arg2                                = 0;
-  std::string* arg3                                = 0;
-  boost::shared_ptr<simgrid::s4u::Disk>* smartarg1 = 0;
-  simgrid::s4u::Disk* result                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  if (!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
-    return 0;
-  }
-  const char* arg2_pstr = (const char*)jenv->GetStringUTFChars(jarg2, 0);
-  if (!arg2_pstr)
-    return 0;
-  std::string arg2_str(arg2_pstr);
-  arg2 = &arg2_str;
-  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr);
-  if (!jarg3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
-    return 0;
-  }
-  const char* arg3_pstr = (const char*)jenv->GetStringUTFChars(jarg3, 0);
-  if (!arg3_pstr)
-    return 0;
-  std::string arg3_str(arg3_pstr);
-  arg3 = &arg3_str;
-  jenv->ReleaseStringUTFChars(jarg3, arg3_pstr);
-  result = (simgrid::s4u::Disk*)(arg1)->set_property((std::string const&)*arg2, (std::string const&)*arg3);
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Disk>(result, SWIG_intrusive_deleter<simgrid::s4u::Disk>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Disk>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  std::string cprop = java_string_to_std_string(jenv, jprop);
+  std::string cval  = java_string_to_std_string(jenv, jval);
+  ((Disk*)cthis)->set_property(cprop, cval);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1properties(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                               jobject jthis, jlong jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                        jobject jthis, jlong chost, jobject jhost)
 {
-  jlong jresult                                      = 0;
-  simgrid::s4u::Disk* arg1                           = (simgrid::s4u::Disk*)0;
-  std::unordered_map<std::string, std::string>* arg2 = 0;
-  boost::shared_ptr<simgrid::s4u::Disk>* smartarg1   = 0;
-  simgrid::s4u::Disk* result                         = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2 = *(std::unordered_map<std::string, std::string>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::unordered_map< std::string,std::string > const & is null");
-    return 0;
-  }
-  result = (simgrid::s4u::Disk*)(arg1)->set_properties((std::unordered_map<std::string, std::string> const&)*arg2);
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Disk>(result, SWIG_intrusive_deleter<simgrid::s4u::Disk>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Disk>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis, jlong jarg2, jobject jarg2_)
-{
-  jlong jresult                                    = 0;
-  simgrid::s4u::Disk* arg1                         = (simgrid::s4u::Disk*)0;
-  simgrid::s4u::Host* arg2                         = (simgrid::s4u::Host*)0;
-  boost::shared_ptr<simgrid::s4u::Disk>* smartarg1 = 0;
-  boost::shared_ptr<simgrid::s4u::Host>* smartarg2 = 0;
-  simgrid::s4u::Disk* result                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  (void)jarg2_;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  // plain pointer
-  smartarg2 = *(boost::shared_ptr<simgrid::s4u::Host>**)&jarg2;
-  arg2      = (simgrid::s4u::Host*)(smartarg2 ? smartarg2->get() : 0);
-
-  result = (simgrid::s4u::Disk*)(arg1)->set_host(arg2);
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Disk>(result, SWIG_intrusive_deleter<simgrid::s4u::Disk>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Disk>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  ((Disk*)cthis)->set_host((Host*)chost);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                          jobject jthis)
 {
-  jlong jresult                                          = 0;
-  simgrid::s4u::Disk* arg1                               = (simgrid::s4u::Disk*)0;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg1 = 0;
-  simgrid::s4u::Host* result                             = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (simgrid::s4u::Host*)((simgrid::s4u::Disk const*)arg1)->get_host();
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Host>(result, SWIG_intrusive_deleter<simgrid::s4u::Host>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Host>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  return (jlong)((Disk*)cthis)->get_host();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1concurrency_1limit(JNIEnv* jenv, jclass jcls,
-                                                                                       jlong cthis, jobject jthis,
-                                                                                       jint jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1concurrency_1limit(JNIEnv* jenv, jclass jcls,
+                                                                                      jlong cthis, jobject jthis,
+                                                                                      jint jarg2)
 {
-  jlong jresult            = 0;
-  simgrid::s4u::Disk* arg1 = (simgrid::s4u::Disk*)0;
-  int arg2;
-  boost::shared_ptr<simgrid::s4u::Disk>* smartarg1 = 0;
-  simgrid::s4u::Disk* result                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = (int)jarg2;
-  result = (simgrid::s4u::Disk*)(arg1)->set_concurrency_limit(arg2);
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Disk>(result, SWIG_intrusive_deleter<simgrid::s4u::Disk>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Disk>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  ((Disk*)cthis)->set_concurrency_limit(jarg2);
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1concurrency_1limit(JNIEnv* jenv, jclass jcls,
                                                                                       jlong cthis, jobject jthis)
 {
-  jint jresult                                           = 0;
-  simgrid::s4u::Disk* arg1                               = (simgrid::s4u::Disk*)0;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg1 = 0;
-  int result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = (int)((simgrid::s4u::Disk const*)arg1)->get_concurrency_limit();
-  jresult = (jint)result;
-  return jresult;
+  return ((Disk*)cthis)->get_concurrency_limit();
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1io_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                         jobject jthis, jint jarg2, jint jarg3)
 {
-  jlong jresult            = 0;
-  simgrid::s4u::Disk* arg1 = (simgrid::s4u::Disk*)0;
-  sg_size_t arg2;
-  simgrid::s4u::Io::OpType arg3;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Io> result;
+  auto self = (Disk*)cthis;
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
+  IoPtr result = self->io_init(jarg2, (Io::OpType)jarg3);
+  intrusive_ptr_add_ref(result.get());
 
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = (sg_size_t)jarg2;
-  arg3   = (simgrid::s4u::Io::OpType)jarg3;
-  result = ((simgrid::s4u::Disk const*)arg1)->io_init(arg2, arg3);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Io>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Io>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult = 0;
-  }
-
-  return jresult;
+  return (jlong)result.get();
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1async(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                            jobject jthis, jint jarg2)
 {
-  jlong jresult            = 0;
-  simgrid::s4u::Disk* arg1 = (simgrid::s4u::Disk*)0;
-  sg_size_t arg2;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Io> result;
+  auto self = (Disk*)cthis;
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
+  IoPtr result = self->read_async(jarg2);
+  intrusive_ptr_add_ref(result.get());
 
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = (sg_size_t)jarg2;
-  result = ((simgrid::s4u::Disk const*)arg1)->read_async(arg2);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Io>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Io>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult = 0;
-  }
-
-  return jresult;
+  return (jlong)result.get();
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1_1SWIG_10(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                               jobject jthis, jint jarg2)
 {
-  jint jresult             = 0;
-  simgrid::s4u::Disk* arg1 = (simgrid::s4u::Disk*)0;
-  sg_size_t arg2;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg1 = 0;
-  sg_size_t result                                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2    = (sg_size_t)jarg2;
+  int result = 0;
   try {
-    result = ((simgrid::s4u::Disk const*)arg1)->read(arg2);
+    result = ((Disk*)cthis)->read(jarg2);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
-  jresult = (jint)result;
-  return jresult;
+  return result;
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1_1SWIG_11(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                               jobject jthis, jint jarg2, jdouble jarg3)
 {
-  jint jresult             = 0;
-  simgrid::s4u::Disk* arg1 = (simgrid::s4u::Disk*)0;
-  sg_size_t arg2;
-  double arg3;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg1 = 0;
-  sg_size_t result                                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2    = (sg_size_t)jarg2;
-  arg3    = (double)jarg3;
+  int result = 0;
   try {
-    result = ((simgrid::s4u::Disk const*)arg1)->read(arg2, arg3);
+    result = ((Disk*)cthis)->read(jarg2, jarg3);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
-  jresult = (jint)result;
-  return jresult;
+  return result;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1async(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                             jobject jthis, jint jarg2)
 {
-  jlong jresult            = 0;
-  simgrid::s4u::Disk* arg1 = (simgrid::s4u::Disk*)0;
-  sg_size_t arg2;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Io> result;
+  auto self = (Disk*)cthis;
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
+  IoPtr result = self->write_async(jarg2);
+  intrusive_ptr_add_ref(result.get());
 
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = (sg_size_t)jarg2;
-  result = ((simgrid::s4u::Disk const*)arg1)->write_async(arg2);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Io>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Io>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult = 0;
-  }
-
-  return jresult;
+  return (jlong)result.get();
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1_1SWIG_10(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                jobject jthis, jint jarg2)
 {
-  jint jresult             = 0;
-  simgrid::s4u::Disk* arg1 = (simgrid::s4u::Disk*)0;
-  sg_size_t arg2;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg1 = 0;
-  sg_size_t result                                       = 0;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2    = (sg_size_t)jarg2;
+  int result = 0;
   try {
-    result = ((simgrid::s4u::Disk const*)arg1)->write(arg2);
+    result = ((Disk*)cthis)->write(jarg2);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
-  jresult = (jint)result;
-  return jresult;
+  return result;
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1_1SWIG_11(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                jobject jthis, jint jarg2, jdouble jarg3)
 {
-  jint jresult             = 0;
-  simgrid::s4u::Disk* arg1 = (simgrid::s4u::Disk*)0;
-  sg_size_t arg2;
-  double arg3;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg1 = 0;
-  sg_size_t result                                       = 0;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2    = (sg_size_t)jarg2;
-  arg3    = (double)jarg3;
+  int result = 0;
   try {
-    result = ((simgrid::s4u::Disk const*)arg1)->write(arg2, arg3);
+    result = ((Disk*)cthis)->write(jarg2, jarg3);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
-  jresult = (jint)result;
-  return jresult;
+  return result;
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1SharingPolicy_1NONLINEAR_1get(JNIEnv* jenv, jclass jcls)
 {
-  jint jresult = 0;
-  simgrid::s4u::Disk::SharingPolicy result;
-
-  (void)jenv;
-  (void)jcls;
-  result  = (simgrid::s4u::Disk::SharingPolicy)simgrid::s4u::Disk::SharingPolicy::NONLINEAR;
-  jresult = (jint)result;
-  return jresult;
+  return (jint)Disk::SharingPolicy::NONLINEAR;
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1SharingPolicy_1LINEAR_1get(JNIEnv* jenv, jclass jcls)
 {
-  jint jresult = 0;
-  simgrid::s4u::Disk::SharingPolicy result;
-
-  (void)jenv;
-  (void)jcls;
-  result  = (simgrid::s4u::Disk::SharingPolicy)simgrid::s4u::Disk::SharingPolicy::LINEAR;
-  jresult = (jint)result;
-  return jresult;
+  return (jint)Disk::SharingPolicy::LINEAR;
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1Operation_1READ_1get(JNIEnv* jenv, jclass jcls)
 {
-  jint jresult = 0;
-  simgrid::s4u::Disk::Operation result;
-
-  (void)jenv;
-  (void)jcls;
-  result  = (simgrid::s4u::Disk::Operation)simgrid::s4u::Disk::Operation::READ;
-  jresult = (jint)result;
-  return jresult;
+  return (jint)simgrid::s4u::Disk::Operation::READ;
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1Operation_1WRITE_1get(JNIEnv* jenv, jclass jcls)
 {
-  jint jresult = 0;
-  simgrid::s4u::Disk::Operation result;
-
-  (void)jenv;
-  (void)jcls;
-  result  = (simgrid::s4u::Disk::Operation)simgrid::s4u::Disk::Operation::WRITE;
-  jresult = (jint)result;
-  return jresult;
+  return (jint)simgrid::s4u::Disk::Operation::WRITE;
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1Operation_1READWRITE_1get(JNIEnv* jenv, jclass jcls)
 {
-  jint jresult = 0;
-  simgrid::s4u::Disk::Operation result;
-
-  (void)jenv;
-  (void)jcls;
-  result  = (simgrid::s4u::Disk::Operation)simgrid::s4u::Disk::Operation::READWRITE;
-  jresult = (jint)result;
-  return jresult;
+  return (jint)simgrid::s4u::Disk::Operation::READWRITE;
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1sharing_1policy(JNIEnv* jenv, jclass jcls,
                                                                                    jlong cthis, jobject jthis,
                                                                                    jint jarg2)
 {
-  jint jresult             = 0;
-  simgrid::s4u::Disk* arg1 = (simgrid::s4u::Disk*)0;
-  simgrid::s4u::Disk::Operation arg2;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg1 = 0;
-  simgrid::s4u::Disk::SharingPolicy result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2    = (simgrid::s4u::Disk::Operation)jarg2;
-  result  = (simgrid::s4u::Disk::SharingPolicy)((simgrid::s4u::Disk const*)arg1)->get_sharing_policy(arg2);
-  jresult = (jint)result;
-  return jresult;
+  return (jint)((Disk*)cthis)->get_sharing_policy((simgrid::s4u::Disk::Operation)jarg2);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1factor_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                               jobject jthis, jlong jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1factor_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                              jobject jthis, jlong jarg2)
 {
-  jlong jresult                                       = 0;
-  simgrid::s4u::Disk* arg1                            = (simgrid::s4u::Disk*)0;
   std::function<simgrid::s4u::Disk::IoFactorCb>* arg2 = 0;
-  boost::shared_ptr<simgrid::s4u::Disk>* smartarg1    = 0;
-  simgrid::s4u::Disk* result                          = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
 
   arg2 = *(std::function<simgrid::s4u::Disk::IoFactorCb>**)&jarg2;
   if (!arg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
                             "std::function< simgrid::s4u::Disk::IoFactorCb > const & is null");
-    return 0;
+    return;
   }
-  result = (simgrid::s4u::Disk*)(arg1)->set_factor_cb((std::function<simgrid::s4u::Disk::IoFactorCb> const&)*arg2);
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Disk>(result, SWIG_intrusive_deleter<simgrid::s4u::Disk>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Disk>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  ((Disk*)cthis)->set_factor_cb((std::function<simgrid::s4u::Disk::IoFactorCb> const&)*arg2);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1seal(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                    jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1seal(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                   jobject jthis)
 {
-  jlong jresult                                    = 0;
-  simgrid::s4u::Disk* arg1                         = (simgrid::s4u::Disk*)0;
-  boost::shared_ptr<simgrid::s4u::Disk>* smartarg1 = 0;
-  simgrid::s4u::Disk* result                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Disk>**)&cthis;
-  arg1      = (simgrid::s4u::Disk*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (simgrid::s4u::Disk*)(arg1)->seal();
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Disk>(result, SWIG_intrusive_deleter<simgrid::s4u::Disk>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Disk>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Disk>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  ((Disk*)cthis)->seal();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1onoff_1cb(JNIEnv* jenv, jclass jcls, jlong cthis)
@@ -4424,8 +3778,7 @@ static void java_main(int argc, char* argv[])
   // Retrieve the name of the process.
   jstring jname = env->NewStringUTF(argv[0]);
   // Build the arguments
-  auto args = static_cast<jobjectArray>(
-      env->NewObjectArray(argc - 1, env->FindClass("java/lang/String"), env->NewStringUTF("")));
+  jobjectArray args = env->NewObjectArray(argc - 1, env->FindClass("java/lang/String"), env->NewStringUTF(""));
   for (int i = 1; i < argc; i++)
     env->SetObjectArrayElement(args, i - 1, env->NewStringUTF(argv[i]));
   // Retrieve the host for the process.
@@ -5489,172 +4842,37 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1init(JNIEnv* jenv, 
 XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1get_1remaining(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                               jobject jthis)
 {
-  jdouble jresult                                      = 0;
-  simgrid::s4u::Io* arg1                               = (simgrid::s4u::Io*)0;
-  boost::shared_ptr<simgrid::s4u::Io const>* smartarg1 = 0;
-  double result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Io>**)&cthis;
-  arg1      = (simgrid::s4u::Io*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = (double)((simgrid::s4u::Io const*)arg1)->get_remaining();
-  jresult = (jdouble)result;
-  return jresult;
+  return ((Io*)cthis)->get_remaining();
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1get_1performed_1ioops(JNIEnv* jenv, jclass jcls,
                                                                                   jlong cthis, jobject jthis)
 {
-  jint jresult                                         = 0;
-  simgrid::s4u::Io* arg1                               = (simgrid::s4u::Io*)0;
-  boost::shared_ptr<simgrid::s4u::Io const>* smartarg1 = 0;
-  sg_size_t result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Io>**)&cthis;
-  arg1      = (simgrid::s4u::Io*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = ((simgrid::s4u::Io const*)arg1)->get_performed_ioops();
-  jresult = (jint)result;
-  return jresult;
+  return ((Io*)cthis)->get_performed_ioops();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1disk(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                       jobject jthis, jlong jarg2, jobject jarg2_)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1disk(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                      jobject jthis, jlong cdisk, jobject jdisk)
 {
-  jlong jresult                                          = 0;
-  simgrid::s4u::Io* arg1                                 = (simgrid::s4u::Io*)0;
-  simgrid::s4u::Disk* arg2                               = (simgrid::s4u::Disk*)0;
-  boost::shared_ptr<simgrid::s4u::Io>* smartarg1         = 0;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg2 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Io> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  (void)jarg2_;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Io>**)&cthis;
-  arg1      = (simgrid::s4u::Io*)(smartarg1 ? smartarg1->get() : 0);
-
-  // plain pointer
-  smartarg2 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&jarg2;
-  arg2      = (simgrid::s4u::Disk*)(smartarg2 ? smartarg2->get() : 0);
-
-  result = (arg1)->set_disk((simgrid::s4u::Disk const*)arg2);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Io>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Io>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult = 0;
-  }
-
-  return jresult;
+  ((Io*)cthis)->set_disk((Disk*)cdisk);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1priority(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis, jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1priority(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                          jobject jthis, jdouble jarg2)
 {
-  jlong jresult          = 0;
-  simgrid::s4u::Io* arg1 = (simgrid::s4u::Io*)0;
-  double arg2;
-  boost::shared_ptr<simgrid::s4u::Io>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Io> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Io>**)&cthis;
-  arg1      = (simgrid::s4u::Io*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = (double)jarg2;
-  result = (arg1)->set_priority(arg2);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Io>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Io>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult = 0;
-  }
-
-  return jresult;
+  ((Io*)cthis)->set_priority(jarg2);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1size(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                       jobject jthis, jint jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1size(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                      jobject jthis, jint jarg2)
 {
-  jlong jresult          = 0;
-  simgrid::s4u::Io* arg1 = (simgrid::s4u::Io*)0;
-  sg_size_t arg2;
-  boost::shared_ptr<simgrid::s4u::Io>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Io> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Io>**)&cthis;
-  arg1      = (simgrid::s4u::Io*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = (sg_size_t)jarg2;
-  result = (arg1)->set_size(arg2);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Io>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Io>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult = 0;
-  }
-
-  return jresult;
+  ((Io*)cthis)->set_size(jarg2);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1op_1type(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis, jint jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1op_1type(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                          jobject jthis, jint jarg2)
 {
-  jlong jresult          = 0;
-  simgrid::s4u::Io* arg1 = (simgrid::s4u::Io*)0;
-  simgrid::s4u::Io::OpType arg2;
-  boost::shared_ptr<simgrid::s4u::Io>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Io> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Io>**)&cthis;
-  arg1      = (simgrid::s4u::Io*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = (simgrid::s4u::Io::OpType)jarg2;
-  result = (arg1)->set_op_type(arg2);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Io>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Io>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult = 0;
-  }
-
-  return jresult;
+  ((Io*)cthis)->set_op_type((simgrid::s4u::Io::OpType)jarg2);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1streamto_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -5811,199 +5029,55 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1streamto(JNIEnv* jen
   }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1source(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis, jlong jarg2, jobject jarg2_,
-                                                                         jlong jarg3, jobject jarg3_)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1source(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                        jobject jthis, jlong chost, jobject jarg2_,
+                                                                        jlong cdisk, jobject jarg3_)
 {
-  jlong jresult                                          = 0;
-  simgrid::s4u::Io* arg1                                 = (simgrid::s4u::Io*)0;
-  simgrid::s4u::Host* arg2                               = (simgrid::s4u::Host*)0;
-  simgrid::s4u::Disk* arg3                               = (simgrid::s4u::Disk*)0;
-  boost::shared_ptr<simgrid::s4u::Io>* smartarg1         = 0;
-  boost::shared_ptr<simgrid::s4u::Host>* smartarg2       = 0;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg3 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Io> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  (void)jarg2_;
-  (void)jarg3_;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Io>**)&cthis;
-  arg1      = (simgrid::s4u::Io*)(smartarg1 ? smartarg1->get() : 0);
-
-  // plain pointer
-  smartarg2 = *(boost::shared_ptr<simgrid::s4u::Host>**)&jarg2;
-  arg2      = (simgrid::s4u::Host*)(smartarg2 ? smartarg2->get() : 0);
-
-  // plain pointer
-  smartarg3 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&jarg3;
-  arg3      = (simgrid::s4u::Disk*)(smartarg3 ? smartarg3->get() : 0);
-
-  result = (arg1)->set_source(arg2, (simgrid::s4u::Disk const*)arg3);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Io>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Io>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult = 0;
-  }
-
-  return jresult;
+  ((Io*)cthis)->set_source((Host*)chost, (Disk*)cdisk);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1destination(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                              jobject jthis, jlong jarg2,
-                                                                              jobject jarg2_, jlong jarg3,
-                                                                              jobject jarg3_)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1destination(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                             jobject jthis, jlong chost, jobject jarg2_,
+                                                                             jlong cdisk, jobject jarg3_)
 {
-  jlong jresult                                          = 0;
-  simgrid::s4u::Io* arg1                                 = (simgrid::s4u::Io*)0;
-  simgrid::s4u::Host* arg2                               = (simgrid::s4u::Host*)0;
-  simgrid::s4u::Disk* arg3                               = (simgrid::s4u::Disk*)0;
-  boost::shared_ptr<simgrid::s4u::Io>* smartarg1         = 0;
-  boost::shared_ptr<simgrid::s4u::Host>* smartarg2       = 0;
-  boost::shared_ptr<simgrid::s4u::Disk const>* smartarg3 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Io> result;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Io>**)&cthis;
-  arg1      = (simgrid::s4u::Io*)(smartarg1 ? smartarg1->get() : 0);
-
-  // plain pointer
-  smartarg2 = *(boost::shared_ptr<simgrid::s4u::Host>**)&jarg2;
-  arg2      = (simgrid::s4u::Host*)(smartarg2 ? smartarg2->get() : 0);
-
-  // plain pointer
-  smartarg3 = *(boost::shared_ptr<const simgrid::s4u::Disk>**)&jarg3;
-  arg3      = (simgrid::s4u::Disk*)(smartarg3 ? smartarg3->get() : 0);
-
-  result = (arg1)->set_destination(arg2, (simgrid::s4u::Disk const*)arg3);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Io>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Io>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult = 0;
-  }
-
-  return jresult;
+  ((Io*)cthis)->set_destination((Host*)chost, (Disk*)cdisk);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1update_1priority(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                              jobject jthis, jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1update_1priority(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                             jobject jthis, jdouble jarg2)
 {
-  jlong jresult          = 0;
-  simgrid::s4u::Io* arg1 = (simgrid::s4u::Io*)0;
-  double arg2;
-  boost::shared_ptr<simgrid::s4u::Io>* smartarg1 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Io> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::Io>**)&cthis;
-  arg1      = (simgrid::s4u::Io*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = (double)jarg2;
-  result = (arg1)->update_priority(arg2);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Io>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Io>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Io>**)&jresult = 0;
-  }
-
-  return jresult;
+  ((Io*)cthis)->update_priority(jarg2);
 }
 
 XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1is_1assigned(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                              jobject jthis)
 {
-  jboolean jresult                                     = 0;
-  simgrid::s4u::Io* arg1                               = (simgrid::s4u::Io*)0;
-  boost::shared_ptr<simgrid::s4u::Io const>* smartarg1 = 0;
-  bool result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Io>**)&cthis;
-  arg1      = (simgrid::s4u::Io*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = (bool)((simgrid::s4u::Io const*)arg1)->is_assigned();
-  jresult = (jboolean)result;
-  return jresult;
+  return ((Io*)cthis)->is_assigned();
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1NONLINEAR_1get(JNIEnv* jenv, jclass jcls)
 {
-  jint jresult = 0;
-  simgrid::s4u::Link::SharingPolicy result;
-
-  (void)jenv;
-  (void)jcls;
-  result  = (simgrid::s4u::Link::SharingPolicy)simgrid::s4u::Link::SharingPolicy::NONLINEAR;
-  jresult = (jint)result;
-  return jresult;
+  return (jint)simgrid::s4u::Link::SharingPolicy::NONLINEAR;
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1WIFI_1get(JNIEnv* jenv, jclass jcls)
 {
-  jint jresult = 0;
-  simgrid::s4u::Link::SharingPolicy result;
-
-  (void)jenv;
-  (void)jcls;
-  result  = (simgrid::s4u::Link::SharingPolicy)simgrid::s4u::Link::SharingPolicy::WIFI;
-  jresult = (jint)result;
-  return jresult;
+  return (jint)simgrid::s4u::Link::SharingPolicy::WIFI;
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1SPLITDUPLEX_1get(JNIEnv* jenv, jclass jcls)
 {
-  jint jresult = 0;
-  simgrid::s4u::Link::SharingPolicy result;
-
-  (void)jenv;
-  (void)jcls;
-  result  = (simgrid::s4u::Link::SharingPolicy)simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
-  jresult = (jint)result;
-  return jresult;
+  return (jint)simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1SHARED_1get(JNIEnv* jenv, jclass jcls)
 {
-  jint jresult = 0;
-  simgrid::s4u::Link::SharingPolicy result;
-
-  (void)jenv;
-  (void)jcls;
-  result  = (simgrid::s4u::Link::SharingPolicy)simgrid::s4u::Link::SharingPolicy::SHARED;
-  jresult = (jint)result;
-  return jresult;
+  return (jint)simgrid::s4u::Link::SharingPolicy::SHARED;
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1FATPIPE_1get(JNIEnv* jenv, jclass jcls)
 {
-  jint jresult = 0;
-  simgrid::s4u::Link::SharingPolicy result;
-
-  (void)jenv;
-  (void)jcls;
-  result  = (simgrid::s4u::Link::SharingPolicy)simgrid::s4u::Link::SharingPolicy::FATPIPE;
-  jresult = (jint)result;
-  return jresult;
+  return (jint)simgrid::s4u::Link::SharingPolicy::FATPIPE;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1by_1name(JNIEnv* jenv, jclass jcls, jstring cthis)
@@ -6167,54 +5241,13 @@ XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1sharing_1poli
 }
 
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                               jobject jthis, jstring jarg2)
+                                                                               jobject jthis, jstring jprop)
 {
-  jstring jresult          = 0;
-  simgrid::s4u::Link* arg1 = (simgrid::s4u::Link*)0;
-  std::string* arg2        = 0;
-  char* result             = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1 = *(simgrid::s4u::Link**)&cthis;
-  if (!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
-    return 0;
-  }
-  const char* arg2_pstr = (const char*)jenv->GetStringUTFChars(jarg2, 0);
-  if (!arg2_pstr)
-    return 0;
-  std::string arg2_str(arg2_pstr);
-  arg2 = &arg2_str;
-  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr);
-  result = (char*)((simgrid::s4u::Link const*)arg1)->get_property((std::string const&)*arg2);
+  std::string cprop  = java_string_to_std_string(jenv, jprop);
+  const char* result = ((Link*)cthis)->get_property(cprop);
   if (result)
-    jresult = jenv->NewStringUTF((const char*)result);
-  return jresult;
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1properties(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                               jobject jthis, jlong jarg2)
-{
-  jlong jresult                                      = 0;
-  simgrid::s4u::Link* arg1                           = (simgrid::s4u::Link*)0;
-  std::unordered_map<std::string, std::string>* arg2 = 0;
-  simgrid::s4u::Link* result                         = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1 = *(simgrid::s4u::Link**)&cthis;
-  arg2 = *(std::unordered_map<std::string, std::string>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::unordered_map< std::string,std::string > const & is null");
-    return 0;
-  }
-  result = (simgrid::s4u::Link*)(arg1)->set_properties((std::unordered_map<std::string, std::string> const&)*arg2);
-  *(simgrid::s4u::Link**)&jresult = result;
-  return jresult;
+    return jenv->NewStringUTF(result);
+  return 0;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -6749,31 +5782,13 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1host_1cou
 
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1property(JNIEnv* jenv, jclass jcls,
                                                                                   jlong cthis, jobject jthis,
-                                                                                  jstring jarg2)
+                                                                                  jstring jprop)
 {
-  jstring jresult             = 0;
-  simgrid::s4u::NetZone* arg1 = (simgrid::s4u::NetZone*)0;
-  std::string* arg2           = 0;
-  char* result                = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1 = *(simgrid::s4u::NetZone**)&cthis;
-  if (!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
-    return 0;
-  }
-  const char* arg2_pstr = (const char*)jenv->GetStringUTFChars(jarg2, 0);
-  if (!arg2_pstr)
-    return 0;
-  std::string arg2_str(arg2_pstr);
-  arg2 = &arg2_str;
-  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr);
-  result = (char*)((simgrid::s4u::NetZone const*)arg1)->get_property((std::string const&)*arg2);
+  std::string cprop  = java_string_to_std_string(jenv, jprop);
+  const char* result = ((NetZone*)cthis)->get_property(cprop);
   if (result)
-    jresult = jenv->NewStringUTF((const char*)result);
-  return jresult;
+    return jenv->NewStringUTF(result);
+  return 0;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1set_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
