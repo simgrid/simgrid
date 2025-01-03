@@ -15,7 +15,7 @@ class detached extends Actor {
     Exec activity = exec_init(computation_amount);
     // Attach a callback to print some log when the detached activity completes
     activity.on_this_completion_cb(new CallbackExec() {
-      public void run(Exec e)
+      @Override public void run(Exec e)
       {
         Engine.info("Detached activity is done");
       }

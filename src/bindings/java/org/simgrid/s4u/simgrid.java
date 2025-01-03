@@ -13,10 +13,6 @@ public class simgrid {
     simgridJNI.parallel_execute(SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t.getCPtr(hosts), SWIGTYPE_p_std__vectorT_double_t.getCPtr(flops_amounts), SWIGTYPE_p_std__vectorT_double_t.getCPtr(bytes_amounts));
   }
 
-  public static void on_exit(SWIGTYPE_p_std__functionT_void_fboolF_t fun) {
-    simgridJNI.on_exit(SWIGTYPE_p_std__functionT_void_fboolF_t.getCPtr(fun));
-  }
-
   public static SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t create_DAG_from_dot(String filename) {
     return new SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t(simgridJNI.create_DAG_from_dot(filename), true);
   }

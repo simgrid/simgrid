@@ -88,7 +88,8 @@ static void handle_exception(JNIEnv* jenv)
 static JNIEnv* get_jenv()
 {
   auto self = (simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self();
-  xbt_assert(self);
+  if (self == nullptr || self->jenv_ == nullptr)
+    return maestro_jenv;
   return self->jenv_;
 }
 static jmethodID init_methodId(JNIEnv* jenv, const char* klassname, const char* methname, const char* signature)
@@ -1214,7 +1215,12 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1yield(JNIEnv* jen
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exit(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                     jobject jthis)
 {
-  ((Actor*)cthis)->kill();
+  try {
+    XBT_CRITICAL("Try to kill");
+    ((Actor*)cthis)->kill();
+    XBT_CRITICAL("Done killing");
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  }
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1termination_1cb(JNIEnv* jenv, jclass jcls,
@@ -1242,7 +1248,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1exit(JNIEnv* 
                                                                         jobject jthis, jobject cb)
 {
   cb = jenv->NewGlobalRef(cb);
-  simgrid::s4u::this_actor::on_exit([cb](bool b) { maestro_jenv->CallVoidMethod(cb, CallbackBoolean_methodId, b); });
+  simgrid::s4u::this_actor::on_exit([cb](bool b) { get_jenv()->CallVoidMethod(cb, CallbackBoolean_methodId, b); });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_parallel_1execute(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -1271,20 +1277,6 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_parallel_1execute(JNIEnv
   }
   simgrid::s4u::this_actor::parallel_execute((std::vector<simgrid::s4u::Host*> const&)*arg1,
                                              (std::vector<double> const&)*arg2, (std::vector<double> const&)*arg3);
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_on_1exit(JNIEnv* jenv, jclass jcls, jlong cthis)
-{
-  std::function<void(bool)>* arg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(std::function<void(bool)>**)&cthis;
-  if (!arg1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::function< void (bool) > const & is null");
-    return;
-  }
-  simgrid::s4u::this_actor::on_exit((std::function<void(bool)> const&)*arg1);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1self(JNIEnv* jenv, jclass jcls)
@@ -1699,11 +1691,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1create(JNIEnv* j
 
     this_actor::yield(); // Delay my execution to the next scheduling round, to let my parent complete my ctor
 
-    try {
-      jenv->CallVoidMethod(jcode, Actor_methodId);
-    } catch (ForcefulKillException const&) {
-      XBT_CRITICAL("Got killed");
-    }
+    jenv->CallVoidMethod(jcode, Actor_methodId);
     handle_exception(jenv);
   });
   intrusive_ptr_add_ref(result.get());
@@ -2081,7 +2069,7 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1has_1fa
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1start_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
 {
   cb = jenv->NewGlobalRef(cb);
-  simgrid::s4u::Exec::on_start_cb([cb](Exec const& e) { maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e); });
+  simgrid::s4u::Exec::on_start_cb([cb](Exec const& e) { get_jenv()->CallVoidMethod(cb, CallbackExec_methodId, &e); });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1start_1cb(JNIEnv* jenv, jclass jcls,
@@ -2089,16 +2077,14 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1start_1c
                                                                                   jobject cb)
 {
   cb = jenv->NewGlobalRef(cb);
-  ((Exec*)cthis)->on_this_start_cb([cb](Exec const& e) {
-    maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e);
-  });
+  ((Exec*)cthis)->on_this_start_cb([cb](Exec const& e) { get_jenv()->CallVoidMethod(cb, CallbackExec_methodId, &e); });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1completion_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
 {
   cb = jenv->NewGlobalRef(cb);
   simgrid::s4u::Exec::on_completion_cb(
-      [cb](Exec const& e) { maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e); });
+      [cb](Exec const& e) { get_jenv()->CallVoidMethod(cb, CallbackExec_methodId, &e); });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1completion_1cb(JNIEnv* jenv, jclass jcls,
@@ -2107,7 +2093,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1completi
 {
   cb = jenv->NewGlobalRef(cb);
   ((Exec*)cthis)->on_this_completion_cb([cb](Exec const& e) {
-    maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e);
+    get_jenv()->CallVoidMethod(cb, CallbackExec_methodId, &e);
   });
 }
 
@@ -2117,7 +2103,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1suspend_
 {
   cb = jenv->NewGlobalRef(cb);
   ((Exec*)cthis)->on_this_suspend_cb([cb](Exec const& e) {
-    maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e);
+    get_jenv()->CallVoidMethod(cb, CallbackExec_methodId, &e);
   });
 }
 
@@ -2126,9 +2112,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1resume_1
                                                                                    jobject cb)
 {
   cb = jenv->NewGlobalRef(cb);
-  ((Exec*)cthis)->on_this_resume_cb([cb](Exec const& e) {
-    maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e);
-  });
+  ((Exec*)cthis)->on_this_resume_cb([cb](Exec const& e) { get_jenv()->CallVoidMethod(cb, CallbackExec_methodId, &e); });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1veto_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
@@ -2141,7 +2125,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1veto_1cb
                                                                                  jobject jthis, jobject cb)
 {
   cb = jenv->NewGlobalRef(cb);
-  ((Exec*)cthis)->on_this_veto_cb([cb](Exec const& e) { maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e); });
+  ((Exec*)cthis)->on_this_veto_cb([cb](Exec const& e) { get_jenv()->CallVoidMethod(cb, CallbackExec_methodId, &e); });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1add_1successor(JNIEnv* jenv, jclass jcls, jlong cthis,

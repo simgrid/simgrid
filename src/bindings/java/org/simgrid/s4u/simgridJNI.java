@@ -22,14 +22,13 @@ public class simgridJNI {
   public final static native long Actor_exec_init(long jarg1, Actor jarg1_, double jarg2);
   public final static native long Actor_exec_async(long jarg1, Actor jarg1_, double jarg2);
   public final static native void Actor_yield(long jarg1, Actor jarg1_);
-  public final static native void Actor_exit(long jarg1, Actor jarg1_);
+  public final static native void Actor_exit(long cthis, Actor jthis);
   public final static native void Actor_on_this_termination_cb(long cthis, Actor jthis, long ccode,
                                                                ActorCallback jcode);
   public final static native void Actor_on_termination_cb(long ccode, ActorCallback jcode);
   public final static native void Actor_on_destruction_cb(long ccode, ActorCallback jcode);
   public final static native void Actor_on_exit(long jarg1, Actor jarg1_, CallbackBoolean jcode);
   public final static native void parallel_execute(long jarg1, long jarg2, long jarg3);
-  public final static native void on_exit(long jarg1);
   public final static native long Actor_self();
   public final static native void Actor_on_this_suspend_cb(long jarg1, Actor jarg1_, long jarg2);
   public final static native void Actor_on_this_resume_cb(long jarg1, Actor jarg1_, long jarg2);
