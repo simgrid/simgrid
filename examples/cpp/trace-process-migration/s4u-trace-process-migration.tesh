@@ -6,7 +6,7 @@ $ ${bindir:=.}/s4u-trace-process-migration --cfg=tracing:yes --cfg=tracing/filen
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'procmig.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/actor' to 'yes'
 
-$ tail -n > 3 procmig.trace
+$ tail -n +3 procmig.trace
 > %EventDef PajeDefineContainerType 0
 > %       Alias string
 > %       Type string
