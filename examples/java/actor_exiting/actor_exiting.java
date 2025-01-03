@@ -33,13 +33,14 @@
 
 import org.simgrid.s4u.*;
 
-class ActorA extends ActorMain {
+class ActorA extends Actor {
+  public ActorA(String name, Host location) { super(name, location); }
   public void run()
   {
 
     // Register a lambda function to be executed once it stops
-    on_exit(new BooleanCallback() {
-      public void run(boolean failed)
+    on_exit(new CallbackBoolean() {
+      @Override public void run(boolean failed)
       {
         Engine.info("I stop now");
       }
@@ -49,15 +50,17 @@ class ActorA extends ActorMain {
   }
 }
 
-class ActorB extends ActorMain {
+class ActorB extends Actor {
+  public ActorB(String name, Host location) { super(name, location); }
   public void run() { sleep_for(2); }
 }
-class ActorC extends ActorMain {
+class ActorC extends Actor {
+  public ActorC(String name, Host location) { super(name, location); }
   public void run()
   {
     // Register a lambda function to be executed once it stops
-    on_exit(new BooleanCallback() {
-      public void run(boolean failed)
+    on_exit(new CallbackBoolean() {
+      @Override public void run(boolean failed)
       {
         if (failed) {
           Engine.info("I was killed!");
@@ -90,9 +93,9 @@ class actor_exiting {
     //    }});
 
     /* Create some actors */
-    Actor.create("A", e.host_by_name("Tremblay"), new ActorA());
-    Actor.create("B", e.host_by_name("Fafard"), new ActorB());
-    Actor.create("C", e.host_by_name("Ginette"), new ActorC());
+    new ActorA("A", e.host_by_name("Tremblay"));
+    new ActorB("B", e.host_by_name("Fafard"));
+    new ActorC("C", e.host_by_name("Ginette"));
 
     e.run(); /* Run the simulation */
   }

@@ -74,6 +74,7 @@ JNIEnv* maestro_jenv       = nullptr;
 extern bool do_install_signal_handlers;
 
 /* For upcalls, from the C++ to the JVM */
+static jmethodID CallbackBoolean_methodId = 0;
 static jmethodID CallbackExec_methodId = 0;
 static jmethodID Actor_methodId        = 0;
 
@@ -121,6 +122,7 @@ static struct SimGridJavaInit {
                  "The maestro thread could not be attached to the JVM");
 
       // Initialize the upcall mechanism
+      CallbackBoolean_methodId = init_methodId(maestro_jenv, "CallbackBoolean", "run", "(Z)V");
       CallbackExec_methodId = init_methodId(maestro_jenv, "CallbackExec", "run", "(J)V");
       Actor_methodId        = init_methodId(maestro_jenv, "Actor", "do_run", "()V");
 
@@ -1056,50 +1058,6 @@ extern "C" {
    and located somewhere under simgrid_jar.dir/native_headers/org_simgrid_s4u_simgridJNI.h */
 #include "org_simgrid_s4u_simgridJNI.h"
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_BooleanCallback_1run(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                             jobject jthis, jboolean jarg2)
-{
-  BooleanCallback* arg1 = *(BooleanCallback**)&cthis;
-  bool arg2             = jarg2 ? true : false;
-  (arg1)->run(arg2);
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1BooleanCallback(JNIEnv* jenv, jclass jcls, jlong cthis)
-{
-  BooleanCallback* arg1 = *(BooleanCallback**)&cthis;
-  delete arg1;
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1BooleanCallback(JNIEnv* jenv, jclass jcls)
-{
-  BooleanCallback* result      = (BooleanCallback*)new SwigDirector_BooleanCallback(jenv);
-  jlong jresult                = 0;
-  *(BooleanCallback**)&jresult = result;
-  return jresult;
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_BooleanCallback_1director_1connect(JNIEnv* jenv, jclass jcls,
-                                                                                           jobject jself, jlong objarg,
-                                                                                           jboolean jswig_mem_own,
-                                                                                           jboolean jweak_global)
-{
-  BooleanCallback* obj                   = *((BooleanCallback**)&objarg);
-  SwigDirector_BooleanCallback* director = static_cast<SwigDirector_BooleanCallback*>(obj);
-  director->swig_connect_director(jenv, jself, jenv->GetObjectClass(jself), (jswig_mem_own == JNI_TRUE),
-                                  (jweak_global == JNI_TRUE));
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_BooleanCallback_1change_1ownership(JNIEnv* jenv, jclass jcls,
-                                                                                           jobject jself, jlong objarg,
-                                                                                           jboolean jtake_or_release)
-{
-  BooleanCallback* obj                   = *((BooleanCallback**)&objarg);
-  SwigDirector_BooleanCallback* director = dynamic_cast<SwigDirector_BooleanCallback*>(obj);
-  if (director) {
-    director->swig_java_change_ownership(jenv, jself, jtake_or_release ? true : false);
-  }
-}
-
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActorCallback_1run(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                            jobject jthis, jlong jarg2, jobject jarg2_)
 {
@@ -1275,11 +1233,10 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1destruction_1
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1exit(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis, jlong jarg2, jobject jarg2_)
+                                                                        jobject jthis, jobject cb)
 {
-  auto code = (BooleanCallback*)jarg2;
-
-  simgrid::s4u::this_actor::on_exit([code](bool b) { code->run(b); });
+  cb = jenv->NewGlobalRef(cb);
+  simgrid::s4u::this_actor::on_exit([cb](bool b) { maestro_jenv->CallVoidMethod(cb, CallbackBoolean_methodId, b); });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_parallel_1execute(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -9533,8 +9490,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_swig_1module_1init(JNIEn
   static struct {
     const char* method;
     const char* signature;
-  } methods[2]            = {{"SwigDirector_BooleanCallback_run", "(Lorg/simgrid/s4u/BooleanCallback;Z)V"},
-                             {"SwigDirector_ActorCallback_run", "(Lorg/simgrid/s4u/ActorCallback;J)V"}};
+  } methods[1]            = {{"SwigDirector_ActorCallback_run", "(Lorg/simgrid/s4u/ActorCallback;J)V"}};
   Swig::jclass_simgridJNI = (jclass)jenv->NewGlobalRef(jcls);
   if (!Swig::jclass_simgridJNI)
     return;

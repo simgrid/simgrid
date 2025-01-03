@@ -448,6 +448,8 @@ include examples/java/exec_async/exec_async.java
 include examples/java/exec_async/exec_async.java.tesh
 include examples/java/exec_basic/exec_basic.java
 include examples/java/exec_basic/exec_basic.java.tesh
+include examples/java/exec_dependent/exec_dependent.java
+include examples/java/exec_dependent/exec_dependent.java.tesh
 include examples/java/synchro_barrier/synchro_barrier.java
 include examples/java/synchro_barrier/synchro_barrier.java.tesh
 include examples/java/synchro_condition_variable/synchro_condition_variable.java
@@ -2146,9 +2148,8 @@ include src/bindings/java/org/simgrid/s4u/Activity.java
 include src/bindings/java/org/simgrid/s4u/ActivitySet.java
 include src/bindings/java/org/simgrid/s4u/Actor.java
 include src/bindings/java/org/simgrid/s4u/ActorCallback.java
-include src/bindings/java/org/simgrid/s4u/ActorMain.java
 include src/bindings/java/org/simgrid/s4u/Barrier.java
-include src/bindings/java/org/simgrid/s4u/BooleanCallback.java
+include src/bindings/java/org/simgrid/s4u/CallbackBoolean.java
 include src/bindings/java/org/simgrid/s4u/CallbackExec.java
 include src/bindings/java/org/simgrid/s4u/ClusterCallbacks.java
 include src/bindings/java/org/simgrid/s4u/Comm.java

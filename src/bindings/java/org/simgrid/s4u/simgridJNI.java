@@ -9,11 +9,6 @@
 package org.simgrid.s4u;
 
 public class simgridJNI {
-  public final static native void BooleanCallback_run(long jarg1, BooleanCallback jarg1_, boolean jarg2);
-  public final static native void delete_BooleanCallback(long jarg1);
-  public final static native long new_BooleanCallback();
-  public final static native void BooleanCallback_director_connect(BooleanCallback obj, long cptr, boolean mem_own, boolean weak_global);
-  public final static native void BooleanCallback_change_ownership(BooleanCallback obj, long cptr, boolean take_or_release);
   public final static native void ActorCallback_run(long jarg1, ActorCallback jarg1_, long jarg2, Actor jarg2_);
   public final static native void delete_ActorCallback(long jarg1);
   public final static native long new_ActorCallback();
@@ -32,7 +27,7 @@ public class simgridJNI {
                                                                ActorCallback jcode);
   public final static native void Actor_on_termination_cb(long ccode, ActorCallback jcode);
   public final static native void Actor_on_destruction_cb(long ccode, ActorCallback jcode);
-  public final static native void Actor_on_exit(long jarg1, Actor jarg1_, long jarg2, BooleanCallback jarg2_);
+  public final static native void Actor_on_exit(long jarg1, Actor jarg1_, CallbackBoolean jcode);
   public final static native void parallel_execute(long jarg1, long jarg2, long jarg3);
   public final static native void on_exit(long jarg1);
   public final static native long Actor_self();
@@ -535,9 +530,6 @@ public class simgridJNI {
   public final static native void VirtualMachine_on_this_migration_end_cb(long jarg1, VirtualMachine jarg1_, long jarg2);
   public final static native void delete_VirtualMachine(long jarg1);
 
-  public static void SwigDirector_BooleanCallback_run(BooleanCallback jself, boolean b) {
-    jself.run(b);
-  }
   public static void SwigDirector_ActorCallback_run(ActorCallback jself, long a) {
     jself.run((a == 0) ? null : new Actor(a, false));
   }
