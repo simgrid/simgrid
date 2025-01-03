@@ -428,6 +428,15 @@ include examples/java/actor_exiting/actor_exiting.java
 include examples/java/actor_exiting/actor_exiting.java.tesh
 include examples/java/actor_join/actor_join.java
 include examples/java/actor_join/actor_join.java.tesh
+include examples/java/actor_lifetime/actor_lifetime.java
+include examples/java/actor_lifetime/actor_lifetime.java.tesh
+include examples/java/actor_lifetime/actor_lifetime_d.xml
+include examples/java/actor_migrate/actor_migrate.java
+include examples/java/actor_migrate/actor_migrate.java.tesh
+include examples/java/actor_suspend/actor_suspend.java
+include examples/java/actor_suspend/actor_suspend.java.tesh
+include examples/java/actor_yield/actor_yield.java
+include examples/java/actor_yield/actor_yield.java.tesh
 include examples/java/comm_await/comm_await.java
 include examples/java/comm_await/comm_await.java.tesh
 include examples/java/comm_awaituntil/comm_awaituntil.java

@@ -19,7 +19,7 @@
 /*
  * We pass raw pointers to the Java world, that builds empty shells around these pointers.
  * The refcounting still works, as we use intrusive_ptr for most of our objects (but the ones
- * that never get destroyed, as Host or Mailbox).
+ * that never get destroyed -- Host and Mailbox).
  */
 
 /*
@@ -27,19 +27,25 @@
  * will be raised if the actor gets killed for whatever reason (including another actor
  * killing it). We may even need to protect every single call, not sure?
  * The return value (if any) is not important, as the Java code will deal with an exception
- * that cuts everything to stop that actor in the Java world too.
+ * that cuts everything to stop that actor in the Java world too, not looking at this value.
  *
  * The idea is that when an actor needs to be forcefully killed, it was launched from:
- *   - (C++) Actor_create(), does a JNI call to:
- *   - (Java) Actor.run()
+ *   - (Java) Actor constructor: In most case, it's ctor(String name, Host location)
+ *       but actors created from the deployment file use ctor(String,String hostname,String[]),
+ *       which calls the former. The former does a Java->C++ JNI call to:
+ *   - (C++) Actor_create(), does a C++->Java JNI call onto:
+ *   - (Java) Actor.do_run(), which try/catch(ForcefullKillException) and call user's Actor.run()
+ *
  * The decision to kill the actor is taken from C++ again (in another thread) at a point where
  * the victim is blocked in a Java->C++ call (any call is possible, even if blocking ones are
- * more probable). From C++, we set a Java exception in the Java actor and raise a  C++
+ * more probable). From C++, we set a Java exception in the Java killed actor and raise a C++
  * ForcefullKillException to rewind the C++ stack until the Java->C++ call on which the actor
- * is blocked.
- * At this point, we swallow that exception and give back the control to the Java code.
- * Upon wakeup, the Java code raises the requested Java exception, that is catch in
- * Actor.run().
+ * is blocked. Which is why any such call must be wrapped in a try/catch block, to prevent the
+ * exception from reaching the top-level exception handler.
+ *
+ * When reaching back the C++ call that is done on behalf of the Java actor run(), we swallow
+ * that exception and give back the control to the Java code. Upon wakeup, the Java code raises
+ * the requested Java exception, that is catch in Actor.do_run().
  *
  * This is how the actor jumps to the end of its execution in both C++/Java words.
  */
@@ -1165,9 +1171,13 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1yield(JNIEnv* jen
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exit(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                     jobject jthis)
 {
+  auto self = (Actor*)cthis;
   try {
     XBT_CRITICAL("Try to kill");
-    ((Actor*)cthis)->kill();
+    if (Actor::self() == self) // Commiting a suicide with self->kill makes the JVM to segfault, so let's cheat
+      this_actor::exit();
+    else
+      self->kill();
     XBT_CRITICAL("Done killing");
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
@@ -4457,28 +4467,48 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1track_1vetoed_1a
   arg2 = *(std::set<simgrid::s4u::Activity*>**)&jarg2;
   ((simgrid::s4u::Engine const*)arg1)->track_vetoed_activities(arg2);
 }
+/** Create a Java org.simgrid.s4u.Actor of the given subclass and using the (String,String,String[]) constructor */
+static void java_main(int argc, char* argv[])
+{
+  JNIEnv* env = get_jenv();
+
+  // Change the "." in class name for "/".
+  std::string arg0 = argv[0];
+  std::replace(begin(arg0), end(arg0), '.', '/');
+  jclass actor_class = env->FindClass(arg0.c_str());
+  // Retrieve the methodID for the constructor
+  xbt_assert((actor_class != nullptr),
+             "Class not found (%s). The deployment file must use the fully qualified class name, including the "
+             "package. The case is important.",
+             argv[0]);
+  jmethodID actor_constructor =
+      env->GetMethodID(actor_class, "<init>", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V");
+  xbt_assert((actor_constructor != nullptr),
+             "Constructor(String name, String hostname, String[] args) not found for class %s. Is there such a "
+             "constructor in your class?",
+             argv[0]);
+
+  // Retrieve the name of the process.
+  jstring jname = env->NewStringUTF(argv[0]);
+  // Build the arguments
+  auto args = static_cast<jobjectArray>(
+      env->NewObjectArray(argc - 1, env->FindClass("java/lang/String"), env->NewStringUTF("")));
+  for (int i = 1; i < argc; i++)
+    env->SetObjectArrayElement(args, i - 1, env->NewStringUTF(argv[i]));
+  // Retrieve the host for the process.
+  jstring jhostname = env->NewStringUTF(simgrid::s4u::Host::current()->get_cname());
+  // creates the actor
+  jobject jactor = env->NewObject(actor_class, actor_constructor, jname, jhostname, args);
+  handle_exception(env);
+  xbt_assert((jactor != nullptr), "Actor creation failed.");
+}
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1load_1deployment(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                 jobject jthis, jstring jarg2)
+                                                                                 jobject jthis, jstring jfilename)
 {
-  simgrid::s4u::Engine* arg1 = (simgrid::s4u::Engine*)0;
-  std::string* arg2          = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1 = *(simgrid::s4u::Engine**)&cthis;
-  if (!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
-    return;
-  }
-  const char* arg2_pstr = (const char*)jenv->GetStringUTFChars(jarg2, 0);
-  if (!arg2_pstr)
-    return;
-  std::string arg2_str(arg2_pstr);
-  arg2 = &arg2_str;
-  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr);
-  ((simgrid::s4u::Engine const*)arg1)->load_deployment((std::string const&)*arg2);
+  simgrid_register_default(java_main);
+  std::string cfilename = java_string_to_std_string(jenv, jfilename);
+  ((Engine*)cthis)->load_deployment(cfilename);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1host_1count(JNIEnv* jenv, jclass jcls,
