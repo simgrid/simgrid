@@ -41,6 +41,7 @@ static simgrid::kernel::actor::ActorCode maestro_code;
 namespace simgrid::s4u {
 xbt::signal<void()> Engine::on_platform_creation;
 xbt::signal<void()> Engine::on_platform_created;
+xbt::signal<void()> Engine::on_platform_sealed;
 xbt::signal<void()> Engine::on_simulation_start;
 xbt::signal<void()> Engine::on_simulation_end;
 xbt::signal<void(double)> Engine::on_time_advance;
