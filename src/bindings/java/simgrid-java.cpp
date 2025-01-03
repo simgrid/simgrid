@@ -85,6 +85,12 @@ static void handle_exception(JNIEnv* jenv)
     jenv->ExceptionClear();
   }
 }
+static JNIEnv* get_jenv()
+{
+  auto self = (simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self();
+  xbt_assert(self);
+  return self->jenv_;
+}
 static jmethodID init_methodId(JNIEnv* jenv, const char* klassname, const char* methname, const char* signature)
 {
   char buff[1024];
@@ -2128,11 +2134,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1resume_1
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1veto_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
 {
   cb = jenv->NewGlobalRef(cb);
-  simgrid::s4u::Exec::on_veto_cb([cb](Exec const& e) {
-    XBT_CRITICAL("Calling callback %p", CallbackExec_methodId);
-    maestro_jenv->CallLongMethod(cb, CallbackExec_methodId, &e);
-    XBT_CRITICAL("Done with the callback");
-  });
+  simgrid::s4u::Exec::on_veto_cb([cb](Exec const& e) { get_jenv()->CallVoidMethod(cb, CallbackExec_methodId, &e); });
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1veto_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -5524,22 +5526,7 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1is_1parallel(J
 XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1is_1assigned(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                jobject jthis)
 {
-  jboolean jresult                                       = 0;
-  simgrid::s4u::Exec* arg1                               = (simgrid::s4u::Exec*)0;
-  boost::shared_ptr<simgrid::s4u::Exec const>* smartarg1 = 0;
-  bool result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Exec>**)&cthis;
-  arg1      = (simgrid::s4u::Exec*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = (bool)((simgrid::s4u::Exec const*)arg1)->is_assigned();
-  jresult = (jboolean)result;
-  return jresult;
+  return ((Exec*)cthis)->is_assigned();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Exec(JNIEnv* jenv, jclass jcls, jlong cthis)
