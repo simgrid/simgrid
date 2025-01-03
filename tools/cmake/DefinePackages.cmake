@@ -805,6 +805,7 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/LinkInRoute.java
     src/bindings/java/org/simgrid/s4u/Link.java
     src/bindings/java/org/simgrid/s4u/Mailbox.java
+    src/bindings/java/org/simgrid/s4u/Mess.java
     src/bindings/java/org/simgrid/s4u/MessageQueue.java
     src/bindings/java/org/simgrid/s4u/Mutex.java
     src/bindings/java/org/simgrid/s4u/NativeLib.java
@@ -812,7 +813,6 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/Semaphore.java
     src/bindings/java/org/simgrid/s4u/simgrid.java
     src/bindings/java/org/simgrid/s4u/simgridJNI.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_MessPtr.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_s4u__Host.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fboost__intrusive_ptrT_simgrid__s4u__Actor_tF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Host_pF_t.java

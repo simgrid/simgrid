@@ -62,6 +62,7 @@
 #include "simgrid/s4u/Activity.hpp"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Barrier.hpp"
+#include "simgrid/s4u/MessageQueue.hpp"
 #include "src/dag/dax_dtd.h"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextJava.hpp"
@@ -2750,71 +2751,17 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1is_1assigned(J
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1sender(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                            jobject jthis)
 {
-  jlong jresult                                          = 0;
-  simgrid::s4u::Comm* arg1                               = (simgrid::s4u::Comm*)0;
-  boost::shared_ptr<simgrid::s4u::Comm const>* smartarg1 = 0;
-  simgrid::s4u::Actor* result                            = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Comm>**)&cthis;
-  arg1      = (simgrid::s4u::Comm*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (simgrid::s4u::Actor*)((simgrid::s4u::Comm const*)arg1)->get_sender();
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Actor>(result, SWIG_intrusive_deleter<simgrid::s4u::Actor>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Actor>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  ActorPtr result = ((Comm*)cthis)->get_sender();
+  intrusive_ptr_add_ref(result.get());
+  return (jlong)result.get();
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1receiver(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                              jobject jthis)
 {
-  jlong jresult                                          = 0;
-  simgrid::s4u::Comm* arg1                               = (simgrid::s4u::Comm*)0;
-  boost::shared_ptr<simgrid::s4u::Comm const>* smartarg1 = 0;
-  simgrid::s4u::Actor* result                            = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Comm>**)&cthis;
-  arg1      = (simgrid::s4u::Comm*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (simgrid::s4u::Actor*)((simgrid::s4u::Comm const*)arg1)->get_receiver();
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Actor>(result, SWIG_intrusive_deleter<simgrid::s4u::Actor>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult = 0;
-  }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Actor>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+  ActorPtr result = ((Comm*)cthis)->get_receiver();
+  intrusive_ptr_add_ref(result.get());
+  return (jlong)result.get();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1await_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -2985,22 +2932,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1tracing_1cate
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1tracing_1category(JNIEnv* jenv, jclass jcls,
                                                                                         jlong cthis, jobject jthis)
 {
-  jstring jresult                                    = 0;
-  simgrid::s4u::Activity_T<simgrid::s4u::Comm>* arg1 = (simgrid::s4u::Activity_T<simgrid::s4u::Comm>*)0;
-  boost::shared_ptr<simgrid::s4u::Activity_T<simgrid::s4u::Comm> const>* smartarg1 = 0;
-  std::string* result                                                              = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Activity_T<simgrid::s4u::Comm>>**)&cthis;
-  arg1      = (simgrid::s4u::Activity_T<simgrid::s4u::Comm>*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = (std::string*)&((simgrid::s4u::Activity_T<simgrid::s4u::Comm> const*)arg1)->get_tracing_category();
-  jresult = jenv->NewStringUTF(result->c_str());
-  return jresult;
+  std::string result = ((Comm*)cthis)->get_tracing_category();
+  return jenv->NewStringUTF(result.c_str());
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1detach_1_1SWIG_10(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -8499,93 +8432,167 @@ XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get(JNIEnv* 
   }
 }
 
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1set_1queue(JNIEnv* jenv, jclass klass, jlong cthis,
+                                                                        jobject jthis, jlong cqueue, jobject jqueue)
+{
+  ((Mess*)cthis)->set_queue((MessageQueue*)cqueue);
+}
+
+JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1queue(JNIEnv* jenv, jclass klass, jlong cthis,
+                                                                         jobject jthis)
+{
+  return (jlong)((Mess*)cthis)->get_queue();
+}
+
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1set_1payload(JNIEnv* jenv, jclass klass, jlong cthis,
+                                                                          jobject jthis, jobject payload)
+{
+  auto self = (Mess*)cthis;
+  auto glob = jenv->NewGlobalRef(payload);
+
+  self->set_payload(glob);
+}
+
+JNIEXPORT jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1payload(JNIEnv* jenv, jclass klass, jlong cthis,
+                                                                             jobject jthis)
+{
+  auto self    = (Mess*)cthis;
+  jobject glob = (jobject)self->get_payload();
+  auto local   = jenv->NewLocalRef(glob);
+  jenv->DeleteGlobalRef(glob);
+
+  return local;
+}
+
+JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1sender(JNIEnv* jenv, jclass klass, jlong cthis,
+                                                                          jobject jthis)
+{
+  ActorPtr result = ((Mess*)cthis)->get_sender();
+  intrusive_ptr_add_ref(result.get());
+  return (jlong)result.get();
+}
+
+JNIEXPORT jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1is_1assigned(JNIEnv* jenv, jclass klass, jlong cthis,
+                                                                              jobject jthis)
+{
+  return ((Mess*)cthis)->is_assigned();
+}
+
+JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1receiver(JNIEnv* jenv, jclass klass, jlong cthis,
+                                                                            jobject jthis)
+{
+  ActorPtr result = ((Mess*)cthis)->get_receiver();
+  intrusive_ptr_add_ref(result.get());
+  return (jlong)result.get();
+}
+
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1add_1successor(JNIEnv* jenv, jclass klass, jlong cthis,
+                                                                            jobject jthis, jlong cact, jobject jact)
+{
+  auto self = (Mess*)cthis;
+  self->add_successor((Activity*)cact);
+}
+
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1remove_1successor(JNIEnv* jenv, jclass klass, jlong cthis,
+                                                                               jobject jthis, jlong cact, jobject jact)
+{
+  auto self = (Mess*)cthis;
+  self->remove_successor((Activity*)cact);
+}
+
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1set_1name(JNIEnv* jenv, jclass klass, jlong cthis,
+                                                                       jobject jthis, jstring jname)
+{
+  auto* self = (Mess*)cthis;
+  self->set_name(java_string_to_std_string(jenv, jname));
+}
+
+JNIEXPORT jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1name(JNIEnv* jenv, jclass klass, jlong cthis,
+                                                                          jobject jthis)
+{
+  auto self          = (Mess*)cthis;
+  const char* result = self->get_cname();
+  if (result)
+    return jenv->NewStringUTF((const char*)result);
+  return 0;
+}
+
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1set_1tracing_1category(JNIEnv* jenv, jclass klass,
+                                                                                    jlong cthis, jobject jthis,
+                                                                                    jstring jcat)
+{
+  auto self = (Mess*)cthis;
+  self->set_tracing_category(java_string_to_std_string(jenv, jcat));
+}
+
+JNIEXPORT jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1tracing_1category(JNIEnv* jenv, jclass klass,
+                                                                                       jlong cthis, jobject jthis)
+{
+  std::string result = ((Mess*)cthis)->get_tracing_category();
+  return jenv->NewStringUTF(result.c_str());
+}
+
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1cancel(JNIEnv* jenv, jclass klass, jlong cthis,
+                                                                    jobject jthis)
+{
+  ((Mess*)cthis)->cancel();
+}
+
+XBT_PUBLIC JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1await_1for(JNIEnv* jenv, jclass klass,
+                                                                                   jlong cthis, jobject jthis,
+                                                                                   jdouble jarg2)
+{
+  try {
+    ((Mess*)cthis)->wait_for(jarg2);
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  }
+}
+
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1name(JNIEnv* jenv, jclass jcls,
                                                                                    jlong cthis, jobject jthis)
 {
-  jstring jresult                  = 0;
-  simgrid::s4u::MessageQueue* arg1 = (simgrid::s4u::MessageQueue*)0;
-  char* result                     = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1   = *(simgrid::s4u::MessageQueue**)&cthis;
-  result = (char*)((simgrid::s4u::MessageQueue const*)arg1)->get_cname();
+  auto self          = (MessageQueue*)cthis;
+  const char* result = self->get_cname();
   if (result)
-    jresult = jenv->NewStringUTF((const char*)result);
-  return jresult;
+    return jenv->NewStringUTF((const char*)result);
+  return 0;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1by_1name(JNIEnv* jenv, jclass jcls,
-                                                                                jstring cthis)
+                                                                                jstring jname)
 {
-  jlong jresult                      = 0;
-  std::string* arg1                  = 0;
-  simgrid::s4u::MessageQueue* result = 0;
-
-  (void)jenv;
-  (void)jcls;
-  if (!cthis) {
+  if (!jname) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
     return 0;
   }
-  const char* arg1_pstr = (const char*)jenv->GetStringUTFChars(cthis, 0);
-  if (!arg1_pstr)
-    return 0;
-  std::string arg1_str(arg1_pstr);
-  arg1 = &arg1_str;
-  jenv->ReleaseStringUTFChars(cthis, arg1_pstr);
-  result = (simgrid::s4u::MessageQueue*)simgrid::s4u::MessageQueue::by_name((std::string const&)*arg1);
-  *(simgrid::s4u::MessageQueue**)&jresult = result;
-  return jresult;
+  const char* cname    = (const char*)jenv->GetStringUTFChars(jname, 0);
+  MessageQueue* result = simgrid::s4u::MessageQueue::by_name(cname);
+  jenv->ReleaseStringUTFChars(jname, cname);
+
+  return (jlong)result;
 }
 
 XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1empty(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                 jobject jthis)
 {
-  jboolean jresult                 = 0;
-  simgrid::s4u::MessageQueue* arg1 = (simgrid::s4u::MessageQueue*)0;
-  bool result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1    = *(simgrid::s4u::MessageQueue**)&cthis;
-  result  = (bool)((simgrid::s4u::MessageQueue const*)arg1)->empty();
-  jresult = (jboolean)result;
-  return jresult;
+  return ((MessageQueue*)cthis)->empty();
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1size(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                             jobject jthis)
 {
-  jlong jresult                    = 0;
-  simgrid::s4u::MessageQueue* arg1 = (simgrid::s4u::MessageQueue*)0;
-  size_t result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1    = *(simgrid::s4u::MessageQueue**)&cthis;
-  result  = ((simgrid::s4u::MessageQueue const*)arg1)->size();
-  jresult = (jlong)result;
-  return jresult;
+  return ((MessageQueue*)cthis)->size();
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1init_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
                                                                                             jlong cthis, jobject jthis)
 {
-  jlong jresult                    = 0;
-  simgrid::s4u::MessageQueue* arg1 = (simgrid::s4u::MessageQueue*)0;
-  MessPtr result;
+  auto self = (MessageQueue*)cthis;
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1                 = *(simgrid::s4u::MessageQueue**)&cthis;
-  result               = (arg1)->put_init();
-  *(MessPtr**)&jresult = new MessPtr(result);
-  return jresult;
+  MessPtr result = self->put_init();
+  intrusive_ptr_add_ref(result.get());
+
+  return (jlong)result.get();
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1init_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
@@ -8634,33 +8641,21 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1_1SWI
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                  jobject jthis)
 {
-  jlong jresult                    = 0;
-  simgrid::s4u::MessageQueue* arg1 = (simgrid::s4u::MessageQueue*)0;
-  MessPtr result;
+  auto self = (MessageQueue*)cthis;
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1                 = *(simgrid::s4u::MessageQueue**)&cthis;
-  result               = (arg1)->get_init();
-  *(MessPtr**)&jresult = new MessPtr(result);
-  return jresult;
+  MessPtr result = self->get_init();
+  intrusive_ptr_add_ref(result.get());
+  return (jlong)result.get();
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1async(JNIEnv* jenv, jclass jcls,
                                                                                   jlong cthis, jobject jthis)
 {
-  jlong jresult                    = 0;
-  simgrid::s4u::MessageQueue* arg1 = (simgrid::s4u::MessageQueue*)0;
-  MessPtr result;
+  auto self = (MessageQueue*)cthis;
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1                 = *(simgrid::s4u::MessageQueue**)&cthis;
-  result               = (arg1)->get_async();
-  *(MessPtr**)&jresult = new MessPtr(result);
-  return jresult;
+  MessPtr result = self->get_async();
+  intrusive_ptr_add_ref(result.get());
+  return (jlong)result.get();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Mutex(JNIEnv* jenv, jclass jcls, jlong cthis)

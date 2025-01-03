@@ -60,16 +60,16 @@ public class MessageQueue {
     return simgridJNI.MessageQueue_size(swigCPtr, this);
   }
 
-  public SWIGTYPE_p_MessPtr put_init() {
-    return new SWIGTYPE_p_MessPtr(simgridJNI.MessageQueue_put_init__SWIG_0(swigCPtr, this), true);
+  public Mess put_init() { return new Mess(simgridJNI.MessageQueue_put_init__SWIG_0(swigCPtr, this), true); }
+
+  public Mess put_init(Object payload)
+  {
+    return new Mess(simgridJNI.MessageQueue_put_init__SWIG_1(swigCPtr, this, payload), true);
   }
 
-  public SWIGTYPE_p_MessPtr put_init(Object payload) {
-    return new SWIGTYPE_p_MessPtr(simgridJNI.MessageQueue_put_init__SWIG_1(swigCPtr, this, payload), true);
-  }
-
-  public SWIGTYPE_p_MessPtr put_async(Object payload) {
-    return new SWIGTYPE_p_MessPtr(simgridJNI.MessageQueue_put_async(swigCPtr, this, payload), true);
+  public Mess put_async(Object payload)
+  {
+    return new Mess(simgridJNI.MessageQueue_put_async(swigCPtr, this, payload), true);
   }
 
   public void put(Object payload) {
@@ -80,12 +80,7 @@ public class MessageQueue {
     simgridJNI.MessageQueue_put__SWIG_1(swigCPtr, this, payload, timeout);
   }
 
-  public SWIGTYPE_p_MessPtr get_init() {
-    return new SWIGTYPE_p_MessPtr(simgridJNI.MessageQueue_get_init(swigCPtr, this), true);
-  }
+  public Mess get_init() { return new Mess(simgridJNI.MessageQueue_get_init(swigCPtr, this), true); }
 
-  public SWIGTYPE_p_MessPtr get_async() {
-    return new SWIGTYPE_p_MessPtr(simgridJNI.MessageQueue_get_async(swigCPtr, this), true);
-  }
-
+  public Mess get_async() { return new Mess(simgridJNI.MessageQueue_get_async(swigCPtr, this), true); }
 }

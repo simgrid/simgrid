@@ -459,6 +459,8 @@ include examples/java/exec_basic/exec_basic.java
 include examples/java/exec_basic/exec_basic.java.tesh
 include examples/java/exec_dependent/exec_dependent.java
 include examples/java/exec_dependent/exec_dependent.java.tesh
+include examples/java/mess_await/mess_await.java
+include examples/java/mess_await/mess_await.java.tesh
 include examples/java/synchro_barrier/synchro_barrier.java
 include examples/java/synchro_barrier/synchro_barrier.java.tesh
 include examples/java/synchro_condition_variable/synchro_condition_variable.java
@@ -2174,11 +2176,11 @@ include src/bindings/java/org/simgrid/s4u/Io.java
 include src/bindings/java/org/simgrid/s4u/Link.java
 include src/bindings/java/org/simgrid/s4u/LinkInRoute.java
 include src/bindings/java/org/simgrid/s4u/Mailbox.java
+include src/bindings/java/org/simgrid/s4u/Mess.java
 include src/bindings/java/org/simgrid/s4u/MessageQueue.java
 include src/bindings/java/org/simgrid/s4u/Mutex.java
 include src/bindings/java/org/simgrid/s4u/NativeLib.java
 include src/bindings/java/org/simgrid/s4u/NetZone.java
-include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_MessPtr.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_s4u__Host.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fboost__intrusive_ptrT_simgrid__s4u__Actor_tF_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Host_pF_t.java
