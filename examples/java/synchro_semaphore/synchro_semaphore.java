@@ -65,7 +65,7 @@ public class synchro_semaphore {
 
   public static void main(String[] args)
   {
-    var e = Engine.get_instance(args);
+    var e = new Engine(args);
     e.load_platform(args.length >= 1 ? args[0] : "../../platforms/two_hosts.xml");
 
     Vector<String> params = new Vector<>(List.of("one", "two", "three", ""));

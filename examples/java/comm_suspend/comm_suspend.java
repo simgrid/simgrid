@@ -54,7 +54,7 @@ class receiver extends Actor {
 public class comm_suspend {
   public static void main(String[] args)
   {
-    var e = Engine.get_instance(args);
+    var e = new Engine(args);
 
     e.load_platform(args[0]);
 

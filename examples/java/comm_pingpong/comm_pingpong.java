@@ -62,7 +62,7 @@ public class comm_pingpong {
   
   public static void main(String[] args) {
 
-    Engine e = Engine.get_instance(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]);
 
     Mailbox mb1 = e.mailbox_by_name_or_create("Mailbox 1");

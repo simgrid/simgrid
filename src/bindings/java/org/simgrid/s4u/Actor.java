@@ -206,9 +206,9 @@ public class Actor {
     simgridJNI.Actor_execute__SWIG_1(swigCPtr, this, flop, priority);
   }
   /** Only call this on the current thread (on `this`) */
-  public void thread_execute(SWIGTYPE_p_s4u__Host host, double flop_amounts, int thread_count)
+  public void thread_execute(Host host, double flop_amounts, int thread_count)
   {
-    simgridJNI.Actor_thread_execute(swigCPtr, this, SWIGTYPE_p_s4u__Host.getCPtr(host), flop_amounts, thread_count);
+    simgridJNI.Actor_thread_execute(swigCPtr, this, Host.getCPtr(host), host, flop_amounts, thread_count);
   }
   /** Only call this on the current thread (on `this`) */
   public Exec exec_init(double flops_amounts)

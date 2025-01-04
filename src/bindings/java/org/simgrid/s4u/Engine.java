@@ -48,13 +48,7 @@ public class Engine {
     }
   }
 
-  public Engine(String name) {
-    this(simgridJNI.new_Engine__SWIG_0(name), true);
-  }
-
-  public Engine(String[] argc) {
-    this(simgridJNI.new_Engine__SWIG_1(argc), true);
-  }
+  public Engine(String[] args) { this(simgridJNI.new_Engine(args), true); }
 
   public void run() {
     simgridJNI.Engine_run(swigCPtr, this);
@@ -85,25 +79,12 @@ public class Engine {
   }
 
   public static Engine get_instance() {
-    long cPtr = simgridJNI.Engine_get_instance__SWIG_0();
-    return (cPtr == 0) ? null : new Engine(cPtr, false);
-  }
-
-  public static Engine get_instance(String[] argc) {
-    long cPtr = simgridJNI.Engine_get_instance__SWIG_1(argc);
+    long cPtr = simgridJNI.Engine_get_instance();
     return (cPtr == 0) ? null : new Engine(cPtr, false);
   }
 
   public static boolean has_instance() {
     return simgridJNI.Engine_has_instance();
-  }
-
-  public SWIGTYPE_p_std__vectorT_std__string_t get_cmdline() {
-    return new SWIGTYPE_p_std__vectorT_std__string_t(simgridJNI.Engine_get_cmdline(swigCPtr, this), false);
-  }
-
-  public String get_context_factory_name() {
-    return simgridJNI.Engine_get_context_factory_name(swigCPtr, this);
   }
 
   public void load_platform(String platf) {
@@ -116,18 +97,6 @@ public class Engine {
 
   public String flatify_platform() {
     return simgridJNI.Engine_flatify_platform(swigCPtr, this);
-  }
-
-  public void register_function(String name, SWIGTYPE_p_std__functionT_void_fint_char_ppF_t code) {
-    simgridJNI.Engine_register_function__SWIG_0(swigCPtr, this, name, SWIGTYPE_p_std__functionT_void_fint_char_ppF_t.getCPtr(code));
-  }
-
-  public void register_function(String name, SWIGTYPE_p_std__functionT_void_fstd__vectorT_std__string_tF_t code) {
-    simgridJNI.Engine_register_function__SWIG_1(swigCPtr, this, name, SWIGTYPE_p_std__functionT_void_fstd__vectorT_std__string_tF_t.getCPtr(code));
-  }
-
-  public void register_default(SWIGTYPE_p_std__functionT_void_fint_char_ppF_t code) {
-    simgridJNI.Engine_register_default(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fint_char_ppF_t.getCPtr(code));
   }
 
   public void track_vetoed_activities(SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t vetoed_activities) {
@@ -296,23 +265,20 @@ public class Engine {
 	public static void main(String[]args) {
   
 		/* initialize the SimGrid simulation. Must be done before anything else */
-		Engine e = Engine.get_instance(args);
+                Engine e = new Engine(args);
 
-		if (args.length < 2) {
-			Engine.info("Usage: org.simgrid.s4u.Engine platform_file deployment_file");
-			System.exit(1);
-		}
+                if (args.length < 2) {
+                  Engine.info("Usage: org.simgrid.s4u.Engine platform_file deployment_file");
+                  System.exit(1);
+                }
 
-		/* Load the platform and deploy the application */
-		e.load_platform(args[0]);
-		e.load_deployment(args[1]);
-		/* Execute the simulation */
-		e.run();
-	}
+                /* Load the platform and deploy the application */
+                e.load_platform(args[0]);
+                e.load_deployment(args[1]);
+                /* Execute the simulation */
+                e.run();
+        }
 
-	/* Class initializer, to initialize various JNI stuff */
-	static {
-		org.simgrid.s4u.NativeLib.nativeInit();
-	}
-  
+        /* Class initializer, to initialize various JNI stuff */
+        static { org.simgrid.s4u.NativeLib.nativeInit(); }
 }

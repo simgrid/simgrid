@@ -97,7 +97,7 @@ class peer extends Actor {
 class comm_ready {
   public static void main(String[] args)
   {
-    var e = Engine.get_instance(args);
+    var e = new Engine(args);
     e.load_platform(args[0]);
 
     new peer("peer", e.host_by_name("Tremblay"), 0, 2, 5e7, 3);

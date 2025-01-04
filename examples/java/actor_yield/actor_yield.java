@@ -32,7 +32,7 @@ class Yielder extends Actor {
 public class actor_yield {
   public static void main(String[] args)
   {
-    var e = Engine.get_instance(args);
+    var e = new Engine(args);
     e.load_platform(args[0]);
 
     new Yielder("yielder", e.host_by_name("Tremblay"), 10);

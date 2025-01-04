@@ -50,7 +50,7 @@ class master extends Actor {
 public class synchro_barrier {
   public static void main(String[] args)
   {
-    var e = Engine.get_instance(args);
+    var e = new Engine(args);
 
     // Parameter: Number of actors in the barrier
     if (args.length < 1)

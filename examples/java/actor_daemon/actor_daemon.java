@@ -36,7 +36,7 @@ class my_daemon extends Actor {
 public class actor_daemon {
   public static void main(String[] args)
   {
-    var e = Engine.get_instance(args);
+    var e = new Engine(args);
 
     e.load_platform(args[0]);
     new worker("worker", e.host_by_name("Boivin"));

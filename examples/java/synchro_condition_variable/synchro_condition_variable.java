@@ -54,7 +54,7 @@ class master extends Actor {
 public class synchro_condition_variable {
   public static void main(String[] args)
   {
-    var e = Engine.get_instance(args);
+    var e = new Engine(args);
     e.load_platform(args[0]);
     new master("main", e.host_by_name("Tremblay"));
     e.run();

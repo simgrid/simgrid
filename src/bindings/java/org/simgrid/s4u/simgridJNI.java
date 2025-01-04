@@ -8,14 +8,13 @@
 
 package org.simgrid.s4u;
 
-import java.util.Vector;
-
 public class simgridJNI {
   public final static native void Actor_sleep_for(long jarg1, Actor jarg1_, double jarg2);
   public final static native void Actor_sleep_until(long jarg1, Actor jarg1_, double jarg2);
   public final static native void Actor_execute__SWIG_0(long jarg1, Actor jarg1_, double jarg2);
   public final static native void Actor_execute__SWIG_1(long jarg1, Actor jarg1_, double jarg2, double jarg3);
-  public final static native void Actor_thread_execute(long jarg1, Actor jarg1_, long jarg2, double jarg3, int jarg4);
+  public final static native void Actor_thread_execute(long jarg1, Actor jarg1_, long chost, Host jhost, double jarg3,
+                                                       int jarg4);
   public final static native long Actor_exec_init(long jarg1, Actor jarg1_, double jarg2);
   public final static native long Actor_exec_async(long jarg1, Actor jarg1_, double jarg2);
   public final static native void Actor_yield(long jarg1, Actor jarg1_);
@@ -229,8 +228,7 @@ public class simgridJNI {
   public final static native void Disk_on_this_write_bandwidth_change_cb(long jarg1, Disk jarg1_, long jarg2);
   public final static native void Disk_on_destruction_cb(long jarg1);
   public final static native void Disk_on_this_destruction_cb(long jarg1, Disk jarg1_, long jarg2);
-  public final static native long new_Engine__SWIG_0(String jarg1);
-  public final static native long new_Engine__SWIG_1(String[] jarg1);
+  public final static native long new_Engine(String[] jarg1);
   public final static native void Engine_run(long jarg1, Engine jarg1_);
   public final static native void Engine_run_until(long jarg1, Engine jarg1_, double jarg2);
   public final static native double Engine_get_clock();
@@ -238,17 +236,11 @@ public class simgridJNI {
   public final static native void Engine_papi_stop();
   public final static native int Engine_papi_get_num_counters();
   public final static native long Engine_get_papi_counters();
-  public final static native long Engine_get_instance__SWIG_0();
-  public final static native long Engine_get_instance__SWIG_1(String[] jarg1);
+  public final static native long Engine_get_instance();
   public final static native boolean Engine_has_instance();
-  public final static native long Engine_get_cmdline(long jarg1, Engine jarg1_);
-  public final static native String Engine_get_context_factory_name(long jarg1, Engine jarg1_);
   public final static native void Engine_load_platform(long jarg1, Engine jarg1_, String jarg2);
   public final static native void Engine_seal_platform(long jarg1, Engine jarg1_);
   public final static native String Engine_flatify_platform(long jarg1, Engine jarg1_);
-  public final static native void Engine_register_function__SWIG_0(long jarg1, Engine jarg1_, String jarg2, long jarg3);
-  public final static native void Engine_register_function__SWIG_1(long jarg1, Engine jarg1_, String jarg2, long jarg3);
-  public final static native void Engine_register_default(long jarg1, Engine jarg1_, long jarg2);
   public final static native void Engine_track_vetoed_activities(long jarg1, Engine jarg1_, long jarg2);
   public final static native void Engine_load_deployment(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_get_host_count(long jarg1, Engine jarg1_);

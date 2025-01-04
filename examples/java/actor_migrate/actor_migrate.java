@@ -71,7 +71,7 @@ class Monitor extends Actor {
 public class actor_migrate {
   public static void main(String[] args)
   {
-    var e = Engine.get_instance(args);
+    var e = new Engine(args);
     e.load_platform(args[0]);
 
     new Monitor("monitor", e.host_by_name("Boivin"));

@@ -780,7 +780,6 @@ set(SIMGRID_JAVA_C_SOURCES
     src/kernel/context/ContextJava.cpp
     src/kernel/context/ContextJava.hpp
     src/bindings/java/simgrid-java.cpp
-    src/bindings/java/simgrid-java.hpp
     )
 set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/NativeLib.java
@@ -816,7 +815,6 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/simgrid.java
     src/bindings/java/org/simgrid/s4u/SimgridException.java
     src/bindings/java/org/simgrid/s4u/simgridJNI.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_s4u__Host.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fboost__intrusive_ptrT_simgrid__s4u__Actor_tF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Host_pF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Link_pF_t.java
@@ -833,8 +831,6 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_R_Host_const_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__NetZone_const_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.java

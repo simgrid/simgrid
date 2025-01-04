@@ -2185,7 +2185,6 @@ include src/bindings/java/org/simgrid/s4u/MessageQueue.java
 include src/bindings/java/org/simgrid/s4u/Mutex.java
 include src/bindings/java/org/simgrid/s4u/NativeLib.java
 include src/bindings/java/org/simgrid/s4u/NetZone.java
-include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_s4u__Host.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fboost__intrusive_ptrT_simgrid__s4u__Actor_tF_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Host_pF_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Link_pF_t.java
@@ -2202,8 +2201,6 @@ include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fint_ch
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_R_Host_const_RF_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t.java
-include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_RF_t.java
-include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__NetZone_const_RF_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.java
@@ -2231,7 +2228,6 @@ include src/bindings/java/org/simgrid/s4u/VirtualMachine.java
 include src/bindings/java/org/simgrid/s4u/simgrid.java
 include src/bindings/java/org/simgrid/s4u/simgridJNI.java
 include src/bindings/java/simgrid-java.cpp
-include src/bindings/java/simgrid-java.hpp
 include src/bindings/python/simgrid_python.cpp
 include src/dag/dax.dtd
 include src/dag/dax_dtd.c
