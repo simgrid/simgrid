@@ -104,14 +104,14 @@ public class simgridJNI {
   public final static native long ActivitySet_get_failed_activity(long jarg1, ActivitySet jarg1_);
   public final static native boolean ActivitySet_has_failed_activity(long jarg1, ActivitySet jarg1_);
 
-  public final static native void Comm_on_start_cb(long jarg1);
-  public final static native void Comm_on_this_start_cb(long jarg1, Comm jarg1_, long jarg2);
-  public final static native void Comm_on_completion_cb(long jarg1);
-  public final static native void Comm_on_this_completion_cb(long jarg1, Comm jarg1_, long jarg2);
-  public final static native void Comm_on_this_suspend_cb(long jarg1, Comm jarg1_, long jarg2);
-  public final static native void Comm_on_this_resume_cb(long jarg1, Comm jarg1_, long jarg2);
-  public final static native void Comm_on_veto_cb(long jarg1);
-  public final static native void Comm_on_this_veto_cb(long jarg1, Comm jarg1_, long jarg2);
+  public final static native void Comm_on_start_cb(CallbackComm cb);
+  public final static native void Comm_on_this_start_cb(long jarg1, Comm jarg1_, CallbackComm cb);
+  public final static native void Comm_on_completion_cb(CallbackComm cb);
+  public final static native void Comm_on_this_completion_cb(long jarg1, Comm jarg1_, CallbackComm cb);
+  public final static native void Comm_on_this_suspend_cb(long jarg1, Comm jarg1_, CallbackComm cb);
+  public final static native void Comm_on_this_resume_cb(long jarg1, Comm jarg1_, CallbackComm cb);
+  public final static native void Comm_on_veto_cb(CallbackComm cb);
+  public final static native void Comm_on_this_veto_cb(long jarg1, Comm jarg1_, CallbackComm cb);
   public final static native void Comm_add_successor(long jarg1, Comm jarg1_, long jarg2, Activity jarg2_);
   public final static native void Comm_remove_successor(long jarg1, Comm jarg1_, long jarg2, Activity jarg2_);
   public final static native void Comm_set_name(long jarg1, Comm jarg1_, String jarg2);
@@ -121,10 +121,10 @@ public class simgridJNI {
   public final static native void Comm_detach__SWIG_0(long jarg1, Comm jarg1_);
   public final static native void Comm_detach__SWIG_1(long jarg1, Comm jarg1_, long jarg2);
   public final static native void Comm_cancel(long jarg1, Comm jarg1_);
-  public final static native void Comm_on_send_cb(long jarg1);
-  public final static native void Comm_on_this_send_cb(long jarg1, Comm jarg1_, long jarg2);
-  public final static native void Comm_on_recv_cb(long jarg1);
-  public final static native void Comm_on_this_recv_cb(long jarg1, Comm jarg1_, long jarg2);
+  public final static native void Comm_on_send_cb(CallbackComm cb);
+  public final static native void Comm_on_this_send_cb(long jarg1, Comm jarg1_, CallbackComm cb);
+  public final static native void Comm_on_recv_cb(CallbackComm cb);
+  public final static native void Comm_on_this_recv_cb(long jarg1, Comm jarg1_, CallbackComm cb);
   public final static native void delete_Comm(long jarg1);
   public final static native long Comm_sendto_init__SWIG_0();
   public final static native long Comm_sendto_init__SWIG_1(long jarg1, Host jarg1_, long jarg2, Host jarg2_);

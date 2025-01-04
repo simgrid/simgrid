@@ -790,6 +790,7 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/Barrier.java
     src/bindings/java/org/simgrid/s4u/CallbackActor.java
     src/bindings/java/org/simgrid/s4u/CallbackBoolean.java
+    src/bindings/java/org/simgrid/s4u/CallbackComm.java
     src/bindings/java/org/simgrid/s4u/CallbackExec.java
     src/bindings/java/org/simgrid/s4u/CallbackIo.java
     src/bindings/java/org/simgrid/s4u/ClusterCallbacks.java
@@ -831,8 +832,6 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fint_char_ppF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_R_Host_const_RF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_const_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Io_RF_t.java

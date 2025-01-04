@@ -36,21 +36,13 @@ public class Comm extends Activity {
     super.delete();
   }
 
-  public static void on_send_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
-    simgridJNI.Comm_on_send_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
-  }
+  public static void on_send_cb(CallbackComm cb) { simgridJNI.Comm_on_send_cb(cb); }
 
-  public void on_this_send_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
-    simgridJNI.Comm_on_this_send_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_send_cb(CallbackComm cb) { simgridJNI.Comm_on_this_send_cb(swigCPtr, this, cb); }
 
-  public static void on_recv_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
-    simgridJNI.Comm_on_recv_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
-  }
+  public static void on_recv_cb(CallbackComm cb) { simgridJNI.Comm_on_recv_cb(cb); }
 
-  public void on_this_recv_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
-    simgridJNI.Comm_on_this_recv_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_recv_cb(CallbackComm cb) { simgridJNI.Comm_on_this_recv_cb(swigCPtr, this, cb); }
 
   public static Comm sendto_init() {
     long cPtr = simgridJNI.Comm_sendto_init__SWIG_0();
@@ -140,37 +132,21 @@ public class Comm extends Activity {
     return (cPtr == 0) ? null : new Actor(cPtr, true);
   }
 
-  public static void on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
-    simgridJNI.Comm_on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
-  }
+  public static void on_start_cb(CallbackComm cb) { simgridJNI.Comm_on_start_cb(cb); }
 
-  public void on_this_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
-    simgridJNI.Comm_on_this_start_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_start_cb(CallbackComm cb) { simgridJNI.Comm_on_this_start_cb(swigCPtr, this, cb); }
 
-  public static void on_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
-    simgridJNI.Comm_on_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
-  }
+  public static void on_completion_cb(CallbackComm cb) { simgridJNI.Comm_on_completion_cb(cb); }
 
-  public void on_this_completion_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
-    simgridJNI.Comm_on_this_completion_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_completion_cb(CallbackComm cb) { simgridJNI.Comm_on_this_completion_cb(swigCPtr, this, cb); }
 
-  public void on_this_suspend_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
-    simgridJNI.Comm_on_this_suspend_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_suspend_cb(CallbackComm cb) { simgridJNI.Comm_on_this_suspend_cb(swigCPtr, this, cb); }
 
-  public void on_this_resume_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t cb) {
-    simgridJNI.Comm_on_this_resume_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_resume_cb(CallbackComm cb) { simgridJNI.Comm_on_this_resume_cb(swigCPtr, this, cb); }
 
-  public static void on_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_RF_t cb) {
-    simgridJNI.Comm_on_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_RF_t.getCPtr(cb));
-  }
+  public static void on_veto_cb(CallbackComm cb) { simgridJNI.Comm_on_veto_cb(cb); }
 
-  public void on_this_veto_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_RF_t cb) {
-    simgridJNI.Comm_on_this_veto_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Comm_RF_t.getCPtr(cb));
-  }
+  public void on_this_veto_cb(CallbackComm cb) { simgridJNI.Comm_on_this_veto_cb(swigCPtr, this, cb); }
 
   public Comm add_successor(Activity a) {
     simgridJNI.Comm_add_successor(swigCPtr, this, Activity.getCPtr(a), a);
