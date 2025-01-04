@@ -2172,14 +2172,11 @@ include src/bindings/java/org/simgrid/s4u/CallbackBoolean.java
 include src/bindings/java/org/simgrid/s4u/CallbackComm.java
 include src/bindings/java/org/simgrid/s4u/CallbackExec.java
 include src/bindings/java/org/simgrid/s4u/CallbackIo.java
-include src/bindings/java/org/simgrid/s4u/ClusterCallbacks.java
 include src/bindings/java/org/simgrid/s4u/Comm.java
 include src/bindings/java/org/simgrid/s4u/ConditionVariable.java
 include src/bindings/java/org/simgrid/s4u/Disk.java
-include src/bindings/java/org/simgrid/s4u/DragonflyParams.java
 include src/bindings/java/org/simgrid/s4u/Engine.java
 include src/bindings/java/org/simgrid/s4u/Exec.java
-include src/bindings/java/org/simgrid/s4u/FatTreeParams.java
 include src/bindings/java/org/simgrid/s4u/ForcefulKillException.java
 include src/bindings/java/org/simgrid/s4u/Host.java
 include src/bindings/java/org/simgrid/s4u/Io.java
@@ -2196,7 +2193,6 @@ include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgri
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Link_pF_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_fdouble_simgrid__s4u__Host_const_p_simgrid__s4u__Host_const_p_std__vectorT_simgrid__s4u__Link_p_t_const_R_std__unordered_setT_simgrid__s4u__NetZone_p_t_const_RF_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_t.java
-include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_simgrid__s4u__Host_p_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_simgrid__s4u__Link_p_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_simgrid__s4u__NetZone_p_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_std__pairT_kernel__routing__NetPoint_p_kernel__routing__NetPoint_p_t_t.java

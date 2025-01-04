@@ -792,15 +792,12 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/CallbackComm.java
     src/bindings/java/org/simgrid/s4u/CallbackExec.java
     src/bindings/java/org/simgrid/s4u/CallbackIo.java
-    src/bindings/java/org/simgrid/s4u/ClusterCallbacks.java
     src/bindings/java/org/simgrid/s4u/Comm.java
     src/bindings/java/org/simgrid/s4u/ConditionVariable.java
     src/bindings/java/org/simgrid/s4u/Disk.java
-    src/bindings/java/org/simgrid/s4u/DragonflyParams.java
     src/bindings/java/org/simgrid/s4u/Engine.java
     src/bindings/java/org/simgrid/s4u/Exec.java
     src/bindings/java/org/simgrid/s4u/ForcefulKillException.java
-    src/bindings/java/org/simgrid/s4u/FatTreeParams.java
     src/bindings/java/org/simgrid/s4u/Host.java
     src/bindings/java/org/simgrid/s4u/Io.java
     src/bindings/java/org/simgrid/s4u/LinkInRoute.java
@@ -820,7 +817,6 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Link_pF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_fdouble_simgrid__s4u__Host_const_p_simgrid__s4u__Host_const_p_std__vectorT_simgrid__s4u__Link_p_t_const_R_std__unordered_setT_simgrid__s4u__NetZone_p_t_const_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_simgrid__s4u__Host_p_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_simgrid__s4u__Link_p_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_simgrid__s4u__NetZone_p_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_std__pairT_kernel__routing__NetPoint_p_kernel__routing__NetPoint_p_t_t.java

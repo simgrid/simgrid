@@ -56,19 +56,4 @@ public class simgrid {
     long cPtr = simgridJNI.create_wifi_zone(name);
     return (cPtr == 0) ? null : new NetZone(cPtr, false);
   }
-
-  public static NetZone create_torus_zone(String name, NetZone parent, SWIGTYPE_p_std__vectorT_unsigned_long_t dimensions, ClusterCallbacks set_callbacks, double bandwidth, double latency, Link.SharingPolicy sharing_policy) {
-    long cPtr = simgridJNI.create_torus_zone(name, NetZone.getCPtr(parent), parent, SWIGTYPE_p_std__vectorT_unsigned_long_t.getCPtr(dimensions), ClusterCallbacks.getCPtr(set_callbacks), set_callbacks, bandwidth, latency, sharing_policy.swigValue());
-    return (cPtr == 0) ? null : new NetZone(cPtr, false);
-  }
-
-  public static NetZone create_fatTree_zone(String name, NetZone parent, FatTreeParams parameters, ClusterCallbacks set_callbacks, double bandwidth, double latency, Link.SharingPolicy sharing_policy) {
-    long cPtr = simgridJNI.create_fatTree_zone(name, NetZone.getCPtr(parent), parent, FatTreeParams.getCPtr(parameters), parameters, ClusterCallbacks.getCPtr(set_callbacks), set_callbacks, bandwidth, latency, sharing_policy.swigValue());
-    return (cPtr == 0) ? null : new NetZone(cPtr, false);
-  }
-
-  public static NetZone create_dragonfly_zone(String name, NetZone parent, DragonflyParams parameters, ClusterCallbacks set_callbacks, double bandwidth, double latency, Link.SharingPolicy sharing_policy) {
-    long cPtr = simgridJNI.create_dragonfly_zone(name, NetZone.getCPtr(parent), parent, DragonflyParams.getCPtr(parameters), parameters, ClusterCallbacks.getCPtr(set_callbacks), set_callbacks, bandwidth, latency, sharing_policy.swigValue());
-    return (cPtr == 0) ? null : new NetZone(cPtr, false);
-  }
 }
