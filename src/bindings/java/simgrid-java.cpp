@@ -145,6 +145,22 @@ static jmethodID init_methodId(JNIEnv* jenv, const char* klassname, const char* 
   return methodId;
 }
 
+/* Retrive the jclass and ctor of the Java Disk object */
+static std::pair<jclass, jmethodID> get_classctor_disk(JNIEnv* jenv)
+{
+  static jclass disk_class   = 0;
+  static jmethodID disk_ctor = 0;
+  if (disk_class == 0) {
+    disk_class = jenv->FindClass("org/simgrid/s4u/Disk");
+    xbt_assert(disk_class);
+    disk_class = (jclass)jenv->NewGlobalRef(disk_class);
+
+    disk_ctor = jenv->GetMethodID(disk_class, "<init>", "(JZ)V");
+    xbt_assert(disk_ctor);
+  }
+  return std::make_pair(disk_class, disk_ctor);
+}
+
 /* *********************************************************************************** */
 /* Initialize the Java bindings                                                        */
 /* *********************************************************************************** */
@@ -3013,12 +3029,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Disk(JNIEnv* jen
 XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1disks(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                  jobject jthis)
 {
-  // The JVM segfaults in NewObjectArray if I cache the class and method ID :(
-  jclass disk_class = jenv->FindClass("org/simgrid/s4u/Disk");
-  xbt_assert(disk_class);
-
-  jmethodID disk_ctor = jenv->GetMethodID(disk_class, "<init>", "(JZ)V");
-  xbt_assert(disk_ctor);
+  auto [disk_class, disk_ctor] = get_classctor_disk(jenv);
 
   auto cres = ((Host*)cthis)->get_disks();
 
