@@ -463,6 +463,8 @@ include examples/java/io_async/io_async.java
 include examples/java/io_async/io_async.java.tesh
 include examples/java/io_disk_raw/io_disk_raw.java
 include examples/java/io_disk_raw/io_disk_raw.java.tesh
+include examples/java/io_priority/io_priority.java
+include examples/java/io_priority/io_priority.java.tesh
 include examples/java/mess_await/mess_await.java
 include examples/java/mess_await/mess_await.java.tesh
 include examples/java/synchro_barrier/synchro_barrier.java
