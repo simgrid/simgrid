@@ -50,11 +50,39 @@
  * This is how the actor jumps to the end of its execution in both C++/Java words.
  */
 
+/* The Java compilation reports the following warning:
+ *  Actor.java: warning: [this-escape] possible 'this' escape before subclass is fully initialized
+ *  swigCPtr        = simgridJNI.Actor_create(name, Host.getCPtr(host), host, this);
+ * and it is perfectly right: we are passing the Java this to the C++ constructor before the
+ * end of the Java initialization. This leads to a race condition where the C++ constructor
+ * builds a system thread that start executing the Java code even before the end of the Java ctor.
+ * This leads to problems when an actor starts another actor (not when the maestro starts actors).
+ *
+ * To solve this, the C++ lambda function in charge of executing the user code in the newly
+ * created actor starts with a yield() to ensure that the newly created actor waits until the
+ * next sub-scheduling round, ensuring that its creator fully executes its constructor before
+ * starting.
+ */
+
 /*
- * Upcalls (from C++ to Java objects, e.g. the callbacks within a signal) are a bit tricky.
- * We have specific classes such as CallbackExec, which provide a virtual method called run().
- * From the C world, we cache the methodIds of these methods at initialization, and then, when
- * a callback is passed, we save it in a lambda that is used as a C++ callback.
+ * The callbacks associated to signals are upcalls in the JNI parlance (calls from C++ to Java
+ * functions, called on the C++ initiative). We don't use lambda in Java, but specific callback
+ * classes, such as CallbackExec, which provide a virtual method called run(). There is one such
+ * class per type of parameter taken by the run() method.
+ *
+ * In the C++ world, we cache the methodIds of these methods at initialization, and then, when
+ * a callback is passed, we save the callback object in a lambda that is used as a C++ callback.
+ *
+ * For non-trivial objects (Exec, Comm, etc), a new java object is created for each C++ object
+ * on which the lambda applies. This is inefficient, and we should cache the Java object as an
+ * extension to the C++ objects. Still TBD and I'm afraid of refcounting issues if I add a ref.
+ *
+ * One extra difficulty is that we cannot pass the right JNIenv to the callback function, as we
+ * don't really know which java thread will execute the signal (it's often maestro but not
+ * always), so we have to retrieve that environment from the simgrid Context with get_env().
+ * That's inefficient as retrieve that environment for every application of the C++ lambda, but
+ * I don't see how this could be improved. C++ could use other signal signatures in the case of
+ * Java executions?
  */
 
 #include "simgrid/Exception.hpp"
