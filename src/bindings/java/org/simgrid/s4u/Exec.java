@@ -54,8 +54,12 @@ public class Exec extends Activity {
     return this;
   }
 
-  public Exec set_hosts(SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t hosts) {
-    simgridJNI.Exec_set_hosts(swigCPtr, this, SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t.getCPtr(hosts));
+  public Exec set_hosts(Host[] jhosts)
+  {
+    long[] chosts = new long[jhosts.length];
+    for (int i = 0; i < jhosts.length; i++)
+      chosts[i] = Host.getCPtr(jhosts[i]);
+    simgridJNI.Exec_set_hosts(swigCPtr, this, chosts);
     return this;
   }
 

@@ -210,6 +210,11 @@ public class Actor {
   {
     simgridJNI.Actor_thread_execute(swigCPtr, this, Host.getCPtr(host), host, flop_amounts, thread_count);
   }
+  public void parallel_execute(Host[] hosts, double[] flops_amounts, double[] bytes_amounts)
+  {
+    Engine.die("TODO: parallel_execute not implemented");
+    // simgridJNI.Actor_parallel_execute(swigCPtr, this, hosts, flops_amounts, bytes_amounts);
+  }
   /** Only call this on the current thread (on `this`) */
   public Exec exec_init(double flops_amounts)
   {

@@ -129,6 +129,9 @@ public class Disk {
     return this;
   }
 
+  public Object get_data() { return simgridJNI.Disk_get_data(swigCPtr, this); }
+  public void set_data(Object data) { simgridJNI.Disk_set_data(swigCPtr, this, data); }
+
   public Disk seal() {
     simgridJNI.Disk_seal(swigCPtr, this);
     return this;

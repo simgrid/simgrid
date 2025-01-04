@@ -66,9 +66,7 @@ public class NetZone {
     return new SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t(simgridJNI.NetZone_get_children(swigCPtr, this), true);
   }
 
-  public SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t get_all_hosts() {
-    return new SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t(simgridJNI.NetZone_get_all_hosts(swigCPtr, this), true);
-  }
+  public Host[] get_all_hosts() { return simgridJNI.NetZone_get_all_hosts(swigCPtr, this); }
 
   public long get_host_count() {
     return simgridJNI.NetZone_get_host_count(swigCPtr, this);

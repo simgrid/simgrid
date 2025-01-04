@@ -97,6 +97,7 @@
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextJava.hpp"
 #include "xbt/asserts.h"
+#include "xbt/base.h"
 #include "xbt/log.h"
 
 #define SWIG_VERSION 0x040201
@@ -117,6 +118,9 @@ static jmethodID CallbackComm_methodId    = 0;
 static jmethodID CallbackExec_methodId = 0;
 static jmethodID CallbackIo_methodId      = 0;
 static jmethodID Actor_methodId        = 0;
+
+/* Various cached classIds */
+static jclass string_class = 0;
 
 static void handle_exception(JNIEnv* jenv)
 {
@@ -146,20 +150,34 @@ static jmethodID init_methodId(JNIEnv* jenv, const char* klassname, const char* 
   return methodId;
 }
 
+static void get_classctor(JNIEnv* jenv, const char* klassname, const char* ctorsig, jclass& klass, jmethodID& ctor)
+{
+  klass = jenv->FindClass(klassname);
+  xbt_assert(klass, "Java class %s not found", klassname);
+  klass = (jclass)jenv->NewGlobalRef(klass);
+
+  ctor = jenv->GetMethodID(klass, "<init>", ctorsig);
+  xbt_assert(ctor, "Class %s does not seem to have a constructor of signature %s", klassname, ctorsig);
+}
+
 /* Retrive the jclass and ctor of the Java Disk object */
 static std::pair<jclass, jmethodID> get_classctor_disk(JNIEnv* jenv)
 {
   static jclass disk_class   = 0;
   static jmethodID disk_ctor = 0;
-  if (disk_class == 0) {
-    disk_class = jenv->FindClass("org/simgrid/s4u/Disk");
-    xbt_assert(disk_class);
-    disk_class = (jclass)jenv->NewGlobalRef(disk_class);
+  if (disk_class == 0)
+    get_classctor(jenv, "org/simgrid/s4u/Disk", "(JZ)V", disk_class, disk_ctor);
 
-    disk_ctor = jenv->GetMethodID(disk_class, "<init>", "(JZ)V");
-    xbt_assert(disk_ctor);
-  }
   return std::make_pair(disk_class, disk_ctor);
+}
+static std::pair<jclass, jmethodID> get_classctor_host(JNIEnv* jenv)
+{
+  static jclass host_class   = 0;
+  static jmethodID host_ctor = 0;
+  if (host_class == 0)
+    get_classctor(jenv, "org/simgrid/s4u/Host", "(J)V", host_class, host_ctor);
+
+  return std::make_pair(host_class, host_ctor);
 }
 
 /* *********************************************************************************** */
@@ -192,6 +210,7 @@ static struct SimGridJavaInit {
       CallbackIo_methodId      = init_methodId(maestro_jenv, "CallbackIo", "run", "(J)V");
       Actor_methodId        = init_methodId(maestro_jenv, "Actor", "do_run", "()V");
 
+      string_class = (jclass)maestro_jenv->NewGlobalRef(maestro_jenv->FindClass("java/lang/String"));
       // Initialize the factory mechanism
       return new simgrid::kernel::context::JavaContextFactory();
     };
@@ -1123,34 +1142,6 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1exit(JNIEnv* 
     simgrid::s4u::this_actor::on_exit([cb](bool b) { get_jenv()->CallVoidMethod(cb, CallbackBoolean_methodId, b); });
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_parallel_1execute(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                          jlong jarg2, jlong jarg3)
-{
-  std::vector<simgrid::s4u::Host*>* arg1 = 0;
-  std::vector<double>* arg2              = 0;
-  std::vector<double>* arg3              = 0;
-
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(std::vector<simgrid::s4u::Host*>**)&cthis;
-  if (!arg1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< simgrid::s4u::Host * > const & is null");
-    return;
-  }
-  arg2 = *(std::vector<double>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< double > const & is null");
-    return;
-  }
-  arg3 = *(std::vector<double>**)&jarg3;
-  if (!arg3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< double > const & is null");
-    return;
-  }
-  simgrid::s4u::this_actor::parallel_execute((std::vector<simgrid::s4u::Host*> const&)*arg1,
-                                             (std::vector<double> const&)*arg2, (std::vector<double> const&)*arg3);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1self(JNIEnv* jenv, jclass jcls)
@@ -2859,6 +2850,12 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Disk(JNIEnv* jen
   (void)arg1;
   delete smartarg1;
 }
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1create_1disk(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                            jobject jthis, jstring jname,
+                                                                            jdouble read_bw, jdouble write_bw)
+{
+  return (jlong)((Host*)cthis)->create_disk(java_string_to_std_string(jenv, jname), read_bw, write_bw);
+}
 XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1disks(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                  jobject jthis)
 {
@@ -2872,7 +2869,27 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1disks
 
   return jres;
 }
-
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1properties_1names(JNIEnv* jenv, jclass jcls,
+                                                                                             jlong cthis, jobject jthis)
+{
+  const std::unordered_map<std::string, std::string>* cproperties = ((Host*)cthis)->get_properties();
+  jobjectArray jres = jenv->NewObjectArray(cproperties->size(), string_class, nullptr);
+  int i             = 0;
+  for (auto [key, _] : *cproperties) {
+    jenv->SetObjectArrayElement(jres, i, jenv->NewStringUTF(key.c_str()));
+    i++;
+  }
+  return jres;
+}
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                               jobject jthis, jstring jprop)
+{
+  std::string cprop  = java_string_to_std_string(jenv, jprop);
+  const char* result = ((Host*)cthis)->get_property(cprop);
+  if (result)
+    return jenv->NewStringUTF(result);
+  return 0;
+}
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                            jobject jthis)
 {
@@ -2880,6 +2897,27 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1name(JNIEn
   if (result)
     return jenv->NewStringUTF(result);
   return nullptr;
+}
+
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1data(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                           jobject jthis)
+{
+  auto self    = (Disk*)cthis;
+  jobject glob = self->get_data<_jobject>();
+  auto local   = jenv->NewLocalRef(glob);
+  jenv->DeleteGlobalRef(glob);
+
+  return local;
+}
+
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1data(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                        jobject jthis, jobject data)
+{
+
+  auto self = (Disk*)cthis;
+  auto glob = jenv->NewGlobalRef(data);
+
+  self->set_data(glob);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1read_1bandwidth(JNIEnv* jenv, jclass jcls,
@@ -3430,7 +3468,7 @@ static void java_main(int argc, char* argv[])
   // Retrieve the name of the process.
   jstring jname = env->NewStringUTF(argv[0]);
   // Build the arguments
-  jobjectArray args = env->NewObjectArray(argc - 1, env->FindClass("java/lang/String"), env->NewStringUTF(""));
+  jobjectArray args = env->NewObjectArray(argc - 1, string_class, env->NewStringUTF(""));
   for (int i = 1; i < argc; i++)
     env->SetObjectArrayElement(args, i - 1, env->NewStringUTF(argv[i]));
   // Retrieve the host for the process.
@@ -3465,72 +3503,38 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1host_1coun
   return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1hosts(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                 jobject jthis)
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1hosts(JNIEnv* jenv, jclass jcls,
+                                                                                        jlong cthis, jobject jthis)
 {
-  jlong jresult              = 0;
-  simgrid::s4u::Engine* arg1 = (simgrid::s4u::Engine*)0;
-  SwigValueWrapper<std::vector<simgrid::s4u::Host*>> result;
+  auto [host_class, host_ctor] = get_classctor_host(jenv);
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1                                          = *(simgrid::s4u::Engine**)&cthis;
-  result                                        = ((simgrid::s4u::Engine const*)arg1)->get_all_hosts();
-  *(std::vector<simgrid::s4u::Host*>**)&jresult = new std::vector<simgrid::s4u::Host*>(result);
-  return jresult;
+  auto chosts = ((Engine*)cthis)->get_all_hosts();
+
+  jobjectArray result = jenv->NewObjectArray(chosts.size(), host_class, nullptr);
+  for (unsigned i = 0; i < chosts.size(); i++)
+    jenv->SetObjectArrayElement(result, i, jenv->NewObject(host_class, host_ctor, chosts.at(i)));
+
+  return result;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1filtered_1hosts(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis,
-                                                                                      jlong jarg2)
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1hosts_1from_1MPI_1hostfile(
+    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jstring jhostfile)
 {
-  jlong jresult                                  = 0;
-  simgrid::s4u::Engine* arg1                     = (simgrid::s4u::Engine*)0;
-  std::function<bool(simgrid::s4u::Host*)>* arg2 = 0;
-  SwigValueWrapper<std::vector<simgrid::s4u::Host*>> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1 = *(simgrid::s4u::Engine**)&cthis;
-  arg2 = *(std::function<bool(simgrid::s4u::Host*)>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< bool (simgrid::s4u::Host *) > const & is null");
+  if (!jhostfile) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "The hostfile shall not be null");
     return 0;
   }
-  result =
-      ((simgrid::s4u::Engine const*)arg1)->get_filtered_hosts((std::function<bool(simgrid::s4u::Host*)> const&)*arg2);
-  *(std::vector<simgrid::s4u::Host*>**)&jresult = new std::vector<simgrid::s4u::Host*>(result);
-  return jresult;
-}
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1hosts_1from_1MPI_1hostfile(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jstring jarg2)
-{
-  jlong jresult              = 0;
-  simgrid::s4u::Engine* arg1 = (simgrid::s4u::Engine*)0;
-  std::string* arg2          = 0;
-  SwigValueWrapper<std::vector<simgrid::s4u::Host*>> result;
+  auto [host_class, host_ctor] = get_classctor_host(jenv);
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1 = *(simgrid::s4u::Engine**)&cthis;
-  if (!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
-    return 0;
-  }
-  const char* arg2_pstr = (const char*)jenv->GetStringUTFChars(jarg2, 0);
-  if (!arg2_pstr)
-    return 0;
-  std::string arg2_str(arg2_pstr);
-  arg2 = &arg2_str;
-  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr);
-  result = ((simgrid::s4u::Engine const*)arg1)->get_hosts_from_MPI_hostfile((std::string const&)*arg2);
-  *(std::vector<simgrid::s4u::Host*>**)&jresult = new std::vector<simgrid::s4u::Host*>(result);
-  return jresult;
+  auto hostfile = java_string_to_std_string(jenv, jhostfile);
+  auto chosts   = ((Engine*)cthis)->get_hosts_from_MPI_hostfile(hostfile);
+
+  jobjectArray result = jenv->NewObjectArray(chosts.size(), host_class, nullptr);
+  for (unsigned i = 0; i < chosts.size(); i++)
+    jenv->SetObjectArrayElement(result, i, jenv->NewObject(host_class, host_ctor, chosts.at(i)));
+
+  return result;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1host_1by_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -4255,17 +4259,16 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1host(JNIEnv* 
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1hosts(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis, jlong jarg2)
+                                                                         jobject jthis, jlongArray jhosts)
 {
-  auto* self                             = (Exec*)cthis;
-  std::vector<simgrid::s4u::Host*>* arg2 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Exec> result;
+  std::vector<Host*> chosts;
+  int len       = jenv->GetArrayLength(jhosts);
+  long* cjhosts = jenv->GetLongArrayElements(jhosts, nullptr);
+  for (int i = 0; i < len; i++)
+    chosts.push_back((Host*)cjhosts[i]);
+  jenv->ReleaseLongArrayElements(jhosts, cjhosts, JNI_ABORT);
 
-  arg2 = *(std::vector<simgrid::s4u::Host*>**)&jarg2;
-  if (!arg2)
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< simgrid::s4u::Host * > const & is null");
-  else
-    self->set_hosts((std::vector<simgrid::s4u::Host*> const&)*arg2);
+  ((Exec*)cthis)->set_hosts(chosts);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1unset_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -5400,20 +5403,18 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1children(
   return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1all_1hosts(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis)
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1all_1hosts(JNIEnv* jenv, jclass jcls,
+                                                                                         jlong cthis, jobject jthis)
 {
-  jlong jresult               = 0;
-  simgrid::s4u::NetZone* arg1 = (simgrid::s4u::NetZone*)0;
-  SwigValueWrapper<std::vector<simgrid::s4u::Host*>> result;
+  auto [host_class, host_ctor] = get_classctor_host(jenv);
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1                                          = *(simgrid::s4u::NetZone**)&cthis;
-  result                                        = ((simgrid::s4u::NetZone const*)arg1)->get_all_hosts();
-  *(std::vector<simgrid::s4u::Host*>**)&jresult = new std::vector<simgrid::s4u::Host*>(result);
-  return jresult;
+  auto chosts = ((NetZone*)cthis)->get_all_hosts();
+
+  jobjectArray result = jenv->NewObjectArray(chosts.size(), host_class, nullptr);
+  for (unsigned i = 0; i < chosts.size(); i++)
+    jenv->SetObjectArrayElement(result, i, jenv->NewObject(host_class, host_ctor, chosts.at(i)));
+
+  return result;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1host_1count(JNIEnv* jenv, jclass jcls,

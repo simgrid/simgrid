@@ -461,6 +461,8 @@ include examples/java/exec_dependent/exec_dependent.java
 include examples/java/exec_dependent/exec_dependent.java.tesh
 include examples/java/io_async/io_async.java
 include examples/java/io_async/io_async.java.tesh
+include examples/java/io_disk_raw/io_disk_raw.java
+include examples/java/io_disk_raw/io_disk_raw.java.tesh
 include examples/java/mess_await/mess_await.java
 include examples/java/mess_await/mess_await.java.tesh
 include examples/java/synchro_barrier/synchro_barrier.java
@@ -2215,7 +2217,6 @@ include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusi
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_double_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_long_long_t.java
-include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__Link_p_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_std__string_t.java

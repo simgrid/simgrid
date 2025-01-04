@@ -111,16 +111,11 @@ public class Engine {
     return simgridJNI.Engine_get_host_count(swigCPtr, this);
   }
 
-  public SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t get_all_hosts() {
-    return new SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t(simgridJNI.Engine_get_all_hosts(swigCPtr, this), true);
-  }
+  public Host[] get_all_hosts() { return simgridJNI.Engine_get_all_hosts(swigCPtr, this); }
 
-  public SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t get_filtered_hosts(SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Host_pF_t filter) {
-    return new SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t(simgridJNI.Engine_get_filtered_hosts(swigCPtr, this, SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Host_pF_t.getCPtr(filter)), true);
-  }
-
-  public SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t get_hosts_from_MPI_hostfile(String hostfile) {
-    return new SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t(simgridJNI.Engine_get_hosts_from_MPI_hostfile(swigCPtr, this, hostfile), true);
+  public Host[] get_hosts_from_MPI_hostfile(String hostfile)
+  {
+    return simgridJNI.Engine_get_hosts_from_MPI_hostfile(swigCPtr, this, hostfile);
   }
 
   public Host host_by_name(String name) {

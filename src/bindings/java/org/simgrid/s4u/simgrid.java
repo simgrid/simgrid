@@ -9,9 +9,6 @@
 package org.simgrid.s4u;
 
 public class simgrid {
-  public static void parallel_execute(SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t hosts, SWIGTYPE_p_std__vectorT_double_t flops_amounts, SWIGTYPE_p_std__vectorT_double_t bytes_amounts) {
-    simgridJNI.parallel_execute(SWIGTYPE_p_std__vectorT_simgrid__s4u__Host_p_t.getCPtr(hosts), SWIGTYPE_p_std__vectorT_double_t.getCPtr(flops_amounts), SWIGTYPE_p_std__vectorT_double_t.getCPtr(bytes_amounts));
-  }
 
   public static SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t create_DAG_from_dot(String filename) {
     return new SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t(simgridJNI.create_DAG_from_dot(filename), true);
@@ -74,5 +71,4 @@ public class simgrid {
     long cPtr = simgridJNI.create_dragonfly_zone(name, NetZone.getCPtr(parent), parent, DragonflyParams.getCPtr(parameters), parameters, ClusterCallbacks.getCPtr(set_callbacks), set_callbacks, bandwidth, latency, sharing_policy.swigValue());
     return (cPtr == 0) ? null : new NetZone(cPtr, false);
   }
-
 }

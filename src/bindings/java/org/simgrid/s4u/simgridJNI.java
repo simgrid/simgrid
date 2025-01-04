@@ -23,7 +23,6 @@ public class simgridJNI {
   public final static native void Actor_on_termination_cb(CallbackActor cb);
   public final static native void Actor_on_destruction_cb(CallbackActor cb);
   public final static native void Actor_on_exit(long jarg1, Actor jarg1_, CallbackBoolean jcode);
-  public final static native void parallel_execute(long jarg1, long jarg2, long jarg3);
   public final static native long Actor_self();
   public final static native void Actor_on_this_suspend_cb(long jarg1, Actor jarg1_, long jarg2);
   public final static native void Actor_on_this_resume_cb(long jarg1, Actor jarg1_, long jarg2);
@@ -219,6 +218,8 @@ public class simgridJNI {
   public final static native int Disk_Operation_READWRITE_get();
   public final static native int Disk_get_sharing_policy(long jarg1, Disk jarg1_, int jarg2);
   public final static native void Disk_set_factor_cb(long jarg1, Disk jarg1_, long jarg2);
+  public final static native Object Disk_get_data(long jarg1, Disk jarg1_);
+  public final static native void Disk_set_data(long jarg1, Disk jarg1_, Object data);
   public final static native void Disk_seal(long jarg1, Disk jarg1_);
   public final static native void Disk_on_onoff_cb(long jarg1);
   public final static native void Disk_on_this_onoff_cb(long jarg1, Disk jarg1_, long jarg2);
@@ -244,9 +245,8 @@ public class simgridJNI {
   public final static native void Engine_track_vetoed_activities(long jarg1, Engine jarg1_, long jarg2);
   public final static native void Engine_load_deployment(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_get_host_count(long jarg1, Engine jarg1_);
-  public final static native long Engine_get_all_hosts(long jarg1, Engine jarg1_);
-  public final static native long Engine_get_filtered_hosts(long jarg1, Engine jarg1_, long jarg2);
-  public final static native long Engine_get_hosts_from_MPI_hostfile(long jarg1, Engine jarg1_, String jarg2);
+  public final static native Host[] Engine_get_all_hosts(long jarg1, Engine jarg1_);
+  public final static native Host[] Engine_get_hosts_from_MPI_hostfile(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_host_by_name(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_host_by_name_or_null(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_get_link_count(long jarg1, Engine jarg1_);
@@ -290,7 +290,7 @@ public class simgridJNI {
   public final static native double Exec_get_remaining(long jarg1, Exec jarg1_);
   public final static native double Exec_get_remaining_ratio(long jarg1, Exec jarg1_);
   public final static native void Exec_set_host(long jarg1, Exec jarg1_, long jarg2, Host jarg2_);
-  public final static native void Exec_set_hosts(long jarg1, Exec jarg1_, long jarg2);
+  public final static native void Exec_set_hosts(long jarg1, Exec jarg1_, long[] jarg2);
   public final static native void Exec_unset_host(long jarg1, Exec jarg1_);
   public final static native void Exec_unset_hosts(long jarg1, Exec jarg1_);
   public final static native void Exec_set_flops_amount(long jarg1, Exec jarg1_, double jarg2);
@@ -307,8 +307,12 @@ public class simgridJNI {
   public final static native boolean Exec_is_parallel(long jarg1, Exec jarg1_);
   public final static native boolean Exec_is_assigned(long jarg1, Exec jarg1_);
   public final static native void delete_Exec(long jarg1);
+  public final static native long Host_create_disk(long jarg1, Host jarg1_, String name, double read_bandwidth,
+                                                   double write_bandwidth);
   public final static native Disk[] Host_get_disks(long jarg1, Host jarg1_);
   public final static native String Host_get_name(long jarg1, Host jarg1_);
+  public final static native String[] Host_get_properties_names(long jarg1, Host jarg1_);
+  public final static native String Host_get_property(long jarg1, Host jarg1_, String name);
   public final static native long Host_by_name(String name);
   public final static native long Host_current();
   public final static native double Host_get_speed(long jarg1, Host jarg1_);
@@ -390,7 +394,7 @@ public class simgridJNI {
   public final static native long NetZone_get_parent(long jarg1, NetZone jarg1_);
   public final static native long NetZone_set_parent(long jarg1, NetZone jarg1_, long jarg2, NetZone jarg2_);
   public final static native long NetZone_get_children(long jarg1, NetZone jarg1_);
-  public final static native long NetZone_get_all_hosts(long jarg1, NetZone jarg1_);
+  public final static native Host[] NetZone_get_all_hosts(long jarg1, NetZone jarg1_);
   public final static native long NetZone_get_host_count(long jarg1, NetZone jarg1_);
   public final static native String NetZone_get_property(long jarg1, NetZone jarg1_, String jarg2);
   public final static native void NetZone_set_property(long jarg1, NetZone jarg1_, String jarg2, String jarg3);
