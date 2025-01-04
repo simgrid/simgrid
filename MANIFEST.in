@@ -428,6 +428,8 @@ include examples/java/actor_exiting/actor_exiting.java
 include examples/java/actor_exiting/actor_exiting.java.tesh
 include examples/java/actor_join/actor_join.java
 include examples/java/actor_join/actor_join.java.tesh
+include examples/java/actor_kill/actor_kill.java
+include examples/java/actor_kill/actor_kill.java.tesh
 include examples/java/actor_lifetime/actor_lifetime.java
 include examples/java/actor_lifetime/actor_lifetime.java.tesh
 include examples/java/actor_lifetime/actor_lifetime_d.xml

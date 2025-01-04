@@ -1104,12 +1104,17 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exit(JNIEnv* jenv
 {
   auto self = (Actor*)cthis;
   try {
-    XBT_CRITICAL("Try to kill");
-    if (Actor::self() == self) // Commiting a suicide with self->kill makes the JVM to segfault, so let's cheat
-      this_actor::exit();
-    else
+    if (Actor::self() == self) {
+      // Calling self->kill() makes the JVM to segfault, so let's kill the java actor in Java instead
+      static jclass klass = 0;
+      if (klass == 0) {
+        klass = jenv->FindClass("org/simgrid/s4u/ForcefulKillException");
+        xbt_assert(klass, "Class ForcefulKillException not found");
+      }
+
+      jenv->ThrowNew(klass, "Actor committed a suicide :( It should have talked to someone instead.");
+    } else
       self->kill();
-    XBT_CRITICAL("Done killing");
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
 }
