@@ -830,7 +830,6 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__NetZone_const_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fstd__vectorT_std__string_tF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fvoidF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fvoid_pF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__pairT_unsigned_int_unsigned_int_t.java

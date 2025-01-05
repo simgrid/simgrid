@@ -133,10 +133,6 @@ public class Engine {
     return new SWIGTYPE_p_std__vectorT_simgrid__s4u__Link_p_t(simgridJNI.Engine_get_all_links(swigCPtr, this), true);
   }
 
-  public SWIGTYPE_p_std__vectorT_simgrid__s4u__Link_p_t get_filtered_links(SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Link_pF_t filter) {
-    return new SWIGTYPE_p_std__vectorT_simgrid__s4u__Link_p_t(simgridJNI.Engine_get_filtered_links(swigCPtr, this, SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Link_pF_t.getCPtr(filter)), true);
-  }
-
   public Link link_by_name(String name) {
     long cPtr = simgridJNI.Engine_link_by_name(swigCPtr, this, name);
     return (cPtr == 0) ? null : new Link(cPtr, false);
@@ -169,10 +165,6 @@ public class Engine {
     return new SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t(simgridJNI.Engine_get_all_actors(swigCPtr, this), true);
   }
 
-  public SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t get_filtered_actors(SWIGTYPE_p_std__functionT_bool_fboost__intrusive_ptrT_simgrid__s4u__Actor_tF_t filter) {
-    return new SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t(simgridJNI.Engine_get_filtered_actors(swigCPtr, this, SWIGTYPE_p_std__functionT_bool_fboost__intrusive_ptrT_simgrid__s4u__Actor_tF_t.getCPtr(filter)), true);
-  }
-
   public NetZone get_netzone_root() {
     long cPtr = simgridJNI.Engine_get_netzone_root(swigCPtr, this);
     return (cPtr == 0) ? null : new NetZone(cPtr, false);
@@ -185,10 +177,6 @@ public class Engine {
   public NetZone netzone_by_name_or_null(String name) {
     long cPtr = simgridJNI.Engine_netzone_by_name_or_null(swigCPtr, this, name);
     return (cPtr == 0) ? null : new NetZone(cPtr, false);
-  }
-
-  public static boolean is_initialized() {
-    return simgridJNI.Engine_is_initialized();
   }
 
   public static void set_config(String str) {

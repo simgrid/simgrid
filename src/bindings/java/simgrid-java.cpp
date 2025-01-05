@@ -3619,31 +3619,6 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1links
   return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1filtered_1links(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis,
-                                                                                      jlong jarg2)
-{
-  jlong jresult                                  = 0;
-  simgrid::s4u::Engine* arg1                     = (simgrid::s4u::Engine*)0;
-  std::function<bool(simgrid::s4u::Link*)>* arg2 = 0;
-  SwigValueWrapper<std::vector<simgrid::s4u::Link*>> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1 = *(simgrid::s4u::Engine**)&cthis;
-  arg2 = *(std::function<bool(simgrid::s4u::Link*)>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< bool (simgrid::s4u::Link *) > const & is null");
-    return 0;
-  }
-  result =
-      ((simgrid::s4u::Engine const*)arg1)->get_filtered_links((std::function<bool(simgrid::s4u::Link*)> const&)*arg2);
-  *(std::vector<simgrid::s4u::Link*>**)&jresult = new std::vector<simgrid::s4u::Link*>(result);
-  return jresult;
-}
-
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1link_1by_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                 jobject jthis, jstring jarg2)
 {
@@ -3820,46 +3795,10 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1actor
   return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1filtered_1actors(JNIEnv* jenv, jclass jcls,
-                                                                                       jlong cthis, jobject jthis,
-                                                                                       jlong jarg2)
-{
-  jlong jresult                                                        = 0;
-  simgrid::s4u::Engine* arg1                                           = (simgrid::s4u::Engine*)0;
-  std::function<bool(boost::intrusive_ptr<simgrid::s4u::Actor>)>* arg2 = 0;
-  SwigValueWrapper<std::vector<boost::intrusive_ptr<simgrid::s4u::Actor>>> result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1 = *(simgrid::s4u::Engine**)&cthis;
-  arg2 = *(std::function<bool(boost::intrusive_ptr<simgrid::s4u::Actor>)>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< bool (boost::intrusive_ptr< simgrid::s4u::Actor >) > const & is null");
-    return 0;
-  }
-  result = ((simgrid::s4u::Engine const*)arg1)
-               ->get_filtered_actors((std::function<bool(boost::intrusive_ptr<simgrid::s4u::Actor>)> const&)*arg2);
-  *(std::vector<boost::intrusive_ptr<simgrid::s4u::Actor>>**)&jresult =
-      new std::vector<boost::intrusive_ptr<simgrid::s4u::Actor>>(result);
-  return jresult;
-}
-
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1netzone_1root(JNIEnv* jenv, jclass jcls,
                                                                                     jlong cthis, jobject jthis)
 {
-  jlong jresult                 = 0;
-  simgrid::s4u::Engine* arg1    = (simgrid::s4u::Engine*)0;
-  simgrid::s4u::NetZone* result = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1                               = *(simgrid::s4u::Engine**)&cthis;
-  result                             = (simgrid::s4u::NetZone*)((simgrid::s4u::Engine const*)arg1)->get_netzone_root();
-  *(simgrid::s4u::NetZone**)&jresult = result;
-  return jresult;
+  return (jlong)((Engine*)cthis)->get_netzone_root();
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1netzones(JNIEnv* jenv, jclass jcls,
@@ -3907,133 +3846,60 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1netzone_1by_1na
   return jresult;
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1is_1initialized(JNIEnv* jenv, jclass jcls)
-{
-  jboolean jresult = 0;
-  bool result;
-
-  (void)jenv;
-  (void)jcls;
-  result  = (bool)simgrid::s4u::Engine::is_initialized();
-  jresult = (jboolean)result;
-  return jresult;
-}
-
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
-                                                                                       jstring cthis)
+                                                                                       jstring jstr)
 {
-  std::string* arg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  if (!cthis) {
+  if (!jstr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
     return;
   }
-  const char* arg1_pstr = (const char*)jenv->GetStringUTFChars(cthis, 0);
-  if (!arg1_pstr)
-    return;
-  std::string arg1_str(arg1_pstr);
-  arg1 = &arg1_str;
-  jenv->ReleaseStringUTFChars(cthis, arg1_pstr);
-  simgrid::s4u::Engine::set_config((std::string const&)*arg1);
+  std::string str = java_string_to_std_string(jenv, jstr);
+  simgrid::s4u::Engine::set_config(str.c_str());
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
-                                                                                       jstring cthis, jint jarg2)
+                                                                                       jstring jname, jint jarg2)
 {
-  std::string* arg1 = 0;
-  int arg2;
-
-  (void)jenv;
-  (void)jcls;
-  if (!cthis) {
+  if (!jname) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
     return;
   }
-  const char* arg1_pstr = (const char*)jenv->GetStringUTFChars(cthis, 0);
-  if (!arg1_pstr)
-    return;
-  std::string arg1_str(arg1_pstr);
-  arg1 = &arg1_str;
-  jenv->ReleaseStringUTFChars(cthis, arg1_pstr);
-  arg2 = (int)jarg2;
-  simgrid::s4u::Engine::set_config((std::string const&)*arg1, arg2);
+  std::string str = java_string_to_std_string(jenv, jname);
+  simgrid::s4u::Engine::set_config(str.c_str(), (int)jarg2);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_12(JNIEnv* jenv, jclass jcls,
-                                                                                       jstring cthis, jboolean jarg2)
+                                                                                       jstring jname, jboolean jarg2)
 {
-  std::string* arg1 = 0;
-  bool arg2;
-
-  (void)jenv;
-  (void)jcls;
-  if (!cthis) {
+  if (!jname) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
     return;
   }
-  const char* arg1_pstr = (const char*)jenv->GetStringUTFChars(cthis, 0);
-  if (!arg1_pstr)
-    return;
-  std::string arg1_str(arg1_pstr);
-  arg1 = &arg1_str;
-  jenv->ReleaseStringUTFChars(cthis, arg1_pstr);
-  arg2 = jarg2 ? true : false;
-  simgrid::s4u::Engine::set_config((std::string const&)*arg1, arg2);
+  std::string str = java_string_to_std_string(jenv, jname);
+  simgrid::s4u::Engine::set_config(str.c_str(), (bool)jarg2);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_13(JNIEnv* jenv, jclass jcls,
-                                                                                       jstring cthis, jdouble jarg2)
+                                                                                       jstring jname, jdouble jarg2)
 {
-  std::string* arg1 = 0;
-  double arg2;
-
-  (void)jenv;
-  (void)jcls;
-  if (!cthis) {
+  if (!jname) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
     return;
   }
-  const char* arg1_pstr = (const char*)jenv->GetStringUTFChars(cthis, 0);
-  if (!arg1_pstr)
-    return;
-  std::string arg1_str(arg1_pstr);
-  arg1 = &arg1_str;
-  jenv->ReleaseStringUTFChars(cthis, arg1_pstr);
-  arg2 = (double)jarg2;
-  simgrid::s4u::Engine::set_config((std::string const&)*arg1, arg2);
+  std::string str = java_string_to_std_string(jenv, jname);
+  simgrid::s4u::Engine::set_config(str.c_str(), (double)jarg2);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_14(JNIEnv* jenv, jclass jcls,
-                                                                                       jstring cthis, jstring jarg2)
+                                                                                       jstring jname, jstring jval)
 {
-  std::string* arg1 = 0;
-  std::string* arg2 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  if (!cthis) {
+  if (!jname || !jval) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
     return;
   }
-  const char* arg1_pstr = (const char*)jenv->GetStringUTFChars(cthis, 0);
-  if (!arg1_pstr)
-    return;
-  std::string arg1_str(arg1_pstr);
-  arg1 = &arg1_str;
-  jenv->ReleaseStringUTFChars(cthis, arg1_pstr);
-  if (!jarg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
-    return;
-  }
-  const char* arg2_pstr = (const char*)jenv->GetStringUTFChars(jarg2, 0);
-  if (!arg2_pstr)
-    return;
-  std::string arg2_str(arg2_pstr);
-  arg2 = &arg2_str;
-  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr);
-  simgrid::s4u::Engine::set_config((std::string const&)*arg1, (std::string const&)*arg2);
+  std::string name = java_string_to_std_string(jenv, jname);
+  std::string val  = java_string_to_std_string(jenv, jval);
+  simgrid::s4u::Engine::set_config(name, val);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1platform_1created_1cb(JNIEnv* jenv, jclass jcls,

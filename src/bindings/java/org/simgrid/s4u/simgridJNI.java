@@ -248,7 +248,6 @@ public class simgridJNI {
   public final static native long Engine_host_by_name_or_null(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_get_link_count(long jarg1, Engine jarg1_);
   public final static native long Engine_get_all_links(long jarg1, Engine jarg1_);
-  public final static native long Engine_get_filtered_links(long jarg1, Engine jarg1_, long jarg2);
   public final static native long Engine_link_by_name(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_link_by_name_or_null(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_mailbox_by_name_or_create(long jarg1, Engine jarg1_, String jarg2);
@@ -256,11 +255,9 @@ public class simgridJNI {
   public final static native long Engine_get_actor_count(long jarg1, Engine jarg1_);
   public final static native int Engine_get_actor_max_pid(long jarg1, Engine jarg1_);
   public final static native long Engine_get_all_actors(long jarg1, Engine jarg1_);
-  public final static native long Engine_get_filtered_actors(long jarg1, Engine jarg1_, long jarg2);
   public final static native long Engine_get_netzone_root(long jarg1, Engine jarg1_);
   public final static native long Engine_get_all_netzones(long jarg1, Engine jarg1_);
   public final static native long Engine_netzone_by_name_or_null(long jarg1, Engine jarg1_, String jarg2);
-  public final static native boolean Engine_is_initialized();
   public final static native void Engine_set_config__SWIG_0(String jarg1);
   public final static native void Engine_set_config__SWIG_1(String jarg1, int jarg2);
   public final static native void Engine_set_config__SWIG_2(String jarg1, boolean jarg2);
