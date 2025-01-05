@@ -439,6 +439,8 @@ include examples/java/actor_suspend/actor_suspend.java
 include examples/java/actor_suspend/actor_suspend.java.tesh
 include examples/java/actor_yield/actor_yield.java
 include examples/java/actor_yield/actor_yield.java.tesh
+include examples/java/cloud_migration/cloud_migration.java
+include examples/java/cloud_migration/cloud_migration.java.tesh
 include examples/java/cloud_simple/cloud_simple.java
 include examples/java/cloud_simple/cloud_simple.java.tesh
 include examples/java/comm_await/comm_await.java
