@@ -5,11 +5,12 @@
 
 package org.simgrid.s4u;
 
-public class VirtualMachine {
+public class VirtualMachine extends Host {
   private transient long swigCPtr;
   private transient boolean swigCMemOwnBase;
 
   protected VirtualMachine(long cPtr, boolean cMemoryOwn) {
+    super(cPtr);
     swigCMemOwnBase = cMemoryOwn;
     swigCPtr = cPtr;
   }
@@ -61,24 +62,30 @@ public class VirtualMachine {
   }
 
   public VirtualMachine set_pm(Host pm) {
-    long cPtr = simgridJNI.VirtualMachine_set_pm(swigCPtr, this, Host.getCPtr(pm), pm);
-    return (cPtr == 0) ? null : new VirtualMachine(cPtr, true);
+    simgridJNI.VirtualMachine_set_pm(swigCPtr, this, Host.getCPtr(pm), pm);
+    return this;
   }
 
   public long get_ramsize() {
     return simgridJNI.VirtualMachine_get_ramsize(swigCPtr, this);
   }
 
+  public VirtualMachine set_ramsize(double ramsize) { return set_ramsize((long)ramsize); }
   public VirtualMachine set_ramsize(long ramsize) {
-    long cPtr = simgridJNI.VirtualMachine_set_ramsize(swigCPtr, this, ramsize);
-    return (cPtr == 0) ? null : new VirtualMachine(cPtr, true);
+    simgridJNI.VirtualMachine_set_ramsize(swigCPtr, this, ramsize);
+    return this;
   }
 
   public VirtualMachine set_bound(double bound) {
-    long cPtr = simgridJNI.VirtualMachine_set_bound(swigCPtr, this, bound);
-    return (cPtr == 0) ? null : new VirtualMachine(cPtr, true);
+    simgridJNI.VirtualMachine_set_bound(swigCPtr, this, bound);
+    return this;
   }
 
+  public VirtualMachine migrate(Host newHost)
+  {
+    simgridJNI.VirtualMachine_migrate(swigCPtr, this, Host.getCPtr(newHost), newHost);
+    return this;
+  }
   public void start_migration() {
     simgridJNI.VirtualMachine_start_migration(swigCPtr, this);
   }
@@ -192,5 +199,4 @@ public class VirtualMachine {
     private final int swigValue;
     private final String swigName;
   }
-
 }

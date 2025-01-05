@@ -87,17 +87,20 @@
 
 #include "simgrid/Exception.hpp"
 #include "simgrid/forward.h"
+#include "simgrid/plugins/live_migration.h"
 #include "simgrid/s4u/Activity.hpp"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Barrier.hpp"
 #include "simgrid/s4u/Disk.hpp"
 #include "simgrid/s4u/MessageQueue.hpp"
 #include "simgrid/s4u/NetZone.hpp"
+#include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/dag/dax_dtd.h"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextJava.hpp"
 #include "xbt/asserts.h"
 #include "xbt/base.h"
+
 #include "xbt/log.h"
 
 #define SWIG_VERSION 0x040201
@@ -211,6 +214,10 @@ static struct SimGridJavaInit {
       Actor_methodId        = init_methodId(maestro_jenv, "Actor", "do_run", "()V");
 
       string_class = (jclass)maestro_jenv->NewGlobalRef(maestro_jenv->FindClass("java/lang/String"));
+
+      // Initialize plugins
+      sg_vm_live_migration_plugin_init();
+
       // Initialize the factory mechanism
       return new simgrid::kernel::context::JavaContextFactory();
     };
@@ -2861,6 +2868,13 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1create_1disk(JNIE
 {
   return (jlong)((Host*)cthis)->create_disk(java_string_to_std_string(jenv, jname), read_bw, write_bw);
 }
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1create_1vm(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                          jobject jthis, jstring jname,
+                                                                          jint core_amount)
+{
+  return (jlong)((Host*)cthis)->create_vm(java_string_to_std_string(jenv, jname), core_amount);
+}
+
 XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1disks(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                  jobject jthis)
 {
@@ -6602,70 +6616,35 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1to_1c
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1start(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                               jobject jthis)
 {
-  simgrid::s4u::VirtualMachine* arg1                         = (simgrid::s4u::VirtualMachine*)0;
-  boost::shared_ptr<simgrid::s4u::VirtualMachine>* smartarg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&cthis;
-  arg1      = (simgrid::s4u::VirtualMachine*)(smartarg1 ? smartarg1->get() : 0);
-
-  (arg1)->start();
+  try {
+    ((VirtualMachine*)cthis)->start();
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  }
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1suspend(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                 jobject jthis)
 {
-  simgrid::s4u::VirtualMachine* arg1                         = (simgrid::s4u::VirtualMachine*)0;
-  boost::shared_ptr<simgrid::s4u::VirtualMachine>* smartarg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&cthis;
-  arg1      = (simgrid::s4u::VirtualMachine*)(smartarg1 ? smartarg1->get() : 0);
-
-  (arg1)->suspend();
+  try {
+    ((VirtualMachine*)cthis)->suspend();
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  }
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1resume(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                jobject jthis)
 {
-  simgrid::s4u::VirtualMachine* arg1                         = (simgrid::s4u::VirtualMachine*)0;
-  boost::shared_ptr<simgrid::s4u::VirtualMachine>* smartarg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&cthis;
-  arg1      = (simgrid::s4u::VirtualMachine*)(smartarg1 ? smartarg1->get() : 0);
-
-  (arg1)->resume();
+  try {
+    ((VirtualMachine*)cthis)->resume();
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  }
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1shutdown(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                  jobject jthis)
 {
-  simgrid::s4u::VirtualMachine* arg1                         = (simgrid::s4u::VirtualMachine*)0;
-  boost::shared_ptr<simgrid::s4u::VirtualMachine>* smartarg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&cthis;
-  arg1      = (simgrid::s4u::VirtualMachine*)(smartarg1 ? smartarg1->get() : 0);
-
   try {
-    (arg1)->shutdown();
+    ((VirtualMachine*)cthis)->start();
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
 }
@@ -6673,211 +6652,76 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1shutdown
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1destroy(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                 jobject jthis)
 {
-  simgrid::s4u::VirtualMachine* arg1                         = (simgrid::s4u::VirtualMachine*)0;
-  boost::shared_ptr<simgrid::s4u::VirtualMachine>* smartarg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&cthis;
-  arg1      = (simgrid::s4u::VirtualMachine*)(smartarg1 ? smartarg1->get() : 0);
-
-  (arg1)->destroy();
+  try {
+    ((VirtualMachine*)cthis)->destroy();
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  }
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1get_1pm(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                  jobject jthis)
 {
-  jlong jresult                                                    = 0;
-  simgrid::s4u::VirtualMachine* arg1                               = (simgrid::s4u::VirtualMachine*)0;
-  boost::shared_ptr<simgrid::s4u::VirtualMachine const>* smartarg1 = 0;
-  simgrid::s4u::Host* result                                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::VirtualMachine>**)&cthis;
-  arg1      = (simgrid::s4u::VirtualMachine*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (simgrid::s4u::Host*)((simgrid::s4u::VirtualMachine const*)arg1)->get_pm();
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Host>(result, SWIG_intrusive_deleter<simgrid::s4u::Host>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult = 0;
+  try {
+    return (jlong)((VirtualMachine*)cthis)->get_pm();
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+    return 0;
   }
-#else
-  *(boost::shared_ptr<simgrid::s4u::Host>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::Host>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1set_1pm(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                 jobject jthis, jlong jarg2,
-                                                                                 jobject jarg2_)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1set_1pm(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                                jobject jthis, jlong chost,
+                                                                                jobject jarg2_)
 {
-  jlong jresult                                              = 0;
-  simgrid::s4u::VirtualMachine* arg1                         = (simgrid::s4u::VirtualMachine*)0;
-  simgrid::s4u::Host* arg2                                   = (simgrid::s4u::Host*)0;
-  boost::shared_ptr<simgrid::s4u::VirtualMachine>* smartarg1 = 0;
-  boost::shared_ptr<simgrid::s4u::Host>* smartarg2           = 0;
-  simgrid::s4u::VirtualMachine* result                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  (void)jarg2_;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&cthis;
-  arg1      = (simgrid::s4u::VirtualMachine*)(smartarg1 ? smartarg1->get() : 0);
-
-  // plain pointer
-  smartarg2 = *(boost::shared_ptr<simgrid::s4u::Host>**)&jarg2;
-  arg2      = (simgrid::s4u::Host*)(smartarg2 ? smartarg2->get() : 0);
-
-  result = (simgrid::s4u::VirtualMachine*)(arg1)->set_pm(arg2);
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&jresult = new boost::shared_ptr<simgrid::s4u::VirtualMachine>(
-        result, SWIG_intrusive_deleter<simgrid::s4u::VirtualMachine>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&jresult = 0;
+  try {
+    ((VirtualMachine*)cthis)->set_pm((Host*)chost);
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
-#else
-  *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::VirtualMachine>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1get_1ramsize(JNIEnv* jenv, jclass jcls,
                                                                                       jlong cthis, jobject jthis)
 {
-  jlong jresult                                                    = 0;
-  simgrid::s4u::VirtualMachine* arg1                               = (simgrid::s4u::VirtualMachine*)0;
-  boost::shared_ptr<simgrid::s4u::VirtualMachine const>* smartarg1 = 0;
-  size_t result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::VirtualMachine>**)&cthis;
-  arg1      = (simgrid::s4u::VirtualMachine*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = ((simgrid::s4u::VirtualMachine const*)arg1)->get_ramsize();
-  jresult = (jlong)result;
-  return jresult;
+  try {
+    return ((VirtualMachine*)cthis)->get_ramsize();
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+    return 0;
+  }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1set_1ramsize(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis,
-                                                                                      jlong jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1set_1ramsize(JNIEnv* jenv, jclass jcls,
+                                                                                     jlong cthis, jobject jthis,
+                                                                                     jlong jarg2)
 {
-  jlong jresult                      = 0;
-  simgrid::s4u::VirtualMachine* arg1 = (simgrid::s4u::VirtualMachine*)0;
-  size_t arg2;
-  boost::shared_ptr<simgrid::s4u::VirtualMachine>* smartarg1 = 0;
-  simgrid::s4u::VirtualMachine* result                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&cthis;
-  arg1      = (simgrid::s4u::VirtualMachine*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = (size_t)jarg2;
-  result = (simgrid::s4u::VirtualMachine*)(arg1)->set_ramsize(arg2);
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&jresult = new boost::shared_ptr<simgrid::s4u::VirtualMachine>(
-        result, SWIG_intrusive_deleter<simgrid::s4u::VirtualMachine>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&jresult = 0;
+  try {
+    ((VirtualMachine*)cthis)->set_ramsize(jarg2);
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
-#else
-  *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::VirtualMachine>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1set_1bound(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis,
-                                                                                    jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1set_1bound(JNIEnv* jenv, jclass jcls,
+                                                                                   jlong cthis, jobject jthis,
+                                                                                   jdouble jarg2)
 {
-  jlong jresult                      = 0;
-  simgrid::s4u::VirtualMachine* arg1 = (simgrid::s4u::VirtualMachine*)0;
-  double arg2;
-  boost::shared_ptr<simgrid::s4u::VirtualMachine>* smartarg1 = 0;
-  simgrid::s4u::VirtualMachine* result                       = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&cthis;
-  arg1      = (simgrid::s4u::VirtualMachine*)(smartarg1 ? smartarg1->get() : 0);
-
-  arg2   = (double)jarg2;
-  result = (simgrid::s4u::VirtualMachine*)(arg1)->set_bound(arg2);
-
-  // plain pointer(out)
-#if (0)
-  if (result) {
-    intrusive_ptr_add_ref(result);
-    *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&jresult = new boost::shared_ptr<simgrid::s4u::VirtualMachine>(
-        result, SWIG_intrusive_deleter<simgrid::s4u::VirtualMachine>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&jresult = 0;
+  try {
+    ((VirtualMachine*)cthis)->set_bound(jarg2);
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
-#else
-  *(boost::shared_ptr<simgrid::s4u::VirtualMachine>**)&jresult =
-      result ? new boost::shared_ptr<simgrid::s4u::VirtualMachine>(result SWIG_NO_NULL_DELETER_0) : 0;
-#endif
-
-  return jresult;
+}
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1migrate(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                               jobject jthis, jlong chost,
+                                                                               jobject jhost)
+{
+  try {
+    sg_vm_migrate((VirtualMachine*)cthis, (Host*)chost);
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  }
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1start_1migration(JNIEnv* jenv, jclass jcls,
                                                                                          jlong cthis, jobject jthis)
 {
-  simgrid::s4u::VirtualMachine* arg1                               = (simgrid::s4u::VirtualMachine*)0;
-  boost::shared_ptr<simgrid::s4u::VirtualMachine const>* smartarg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::VirtualMachine>**)&cthis;
-  arg1      = (simgrid::s4u::VirtualMachine*)(smartarg1 ? smartarg1->get() : 0);
-
   try {
-    ((simgrid::s4u::VirtualMachine const*)arg1)->start_migration();
+    ((VirtualMachine*)cthis)->start_migration();
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
 }
@@ -6885,19 +6729,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1start_1m
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1end_1migration(JNIEnv* jenv, jclass jcls,
                                                                                        jlong cthis, jobject jthis)
 {
-  simgrid::s4u::VirtualMachine* arg1                               = (simgrid::s4u::VirtualMachine*)0;
-  boost::shared_ptr<simgrid::s4u::VirtualMachine const>* smartarg1 = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::VirtualMachine>**)&cthis;
-  arg1      = (simgrid::s4u::VirtualMachine*)(smartarg1 ? smartarg1->get() : 0);
-
   try {
-    ((simgrid::s4u::VirtualMachine const*)arg1)->end_migration();
+    ((VirtualMachine*)cthis)->end_migration();
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   }
 }
@@ -6905,22 +6738,11 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1end_1mig
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1get_1state(JNIEnv* jenv, jclass jcls,
                                                                                    jlong cthis, jobject jthis)
 {
-  jint jresult                                                     = 0;
-  simgrid::s4u::VirtualMachine* arg1                               = (simgrid::s4u::VirtualMachine*)0;
-  boost::shared_ptr<simgrid::s4u::VirtualMachine const>* smartarg1 = 0;
-  simgrid::s4u::VirtualMachine::State result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::VirtualMachine>**)&cthis;
-  arg1      = (simgrid::s4u::VirtualMachine*)(smartarg1 ? smartarg1->get() : 0);
-
-  result  = (simgrid::s4u::VirtualMachine::State)((simgrid::s4u::VirtualMachine const*)arg1)->get_state();
-  jresult = (jint)result;
-  return jresult;
+  try {
+    return (jint)((VirtualMachine*)cthis)->get_state();
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+    return 0;
+  }
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1start_1cb(JNIEnv* jenv, jclass jcls,

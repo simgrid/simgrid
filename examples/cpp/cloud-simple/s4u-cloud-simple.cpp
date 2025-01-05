@@ -62,7 +62,6 @@ static void launch_communication_worker(s4u_Host* tx_host, s4u_Host* rx_host)
   args.push_back(mbox_name);
 
   sg4::Actor::create("comm_tx", tx_host, communication_tx_fun, args);
-
   sg4::Actor::create("comm_rx", rx_host, communication_rx_fun, args);
 }
 
@@ -121,6 +120,7 @@ static void master_main()
   vm0 = pm0->create_vm("VM0", 1);
   vm0->start();
   auto* vm1 = pm0->create_vm("VM1", 1);
+  vm1->start();
   launch_computation_worker(vm0);
   launch_computation_worker(vm1);
   sg4::this_actor::sleep_for(2);

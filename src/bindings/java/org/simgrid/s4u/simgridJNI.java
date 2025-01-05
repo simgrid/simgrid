@@ -307,6 +307,7 @@ public class simgridJNI {
   public final static native long Host_create_disk(long jarg1, Host jarg1_, String name, double read_bandwidth,
                                                    double write_bandwidth);
   public final static native Disk[] Host_get_disks(long jarg1, Host jarg1_);
+  public final static native long Host_create_vm(long jarg1, Host jarg1_, String name, int core_amount);
   public final static native String Host_get_name(long jarg1, Host jarg1_);
   public final static native String[] Host_get_properties_names(long jarg1, Host jarg1_);
   public final static native String Host_get_property(long jarg1, Host jarg1_, String name);
@@ -465,10 +466,11 @@ public class simgridJNI {
   public final static native void VirtualMachine_shutdown(long jarg1, VirtualMachine jarg1_);
   public final static native void VirtualMachine_destroy(long jarg1, VirtualMachine jarg1_);
   public final static native long VirtualMachine_get_pm(long jarg1, VirtualMachine jarg1_);
-  public final static native long VirtualMachine_set_pm(long jarg1, VirtualMachine jarg1_, long jarg2, Host jarg2_);
+  public final static native void VirtualMachine_set_pm(long jarg1, VirtualMachine jarg1_, long jarg2, Host jarg2_);
   public final static native long VirtualMachine_get_ramsize(long jarg1, VirtualMachine jarg1_);
-  public final static native long VirtualMachine_set_ramsize(long jarg1, VirtualMachine jarg1_, long jarg2);
-  public final static native long VirtualMachine_set_bound(long jarg1, VirtualMachine jarg1_, double jarg2);
+  public final static native void VirtualMachine_set_ramsize(long jarg1, VirtualMachine jarg1_, long jarg2);
+  public final static native void VirtualMachine_set_bound(long jarg1, VirtualMachine jarg1_, double jarg2);
+  public final static native void VirtualMachine_migrate(long jarg1, VirtualMachine jarg1_, long chost, Host jhost);
   public final static native void VirtualMachine_start_migration(long jarg1, VirtualMachine jarg1_);
   public final static native void VirtualMachine_end_migration(long jarg1, VirtualMachine jarg1_);
   public final static native int VirtualMachine_get_state(long jarg1, VirtualMachine jarg1_);

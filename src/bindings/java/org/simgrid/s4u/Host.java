@@ -42,4 +42,10 @@ public class Host {
   public String get_property(String name) { return simgridJNI.Host_get_property(swigCPtr, this, name); }
 
   public Disk[] get_disks() { return simgridJNI.Host_get_disks(swigCPtr, this); }
+
+  public VirtualMachine create_vm(String name, int core_amount)
+  {
+    long cPtr = simgridJNI.Host_create_vm(swigCPtr, this, name, core_amount);
+    return (cPtr == 0) ? null : new VirtualMachine(cPtr, true);
+  }
 }
