@@ -184,8 +184,9 @@ public class Exec extends Activity {
     return this;
   }
 
-  public Exec detach(SWIGTYPE_p_std__functionT_void_fvoid_pF_t clean_function) {
-    simgridJNI.Exec_detach__SWIG_1(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fvoid_pF_t.getCPtr(clean_function));
+  public Exec detach(CallbackExec clean_function)
+  {
+    simgridJNI.Exec_detach__SWIG_1(swigCPtr, this, clean_function);
     return this;
   }
 

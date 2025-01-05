@@ -21,11 +21,11 @@ public class simgridJNI {
   public final static native void Actor_on_destruction_cb(CallbackActor cb);
   public final static native void Actor_on_exit(long jarg1, Actor jarg1_, CallbackBoolean jcode);
   public final static native long Actor_self();
-  public final static native void Actor_on_this_suspend_cb(long jarg1, Actor jarg1_, long jarg2);
-  public final static native void Actor_on_this_resume_cb(long jarg1, Actor jarg1_, long jarg2);
-  public final static native void Actor_on_this_sleep_cb(long jarg1, Actor jarg1_, long jarg2);
-  public final static native void Actor_on_this_wake_up_cb(long jarg1, Actor jarg1_, long jarg2);
-  public final static native void Actor_on_this_host_change_cb(long jarg1, Actor jarg1_, long jarg2);
+  public final static native void Actor_on_this_suspend_cb(long jarg1, Actor jarg1_, CallbackActor cb);
+  public final static native void Actor_on_this_resume_cb(long jarg1, Actor jarg1_, CallbackActor cb);
+  public final static native void Actor_on_this_sleep_cb(long jarg1, Actor jarg1_, CallbackActor cb);
+  public final static native void Actor_on_this_wake_up_cb(long jarg1, Actor jarg1_, CallbackActor cb);
+  public final static native void Actor_on_this_host_change_cb(long jarg1, Actor jarg1_, CallbackActorHost cb);
   public final static native void Actor_on_this_destruction_cb(long cthis, Actor jthis, CallbackActor cb);
   public final static native long Actor_init(String jarg1, long jarg2, Host jarg2_);
   public final static native void Actor_daemonize(long jarg1, Actor jarg1_);
@@ -114,7 +114,7 @@ public class simgridJNI {
   public final static native void Comm_set_tracing_category(long jarg1, Comm jarg1_, String jarg2);
   public final static native String Comm_get_tracing_category(long jarg1, Comm jarg1_);
   public final static native void Comm_detach__SWIG_0(long jarg1, Comm jarg1_);
-  public final static native void Comm_detach__SWIG_1(long jarg1, Comm jarg1_, long jarg2);
+  public final static native void Comm_detach__SWIG_1(long jarg1, Comm jarg1_, CallbackComm cb);
   public final static native void Comm_cancel(long jarg1, Comm jarg1_);
   public final static native void Comm_on_send_cb(CallbackComm cb);
   public final static native void Comm_on_this_send_cb(long jarg1, Comm jarg1_, CallbackComm cb);
@@ -155,7 +155,7 @@ public class simgridJNI {
   public final static native void Exec_set_tracing_category(long jarg1, Exec jarg1_, String jarg2);
   public final static native String Exec_get_tracing_category(long jarg1, Exec jarg1_);
   public final static native void Exec_detach__SWIG_0(long jarg1, Exec jarg1_);
-  public final static native void Exec_detach__SWIG_1(long jarg1, Exec jarg1_, long jarg2);
+  public final static native void Exec_detach__SWIG_1(long jarg1, Exec jarg1_, CallbackExec cb);
   public final static native void Exec_cancel(long jarg1, Exec jarg1_);
   public final static native void Exec_await_for(long jarg1, Exec jarg1_, double jarg2);
   public final static native void Io_on_start_cb(CallbackIo cb);
@@ -218,22 +218,18 @@ public class simgridJNI {
   public final static native Object Disk_get_data(long jarg1, Disk jarg1_);
   public final static native void Disk_set_data(long jarg1, Disk jarg1_, Object data);
   public final static native void Disk_seal(long jarg1, Disk jarg1_);
-  public final static native void Disk_on_onoff_cb(long jarg1);
-  public final static native void Disk_on_this_onoff_cb(long jarg1, Disk jarg1_, long jarg2);
-  public final static native void Disk_on_read_bandwidth_change_cb(long jarg1);
-  public final static native void Disk_on_this_read_bandwidth_change_cb(long jarg1, Disk jarg1_, long jarg2);
-  public final static native void Disk_on_write_bandwidth_change_cb(long jarg1);
-  public final static native void Disk_on_this_write_bandwidth_change_cb(long jarg1, Disk jarg1_, long jarg2);
-  public final static native void Disk_on_destruction_cb(long jarg1);
-  public final static native void Disk_on_this_destruction_cb(long jarg1, Disk jarg1_, long jarg2);
+  public final static native void Disk_on_onoff_cb(CallbackDisk cb);
+  public final static native void Disk_on_this_onoff_cb(long jarg1, Disk jarg1_, CallbackDisk cb);
+  public final static native void Disk_on_read_bandwidth_change_cb(CallbackDisk cb);
+  public final static native void Disk_on_this_read_bandwidth_change_cb(long jarg1, Disk jarg1_, CallbackDisk cb);
+  public final static native void Disk_on_write_bandwidth_change_cb(CallbackDisk cb);
+  public final static native void Disk_on_this_write_bandwidth_change_cb(long jarg1, Disk jarg1_, CallbackDisk cb);
+  public final static native void Disk_on_destruction_cb(CallbackDisk cb);
+  public final static native void Disk_on_this_destruction_cb(long jarg1, Disk jarg1_, CallbackDisk cb);
   public final static native long new_Engine(String[] jarg1);
   public final static native void Engine_run(long jarg1, Engine jarg1_);
   public final static native void Engine_run_until(long jarg1, Engine jarg1_, double jarg2);
   public final static native double Engine_get_clock();
-  public final static native void Engine_papi_start();
-  public final static native void Engine_papi_stop();
-  public final static native int Engine_papi_get_num_counters();
-  public final static native long Engine_get_papi_counters();
   public final static native long Engine_get_instance();
   public final static native boolean Engine_has_instance();
   public final static native void Engine_load_platform(long jarg1, Engine jarg1_, String jarg2);
@@ -263,12 +259,12 @@ public class simgridJNI {
   public final static native void Engine_set_config__SWIG_2(String jarg1, boolean jarg2);
   public final static native void Engine_set_config__SWIG_3(String jarg1, double jarg2);
   public final static native void Engine_set_config__SWIG_4(String jarg1, String jarg2);
-  public final static native void Engine_on_platform_created_cb(long jarg1);
-  public final static native void Engine_on_platform_creation_cb(long jarg1);
-  public final static native void Engine_on_simulation_start_cb(long jarg1);
-  public final static native void Engine_on_simulation_end_cb(long jarg1);
-  public final static native void Engine_on_time_advance_cb(long jarg1);
-  public final static native void Engine_on_deadlock_cb(long jarg1);
+  public final static native void Engine_on_platform_created_cb(CallbackVoid jarg1);
+  public final static native void Engine_on_platform_creation_cb(CallbackVoid jarg1);
+  public final static native void Engine_on_simulation_start_cb(CallbackVoid jarg1);
+  public final static native void Engine_on_simulation_end_cb(CallbackVoid jarg1);
+  public final static native void Engine_on_time_advance_cb(CallbackDouble jarg1);
+  public final static native void Engine_on_deadlock_cb(CallbackVoid jarg1);
   public final static native void Engine_die(String jarg1);
   public final static native void Engine_critical(String jarg1);
   public final static native void Engine_error(String jarg1);
@@ -355,12 +351,12 @@ public class simgridJNI {
   public final static native void Link_turn_off(long jarg1, Link jarg1_);
   public final static native boolean Link_is_on(long jarg1, Link jarg1_);
   public final static native long Link_seal(long jarg1, Link jarg1_);
-  public final static native void Link_on_onoff_cb(long jarg1);
-  public final static native void Link_on_this_onoff_cb(long jarg1, Link jarg1_, long jarg2);
-  public final static native void Link_on_bandwidth_change_cb(long jarg1);
-  public final static native void Link_on_this_bandwidth_change_cb(long jarg1, Link jarg1_, long jarg2);
-  public final static native void Link_on_destruction_cb(long jarg1);
-  public final static native void Link_on_this_destruction_cb(long jarg1, Link jarg1_, long jarg2);
+  public final static native void Link_on_onoff_cb(CallbackLink cb);
+  public final static native void Link_on_this_onoff_cb(long jarg1, Link jarg1_, CallbackLink cb);
+  public final static native void Link_on_bandwidth_change_cb(CallbackLink cb);
+  public final static native void Link_on_this_bandwidth_change_cb(long jarg1, Link jarg1_, CallbackLink cb);
+  public final static native void Link_on_destruction_cb(CallbackLink cb);
+  public final static native void Link_on_this_destruction_cb(long jarg1, Link jarg1_, CallbackLink cb);
   public final static native int LinkInRoute_Direction_UP_get();
   public final static native int LinkInRoute_Direction_DOWN_get();
   public final static native int LinkInRoute_Direction_NONE_get();
@@ -393,7 +389,7 @@ public class simgridJNI {
   public final static native long NetZone_get_host_count(long jarg1, NetZone jarg1_);
   public final static native String NetZone_get_property(long jarg1, NetZone jarg1_, String jarg2);
   public final static native void NetZone_set_property(long jarg1, NetZone jarg1_, String jarg2, String jarg3);
-  public final static native void NetZone_on_seal_cb(long jarg1);
+  public final static native void NetZone_on_seal_cb(CallbackNetzone cb);
   public final static native long NetZone_create_host__SWIG_0(long jarg1, NetZone jarg1_, String jarg2, long jarg3);
   public final static native long NetZone_create_host__SWIG_1(long jarg1, NetZone jarg1_, String jarg2, double jarg3);
   public final static native long NetZone_create_host__SWIG_2(long jarg1, NetZone jarg1_, String jarg2, long jarg3);
@@ -402,10 +398,7 @@ public class simgridJNI {
   public final static native long NetZone_create_link__SWIG_1(long jarg1, NetZone jarg1_, String jarg2, double jarg3);
   public final static native long NetZone_create_link__SWIG_2(long jarg1, NetZone jarg1_, String jarg2, long jarg3);
   public final static native long NetZone_create_link__SWIG_3(long jarg1, NetZone jarg1_, String jarg2, String jarg3);
-  public final static native long NetZone_seal(long jarg1, NetZone jarg1_);
-  public final static native void NetZone_set_latency_factor_cb(long jarg1, NetZone jarg1_, long jarg2);
-  public final static native void NetZone_set_bandwidth_factor_cb(long jarg1, NetZone jarg1_, long jarg2);
-  public final static native void delete_NetZone(long jarg1);
+  public final static native void NetZone_seal(long jarg1, NetZone jarg1_);
   public final static native long create_full_zone(String jarg1);
   public final static native long create_star_zone(String jarg1);
   public final static native long create_dijkstra_zone(String jarg1, boolean jarg2);
@@ -471,19 +464,26 @@ public class simgridJNI {
   public final static native void VirtualMachine_start_migration(long jarg1, VirtualMachine jarg1_);
   public final static native void VirtualMachine_end_migration(long jarg1, VirtualMachine jarg1_);
   public final static native int VirtualMachine_get_state(long jarg1, VirtualMachine jarg1_);
-  public final static native void VirtualMachine_on_start_cb(long jarg1);
-  public final static native void VirtualMachine_on_this_start_cb(long jarg1, VirtualMachine jarg1_, long jarg2);
-  public final static native void VirtualMachine_on_started_cb(long jarg1);
-  public final static native void VirtualMachine_on_this_started_cb(long jarg1, VirtualMachine jarg1_, long jarg2);
-  public final static native void VirtualMachine_on_shutdown_cb(long jarg1);
-  public final static native void VirtualMachine_on_this_shutdown_cb(long jarg1, VirtualMachine jarg1_, long jarg2);
-  public final static native void VirtualMachine_on_this_suspend_cb(long jarg1, VirtualMachine jarg1_, long jarg2);
-  public final static native void VirtualMachine_on_this_resume_cb(long jarg1, VirtualMachine jarg1_, long jarg2);
-  public final static native void VirtualMachine_on_destruction_cb(long jarg1);
-  public final static native void VirtualMachine_on_this_destruction_cb(long jarg1, VirtualMachine jarg1_, long jarg2);
-  public final static native void VirtualMachine_on_migration_start_cb(long jarg1);
-  public final static native void VirtualMachine_on_this_migration_start_cb(long jarg1, VirtualMachine jarg1_, long jarg2);
-  public final static native void VirtualMachine_on_migration_end_cb(long jarg1);
-  public final static native void VirtualMachine_on_this_migration_end_cb(long jarg1, VirtualMachine jarg1_, long jarg2);
-  public final static native void delete_VirtualMachine(long jarg1);
+  public final static native void VirtualMachine_on_start_cb(CallbackVirtualMachine cb);
+  public final static native void VirtualMachine_on_this_start_cb(long jarg1, VirtualMachine jarg1_,
+                                                                  CallbackVirtualMachine cb);
+  public final static native void VirtualMachine_on_started_cb(CallbackVirtualMachine cb);
+  public final static native void VirtualMachine_on_this_started_cb(long jarg1, VirtualMachine jarg1_,
+                                                                    CallbackVirtualMachine cb);
+  public final static native void VirtualMachine_on_shutdown_cb(CallbackVirtualMachine cb);
+  public final static native void VirtualMachine_on_this_shutdown_cb(long jarg1, VirtualMachine jarg1_,
+                                                                     CallbackVirtualMachine cb);
+  public final static native void VirtualMachine_on_this_suspend_cb(long jarg1, VirtualMachine jarg1_,
+                                                                    CallbackVirtualMachine cb);
+  public final static native void VirtualMachine_on_this_resume_cb(long jarg1, VirtualMachine jarg1_,
+                                                                   CallbackVirtualMachine cb);
+  public final static native void VirtualMachine_on_destruction_cb(CallbackVirtualMachine cb);
+  public final static native void VirtualMachine_on_this_destruction_cb(long jarg1, VirtualMachine jarg1_,
+                                                                        CallbackVirtualMachine cb);
+  public final static native void VirtualMachine_on_migration_start_cb(CallbackVirtualMachine cb);
+  public final static native void VirtualMachine_on_this_migration_start_cb(long jarg1, VirtualMachine jarg1_,
+                                                                            CallbackVirtualMachine cb);
+  public final static native void VirtualMachine_on_migration_end_cb(CallbackVirtualMachine cb);
+  public final static native void VirtualMachine_on_this_migration_end_cb(long jarg1, VirtualMachine jarg1_,
+                                                                          CallbackVirtualMachine cb);
 }

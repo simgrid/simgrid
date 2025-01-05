@@ -61,24 +61,17 @@ public class Actor {
     return (cPtr == 0) ? null : new Actor(cPtr, true);
   }
 
-  public void on_this_suspend_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t cb) {
-    simgridJNI.Actor_on_this_suspend_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_suspend_cb(CallbackActor cb) { simgridJNI.Actor_on_this_suspend_cb(swigCPtr, this, cb); }
 
-  public void on_this_resume_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t cb) {
-    simgridJNI.Actor_on_this_resume_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_resume_cb(CallbackActor cb) { simgridJNI.Actor_on_this_resume_cb(swigCPtr, this, cb); }
 
-  public void on_this_sleep_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t cb) {
-    simgridJNI.Actor_on_this_sleep_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_sleep_cb(CallbackActor cb) { simgridJNI.Actor_on_this_sleep_cb(swigCPtr, this, cb); }
 
-  public void on_this_wake_up_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t cb) {
-    simgridJNI.Actor_on_this_wake_up_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_wake_up_cb(CallbackActor cb) { simgridJNI.Actor_on_this_wake_up_cb(swigCPtr, this, cb); }
 
-  public void on_this_host_change_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_R_Host_const_RF_t cb) {
-    simgridJNI.Actor_on_this_host_change_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_R_Host_const_RF_t.getCPtr(cb));
+  public void on_this_host_change_cb(CallbackActorHost cb)
+  {
+    simgridJNI.Actor_on_this_host_change_cb(swigCPtr, this, cb);
   }
 
   public static void on_termination_cb(CallbackActor cb) { simgridJNI.Actor_on_termination_cb(cb); }

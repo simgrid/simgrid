@@ -7,29 +7,15 @@ package org.simgrid.s4u;
 
 public class VirtualMachine extends Host {
   private transient long swigCPtr;
-  private transient boolean swigCMemOwnBase;
 
-  protected VirtualMachine(long cPtr, boolean cMemoryOwn) {
+  protected VirtualMachine(long cPtr)
+  {
     super(cPtr);
-    swigCMemOwnBase = cMemoryOwn;
     swigCPtr = cPtr;
   }
 
   protected static long getCPtr(VirtualMachine obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  @SuppressWarnings({"deprecation", "removal"})
-  protected void finalize() {
-    delete();
-  }
-
-  public synchronized void delete() {
-    if(swigCPtr != 0 && swigCMemOwnBase) {
-      swigCMemOwnBase = false;
-      simgridJNI.delete_VirtualMachine(swigCPtr);
-    }
-    swigCPtr = 0;
   }
 
   public static String to_c_str(VirtualMachine.State value) {
@@ -98,60 +84,62 @@ public class VirtualMachine extends Host {
     return VirtualMachine.State.swigToEnum(simgridJNI.VirtualMachine_get_state(swigCPtr, this));
   }
 
-  public static void on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t cb) {
-    simgridJNI.VirtualMachine_on_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.getCPtr(cb));
+  public static void on_start_cb(CallbackVirtualMachine cb) { simgridJNI.VirtualMachine_on_start_cb(cb); }
+
+  public void on_this_start_cb(CallbackVirtualMachine cb)
+  {
+    simgridJNI.VirtualMachine_on_this_start_cb(swigCPtr, this, cb);
   }
 
-  public void on_this_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t cb) {
-    simgridJNI.VirtualMachine_on_this_start_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.getCPtr(cb));
+  public static void on_started_cb(CallbackVirtualMachine cb) { simgridJNI.VirtualMachine_on_started_cb(cb); }
+
+  public void on_this_started_cb(CallbackVirtualMachine cb)
+  {
+    simgridJNI.VirtualMachine_on_this_started_cb(swigCPtr, this, cb);
   }
 
-  public static void on_started_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t cb) {
-    simgridJNI.VirtualMachine_on_started_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.getCPtr(cb));
+  public static void on_shutdown_cb(CallbackVirtualMachine cb) { simgridJNI.VirtualMachine_on_shutdown_cb(cb); }
+
+  public void on_this_shutdown_cb(CallbackVirtualMachine cb)
+  {
+    simgridJNI.VirtualMachine_on_this_shutdown_cb(swigCPtr, this, cb);
   }
 
-  public void on_this_started_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t cb) {
-    simgridJNI.VirtualMachine_on_this_started_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.getCPtr(cb));
+  public void on_this_suspend_cb(CallbackVirtualMachine cb)
+  {
+    simgridJNI.VirtualMachine_on_this_suspend_cb(swigCPtr, this, cb);
   }
 
-  public static void on_shutdown_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t cb) {
-    simgridJNI.VirtualMachine_on_shutdown_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.getCPtr(cb));
+  public void on_this_resume_cb(CallbackVirtualMachine cb)
+  {
+    simgridJNI.VirtualMachine_on_this_resume_cb(swigCPtr, this, cb);
   }
 
-  public void on_this_shutdown_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t cb) {
-    simgridJNI.VirtualMachine_on_this_shutdown_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.getCPtr(cb));
+  public static void on_destruction_cb(CallbackVirtualMachine cb) { simgridJNI.VirtualMachine_on_destruction_cb(cb); }
+
+  public void on_this_destruction_cb(CallbackVirtualMachine cb)
+  {
+    simgridJNI.VirtualMachine_on_this_destruction_cb(swigCPtr, this, cb);
   }
 
-  public void on_this_suspend_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t cb) {
-    simgridJNI.VirtualMachine_on_this_suspend_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.getCPtr(cb));
+  public static void on_migration_start_cb(CallbackVirtualMachine cb)
+  {
+    simgridJNI.VirtualMachine_on_migration_start_cb(cb);
   }
 
-  public void on_this_resume_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t cb) {
-    simgridJNI.VirtualMachine_on_this_resume_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.getCPtr(cb));
+  public void on_this_migration_start_cb(CallbackVirtualMachine cb)
+  {
+    simgridJNI.VirtualMachine_on_this_migration_start_cb(swigCPtr, this, cb);
   }
 
-  public static void on_destruction_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t cb) {
-    simgridJNI.VirtualMachine_on_destruction_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.getCPtr(cb));
+  public static void on_migration_end_cb(CallbackVirtualMachine cb)
+  {
+    simgridJNI.VirtualMachine_on_migration_end_cb(cb);
   }
 
-  public void on_this_destruction_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t cb) {
-    simgridJNI.VirtualMachine_on_this_destruction_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.getCPtr(cb));
-  }
-
-  public static void on_migration_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t cb) {
-    simgridJNI.VirtualMachine_on_migration_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.getCPtr(cb));
-  }
-
-  public void on_this_migration_start_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t cb) {
-    simgridJNI.VirtualMachine_on_this_migration_start_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.getCPtr(cb));
-  }
-
-  public static void on_migration_end_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t cb) {
-    simgridJNI.VirtualMachine_on_migration_end_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.getCPtr(cb));
-  }
-
-  public void on_this_migration_end_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t cb) {
-    simgridJNI.VirtualMachine_on_this_migration_end_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.getCPtr(cb));
+  public void on_this_migration_end_cb(CallbackVirtualMachine cb)
+  {
+    simgridJNI.VirtualMachine_on_this_migration_end_cb(swigCPtr, this, cb);
   }
 
   public final static class State {

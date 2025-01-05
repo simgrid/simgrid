@@ -134,37 +134,27 @@ public class Disk {
     return this;
   }
 
-  public static void on_onoff_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t cb) {
-    simgridJNI.Disk_on_onoff_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t.getCPtr(cb));
+  public static void on_onoff_cb(CallbackDisk cb) { simgridJNI.Disk_on_onoff_cb(cb); }
+
+  public void on_this_onoff_cb(CallbackDisk cb) { simgridJNI.Disk_on_this_onoff_cb(swigCPtr, this, cb); }
+
+  public static void on_read_bandwidth_change_cb(CallbackDisk cb) { simgridJNI.Disk_on_read_bandwidth_change_cb(cb); }
+
+  public void on_this_read_bandwidth_change_cb(CallbackDisk cb)
+  {
+    simgridJNI.Disk_on_this_read_bandwidth_change_cb(swigCPtr, this, cb);
   }
 
-  public void on_this_onoff_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t cb) {
-    simgridJNI.Disk_on_this_onoff_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t.getCPtr(cb));
+  public static void on_write_bandwidth_change_cb(CallbackDisk cb) { simgridJNI.Disk_on_write_bandwidth_change_cb(cb); }
+
+  public void on_this_write_bandwidth_change_cb(CallbackDisk cb)
+  {
+    simgridJNI.Disk_on_this_write_bandwidth_change_cb(swigCPtr, this, cb);
   }
 
-  public static void on_read_bandwidth_change_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t cb) {
-    simgridJNI.Disk_on_read_bandwidth_change_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t.getCPtr(cb));
-  }
+  public static void on_destruction_cb(CallbackDisk cb) { simgridJNI.Disk_on_destruction_cb(cb); }
 
-  public void on_this_read_bandwidth_change_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t cb) {
-    simgridJNI.Disk_on_this_read_bandwidth_change_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t.getCPtr(cb));
-  }
-
-  public static void on_write_bandwidth_change_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t cb) {
-    simgridJNI.Disk_on_write_bandwidth_change_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t.getCPtr(cb));
-  }
-
-  public void on_this_write_bandwidth_change_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t cb) {
-    simgridJNI.Disk_on_this_write_bandwidth_change_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t.getCPtr(cb));
-  }
-
-  public static void on_destruction_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t cb) {
-    simgridJNI.Disk_on_destruction_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t.getCPtr(cb));
-  }
-
-  public void on_this_destruction_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t cb) {
-    simgridJNI.Disk_on_this_destruction_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_destruction_cb(CallbackDisk cb) { simgridJNI.Disk_on_this_destruction_cb(swigCPtr, this, cb); }
 
   public final static class SharingPolicy {
     public final static Disk.SharingPolicy NONLINEAR = new Disk.SharingPolicy("NONLINEAR", simgridJNI.Disk_SharingPolicy_NONLINEAR_get());

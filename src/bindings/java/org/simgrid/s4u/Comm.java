@@ -178,8 +178,9 @@ public class Comm extends Activity {
     return this;
   }
 
-  public Comm detach(SWIGTYPE_p_std__functionT_void_fvoid_pF_t clean_function) {
-    simgridJNI.Comm_detach__SWIG_1(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fvoid_pF_t.getCPtr(clean_function));
+  public Comm detach(CallbackComm clean_function)
+  {
+    simgridJNI.Comm_detach__SWIG_1(swigCPtr, this, clean_function);
     return this;
   }
 

@@ -46,6 +46,6 @@ public class Host {
   public VirtualMachine create_vm(String name, int core_amount)
   {
     long cPtr = simgridJNI.Host_create_vm(swigCPtr, this, name, core_amount);
-    return (cPtr == 0) ? null : new VirtualMachine(cPtr, true);
+    return (cPtr == 0) ? null : new VirtualMachine(cPtr);
   }
 }

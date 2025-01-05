@@ -59,22 +59,6 @@ public class Engine {
     return simgridJNI.Engine_get_clock();
   }
 
-  public static void papi_start() {
-    simgridJNI.Engine_papi_start();
-  }
-
-  public static void papi_stop() {
-    simgridJNI.Engine_papi_stop();
-  }
-
-  public static int papi_get_num_counters() {
-    return simgridJNI.Engine_papi_get_num_counters();
-  }
-
-  public static SWIGTYPE_p_std__vectorT_long_long_t get_papi_counters() {
-    return new SWIGTYPE_p_std__vectorT_long_long_t(simgridJNI.Engine_get_papi_counters(), true);
-  }
-
   public static Engine get_instance() {
     long cPtr = simgridJNI.Engine_get_instance();
     return (cPtr == 0) ? null : new Engine(cPtr, false);
@@ -167,7 +151,7 @@ public class Engine {
 
   public NetZone get_netzone_root() {
     long cPtr = simgridJNI.Engine_get_netzone_root(swigCPtr, this);
-    return (cPtr == 0) ? null : new NetZone(cPtr, false);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
   }
 
   public SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t get_all_netzones() {
@@ -176,7 +160,7 @@ public class Engine {
 
   public NetZone netzone_by_name_or_null(String name) {
     long cPtr = simgridJNI.Engine_netzone_by_name_or_null(swigCPtr, this, name);
-    return (cPtr == 0) ? null : new NetZone(cPtr, false);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
   }
 
   public static void set_config(String str) {
@@ -199,29 +183,17 @@ public class Engine {
     simgridJNI.Engine_set_config__SWIG_4(name, value);
   }
 
-  public static void on_platform_created_cb(SWIGTYPE_p_std__functionT_void_fF_t cb) {
-    simgridJNI.Engine_on_platform_created_cb(SWIGTYPE_p_std__functionT_void_fF_t.getCPtr(cb));
-  }
+  public static void on_platform_created_cb(CallbackVoid cb) { simgridJNI.Engine_on_platform_created_cb(cb); }
 
-  public static void on_platform_creation_cb(SWIGTYPE_p_std__functionT_void_fF_t cb) {
-    simgridJNI.Engine_on_platform_creation_cb(SWIGTYPE_p_std__functionT_void_fF_t.getCPtr(cb));
-  }
+  public static void on_platform_creation_cb(CallbackVoid cb) { simgridJNI.Engine_on_platform_creation_cb(cb); }
 
-  public static void on_simulation_start_cb(SWIGTYPE_p_std__functionT_void_fF_t cb) {
-    simgridJNI.Engine_on_simulation_start_cb(SWIGTYPE_p_std__functionT_void_fF_t.getCPtr(cb));
-  }
+  public static void on_simulation_start_cb(CallbackVoid cb) { simgridJNI.Engine_on_simulation_start_cb(cb); }
 
-  public static void on_simulation_end_cb(SWIGTYPE_p_std__functionT_void_fF_t cb) {
-    simgridJNI.Engine_on_simulation_end_cb(SWIGTYPE_p_std__functionT_void_fF_t.getCPtr(cb));
-  }
+  public static void on_simulation_end_cb(CallbackVoid cb) { simgridJNI.Engine_on_simulation_end_cb(cb); }
 
-  public static void on_time_advance_cb(SWIGTYPE_p_std__functionT_void_fdoubleF_t cb) {
-    simgridJNI.Engine_on_time_advance_cb(SWIGTYPE_p_std__functionT_void_fdoubleF_t.getCPtr(cb));
-  }
+  public static void on_time_advance_cb(CallbackDouble cb) { simgridJNI.Engine_on_time_advance_cb(cb); }
 
-  public static void on_deadlock_cb(SWIGTYPE_p_std__functionT_void_fvoidF_t cb) {
-    simgridJNI.Engine_on_deadlock_cb(SWIGTYPE_p_std__functionT_void_fvoidF_t.getCPtr(cb));
-  }
+  public static void on_deadlock_cb(CallbackVoid cb) { simgridJNI.Engine_on_deadlock_cb(cb); }
 
   public static void die(String fmt, Object... args) { simgridJNI.Engine_die(String.format(fmt, args)); }
 

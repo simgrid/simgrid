@@ -788,10 +788,17 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/Actor.java
     src/bindings/java/org/simgrid/s4u/Barrier.java
     src/bindings/java/org/simgrid/s4u/CallbackActor.java
+    src/bindings/java/org/simgrid/s4u/CallbackActorHost.java
     src/bindings/java/org/simgrid/s4u/CallbackBoolean.java
     src/bindings/java/org/simgrid/s4u/CallbackComm.java
+    src/bindings/java/org/simgrid/s4u/CallbackDisk.java
+    src/bindings/java/org/simgrid/s4u/CallbackDouble.java
     src/bindings/java/org/simgrid/s4u/CallbackExec.java
     src/bindings/java/org/simgrid/s4u/CallbackIo.java
+    src/bindings/java/org/simgrid/s4u/CallbackLink.java
+    src/bindings/java/org/simgrid/s4u/CallbackNetzone.java
+    src/bindings/java/org/simgrid/s4u/CallbackVirtualMachine.java
+    src/bindings/java/org/simgrid/s4u/CallbackVoid.java
     src/bindings/java/org/simgrid/s4u/Comm.java
     src/bindings/java/org/simgrid/s4u/ConditionVariable.java
     src/bindings/java/org/simgrid/s4u/Disk.java
@@ -812,39 +819,15 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/simgrid.java
     src/bindings/java/org/simgrid/s4u/SimgridException.java
     src/bindings/java/org/simgrid/s4u/simgridJNI.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fboost__intrusive_ptrT_simgrid__s4u__Actor_tF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Host_pF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_bool_fsimgrid__s4u__Link_pF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_fdouble_simgrid__s4u__Host_const_p_simgrid__s4u__Host_const_p_std__vectorT_simgrid__s4u__Link_p_t_const_R_std__unordered_setT_simgrid__s4u__NetZone_p_t_const_RF_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_simgrid__s4u__Link_p_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_simgrid__s4u__NetZone_p_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_std__pairT_kernel__routing__NetPoint_p_kernel__routing__NetPoint_p_t_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fboolF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fdoubleF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fint_char_ppF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_RF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Actor_const_R_Host_const_RF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Disk_const_RF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__NetZone_const_RF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__VirtualMachine_const_RF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fvoidF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_void_fvoid_pF_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__pairT_unsigned_int_unsigned_int_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__unordered_mapT_std__string_std__string_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_double_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_long_long_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__Link_p_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_std__string_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_unsigned_int_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_unsigned_long_t.java
     src/bindings/java/org/simgrid/s4u/TimeoutException.java
     src/bindings/java/org/simgrid/s4u/VirtualMachine.java
 )

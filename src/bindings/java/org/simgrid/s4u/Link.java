@@ -132,29 +132,20 @@ public class Link {
     return (cPtr == 0) ? null : new Link(cPtr, false);
   }
 
-  public static void on_onoff_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t cb) {
-    simgridJNI.Link_on_onoff_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t.getCPtr(cb));
+  public static void on_onoff_cb(CallbackLink cb) { simgridJNI.Link_on_onoff_cb(cb); }
+
+  public void on_this_onoff_cb(CallbackLink cb) { simgridJNI.Link_on_this_onoff_cb(swigCPtr, this, cb); }
+
+  public static void on_bandwidth_change_cb(CallbackLink cb) { simgridJNI.Link_on_bandwidth_change_cb(cb); }
+
+  public void on_this_bandwidth_change_cb(CallbackLink cb)
+  {
+    simgridJNI.Link_on_this_bandwidth_change_cb(swigCPtr, this, cb);
   }
 
-  public void on_this_onoff_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t cb) {
-    simgridJNI.Link_on_this_onoff_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t.getCPtr(cb));
-  }
+  public static void on_destruction_cb(CallbackLink cb) { simgridJNI.Link_on_destruction_cb(cb); }
 
-  public static void on_bandwidth_change_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t cb) {
-    simgridJNI.Link_on_bandwidth_change_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t.getCPtr(cb));
-  }
-
-  public void on_this_bandwidth_change_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t cb) {
-    simgridJNI.Link_on_this_bandwidth_change_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t.getCPtr(cb));
-  }
-
-  public static void on_destruction_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t cb) {
-    simgridJNI.Link_on_destruction_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t.getCPtr(cb));
-  }
-
-  public void on_this_destruction_cb(SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t cb) {
-    simgridJNI.Link_on_this_destruction_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_void_fsimgrid__s4u__Link_const_RF_t.getCPtr(cb));
-  }
+  public void on_this_destruction_cb(CallbackLink cb) { simgridJNI.Link_on_this_destruction_cb(swigCPtr, this, cb); }
 
   public final static class SharingPolicy {
     public final static Link.SharingPolicy NONLINEAR = new Link.SharingPolicy("NONLINEAR", simgridJNI.Link_SharingPolicy_NONLINEAR_get());
