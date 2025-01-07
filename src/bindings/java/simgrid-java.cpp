@@ -2181,11 +2181,6 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1await_1for(JNIEnv* j
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Io(JNIEnv* jenv, jclass jcls, jlong cthis)
-{
-  intrusive_ptr_release((Io*)cthis);
-}
-
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Barrier_1create(JNIEnv* jenv, jclass jcls, jlong size)
 {
   BarrierPtr result = simgrid::s4u::Barrier::create(size);
@@ -2253,11 +2248,6 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1recv_1cb
     ((Comm*)cthis)->on_this_recv_cb([cb](Comm const& c) { get_jenv()->CallVoidMethod(cb, CallbackComm_methodId, &c); });
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Comm(JNIEnv* jenv, jclass jcls, jlong cthis)
-{
-  intrusive_ptr_release((Comm*)cthis);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1sendto_1init_1_1SWIG_10(JNIEnv* jenv, jclass jcls)
@@ -4002,10 +3992,6 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1is_1assigned(J
   return ((Exec*)cthis)->is_assigned();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Exec(JNIEnv* jenv, jclass jcls, jlong cthis)
-{
-  intrusive_ptr_release((Exec*)cthis);
-}
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1by_1name(JNIEnv* jenv, jclass jcls, jstring jname)
 {
   if (!jname) {

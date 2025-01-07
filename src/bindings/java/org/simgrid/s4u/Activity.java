@@ -14,6 +14,8 @@ public class Activity {
     swigCPtr = cPtr;
   }
 
+  protected final long getCPtr() { return swigCPtr; }
+
   protected static long getCPtr(Activity obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }

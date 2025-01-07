@@ -119,7 +119,6 @@ public class simgridJNI {
   public final static native void Comm_on_this_send_cb(long jarg1, Comm jarg1_, CallbackComm cb);
   public final static native void Comm_on_recv_cb(CallbackComm cb);
   public final static native void Comm_on_this_recv_cb(long jarg1, Comm jarg1_, CallbackComm cb);
-  public final static native void delete_Comm(long jarg1);
   public final static native long Comm_sendto_init__SWIG_0();
   public final static native long Comm_sendto_init__SWIG_1(long jarg1, Host jarg1_, long jarg2, Host jarg2_);
   public final static native long Comm_sendto_async(long jarg1, Host jarg1_, long jarg2, Host jarg2_, long jarg3);
@@ -295,7 +294,6 @@ public class simgridJNI {
   public final static native double Exec_get_cost(long jarg1, Exec jarg1_);
   public final static native boolean Exec_is_parallel(long jarg1, Exec jarg1_);
   public final static native boolean Exec_is_assigned(long jarg1, Exec jarg1_);
-  public final static native void delete_Exec(long jarg1);
   public final static native long Host_create_disk(long jarg1, Host jarg1_, String name, double read_bandwidth,
                                                    double write_bandwidth);
   public final static native Disk[] Host_get_disks(long jarg1, Host jarg1_);
@@ -323,7 +321,6 @@ public class simgridJNI {
                                                      Disk jarg3_);
   public final static native void Io_update_priority(long jarg1, Io jarg1_, double jarg2);
   public final static native boolean Io_is_assigned(long jarg1, Io jarg1_);
-  public final static native void delete_Io(long jarg1);
   public final static native int Link_SharingPolicy_NONLINEAR_get();
   public final static native int Link_SharingPolicy_WIFI_get();
   public final static native int Link_SharingPolicy_SPLITDUPLEX_get();
@@ -364,7 +361,6 @@ public class simgridJNI {
   public final static native int LinkInRoute_get_direction(long jarg1, LinkInRoute jarg1_);
   public final static native long LinkInRoute_get_link(long jarg1, LinkInRoute jarg1_);
   public final static native void delete_LinkInRoute(long jarg1);
-  public final static native void delete_Mess(long cmess);
   public final static native void Mess_set_queue(long cmess, Mess jmess, long cqueue, MessageQueue jqueue);
   public final static native long Mess_get_queue(long cmess, Mess jmess);
   public final static native void Mess_set_payload(long cmess, Mess jmess, Object payload);
