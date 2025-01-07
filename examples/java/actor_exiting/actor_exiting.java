@@ -56,7 +56,7 @@ class ActorB extends Actor {
 }
 class ActorC extends Actor {
   public ActorC(String name, Host location) { super(name, location); }
-  public void run()
+  public void run() throws SimgridException
   {
     // Register a lambda function to be executed once it stops
     on_exit(new CallbackBoolean() {

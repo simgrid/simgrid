@@ -148,9 +148,51 @@ public class Engine {
   public SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t get_all_actors() {
     return new SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t(simgridJNI.Engine_get_all_actors(swigCPtr, this), true);
   }
+  public NetZone set_rootzone_full(String name)
+  {
+    long cPtr = simgridJNI.Engine_set_root_netzone_full(swigCPtr, this, name);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
+  }
 
-  public NetZone get_netzone_root() {
-    long cPtr = simgridJNI.Engine_get_netzone_root(swigCPtr, this);
+  public NetZone set_rootzone_star(String name)
+  {
+    long cPtr = simgridJNI.Engine_set_root_netzone_star(swigCPtr, this, name);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
+  }
+
+  public NetZone set_rootzone_dijkstra(String name, boolean cache)
+  {
+    long cPtr = simgridJNI.Engine_set_root_netzone_dijkstra(swigCPtr, this, name, cache);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
+  }
+
+  public NetZone set_rootzone_empty(String name)
+  {
+    long cPtr = simgridJNI.Engine_set_root_netzone_empty(swigCPtr, this, name);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
+  }
+
+  public NetZone set_rootzone_floyd(String name)
+  {
+    long cPtr = simgridJNI.Engine_set_root_netzone_floyd(swigCPtr, this, name);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
+  }
+
+  public NetZone set_rootzone_vivaldi(String name)
+  {
+    long cPtr = simgridJNI.Engine_set_root_netzone_vivaldi(swigCPtr, this, name);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
+  }
+
+  public NetZone create_wifi_zone(String name)
+  {
+    long cPtr = simgridJNI.Engine_set_root_netzone_wifi(swigCPtr, this, name);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
+  }
+
+  public NetZone get_root_netzone()
+  {
+    long cPtr = simgridJNI.Engine_get_root_netzone(swigCPtr, this);
     return (cPtr == 0) ? null : new NetZone(cPtr);
   }
 

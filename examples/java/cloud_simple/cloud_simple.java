@@ -49,7 +49,7 @@ class CommunicationRX extends Actor {
     super(name, location);
     this.mbox_name = mbox_name;
   }
-  public void run()
+  public void run() throws SimgridException
   {
     String actor_name = Actor.self().get_name();
     String host_name  = this.get_host().get_name();

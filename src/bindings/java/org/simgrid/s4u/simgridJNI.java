@@ -127,7 +127,7 @@ public class simgridJNI {
   public final static native long Comm_get_source(long jarg1, Comm jarg1_);
   public final static native long Comm_set_destination(long jarg1, Comm jarg1_, long jarg2, Host jarg2_);
   public final static native long Comm_get_destination(long jarg1, Comm jarg1_);
-  public final static native long Comm_set_mailbox(long jarg1, Comm jarg1_, long jarg2, Mailbox jarg2_);
+  public final static native void Comm_set_mailbox(long jarg1, Comm jarg1_, long jarg2, Mailbox jarg2_);
   public final static native long Comm_get_mailbox(long jarg1, Comm jarg1_);
   public final static native void Comm_set_src_data(long jarg1, Comm jarg1_, Object payload);
   public final static native Object Comm_get_payload(long jarg1, Comm jarg1_);
@@ -249,7 +249,15 @@ public class simgridJNI {
   public final static native long Engine_get_actor_count(long jarg1, Engine jarg1_);
   public final static native int Engine_get_actor_max_pid(long jarg1, Engine jarg1_);
   public final static native long Engine_get_all_actors(long jarg1, Engine jarg1_);
-  public final static native long Engine_get_netzone_root(long jarg1, Engine jarg1_);
+  public final static native long Engine_get_root_netzone(long jarg1, Engine jarg1_);
+  public final static native long Engine_set_root_netzone_full(long jarg1, Engine jarg1_, String jname);
+  public final static native long Engine_set_root_netzone_star(long jarg1, Engine jarg1_, String jname);
+  public final static native long Engine_set_root_netzone_dijkstra(long jarg1, Engine jarg1_, String jname,
+                                                                   boolean jarg2);
+  public final static native long Engine_set_root_netzone_empty(long jarg1, Engine jarg1_, String jname);
+  public final static native long Engine_set_root_netzone_floyd(long jarg1, Engine jarg1_, String jname);
+  public final static native long Engine_set_root_netzone_vivaldi(long jarg1, Engine jarg1_, String jname);
+  public final static native long Engine_set_root_netzone_wifi(long jarg1, Engine jarg1_, String jname);
   public final static native long Engine_get_all_netzones(long jarg1, Engine jarg1_);
   public final static native long Engine_netzone_by_name_or_null(long jarg1, Engine jarg1_, String jarg2);
   public final static native void Engine_set_config__SWIG_0(String jarg1);
@@ -385,22 +393,18 @@ public class simgridJNI {
   public final static native String NetZone_get_property(long jarg1, NetZone jarg1_, String jarg2);
   public final static native void NetZone_set_property(long jarg1, NetZone jarg1_, String jarg2, String jarg3);
   public final static native void NetZone_on_seal_cb(CallbackNetzone cb);
-  public final static native long NetZone_create_host__SWIG_0(long jarg1, NetZone jarg1_, String jarg2, long jarg3);
+  public final static native long NetZone_create_host__SWIG_0(long jarg1, NetZone jarg1_, String jarg2, double[] jarg3);
   public final static native long NetZone_create_host__SWIG_1(long jarg1, NetZone jarg1_, String jarg2, double jarg3);
-  public final static native long NetZone_create_host__SWIG_2(long jarg1, NetZone jarg1_, String jarg2, long jarg3);
+  public final static native long NetZone_create_host__SWIG_2(long jarg1, NetZone jarg1_, String jarg2, String[] jarg3);
   public final static native long NetZone_create_host__SWIG_3(long jarg1, NetZone jarg1_, String jarg2, String jarg3);
-  public final static native long NetZone_create_link__SWIG_0(long jarg1, NetZone jarg1_, String jarg2, long jarg3);
+  public final static native long NetZone_create_link__SWIG_0(long jarg1, NetZone jarg1_, String jarg2, double[] jarg3);
   public final static native long NetZone_create_link__SWIG_1(long jarg1, NetZone jarg1_, String jarg2, double jarg3);
-  public final static native long NetZone_create_link__SWIG_2(long jarg1, NetZone jarg1_, String jarg2, long jarg3);
+  public final static native long NetZone_create_link__SWIG_2(long jarg1, NetZone jarg1_, String jarg2, String[] jarg3);
   public final static native long NetZone_create_link__SWIG_3(long jarg1, NetZone jarg1_, String jarg2, String jarg3);
+  public final static native void NetZone_add_route_hosts(long jarg1, NetZone jarg1_, long src, long dst, long[] links);
+  public final static native void NetZone_add_route_netzones(long jarg1, NetZone jarg1_, long src, long dst,
+                                                             long[] links);
   public final static native void NetZone_seal(long jarg1, NetZone jarg1_);
-  public final static native long create_full_zone(String jarg1);
-  public final static native long create_star_zone(String jarg1);
-  public final static native long create_dijkstra_zone(String jarg1, boolean jarg2);
-  public final static native long create_empty_zone(String jarg1);
-  public final static native long create_floyd_zone(String jarg1);
-  public final static native long create_vivaldi_zone(String jarg1);
-  public final static native long create_wifi_zone(String jarg1);
   public final static native String Mailbox_get_name(long jarg1, Mailbox jarg1_);
   public final static native long Mailbox_by_name(String jarg1);
   public final static native boolean Mailbox_empty(long jarg1, Mailbox jarg1_);

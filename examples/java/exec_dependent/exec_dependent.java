@@ -7,7 +7,7 @@ import org.simgrid.s4u.*;
 
 class Worker extends Actor {
   public Worker(String name, Host location) { super(name, location); }
-  public void run()
+  public void run() throws SimgridException
   {
 
     // Define an amount of work that should take 1 second to execute.

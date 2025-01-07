@@ -28,7 +28,7 @@ class sender extends Actor {
     h3 = host3;
     h4 = host4;
   }
-  public void run()
+  public void run() throws SimgridException
   {
     Engine.info("Send c12 with sendto_async(" + h1.get_name() + " -> " + h2.get_name() +
                 "), and c34 with sendto_init(" + h3.get_name() + " -> " + h4.get_name() + ")");

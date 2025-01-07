@@ -14,8 +14,8 @@ class Pinger extends Actor {
     this.mailbox_in = mailbox_in;
     this.mailbox_out = mailbox_out;
   }
-  @Override
-  public void run() {
+  @Override public void run() throws SimgridException
+  {
     Engine.info("Ping from mailbox "+mailbox_in.get_name()+" to mailbox "+mailbox_out.get_name());
 
     /* - Do the ping with a 1-Byte payload (latency bound) ... */
@@ -40,8 +40,8 @@ class Ponger extends Actor {
     this.mailbox_in = mailbox_in;
     this.mailbox_out = mailbox_out;
   }
-  @Override
-  public void run() {
+  @Override public void run() throws SimgridException
+  {
     Engine.info("Pong from mailbox "+mailbox_in.get_name()+" to mailbox "+mailbox_out.get_name());
 
     /* - Receive the (small) ping first ....*/

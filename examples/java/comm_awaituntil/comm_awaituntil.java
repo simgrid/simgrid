@@ -24,7 +24,7 @@ class sender extends Actor {
     messages_count = messages_count_;
     payload_size   = payload_size_;
   }
-  public void run()
+  public void run() throws SimgridException
   {
     Vector<Comm> pending_comms = new Vector<>();
     Mailbox mbox               = Mailbox.by_name("receiver-0");
@@ -61,7 +61,7 @@ class sender extends Actor {
 }
 class receiver extends Actor {
   public receiver(String name, Host location) { super(name, location); }
-  public void run()
+  public void run() throws SimgridException
   {
     Mailbox mbox = Mailbox.by_name("receiver-0");
 

@@ -59,8 +59,8 @@ public class Comm extends Activity {
   }
 
   public Comm set_mailbox(Mailbox mailbox) {
-    long cPtr = simgridJNI.Comm_set_mailbox(getCPtr(), this, Mailbox.getCPtr(mailbox), mailbox);
-    return (cPtr == 0) ? null : new Comm(cPtr, true);
+    simgridJNI.Comm_set_mailbox(getCPtr(), this, Mailbox.getCPtr(mailbox), mailbox);
+    return this;
   }
 
   public Mailbox get_mailbox() {
@@ -150,13 +150,14 @@ public class Comm extends Activity {
     return this;
   }
 
-  public Comm await_for(double timeout)
+  public Comm await_for(double timeout) throws NetworkFailureException, TimeoutException
   {
     simgridJNI.Comm_await_for(getCPtr(), this, timeout);
     return this;
   }
 
-  public Comm await() {
+  public Comm await() throws NetworkFailureException, TimeoutException
+  {
     await_for(-1);
     return this;
   }

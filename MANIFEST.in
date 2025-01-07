@@ -449,6 +449,8 @@ include examples/java/comm_awaituntil/comm_awaituntil.java
 include examples/java/comm_awaituntil/comm_awaituntil.java.tesh
 include examples/java/comm_dependent/comm_dependent.java
 include examples/java/comm_dependent/comm_dependent.java.tesh
+include examples/java/comm_failure/comm_failure.java
+include examples/java/comm_failure/comm_failure.java.tesh
 include examples/java/comm_host2host/comm_host2host.java
 include examples/java/comm_host2host/comm_host2host.java.tesh
 include examples/java/comm_pingpong/comm_pingpong.java
@@ -2199,6 +2201,7 @@ include src/bindings/java/org/simgrid/s4u/MessageQueue.java
 include src/bindings/java/org/simgrid/s4u/Mutex.java
 include src/bindings/java/org/simgrid/s4u/NativeLib.java
 include src/bindings/java/org/simgrid/s4u/NetZone.java
+include src/bindings/java/org/simgrid/s4u/NetworkFailureException.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.java
@@ -2207,7 +2210,6 @@ include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusi
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_double_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__Link_p_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t.java
-include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_std__string_t.java
 include src/bindings/java/org/simgrid/s4u/Semaphore.java
 include src/bindings/java/org/simgrid/s4u/SimgridException.java
 include src/bindings/java/org/simgrid/s4u/TimeoutException.java

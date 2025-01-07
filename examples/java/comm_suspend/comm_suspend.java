@@ -9,7 +9,7 @@ import org.simgrid.s4u.*;
 
 class sender extends Actor {
   public sender(String name, Host location) { super(name, location); }
-  public void run()
+  public void run() throws SimgridException
   {
     Mailbox mbox = Mailbox.by_name("receiver");
 
@@ -41,7 +41,7 @@ class sender extends Actor {
 
 class receiver extends Actor {
   public receiver(String name, Host location) { super(name, location); }
-  public void run()
+  public void run() throws SimgridException
   {
     Mailbox mbox = Mailbox.by_name("receiver");
     Engine.info("Wait for the message.");

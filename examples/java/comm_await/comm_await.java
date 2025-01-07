@@ -18,7 +18,7 @@ class sender extends Actor {
     payload_size   = payload_size_;
   }
 
-  public void run()
+  public void run() throws SimgridException
   {
     double sleep_start_time = 5.0;
     double sleep_test_time  = 0;

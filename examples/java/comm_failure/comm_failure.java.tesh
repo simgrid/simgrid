@@ -1,0 +1,18 @@
+#!/usr/bin/env tesh
+
+$  ${javacmd} -cp ../../simgrid.jar:comm_failure.jar comm_failure --log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n
+> [0.000000] [java/INFO] Using regular java threads.
+> [Host2:Receiver:(2) 0.000000] [java/INFO] Receiver posting a receive...
+> [Host3:Receiver:(3) 0.000000] [java/INFO] Receiver posting a receive...
+> [Host1:Sender:(1) 0.000000] [java/INFO] Initiating asynchronous send to mailbox2
+> [Host1:Sender:(1) 0.000000] [java/INFO] Initiating asynchronous send to mailbox3
+> [Host1:Sender:(1) 0.000000] [java/INFO] Calling wait_any..
+> [Host1:LinkKiller:(4) 10.000000] [java/INFO] Turning off link 'linkto2'
+> [Host2:Receiver:(2) 10.000000] [java/INFO] Receiver has experience a network failure exception
+> [Host1:Sender:(1) 10.000000] [java/INFO] Sender has experienced a network failure exception, so it knows that something went wrong
+> [Host1:Sender:(1) 10.000000] [java/INFO] Now it needs to figure out which of the two comms failed by looking at their state:
+> [Host1:Sender:(1) 10.000000] [java/INFO]   Comm to mailbox2 has state: FAILED
+> [Host1:Sender:(1) 10.000000] [java/INFO]   Comm to mailbox3 has state: STARTED
+> [Host1:Sender:(1) 10.000000] [java/INFO] Waiting on a FAILED comm raises an exception: 'Cannot wait for a failed communication'
+> [Host1:Sender:(1) 10.000000] [java/INFO] Wait for remaining comm, just to be nice
+> [Host3:Receiver:(3) 17.319588] [java/INFO] Receiver has successfully received 888!

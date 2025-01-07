@@ -32,7 +32,7 @@ class peer extends Actor {
     payload_size   = (int)payload_size_;
     peers_count    = peers_count_;
   }
-  public void run()
+  public void run() throws SimgridException
   {
     /* Set myself as the persistent receiver of my mailbox so that messages start flowing to me as soon as they are put
      * into it */

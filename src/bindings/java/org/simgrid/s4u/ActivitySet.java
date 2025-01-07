@@ -59,9 +59,12 @@ public class ActivitySet {
    *
    * In any case, the completed activities remain in the set. Use test_any() to retrieve them.
    */
-  public void await_all_for(double timeout) { simgridJNI.ActivitySet_await_all_for(swigCPtr, this, timeout); }
+  public void await_all_for(double timeout) throws SimgridException
+  {
+    simgridJNI.ActivitySet_await_all_for(swigCPtr, this, timeout);
+  }
   /** Wait for the completion of all activities in the set. The set is NOT emptied afterward. */
-  public void await_all() { await_all_for(-1); }
+  public void await_all() throws SimgridException { await_all_for(-1); }
   /** Returns the first terminated activity if any, or ActivityPtr(nullptr) if no activity is terminated */
   public Activity test_any()
   {
@@ -77,7 +80,7 @@ public class ActivitySet {
    * @return the first terminated activity, which is automatically removed from the set.
    */
 
-  public Activity await_any_for(double timeout)
+  public Activity await_any_for(double timeout) throws SimgridException
   {
     long cPtr = simgridJNI.ActivitySet_await_any_for(swigCPtr, this, timeout);
     return (cPtr == 0) ? null : new Activity(cPtr, true);
@@ -95,7 +98,7 @@ public class ActivitySet {
    * terminated at the same timestamp, then the other ones are still in the set. Use either test_any() or await_any() to
    * retrieve the other ones.
    */
-  public Activity await_any() { return await_any_for(-1); }
+  public Activity await_any() throws SimgridException { return await_any_for(-1); }
 
   /**
    * Return one of the failed activity of the set that was revealed during the previous await operation, or

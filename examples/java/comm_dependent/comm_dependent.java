@@ -12,7 +12,7 @@ class Sender extends Actor {
     super(name, location);
     mailbox = mb;
   }
-  public void run()
+  public void run() throws SimgridException
   {
     Double computation_amount = get_host().get_speed();
 
@@ -32,7 +32,7 @@ class Receiver extends Actor {
     super(name, location);
     mailbox = mb;
   }
-  public void run()
+  public void run() throws SimgridException
   {
     Double computation_amount = get_host().get_speed();
 

@@ -12,7 +12,7 @@ class sender extends Actor {
     super(name, location);
     mailbox = mailbox_;
   }
-  public void run()
+  public void run() throws SimgridException
   {
     Engine.info("Send at full bandwidth");
 
@@ -39,7 +39,7 @@ class receiver extends Actor {
     super(name, location);
     mailbox = mailbox_;
   }
-  public void run()
+  public void run() throws SimgridException
   {
     /* - Receive the first payload sent at full bandwidth */
     Double sender_time        = (Double)mailbox.get();
