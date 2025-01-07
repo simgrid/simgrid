@@ -50,9 +50,5 @@ public class Mutex {
     return simgridJNI.Mutex_try_lock(swigCPtr, this);
   }
 
-  public Actor get_owner() {
-    long cPtr = simgridJNI.Mutex_get_owner(swigCPtr, this);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
-
+  public Actor get_owner() { return simgridJNI.Mutex_get_owner(swigCPtr, this); }
 }

@@ -10,5 +10,5 @@ public abstract class CallbackActorHost {
   public abstract void run(Actor e, Host h);
 
   /* Internal method to ensure that your callback can be called from C++ */
-  public final void run(long a, long h) { run(new Actor(a, false), new Host(h)); }
+  public final void run(Actor a, long h) { run(a, new Host(h)); }
 }

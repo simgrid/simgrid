@@ -133,6 +133,14 @@ static jmethodID Actor_methodId             = 0;
 /* Various cached classIds */
 static jclass string_class = 0;
 
+/* Various extensions */
+struct ActorJavaExt {
+  jobject jactor_;
+  explicit ActorJavaExt(jobject jactor) : jactor_(jactor) {}
+  static simgrid::xbt::Extension<simgrid::s4u::Actor, ActorJavaExt> EXTENSION_ID;
+};
+simgrid::xbt::Extension<simgrid::s4u::Actor, ActorJavaExt> ActorJavaExt::EXTENSION_ID;
+
 static void handle_exception(JNIEnv* jenv)
 {
   if (jenv->ExceptionCheck()) {
@@ -214,8 +222,9 @@ static struct SimGridJavaInit {
                  "The maestro thread could not be attached to the JVM");
 
       // Initialize the upcall mechanism
-      CallbackActor_methodId     = init_methodId(maestro_jenv, "CallbackActor", "run", "(J)V");
-      CallbackActorHost_methodId = init_methodId(maestro_jenv, "CallbackActorHost", "run", "(JJ)V");
+      CallbackActor_methodId = init_methodId(maestro_jenv, "CallbackActor", "run", "(Lorg/simgrid/s4u/Actor;)V");
+      CallbackActorHost_methodId =
+          init_methodId(maestro_jenv, "CallbackActorHost", "run", "(Lorg/simgrid/s4u/Actor;J)V");
       CallbackBoolean_methodId   = init_methodId(maestro_jenv, "CallbackBoolean", "run", "(Z)V");
       CallbackComm_methodId      = init_methodId(maestro_jenv, "CallbackComm", "run", "(J)V");
       CallbackDisk_methodId      = init_methodId(maestro_jenv, "CallbackDisk", "run", "(J)V");
@@ -229,6 +238,9 @@ static struct SimGridJavaInit {
       Actor_methodId = init_methodId(maestro_jenv, "Actor", "do_run", "()V");
 
       string_class = (jclass)maestro_jenv->NewGlobalRef(maestro_jenv->FindClass("java/lang/String"));
+
+      // Initialize extensions
+      ActorJavaExt::EXTENSION_ID = simgrid::s4u::Actor::extension_create<ActorJavaExt>();
 
       // Initialize plugins
       sg_vm_live_migration_plugin_init();
@@ -1146,7 +1158,9 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1termination_1
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
-    Actor::on_termination_cb([cb](Actor const& a) { get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, &a); });
+    Actor::on_termination_cb([cb](Actor const& a) {
+      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, a.extension<ActorJavaExt>()->jactor_);
+    });
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
@@ -1156,7 +1170,9 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1destruction_1
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
-    Actor::on_destruction_cb([cb](Actor const& a) { get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, &a); });
+    Actor::on_destruction_cb([cb](Actor const& a) {
+      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, a.extension<ActorJavaExt>()->jactor_);
+    });
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
@@ -1171,9 +1187,10 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1exit(JNIEnv* 
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1self(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1self(JNIEnv* jenv, jclass jcls)
 {
-  return (jlong)simgrid::s4u::Actor::self();
+  Actor* result = simgrid::s4u::Actor::self();
+  return result ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass jcls,
@@ -1183,7 +1200,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1suspend
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
     ((Actor*)cthis)->on_this_suspend_cb([cb](Actor const& a) {
-      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, &a);
+      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, a.extension<ActorJavaExt>()->jactor_);
     });
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
@@ -1196,7 +1213,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1resume_
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
     ((Actor*)cthis)->on_this_resume_cb([cb](Actor const& a) {
-      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, &a);
+      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, a.extension<ActorJavaExt>()->jactor_);
     });
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
@@ -1209,7 +1226,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1sleep_1
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
     ((Actor*)cthis)->on_this_sleep_cb([cb](Actor const& a) {
-      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, &a);
+      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, a.extension<ActorJavaExt>()->jactor_);
     });
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
@@ -1222,7 +1239,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1wake_1u
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
     ((Actor*)cthis)->on_this_wake_up_cb([cb](Actor const& a) {
-      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, &a);
+      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, a.extension<ActorJavaExt>()->jactor_);
     });
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
@@ -1235,7 +1252,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1host_1c
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
     ((Actor*)cthis)->on_this_host_change_cb([cb](Actor const& a, Host const& h) {
-      get_jenv()->CallVoidMethod(cb, CallbackActorHost_methodId, &a, &h);
+      get_jenv()->CallVoidMethod(cb, CallbackActorHost_methodId, a.extension<ActorJavaExt>()->jactor_, &h);
     });
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
@@ -1248,7 +1265,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1termina
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
     ((Actor*)cthis)->on_this_termination_cb([cb](Actor const& a) {
-      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, &a);
+      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, a.extension<ActorJavaExt>()->jactor_);
     });
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
@@ -1261,37 +1278,10 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1destruc
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
     ((Actor*)cthis)->on_this_destruction_cb([cb](Actor const& a) {
-      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, &a);
+      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, a.extension<ActorJavaExt>()->jactor_);
     });
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1init(JNIEnv* jenv, jclass jcls, jstring cthis,
-                                                                     jlong jarg2, jobject jarg2_)
-{
-  jlong jresult                                    = 0;
-  simgrid::s4u::Host* arg2                         = (simgrid::s4u::Host*)0;
-  boost::shared_ptr<simgrid::s4u::Host>* smartarg2 = 0;
-  boost::intrusive_ptr<simgrid::s4u::Actor> result;
-
-  std::string arg1 = java_string_to_std_string(jenv, cthis);
-
-  // plain pointer
-  smartarg2 = *(boost::shared_ptr<simgrid::s4u::Host>**)&jarg2;
-  arg2      = (simgrid::s4u::Host*)(smartarg2 ? smartarg2->get() : 0);
-
-  result = simgrid::s4u::Actor::init(arg1, arg2);
-
-  if (result) {
-    intrusive_ptr_add_ref(result.get());
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult =
-        new boost::shared_ptr<simgrid::s4u::Actor>(result.get(), SWIG_intrusive_deleter<simgrid::s4u::Actor>());
-  } else {
-    *(boost::shared_ptr<simgrid::s4u::Actor>**)&jresult = 0;
-  }
-
-  return jresult;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1daemonize(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -1396,11 +1386,10 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1kill(JNIEnv* jenv
   }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1by_1pid(JNIEnv* jenv, jclass jcls, jint pid)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1by_1pid(JNIEnv* jenv, jclass jcls, jint pid)
 {
   ActorPtr result = simgrid::s4u::Actor::by_pid(pid);
-  intrusive_ptr_add_ref(result.get());
-  return (jlong)result.get();
+  return result.get() != nullptr ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1join_1_1SWIG_10(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -1425,6 +1414,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1restart(JNIEnv* 
                                                                         jobject jthis)
 {
   ActorPtr result = ((Actor*)cthis)->restart();
+  result->extension_set<ActorJavaExt>(new ActorJavaExt(jthis));
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
@@ -1462,20 +1452,21 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1property(JNI
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1create(JNIEnv* jenv, jclass jcls, jstring jname,
-                                                                       jlong chost, jobject jhost, jobject jcode)
+                                                                       jlong chost, jobject jhost, jobject jactor)
 {
   std::string name = java_string_to_std_string(jenv, jname);
   Host* host       = (Host*)chost;
 
-  jcode           = jenv->NewGlobalRef(jcode);
-  ActorPtr result = Actor::create(name, host, [jcode]() {
+  jactor          = jenv->NewGlobalRef(jactor);
+  ActorPtr result = Actor::create(name, host, [jactor]() {
     auto jenv = ((simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self())->jenv_;
 
     this_actor::yield(); // Delay my execution to the next scheduling round, to let my parent complete my ctor
 
-    jenv->CallVoidMethod(jcode, Actor_methodId);
+    jenv->CallVoidMethod(jactor, Actor_methodId);
     handle_exception(jenv);
   });
+  result->extension_set<ActorJavaExt>(new ActorJavaExt(jactor));
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
@@ -2499,20 +2490,18 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1is_1assigned(J
   return self->is_assigned();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1sender(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis)
-{
-  ActorPtr result = ((Comm*)cthis)->get_sender();
-  intrusive_ptr_add_ref(result.get());
-  return (jlong)result.get();
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1receiver(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1sender(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                              jobject jthis)
 {
+  ActorPtr result = ((Comm*)cthis)->get_sender();
+  return result.get() != nullptr ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
+}
+
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1receiver(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                               jobject jthis)
+{
   ActorPtr result = ((Comm*)cthis)->get_receiver();
-  intrusive_ptr_add_ref(result.get());
-  return (jlong)result.get();
+  return result.get() != nullptr ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1await_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -5429,13 +5418,11 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1set_1receiver(J
   return ((Mailbox*)cthis)->set_receiver((Actor*)cactor);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1receiver(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                jobject jthis)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1receiver(JNIEnv* jenv, jclass jcls,
+                                                                                  jlong cthis, jobject jthis)
 {
-  auto res = ((Mailbox*)cthis)->get_receiver();
-  intrusive_ptr_add_ref(res.get());
-
-  return (jlong)res.get();
+  auto result = ((Mailbox*)cthis)->get_receiver();
+  return result.get() != nullptr ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1init_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
@@ -5579,12 +5566,11 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1payload(JNI
   return local;
 }
 
-JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1sender(JNIEnv* jenv, jclass klass, jlong cthis,
-                                                                          jobject jthis)
+JNIEXPORT jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1sender(JNIEnv* jenv, jclass klass, jlong cthis,
+                                                                            jobject jthis)
 {
   ActorPtr result = ((Mess*)cthis)->get_sender();
-  intrusive_ptr_add_ref(result.get());
-  return (jlong)result.get();
+  return result.get() != nullptr ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
 }
 
 JNIEXPORT jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1is_1assigned(JNIEnv* jenv, jclass klass, jlong cthis,
@@ -5593,12 +5579,11 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1is_1assigned(JN
   return ((Mess*)cthis)->is_assigned();
 }
 
-JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1receiver(JNIEnv* jenv, jclass klass, jlong cthis,
-                                                                            jobject jthis)
+JNIEXPORT jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1receiver(JNIEnv* jenv, jclass klass, jlong cthis,
+                                                                              jobject jthis)
 {
   ActorPtr result = ((Mess*)cthis)->get_receiver();
-  intrusive_ptr_add_ref(result.get());
-  return (jlong)result.get();
+  return result.get() != nullptr ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1add_1successor(JNIEnv* jenv, jclass klass, jlong cthis,
@@ -5806,12 +5791,11 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mutex_1try_1lock(JNI
   return ((Mutex*)cthis)->try_lock();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mutex_1get_1owner(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mutex_1get_1owner(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                             jobject jthis)
 {
   ActorPtr result = ((Mutex*)cthis)->get_owner();
-  intrusive_ptr_add_ref(result.get());
-  return (jlong)result.get();
+  return result.get() != nullptr ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Semaphore(JNIEnv* jenv, jclass jcls, jlong cthis)

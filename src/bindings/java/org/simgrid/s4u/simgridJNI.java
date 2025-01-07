@@ -20,14 +20,13 @@ public class simgridJNI {
   public final static native void Actor_on_termination_cb(CallbackActor cb);
   public final static native void Actor_on_destruction_cb(CallbackActor cb);
   public final static native void Actor_on_exit(long jarg1, Actor jarg1_, CallbackBoolean jcode);
-  public final static native long Actor_self();
+  public final static native Actor Actor_self();
   public final static native void Actor_on_this_suspend_cb(long jarg1, Actor jarg1_, CallbackActor cb);
   public final static native void Actor_on_this_resume_cb(long jarg1, Actor jarg1_, CallbackActor cb);
   public final static native void Actor_on_this_sleep_cb(long jarg1, Actor jarg1_, CallbackActor cb);
   public final static native void Actor_on_this_wake_up_cb(long jarg1, Actor jarg1_, CallbackActor cb);
   public final static native void Actor_on_this_host_change_cb(long jarg1, Actor jarg1_, CallbackActorHost cb);
   public final static native void Actor_on_this_destruction_cb(long cthis, Actor jthis, CallbackActor cb);
-  public final static native long Actor_init(String jarg1, long jarg2, Host jarg2_);
   public final static native void Actor_daemonize(long jarg1, Actor jarg1_);
   public final static native boolean Actor_is_daemon(long jarg1, Actor jarg1_);
   public final static native String Actor_get_name(long jarg1, Actor jarg1_);
@@ -43,7 +42,7 @@ public class simgridJNI {
   public final static native double Actor_get_kill_time(long jarg1, Actor jarg1_);
   public final static native void Actor_set_host(long cthis, Actor jthis, long chost, Host jhost);
   public final static native void Actor_kill(long jarg1, Actor jarg1_);
-  public final static native long Actor_by_pid(int jarg1);
+  public final static native Actor Actor_by_pid(int jarg1);
   public final static native void Actor_join__SWIG_0(long jarg1, Actor jarg1_);
   public final static native void Actor_join__SWIG_1(long jarg1, Actor jarg1_, double jarg2);
   public final static native long Actor_restart(long jarg1, Actor jarg1_);
@@ -136,8 +135,8 @@ public class simgridJNI {
   public final static native void Comm_set_payload_size(long jarg1, Comm jarg1_, long jarg2);
   public final static native void Comm_set_rate(long jarg1, Comm jarg1_, double jarg2);
   public final static native boolean Comm_is_assigned(long jarg1, Comm jarg1_);
-  public final static native long Comm_get_sender(long jarg1, Comm jarg1_);
-  public final static native long Comm_get_receiver(long jarg1, Comm jarg1_);
+  public final static native Actor Comm_get_sender(long jarg1, Comm jarg1_);
+  public final static native Actor Comm_get_receiver(long jarg1, Comm jarg1_);
   public final static native void Comm_await_for(long jarg1, Comm jarg1_, double jarg2);
 
   public final static native void Exec_on_start_cb(CallbackExec cb);
@@ -370,9 +369,9 @@ public class simgridJNI {
   public final static native long Mess_get_queue(long cmess, Mess jmess);
   public final static native void Mess_set_payload(long cmess, Mess jmess, Object payload);
   public final static native Object Mess_get_payload(long cmess, Mess jmess);
-  public final static native long Mess_get_sender(long cmess, Mess jmess);
+  public final static native Actor Mess_get_sender(long cmess, Mess jmess);
   public final static native boolean Mess_is_assigned(long cmess, Mess jmess);
-  public final static native long Mess_get_receiver(long cmess, Mess jmess);
+  public final static native Actor Mess_get_receiver(long cmess, Mess jmess);
   public final static native void Mess_add_successor(long cmess, Mess jmess, long cactivity, Activity jActivity);
   public final static native void Mess_remove_successor(long cmess, Mess jmess, long cactivity, Activity jActivity);
   public final static native void Mess_set_name(long cmess, Mess jmess, String name);
@@ -414,7 +413,7 @@ public class simgridJNI {
   public final static native int Mailbox_listen_from(long jarg1, Mailbox jarg1_);
   public final static native boolean Mailbox_ready(long jarg1, Mailbox jarg1_);
   public final static native void Mailbox_set_receiver(long jarg1, Mailbox jarg1_, long jarg2, Actor jarg2_);
-  public final static native long Mailbox_get_receiver(long jarg1, Mailbox jarg1_);
+  public final static native Actor Mailbox_get_receiver(long jarg1, Mailbox jarg1_);
   public final static native long Mailbox_put_init__SWIG_0(long jarg1, Mailbox jarg1_);
   public final static native long Mailbox_put_init__SWIG_1(long jarg1, Mailbox jarg1_, Object jarg2, long jarg3);
   public final static native long Mailbox_put_async(long jarg1, Mailbox jarg1_, Object jarg2, long jarg3);
@@ -441,7 +440,7 @@ public class simgridJNI {
   public final static native void Mutex_lock(long jarg1, Mutex jarg1_);
   public final static native void Mutex_unlock(long jarg1, Mutex jarg1_);
   public final static native boolean Mutex_try_lock(long jarg1, Mutex jarg1_);
-  public final static native long Mutex_get_owner(long jarg1, Mutex jarg1_);
+  public final static native Actor Mutex_get_owner(long jarg1, Mutex jarg1_);
   public final static native void delete_Semaphore(long jarg1);
   public final static native long Semaphore_create(long jarg1);
   public final static native void Semaphore_acquire(long jarg1, Semaphore jarg1_);

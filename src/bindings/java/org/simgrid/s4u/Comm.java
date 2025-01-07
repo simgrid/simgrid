@@ -119,15 +119,9 @@ public class Comm extends Activity {
     return simgridJNI.Comm_is_assigned(swigCPtr, this);
   }
 
-  public Actor get_sender() {
-    long cPtr = simgridJNI.Comm_get_sender(swigCPtr, this);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
+  public Actor get_sender() { return simgridJNI.Comm_get_sender(swigCPtr, this); }
 
-  public Actor get_receiver() {
-    long cPtr = simgridJNI.Comm_get_receiver(swigCPtr, this);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
+  public Actor get_receiver() { return simgridJNI.Comm_get_receiver(swigCPtr, this); }
 
   public static void on_start_cb(CallbackComm cb) { simgridJNI.Comm_on_start_cb(cb); }
 

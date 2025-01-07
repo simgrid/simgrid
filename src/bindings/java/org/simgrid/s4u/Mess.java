@@ -50,18 +50,10 @@ public class Mess extends Activity {
 
   public Object get_payload() { return simgridJNI.Mess_get_payload(swigCPtr, this); }
 
-  public Actor get_sender()
-  {
-    long cPtr = simgridJNI.Mess_get_sender(swigCPtr, this);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
+  public Actor get_sender() { return simgridJNI.Mess_get_sender(swigCPtr, this); }
   public boolean is_assigned() { return simgridJNI.Mess_is_assigned(swigCPtr, this); }
 
-  public Actor get_receiver()
-  {
-    long cPtr = simgridJNI.Mess_get_receiver(swigCPtr, this);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
+  public Actor get_receiver() { return simgridJNI.Mess_get_receiver(swigCPtr, this); }
 
   public Mess add_successor(Activity a)
   {

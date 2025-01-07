@@ -8,7 +8,4 @@ package org.simgrid.s4u;
 public abstract class CallbackActor {
   /** This method shall contain the code of your callback */
   public abstract void run(Actor e);
-
-  /* Internal method to ensure that your callback can be called from C++ */
-  public final void run(long e) { run(new Actor(e, false)); }
 }

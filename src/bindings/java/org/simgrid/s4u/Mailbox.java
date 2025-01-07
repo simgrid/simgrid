@@ -47,10 +47,7 @@ public class Mailbox {
     simgridJNI.Mailbox_set_receiver(swigCPtr, this, Actor.getCPtr(actor), actor);
   }
 
-  public Actor get_receiver() {
-    long cPtr = simgridJNI.Mailbox_get_receiver(swigCPtr, this);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
+  public Actor get_receiver() { return simgridJNI.Mailbox_get_receiver(swigCPtr, this); }
 
   public Comm put_init() {
     long cPtr = simgridJNI.Mailbox_put_init__SWIG_0(swigCPtr, this);

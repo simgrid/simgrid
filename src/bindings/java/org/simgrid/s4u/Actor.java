@@ -5,18 +5,14 @@
 
 package org.simgrid.s4u;
 
-public class Actor {
+public abstract class Actor {
   /**
    * this is the method you should implement in your actor (it's the main of your actor).
    * @todo: make this abstract
    */
-  public void run() throws SimgridException { /* your code here */ }
+  public abstract void run() throws SimgridException; /* your code here */
 
-  protected Actor(String name, Host host)
-  {
-    swigCPtr        = simgridJNI.Actor_create(name, Host.getCPtr(host), host, this);
-    swigCMemOwnBase = true;
-  }
+  protected Actor(String name, Host host) { swigCPtr = simgridJNI.Actor_create(name, Host.getCPtr(host), host, this); }
 
   /* Internal method executing your code, and catching the actor-killing exception */
   public void do_run()
@@ -32,12 +28,6 @@ public class Actor {
   }
 
   private transient long swigCPtr;
-  private transient boolean swigCMemOwnBase;
-
-  protected Actor(long cPtr, boolean cMemoryOwn) {
-    swigCMemOwnBase = cMemoryOwn;
-    swigCPtr = cPtr;
-  }
 
   protected static long getCPtr(Actor obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
@@ -49,17 +39,12 @@ public class Actor {
   }
 
   public synchronized void delete() {
-    if(swigCPtr != 0 && swigCMemOwnBase) {
-      swigCMemOwnBase = false;
+    if (swigCPtr != 0)
       simgridJNI.delete_Actor(swigCPtr);
-    }
     swigCPtr = 0;
   }
 
-  public static Actor self() {
-    long cPtr = simgridJNI.Actor_self();
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
+  public static Actor self() { return simgridJNI.Actor_self(); }
 
   public void on_this_suspend_cb(CallbackActor cb) { simgridJNI.Actor_on_this_suspend_cb(swigCPtr, this, cb); }
 
@@ -81,11 +66,6 @@ public class Actor {
   public static void on_destruction_cb(CallbackActor cb) { simgridJNI.Actor_on_destruction_cb(cb); }
 
   public void on_this_destruction_cb(CallbackActor cb) { simgridJNI.Actor_on_this_destruction_cb(swigCPtr, this, cb); }
-
-  public static Actor init(String name, Host host) {
-    long cPtr = simgridJNI.Actor_init(name, Host.getCPtr(host), host);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
 
   public Actor daemonize() {
     simgridJNI.Actor_daemonize(swigCPtr, this);
@@ -155,10 +135,7 @@ public class Actor {
     simgridJNI.Actor_kill(swigCPtr, this);
   }
 
-  public static Actor by_pid(int pid) {
-    long cPtr = simgridJNI.Actor_by_pid(pid);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
+  public static Actor by_pid(int pid) { return simgridJNI.Actor_by_pid(pid); }
 
   public void join() {
     simgridJNI.Actor_join__SWIG_0(swigCPtr, this);
@@ -169,8 +146,8 @@ public class Actor {
   }
 
   public Actor restart() {
-    long cPtr = simgridJNI.Actor_restart(swigCPtr, this);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
+    swigCPtr = simgridJNI.Actor_restart(swigCPtr, this);
+    return this;
   }
 
   public static void kill_all() {
