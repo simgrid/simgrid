@@ -779,18 +779,61 @@ endif()
 set(SIMGRID_JAVA_C_SOURCES
     src/kernel/context/ContextJava.cpp
     src/kernel/context/ContextJava.hpp
+    src/bindings/java/simgrid-java.cpp
     )
 set(SIMGRID_JAVA_JAVA_SOURCES
-    src/bindings/swig/org/simgrid/s4u/NativeLib.java)
-set(SIMGRID_JAVA_SWIG_SOURCES
-    src/bindings/swig/defs/pargc_argv.i
-    src/bindings/swig/defs/std_function.i
-    src/bindings/swig/simgrid-java.i)
+    src/bindings/java/org/simgrid/s4u/NativeLib.java
+    src/bindings/java/org/simgrid/s4u/Activity.java
+    src/bindings/java/org/simgrid/s4u/ActivitySet.java
+    src/bindings/java/org/simgrid/s4u/Actor.java
+    src/bindings/java/org/simgrid/s4u/Barrier.java
+    src/bindings/java/org/simgrid/s4u/CallbackActor.java
+    src/bindings/java/org/simgrid/s4u/CallbackActorHost.java
+    src/bindings/java/org/simgrid/s4u/CallbackBoolean.java
+    src/bindings/java/org/simgrid/s4u/CallbackComm.java
+    src/bindings/java/org/simgrid/s4u/CallbackDisk.java
+    src/bindings/java/org/simgrid/s4u/CallbackDouble.java
+    src/bindings/java/org/simgrid/s4u/CallbackExec.java
+    src/bindings/java/org/simgrid/s4u/CallbackIo.java
+    src/bindings/java/org/simgrid/s4u/CallbackLink.java
+    src/bindings/java/org/simgrid/s4u/CallbackNetzone.java
+    src/bindings/java/org/simgrid/s4u/CallbackVirtualMachine.java
+    src/bindings/java/org/simgrid/s4u/CallbackVoid.java
+    src/bindings/java/org/simgrid/s4u/Comm.java
+    src/bindings/java/org/simgrid/s4u/ConditionVariable.java
+    src/bindings/java/org/simgrid/s4u/Disk.java
+    src/bindings/java/org/simgrid/s4u/Engine.java
+    src/bindings/java/org/simgrid/s4u/Exec.java
+    src/bindings/java/org/simgrid/s4u/ForcefulKillException.java
+    src/bindings/java/org/simgrid/s4u/Host.java
+    src/bindings/java/org/simgrid/s4u/Io.java
+    src/bindings/java/org/simgrid/s4u/LinkInRoute.java
+    src/bindings/java/org/simgrid/s4u/Link.java
+    src/bindings/java/org/simgrid/s4u/Mailbox.java
+    src/bindings/java/org/simgrid/s4u/Mess.java
+    src/bindings/java/org/simgrid/s4u/MessageQueue.java
+    src/bindings/java/org/simgrid/s4u/Mutex.java
+    src/bindings/java/org/simgrid/s4u/NativeLib.java
+    src/bindings/java/org/simgrid/s4u/NetZone.java
+    src/bindings/java/org/simgrid/s4u/Semaphore.java
+    src/bindings/java/org/simgrid/s4u/simgrid.java
+    src/bindings/java/org/simgrid/s4u/SimgridException.java
+    src/bindings/java/org/simgrid/s4u/simgridJNI.java
+    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_t.java
+    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
+    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.java
+    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
+    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t.java
+    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_double_t.java
+    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__Link_p_t.java
+    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t.java
+    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_std__string_t.java
+    src/bindings/java/org/simgrid/s4u/TimeoutException.java
+    src/bindings/java/org/simgrid/s4u/VirtualMachine.java
+)
 if(NOT Java_FOUND)
-  set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_C_SOURCES})
+  set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_C_SOURCES} ${SIMGRID_JAVA_JAVA_SOURCES})
 endif()
-# Not sure that our Java rules add these files to the target, so let's play safe and add them anyway
-set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_JAVA_SOURCES} ${SIMGRID_JAVA_SWIG_SOURCES})
 
 set(DOC_SOURCES
   doc/doxygen/FAQ.doc

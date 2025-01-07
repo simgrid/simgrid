@@ -225,9 +225,9 @@ void ActorImpl::kill(ActorImpl* actor) const
 
   actor->exit();
 
-  if (actor == this) {
-    XBT_DEBUG("Go on, this is a suicide,");
-  } else
+  if (actor == this)
+    XBT_DEBUG("Damn, this is a suicide :(");
+  else
     EngineImpl::get_instance()->add_actor_to_run_list(actor);
 }
 

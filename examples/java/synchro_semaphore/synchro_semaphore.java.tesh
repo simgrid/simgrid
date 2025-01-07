@@ -1,0 +1,14 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:synchro_semaphore.jar synchro_semaphore ${platfdir}/two_hosts.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [Tremblay:producer:(1) 0.000000] [java/INFO] Pushing 'one'
+> [Jupiter:consumer:(2) 0.000000] [java/INFO] Receiving 'one'
+> [Tremblay:producer:(1) 0.000000] [java/INFO] Pushing 'two'
+> [Jupiter:consumer:(2) 0.000000] [java/INFO] Receiving 'two'
+> [Tremblay:producer:(1) 0.000000] [java/INFO] Pushing 'three'
+> [Jupiter:consumer:(2) 0.000000] [java/INFO] Receiving 'three'
+> [Tremblay:producer:(1) 0.000000] [java/INFO] Pushing ''
+> [Jupiter:consumer:(2) 0.000000] [java/INFO] Receiving ''
+> [Tremblay:producer:(1) 0.000000] [java/INFO] Bye!
+> [Jupiter:consumer:(2) 0.000000] [java/INFO] Bye!

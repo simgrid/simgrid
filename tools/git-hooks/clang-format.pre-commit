@@ -48,11 +48,11 @@ PARSE_EXTS=true
 
 # file types to parse. Only effective when PARSE_EXTS is true.
 # FILE_EXTS=".c .h .cpp .hpp"
-FILE_EXTS=".c .h .cpp .hpp .cc .hh .cxx"
+FILE_EXTS=".c .h .cpp .hpp .cc .hh .cxx .java"
 
 ##################################################################
 # Potential names for clang-format (debian...)
-CLANG_FMT_PNAMES=(clang-format clang-format-5.0 clang-format-4.0 clang-format-3.9 clang-format-3.8)
+CLANG_FMT_PNAMES=(clang-format clang-format-5.0 clang-format-4.0)
 CLANG_FMT_CMD="NOT-FOUND"
 GIT_CLANG_FMT_CMD="NOT-FOUND"
 

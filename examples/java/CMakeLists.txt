@@ -6,11 +6,17 @@ if(enable_java)
   add_dependencies(java-all simgrid)      # useful when the libs are not included in the jar
 endif()
 
-# actor_exiting is not working yet
-set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/actor_exiting/actor_exiting.java)
-set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor_exiting/actor_exiting.java.tesh)
-#comm_dependent
-foreach (example  comm_pingpong)
+# comm_failure: needs both exceptions and platform creation
+# io_dependent io_file_system io_file_remote: need a plugin
+foreach (example actor_daemon actor_exiting actor_join actor_kill
+                 actor_lifetime actor_migrate actor_suspend actor_yield
+                 cloud_migration cloud_simple #cloud_capping
+                 exec_async exec_basic exec_dependent
+                 comm_await comm_awaituntil comm_dependent comm_host2host comm_pingpong comm_ready comm_suspend comm_throttling
+                 io_async io_disk_raw io_priority # io_degradation 
+                 mess_await
+                 synchro_barrier synchro_condition_variable synchro_mutex synchro_semaphore
+                 )
   
   # Use default source file unless specified otherwise
   if(NOT DEFINED _${example}_sources)
@@ -24,10 +30,11 @@ foreach (example  comm_pingpong)
   if(enable_java AND (NOT DEFINED _${example}_disable))
     add_jar(java-${example} SOURCES ${_${example}_sources}
             INCLUDE_JARS simgrid_jar
+            ENTRY_POINT ${example}
             OUTPUT_NAME ${example}
             OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${example_dir})
     add_dependencies(java-all java-${example})
-    ADD_TESH(java-${example}  --setenv javacmd=${Java_JAVA_EXECUTABLE} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
+    ADD_TESH(java-${example} --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib --setenv LC_CTYPE=C --setenv javacmd=${Java_JAVA_EXECUTABLE} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
   endif()
 
   set(examples_src  ${examples_src}  ${_${example}_sources})
@@ -36,3 +43,5 @@ endforeach()
 
 set(examples_src  ${examples_src}                                                                          PARENT_SCOPE)
 set(tesh_files    ${tesh_files}                                                                            PARENT_SCOPE)
+set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor_lifetime/actor_lifetime_d.xml
+                  PARENT_SCOPE)

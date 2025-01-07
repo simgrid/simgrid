@@ -94,6 +94,8 @@ CommPtr Mailbox::put_init()
 
 CommPtr Mailbox::put_init(void* payload, uint64_t simulated_size_in_bytes)
 {
+  xbt_assert(payload != nullptr, "You cannot send nullptr");
+
   return put_init()->set_payload_size(simulated_size_in_bytes)->set_src_data(payload)->set_src_data_size(sizeof(void*));
 }
 

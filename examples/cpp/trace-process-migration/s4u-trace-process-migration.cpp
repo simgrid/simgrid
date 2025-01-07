@@ -48,6 +48,8 @@ int main(int argc, char* argv[])
   xbt_assert(argc > 1, "Usage: %s platform_file\n \tExample: %s small_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
+  // Have to seal the platform before declaring new tracing variables
+  e.seal_platform();
 
   simgrid::instr::declare_tracing_category("migration_order");
 

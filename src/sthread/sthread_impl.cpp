@@ -147,13 +147,21 @@ int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr
   *thread = reinterpret_cast<unsigned long>(actor.get());
   return 0;
 }
-int sthread_join(sthread_t thread, void** /*retval*/)
+int sthread_join(sthread_t thread, void** retval)
 {
   sg4::ActorPtr actor(reinterpret_cast<sg4::Actor*>(thread));
   actor->join();
+  if (retval)
+    *retval = actor->get_data<void>();
   intrusive_ptr_release(actor.get());
 
   return 0;
+}
+void sthread_exit(void* retval)
+{
+  if (retval)
+    simgrid::s4u::Actor::self()->set_data(retval);
+  simgrid::s4u::this_actor::exit();
 }
 
 int sthread_mutexattr_init(sthread_mutexattr_t* attr)

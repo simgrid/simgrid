@@ -133,8 +133,6 @@ void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args)
       ->set_latency_profile(args->latency_trace)
       ->set_bandwidth_profile(args->bandwidth_trace)
       ->set_latency(args->latency);
-
-  link->seal();
 }
 
 void sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)

@@ -169,11 +169,8 @@ fi
 if swig -version ; then : else
   have_Java="no"
 fi
-#if [ "$os" = "Debian" ] && dpkg -l openjdk-*-jdk 2>/dev/null | grep ^ii && dpkg -l swig 2>/dev/null | grep ^ii ; then
-#  have_Java="yes"
-#elif [ "$os" = "opensuse" ] ; then
-#  have_Java="yes" # Let's assume it's correctly configured, as I'm too lazy to learn how to check this with rpm
-#fi
+echo "XX have_Java=$have_Java"
+echo
 
 SIMGRID_PYTHON_LIBDIR=""
 if [ "$os" = "nixos" ] ; then

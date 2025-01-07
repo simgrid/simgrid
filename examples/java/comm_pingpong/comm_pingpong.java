@@ -5,10 +5,12 @@
 
 import org.simgrid.s4u.*;;
 
-class Pinger extends ActorMain {
+class Pinger extends Actor {
   Mailbox mailbox_in;
   Mailbox mailbox_out;
-  Pinger(Mailbox mailbox_in, Mailbox mailbox_out) {
+  public Pinger(String name, Host location, Mailbox mailbox_in, Mailbox mailbox_out)
+  {
+    super(name, location);
     this.mailbox_in = mailbox_in;
     this.mailbox_out = mailbox_out;
   }
@@ -29,10 +31,12 @@ class Pinger extends ActorMain {
   }
 }
 
-class Ponger extends ActorMain {
+class Ponger extends Actor {
   Mailbox mailbox_in;
   Mailbox mailbox_out;
-  Ponger(Mailbox mailbox_in, Mailbox mailbox_out) {
+  public Ponger(String name, Host location, Mailbox mailbox_in, Mailbox mailbox_out)
+  {
+    super(name, location);
     this.mailbox_in = mailbox_in;
     this.mailbox_out = mailbox_out;
   }
@@ -58,14 +62,14 @@ public class comm_pingpong {
   
   public static void main(String[] args) {
 
-    Engine e = Engine.get_instance(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]);
 
     Mailbox mb1 = e.mailbox_by_name_or_create("Mailbox 1");
     Mailbox mb2 = e.mailbox_by_name_or_create("Mailbox 2");
-  
-    Actor.create("pinger", e.host_by_name("Tremblay"), new Pinger(mb1, mb2));
-    Actor.create("ponger", e.host_by_name("Jupiter"), new Ponger(mb2, mb1));
+
+    new Pinger("pinger", e.host_by_name("Tremblay"), mb1, mb2);
+    new Ponger("ponger", e.host_by_name("Jupiter"), mb2, mb1);
 
     e.run();
     Engine.info("The simulation is terminating.");

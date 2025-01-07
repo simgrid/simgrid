@@ -1,0 +1,41 @@
+image: simgrid/build-deps
+
+# On Inria, we run the base build all the time 
+build-base:
+  except:
+  - stable
+  tags:
+    - large  # Inria infra
+  script:
+  #- apt-get --allow-releaseinfo-change update
+  #- apt install -y binutils xsltproc
+  - rm -rf CMakeFiles CMakeCache.txt
+  - cmake -Denable_model-checking=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - make -j$(nproc) all tests
+  - ctest -T Test -j$(nproc) --output-on-failure
+  - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml  
+  artifacts:
+    reports:
+      junit:
+      - CTestResults.xml
+    expire_in: 1 week
+    when: always
+  
+# Ensure that the produced tarball is OK
+distcheck:
+  tags:
+    - linux  # any runner will do
+  script:
+  - cmake .
+  - make distcheck-configure
+
+# Test the Python build
+build-pip:
+  except:
+  - stable
+  tags: # Select a runner
+    - small # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3.11-venv
+  - python3 -m build --outdir dist

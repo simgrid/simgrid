@@ -140,16 +140,17 @@ XBT_PUBLIC s4u::Host* get_host();
 /** Migrate the current actor to a new host. */
 XBT_PUBLIC void set_host(s4u::Host* new_host);
 
-/** @brief Suspend the current actor, that is blocked until resume()ed by another actor. */
+/** Suspend the current actor, that is blocked until resume()ed by another actor. */
 XBT_PUBLIC void suspend();
 
-/** @brief Yield the current actor. */
+/** Yield the current actor, give the control to the other actors. It will be executed again in the next scheduling
+ * round */
 XBT_PUBLIC void yield();
 
-/** @brief kill the current actor. */
+/** kill the current actor. */
 XBT_ATTRIB_NORETURN XBT_PUBLIC void exit();
 
-/** @brief Add a function to the list of "on_exit" functions of the current actor.
+/** Add a function to the list of "on_exit" functions of the current actor.
  *
  * The on_exit functions are the functions executed when your actor is killed. You should use them to free the data used
  * by your actor.

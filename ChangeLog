@@ -8,6 +8,9 @@ S4U:
  - Turning off a host now turns off the disks attached to this host. Conversely, turning the host back on brings back
    the disks online. Tested in teshsuite/src/host-on-off-disks.
 
+sthread:
+ - Implement pthread_exit() and pthread_cond_timedwait()
+
 Python:
  - Add many missing bindings [Sergey Teryoshkin].
 

@@ -14,7 +14,8 @@
 + \.circleci/.*
 + \.clang-format
 + \.editorconfig
-+ \.gitlab-ci\.yml
++ \.gitlab-ci-framasoft\.yml
++ \.gitlab-ci-inria\.yml
 + \.readthedocs.yml
 + sonar-project\.properties
 
@@ -37,3 +38,7 @@
 # temp file -- to be killed once some Java examples are added
 + src/bindings/swig/simgrid_runme.java
 + src/bindings/swig/README.md
++ src/bindings/swig/defs/pargc_argv.i
++ src/bindings/swig/defs/std_function.i
++ src/bindings/swig/simgrid-java.i
+

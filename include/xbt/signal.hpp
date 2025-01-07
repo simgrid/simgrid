@@ -41,6 +41,8 @@ public:
   void disconnect(unsigned int id) { handlers_.erase(id); }
   /** Remove all callbacks */
   void disconnect_slots() { handlers_.clear(); }
+  /** Returns the amount of callbacks */
+  int size() { return handlers_.size(); }
 };
 } // namespace simgrid::xbt
 

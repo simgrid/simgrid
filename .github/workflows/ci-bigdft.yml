@@ -10,7 +10,7 @@ jobs:
 
     runs-on: ubuntu-latest
     container:
-      image: bigdft/sdk
+      image: bigdft/sdk:oneapi-ground
       options: --user 0
 
     steps:
@@ -18,8 +18,6 @@ jobs:
       - name: Build and test BigDFT
         run: |
           set -e
-          #temporary fix for https://github.com/NVIDIA/nvidia-docker/issues/1631
-          apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
           ./tools/jenkins/ci-bigdft.sh
 
       - name: Send the failure Message

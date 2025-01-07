@@ -1,0 +1,12 @@
+#!/usr/bin/env tesh
+
+p Testing the actor daemonization feature
+
+$ ${javacmd} -cp ../../simgrid.jar:actor_daemon.jar actor_daemon ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
+> [  0.000000] (maestro@) Using regular java threads.
+> [  0.000000] (worker@Boivin) Let's do some work (for 10 sec on Boivin).
+> [  0.000000] (daemon@Tremblay) Hello from the infinite loop
+> [  3.000000] (daemon@Tremblay) Hello from the infinite loop
+> [  6.000000] (daemon@Tremblay) Hello from the infinite loop
+> [  9.000000] (daemon@Tremblay) Hello from the infinite loop
+> [ 10.000000] (worker@Boivin) I'm done now. I leave even if it makes the daemon die.

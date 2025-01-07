@@ -33,63 +33,81 @@
 
 import org.simgrid.s4u.*;
 
-class ActorA extends ActorMain 
-{
-  public void run() {
+class ActorA extends Actor {
+  public ActorA(String name, Host location) { super(name, location); }
+  public void run()
+  {
 
     // Register a lambda function to be executed once it stops
-    on_exit(new BooleanCallback() { public void run(boolean failed) { Engine.info("I stop now"); }});
-  
+    on_exit(new CallbackBoolean() {
+      @Override public void run(boolean failed)
+      {
+        Engine.info("I stop now");
+      }
+    });
+
     sleep_for(1);
   }
 }
 
-class ActorB extends ActorMain
-{
-  public void run() {
-    sleep_for(2);
-  }
+class ActorB extends Actor {
+  public ActorB(String name, Host location) { super(name, location); }
+  public void run() { sleep_for(2); }
 }
-class ActorC extends ActorMain
-{
-  public void run() {
+class ActorC extends Actor {
+  public ActorC(String name, Host location) { super(name, location); }
+  public void run()
+  {
     // Register a lambda function to be executed once it stops
-    on_exit(new BooleanCallback() { public void run(boolean failed) {
-      if (failed) {
-        Engine.info("I was killed!");
-      } else
-        Engine.info("Exiting gracefully.");
-    }});
-  
+    on_exit(new CallbackBoolean() {
+      @Override public void run(boolean failed)
+      {
+        if (failed) {
+          Engine.info("I was killed!");
+        } else
+          Engine.info("Exiting gracefully.");
+      }
+    });
+
     sleep_for(3);
     Engine.info("And now, induce a deadlock by waiting for a message that will never come\n\n");
     Mailbox.by_name("nobody").get();
     Engine.die("Receiving is not supposed to succeed when nobody is sending");
-    }
+  }
 }
 
 class actor_exiting {
-  public static void main(String[] args) {
-    var e = Engine.get_instance(args);
-    e.load_platform(args[0]);  /* - Load the platform description */
-    
+  public static void main(String[] args)
+  {
+    var e = new Engine(args);
+    e.load_platform(args[0]); /* - Load the platform description */
+
     /* Register a callback in the Actor::on_termination signal. It will be called for every terminated actors */
-//    ActorMain.on_termination_cb(new ActorCallback() {@Override public void run(Actor a) {
-//      Engine.info("Actor "+a.get_name()+" terminates now.");
-//    }});
+    Actor.on_termination_cb(new CallbackActor() {
+      @Override public void run(Actor a)
+      {
+        Engine.info("Actor " + a.get_name() + " terminates now.");
+      }
+    });
 
-    /* Register a callback in the Actor::on_destruction signal. It will be called for every destructed actors */
-//    ActorMain.on_destruction_cb(new ActorCallback() {public void run(Actor a) {
-//          Engine.info("Actor "+a.get_name()+" gets destroyed now."); 
-//    }});
+    /* Register a callback in the Actor::on_destruction signal. It will be called for every destructed actors
+     * Unfortunately, this example is too small to get the GC to actually destroy the actors :(
+     */
+    Actor.on_destruction_cb(new CallbackActor() {
+      public void run(Actor a)
+      {
+        Engine.info("Actor " + a.get_name() + " gets destroyed now.");
+      }
+    });
 
-    
     /* Create some actors */
-    Actor.create("A", e.host_by_name("Tremblay"), new ActorA());
-    Actor.create("B", e.host_by_name("Fafard"), new ActorB());
-    Actor.create("C", e.host_by_name("Ginette"), new ActorC());
-  
+    new ActorA("A", e.host_by_name("Tremblay"));
+    new ActorB("B", e.host_by_name("Fafard"));
+    new ActorC("C", e.host_by_name("Ginette"));
+
     e.run(); /* Run the simulation */
+    Engine.info("Run the garbage collector now in the hope to get the actors destroyed. In vain :(");
+    System.gc();
   }
 }
 

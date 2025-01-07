@@ -66,6 +66,8 @@ public:
   /// Wait until the given instant (specified as a plain double)
   std::cv_status wait_until(const std::unique_lock<s4u::Mutex>& lock, double timeout_time);
   /// Wait for the given amount of seconds (specified as a plain double)
+  std::cv_status wait_for(MutexPtr lock, double timeout);
+  /// Wait for the given amount of seconds (specified as a plain double)
   std::cv_status wait_for(const std::unique_lock<s4u::Mutex>& lock, double duration);
 
   // Wait function taking a C++ style time:

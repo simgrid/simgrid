@@ -30,6 +30,7 @@ XBT_PUBLIC void sthread_disable(void); // Stop intercepting all pthread calls
 typedef unsigned long int sthread_t;
 int sthread_create(sthread_t* thread, const /*pthread_attr_t*/ void* attr, void* (*start_routine)(void*), void* arg);
 int sthread_join(sthread_t thread, void** retval);
+XBT_ATTRIB_NORETURN void sthread_exit(void* retval);
 
 typedef struct {
   unsigned recursive : 1;

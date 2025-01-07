@@ -1,0 +1,12 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:comm_dependent.jar comm_dependent ${platfdir}/small_platform.xml --log=s4u_activity.t:verbose "--log=root.fmt:[%6.2r]%e(%i:%a@%h)%e%m%n"
+> [  0.00] (0:maestro@) Using regular java threads.
+> [  0.00] (1:sender@Tremblay) 'exec on sender' is assigned to a resource and all dependencies are solved. Let's start
+> [  0.00] (2:receiver@Jupiter) 'comm from sender' is assigned to a resource and all dependencies are solved. Let's start
+> [  2.00] (1:sender@Tremblay) Remove a dependency from 'exec on sender' on 'comm to receiver'
+> [  2.00] (1:sender@Tremblay) 'comm to receiver' is assigned to a resource and all dependencies are solved. Let's start
+> [  3.07] (2:receiver@Jupiter) Remove a dependency from 'comm from sender' on 'exec on receiver'
+> [  3.07] (2:receiver@Jupiter) 'exec on receiver' is assigned to a resource and all dependencies are solved. Let's start
+> [  5.07] (2:receiver@Jupiter) Received: 98095000 flops were computed on sender
+> [  5.07] (0:maestro@) Simulation ends
