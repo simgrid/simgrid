@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_UDPOR_EVENTSETCALCULATOR_HPP
 #define SIMGRID_MC_UDPOR_EVENTSETCALCULATOR_HPP
 
+#include "simgrid/forward.h"
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
@@ -17,6 +18,7 @@
 #include "src/mc/transition/TransitionSynchro.hpp"
 
 #include <memory>
+#include <optional>
 
 namespace simgrid::mc::udpor {
 
@@ -48,8 +50,12 @@ private:
   static EventSet partially_extend_SemWait(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
   static EventSet partially_extend_SemUnlock(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
 
+  // Helper method that find the event that created the actor given in parameter if any
+  static std::optional<const UnfoldingEvent*> find_ActorCreate_Event(const EventSet history, aid_t actor);
+
   static EventSet partially_extend_ActorJoin(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
   static EventSet partially_extend_ActorSleep(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
+  static EventSet partially_extend_ActorCreate(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
 
 public:
   static EventSet partially_extend(const Configuration&, Unfolding*, std::shared_ptr<Transition>);

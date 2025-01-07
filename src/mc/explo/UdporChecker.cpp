@@ -194,6 +194,7 @@ EventSet UdporChecker::compute_enC(const Configuration& C, const EventSet& exC) 
 {
   EventSet enC;
   for (const auto* e : exC) {
+    XBT_DEBUG("Is the extension <%s> compatible with current configuration?", e->to_string().c_str());
     if (C.is_compatible_with(e)) {
       enC.insert(e);
     }

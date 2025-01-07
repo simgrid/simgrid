@@ -10,4 +10,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:udpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_mutex_ok 5 0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'udpor'
 > [0.000000] [mc_udpor/INFO] Starting a UDPOR exploration
-> [0.000000] [mc_udpor/INFO] UDPOR exploration ended. 366 unique events considered; 119 backtracks
+> [0.000000] [mc_udpor/INFO] UDPOR exploration ended. 371 unique events considered; 119 backtracks

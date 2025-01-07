@@ -11,10 +11,13 @@
 #include "src/mc/explo/udpor/Unfolding.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/transition/Transition.hpp"
+#include "src/mc/transition/TransitionActor.hpp"
 #include "src/mc/transition/TransitionSynchro.hpp"
 
 #include <deque>
 #include <functional>
+#include <memory>
+#include <optional>
 #include <unordered_map>
 #include <xbt/asserts.h>
 #include <xbt/ex.h>
@@ -43,6 +46,7 @@ EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, Unfold
       {Action::MUTEX_TEST, &ExtensionSetCalculator::partially_extend_MutexTest},
       {Action::ACTOR_JOIN, &ExtensionSetCalculator::partially_extend_ActorJoin},
       {Action::ACTOR_SLEEP, &ExtensionSetCalculator::partially_extend_ActorSleep},
+      {Action::ACTOR_CREATE, &ExtensionSetCalculator::partially_extend_ActorCreate},
 
       {Action::SEM_ASYNC_LOCK, &ExtensionSetCalculator::partially_extend_SemAsyncLock},
 
@@ -496,7 +500,12 @@ EventSet ExtensionSetCalculator::partially_extend_MutexAsyncLock(const Configura
 {
   EventSet exC;
   const auto mutex_lock    = std::static_pointer_cast<MutexTransition>(action);
-  const auto pre_event_a_C = C.pre_event(mutex_lock->aid_);
+  auto pre_event_a_C       = C.pre_event(mutex_lock->aid_);
+  // If this is the first action from this aid, we need to check for a related Actor_Create
+  if (not pre_event_a_C.has_value()) {
+    if (const auto creator_event = find_ActorCreate_Event(C.get_events(), mutex_lock->aid_); creator_event.has_value())
+      pre_event_a_C = creator_event;
+  }
 
   // for each event e in C
   // 1. If lambda(e) := pre(a) -> add it. Note that if
@@ -550,8 +559,13 @@ EventSet ExtensionSetCalculator::partially_extend_MutexUnlock(const Configuratio
 {
   EventSet exC;
   const auto mutex_unlock  = std::static_pointer_cast<MutexTransition>(action);
-  const auto pre_event_a_C = C.pre_event(mutex_unlock->aid_);
-
+  auto pre_event_a_C       = C.pre_event(mutex_unlock->aid_);
+  // If this is the first action from this aid, we need to check for a related Actor_Create
+  if (not pre_event_a_C.has_value()) {
+    if (const auto creator_event = find_ActorCreate_Event(C.get_events(), mutex_unlock->aid_);
+        creator_event.has_value())
+      pre_event_a_C = creator_event;
+  }
   // for each event e in C
   // 1. If lambda(e) := pre(a) -> add it. Note that if
   // pre_event_a_C.has_value() == false, this implies `C` is
@@ -664,7 +678,12 @@ EventSet ExtensionSetCalculator::partially_extend_MutexTest(const Configuration&
 {
   EventSet exC;
   const auto mutex_test    = std::static_pointer_cast<MutexTransition>(action);
-  const auto pre_event_a_C = C.pre_event(mutex_test->aid_);
+  auto pre_event_a_C       = C.pre_event(mutex_test->aid_);
+  // If this is the first action from this aid, we need to check for a related Actor_Create
+  if (not pre_event_a_C.has_value()) {
+    if (const auto creator_event = find_ActorCreate_Event(C.get_events(), mutex_test->aid_); creator_event.has_value())
+      pre_event_a_C = creator_event;
+  }
 
   // for each event e in C
   // 1. If lambda(e) := pre(a) -> add it. Note that if
@@ -730,8 +749,64 @@ EventSet ExtensionSetCalculator::partially_extend_ActorSleep(const Configuration
     const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), sleep_action);
     exC.insert(e_prime);
   } else {
-    const auto e_prime = U->discover_event(EventSet({}), sleep_action);
+    if (const auto creator_event = find_ActorCreate_Event(C.get_events(), sleep_action->aid_);
+        creator_event.has_value()) {
+      const auto e_prime = U->discover_event(EventSet({creator_event.value()}), sleep_action);
+      exC.insert(e_prime);
+    } else {
+
+      const auto e_prime = U->discover_event(EventSet({}), sleep_action);
+      exC.insert(e_prime);
+    }
+  }
+
+  return exC;
+}
+
+std::optional<const UnfoldingEvent*> ExtensionSetCalculator::find_ActorCreate_Event(const EventSet history, aid_t actor)
+{
+
+  for (const auto event : history) {
+    const auto transition = event->get_transition();
+    if (transition->type_ != Transition::Type::ACTOR_CREATE)
+      continue;
+    // If there is an ActorCreate ...
+    const auto create_t = (ActorCreateTransition*)(transition);
+    if (create_t->get_child() != actor)
+      continue;
+    // and it created actor ...
+    // then we found our guy
+    return std::optional(event);
+  }
+
+  return std::nullopt;
+}
+
+EventSet ExtensionSetCalculator::partially_extend_ActorCreate(const Configuration& C, Unfolding* U,
+                                                              std::shared_ptr<Transition> action)
+{
+  EventSet exC;
+
+  const std::shared_ptr<ActorCreateTransition> create_action = std::static_pointer_cast<ActorCreateTransition>(action);
+
+  // To handle an actor create has no backward dependencies, so it is basically the same as a nop.
+  // I hope it doesn't require to be tracked in each single different thread action though.
+
+  xbt_assert(not C.pre_event(create_action->get_child()).has_value(),
+             "How did the actor %ld achieved being executed before being created by someone else?", action->aid_);
+
+  if (const auto pre_event_a_C = C.pre_event(create_action->aid_); pre_event_a_C.has_value()) {
+    const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), create_action);
     exC.insert(e_prime);
+  } else {
+    if (const auto creator_event = find_ActorCreate_Event(C.get_events(), create_action->aid_);
+        creator_event.has_value()) {
+      const auto e_prime = U->discover_event(EventSet({creator_event.value()}), create_action);
+      exC.insert(e_prime);
+    } else {
+      const auto e_prime = U->discover_event(EventSet({}), create_action);
+      exC.insert(e_prime);
+    }
   }
 
   return exC;
@@ -857,7 +932,12 @@ EventSet ExtensionSetCalculator::partially_extend_SemAsyncLock(const Configurati
 
   EventSet exC;
   const auto sem_lock      = std::static_pointer_cast<SemaphoreTransition>(action);
-  const auto pre_event_a_C = C.pre_event(sem_lock->aid_);
+  auto pre_event_a_C       = C.pre_event(sem_lock->aid_);
+  // If this is the first action from this aid, we need to check for a related Actor_Create
+  if (not pre_event_a_C.has_value()) {
+    if (const auto creator_event = find_ActorCreate_Event(C.get_events(), sem_lock->aid_); creator_event.has_value())
+      pre_event_a_C = creator_event;
+  }
 
   // for each event e in C
   // 1. If lambda(e) := pre(a) -> add it. Note that if
@@ -932,7 +1012,12 @@ EventSet ExtensionSetCalculator::partially_extend_SemUnlock(const Configuration&
 {
   EventSet exC;
   const auto sem_unlock    = std::static_pointer_cast<SemaphoreTransition>(action);
-  const auto pre_event_a_C = C.pre_event(sem_unlock->aid_);
+  auto pre_event_a_C       = C.pre_event(sem_unlock->aid_);
+  // If this is the first action from this aid, we need to check for a related Actor_Create
+  if (not pre_event_a_C.has_value()) {
+    if (const auto creator_event = find_ActorCreate_Event(C.get_events(), sem_unlock->aid_); creator_event.has_value())
+      pre_event_a_C = creator_event;
+  }
 
   // 1. Create `e' := <a, config(preEvt(a, C))>` and add `e'` to `ex(C)`
   if (pre_event_a_C.has_value()) {
