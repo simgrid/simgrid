@@ -97,7 +97,8 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
   xbt_assert(
       (actor->simcall_.observer_ == nullptr && actor->simcall_.call_ != simgrid::kernel::actor::Simcall::Type::NONE) ||
           (actor->simcall_.observer_ != nullptr && actor->simcall_.observer_->is_enabled()),
-      "Please, model-checker, don't execute disabled transitions.");
+      "Please, model-checker, don't execute disabled transitions. You tried to execute %s which is disabled",
+      actor->simcall_.observer_->to_string().c_str());
 
   // The client may send some messages to the server while processing the transition
   actor->simcall_handle(message->times_considered_);
@@ -120,7 +121,7 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
   strncpy(answer.buffer.data(), str.c_str(), answer.buffer.size() - 1);
   answer.buffer.back() = '\0';
 
-  XBT_DEBUG("send SIMCALL_EXECUTE_ANSWER(%s) ~> '%s'", actor->get_cname(), str.c_str());
+  XBT_VERB("send SIMCALL_EXECUTE_ANSWER(%s) ~> '%s'", actor->get_cname(), str.c_str());
   xbt_assert(channel_.send(answer) == 0, "Could not send response: %s", strerror(errno));
 }
 
@@ -263,7 +264,7 @@ void AppSide::handle_actors_status() const
       strncpy(probe.buffer.data(), str.c_str(), probe.buffer.size() - 1);
       probe.buffer.back() = '\0';
 
-      XBT_DEBUG("send ACTOR_TRANSITION_PROBE(%s) ~> '%s'", actor->get_cname(), str.c_str());
+      XBT_VERB("send ACTOR_TRANSITION_PROBE(%s) ~> '%s'", actor->get_cname(), str.c_str());
       xbt_assert(channel_.send(probe) == 0, "Could not send ACTOR_TRANSITION_PROBE payload: %s", strerror(errno));
     }
     // NOTE: We do NOT need to reset `times_considered` for each actor's

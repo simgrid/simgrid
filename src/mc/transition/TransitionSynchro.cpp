@@ -173,7 +173,7 @@ bool MutexTransition::can_be_co_enabled(const Transition* o) const
   if (type_ == Type::MUTEX_WAIT && o->type_ == Type::MUTEX_WAIT)
     return false;
 
-  // If you can wait on the muytex, then the CONDVAR async lock cannot be enabled
+  // If you can wait on the mutex, then the CONDVAR async lock cannot be enabled
   if (type_ == Type::MUTEX_WAIT && o->type_ == Type::CONDVAR_ASYNC_LOCK)
     return mutex_ != static_cast<const CondvarTransition*>(o)->get_mutex();
 
