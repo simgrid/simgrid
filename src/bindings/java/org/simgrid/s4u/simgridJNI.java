@@ -334,14 +334,14 @@ public class simgridJNI {
   public final static native long Link_by_name_or_null(String jarg1);
   public final static native String Link_get_name(long jarg1, Link jarg1_);
   public final static native double Link_get_bandwidth(long jarg1, Link jarg1_);
-  public final static native long Link_set_bandwidth(long jarg1, Link jarg1_, double jarg2);
+  public final static native void Link_set_bandwidth(long jarg1, Link jarg1_, double jarg2);
   public final static native double Link_get_latency(long jarg1, Link jarg1_);
-  public final static native long Link_set_latency__SWIG_0(long jarg1, Link jarg1_, double jarg2);
-  public final static native long Link_set_latency__SWIG_1(long jarg1, Link jarg1_, String jarg2);
+  public final static native void Link_set_latency__SWIG_0(long jarg1, Link jarg1_, double jarg2);
+  public final static native void Link_set_latency__SWIG_1(long jarg1, Link jarg1_, String jarg2);
   public final static native int Link_get_sharing_policy(long jarg1, Link jarg1_);
   public final static native String Link_get_property(long jarg1, Link jarg1_, String jarg2);
-  public final static native long Link_set_property(long jarg1, Link jarg1_, String jarg2, String jarg3);
-  public final static native long Link_set_concurrency_limit(long jarg1, Link jarg1_, int jarg2);
+  public final static native void Link_set_property(long jarg1, Link jarg1_, String jarg2, String jarg3);
+  public final static native void Link_set_concurrency_limit(long jarg1, Link jarg1_, int jarg2);
   public final static native int Link_get_concurrency_limit(long jarg1, Link jarg1_);
   public final static native void Link_set_host_wifi_rate(long jarg1, Link jarg1_, long jarg2, Host jarg2_, int jarg3);
   public final static native double Link_get_load(long jarg1, Link jarg1_);
@@ -350,7 +350,7 @@ public class simgridJNI {
   public final static native void Link_turn_on(long jarg1, Link jarg1_);
   public final static native void Link_turn_off(long jarg1, Link jarg1_);
   public final static native boolean Link_is_on(long jarg1, Link jarg1_);
-  public final static native long Link_seal(long jarg1, Link jarg1_);
+  public final static native void Link_seal(long jarg1, Link jarg1_);
   public final static native void Link_on_onoff_cb(CallbackLink cb);
   public final static native void Link_on_this_onoff_cb(long jarg1, Link jarg1_, CallbackLink cb);
   public final static native void Link_on_bandwidth_change_cb(CallbackLink cb);

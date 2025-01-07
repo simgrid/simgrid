@@ -59,8 +59,8 @@ public class Link {
   }
 
   public Link set_bandwidth(double value) {
-    long cPtr = simgridJNI.Link_set_bandwidth(swigCPtr, this, value);
-    return (cPtr == 0) ? null : new Link(cPtr, false);
+    simgridJNI.Link_set_bandwidth(swigCPtr, this, value);
+    return this;
   }
 
   public double get_latency() {
@@ -68,13 +68,13 @@ public class Link {
   }
 
   public Link set_latency(double value) {
-    long cPtr = simgridJNI.Link_set_latency__SWIG_0(swigCPtr, this, value);
-    return (cPtr == 0) ? null : new Link(cPtr, false);
+    simgridJNI.Link_set_latency__SWIG_0(swigCPtr, this, value);
+    return this;
   }
 
   public Link set_latency(String value) {
-    long cPtr = simgridJNI.Link_set_latency__SWIG_1(swigCPtr, this, value);
-    return (cPtr == 0) ? null : new Link(cPtr, false);
+    simgridJNI.Link_set_latency__SWIG_1(swigCPtr, this, value);
+    return this;
   }
 
   public Link.SharingPolicy get_sharing_policy() {
@@ -86,13 +86,13 @@ public class Link {
   }
 
   public Link set_property(String key, String value) {
-    long cPtr = simgridJNI.Link_set_property(swigCPtr, this, key, value);
-    return (cPtr == 0) ? null : new Link(cPtr, false);
+    simgridJNI.Link_set_property(swigCPtr, this, key, value);
+    return this;
   }
 
   public Link set_concurrency_limit(int limit) {
-    long cPtr = simgridJNI.Link_set_concurrency_limit(swigCPtr, this, limit);
-    return (cPtr == 0) ? null : new Link(cPtr, false);
+    simgridJNI.Link_set_concurrency_limit(swigCPtr, this, limit);
+    return this;
   }
 
   public int get_concurrency_limit() {
@@ -128,8 +128,8 @@ public class Link {
   }
 
   public Link seal() {
-    long cPtr = simgridJNI.Link_seal(swigCPtr, this);
-    return (cPtr == 0) ? null : new Link(cPtr, false);
+    simgridJNI.Link_seal(swigCPtr, this);
+    return this;
   }
 
   public static void on_onoff_cb(CallbackLink cb) { simgridJNI.Link_on_onoff_cb(cb); }
