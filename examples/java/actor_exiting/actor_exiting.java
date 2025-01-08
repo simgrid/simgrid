@@ -71,7 +71,7 @@ class ActorC extends Actor {
 
     sleep_for(3);
     Engine.info("And now, induce a deadlock by waiting for a message that will never come\n\n");
-    Mailbox.by_name("nobody").get();
+    this.get_engine().mailbox_by_name("nobody").get();
     Engine.die("Receiving is not supposed to succeed when nobody is sending");
   }
 }

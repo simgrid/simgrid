@@ -57,7 +57,7 @@ public class comm_dependent {
 
     e.load_platform(args[0]);
 
-    var mbox = e.mailbox_by_name_or_create("Mailbox");
+    var mbox = e.mailbox_by_name("Mailbox");
 
     new Sender("sender", e.host_by_name("Tremblay"), mbox);
     new Receiver("receiver", e.host_by_name("Jupiter"), mbox);

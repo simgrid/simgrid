@@ -32,7 +32,7 @@ class CommunicationTX extends Actor {
   }
   public void run()
   {
-    Mailbox mbox          = Mailbox.by_name(mbox_name);
+    Mailbox mbox          = this.get_engine().mailbox_by_name(mbox_name);
     var payload           = new Payload();
     payload.tx_actor_name = Actor.self().get_name();
     payload.tx_host       = this.get_host();
@@ -53,7 +53,7 @@ class CommunicationRX extends Actor {
   {
     String actor_name = Actor.self().get_name();
     String host_name  = this.get_host().get_name();
-    Mailbox mbox      = Mailbox.by_name(mbox_name);
+    Mailbox mbox      = this.get_engine().mailbox_by_name(mbox_name);
 
     var payload      = (Payload)mbox.get();
     double clock_end = Engine.get_clock();
@@ -74,9 +74,10 @@ class Main extends Actor {
   }
   public void run()
   {
-    Host pm0 = Host.by_name("Fafard");
-    Host pm1 = Host.by_name("Tremblay");
-    Host pm2 = Host.by_name("Bourassa");
+    var e    = this.get_engine();
+    Host pm0 = e.host_by_name("Fafard");
+    Host pm1 = e.host_by_name("Tremblay");
+    Host pm2 = e.host_by_name("Bourassa");
 
     Engine.info("## Test 1 (started): check computation on normal PMs");
 

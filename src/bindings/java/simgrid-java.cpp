@@ -3844,19 +3844,6 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1is_1assigned(J
   return ((Exec*)cthis)->is_assigned();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1by_1name(JNIEnv* jenv, jclass jcls, jstring jname)
-{
-  try {
-    if (jname) {
-      std::string cname = java_string_to_std_string(jenv, jname);
-      return (jlong)Host::by_name(cname);
-    }
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Host names shall not be null.");
-  } catch (std::exception const& e) {
-    rethrow_simgrid_exception(jenv, e);
-  }
-  return 0;
-}
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1current(JNIEnv* jenv, jclass jcls)
 {
   return (jlong)Host::current();
@@ -4141,20 +4128,6 @@ XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1SHA
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1FATPIPE_1get(JNIEnv* jenv, jclass jcls)
 {
   return (jint)simgrid::s4u::Link::SharingPolicy::FATPIPE;
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1by_1name(JNIEnv* jenv, jclass jcls, jstring jname)
-{
-  try {
-    if (jname) {
-      std::string name = java_string_to_std_string(jenv, jname);
-      return (jlong)Link::by_name(name);
-    }
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Link names shall not be null.");
-  } catch (std::exception const& e) {
-    rethrow_simgrid_exception(jenv, e);
-  }
-  return 0;
 }
 
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -4925,20 +4898,6 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1name(JN
   return 0;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1by_1name(JNIEnv* jenv, jclass jcls, jstring jname)
-{
-  try {
-    if (jname) {
-      std::string cname = java_string_to_std_string(jenv, jname);
-      return (jlong)simgrid::s4u::Mailbox::by_name(cname);
-    }
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Mailbox names shall not be null");
-  } catch (std::exception const& e) {
-    rethrow_simgrid_exception(jenv, e);
-  }
-  return 0;
-}
-
 XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1empty(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                            jobject jthis)
 {
@@ -5231,21 +5190,6 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1na
 
   if (result)
     return jenv->NewStringUTF(result);
-  return 0;
-}
-
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1by_1name(JNIEnv* jenv, jclass jcls,
-                                                                                jstring jname)
-{
-  try {
-    if (jname) {
-      std::string cname = java_string_to_std_string(jenv, jname);
-      return (jlong)simgrid::s4u::MessageQueue::by_name(cname);
-    }
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "MessageQueue names shall not be null");
-  } catch (std::exception const& e) {
-    rethrow_simgrid_exception(jenv, e);
-  }
   return 0;
 }
 

@@ -38,7 +38,7 @@ class master extends Actor {
 
     Engine.info("Spawning %d workers", actor_count - 1);
     for (int i = 0; i < actor_count - 1; i++)
-      new worker("worker", Host.by_name("Jupiter"), barrier);
+      new worker("worker", this.get_engine().host_by_name("Jupiter"), barrier);
 
     Engine.info("Waiting on the barrier");
     if (barrier.await())

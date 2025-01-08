@@ -59,7 +59,7 @@ public class comm_throttling {
     var e = new Engine(args);
     e.load_platform(args[0]);
 
-    Mailbox mbox = e.mailbox_by_name_or_create("Mailbox");
+    Mailbox mbox = e.mailbox_by_name("Mailbox");
 
     new sender("sender", e.host_by_name("node-0.simgrid.org"), mbox);
     new receiver("receiver", e.host_by_name("node-1.simgrid.org"), mbox);

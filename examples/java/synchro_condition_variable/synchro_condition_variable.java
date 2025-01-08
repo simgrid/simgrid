@@ -40,7 +40,7 @@ class master extends Actor {
     var cv    = ConditionVariable.create();
 
     mutex.lock();
-    var worker = new worker("worker", Host.by_name("Jupiter"), cv, mutex);
+    var worker = new worker("worker", this.get_engine().host_by_name("Jupiter"), cv, mutex);
 
     // wait for the worker
     cv.await(mutex);

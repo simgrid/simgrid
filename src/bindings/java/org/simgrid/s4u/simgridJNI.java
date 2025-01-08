@@ -305,7 +305,6 @@ public class simgridJNI {
   public final static native String Host_get_name(long jarg1, Host jarg1_);
   public final static native String[] Host_get_properties_names(long jarg1, Host jarg1_);
   public final static native String Host_get_property(long jarg1, Host jarg1_, String name);
-  public final static native long Host_by_name(String name);
   public final static native long Host_current();
   public final static native double Host_get_speed(long jarg1, Host jarg1_);
   public final static native boolean Host_is_on(long jarg1, Host jarg1_);
@@ -330,7 +329,6 @@ public class simgridJNI {
   public final static native int Link_SharingPolicy_SPLITDUPLEX_get();
   public final static native int Link_SharingPolicy_SHARED_get();
   public final static native int Link_SharingPolicy_FATPIPE_get();
-  public final static native long Link_by_name(String jarg1);
   public final static native String Link_get_name(long jarg1, Link jarg1_);
   public final static native double Link_get_bandwidth(long jarg1, Link jarg1_);
   public final static native void Link_set_bandwidth(long jarg1, Link jarg1_, double jarg2);
@@ -401,7 +399,6 @@ public class simgridJNI {
                                                              long[] links);
   public final static native void NetZone_seal(long jarg1, NetZone jarg1_);
   public final static native String Mailbox_get_name(long jarg1, Mailbox jarg1_);
-  public final static native long Mailbox_by_name(String jarg1);
   public final static native boolean Mailbox_empty(long jarg1, Mailbox jarg1_);
   public final static native long Mailbox_size(long jarg1, Mailbox jarg1_);
   public final static native boolean Mailbox_listen(long jarg1, Mailbox jarg1_);
@@ -420,7 +417,6 @@ public class simgridJNI {
   public final static native void Mailbox_put__SWIG_1(long jarg1, Mailbox jarg1_, Object jarg3, long jarg4, double jarg5);
   public final static native Object Mailbox_get(long jarg1, Mailbox jarg1_);
   public final static native String MessageQueue_get_name(long jarg1, MessageQueue jarg1_);
-  public final static native long MessageQueue_by_name(String jarg1);
   public final static native boolean MessageQueue_empty(long jarg1, MessageQueue jarg1_);
   public final static native long MessageQueue_size(long jarg1, MessageQueue jarg1_);
   public final static native long MessageQueue_put_init__SWIG_0(long jarg1, MessageQueue jarg1_);

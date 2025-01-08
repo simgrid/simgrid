@@ -23,7 +23,7 @@ class sender extends Actor {
     double sleep_start_time = 5.0;
     double sleep_test_time  = 0;
 
-    Mailbox mbox = Mailbox.by_name("receiver");
+    Mailbox mbox = this.get_engine().mailbox_by_name("receiver");
 
     Engine.info("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time, sleep_test_time);
     sleep_for(sleep_start_time);
@@ -57,7 +57,7 @@ class receiver extends Actor {
     double sleep_start_time = 1.0;
     double sleep_test_time  = 0.1;
 
-    Mailbox mbox = Mailbox.by_name("receiver");
+    Mailbox mbox = this.get_engine().mailbox_by_name("receiver");
 
     Engine.info("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time, sleep_test_time);
     sleep_for(sleep_start_time);

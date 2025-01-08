@@ -18,11 +18,6 @@ public class Mailbox {
     return simgridJNI.Mailbox_get_name(swigCPtr, this);
   }
 
-  public static Mailbox by_name(String name) {
-    long cPtr = simgridJNI.Mailbox_by_name(name);
-    return (cPtr == 0) ? null : new Mailbox(cPtr);
-  }
-
   public boolean empty() {
     return simgridJNI.Mailbox_empty(swigCPtr, this);
   }

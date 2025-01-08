@@ -34,9 +34,10 @@ class peer extends Actor {
   }
   public void run() throws SimgridException
   {
+    var e = this.get_engine();
     /* Set myself as the persistent receiver of my mailbox so that messages start flowing to me as soon as they are put
      * into it */
-    Mailbox my_mbox = Mailbox.by_name("peer-" + my_id);
+    Mailbox my_mbox = e.mailbox_by_name("peer-" + my_id);
     my_mbox.set_receiver(Actor.self());
 
     ActivitySet pending_comms = new ActivitySet();
@@ -45,7 +46,7 @@ class peer extends Actor {
     for (int i = 0; i < messages_count; i++) {
       for (int peer_id = 0; peer_id < peers_count; peer_id++) {
         if (peer_id != my_id) {
-          Mailbox mbox   = Mailbox.by_name("peer-" + peer_id);
+          Mailbox mbox   = e.mailbox_by_name("peer-" + peer_id);
           String payload = "Message " + i + " from peer " + my_id;
           Engine.info("Send '" + payload + "' to '" + mbox.get_name() + "'");
           /* Create a communication representing the ongoing communication */
@@ -57,7 +58,7 @@ class peer extends Actor {
     /* Start sending messages to let peers know that they should stop */
     for (int peer_id = 0; peer_id < peers_count; peer_id++) {
       if (peer_id != my_id) {
-        Mailbox mbox   = Mailbox.by_name("peer-" + peer_id);
+        Mailbox mbox   = e.mailbox_by_name("peer-" + peer_id);
         String payload = "finalize";
         pending_comms.push(mbox.put_async(payload, payload_size));
         Engine.info("Send 'finalize' to 'peer-" + peer_id + "'");

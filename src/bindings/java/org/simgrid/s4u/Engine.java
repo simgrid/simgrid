@@ -91,6 +91,7 @@ public class Engine {
     return simgridJNI.Engine_get_hosts_from_MPI_hostfile(swigCPtr, this, hostfile);
   }
 
+  /** If no host of that name exists, throws an IllegalArgumentError. */
   public Host host_by_name(String name) {
     long cPtr = simgridJNI.Engine_host_by_name(swigCPtr, this, name);
     return (cPtr == 0) ? null : new Host(cPtr);
@@ -108,17 +109,22 @@ public class Engine {
 
   public Link[] get_all_links() { return simgridJNI.Engine_get_all_links(swigCPtr, this); }
 
+  /** If no link of that name exists, throws an IllegalArgumentError. */
   public Link link_by_name(String name) {
     long cPtr = simgridJNI.Engine_link_by_name(swigCPtr, this, name);
     return (cPtr == 0) ? null : new Link(cPtr, false);
   }
 
-  public Mailbox mailbox_by_name_or_create(String name) {
+  /** If no mailbox of that name exists, create it. */
+  public Mailbox mailbox_by_name(String name)
+  {
     long cPtr = simgridJNI.Engine_mailbox_by_name_or_create(swigCPtr, this, name);
     return (cPtr == 0) ? null : new Mailbox(cPtr);
   }
 
-  public MessageQueue message_queue_by_name_or_create(String name) {
+  /** If no message queue of that name exists, create it. */
+  public MessageQueue message_queue_by_name(String name)
+  {
     long cPtr = simgridJNI.Engine_message_queue_by_name_or_create(swigCPtr, this, name);
     return (cPtr == 0) ? null : new MessageQueue(cPtr, false);
   }
@@ -182,6 +188,7 @@ public class Engine {
 
   public NetZone[] get_all_netzones() { return simgridJNI.Engine_get_all_netzones(swigCPtr, this); }
 
+  /** If no link of that name exists, throws an IllegalArgumentError. */
   public NetZone netzone_by_name(String name)
   {
     long cPtr = simgridJNI.Engine_netzone_by_name_or_null(swigCPtr, this, name);

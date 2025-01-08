@@ -22,8 +22,9 @@ class Sender extends Actor {
 
   public void run() throws SimgridException
   {
-    var mailbox1     = Mailbox.by_name(mailbox1_name);
-    var mailbox2     = Mailbox.by_name(mailbox2_name);
+    var e            = this.get_engine();
+    var mailbox1     = e.mailbox_by_name(mailbox1_name);
+    var mailbox2     = e.mailbox_by_name(mailbox2_name);
     Integer payload1 = 666;
     Integer payload2 = 888;
 
@@ -39,7 +40,7 @@ class Sender extends Actor {
     try {
       Activity acti = pending_comms.await_any();
       Engine.info("Wait any returned comm to %s", ((Comm)acti).get_mailbox().get_name());
-    } catch (NetworkFailureException e) {
+    } catch (NetworkFailureException ex) {
       Engine.info("Sender has experienced a network failure exception, so it knows that something went wrong");
       Engine.info("Now it needs to figure out which of the two comms failed by looking at their state:");
       Engine.info("  Comm to %s has state: %s", comm1.get_mailbox().get_name(), comm1.get_state_str());
@@ -48,8 +49,8 @@ class Sender extends Actor {
 
     try {
       comm1.await();
-    } catch (NetworkFailureException e) {
-      Engine.info("Waiting on a FAILED comm raises an exception: '%s'", e.getMessage());
+    } catch (NetworkFailureException ex) {
+      Engine.info("Waiting on a FAILED comm raises an exception: '%s'", ex.getMessage());
     }
     Engine.info("Wait for remaining comm, just to be nice");
     pending_comms.await_all();
@@ -62,7 +63,7 @@ class Receiver extends Actor {
   public Receiver(String name, Host location, String mailbox_name)
   {
     super(name, location);
-    mailbox = Mailbox.by_name(mailbox_name);
+    mailbox = this.get_engine().mailbox_by_name(mailbox_name);
   }
 
   public void run()
@@ -100,7 +101,7 @@ public class comm_failure {
       {
         this.sleep_for(10.0);
         Engine.info("Turning off link 'linkto2'");
-        Link.by_name("linkto2").turn_off();
+        this.get_engine().link_by_name("linkto2").turn_off();
       }
     };
 

@@ -65,8 +65,8 @@ public class comm_pingpong {
     Engine e = new Engine(args);
     e.load_platform(args[0]);
 
-    Mailbox mb1 = e.mailbox_by_name_or_create("Mailbox 1");
-    Mailbox mb2 = e.mailbox_by_name_or_create("Mailbox 2");
+    Mailbox mb1 = e.mailbox_by_name("Mailbox 1");
+    Mailbox mb2 = e.mailbox_by_name("Mailbox 2");
 
     new Pinger("pinger", e.host_by_name("Tremblay"), mb1, mb2);
     new Ponger("ponger", e.host_by_name("Jupiter"), mb2, mb1);

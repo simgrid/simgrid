@@ -17,7 +17,7 @@ class Sender extends Actor {
   }
   public void run()
   {
-    MessageQueue mqueue = MessageQueue.by_name("control");
+    MessageQueue mqueue = this.get_engine().message_queue_by_name("control");
 
     this.sleep_for(0.5);
 
@@ -44,7 +44,7 @@ class Receiver extends Actor {
   Receiver(String name, Host location) { super(name, location); }
   public void run()
   {
-    var mqueue = MessageQueue.by_name("control");
+    var mqueue = this.get_engine().message_queue_by_name("control");
     this.sleep_for(1);
 
     Mess hello = mqueue.get_async();

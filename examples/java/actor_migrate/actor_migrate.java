@@ -51,9 +51,10 @@ class Monitor extends Actor {
 
   public void run()
   {
-    Host boivin    = Host.by_name("Boivin");
-    Host jacquelin = Host.by_name("Jacquelin");
-    Host fafard    = Host.by_name("Fafard");
+    var e          = this.get_engine();
+    Host boivin    = e.host_by_name("Boivin");
+    Host jacquelin = e.host_by_name("Jacquelin");
+    Host fafard    = e.host_by_name("Fafard");
 
     Actor actor = new Worker("worker", fafard, boivin, jacquelin);
 

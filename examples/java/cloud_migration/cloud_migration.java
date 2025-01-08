@@ -30,9 +30,10 @@ class Main extends Actor {
   Main(String name, Host location) { super(name, location); }
   public void run()
   {
-    Host pm0 = Host.by_name("Fafard");
-    Host pm1 = Host.by_name("Tremblay");
-    Host pm2 = Host.by_name("Bourassa");
+    var e    = this.get_engine();
+    Host pm0 = e.host_by_name("Fafard");
+    Host pm1 = e.host_by_name("Tremblay");
+    Host pm2 = e.host_by_name("Bourassa");
 
     var vm0 = pm0.create_vm("VM0", 1);
     vm0.set_ramsize(1e9); // 1Gbytes
@@ -92,7 +93,7 @@ public class cloud_migration {
 
     e.load_platform(args[0]);
 
-    new Main("Main", Host.by_name("Fafard"));
+    new Main("Main", e.host_by_name("Fafard"));
 
     e.run();
 

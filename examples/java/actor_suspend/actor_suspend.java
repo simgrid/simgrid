@@ -76,7 +76,7 @@ public class actor_suspend {
   {
     var e = new Engine(args);
     e.load_platform(args[0]);
-    new DreamMaster("dream_master", Host.by_name("Boivin"));
+    new DreamMaster("dream_master", e.host_by_name("Boivin"));
     e.run();
   }
 }

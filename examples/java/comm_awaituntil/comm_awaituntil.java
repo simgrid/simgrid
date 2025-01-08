@@ -27,7 +27,7 @@ class sender extends Actor {
   public void run() throws SimgridException
   {
     Vector<Comm> pending_comms = new Vector<>();
-    Mailbox mbox               = Mailbox.by_name("receiver-0");
+    Mailbox mbox               = this.get_engine().mailbox_by_name("receiver-0");
 
     /* Start dispatching all messages to the receiver */
     for (int i = 0; i < messages_count; i++) {
@@ -63,7 +63,7 @@ class receiver extends Actor {
   public receiver(String name, Host location) { super(name, location); }
   public void run() throws SimgridException
   {
-    Mailbox mbox = Mailbox.by_name("receiver-0");
+    Mailbox mbox = this.get_engine().mailbox_by_name("receiver-0");
 
     Engine.info("Wait for my first message");
     for (boolean more_messages = true; more_messages;) {

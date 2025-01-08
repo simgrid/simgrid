@@ -11,7 +11,7 @@ class sender extends Actor {
   public sender(String name, Host location) { super(name, location); }
   public void run() throws SimgridException
   {
-    Mailbox mbox = Mailbox.by_name("receiver");
+    Mailbox mbox = this.get_engine().mailbox_by_name("receiver");
 
     String payload = "Sent message";
 
@@ -43,7 +43,7 @@ class receiver extends Actor {
   public receiver(String name, Host location) { super(name, location); }
   public void run() throws SimgridException
   {
-    Mailbox mbox = Mailbox.by_name("receiver");
+    Mailbox mbox = this.get_engine().mailbox_by_name("receiver");
     Engine.info("Wait for the message.");
     String received = (String)mbox.get();
 

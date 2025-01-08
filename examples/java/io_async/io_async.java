@@ -126,8 +126,8 @@ public class io_async {
     var e = new Engine(args);
 
     e.load_platform(args[0]);
-    new test("test", Host.by_name("bob"), 2e7);
-    new test_detach("test_detach", Host.by_name("bob"), 2e7);
+    new test("test", e.host_by_name("bob"), 2e7);
+    new test_detach("test_detach", e.host_by_name("bob"), 2e7);
     new test_waitfor("test_waitfor", e.host_by_name("alice"), 5e7);
     new test_cancel("test_cancel", e.host_by_name("alice"), 5e7);
     new test_monitor("test_monitor", e.host_by_name("alice"), 5e7);
