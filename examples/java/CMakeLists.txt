@@ -7,7 +7,7 @@ if(enable_java)
 endif()
 
 # io_dependent io_file_system io_file_remote: need a plugin
-foreach (example actor_daemon actor_exiting actor_join actor_kill
+foreach (example actor_daemon actor_exiting actor_join actor_kill # actor_create
                  actor_lifetime actor_migrate actor_suspend actor_yield
                  cloud_migration cloud_simple #cloud_capping
                  exec_async exec_basic exec_dependent

@@ -228,7 +228,6 @@ public class simgridJNI {
   public final static native void Engine_run_until(long jarg1, Engine jarg1_, double jarg2);
   public final static native double Engine_get_clock();
   public final static native long Engine_get_instance();
-  public final static native boolean Engine_has_instance();
   public final static native void Engine_load_platform(long jarg1, Engine jarg1_, String jarg2);
   public final static native void Engine_seal_platform(long jarg1, Engine jarg1_);
   public final static native String Engine_flatify_platform(long jarg1, Engine jarg1_);
@@ -238,11 +237,9 @@ public class simgridJNI {
   public final static native Host[] Engine_get_all_hosts(long jarg1, Engine jarg1_);
   public final static native Host[] Engine_get_hosts_from_MPI_hostfile(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_host_by_name(long jarg1, Engine jarg1_, String jarg2);
-  public final static native long Engine_host_by_name_or_null(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_get_link_count(long jarg1, Engine jarg1_);
   public final static native Link[] Engine_get_all_links(long jarg1, Engine jarg1_);
   public final static native long Engine_link_by_name(long jarg1, Engine jarg1_, String jarg2);
-  public final static native long Engine_link_by_name_or_null(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_mailbox_by_name_or_create(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_message_queue_by_name_or_create(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_get_actor_count(long jarg1, Engine jarg1_);
@@ -334,7 +331,6 @@ public class simgridJNI {
   public final static native int Link_SharingPolicy_SHARED_get();
   public final static native int Link_SharingPolicy_FATPIPE_get();
   public final static native long Link_by_name(String jarg1);
-  public final static native long Link_by_name_or_null(String jarg1);
   public final static native String Link_get_name(long jarg1, Link jarg1_);
   public final static native double Link_get_bandwidth(long jarg1, Link jarg1_);
   public final static native void Link_set_bandwidth(long jarg1, Link jarg1_, double jarg2);

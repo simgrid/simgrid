@@ -64,10 +64,6 @@ public class Engine {
     return (cPtr == 0) ? null : new Engine(cPtr, false);
   }
 
-  public static boolean has_instance() {
-    return simgridJNI.Engine_has_instance();
-  }
-
   public void load_platform(String platf) {
     simgridJNI.Engine_load_platform(swigCPtr, this, platf);
   }
@@ -78,10 +74,6 @@ public class Engine {
 
   public String flatify_platform() {
     return simgridJNI.Engine_flatify_platform(swigCPtr, this);
-  }
-
-  public void track_vetoed_activities(SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t vetoed_activities) {
-    simgridJNI.Engine_track_vetoed_activities(swigCPtr, this, SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.getCPtr(vetoed_activities));
   }
 
   public void load_deployment(String deploy) {
@@ -104,24 +96,20 @@ public class Engine {
     return (cPtr == 0) ? null : new Host(cPtr);
   }
 
-  public Host host_by_name_or_null(String name) {
-    long cPtr = simgridJNI.Engine_host_by_name_or_null(swigCPtr, this, name);
-    return (cPtr == 0) ? null : new Host(cPtr);
-  }
-
   public long get_link_count() {
     return simgridJNI.Engine_get_link_count(swigCPtr, this);
+  }
+
+  public void track_vetoed_activities(SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t vetoed_activities)
+  {
+    simgridJNI.Engine_track_vetoed_activities(
+        swigCPtr, this, SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.getCPtr(vetoed_activities));
   }
 
   public Link[] get_all_links() { return simgridJNI.Engine_get_all_links(swigCPtr, this); }
 
   public Link link_by_name(String name) {
     long cPtr = simgridJNI.Engine_link_by_name(swigCPtr, this, name);
-    return (cPtr == 0) ? null : new Link(cPtr, false);
-  }
-
-  public Link link_by_name_or_null(String name) {
-    long cPtr = simgridJNI.Engine_link_by_name_or_null(swigCPtr, this, name);
     return (cPtr == 0) ? null : new Link(cPtr, false);
   }
 
@@ -194,8 +182,12 @@ public class Engine {
 
   public NetZone[] get_all_netzones() { return simgridJNI.Engine_get_all_netzones(swigCPtr, this); }
 
-  public NetZone netzone_by_name_or_null(String name) {
+  public NetZone netzone_by_name(String name)
+  {
     long cPtr = simgridJNI.Engine_netzone_by_name_or_null(swigCPtr, this, name);
+    if (cPtr == 0)
+      throw new IllegalArgumentException("NetZone '" + name + "' does not exist. Did you spell its name correctly?");
+
     return (cPtr == 0) ? null : new NetZone(cPtr);
   }
 

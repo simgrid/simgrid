@@ -45,11 +45,6 @@ public class Link {
     return (cPtr == 0) ? null : new Link(cPtr, false);
   }
 
-  public static Link by_name_or_null(String name) {
-    long cPtr = simgridJNI.Link_by_name_or_null(name);
-    return (cPtr == 0) ? null : new Link(cPtr, false);
-  }
-
   public String get_name() {
     return simgridJNI.Link_get_name(swigCPtr, this);
   }
