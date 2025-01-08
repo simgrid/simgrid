@@ -28,9 +28,7 @@ public class NetZone {
     return (cPtr == 0) ? null : new NetZone(cPtr);
   }
 
-  public SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t get_children() {
-    return new SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t(simgridJNI.NetZone_get_children(swigCPtr, this), true);
-  }
+  public NetZone[] get_children() { return simgridJNI.NetZone_get_children(swigCPtr, this); }
 
   public Host[] get_all_hosts() { return simgridJNI.NetZone_get_all_hosts(swigCPtr, this); }
 

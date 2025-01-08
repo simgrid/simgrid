@@ -824,10 +824,7 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_double_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__Link_p_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t.java
     src/bindings/java/org/simgrid/s4u/TimeoutException.java
     src/bindings/java/org/simgrid/s4u/VirtualMachine.java
 )

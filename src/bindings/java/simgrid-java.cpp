@@ -102,6 +102,7 @@
 #include "src/dag/dax_dtd.h"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextJava.hpp"
+#include "xbt/Extendable.hpp"
 #include "xbt/asserts.h"
 
 #include "xbt/base.h"
@@ -135,6 +136,7 @@ static jmethodID Actor_methodId             = 0;
 
 /* Various cached classIds */
 static jclass string_class = 0;
+static jclass actor_class  = 0;
 
 /* Various extensions */
 struct ActorJavaExt {
@@ -201,6 +203,24 @@ static std::pair<jclass, jmethodID> get_classctor_host(JNIEnv* jenv)
 
   return std::make_pair(host_class, host_ctor);
 }
+static std::pair<jclass, jmethodID> get_classctor_link(JNIEnv* jenv)
+{
+  static jclass link_class   = 0;
+  static jmethodID link_ctor = 0;
+  if (link_class == 0)
+    get_classctor(jenv, "org/simgrid/s4u/Link", "(J)V", link_class, link_ctor);
+
+  return std::make_pair(link_class, link_ctor);
+}
+static std::pair<jclass, jmethodID> get_classctor_netzone(JNIEnv* jenv)
+{
+  static jclass netzone_class   = 0;
+  static jmethodID netzone_ctor = 0;
+  if (netzone_class == 0)
+    get_classctor(jenv, "org/simgrid/s4u/NetZone", "(J)V", netzone_class, netzone_ctor);
+
+  return std::make_pair(netzone_class, netzone_ctor);
+}
 
 /* *********************************************************************************** */
 /* Initialize the Java bindings                                                        */
@@ -241,6 +261,9 @@ static struct SimGridJavaInit {
       Actor_methodId = init_methodId(maestro_jenv, "Actor", "do_run", "()V");
 
       string_class = (jclass)maestro_jenv->NewGlobalRef(maestro_jenv->FindClass("java/lang/String"));
+      xbt_assert(string_class);
+      actor_class = (jclass)maestro_jenv->NewGlobalRef(maestro_jenv->FindClass("org/simgrid/s4u/Actor"));
+      xbt_assert(actor_class);
 
       // Initialize extensions
       ActorJavaExt::EXTENSION_ID = simgrid::s4u::Actor::extension_create<ActorJavaExt>();
@@ -3291,20 +3314,18 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1link_1coun
   return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1links(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                 jobject jthis)
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1links(JNIEnv* jenv, jclass jcls,
+                                                                                        jlong cthis, jobject jthis)
 {
-  jlong jresult              = 0;
-  simgrid::s4u::Engine* arg1 = (simgrid::s4u::Engine*)0;
-  SwigValueWrapper<std::vector<simgrid::s4u::Link*>> result;
+  auto [link_class, link_ctor] = get_classctor_link(jenv);
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1                                          = *(simgrid::s4u::Engine**)&cthis;
-  result                                        = ((simgrid::s4u::Engine const*)arg1)->get_all_links();
-  *(std::vector<simgrid::s4u::Link*>**)&jresult = new std::vector<simgrid::s4u::Link*>(result);
-  return jresult;
+  auto clinks = ((Engine*)cthis)->get_all_links();
+
+  jobjectArray result = jenv->NewObjectArray(clinks.size(), link_class, nullptr);
+  for (unsigned i = 0; i < clinks.size(); i++)
+    jenv->SetObjectArrayElement(result, i, jenv->NewObject(link_class, link_ctor, clinks.at(i)));
+
+  return result;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1link_1by_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -3366,21 +3387,16 @@ XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1actor_1max_
   return (jint)((Engine*)cthis)->get_actor_max_pid();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1actors(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis)
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1actors(JNIEnv* jenv, jclass jcls,
+                                                                                         jlong cthis, jobject jthis)
 {
-  jlong jresult              = 0;
-  simgrid::s4u::Engine* arg1 = (simgrid::s4u::Engine*)0;
-  SwigValueWrapper<std::vector<boost::intrusive_ptr<simgrid::s4u::Actor>>> result;
+  auto cactors = ((Engine*)cthis)->get_all_actors();
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1   = *(simgrid::s4u::Engine**)&cthis;
-  result = ((simgrid::s4u::Engine const*)arg1)->get_all_actors();
-  *(std::vector<boost::intrusive_ptr<simgrid::s4u::Actor>>**)&jresult =
-      new std::vector<boost::intrusive_ptr<simgrid::s4u::Actor>>(result);
-  return jresult;
+  jobjectArray result = jenv->NewObjectArray(cactors.size(), actor_class, nullptr);
+  for (unsigned i = 0; i < cactors.size(); i++)
+    jenv->SetObjectArrayElement(result, i, cactors.at(i)->extension<ActorJavaExt>()->jactor_);
+
+  return result;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1root_1netzone(JNIEnv* jenv, jclass jcls,
@@ -3389,20 +3405,18 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1root_1netz
   return (jlong)((Engine*)cthis)->get_netzone_root();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1netzones(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis)
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1netzones(JNIEnv* jenv, jclass jcls,
+                                                                                           jlong cthis, jobject jthis)
 {
-  jlong jresult              = 0;
-  simgrid::s4u::Engine* arg1 = (simgrid::s4u::Engine*)0;
-  SwigValueWrapper<std::vector<simgrid::s4u::NetZone*>> result;
+  auto [netzone_class, netzone_ctor] = get_classctor_netzone(jenv);
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1                                             = *(simgrid::s4u::Engine**)&cthis;
-  result                                           = ((simgrid::s4u::Engine const*)arg1)->get_all_netzones();
-  *(std::vector<simgrid::s4u::NetZone*>**)&jresult = new std::vector<simgrid::s4u::NetZone*>(result);
-  return jresult;
+  auto cnetzones = ((Engine*)cthis)->get_all_netzones();
+
+  jobjectArray result = jenv->NewObjectArray(cnetzones.size(), netzone_class, nullptr);
+  for (unsigned i = 0; i < cnetzones.size(); i++)
+    jenv->SetObjectArrayElement(result, i, jenv->NewObject(netzone_class, netzone_ctor, cnetzones.at(i)));
+
+  return result;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1netzone_1by_1name_1or_1null(JNIEnv* jenv, jclass jcls,
@@ -4630,20 +4644,18 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1set_1parent(JN
   return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1children(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                jobject jthis)
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1children(JNIEnv* jenv, jclass jcls,
+                                                                                       jlong cthis, jobject jthis)
 {
-  jlong jresult               = 0;
-  simgrid::s4u::NetZone* arg1 = (simgrid::s4u::NetZone*)0;
-  SwigValueWrapper<std::vector<simgrid::s4u::NetZone*>> result;
+  auto [netzone_class, netzone_ctor] = get_classctor_netzone(jenv);
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1                                             = *(simgrid::s4u::NetZone**)&cthis;
-  result                                           = ((simgrid::s4u::NetZone const*)arg1)->get_children();
-  *(std::vector<simgrid::s4u::NetZone*>**)&jresult = new std::vector<simgrid::s4u::NetZone*>(result);
-  return jresult;
+  auto cnetzones = ((NetZone*)cthis)->get_children();
+
+  jobjectArray result = jenv->NewObjectArray(cnetzones.size(), netzone_class, nullptr);
+  for (unsigned i = 0; i < cnetzones.size(); i++)
+    jenv->SetObjectArrayElement(result, i, jenv->NewObject(netzone_class, netzone_ctor, cnetzones.at(i)));
+
+  return result;
 }
 
 XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1all_1hosts(JNIEnv* jenv, jclass jcls,

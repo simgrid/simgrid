@@ -240,14 +240,14 @@ public class simgridJNI {
   public final static native long Engine_host_by_name(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_host_by_name_or_null(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_get_link_count(long jarg1, Engine jarg1_);
-  public final static native long Engine_get_all_links(long jarg1, Engine jarg1_);
+  public final static native Link[] Engine_get_all_links(long jarg1, Engine jarg1_);
   public final static native long Engine_link_by_name(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_link_by_name_or_null(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_mailbox_by_name_or_create(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_message_queue_by_name_or_create(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_get_actor_count(long jarg1, Engine jarg1_);
   public final static native int Engine_get_actor_max_pid(long jarg1, Engine jarg1_);
-  public final static native long Engine_get_all_actors(long jarg1, Engine jarg1_);
+  public final static native Actor[] Engine_get_all_actors(long jarg1, Engine jarg1_);
   public final static native long Engine_get_root_netzone(long jarg1, Engine jarg1_);
   public final static native long Engine_set_root_netzone_full(long jarg1, Engine jarg1_, String jname);
   public final static native long Engine_set_root_netzone_star(long jarg1, Engine jarg1_, String jname);
@@ -257,7 +257,7 @@ public class simgridJNI {
   public final static native long Engine_set_root_netzone_floyd(long jarg1, Engine jarg1_, String jname);
   public final static native long Engine_set_root_netzone_vivaldi(long jarg1, Engine jarg1_, String jname);
   public final static native long Engine_set_root_netzone_wifi(long jarg1, Engine jarg1_, String jname);
-  public final static native long Engine_get_all_netzones(long jarg1, Engine jarg1_);
+  public final static native NetZone[] Engine_get_all_netzones(long jarg1, Engine jarg1_);
   public final static native long Engine_netzone_by_name_or_null(long jarg1, Engine jarg1_, String jarg2);
   public final static native void Engine_set_config__SWIG_0(String jarg1);
   public final static native void Engine_set_config__SWIG_1(String jarg1, int jarg2);
@@ -386,7 +386,7 @@ public class simgridJNI {
   public final static native String NetZone_get_name(long jarg1, NetZone jarg1_);
   public final static native long NetZone_get_parent(long jarg1, NetZone jarg1_);
   public final static native long NetZone_set_parent(long jarg1, NetZone jarg1_, long jarg2, NetZone jarg2_);
-  public final static native long NetZone_get_children(long jarg1, NetZone jarg1_);
+  public final static native NetZone[] NetZone_get_children(long jarg1, NetZone jarg1_);
   public final static native Host[] NetZone_get_all_hosts(long jarg1, NetZone jarg1_);
   public final static native long NetZone_get_host_count(long jarg1, NetZone jarg1_);
   public final static native String NetZone_get_property(long jarg1, NetZone jarg1_, String jarg2);

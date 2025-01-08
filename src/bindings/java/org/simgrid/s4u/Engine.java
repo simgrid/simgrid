@@ -113,9 +113,7 @@ public class Engine {
     return simgridJNI.Engine_get_link_count(swigCPtr, this);
   }
 
-  public SWIGTYPE_p_std__vectorT_simgrid__s4u__Link_p_t get_all_links() {
-    return new SWIGTYPE_p_std__vectorT_simgrid__s4u__Link_p_t(simgridJNI.Engine_get_all_links(swigCPtr, this), true);
-  }
+  public Link[] get_all_links() { return simgridJNI.Engine_get_all_links(swigCPtr, this); }
 
   public Link link_by_name(String name) {
     long cPtr = simgridJNI.Engine_link_by_name(swigCPtr, this, name);
@@ -145,9 +143,7 @@ public class Engine {
     return simgridJNI.Engine_get_actor_max_pid(swigCPtr, this);
   }
 
-  public SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t get_all_actors() {
-    return new SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t(simgridJNI.Engine_get_all_actors(swigCPtr, this), true);
-  }
+  public Actor[] get_all_actors() { return simgridJNI.Engine_get_all_actors(swigCPtr, this); }
   public NetZone set_rootzone_full(String name)
   {
     long cPtr = simgridJNI.Engine_set_root_netzone_full(swigCPtr, this, name);
@@ -196,9 +192,7 @@ public class Engine {
     return (cPtr == 0) ? null : new NetZone(cPtr);
   }
 
-  public SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t get_all_netzones() {
-    return new SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t(simgridJNI.Engine_get_all_netzones(swigCPtr, this), true);
-  }
+  public NetZone[] get_all_netzones() { return simgridJNI.Engine_get_all_netzones(swigCPtr, this); }
 
   public NetZone netzone_by_name_or_null(String name) {
     long cPtr = simgridJNI.Engine_netzone_by_name_or_null(swigCPtr, this, name);
