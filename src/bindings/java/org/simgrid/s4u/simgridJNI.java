@@ -125,7 +125,7 @@ public class simgridJNI {
   public final static native void Comm_sendto(long jarg1, Host jarg1_, long jarg2, Host jarg2_, long jarg3);
   public final static native void Comm_set_source(long jarg1, Comm jarg1_, long jarg2, Host jarg2_);
   public final static native long Comm_get_source(long jarg1, Comm jarg1_);
-  public final static native long Comm_set_destination(long jarg1, Comm jarg1_, long jarg2, Host jarg2_);
+  public final static native void Comm_set_destination(long jarg1, Comm jarg1_, long jarg2, Host jarg2_);
   public final static native long Comm_get_destination(long jarg1, Comm jarg1_);
   public final static native void Comm_set_mailbox(long jarg1, Comm jarg1_, long jarg2, Mailbox jarg2_);
   public final static native long Comm_get_mailbox(long jarg1, Comm jarg1_);
@@ -186,7 +186,6 @@ public class simgridJNI {
                                                                  Mutex jmutex, double jarg3);
   public final static native void ConditionVariable_notify_one(long jarg1, ConditionVariable jarg1_);
   public final static native void ConditionVariable_notify_all(long jarg1, ConditionVariable jarg1_);
-  public final static native void delete_Disk(long jarg1);
   public final static native String Disk_get_name(long jarg1, Disk jarg1_);
   public final static native void Disk_set_read_bandwidth(long jarg1, Disk jarg1_, double jarg2);
   public final static native double Disk_get_read_bandwidth(long jarg1, Disk jarg1_);

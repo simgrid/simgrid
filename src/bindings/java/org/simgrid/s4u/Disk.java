@@ -7,28 +7,11 @@ package org.simgrid.s4u;
 
 public class Disk {
   private transient long swigCPtr;
-  private transient boolean swigCMemOwnBase;
 
-  protected Disk(long cPtr, boolean cMemoryOwn) {
-    swigCMemOwnBase = cMemoryOwn;
-    swigCPtr = cPtr;
-  }
+  protected Disk(long cPtr) { swigCPtr = cPtr; }
 
   protected static long getCPtr(Disk obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  @SuppressWarnings({"deprecation", "removal"})
-  protected void finalize() {
-    delete();
-  }
-
-  public synchronized void delete() {
-    if(swigCPtr != 0 && swigCMemOwnBase) {
-      swigCMemOwnBase = false;
-      simgridJNI.delete_Disk(swigCPtr);
-    }
-    swigCPtr = 0;
   }
 
   public String get_name() {

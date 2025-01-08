@@ -36,7 +36,7 @@ public class Host {
   public Disk create_disk(String name, double read_bandwidth, double write_bandwidth)
   {
     long cPtr = simgridJNI.Host_create_disk(swigCPtr, this, name, read_bandwidth, write_bandwidth);
-    return (cPtr == 0) ? null : new Disk(cPtr, false);
+    return (cPtr == 0) ? null : new Disk(cPtr);
   }
   public String[] get_properties_names() { return simgridJNI.Host_get_properties_names(swigCPtr, this); }
   public String get_property(String name) { return simgridJNI.Host_get_property(swigCPtr, this, name); }

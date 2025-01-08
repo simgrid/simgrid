@@ -10,5 +10,5 @@ public abstract class CallbackDisk {
   public abstract void run(Disk d);
 
   /* Internal method to ensure that your callback can be called from C++ */
-  public final void run(long d) { run(new Disk(d, false)); }
+  public final void run(long d) { run(new Disk(d)); }
 }

@@ -49,8 +49,8 @@ public class Comm extends Activity {
   }
 
   public Comm set_destination(Host to) {
-    long cPtr = simgridJNI.Comm_set_destination(getCPtr(), this, Host.getCPtr(to), to);
-    return (cPtr == 0) ? null : new Comm(cPtr, true);
+    simgridJNI.Comm_set_destination(getCPtr(), this, Host.getCPtr(to), to);
+    return this;
   }
 
   public Host get_destination() {
