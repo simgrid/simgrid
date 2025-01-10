@@ -10,11 +10,7 @@ import org.simgrid.s4u.*;
 
 class Sender extends Actor {
   int messages_count;
-  public Sender(String name, Host location, int messages_count)
-  {
-    super(name, location);
-    this.messages_count = messages_count;
-  }
+  public Sender(int messages_count) { this.messages_count = messages_count; }
   public void run()
   {
     MessageQueue mqueue = this.get_engine().message_queue_by_name("control");
@@ -41,7 +37,6 @@ class Sender extends Actor {
 
 /* Receiver actor expects no argument */
 class Receiver extends Actor {
-  Receiver(String name, Host location) { super(name, location); }
   public void run()
   {
     var mqueue = this.get_engine().message_queue_by_name("control");
@@ -73,9 +68,8 @@ public class mess_await {
     var e = new Engine(args);
 
     e.load_platform(args[0]);
-
-    new Sender("sender", e.host_by_name("Tremblay"), 3);
-    new Receiver("receiver", e.host_by_name("Fafard"));
+    e.add_actor("sender", e.host_by_name("Tremblay"), new Sender(3));
+    e.add_actor("receiver", e.host_by_name("Fafard"), new Receiver());
 
     e.run();
   }

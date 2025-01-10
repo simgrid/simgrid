@@ -8,9 +8,8 @@ import org.simgrid.s4u.*;;
 class Pinger extends Actor {
   Mailbox mailbox_in;
   Mailbox mailbox_out;
-  public Pinger(String name, Host location, Mailbox mailbox_in, Mailbox mailbox_out)
+  public Pinger(Mailbox mailbox_in, Mailbox mailbox_out)
   {
-    super(name, location);
     this.mailbox_in = mailbox_in;
     this.mailbox_out = mailbox_out;
   }
@@ -34,9 +33,8 @@ class Pinger extends Actor {
 class Ponger extends Actor {
   Mailbox mailbox_in;
   Mailbox mailbox_out;
-  public Ponger(String name, Host location, Mailbox mailbox_in, Mailbox mailbox_out)
+  public Ponger(Mailbox mailbox_in, Mailbox mailbox_out)
   {
-    super(name, location);
     this.mailbox_in = mailbox_in;
     this.mailbox_out = mailbox_out;
   }
@@ -68,8 +66,8 @@ public class comm_pingpong {
     Mailbox mb1 = e.mailbox_by_name("Mailbox 1");
     Mailbox mb2 = e.mailbox_by_name("Mailbox 2");
 
-    new Pinger("pinger", e.host_by_name("Tremblay"), mb1, mb2);
-    new Ponger("ponger", e.host_by_name("Jupiter"), mb2, mb1);
+    e.add_actor("pinger", e.host_by_name("Tremblay"), new Pinger(mb1, mb2));
+    e.add_actor("ponger", e.host_by_name("Jupiter"), new Ponger(mb2, mb1));
 
     e.run();
     Engine.info("The simulation is terminating.");

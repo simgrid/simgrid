@@ -21,9 +21,8 @@ import org.simgrid.s4u.*;
 class Worker extends Actor {
   Host first;
   Host second;
-  Worker(String name, Host location, Host first, Host second)
+  Worker(Host first, Host second)
   {
-    super(name, location);
     this.first  = first;
     this.second = second;
   }
@@ -47,8 +46,6 @@ class Worker extends Actor {
 }
 
 class Monitor extends Actor {
-  Monitor(String name, Host location) { super(name, location); }
-
   public void run()
   {
     var e          = this.get_engine();
@@ -56,7 +53,7 @@ class Monitor extends Actor {
     Host jacquelin = e.host_by_name("Jacquelin");
     Host fafard    = e.host_by_name("Fafard");
 
-    Actor actor = new Worker("worker", fafard, boivin, jacquelin);
+    Actor actor = e.add_actor("worker", fafard, new Worker(boivin, jacquelin));
 
     this.sleep_for(5);
 
@@ -75,7 +72,7 @@ public class actor_migrate {
     var e = new Engine(args);
     e.load_platform(args[0]);
 
-    new Monitor("monitor", e.host_by_name("Boivin"));
+    e.add_actor("monitor", e.host_by_name("Boivin"), new Monitor());
     e.run();
   }
 }

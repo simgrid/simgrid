@@ -7,7 +7,6 @@ import org.simgrid.s4u.*;
 
 /* This actor simply starts an activity in a fire and forget (a.k.a. detached) mode and quit.*/
 class detached extends Actor {
-  public detached(String name, Host location) { super(name, location); }
   public void run()
   {
     double computation_amount = get_host().get_speed();
@@ -30,7 +29,6 @@ class detached extends Actor {
 /* This actor simply waits for its activity completion after starting it.
  * That's exactly equivalent to synchronous execution. */
 class waiter extends Actor {
-  public waiter(String name, Host location) { super(name, location); }
   public void run()
   {
     double computation_amount = get_host().get_speed();
@@ -45,7 +43,6 @@ class waiter extends Actor {
 
 /* This actor tests the ongoing execution until its completion, and don't wait before it's terminated. */
 class monitor extends Actor {
-  public monitor(String name, Host location) { super(name, location); }
   public void run()
   {
     double computation_amount = get_host().get_speed();
@@ -65,7 +62,6 @@ class monitor extends Actor {
 
 /* This actor cancels the ongoing execution after a while. */
 class canceller extends Actor {
-  public canceller(String name, Host location) { super(name, location); }
   public void run()
   {
     double computation_amount = get_host().get_speed();
@@ -91,10 +87,10 @@ public class exec_async {
     Host boivin   = e.host_by_name("Boivin");
     Host tremblay = e.host_by_name("Tremblay");
 
-    new waiter("wait", fafard);
-    new monitor("monitor", ginette);
-    new canceller("cancel", boivin);
-    new detached("detach", tremblay);
+    e.add_actor("wait", fafard, new waiter());
+    e.add_actor("monitor", ginette, new monitor());
+    e.add_actor("cancel", boivin, new canceller());
+    e.add_actor("detach", tremblay, new detached());
 
     e.run();
 

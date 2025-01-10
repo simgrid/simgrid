@@ -19,10 +19,8 @@ import org.simgrid.s4u.*;
 
 class sender extends Actor {
   Host h1, h2, h3, h4;
-  public sender(String name, Host location, Host host1, Host host2, Host host3, Host host4)
+  public sender(Host host1, Host host2, Host host3, Host host4)
   {
-    super(name, location);
-
     h1 = host1;
     h2 = host2;
     h3 = host3;
@@ -81,10 +79,9 @@ public class comm_host2host {
     var e = new Engine(args);
 
     e.load_platform(args[0]);
-
-    new sender("sender", e.host_by_name("Boivin"), e.host_by_name("Tremblay"), e.host_by_name("Jupiter"),
-               e.host_by_name("Fafard"), e.host_by_name("Ginette"));
-
+    e.add_actor("sender", e.host_by_name("Boivin"),
+                new sender(e.host_by_name("Tremblay"), e.host_by_name("Jupiter"), e.host_by_name("Fafard"),
+                           e.host_by_name("Ginette")));
     e.run();
 
     Engine.info("Simulation ends");

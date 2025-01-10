@@ -129,6 +129,11 @@ public class Engine {
     return (cPtr == 0) ? null : new MessageQueue(cPtr, false);
   }
 
+  public Actor add_actor(String name, Host location, Actor actor)
+  {
+    simgridJNI.Actor_create(name, Host.getCPtr(location), location, actor);
+    return actor;
+  }
   public long get_actor_count() {
     return simgridJNI.Engine_get_actor_count(swigCPtr, this);
   }

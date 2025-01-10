@@ -3,17 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-import java.util.concurrent.Semaphore;
 import org.simgrid.s4u.*;
 
 /// Wait on the barrier then leave
 class worker extends Actor {
   Barrier barrier;
-  public worker(String name, Host location, Barrier barrier)
-  {
-    super(name, location);
-    this.barrier = barrier;
-  }
+  public worker(Barrier barrier) { this.barrier = barrier; }
   public void run()
   {
     Engine.info("Waiting on the barrier");
@@ -27,18 +22,16 @@ class worker extends Actor {
 /// Spawn actor_count-1 workers and do a barrier with them
 class master extends Actor {
   int actor_count;
-  public master(String name, Host location, int actor_count)
-  {
-    super(name, location);
-    this.actor_count = actor_count;
-  }
+  public master(int actor_count) { this.actor_count = actor_count; }
   public void run()
   {
+    var e = this.get_engine();
+
     Barrier barrier = Barrier.create(actor_count);
 
     Engine.info("Spawning %d workers", actor_count - 1);
     for (int i = 0; i < actor_count - 1; i++)
-      new worker("worker", this.get_engine().host_by_name("Jupiter"), barrier);
+      e.add_actor("worker", e.host_by_name("Jupiter"), new worker(barrier));
 
     Engine.info("Waiting on the barrier");
     if (barrier.await())
@@ -61,7 +54,7 @@ public class synchro_barrier {
       Engine.die("<actor-count> must be greater than 0");
 
     e.load_platform(args.length >= 2 ? args[1] : "../platforms/two_hosts.xml");
-    new master("master", e.host_by_name("Tremblay"), actor_count);
+    e.add_actor("master", e.host_by_name("Tremblay"), new master(actor_count));
     e.run();
   }
 }

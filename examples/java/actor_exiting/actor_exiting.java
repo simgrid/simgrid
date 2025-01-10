@@ -34,7 +34,6 @@
 import org.simgrid.s4u.*;
 
 class ActorA extends Actor {
-  public ActorA(String name, Host location) { super(name, location); }
   public void run()
   {
 
@@ -51,11 +50,9 @@ class ActorA extends Actor {
 }
 
 class ActorB extends Actor {
-  public ActorB(String name, Host location) { super(name, location); }
   public void run() { sleep_for(2); }
 }
 class ActorC extends Actor {
-  public ActorC(String name, Host location) { super(name, location); }
   public void run() throws SimgridException
   {
     // Register a lambda function to be executed once it stops
@@ -101,9 +98,9 @@ class actor_exiting {
     });
 
     /* Create some actors */
-    new ActorA("A", e.host_by_name("Tremblay"));
-    new ActorB("B", e.host_by_name("Fafard"));
-    new ActorC("C", e.host_by_name("Ginette"));
+    e.add_actor("A", e.host_by_name("Tremblay"), new ActorA());
+    e.add_actor("B", e.host_by_name("Fafard"), new ActorB());
+    e.add_actor("C", e.host_by_name("Ginette"), new ActorC());
 
     e.run(); /* Run the simulation */
     Engine.info("Run the garbage collector now in the hope to get the actors destroyed. In vain :(");

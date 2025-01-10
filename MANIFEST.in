@@ -422,6 +422,9 @@ include examples/cpp/trace-process-migration/s4u-trace-process-migration.cpp
 include examples/cpp/trace-process-migration/s4u-trace-process-migration.tesh
 include examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.cpp
 include examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.tesh
+include examples/java/actor_create/actor_create.java
+include examples/java/actor_create/actor_create.java.tesh
+include examples/java/actor_create/actor_create_d.xml
 include examples/java/actor_daemon/actor_daemon.java
 include examples/java/actor_daemon/actor_daemon.java.tesh
 include examples/java/actor_exiting/actor_exiting.java
@@ -2206,10 +2209,7 @@ include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_t.jav
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
-include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t.java
 include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_double_t.java
-include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__Link_p_t.java
-include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t.java
 include src/bindings/java/org/simgrid/s4u/Semaphore.java
 include src/bindings/java/org/simgrid/s4u/SimgridException.java
 include src/bindings/java/org/simgrid/s4u/TimeoutException.java

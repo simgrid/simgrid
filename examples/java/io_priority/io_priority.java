@@ -6,7 +6,6 @@
 import org.simgrid.s4u.*;
 
 class Writer extends Actor {
-  Writer(String name, Host location) { super(name, location); }
   public void run()
   {
     /* - Retrieve all disks from current host */
@@ -20,7 +19,6 @@ class Writer extends Actor {
   }
 }
 class PrivilegedWriter extends Actor {
-  PrivilegedWriter(String name, Host location) { super(name, location); }
   public void run() throws TimeoutException
   {
     /* - Retrieve all disks from current host */
@@ -69,8 +67,8 @@ public class io_priority {
 
     e.load_platform(args[0]);
 
-    new Writer("writer", e.host_by_name("bob"));
-    new PrivilegedWriter("privileged_writer", e.host_by_name("bob"));
+    e.add_actor("writer", e.host_by_name("bob"), new Writer());
+    e.add_actor("privileged_writer", e.host_by_name("bob"), new PrivilegedWriter());
 
     e.run();
   }

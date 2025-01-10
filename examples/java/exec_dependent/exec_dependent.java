@@ -6,7 +6,6 @@
 import org.simgrid.s4u.*;
 
 class Worker extends Actor {
-  public Worker(String name, Host location) { super(name, location); }
   public void run() throws SimgridException
   {
 
@@ -54,7 +53,7 @@ public class exec_dependent {
     var e = new Engine(args);
     e.load_platform(args[0]);
 
-    new Worker("worker", e.host_by_name("Fafard"));
+    e.add_actor("worker", e.host_by_name("Fafard"), new Worker());
 
     Exec.on_veto_cb(new CallbackExec() {
       public void run(Exec exec)

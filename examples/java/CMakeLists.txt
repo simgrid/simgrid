@@ -7,7 +7,7 @@ if(enable_java)
 endif()
 
 # io_dependent io_file_system io_file_remote: need a plugin
-foreach (example actor_daemon actor_exiting actor_join actor_kill # actor_create
+foreach (example actor_create actor_daemon actor_exiting actor_join actor_kill
                  actor_lifetime actor_migrate actor_suspend actor_yield
                  cloud_migration cloud_simple #cloud_capping
                  exec_async exec_basic exec_dependent
@@ -43,4 +43,5 @@ endforeach()
 set(examples_src  ${examples_src}                                                                          PARENT_SCOPE)
 set(tesh_files    ${tesh_files}                                                                            PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor_lifetime/actor_lifetime_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor_create/actor_create_d.xml
                   PARENT_SCOPE)

@@ -7,11 +7,7 @@ import org.simgrid.s4u.*;
 
 class test_detach extends Actor {
   int size;
-  test_detach(String name, Host location, double size)
-  {
-    super(name, location);
-    this.size = (int)size;
-  }
+  test_detach(double size) { this.size = (int)size; }
   public void run()
   {
     Disk disk = Host.current().get_disks()[0];
@@ -34,11 +30,7 @@ class test_detach extends Actor {
 
 class test extends Actor {
   int size;
-  test(String name, Host location, double size)
-  {
-    super(name, location);
-    this.size = (int)size;
-  }
+  test(double size) { this.size = (int)size; }
   public void run() throws SimgridException
   {
     Disk disk = Host.current().get_disks()[0];
@@ -54,11 +46,7 @@ class test extends Actor {
 
 class test_waitfor extends Actor {
   int size;
-  test_waitfor(String name, Host location, double size)
-  {
-    super(name, location);
-    this.size = (int)size;
-  }
+  test_waitfor(double size) { this.size = (int)size; }
   public void run()
   {
     Disk disk = Host.current().get_disks()[0];
@@ -77,11 +65,7 @@ class test_waitfor extends Actor {
 
 class test_cancel extends Actor {
   int size;
-  test_cancel(String name, Host location, double size)
-  {
-    super(name, location);
-    this.size = (int)size;
-  }
+  test_cancel(double size) { this.size = (int)size; }
   public void run()
   {
     Disk disk = Host.current().get_disks()[0];
@@ -99,11 +83,7 @@ class test_cancel extends Actor {
 
 class test_monitor extends Actor {
   int size;
-  test_monitor(String name, Host location, double size)
-  {
-    super(name, location);
-    this.size = (int)size;
-  }
+  test_monitor(double size) { this.size = (int)size; }
   public void run() throws SimgridException
   {
     Disk disk = Host.current().get_disks()[0];
@@ -126,11 +106,11 @@ public class io_async {
     var e = new Engine(args);
 
     e.load_platform(args[0]);
-    new test("test", e.host_by_name("bob"), 2e7);
-    new test_detach("test_detach", e.host_by_name("bob"), 2e7);
-    new test_waitfor("test_waitfor", e.host_by_name("alice"), 5e7);
-    new test_cancel("test_cancel", e.host_by_name("alice"), 5e7);
-    new test_monitor("test_monitor", e.host_by_name("alice"), 5e7);
+    e.add_actor("test", e.host_by_name("bob"), new test(2e7));
+    e.add_actor("test_detach", e.host_by_name("bob"), new test_detach(2e7));
+    e.add_actor("test_waitfor", e.host_by_name("alice"), new test_waitfor(5e7));
+    e.add_actor("test_cancel", e.host_by_name("alice"), new test_cancel(5e7));
+    e.add_actor("test_monitor", e.host_by_name("alice"), new test_monitor(5e7));
 
     e.run();
 

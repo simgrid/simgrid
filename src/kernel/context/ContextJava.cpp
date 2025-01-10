@@ -72,7 +72,7 @@ void JavaContext::stop()
     // Cache the exception class
     static jclass klass = 0;
     if (klass == 0) {
-      klass = jenv_->FindClass("org/simgrid/s4u/ForcefulKillException");
+      klass = (jclass)jenv_->NewGlobalRef(jenv_->FindClass("org/simgrid/s4u/ForcefulKillException"));
       xbt_assert(klass, "Class not found");
     }
 

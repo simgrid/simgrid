@@ -197,6 +197,15 @@ Unsorted hints
 * If you break the logs, you want to define XBT_LOG_MAYDAY at the beginning of log.h. It deactivates the whole logging
   mechanism, switching to printfs instead. SimGrid then becomes incredibly verbose, but it you let you fixing things.
 
+* To run the JVM within the address sanitizer, you have to compile simgrid with ASan as usual, and then you have to LD_PRELOAD 
+  asan within the JVM (unless you want to recompile the JVM and then see all the java-related bugs). This only works if you also
+  PRELOAD the stdc++ library (see https://github.com/google/sanitizers/issues/934 for the details I didn't read).
+
+  .. code-block:: console
+
+   $ LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libasan.so.8:/usr/lib/x86_64-linux-gnu/libstdc++.so.6 LD_LIBRARY_PATH=../../lib/ /usr/bin/java -cp ../../simgrid.jar:actor_kill.jar actor_kill /home/mquinson/Code/simgrid/examples/platforms/small_platform.xml
+
+
 .. |br| raw:: html
 
    <br />

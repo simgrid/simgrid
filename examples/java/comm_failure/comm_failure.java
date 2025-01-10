@@ -13,9 +13,8 @@ class Sender extends Actor {
   String mailbox1_name;
   String mailbox2_name;
 
-  public Sender(String name, Host location, String mailbox1_name_, String mailbox2_name_)
+  public Sender(String mailbox1_name_, String mailbox2_name_)
   {
-    super(name, location);
     mailbox1_name = mailbox1_name_;
     mailbox2_name = mailbox2_name_;
   }
@@ -60,11 +59,7 @@ class Sender extends Actor {
 class Receiver extends Actor {
   Mailbox mailbox;
 
-  public Receiver(String name, Host location, String mailbox_name)
-  {
-    super(name, location);
-    mailbox = this.get_engine().mailbox_by_name(mailbox_name);
-  }
+  public Receiver(String mailbox_name) { mailbox = this.get_engine().mailbox_by_name(mailbox_name); }
 
   public void run()
   {
@@ -92,18 +87,18 @@ public class comm_failure {
     zone.add_route(host1, host3, new Link[] {link3});
     zone.seal();
 
-    new Sender("Sender", host1, "mailbox2", "mailbox3");
-    new Receiver("Receiver", host2, "mailbox2");
-    new Receiver("Receiver", host3, "mailbox3");
+    e.add_actor("Sender", host1, new Sender("mailbox2", "mailbox3"));
+    e.add_actor("Receiver", host2, new Receiver("mailbox2"));
+    e.add_actor("Receiver", host3, new Receiver("mailbox3"));
 
-    new Actor("LinkKiller", host1) {
+    e.add_actor("LinkKiller", host1, new Actor() {
       @Override public void run()
       {
         this.sleep_for(10.0);
         Engine.info("Turning off link 'linkto2'");
         this.get_engine().link_by_name("linkto2").turn_off();
       }
-    };
+    });
 
     e.run();
   }

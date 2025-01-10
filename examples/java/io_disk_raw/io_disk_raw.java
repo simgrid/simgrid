@@ -6,7 +6,6 @@
 import org.simgrid.s4u.*;
 
 class HostRunner extends Actor {
-  HostRunner(String name, Host location) { super(name, location); }
   public void run()
   {
 
@@ -64,7 +63,7 @@ public class io_disk_raw {
         Engine.info("  %s -> %s", key, h.get_property(key));
     }
 
-    new HostRunner("", e.host_by_name("bob"));
+    e.add_actor("", e.host_by_name("bob"), new HostRunner());
 
     e.run();
     Engine.info("Simulated ends.");

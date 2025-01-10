@@ -32,9 +32,9 @@
  * that cuts everything to stop that actor in the Java world too, not looking at this value.
  *
  * The idea is that when an actor needs to be forcefully killed, it was launched from:
- *   - (Java) Actor constructor: In most case, it's ctor(String name, Host location)
- *       but actors created from the deployment file use ctor(String,String hostname,String[]),
- *       which calls the former. The former does a Java->C++ JNI call to:
+ *   - (Java) Actor constructor: In most case, the ctor called manually in the user code
+ *       but actors created from the deployment file use ctor(String[]), which calls the ctor().
+ *   - (Java) once the actor is created, it's started by calling Engine::add_actor() which calls:
  *   - (C++) Actor_create(), does a C++->Java JNI call onto:
  *   - (Java) Actor.do_run(), which try/catch(ForcefullKillException) and call user's Actor.run()
  *
@@ -50,20 +50,6 @@
  * the requested Java exception, that is catch in Actor.do_run().
  *
  * This is how the actor jumps to the end of its execution in both C++/Java words.
- */
-
-/* The Java compilation reports the following warning:
- *  Actor.java: warning: [this-escape] possible 'this' escape before subclass is fully initialized
- *  swigCPtr        = simgridJNI.Actor_create(name, Host.getCPtr(host), host, this);
- * and it is perfectly right: we are passing the Java this to the C++ constructor before the
- * end of the Java initialization. This leads to a race condition where the C++ constructor
- * builds a system thread that start executing the Java code even before the end of the Java ctor.
- * This leads to problems when an actor starts another actor (not when the maestro starts actors).
- *
- * To solve this, the C++ lambda function in charge of executing the user code in the newly
- * created actor starts with a yield() to ensure that the newly created actor waits until the
- * next sub-scheduling round, ensuring that its creator fully executes its constructor before
- * starting.
  */
 
 /*
@@ -258,7 +244,7 @@ static struct SimGridJavaInit {
       CallbackNetzone_methodId   = init_methodId(maestro_jenv, "CallbackNetzone", "run", "(J)V");
       CallbackVoid_methodId      = init_methodId(maestro_jenv, "CallbackVoid", "run", "()V");
 
-      Actor_methodId = init_methodId(maestro_jenv, "Actor", "do_run", "()V");
+      Actor_methodId = init_methodId(maestro_jenv, "Actor", "do_run", "(J)V");
 
       string_class = (jclass)maestro_jenv->NewGlobalRef(maestro_jenv->FindClass("java/lang/String"));
       xbt_assert(string_class);
@@ -1097,7 +1083,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1sleep_1for(JNIEnv
                                                                           jobject jthis, jdouble duration)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor, only on the currently executing actor.");
+             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::sleep_for(duration);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
@@ -1108,7 +1095,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1sleep_1until(JNIE
                                                                             jobject jthis, jdouble wakeup_time)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_until() on a remote actor, only on the currently executing actor.");
+             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::sleep_until(wakeup_time);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
@@ -1120,7 +1108,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1execute_1_1SWIG_1
                                                                                   jdouble flop)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call execute() on a remote actor, only on the currently executing actor.");
+             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::execute(flop);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
@@ -1132,7 +1121,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1execute_1_1SWIG_1
                                                                                   jdouble flop, jdouble priority)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call execute() on a remote actor, only on the currently executing actor.");
+             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::execute(flop, priority);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
@@ -1145,7 +1135,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1thread_1execute(J
                                                                                jint thread_count)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call thread_execute() on a remote actor, only on the currently executing actor.");
+             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::thread_execute((Host*)chost, flop_amounts, thread_count);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
@@ -1156,7 +1147,8 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1init(JNIEn
                                                                            jobject jthis, jdouble flops_amounts)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call exec_init() on a remote actor, only on the currently executing actor.");
+             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   auto result = simgrid::s4u::this_actor::exec_init(flops_amounts);
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
@@ -1166,7 +1158,8 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1async(JNIE
                                                                             jobject jthis, jdouble flops_amounts)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call exec_async() on a remote actor, only on the currently executing actor.");
+             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   auto result = simgrid::s4u::this_actor::exec_async(flops_amounts);
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
@@ -1182,7 +1175,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1yield(JNIEnv* jen
                                                                      jobject jthis)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call yield() on a remote actor, only on the currently executing actor.");
+             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::yield();
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
@@ -1237,16 +1231,20 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1exit(JNIEnv* 
                                                                         jobject jthis, jobject cb)
 {
   if (cb) {
-    cb = jenv->NewGlobalRef(cb);
-    simgrid::s4u::this_actor::on_exit([cb](bool b) { get_jenv()->CallVoidMethod(cb, CallbackBoolean_methodId, b); });
+    try {
+      cb = jenv->NewGlobalRef(cb);
+      simgrid::s4u::this_actor::on_exit([cb](bool b) { get_jenv()->CallVoidMethod(cb, CallbackBoolean_methodId, b); });
+    } catch (ForcefulKillException const&) {
+    }
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
 XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1self(JNIEnv* jenv, jclass jcls)
 {
-  Actor* result = simgrid::s4u::Actor::self();
-  return result ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
+  Actor* self    = simgrid::s4u::Actor::self();
+  jobject result = self ? self->extension<ActorJavaExt>()->jactor_ : nullptr;
+  return result;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass jcls,
@@ -1514,15 +1512,14 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1create(JNIEnv* j
   Host* host       = (Host*)chost;
 
   jactor          = jenv->NewGlobalRef(jactor);
-  ActorPtr result = Actor::create(name, host, [jactor]() {
+  ActorPtr result = Actor::init(name, host);
+  result->extension_set<ActorJavaExt>(new ActorJavaExt(jactor));
+  result->start([jactor]() {
     auto jenv = ((simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self())->jenv_;
 
-    this_actor::yield(); // Delay my execution to the next scheduling round, to let my parent complete my ctor
-
-    jenv->CallVoidMethod(jactor, Actor_methodId);
+    jenv->CallVoidMethod(jactor, Actor_methodId, (jlong)simgrid::s4u::Actor::self());
     handle_exception(jenv);
   });
-  result->extension_set<ActorJavaExt>(new ActorJavaExt(jactor));
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
@@ -2275,7 +2272,6 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Barrier_1await(JNIEn
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Barrier(JNIEnv* jenv, jclass jcls, jlong cthis)
 {
-  XBT_CRITICAL("Delete barrier");
   intrusive_ptr_release((Barrier*)cthis);
 }
 
@@ -3187,25 +3183,27 @@ static void java_main(int argc, char* argv[])
              "Class not found (%s). The deployment file must use the fully qualified class name, including the "
              "package. The upper/lower case is important.",
              argv[0]);
-  jmethodID actor_constructor =
-      env->GetMethodID(actor_class, "<init>", "(Ljava/lang/String;Lorg/simgrid/s4u/Host;[Ljava/lang/String;)V");
-  xbt_assert((actor_constructor != nullptr),
-             "Constructor(String name, Host location, String[] args) not found for class %s. Is there such a "
-             "constructor in your class?",
-             argv[0]);
+  jmethodID actor_constructor = env->GetMethodID(actor_class, "<init>", "([Ljava/lang/String;)V");
+  xbt_assert(actor_constructor != nullptr,
+             "Constructor %s(String[] args) not found. Is there such a constructor in your class?", argv[0]);
 
-  // Retrieve the name of the process.
-  jstring jname = env->NewStringUTF(argv[0]);
   // Build the arguments
   jobjectArray args = env->NewObjectArray(argc - 1, string_class, nullptr);
   for (int i = 1; i < argc; i++)
     env->SetObjectArrayElement(args, i - 1, env->NewStringUTF(argv[i]));
-  // Retrieve the host for the process.
-  auto [host_class, host_ctor] = get_classctor_host(env);
-  jobject jhost                = env->NewObject(host_class, host_ctor, simgrid::s4u::Host::current());
 
-  // creates the actor host_ctor
-  jobject jactor = env->NewObject(actor_class, actor_constructor, jname, jhost, args);
+  // creates the java actor
+  jobject jactor = env->NewObject(actor_class, actor_constructor, args);
+
+  ActorPtr result = Actor::create(argv[0], simgrid::s4u::Host::current(), [jactor]() {
+    auto jenv = ((simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self())->jenv_;
+
+    jenv->CallVoidMethod(jactor, Actor_methodId, s4u::Actor::self());
+    handle_exception(jenv);
+  });
+  result->extension_set<ActorJavaExt>(new ActorJavaExt(jactor));
+  intrusive_ptr_add_ref(result.get());
+
   handle_exception(env);
   xbt_assert((jactor != nullptr), "Actor creation failed.");
 }

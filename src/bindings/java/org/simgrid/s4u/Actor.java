@@ -6,17 +6,17 @@
 package org.simgrid.s4u;
 
 public abstract class Actor {
+  protected Actor() {}
   /**
    * this is the method you should implement in your actor (it's the main of your actor).
    * @todo: make this abstract
    */
   public abstract void run() throws SimgridException; /* your code here */
 
-  protected Actor(String name, Host host) { swigCPtr = simgridJNI.Actor_create(name, Host.getCPtr(host), host, this); }
-
   /* Internal method executing your code, and catching the actor-killing exception */
-  public void do_run()
+  public void do_run(long cPtr)
   {
+    this.swigCPtr = cPtr;
     try {
       run();
     } catch (org.simgrid.s4u.ForcefulKillException e) {
@@ -45,11 +45,7 @@ public abstract class Actor {
   }
 
   public static Actor self() { return simgridJNI.Actor_self(); }
-  public Engine get_engine()
-  {
-    long cPtr = simgridJNI.Engine_get_instance();
-    return (cPtr == 0) ? null : new Engine(cPtr, false);
-  }
+  public Engine get_engine() { return new Engine(simgridJNI.Engine_get_instance(), false); }
 
   public void on_this_suspend_cb(CallbackActor cb) { simgridJNI.Actor_on_this_suspend_cb(swigCPtr, this, cb); }
   public void on_this_resume_cb(CallbackActor cb) { simgridJNI.Actor_on_this_resume_cb(swigCPtr, this, cb); }

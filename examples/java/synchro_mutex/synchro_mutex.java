@@ -10,10 +10,8 @@ import org.simgrid.s4u.*;
 class worker extends Actor {
   Mutex mutex;
   int idx;
-  public worker(String name, Host location, Mutex mutex, int idx)
+  public worker(Mutex mutex, int idx)
   {
-    super(name, location);
-
     this.mutex = mutex;
     this.idx   = idx;
   }
@@ -46,8 +44,8 @@ public class synchro_mutex {
     for (int i = 0; i < cfg_actor_count; i++) {
       result.add(0);
       Mutex mutex = Mutex.create();
-      new worker("worker", e.host_by_name("Jupiter"), mutex, i);
-      new worker("worker", e.host_by_name("Tremblay"), mutex, i);
+      e.add_actor("worker", e.host_by_name("Jupiter"), new worker(mutex, i));
+      e.add_actor("worker", e.host_by_name("Tremblay"), new worker(mutex, i));
     }
 
     e.run();

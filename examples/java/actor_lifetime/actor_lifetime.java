@@ -10,9 +10,8 @@ import org.simgrid.s4u.*;
 
 /* This actor just sleeps until termination */
 class sleeper extends Actor {
-  public sleeper(String name, Host location, String[] args)
+  public sleeper(String[] args)
   {
-    super(name, location);
     this.on_exit(new CallbackBoolean() {
       @Override public void run(boolean failed)
       {
