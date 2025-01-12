@@ -11,6 +11,7 @@ $ ${javacmd} -cp ../../simgrid.jar:actor_kill.jar actor_kill ${platfdir}/small_p
 > [ 12.000000] (killer@Tremblay) Kill the victim A
 > [ 12.000000] (victim A@Fafard) I have been killed!
 > [ 13.000000] (killer@Tremblay) Kill victimB, even if it's already dead
-> [ 14.000000] (killer@Tremblay) Start a new actor, and kill it right away. Its on_exit() callback does not appear since it did not even start before being killed.
+> [ 14.000000] (killer@Tremblay) Start a new actor, and kill it right away.
+> [ 14.000000] (victim C@Jupiter) I have been killed!
 > [ 15.000000] (killer@Tremblay) Killing everybody but myself
 > [ 15.000000] (killer@Tremblay) OK, goodbye now. I commit a suicide.

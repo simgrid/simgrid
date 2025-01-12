@@ -50,8 +50,7 @@ class Killer extends Actor {
 
     sleep_for(1);
 
-    Engine.info("Start a new actor, and kill it right away. Its on_exit() callback does not appear since it did not "
-                + "even start before being killed.");
+    Engine.info("Start a new actor, and kill it right away.");
     Actor victimC = e.add_actor("victim C", e.host_by_name("Jupiter"), new VictimA());
     victimC.kill();
 

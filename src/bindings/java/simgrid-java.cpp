@@ -1083,7 +1083,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1sleep_1for(JNIEnv
                                                                           jobject jthis, jdouble duration)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::sleep_for(duration);
@@ -1095,7 +1095,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1sleep_1until(JNIE
                                                                             jobject jthis, jdouble wakeup_time)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::sleep_until(wakeup_time);
@@ -1108,7 +1108,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1execute_1_1SWIG_1
                                                                                   jdouble flop)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::execute(flop);
@@ -1121,7 +1121,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1execute_1_1SWIG_1
                                                                                   jdouble flop, jdouble priority)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::execute(flop, priority);
@@ -1135,7 +1135,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1thread_1execute(J
                                                                                jint thread_count)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::thread_execute((Host*)chost, flop_amounts, thread_count);
@@ -1147,7 +1147,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1init(JNIEn
                                                                            jobject jthis, jdouble flops_amounts)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   auto result = simgrid::s4u::this_actor::exec_init(flops_amounts);
   intrusive_ptr_add_ref(result.get());
@@ -1158,7 +1158,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1async(JNIE
                                                                             jobject jthis, jdouble flops_amounts)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   auto result = simgrid::s4u::this_actor::exec_async(flops_amounts);
   intrusive_ptr_add_ref(result.get());
@@ -1175,7 +1175,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1yield(JNIEnv* jen
                                                                      jobject jthis)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %d:%s, only on the currently executing actor.",
+             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::yield();
