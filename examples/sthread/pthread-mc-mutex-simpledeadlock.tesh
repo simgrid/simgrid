@@ -51,6 +51,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 # The return code of a replay is not modified
 ! expect return 0
 ! output display
+! timeout 500
 ! setenv LD_PRELOAD=${libdir:=.}/libsthread.so
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/pthread-mutex-simpledeadlock --cfg=model-check/replay:'1;1;2;2;3;2;3;3'
 
