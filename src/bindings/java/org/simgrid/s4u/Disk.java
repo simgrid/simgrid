@@ -74,6 +74,7 @@ public class Disk {
     return (cPtr == 0) ? null : new Io(cPtr, true);
   }
 
+  public Io read_async(double size) { return read_async((int)size); }
   public Io read_async(int size) {
     long cPtr = simgridJNI.Disk_read_async(swigCPtr, this, size);
     return (cPtr == 0) ? null : new Io(cPtr, true);

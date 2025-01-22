@@ -46,11 +46,7 @@ public class ActivitySet {
   public void clear() { simgridJNI.ActivitySet_clear(swigCPtr, this); }
 
   /** Access to one specific activity in the set */
-  public Activity at(int index)
-  {
-    long cPtr = simgridJNI.ActivitySet_at(swigCPtr, this, index);
-    return (cPtr == 0) ? null : new Activity(cPtr, true);
-  }
+  public Activity at(int index) { return simgridJNI.ActivitySet_at(swigCPtr, this, index); }
 
   /**
    * Wait for the completion of all activities in the set, but not longer than the provided timeout
@@ -66,11 +62,7 @@ public class ActivitySet {
   /** Wait for the completion of all activities in the set. The set is NOT emptied afterward. */
   public void await_all() throws SimgridException { await_all_for(-1); }
   /** Returns the first terminated activity if any, or ActivityPtr(nullptr) if no activity is terminated */
-  public Activity test_any()
-  {
-    long cPtr = simgridJNI.ActivitySet_test_any(swigCPtr, this);
-    return (cPtr == 0) ? null : new Activity(cPtr, true);
-  }
+  public Activity test_any() { return simgridJNI.ActivitySet_test_any(swigCPtr, this); }
 
   /**
    * Wait for the completion of one activity from the set, but not longer than the provided timeout.
@@ -82,8 +74,7 @@ public class ActivitySet {
 
   public Activity await_any_for(double timeout) throws SimgridException
   {
-    long cPtr = simgridJNI.ActivitySet_await_any_for(swigCPtr, this, timeout);
-    return (cPtr == 0) ? null : new Activity(cPtr, true);
+    return simgridJNI.ActivitySet_await_any_for(swigCPtr, this, timeout);
   }
   /**
    * Wait for the completion of one activity from the set.
@@ -104,11 +95,7 @@ public class ActivitySet {
    * Return one of the failed activity of the set that was revealed during the previous await operation, or
    * ActivityPtr() if no failed activity exist in the set.
    */
-  public Activity get_failed_activity()
-  {
-    long cPtr = simgridJNI.ActivitySet_get_failed_activity(swigCPtr, this);
-    return (cPtr == 0) ? null : new Activity(cPtr, true);
-  }
+  public Activity get_failed_activity() { return simgridJNI.ActivitySet_get_failed_activity(swigCPtr, this); }
   /** Return whether the set contains any failed activity. */
   public boolean has_failed_activities() { return simgridJNI.ActivitySet_has_failed_activity(swigCPtr, this); }
 }

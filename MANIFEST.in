@@ -422,6 +422,14 @@ include examples/cpp/trace-process-migration/s4u-trace-process-migration.cpp
 include examples/cpp/trace-process-migration/s4u-trace-process-migration.tesh
 include examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.cpp
 include examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.tesh
+include examples/java/activityset_awaitall/activityset_awaitall.java
+include examples/java/activityset_awaitall/activityset_awaitall.java.tesh
+include examples/java/activityset_awaitallfor/activityset_awaitallfor.java
+include examples/java/activityset_awaitallfor/activityset_awaitallfor.java.tesh
+include examples/java/activityset_awaitany/activityset_awaitany.java
+include examples/java/activityset_awaitany/activityset_awaitany.java.tesh
+include examples/java/activityset_testany/activityset_testany.java
+include examples/java/activityset_testany/activityset_testany.java.tesh
 include examples/java/actor_create/actor_create.java
 include examples/java/actor_create/actor_create.java.tesh
 include examples/java/actor_create/actor_create_d.xml

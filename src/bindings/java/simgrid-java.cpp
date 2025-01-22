@@ -132,6 +132,14 @@ struct ActorJavaExt {
 };
 simgrid::xbt::Extension<simgrid::s4u::Actor, ActorJavaExt> ActorJavaExt::EXTENSION_ID;
 
+/* This is not systematically used, only when storing an activity in an ActivitySet */
+struct ActivityJavaExt {
+  jobject jactivity_;
+  explicit ActivityJavaExt(jobject jactivity) : jactivity_(jactivity) {}
+  static simgrid::xbt::Extension<simgrid::s4u::Activity, ActivityJavaExt> EXTENSION_ID;
+};
+simgrid::xbt::Extension<simgrid::s4u::Activity, ActivityJavaExt> ActivityJavaExt::EXTENSION_ID;
+
 static void handle_exception(JNIEnv* jenv)
 {
   if (jenv->ExceptionCheck()) {
@@ -253,6 +261,7 @@ static struct SimGridJavaInit {
 
       // Initialize extensions
       ActorJavaExt::EXTENSION_ID = simgrid::s4u::Actor::extension_create<ActorJavaExt>();
+      ActivityJavaExt::EXTENSION_ID = simgrid::s4u::Activity::extension_create<ActivityJavaExt>();
 
       // Initialize plugins
       sg_vm_live_migration_plugin_init();
@@ -1781,57 +1790,83 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1ActivitySet(JNIEnv
 }
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1ActivitySet(JNIEnv* jenv, jclass jcls, jlong cthis)
 {
-  auto self = (ActivitySet*)cthis;
-  intrusive_ptr_release(self);
+  intrusive_ptr_release(((ActivitySet*)cthis));
 }
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1push(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                           jobject jthis, jlong cactivity,
                                                                           jobject jactivity)
 {
-  auto self = (ActivitySet*)cthis;
-  ActivityPtr act((Activity*)cactivity);
-  self->push(act);
+  try {
+    ActivityPtr act((Activity*)cactivity);
+    jobject glob = jenv->NewGlobalRef(jactivity);
+    act->extension_set<ActivityJavaExt>(new ActivityJavaExt(glob));
+    ((ActivitySet*)cthis)->push(act);
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (std::exception const& e) {
+    rethrow_simgrid_exception(jenv, e);
+  }
 }
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1erase(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                            jobject jthis, jlong cactivity,
                                                                            jobject jactivity)
 {
-  auto self = (ActivitySet*)cthis;
-  ActivityPtr act((Activity*)cactivity);
-  self->erase(act);
+  try {
+    ActivityPtr act((Activity*)cactivity);
+    ((ActivitySet*)cthis)->erase(act);
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (std::exception const& e) {
+    rethrow_simgrid_exception(jenv, e);
+  }
 }
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1size(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                           jobject jthis)
 {
-  auto self = (ActivitySet*)cthis;
-  return self->size();
+  try {
+    return ((ActivitySet*)cthis)->size();
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (std::exception const& e) {
+    rethrow_simgrid_exception(jenv, e);
+  }
+  return 0;
 }
 XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1empty(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                jobject jthis)
 {
-  auto self = (ActivitySet*)cthis;
-  return self->empty();
+  try {
+    return ((ActivitySet*)cthis)->empty();
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (std::exception const& e) {
+    rethrow_simgrid_exception(jenv, e);
+  }
+  return false;
 }
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1clear(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                            jobject jthis)
 {
-  auto self = (ActivitySet*)cthis;
-  self->clear();
+  try {
+    ((ActivitySet*)cthis)->clear();
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (std::exception const& e) {
+    rethrow_simgrid_exception(jenv, e);
+  }
 }
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1at(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis, jint index)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1at(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                           jobject jthis, jint index)
 {
-  auto self       = (ActivitySet*)cthis;
-  ActivityPtr act = self->at(index);
-  return (jlong)act.get();
+  try {
+    return jenv->NewLocalRef(((ActivitySet*)cthis)->at(index)->extension<ActivityJavaExt>()->jactivity_);
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (std::exception const& e) {
+    rethrow_simgrid_exception(jenv, e);
+  }
+  return nullptr;
 }
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1all_1for(JNIEnv* jenv, jclass jcls,
                                                                                      jlong cthis, jobject jthis,
                                                                                      jdouble timeout)
 {
-  auto self = (ActivitySet*)cthis;
   try {
-    self->wait_all_for(timeout);
+    ((ActivitySet*)cthis)->wait_all_for(timeout);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
@@ -1840,67 +1875,98 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1all_
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1all(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                                 jobject jthis)
 {
-  auto self = (ActivitySet*)cthis;
   try {
-    self->wait_all();
+    ((ActivitySet*)cthis)->wait_all();
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1test_1any(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                jobject jthis)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1test_1any(JNIEnv* jenv, jclass jcls,
+                                                                                  jlong cthis, jobject jthis)
 {
-  auto self = (ActivitySet*)cthis;
-  ActivityPtr act;
   try {
-    act = self->test_any();
+    ActivityPtr act = ((ActivitySet*)cthis)->test_any();
+    if (act.get() == nullptr)
+      return nullptr;
+    auto glob                                     = act->extension<ActivityJavaExt>()->jactivity_;
+    act->extension<ActivityJavaExt>()->jactivity_ = nullptr;
+    auto local                                    = jenv->NewLocalRef(glob);
+    jenv->DeleteGlobalRef(glob);
+    return local;
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
-  return (jlong)act.get();
+  return nullptr;
 }
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1any_1for(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis,
-                                                                                      jdouble timeout)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1any_1for(JNIEnv* jenv, jclass jcls,
+                                                                                        jlong cthis, jobject jthis,
+                                                                                        jdouble timeout)
 {
-  auto self       = (ActivitySet*)cthis;
-  ActivityPtr act;
   try {
-    act = self->wait_any_for(timeout);
+    ActivityPtr act = ((ActivitySet*)cthis)->wait_any_for(timeout);
+    if (act.get() == nullptr)
+      return nullptr;
+    auto glob                                     = act->extension<ActivityJavaExt>()->jactivity_;
+    act->extension<ActivityJavaExt>()->jactivity_ = nullptr;
+    auto local                                    = jenv->NewLocalRef(glob);
+    jenv->DeleteGlobalRef(glob);
+    return local;
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
-  return (jlong)act.get();
+  return nullptr;
 }
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1any(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                                 jobject jthis)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1any(JNIEnv* jenv, jclass jcls,
+                                                                                   jlong cthis, jobject jthis)
 {
-  auto self       = (ActivitySet*)cthis;
-  ActivityPtr act;
   try {
-    act = self->wait_any();
+    ActivityPtr act = ((ActivitySet*)cthis)->wait_any();
+    if (act.get() == nullptr)
+      return nullptr;
+    auto glob                                     = act->extension<ActivityJavaExt>()->jactivity_;
+    act->extension<ActivityJavaExt>()->jactivity_ = nullptr;
+    auto local                                    = jenv->NewLocalRef(glob);
+    jenv->DeleteGlobalRef(glob);
+    return local;
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
-  return (jlong)act.get();
+  return nullptr;
 }
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1get_1failed_1activity(JNIEnv* jenv, jclass jcls,
-                                                                                            jlong cthis, jobject jthis)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1get_1failed_1activity(JNIEnv* jenv, jclass jcls,
+                                                                                              jlong cthis,
+                                                                                              jobject jthis)
 {
-  auto self       = (ActivitySet*)cthis;
-  ActivityPtr act = self->get_failed_activity();
-  return (jlong)act.get();
+  try {
+    ActivityPtr act = ((ActivitySet*)cthis)->get_failed_activity();
+    if (act.get() == nullptr)
+      return nullptr;
+    auto glob                                     = act->extension<ActivityJavaExt>()->jactivity_;
+    act->extension<ActivityJavaExt>()->jactivity_ = nullptr;
+    auto local                                    = jenv->NewLocalRef(glob);
+    jenv->DeleteGlobalRef(glob);
+    return local;
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (std::exception const& e) {
+    rethrow_simgrid_exception(jenv, e);
+  }
+  return nullptr;
 }
 XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1has_1failed_1activity(JNIEnv* jenv,
                                                                                                jclass jcls, jlong cthis,
                                                                                                jobject jthis)
 {
-  auto self = (ActivitySet*)cthis;
-  return self->has_failed_activities();
+  try {
+    return ((ActivitySet*)cthis)->has_failed_activities();
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (std::exception const& e) {
+    rethrow_simgrid_exception(jenv, e);
+  }
+  return false;
 }
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1start_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
 {
@@ -3629,7 +3695,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1hosts(JNIEnv*
 {
   std::vector<Host*> chosts;
   int len       = jenv->GetArrayLength(jhosts);
-  long* cjhosts = jenv->GetLongArrayElements(jhosts, nullptr);
+  jlong* cjhosts = jenv->GetLongArrayElements(jhosts, nullptr);
   for (int i = 0; i < len; i++)
     chosts.push_back((Host*)cjhosts[i]);
   jenv->ReleaseLongArrayElements(jhosts, cjhosts, JNI_ABORT);
@@ -4544,7 +4610,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1route_1hos
 {
   std::vector<const Link*> clinks;
   int len       = jenv->GetArrayLength(jlinks);
-  long* cjlinks = jenv->GetLongArrayElements(jlinks, nullptr);
+  jlong* cjlinks = jenv->GetLongArrayElements(jlinks, nullptr);
   for (int i = 0; i < len; i++)
     clinks.push_back((const Link*)cjlinks[i]);
   jenv->ReleaseLongArrayElements(jlinks, cjlinks, JNI_ABORT);
@@ -4559,7 +4625,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1route_1net
 {
   std::vector<const Link*> clinks;
   int len       = jenv->GetArrayLength(jlinks);
-  long* cjlinks = jenv->GetLongArrayElements(jlinks, nullptr);
+  jlong* cjlinks = jenv->GetLongArrayElements(jlinks, nullptr);
   for (int i = 0; i < len; i++)
     clinks.push_back((const Link*)cjlinks[i]);
   jenv->ReleaseLongArrayElements(jlinks, cjlinks, JNI_ABORT);

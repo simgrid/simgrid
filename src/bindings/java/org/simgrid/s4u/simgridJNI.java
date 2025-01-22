@@ -89,13 +89,13 @@ public class simgridJNI {
   public final static native int ActivitySet_size(long jarg1, ActivitySet jarg1_);
   public final static native boolean ActivitySet_empty(long jarg1, ActivitySet jarg1_);
   public final static native void ActivitySet_clear(long jarg1, ActivitySet jarg1_);
-  public final static native long ActivitySet_at(long jarg1, ActivitySet jarg1_, int index);
+  public final static native Activity ActivitySet_at(long jarg1, ActivitySet jarg1_, int index);
   public final static native void ActivitySet_await_all_for(long jarg1, ActivitySet jarg1_, double timeout);
   public final static native void ActivitySet_await_all(long jarg1, ActivitySet jarg1_);
-  public final static native long ActivitySet_test_any(long jarg1, ActivitySet jarg1_);
-  public final static native long ActivitySet_await_any_for(long jarg1, ActivitySet jarg1_, double timeout);
-  public final static native long ActivitySet_await_any(long jarg1, ActivitySet jarg1_);
-  public final static native long ActivitySet_get_failed_activity(long jarg1, ActivitySet jarg1_);
+  public final static native Activity ActivitySet_test_any(long jarg1, ActivitySet jarg1_);
+  public final static native Activity ActivitySet_await_any_for(long jarg1, ActivitySet jarg1_, double timeout);
+  public final static native Activity ActivitySet_await_any(long jarg1, ActivitySet jarg1_);
+  public final static native Activity ActivitySet_get_failed_activity(long jarg1, ActivitySet jarg1_);
   public final static native boolean ActivitySet_has_failed_activity(long jarg1, ActivitySet jarg1_);
 
   public final static native void Comm_on_start_cb(CallbackComm cb);
