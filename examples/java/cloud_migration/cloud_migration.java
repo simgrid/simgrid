@@ -28,12 +28,12 @@ class MigrationManager extends Actor {
 class Main extends Actor {
   public void run()
   {
-    var e    = this.get_engine();
+    Engine e = this.get_engine();
     Host pm0 = e.host_by_name("Fafard");
     Host pm1 = e.host_by_name("Tremblay");
     Host pm2 = e.host_by_name("Bourassa");
 
-    var vm0 = pm0.create_vm("VM0", 1);
+    VirtualMachine vm0 = pm0.create_vm("VM0", 1);
     vm0.set_ramsize(1e9); // 1Gbytes
     vm0.start();
 
@@ -51,7 +51,7 @@ class Main extends Actor {
     vm0.destroy();
 
     vm0     = pm0.create_vm("VM0", 1);
-    var vm1 = pm0.create_vm("VM1", 1);
+    VirtualMachine vm1 = pm0.create_vm("VM1", 1);
 
     vm0.set_ramsize(1e9); // 1Gbytes
     vm1.set_ramsize(1e9); // 1Gbytes
@@ -87,7 +87,7 @@ class Main extends Actor {
 public class cloud_migration {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
 
     e.load_platform(args[0]);
     e.add_actor("Main", e.host_by_name("Fafard"), new Main());

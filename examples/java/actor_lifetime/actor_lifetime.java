@@ -31,7 +31,7 @@ class sleeper extends Actor {
 public class actor_lifetime {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]);   /* Load the platform description */
     e.load_deployment(args[1]); /*  Deploy the sleeper actors with explicit start/kill times */
 

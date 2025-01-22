@@ -37,7 +37,7 @@ public class synchro_mutex {
 
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]);
 
     /* Create the requested amount of actors pairs. Each pair has a specific mutex and cell in `result`. */

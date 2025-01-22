@@ -79,7 +79,7 @@ class canceller extends Actor {
 public class exec_async {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]);
 
     Host fafard   = e.host_by_name("Fafard");

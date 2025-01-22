@@ -30,7 +30,7 @@ class VictimB extends Actor {
 class Killer extends Actor {
   public void run()
   {
-    var e = this.get_engine();
+    Engine e = this.get_engine();
     Engine.info("Hello!"); /* - First start a victim actor */
     Actor victimA = e.add_actor("victim A", e.host_by_name("Fafard"), new VictimA());
     Actor victimB = e.add_actor("victim B", e.host_by_name("Jupiter"), new VictimB());
@@ -69,7 +69,7 @@ class Killer extends Actor {
 public class actor_kill {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
 
     e.load_platform(args[0]); /* - Load the platform description */
     /* - Create and deploy killer actor, that will create the victim actors  */

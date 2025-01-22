@@ -63,7 +63,7 @@ class PrivilegedWriter extends Actor {
 public class io_priority {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
 
     e.load_platform(args[0]);
 

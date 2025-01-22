@@ -33,7 +33,7 @@ class peer extends Actor {
   }
   public void run() throws SimgridException
   {
-    var e = this.get_engine();
+    Engine e = this.get_engine();
     /* Set myself as the persistent receiver of my mailbox so that messages start flowing to me as soon as they are put
      * into it */
     Mailbox my_mbox = e.mailbox_by_name("peer-" + my_id);
@@ -97,7 +97,7 @@ class peer extends Actor {
 class comm_ready {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]);
     e.add_actor("peer", e.host_by_name("Tremblay"), new peer(0, 2, 5e7, 3));
     e.add_actor("peer", e.host_by_name("Ruby"), new peer(1, 6, 2.5e5, 3));

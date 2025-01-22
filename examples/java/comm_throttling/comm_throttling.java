@@ -48,7 +48,7 @@ class receiver extends Actor {
 public class comm_throttling {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]);
 
     Mailbox mbox = e.mailbox_by_name("Mailbox");

@@ -19,7 +19,7 @@ class HostRunner extends Actor {
     Disk[] disk_list = Host.current().get_disks();
 
     /* - For each disk mounted on host, display disk name and mount point */
-    for (var disk : disk_list)
+    for (Disk disk : disk_list)
       Engine.info("Disk name: %s (read: %.0f B/s -- write: %.0f B/s)", disk.get_name(), disk.get_read_bandwidth(),
                   disk.get_write_bandwidth());
 
@@ -40,7 +40,7 @@ class HostRunner extends Actor {
     /* - Attach some user data to disk1 */
     Engine.info("*** Get/set data for storage element: Disk1 ***");
 
-    var data = (String)disk.get_data();
+    String data = (String)disk.get_data();
 
     Engine.info("Get storage data: '%s'", data);
 
@@ -53,13 +53,13 @@ class HostRunner extends Actor {
 public class io_disk_raw {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]);
 
     /* - Display Host properties */
-    for (var h : e.get_all_hosts()) {
+    for (Host h : e.get_all_hosts()) {
       Engine.info("*** %s properties ****", h.get_name());
-      for (var key : h.get_properties_names())
+      for (String key : h.get_properties_names())
         Engine.info("  %s -> %s", key, h.get_property(key));
     }
 

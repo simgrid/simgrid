@@ -37,7 +37,7 @@ class privileged extends Actor {
 public class exec_basic {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     if (args.length < 1)
       Engine.die("Usage: exec_basic platform_file\n\tExample: exec_basic platform.xml");
 

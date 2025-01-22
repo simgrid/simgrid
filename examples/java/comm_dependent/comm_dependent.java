@@ -36,7 +36,7 @@ class Receiver extends Actor {
 
     comm.await();
     exec.await();
-    var received = (double)comm.get_payload();
+    double received = (double)comm.get_payload();
     Engine.info("Received: " + (int)received + " flops were computed on sender");
   }
 }
@@ -45,11 +45,11 @@ public class comm_dependent {
 
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
 
     e.load_platform(args[0]);
 
-    var mbox = e.mailbox_by_name("Mailbox");
+    Mailbox mbox = e.mailbox_by_name("Mailbox");
 
     e.add_actor("sender", e.host_by_name("Tremblay"), new Sender(mbox));
     e.add_actor("receiver", e.host_by_name("Jupiter"), new Receiver(mbox));

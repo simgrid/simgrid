@@ -39,12 +39,12 @@ class Sender extends Actor {
 class Receiver extends Actor {
   public void run()
   {
-    var mqueue = this.get_engine().message_queue_by_name("control");
+    MessageQueue mqueue = this.get_engine().message_queue_by_name("control");
     this.sleep_for(1);
 
     Mess hello = mqueue.get_async();
     hello.await();
-    var msg = (String)hello.get_payload();
+    String msg = (String)hello.get_payload();
     Engine.info("I got a '%s'.", msg);
 
     Engine.info("Await for my first message");
@@ -65,7 +65,7 @@ class Receiver extends Actor {
 public class mess_await {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
 
     e.load_platform(args[0]);
     e.add_actor("sender", e.host_by_name("Tremblay"), new Sender(3));

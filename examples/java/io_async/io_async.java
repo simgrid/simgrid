@@ -103,7 +103,7 @@ class test_monitor extends Actor {
 public class io_async {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
 
     e.load_platform(args[0]);
     e.add_actor("test", e.host_by_name("bob"), new test(2e7));

@@ -23,7 +23,7 @@ class producer extends Actor {
 
   public void run()
   {
-    for (var str : args) {
+    for (String str : args) {
       sem_empty.acquire();
       Engine.info("Pushing '%s'", str);
       synchro_semaphore.buffer = str;
@@ -61,13 +61,13 @@ public class synchro_semaphore {
 
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args.length >= 1 ? args[0] : "../../platforms/two_hosts.xml");
 
     Vector<String> params = new Vector<>(List.of("one", "two", "three", ""));
 
-    var sem_empty = Semaphore.create(1); /* indicates whether the buffer is empty */
-    var sem_full  = Semaphore.create(0); /* indicates whether the buffer is full */
+    Semaphore sem_empty = Semaphore.create(1); /* indicates whether the buffer is empty */
+    Semaphore sem_full  = Semaphore.create(0); /* indicates whether the buffer is full */
 
     e.add_actor("producer", e.host_by_name("Tremblay"), new producer(sem_empty, sem_full, params));
     e.add_actor("consumer", e.host_by_name("Jupiter"), new consumer(sem_empty, sem_full));

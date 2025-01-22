@@ -25,7 +25,7 @@ class master extends Actor {
   public master(int actor_count) { this.actor_count = actor_count; }
   public void run()
   {
-    var e = this.get_engine();
+    Engine e = this.get_engine();
 
     Barrier barrier = Barrier.create(actor_count);
 
@@ -43,7 +43,7 @@ class master extends Actor {
 public class synchro_barrier {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
 
     // Parameter: Number of actors in the barrier
     if (args.length < 1)

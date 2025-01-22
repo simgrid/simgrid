@@ -76,7 +76,7 @@ class ActorC extends Actor {
 class actor_exiting {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]); /* - Load the platform description */
 
     /* Register a callback in the Actor::on_termination signal. It will be called for every terminated actors */

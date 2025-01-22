@@ -95,7 +95,7 @@ public class actor_create {
   public static void main(String[] args)
   {
     /* When your program starts, you have to first start a new simulation engine, as follows */
-    var e = new Engine(args);
+    Engine e = new Engine(args);
 
     /* Then you should load a platform file, describing your simulated platform */
     e.load_platform(args.length > 0 ? args[0] : "../../platforms/small_platform.xml");

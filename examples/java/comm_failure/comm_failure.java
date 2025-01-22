@@ -21,19 +21,19 @@ class Sender extends Actor {
 
   public void run() throws SimgridException
   {
-    var e            = this.get_engine();
-    var mailbox1     = e.mailbox_by_name(mailbox1_name);
-    var mailbox2     = e.mailbox_by_name(mailbox2_name);
+    Engine e         = this.get_engine();
+    Mailbox mailbox1 = e.mailbox_by_name(mailbox1_name);
+    Mailbox mailbox2 = e.mailbox_by_name(mailbox2_name);
     Integer payload1 = 666;
     Integer payload2 = 888;
 
     Engine.info("Initiating asynchronous send to %s", mailbox1.get_name());
-    var comm1 = mailbox1.put_async(payload1, 5);
+    Comm comm1 = mailbox1.put_async(payload1, 5);
     Engine.info("Initiating asynchronous send to %s", mailbox2.get_name());
-    var comm2 = mailbox2.put_async(payload2, 2);
+    Comm comm2 = mailbox2.put_async(payload2, 2);
 
     Engine.info("Calling wait_any..");
-    var pending_comms = new ActivitySet();
+    ActivitySet pending_comms = new ActivitySet();
     pending_comms.push(comm1);
     pending_comms.push(comm2);
     try {
@@ -75,13 +75,13 @@ class Receiver extends Actor {
 public class comm_failure {
   public static void main(String[] args)
   {
-    var e     = new Engine(args);
-    var zone  = e.set_rootzone_full("AS0");
-    var host1 = zone.create_host("Host1", "1f");
-    var host2 = zone.create_host("Host2", "1f");
-    var host3 = zone.create_host("Host3", "1f");
-    var link2 = zone.create_link("linkto2", "1bps").seal();
-    var link3 = zone.create_link("linkto3", "1bps").seal();
+    Engine e     = new Engine(args);
+    NetZone zone = e.set_rootzone_full("AS0");
+    Host host1   = zone.create_host("Host1", "1f");
+    Host host2   = zone.create_host("Host2", "1f");
+    Host host3   = zone.create_host("Host3", "1f");
+    Link link2   = zone.create_link("linkto2", "1bps").seal();
+    Link link3   = zone.create_link("linkto3", "1bps").seal();
 
     zone.add_route(host1, host2, new Link[] {link2});
     zone.add_route(host1, host3, new Link[] {link3});

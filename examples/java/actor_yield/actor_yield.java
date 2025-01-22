@@ -28,7 +28,7 @@ class Yielder extends Actor {
 public class actor_yield {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]);
 
     e.add_actor("yielder", e.host_by_name("Tremblay"), new Yielder(10));
