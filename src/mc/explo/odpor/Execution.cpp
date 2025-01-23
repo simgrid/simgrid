@@ -7,6 +7,7 @@
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/api/states/State.hpp"
 #include "xbt/asserts.h"
+#include "xbt/log.h"
 #include "xbt/string.hpp"
 #include <algorithm>
 #include <limits>
@@ -256,8 +257,9 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
 {
   XBT_VERB("Calling odpor extension from with parameters e:%u ; e_prime:%u ; actor_after_e:%ld\n sequence:<%s>", e,
            e_prime, actor_after_e, get_one_string_textual_trace().c_str());
-  for (auto const& s : this->get_textual_trace())
-    XBT_VERB("... %s", s.c_str());
+  if (XBT_LOG_ISENABLED(mc_odpor_execution, xbt_log_priority_verbose))
+    for (auto const& s : this->get_textual_trace())
+      XBT_VERB("... %s", s.c_str());
   // `e` is assumed to be in a reversible race with `e_prime`.
   // If `e > e_prime`, then `e` occurs-after `e_prime` which means
   // `e` could not race with if
