@@ -9,6 +9,7 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/log.h"
@@ -24,9 +25,9 @@ namespace simgrid::mc {
 
 void BeFSWutState::compare_final_and_wut()
 {
-
-  xbt_assert(wakeup_tree_.is_contained_in(final_wakeup_tree_), "final_wut: %s\n versus curren wut: %s",
-             get_string_of_final_wut().c_str(), string_of_wut().c_str());
+  if (_sg_mc_debug)
+    xbt_assert(wakeup_tree_.is_contained_in(final_wakeup_tree_), "final_wut: %s\n versus curren wut: %s",
+               get_string_of_final_wut().c_str(), string_of_wut().c_str());
 }
 
 BeFSWutState::BeFSWutState(RemoteApp& remote_app) : WutState(remote_app)
