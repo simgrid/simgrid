@@ -43,4 +43,10 @@ public class Host {
     long cPtr = simgridJNI.Host_create_vm(swigCPtr, this, name, core_amount);
     return (cPtr == 0) ? null : new VirtualMachine(cPtr);
   }
+
+  public Link[] route_links_to(Host host) { return simgridJNI.Host_route_links_to(swigCPtr, Host.getCPtr(host)); }
+  public double route_latency_to(Host host) { return simgridJNI.Host_route_latency_to(swigCPtr, Host.getCPtr(host)); }
+  public Object get_data() { return simgridJNI.Host_get_data(swigCPtr); }
+  public void set_data(Object o) { simgridJNI.Host_set_data(swigCPtr, o); }
+  public void set_concurrency_limit(int i) { simgridJNI.Host_set_concurrency_limit(swigCPtr, i); }
 }

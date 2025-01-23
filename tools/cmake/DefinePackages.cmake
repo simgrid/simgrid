@@ -817,14 +817,10 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/NetZone.java
     src/bindings/java/org/simgrid/s4u/NetworkFailureException.java
     src/bindings/java/org/simgrid/s4u/Semaphore.java
-    src/bindings/java/org/simgrid/s4u/simgrid.java
     src/bindings/java/org/simgrid/s4u/SimgridException.java
     src/bindings/java/org/simgrid/s4u/simgridJNI.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__vectorT_double_t.java
     src/bindings/java/org/simgrid/s4u/TimeoutException.java
     src/bindings/java/org/simgrid/s4u/VirtualMachine.java
 )

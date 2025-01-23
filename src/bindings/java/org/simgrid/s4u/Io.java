@@ -27,6 +27,7 @@ public class Io extends Activity {
     return this;
   }
 
+  public Io set_size(double size) { return set_size((int)size); }
   public Io set_size(int size) {
     simgridJNI.Io_set_size(getCPtr(), this, size);
     return this;

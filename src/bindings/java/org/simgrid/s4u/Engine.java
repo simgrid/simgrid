@@ -103,9 +103,9 @@ public class Engine {
 
   public void track_vetoed_activities(SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t vetoed_activities)
   {
-    simgridJNI.Engine_track_vetoed_activities(
-        swigCPtr, this, SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.getCPtr(vetoed_activities));
+    simgridJNI.Engine_track_vetoed_activities(swigCPtr);
   }
+  public Activity[] get_vetoed_activities() { return simgridJNI.Engine_get_vetoed_activities(swigCPtr); }
 
   public Link[] get_all_links() { return simgridJNI.Engine_get_all_links(swigCPtr, this); }
 
@@ -245,31 +245,34 @@ public class Engine {
 
   public static void info(String fmt, Object... args) { simgridJNI.Engine_info(String.format(fmt, args)); }
 
-  public static void verbose(String msg) {
-    simgridJNI.Engine_verbose(msg);
+  public static void verbose(String fmt, Object... args) { simgridJNI.Engine_verbose(String.format(fmt, args)); }
+
+  public static void debug(String fmt, Object... args) { simgridJNI.Engine_debug(String.format(fmt, args)); }
+
+  public Activity[] create_DAG_from_dot(String filename) { return simgridJNI.create_DAG_from_dot(filename); }
+
+  public Activity[] create_DAG_from_DAX(String filename) { return simgridJNI.create_DAG_from_DAX(filename); }
+
+  public Activity[] create_DAG_from_json(String filename) { return simgridJNI.create_DAG_from_json(filename); }
+
+  /** Example launcher. You can use it or provide your own launcher, as you wish */
+  public static void main(String[] args)
+  {
+
+    /* initialize the SimGrid simulation. Must be done before anything else */
+    Engine e = new Engine(args);
+
+    if (args.length < 2) {
+      Engine.info("Usage: org.simgrid.s4u.Engine platform_file deployment_file");
+      System.exit(1);
+    }
+
+    /* Load the platform and deploy the application */
+    e.load_platform(args[0]);
+    e.load_deployment(args[1]);
+    /* Execute the simulation */
+    e.run();
   }
-
-  public static void debug(String msg) {
-    simgridJNI.Engine_debug(msg);
-  }
-
-	/** Example launcher. You can use it or provide your own launcher, as you wish */
-	public static void main(String[]args) {
-  
-		/* initialize the SimGrid simulation. Must be done before anything else */
-                Engine e = new Engine(args);
-
-                if (args.length < 2) {
-                  Engine.info("Usage: org.simgrid.s4u.Engine platform_file deployment_file");
-                  System.exit(1);
-                }
-
-                /* Load the platform and deploy the application */
-                e.load_platform(args[0]);
-                e.load_deployment(args[1]);
-                /* Execute the simulation */
-                e.run();
-        }
 
         /* Class initializer, to initialize various JNI stuff */
         static { org.simgrid.s4u.NativeLib.nativeInit(); }

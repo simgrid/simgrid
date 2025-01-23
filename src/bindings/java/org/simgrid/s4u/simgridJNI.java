@@ -55,10 +55,10 @@ public class simgridJNI {
   public final static native boolean Activity_is_assigned(long jarg1, Activity jarg1_);
   public final static native boolean Activity_dependencies_solved(long jarg1, Activity jarg1_);
   public final static native boolean Activity_has_no_successor(long jarg1, Activity jarg1_);
-  public final static native long Activity_get_dependencies(long jarg1, Activity jarg1_);
-  public final static native long Activity_get_successors(long jarg1, Activity jarg1_);
+  public final static native Activity[] Activity_get_dependencies(long jarg1, Activity jarg1_);
+  public final static native Activity[] Activity_get_successors(long jarg1, Activity jarg1_);
   public final static native void delete_Activity(long jarg1);
-  public final static native long Activity_get_vetoed_activities();
+  public final static native Activity[] Activity_get_vetoed_activities();
   public final static native void Activity_set_vetoed_activities(long jarg1);
   public final static native void Activity_start(long jarg1, Activity jarg1_);
   public final static native boolean Activity_test(long jarg1, Activity jarg1_);
@@ -76,6 +76,8 @@ public class simgridJNI {
   public final static native void Activity_resume(long jarg1, Activity jarg1_);
   public final static native boolean Activity_is_suspended(long jarg1, Activity jarg1_);
   public final static native String Activity_get_name(long jarg1, Activity jarg1_);
+  public final static native Object Activity_get_data(long swigCPtr);
+  public final static native void Activity_set_data(long swigCPtr, Object o);
   public final static native double Activity_get_remaining(long jarg1, Activity jarg1_);
   public final static native double Activity_get_start_time(long jarg1, Activity jarg1_);
   public final static native double Activity_get_finish_time(long jarg1, Activity jarg1_);
@@ -231,7 +233,8 @@ public class simgridJNI {
   public final static native void Engine_load_platform(long jarg1, Engine jarg1_, String jarg2);
   public final static native void Engine_seal_platform(long jarg1, Engine jarg1_);
   public final static native String Engine_flatify_platform(long jarg1, Engine jarg1_);
-  public final static native void Engine_track_vetoed_activities(long jarg1, Engine jarg1_, long jarg2);
+  public final static native void Engine_track_vetoed_activities(long cthis);
+  public final static native Activity[] Engine_get_vetoed_activities(long cthis);
   public final static native void Engine_load_deployment(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_get_host_count(long jarg1, Engine jarg1_);
   public final static native Host[] Engine_get_all_hosts(long jarg1, Engine jarg1_);
@@ -275,9 +278,9 @@ public class simgridJNI {
   public final static native void Engine_verbose(String jarg1);
   public final static native void Engine_debug(String jarg1);
   public final static native void delete_Engine(long jarg1);
-  public final static native long create_DAG_from_dot(String jarg1);
-  public final static native long create_DAG_from_DAX(String jarg1);
-  public final static native long create_DAG_from_json(String jarg1);
+  public final static native Activity[] create_DAG_from_dot(String jarg1);
+  public final static native Activity[] create_DAG_from_DAX(String jarg1);
+  public final static native Activity[] create_DAG_from_json(String jarg1);
   public final static native long Exec_init();
   public final static native double Exec_get_remaining(long jarg1, Exec jarg1_);
   public final static native double Exec_get_remaining_ratio(long jarg1, Exec jarg1_);
@@ -286,8 +289,8 @@ public class simgridJNI {
   public final static native void Exec_unset_host(long jarg1, Exec jarg1_);
   public final static native void Exec_unset_hosts(long jarg1, Exec jarg1_);
   public final static native void Exec_set_flops_amount(long jarg1, Exec jarg1_, double jarg2);
-  public final static native void Exec_set_flops_amounts(long jarg1, Exec jarg1_, long jarg2);
-  public final static native void Exec_set_bytes_amounts(long jarg1, Exec jarg1_, long jarg2);
+  public final static native void Exec_set_flops_amounts(long jarg1, Exec jarg1_, double[] jarg2);
+  public final static native void Exec_set_bytes_amounts(long jarg1, Exec jarg1_, double[] jarg2);
   public final static native void Exec_set_thread_count(long jarg1, Exec jarg1_, int jarg2);
   public final static native void Exec_set_bound(long jarg1, Exec jarg1_, double jarg2);
   public final static native void Exec_set_priority(long jarg1, Exec jarg1_, double jarg2);
@@ -308,6 +311,11 @@ public class simgridJNI {
   public final static native long Host_current();
   public final static native double Host_get_speed(long jarg1, Host jarg1_);
   public final static native boolean Host_is_on(long jarg1, Host jarg1_);
+  public final static native Link[] Host_route_links_to(long swigCPtr, long host);
+  public final static native double Host_route_latency_to(long swigCPtr, long host);
+  public final static native Object Host_get_data(long swigCPtr);
+  public final static native void Host_set_data(long swigCPtr, Object o);
+  public final static native void Host_set_concurrency_limit(long swigCPtr, int i);
   public final static native long Io_init();
   public final static native double Io_get_remaining(long jarg1, Io jarg1_);
   public final static native int Io_get_performed_ioops(long jarg1, Io jarg1_);
@@ -379,7 +387,7 @@ public class simgridJNI {
   public final static native void Mess_await_for(long cmess, Mess jmess, double timeout);
   public final static native String NetZone_get_name(long jarg1, NetZone jarg1_);
   public final static native long NetZone_get_parent(long jarg1, NetZone jarg1_);
-  public final static native long NetZone_set_parent(long jarg1, NetZone jarg1_, long jarg2, NetZone jarg2_);
+  public final static native void NetZone_set_parent(long jarg1, NetZone jarg1_, long jarg2, NetZone jarg2_);
   public final static native NetZone[] NetZone_get_children(long jarg1, NetZone jarg1_);
   public final static native Host[] NetZone_get_all_hosts(long jarg1, NetZone jarg1_);
   public final static native long NetZone_get_host_count(long jarg1, NetZone jarg1_);

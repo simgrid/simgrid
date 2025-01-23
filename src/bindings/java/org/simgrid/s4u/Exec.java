@@ -12,6 +12,11 @@ public class Exec extends Activity {
     long cPtr = simgridJNI.Exec_init();
     return (cPtr == 0) ? null : new Exec(cPtr, true);
   }
+  public Exec start()
+  {
+    super.start();
+    return this;
+  }
 
   public double get_remaining() { return simgridJNI.Exec_get_remaining(getCPtr(), this); }
 
@@ -46,13 +51,15 @@ public class Exec extends Activity {
     return this;
   }
 
-  public Exec set_flops_amounts(SWIGTYPE_p_std__vectorT_double_t flops_amounts) {
-    simgridJNI.Exec_set_flops_amounts(getCPtr(), this, SWIGTYPE_p_std__vectorT_double_t.getCPtr(flops_amounts));
+  public Exec set_flops_amounts(double[] flops_amounts)
+  {
+    simgridJNI.Exec_set_flops_amounts(getCPtr(), this, flops_amounts);
     return this;
   }
 
-  public Exec set_bytes_amounts(SWIGTYPE_p_std__vectorT_double_t bytes_amounts) {
-    simgridJNI.Exec_set_bytes_amounts(getCPtr(), this, SWIGTYPE_p_std__vectorT_double_t.getCPtr(bytes_amounts));
+  public Exec set_bytes_amounts(double[] bytes_amounts)
+  {
+    simgridJNI.Exec_set_bytes_amounts(getCPtr(), this, bytes_amounts);
     return this;
   }
 

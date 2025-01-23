@@ -1,0 +1,17 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:dag_io.jar dag_io ${platfdir}/hosts_with_disks.xml --log=s4u_activity.t:verbose "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Using regular java threads.
+> [  0.000000] (0:maestro@) 'parent' is assigned to a resource and all dependencies are solved. Let's start
+> [  0.000000] (0:maestro@) Io 'write' vetoed. Dependencies: NOT solved; Ressources: assigned
+> [  0.000000] (0:maestro@) Io 'read' vetoed. Dependencies: NOT solved; Ressources: assigned
+> [  0.000000] (0:maestro@) Exec 'child' vetoed. Dependencies: NOT solved; Ressources: assigned
+> [  1.000000] (0:maestro@) Exec 'parent' is complete (start time: 0.000000, finish time: 1.000000)
+> [  1.000000] (0:maestro@) Remove a dependency from 'parent' on 'write'
+> [  1.000000] (0:maestro@) 'write' is assigned to a resource and all dependencies are solved. Let's start
+> [ 26.000000] (0:maestro@) Remove a dependency from 'write' on 'read'
+> [ 26.000000] (0:maestro@) 'read' is assigned to a resource and all dependencies are solved. Let's start
+> [ 36.000000] (0:maestro@) Remove a dependency from 'read' on 'child'
+> [ 36.000000] (0:maestro@) 'child' is assigned to a resource and all dependencies are solved. Let's start
+> [ 37.000000] (0:maestro@) Exec 'child' is complete (start time: 36.000000, finish time: 37.000000)
+> [ 37.000000] (0:maestro@) Simulation ends.

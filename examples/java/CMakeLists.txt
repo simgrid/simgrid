@@ -6,11 +6,17 @@ if(enable_java)
   add_dependencies(java-all simgrid)      # useful when the libs are not included in the jar
 endif()
 
+if(NOT HAVE_GRAPHVIZ)
+  set(_dag_from_dot_disable 1)
+  set(_dag_from_dot_simple_disable 1)
+endif()
+
 # io_dependent io_file_system io_file_remote: need a plugin
 foreach (example activityset_awaitall activityset_awaitallfor activityset_awaitany activityset_testany
                  actor_create actor_daemon actor_exiting actor_join actor_kill
                  actor_lifetime actor_migrate actor_suspend actor_yield
                  cloud_migration cloud_simple #cloud_capping
+                 dag_comm dag_failure dag_from_dax_simple dag_from_dot_simple dag_io dag_tuto # dag_from_dax #dag_scheduling
                  exec_async exec_basic exec_dependent
                  comm_await comm_awaituntil comm_dependent comm_failure comm_host2host comm_pingpong comm_ready comm_suspend comm_throttling
                  io_async io_disk_raw io_priority # io_degradation 
@@ -46,3 +52,15 @@ set(tesh_files    ${tesh_files}                                                 
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor_lifetime/actor_lifetime_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor_create/actor_create_d.xml
                   PARENT_SCOPE)
+set(txt_files     ${txt_files}    #${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dax/simple-dax-with-cycle.xml
+                                  #${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dax/smalldax.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dax_simple/dag.xml
+                                  #${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dot/dag.dot
+                                  #${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dot/dag-with-cycle.dot
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dot_simple/dag.dot
+                                  #${CMAKE_CURRENT_SOURCE_DIR}/dag_from_json_simple/dag.json
+                                  #${CMAKE_CURRENT_SOURCE_DIR}/replay_comm/s4u-replay-comm-split-p0.txt
+                                  #${CMAKE_CURRENT_SOURCE_DIR}/replay_comm/s4u-replay-comm-split-p1.txt
+                                  #${CMAKE_CURRENT_SOURCE_DIR}/replay_comm/s4u-replay-comm.txt
+                                  #${CMAKE_CURRENT_SOURCE_DIR}/replay_io/s4u-replay-io.txt
+                    PARENT_SCOPE)

@@ -73,29 +73,12 @@
  * Java executions?
  */
 
-#include "simgrid/Exception.hpp"
-#include "simgrid/forward.h"
 #include "simgrid/plugins/live_migration.h"
-#include "simgrid/s4u/Activity.hpp"
-#include "simgrid/s4u/Actor.hpp"
-#include "simgrid/s4u/Barrier.hpp"
-#include "simgrid/s4u/ConditionVariable.hpp"
-#include "simgrid/s4u/Disk.hpp"
-#include "simgrid/s4u/Mailbox.hpp"
-#include "simgrid/s4u/MessageQueue.hpp"
-#include "simgrid/s4u/NetZone.hpp"
-#include "simgrid/s4u/VirtualMachine.hpp"
-#include "src/dag/dax_dtd.h"
+#include "simgrid/s4u.hpp"
+
+#include "simgrid/s4u/ActivitySet.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextJava.hpp"
-#include "xbt/Extendable.hpp"
-#include "xbt/asserts.h"
-
-#include "xbt/base.h"
-#include "xbt/ex.h"
-#include "xbt/log.h"
-
-#define SWIG_VERSION 0x040201
 
 #include <jni.h>
 #include <stdlib.h>
@@ -214,6 +197,42 @@ static std::pair<jclass, jmethodID> get_classctor_netzone(JNIEnv* jenv)
     get_classctor(jenv, "org/simgrid/s4u/NetZone", "(J)V", netzone_class, netzone_ctor);
 
   return std::make_pair(netzone_class, netzone_ctor);
+}
+static std::pair<jclass, jmethodID> get_classctor_activity(JNIEnv* jenv)
+{
+  static jclass da_class   = 0;
+  static jmethodID da_ctor = 0;
+  if (da_class == 0)
+    get_classctor(jenv, "org/simgrid/s4u/Activity", "(JZ)V", da_class, da_ctor);
+
+  return std::make_pair(da_class, da_ctor);
+}
+static std::pair<jclass, jmethodID> get_classctor_comm(JNIEnv* jenv)
+{
+  static jclass da_class   = 0;
+  static jmethodID da_ctor = 0;
+  if (da_class == 0)
+    get_classctor(jenv, "org/simgrid/s4u/Comm", "(JZ)V", da_class, da_ctor);
+
+  return std::make_pair(da_class, da_ctor);
+}
+static std::pair<jclass, jmethodID> get_classctor_exec(JNIEnv* jenv)
+{
+  static jclass da_class   = 0;
+  static jmethodID da_ctor = 0;
+  if (da_class == 0)
+    get_classctor(jenv, "org/simgrid/s4u/Exec", "(JZ)V", da_class, da_ctor);
+
+  return std::make_pair(da_class, da_ctor);
+}
+static std::pair<jclass, jmethodID> get_classctor_io(JNIEnv* jenv)
+{
+  static jclass da_class   = 0;
+  static jmethodID da_ctor = 0;
+  if (da_class == 0)
+    get_classctor(jenv, "org/simgrid/s4u/Io", "(JZ)V", da_class, da_ctor);
+
+  return std::make_pair(da_class, da_ctor);
 }
 
 /* *********************************************************************************** */
@@ -347,21 +366,6 @@ XBT_ATTRIB_UNUSED static void SWIG_JavaThrowException(JNIEnv* jenv, SWIG_JavaExc
     jenv->ThrowNew(excep, msg);
 }
 
-/* SWIG Errors applicable to all language modules, values are reserved from -1 to -99 */
-#define SWIG_UnknownError -1
-#define SWIG_IOError -2
-#define SWIG_RuntimeError -3
-#define SWIG_IndexError -4
-#define SWIG_TypeError -5
-#define SWIG_DivisionByZero -6
-#define SWIG_OverflowError -7
-#define SWIG_SyntaxError -8
-#define SWIG_ValueError -9
-#define SWIG_SystemError -10
-#define SWIG_AttributeError -11
-#define SWIG_MemoryError -12
-#define SWIG_NullReferenceError -13
-
 static std::string java_string_to_std_string(JNIEnv* jenv, jstring jstr)
 {
   if (!jstr) {
@@ -428,10 +432,6 @@ static int Swig::GetThreadName(char* name, size_t len)
 
 #endif
 
-#endif
-
-#if defined(SWIG_JAVA_DETACH_ON_THREAD_END)
-#include <pthread.h>
 #endif
 
 namespace Swig {
@@ -521,25 +521,12 @@ public:
     }
   }
 
-#if defined(SWIG_JAVA_DETACH_ON_THREAD_END)
-  static void detach(void* jvm) { static_cast<JavaVM*>(jvm)->DetachCurrentThread(); }
-
-  static void make_detach_key() { pthread_key_create(&detach_key_, detach); }
-
-  /* thread-local key to register a destructor */
-  static pthread_key_t detach_key_;
-#endif
-
 private:
   /* pointer to Java object */
   jobject jthis_;
   /* Local or global reference flag */
   bool weak_global_;
 };
-
-#if defined(SWIG_JAVA_DETACH_ON_THREAD_END)
-pthread_key_t JObjectWrapper::detach_key_;
-#endif
 
 /* Local JNI reference deleter */
 class LocalRefGuard {
@@ -559,516 +546,10 @@ public:
   }
 };
 
-/* director base class */
-class Director {
-  /* pointer to Java virtual machine */
-  JavaVM* swig_jvm_;
-
-protected:
-#if defined(_MSC_VER) && (_MSC_VER < 1300)
-  class JNIEnvWrapper;
-  friend class JNIEnvWrapper;
-#endif
-  /* Utility class for managing the JNI environment */
-  class JNIEnvWrapper {
-    const Director* director_;
-    JNIEnv* jenv_;
-    int env_status;
-
-  public:
-    JNIEnvWrapper(const Director* director) : director_(director), jenv_(nullptr), env_status(0)
-    {
-#if defined(__ANDROID__)
-      JNIEnv** jenv = &jenv_;
-#else
-      void** jenv = (void**)&jenv_;
-#endif
-      env_status = director_->swig_jvm_->GetEnv((void**)&jenv_, JNI_VERSION_1_2);
-      JavaVMAttachArgs args;
-      args.version = JNI_VERSION_1_2;
-      args.group   = nullptr;
-      args.name    = nullptr;
-#if defined(SWIG_JAVA_USE_THREAD_NAME)
-      char
-          thread_name[64]; // MAX_TASK_COMM_LEN=16 is hard-coded in the Linux kernel and MacOS has MAXTHREADNAMESIZE=64.
-      if (Swig::GetThreadName(thread_name, sizeof(thread_name)) == 0) {
-        args.name = thread_name;
-#if defined(DEBUG_DIRECTOR_THREAD_NAME)
-        std::cout << "JNIEnvWrapper: thread name: " << thread_name << std::endl;
-      } else {
-        std::cout << "JNIEnvWrapper: Couldn't set Java thread name" << std::endl;
-#endif
-      }
-#endif
-#if defined(SWIG_JAVA_ATTACH_CURRENT_THREAD_AS_DAEMON)
-      // Attach a daemon thread to the JVM. Useful when the JVM should not wait for
-      // the thread to exit upon shutdown. Only for jdk-1.4 and later.
-      director_->swig_jvm_->AttachCurrentThreadAsDaemon(jenv, &args);
-#else
-      director_->swig_jvm_->AttachCurrentThread(jenv, &args);
-#endif
-
-#if defined(SWIG_JAVA_DETACH_ON_THREAD_END)
-      // At least on Android 6, detaching after every call causes a memory leak.
-      // Instead, register a thread desructor and detach only when the thread ends.
-      // See https://developer.android.com/training/articles/perf-jni#threads
-      static pthread_once_t once = PTHREAD_ONCE_INIT;
-
-      pthread_once(&once, JObjectWrapper::make_detach_key);
-      pthread_setspecific(JObjectWrapper::detach_key_, director->swig_jvm_);
-#endif
-    }
-    ~JNIEnvWrapper()
-    {
-#if !defined(SWIG_JAVA_DETACH_ON_THREAD_END) && !defined(SWIG_JAVA_NO_DETACH_CURRENT_THREAD)
-      // Some JVMs, eg jdk-1.4.2 and lower on Solaris have a bug and crash with the DetachCurrentThread call.
-      // However, without this call, the JVM hangs on exit when the thread was not created by the JVM and creates a
-      // memory leak.
-      if (env_status == JNI_EDETACHED)
-        director_->swig_jvm_->DetachCurrentThread();
-#endif
-    }
-    JNIEnv* getJNIEnv() const { return jenv_; }
-  };
-
-  struct SwigDirectorMethod {
-    const char* name;
-    const char* desc;
-    jmethodID methid;
-    SwigDirectorMethod(JNIEnv* jenv, jclass baseclass, const char* name, const char* desc) : name(name), desc(desc)
-    {
-      methid = jenv->GetMethodID(baseclass, name, desc);
-    }
-  };
-
-  /* Java object wrapper */
-  JObjectWrapper swig_self_;
-
-  /* Disconnect director from Java object */
-  void swig_disconnect_director_self(const char* disconn_method)
-  {
-    JNIEnvWrapper jnienv(this);
-    JNIEnv* jenv = jnienv.getJNIEnv();
-    jobject jobj = swig_self_.get(jenv);
-    LocalRefGuard ref_deleter(jenv, jobj);
-#if defined(DEBUG_DIRECTOR_OWNED)
-    std::cout << "Swig::Director::disconnect_director_self(" << jobj << ")" << std::endl;
-#endif
-    if (jobj && jenv->IsSameObject(jobj, nullptr) == JNI_FALSE) {
-      jmethodID disconn_meth = jenv->GetMethodID(jenv->GetObjectClass(jobj), disconn_method, "()V");
-      if (disconn_meth) {
-#if defined(DEBUG_DIRECTOR_OWNED)
-        std::cout << "Swig::Director::disconnect_director_self upcall to " << disconn_method << std::endl;
-#endif
-        jenv->CallVoidMethod(jobj, disconn_meth);
-      }
-    }
-  }
-
-  jclass swig_new_global_ref(JNIEnv* jenv, const char* classname)
-  {
-    jclass clz = jenv->FindClass(classname);
-    return clz ? (jclass)jenv->NewGlobalRef(clz) : nullptr;
-  }
-
-public:
-  Director(JNIEnv* jenv) : swig_jvm_((JavaVM*)nullptr), swig_self_()
-  {
-    /* Acquire the Java VM pointer */
-    jenv->GetJavaVM(&swig_jvm_);
-  }
-
-  virtual ~Director()
-  {
-    JNIEnvWrapper jnienv(this);
-    JNIEnv* jenv = jnienv.getJNIEnv();
-    swig_self_.release(jenv);
-  }
-
-  bool swig_set_self(JNIEnv* jenv, jobject jself, bool mem_own, bool weak_global)
-  {
-    return swig_self_.set(jenv, jself, mem_own, weak_global);
-  }
-
-  jobject swig_get_self(JNIEnv* jenv) const { return swig_self_.get(jenv); }
-
-  // Change C++ object's ownership, relative to Java
-  void swig_java_change_ownership(JNIEnv* jenv, jobject jself, bool take_or_release)
-  {
-    swig_self_.java_change_ownership(jenv, jself, take_or_release);
-  }
-};
-
-// Zero initialized bool array
-template <size_t N> class BoolArray {
-  bool array_[N];
-
-public:
-  BoolArray() { memset(array_, 0, sizeof(array_)); }
-  bool& operator[](size_t n) { return array_[n]; }
-  bool operator[](size_t n) const { return array_[n]; }
-};
-
-// Utility classes and functions for exception handling.
-
-// Simple holder for a Java string during exception handling, providing access to a c-style string
-class JavaString {
-public:
-  JavaString(JNIEnv* jenv, jstring jstr) : jenv_(jenv), jstr_(jstr), cstr_(nullptr)
-  {
-    if (jenv_ && jstr_)
-      cstr_ = (const char*)jenv_->GetStringUTFChars(jstr_, nullptr);
-  }
-
-  ~JavaString()
-  {
-    if (jenv_ && jstr_ && cstr_)
-      jenv_->ReleaseStringUTFChars(jstr_, cstr_);
-  }
-
-  const char* c_str(const char* null_string = "null JavaString") const { return cstr_ ? cstr_ : null_string; }
-
-private:
-  // non-copyable
-  JavaString(const JavaString&);
-  JavaString& operator=(const JavaString&);
-
-  JNIEnv* jenv_;
-  jstring jstr_;
-  const char* cstr_;
-};
-
-// Helper class to extract the exception message from a Java throwable
-class JavaExceptionMessage {
-public:
-  JavaExceptionMessage(JNIEnv* jenv, jthrowable throwable)
-      : message_(jenv, exceptionMessageFromThrowable(jenv, throwable))
-  {
-  }
-
-  // Return a C string of the exception message in the jthrowable passed in the constructor
-  // If no message is available, null_string is return instead
-  const char* message(const char* null_string = "Could not get exception message in JavaExceptionMessage") const
-  {
-    return message_.c_str(null_string);
-  }
-
-private:
-  // non-copyable
-  JavaExceptionMessage(const JavaExceptionMessage&);
-  JavaExceptionMessage& operator=(const JavaExceptionMessage&);
-
-  // Get exception message by calling Java method Throwable.getMessage()
-  static jstring exceptionMessageFromThrowable(JNIEnv* jenv, jthrowable throwable)
-  {
-    jstring jmsg = nullptr;
-    if (jenv && throwable) {
-      jenv->ExceptionClear(); // Cannot invoke methods with any pending exceptions
-      jclass throwclz = jenv->GetObjectClass(throwable);
-      if (throwclz) {
-        // All Throwable classes have a getMessage() method, so call it to extract the exception message
-        jmethodID getMessageMethodID = jenv->GetMethodID(throwclz, "getMessage", "()Ljava/lang/String;");
-        if (getMessageMethodID)
-          jmsg = (jstring)jenv->CallObjectMethod(throwable, getMessageMethodID);
-      }
-      if (jmsg == nullptr && jenv->ExceptionCheck())
-        jenv->ExceptionClear();
-    }
-    return jmsg;
-  }
-
-  JavaString message_;
-};
-
-// C++ Exception class for handling Java exceptions thrown during a director method Java upcall
-class DirectorException : public std::exception {
-public:
-  // Construct exception from a Java throwable
-  DirectorException(JNIEnv* jenv, jthrowable throwable)
-      : jenv_(jenv), throwable_(throwable), classname_(nullptr), msg_(nullptr)
-  {
-
-    // Call Java method Object.getClass().getName() to obtain the throwable's class name (delimited by '/')
-    if (jenv && throwable) {
-      jenv->ExceptionClear(); // Cannot invoke methods with any pending exceptions
-      jclass throwclz = jenv->GetObjectClass(throwable);
-      if (throwclz) {
-        jclass clzclz = jenv->GetObjectClass(throwclz);
-        if (clzclz) {
-          jmethodID getNameMethodID = jenv->GetMethodID(clzclz, "getName", "()Ljava/lang/String;");
-          if (getNameMethodID) {
-            jstring jstr_classname = (jstring)(jenv->CallObjectMethod(throwclz, getNameMethodID));
-            // Copy strings, since there is no guarantee that jenv will be active when handled
-            if (jstr_classname) {
-              JavaString jsclassname(jenv, jstr_classname);
-              const char* classname = jsclassname.c_str(nullptr);
-              if (classname)
-                classname_ = copypath(classname);
-            }
-          }
-        }
-      }
-    }
-
-    JavaExceptionMessage exceptionmsg(jenv, throwable);
-    msg_ = copystr(exceptionmsg.message(nullptr));
-  }
-
-  // More general constructor for handling as a java.lang.RuntimeException
-  DirectorException(const char* msg)
-      : jenv_(nullptr), throwable_(nullptr), classname_(nullptr), msg_(msg ? copystr(msg) : nullptr)
-  {
-  }
-
-  ~DirectorException() throw()
-  {
-    delete[] classname_;
-    delete[] msg_;
-  }
-
-  const char* what() const throw() { return msg_ ? msg_ : "Unspecified DirectorException message"; }
-
-  // Reconstruct and raise/throw the Java Exception that caused the DirectorException
-  // Note that any error in the JNI exception handling results in a Java RuntimeException
-  void throwException(JNIEnv* jenv) const
-  {
-    if (jenv) {
-      if (jenv == jenv_ && throwable_) {
-        // Throw original exception if not already pending
-        jthrowable throwable = jenv->ExceptionOccurred();
-        if (throwable && jenv->IsSameObject(throwable, throwable_) == JNI_FALSE) {
-          jenv->ExceptionClear();
-          throwable = nullptr;
-        }
-        if (!throwable)
-          jenv->Throw(throwable_);
-      } else {
-        // Try and reconstruct original exception, but original stacktrace is not reconstructed
-        jenv->ExceptionClear();
-
-        jmethodID ctorMethodID = nullptr;
-        jclass throwableclass  = nullptr;
-        if (classname_) {
-          throwableclass = jenv->FindClass(classname_);
-          if (throwableclass)
-            ctorMethodID = jenv->GetMethodID(throwableclass, "<init>", "(Ljava/lang/String;)V");
-        }
-
-        if (ctorMethodID) {
-          jenv->ThrowNew(throwableclass, what());
-        } else {
-          SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, what());
-        }
-      }
-    }
-  }
-
-  // Deprecated - use throwException
-  void raiseJavaException(JNIEnv* jenv) const { throwException(jenv); }
-
-  // Create and throw the DirectorException
-  static void raise(JNIEnv* jenv, jthrowable throwable) { throw DirectorException(jenv, throwable); }
-
-private:
-  static char* copypath(const char* srcmsg)
-  {
-    char* target = copystr(srcmsg);
-    for (char* c = target; *c; ++c) {
-      if ('.' == *c)
-        *c = '/';
-    }
-    return target;
-  }
-
-  static char* copystr(const char* srcmsg)
-  {
-    char* target = nullptr;
-    if (srcmsg) {
-      size_t msglen = strlen(srcmsg) + 1;
-      target        = new char[msglen];
-      strncpy(target, srcmsg, msglen);
-    }
-    return target;
-  }
-
-  JNIEnv* jenv_;
-  jthrowable throwable_;
-  const char* classname_;
-  const char* msg_;
-};
-
-// Helper method to determine if a Java throwable matches a particular Java class type
-// Note side effect of clearing any pending exceptions
-static bool ExceptionMatches(JNIEnv* jenv, jthrowable throwable, const char* classname)
-{
-  bool matches = false;
-
-  if (throwable && jenv && classname) {
-    // Exceptions need to be cleared for correct behavior.
-    // The caller of ExceptionMatches should restore pending exceptions if desired -
-    // the caller already has the throwable.
-    jenv->ExceptionClear();
-
-    jclass clz = jenv->FindClass(classname);
-    if (clz) {
-      jclass classclz              = jenv->GetObjectClass(clz);
-      jmethodID isInstanceMethodID = jenv->GetMethodID(classclz, "isInstance", "(Ljava/lang/Object;)Z");
-      if (isInstanceMethodID) {
-        matches = jenv->CallBooleanMethod(clz, isInstanceMethodID, throwable) != 0;
-      }
-    }
-
-#if defined(DEBUG_DIRECTOR_EXCEPTION)
-    if (jenv->ExceptionCheck()) {
-      // Typically occurs when an invalid classname argument is passed resulting in a ClassNotFoundException
-      JavaExceptionMessage exc(jenv, jenv->ExceptionOccurred());
-      std::cout << "Error: ExceptionMatches: class '" << classname << "' : " << exc.message() << std::endl;
-    }
-#endif
-  }
-  return matches;
-}
 } // namespace Swig
 
-#ifdef __cplusplus
-#include <utility>
-/* SwigValueWrapper is described in swig.swg */
-template <typename T> class SwigValueWrapper {
-  struct SwigSmartPointer {
-    T* ptr;
-    SwigSmartPointer(T* p) : ptr(p) {}
-    ~SwigSmartPointer() { delete ptr; }
-    SwigSmartPointer& operator=(SwigSmartPointer& rhs)
-    {
-      T* oldptr = ptr;
-      ptr       = 0;
-      delete oldptr;
-      ptr     = rhs.ptr;
-      rhs.ptr = 0;
-      return *this;
-    }
-    void reset(T* p)
-    {
-      T* oldptr = ptr;
-      ptr       = 0;
-      delete oldptr;
-      ptr = p;
-    }
-  } pointer;
-  SwigValueWrapper& operator=(const SwigValueWrapper<T>& rhs);
-  SwigValueWrapper(const SwigValueWrapper<T>& rhs);
-
-public:
-  SwigValueWrapper() : pointer(0) {}
-  SwigValueWrapper& operator=(const T& t)
-  {
-    SwigSmartPointer tmp(new T(t));
-    pointer = tmp;
-    return *this;
-  }
-#if __cplusplus >= 201103L
-  SwigValueWrapper& operator=(T&& t)
-  {
-    SwigSmartPointer tmp(new T(std::move(t)));
-    pointer = tmp;
-    return *this;
-  }
-  operator T&&() const { return std::move(*pointer.ptr); }
-#else
-  operator T&() const { return *pointer.ptr; }
-#endif
-  T* operator&() const { return pointer.ptr; }
-  static void reset(SwigValueWrapper& t, T* p) { t.pointer.reset(p); }
-};
-
-/*
- * SwigValueInit() is a generic initialisation solution as the following approach:
- *
- *       T c_result = T();
- *
- * doesn't compile for all types for example:
- *
- *       unsigned int c_result = unsigned int();
- */
-template <typename T> T SwigValueInit()
-{
-  return T();
-}
-
-#endif
-
-#include "simgrid/s4u.hpp"
-#include <boost/shared_ptr.hpp>
-
 using namespace simgrid::s4u;
-
 using namespace simgrid;
-
-#include <stdexcept>
-#include <typeinfo>
-
-#include <string>
-
-#include <stdexcept>
-#include <vector>
-
-#include <map>
-#include <stdexcept>
-
-static void SWIG_JavaException(JNIEnv* jenv, int code, const char* msg)
-{
-  SWIG_JavaExceptionCodes exception_code = SWIG_JavaUnknownError;
-  switch (code) {
-    case SWIG_MemoryError:
-      exception_code = SWIG_JavaOutOfMemoryError;
-      break;
-    case SWIG_IOError:
-      exception_code = SWIG_JavaIOException;
-      break;
-    case SWIG_SystemError:
-    case SWIG_RuntimeError:
-      exception_code = SWIG_JavaRuntimeException;
-      break;
-    case SWIG_OverflowError:
-    case SWIG_IndexError:
-      exception_code = SWIG_JavaIndexOutOfBoundsException;
-      break;
-    case SWIG_DivisionByZero:
-      exception_code = SWIG_JavaArithmeticException;
-      break;
-    case SWIG_SyntaxError:
-    case SWIG_ValueError:
-    case SWIG_TypeError:
-      exception_code = SWIG_JavaIllegalArgumentException;
-      break;
-    case SWIG_UnknownError:
-    default:
-      exception_code = SWIG_JavaUnknownError;
-      break;
-  }
-  SWIG_JavaThrowException(jenv, exception_code, msg);
-}
-
-#include <stdexcept>
-#include <typeinfo>
-
-#include <utility>
-
-#include <functional>
-#include <iostream>
-
-template <class T> struct SWIG_intrusive_deleter {
-  void operator()(T* p)
-  {
-    if (p)
-      intrusive_ptr_release(p);
-  }
-};
-
-struct SWIG_null_deleter {
-  void operator()(void const*) const {}
-};
-#define SWIG_NO_NULL_DELETER_0 , SWIG_null_deleter()
 
 #ifdef __cplusplus
 extern "C" {
@@ -1565,36 +1046,58 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1has_1no_1s
   return ((Activity*)cthis)->has_no_successor();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1dependencies(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis)
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1dependencies(JNIEnv* jenv, jclass jcls,
+                                                                                            jlong cthis, jobject jthis)
 {
-  jlong jresult                                                  = 0;
-  simgrid::s4u::Activity* arg1                                   = (simgrid::s4u::Activity*)0;
-  boost::shared_ptr<simgrid::s4u::Activity const>* smartarg1     = 0;
-  std::set<boost::intrusive_ptr<simgrid::s4u::Activity>>* result = 0;
+  auto [activity_class, activity_ctor] = get_classctor_activity(jenv);
+  auto [comm_class, comm_ctor]         = get_classctor_comm(jenv);
+  auto [io_class, io_ctor]             = get_classctor_io(jenv);
+  auto [exec_class, exec_ctor]         = get_classctor_exec(jenv);
 
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
+  auto cdep         = ((Activity*)cthis)->get_dependencies();
+  jobjectArray jres = jenv->NewObjectArray(cdep.size(), activity_class, nullptr);
+  int i             = 0;
+  for (ActivityPtr const& act : cdep) {
+    intrusive_ptr_add_ref(act.get());
+    if (dynamic_cast<Comm*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(comm_class, comm_ctor, act.get(), (jboolean)1));
+    } else if (dynamic_cast<Io*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(io_class, io_ctor, act.get(), (jboolean)1));
+    } else if (dynamic_cast<Exec*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(exec_class, exec_ctor, act.get(), (jboolean)1));
+    } else
+      THROW_IMPOSSIBLE;
+    i++;
+  }
 
-  // plain pointer
-  smartarg1 = *(boost::shared_ptr<const simgrid::s4u::Activity>**)&cthis;
-  arg1      = (simgrid::s4u::Activity*)(smartarg1 ? smartarg1->get() : 0);
-
-  result = (std::set<boost::intrusive_ptr<simgrid::s4u::Activity>>*)&((simgrid::s4u::Activity const*)arg1)
-               ->get_dependencies();
-  *(std::set<boost::intrusive_ptr<simgrid::s4u::Activity>>**)&jresult = result;
-  return jresult;
+  return jres;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1successors(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis)
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1successors(JNIEnv* jenv, jclass jcls,
+                                                                                          jlong cthis, jobject jthis)
 {
-  jlong jresult                                                     = 0;
-  std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>* result =
-      (std::vector<ActivityPtr>*)&((Activity*)cthis)->get_successors();
-  *(std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>**)&jresult = result;
-  return jresult;
+  auto [activity_class, activity_ctor] = get_classctor_activity(jenv);
+  auto [comm_class, comm_ctor]         = get_classctor_comm(jenv);
+  auto [io_class, io_ctor]             = get_classctor_io(jenv);
+  auto [exec_class, exec_ctor]         = get_classctor_exec(jenv);
+
+  auto csucc        = ((Activity*)cthis)->get_successors();
+  jobjectArray jres = jenv->NewObjectArray(csucc.size(), activity_class, nullptr);
+  int i             = 0;
+  for (ActivityPtr const& act : csucc) {
+    intrusive_ptr_add_ref(act.get());
+    if (dynamic_cast<Comm*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(comm_class, comm_ctor, act.get(), (jboolean)1));
+    } else if (dynamic_cast<Io*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(io_class, io_ctor, act.get(), (jboolean)1));
+    } else if (dynamic_cast<Exec*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(exec_class, exec_ctor, act.get(), (jboolean)1));
+    } else
+      THROW_IMPOSSIBLE;
+    i++;
+  }
+
+  return jres;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Activity(JNIEnv* jenv, jclass jcls, jlong cthis)
@@ -1602,16 +1105,30 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Activity(JNIEnv*
   intrusive_ptr_release((Activity*)cthis);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1vetoed_1activities(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1vetoed_1activities(JNIEnv* jenv,
+                                                                                                  jclass jcls)
 {
-  jlong jresult                             = 0;
-  std::set<simgrid::s4u::Activity*>* result = 0;
+  auto [activity_class, activity_ctor] = get_classctor_activity(jenv);
+  auto [comm_class, comm_ctor]         = get_classctor_comm(jenv);
+  auto [io_class, io_ctor]             = get_classctor_io(jenv);
+  auto [exec_class, exec_ctor]         = get_classctor_exec(jenv);
 
-  (void)jenv;
-  (void)jcls;
-  result = (std::set<simgrid::s4u::Activity*>*)simgrid::s4u::Activity::get_vetoed_activities();
-  *(std::set<simgrid::s4u::Activity*>**)&jresult = result;
-  return jresult;
+  auto* csucc       = Activity::get_vetoed_activities();
+  jobjectArray jres = jenv->NewObjectArray(csucc->size(), activity_class, nullptr);
+  int i             = 0;
+  for (Activity* act : *csucc) {
+    intrusive_ptr_add_ref(act);
+    if (dynamic_cast<Comm*>(act)) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(comm_class, comm_ctor, act, (jboolean)1));
+    } else if (dynamic_cast<Io*>(act)) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(io_class, io_ctor, act, (jboolean)1));
+    } else if (dynamic_cast<Exec*>(act)) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(exec_class, exec_ctor, act, (jboolean)1));
+    } else
+      THROW_IMPOSSIBLE;
+    i++;
+  }
+  return jres;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1set_1vetoed_1activities(JNIEnv* jenv, jclass jcls,
@@ -3117,7 +2634,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1destruct
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jenv, jclass jcls, jobjectArray cthis)
 {
   if (cthis == (jobjectArray)0) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "The engine arguments shall not be null");
     return 0;
   }
   int len = (int)jenv->GetArrayLength(cthis);
@@ -3187,19 +2704,11 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1flatify_1plat
   return jenv->NewStringUTF(result.c_str());
 }
 
+std::set<simgrid::s4u::Activity*> vetoed_activities;
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1track_1vetoed_1activities(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis, jobject jthis,
-                                                                                          jlong jarg2)
+                                                                                          jlong cthis)
 {
-  simgrid::s4u::Engine* arg1              = (simgrid::s4u::Engine*)0;
-  std::set<simgrid::s4u::Activity*>* arg2 = (std::set<simgrid::s4u::Activity*>*)0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1 = *(simgrid::s4u::Engine**)&cthis;
-  arg2 = *(std::set<simgrid::s4u::Activity*>**)&jarg2;
-  ((simgrid::s4u::Engine const*)arg1)->track_vetoed_activities(arg2);
+  ((Engine*)cthis)->track_vetoed_activities(&vetoed_activities);
 }
 /** Create a Java org.simgrid.s4u.Actor of the given subclass and using the (String,String,String[]) constructor */
 static void java_main(int argc, char* argv[])
@@ -3590,79 +3099,100 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Engine(JNIEnv* j
   delete ((Engine*)cthis);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1from_1dot(JNIEnv* jenv, jclass jcls,
-                                                                                jstring cthis)
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1from_1dot(JNIEnv* jenv, jclass jcls,
+                                                                                       jstring jstr)
 {
-  jlong jresult     = 0;
-  std::string* arg1 = 0;
-  SwigValueWrapper<std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>> result;
+  auto [activity_class, activity_ctor] = get_classctor_activity(jenv);
+  auto [comm_class, comm_ctor]         = get_classctor_comm(jenv);
+  auto [io_class, io_ctor]             = get_classctor_io(jenv);
+  auto [exec_class, exec_ctor]         = get_classctor_exec(jenv);
 
-  (void)jenv;
-  (void)jcls;
-  if (!cthis) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
+  if (!jstr) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Dot content shall not be null");
     return 0;
   }
-  const char* arg1_pstr = (const char*)jenv->GetStringUTFChars(cthis, 0);
-  if (!arg1_pstr)
-    return 0;
-  std::string arg1_str(arg1_pstr);
-  arg1 = &arg1_str;
-  jenv->ReleaseStringUTFChars(cthis, arg1_pstr);
-  result = simgrid::s4u::create_DAG_from_dot((std::string const&)*arg1);
-  *(std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>**)&jresult =
-      new std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>(result);
-  return jresult;
+  std::string str = java_string_to_std_string(jenv, jstr);
+  auto cres       = simgrid::s4u::create_DAG_from_dot(str);
+
+  jobjectArray jres = jenv->NewObjectArray(cres.size(), activity_class, nullptr);
+  int i             = 0;
+  for (ActivityPtr const& act : cres) {
+    intrusive_ptr_add_ref(act.get());
+    if (dynamic_cast<Comm*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(comm_class, comm_ctor, act.get(), (jboolean)1));
+    } else if (dynamic_cast<Io*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(io_class, io_ctor, act.get(), (jboolean)1));
+    } else if (dynamic_cast<Exec*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(exec_class, exec_ctor, act.get(), (jboolean)1));
+    } else
+      THROW_IMPOSSIBLE;
+    i++;
+  }
+  return jres;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1from_1DAX(JNIEnv* jenv, jclass jcls,
-                                                                                jstring cthis)
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1from_1DAX(JNIEnv* jenv, jclass jcls,
+                                                                                       jstring jstr)
 {
-  jlong jresult     = 0;
-  std::string* arg1 = 0;
-  SwigValueWrapper<std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>> result;
+  auto [activity_class, activity_ctor] = get_classctor_activity(jenv);
+  auto [comm_class, comm_ctor]         = get_classctor_comm(jenv);
+  auto [io_class, io_ctor]             = get_classctor_io(jenv);
+  auto [exec_class, exec_ctor]         = get_classctor_exec(jenv);
 
-  (void)jenv;
-  (void)jcls;
-  if (!cthis) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
+  if (!jstr) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "DAX content shall not be null");
     return 0;
   }
-  const char* arg1_pstr = (const char*)jenv->GetStringUTFChars(cthis, 0);
-  if (!arg1_pstr)
-    return 0;
-  std::string arg1_str(arg1_pstr);
-  arg1 = &arg1_str;
-  jenv->ReleaseStringUTFChars(cthis, arg1_pstr);
-  result = simgrid::s4u::create_DAG_from_DAX((std::string const&)*arg1);
-  *(std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>**)&jresult =
-      new std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>(result);
-  return jresult;
+  std::string str = java_string_to_std_string(jenv, jstr);
+  auto cres       = simgrid::s4u::create_DAG_from_DAX(str);
+
+  jobjectArray jres = jenv->NewObjectArray(cres.size(), activity_class, nullptr);
+  int i             = 0;
+  for (ActivityPtr const& act : cres) {
+    intrusive_ptr_add_ref(act.get());
+    if (dynamic_cast<Comm*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(comm_class, comm_ctor, act.get(), (jboolean)1));
+    } else if (dynamic_cast<Io*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(io_class, io_ctor, act.get(), (jboolean)1));
+    } else if (dynamic_cast<Exec*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(exec_class, exec_ctor, act.get(), (jboolean)1));
+    } else
+      THROW_IMPOSSIBLE;
+    i++;
+  }
+  return jres;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1from_1json(JNIEnv* jenv, jclass jcls,
-                                                                                 jstring cthis)
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1from_1json(JNIEnv* jenv, jclass jcls,
+                                                                                        jstring jstr)
 {
-  jlong jresult     = 0;
-  std::string* arg1 = 0;
-  SwigValueWrapper<std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>> result;
+  auto [activity_class, activity_ctor] = get_classctor_activity(jenv);
+  auto [comm_class, comm_ctor]         = get_classctor_comm(jenv);
+  auto [io_class, io_ctor]             = get_classctor_io(jenv);
+  auto [exec_class, exec_ctor]         = get_classctor_exec(jenv);
 
-  (void)jenv;
-  (void)jcls;
-  if (!cthis) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null string");
+  if (!jstr) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "JSON content shall not be null");
     return 0;
   }
-  const char* arg1_pstr = (const char*)jenv->GetStringUTFChars(cthis, 0);
-  if (!arg1_pstr)
-    return 0;
-  std::string arg1_str(arg1_pstr);
-  arg1 = &arg1_str;
-  jenv->ReleaseStringUTFChars(cthis, arg1_pstr);
-  result = simgrid::s4u::create_DAG_from_json((std::string const&)*arg1);
-  *(std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>**)&jresult =
-      new std::vector<boost::intrusive_ptr<simgrid::s4u::Activity>>(result);
-  return jresult;
+  std::string str = java_string_to_std_string(jenv, jstr);
+  auto cres       = simgrid::s4u::create_DAG_from_json(str);
+
+  jobjectArray jres = jenv->NewObjectArray(cres.size(), activity_class, nullptr);
+  int i             = 0;
+  for (ActivityPtr const& act : cres) {
+    intrusive_ptr_add_ref(act.get());
+    if (dynamic_cast<Comm*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(comm_class, comm_ctor, act.get(), (jboolean)1));
+    } else if (dynamic_cast<Io*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(io_class, io_ctor, act.get(), (jboolean)1));
+    } else if (dynamic_cast<Exec*>(act.get())) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(exec_class, exec_ctor, act.get(), (jboolean)1));
+    } else
+      THROW_IMPOSSIBLE;
+    i++;
+  }
+  return jres;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1init(JNIEnv* jenv, jclass jcls)
@@ -3723,26 +3253,40 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1flops_1amount
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1flops_1amounts(JNIEnv* jenv, jclass jcls,
                                                                                   jlong cthis, jobject jthis,
-                                                                                  jlong jarg2)
+                                                                                  jdoubleArray jamounts)
 {
-  auto* self                = (Exec*)cthis;
-  std::vector<double>* arg2 = *(std::vector<double>**)&jarg2;
-  if (!arg2)
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< double > const & is null");
-  else
-    self->set_flops_amounts((std::vector<double> const&)*arg2);
+  if (!jamounts) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Array of amounts shall not be null");
+    return;
+  }
+
+  std::vector<double> camounts;
+  int len            = jenv->GetArrayLength(jamounts);
+  jdouble* cjamounts = jenv->GetDoubleArrayElements(jamounts, nullptr);
+  for (int i = 0; i < len; i++)
+    camounts.push_back((double)cjamounts[i]);
+  jenv->ReleaseDoubleArrayElements(jamounts, cjamounts, JNI_ABORT);
+
+  ((Exec*)cthis)->set_flops_amounts(camounts);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1bytes_1amounts(JNIEnv* jenv, jclass jcls,
                                                                                   jlong cthis, jobject jthis,
-                                                                                  jlong jarg2)
+                                                                                  jdoubleArray jamounts)
 {
-  auto* self                = (Exec*)cthis;
-  std::vector<double>* arg2 = *(std::vector<double>**)&jarg2;
-  if (!arg2)
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "std::vector< double > const & is null");
-  else
-    self->set_bytes_amounts((std::vector<double> const&)*arg2);
+  if (!jamounts) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Array of amounts shall not be null");
+    return;
+  }
+
+  std::vector<double> camounts;
+  int len            = jenv->GetArrayLength(jamounts);
+  jdouble* cjamounts = jenv->GetDoubleArrayElements(jamounts, nullptr);
+  for (int i = 0; i < len; i++)
+    camounts.push_back((double)cjamounts[i]);
+  jenv->ReleaseDoubleArrayElements(jamounts, cjamounts, JNI_ABORT);
+
+  ((Exec*)cthis)->set_bytes_amounts(camounts);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1thread_1count(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -4334,12 +3878,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_LinkInRoute_1get_1link(
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1LinkInRoute(JNIEnv* jenv, jclass jcls, jlong cthis)
 {
-  simgrid::s4u::LinkInRoute* arg1 = (simgrid::s4u::LinkInRoute*)0;
-
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(simgrid::s4u::LinkInRoute**)&cthis;
-  delete arg1;
+  delete (simgrid::s4u::LinkInRoute*)cthis;
 }
 
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -4368,24 +3907,11 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1parent(JN
   return jresult;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1set_1parent(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                              jobject jthis, jlong jarg2,
-                                                                              jobject jarg2_)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1set_1parent(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                             jobject jthis, jlong cparent,
+                                                                             jobject jparent)
 {
-  jlong jresult                 = 0;
-  simgrid::s4u::NetZone* arg1   = (simgrid::s4u::NetZone*)0;
-  simgrid::s4u::NetZone* arg2   = (simgrid::s4u::NetZone*)0;
-  simgrid::s4u::NetZone* result = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  (void)jarg2_;
-  arg1                               = *(simgrid::s4u::NetZone**)&cthis;
-  arg2                               = *(simgrid::s4u::NetZone**)&jarg2;
-  result                             = (simgrid::s4u::NetZone*)(arg1)->set_parent((simgrid::s4u::NetZone const*)arg2);
-  *(simgrid::s4u::NetZone**)&jresult = result;
-  return jresult;
+  ((NetZone*)cthis)->set_parent((NetZone*)cparent);
 }
 
 XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1children(JNIEnv* jenv, jclass jcls,
@@ -4419,17 +3945,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1al
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1host_1count(JNIEnv* jenv, jclass jcls,
                                                                                    jlong cthis, jobject jthis)
 {
-  jlong jresult               = 0;
-  simgrid::s4u::NetZone* arg1 = (simgrid::s4u::NetZone*)0;
-  size_t result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1    = *(simgrid::s4u::NetZone**)&cthis;
-  result  = ((simgrid::s4u::NetZone const*)arg1)->get_host_count();
-  jresult = (jlong)result;
-  return jresult;
+  return ((NetZone*)cthis)->get_host_count();
 }
 
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1property(JNIEnv* jenv, jclass jcls,
