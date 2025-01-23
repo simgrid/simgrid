@@ -106,6 +106,11 @@ simgrid::config::Flag<bool> _sg_mc_send_determinism{
       _mc_cfg_cb_check("value to enable/disable the detection of send-determinism in the communications schemes");
     }};
 
+simgrid::config::Flag<bool> _sg_mc_debug{
+    "model-check/debug",
+    "Whether to enable advance runtime verification. Those may be costly and therefore are desactivated by default.",
+    false, [](bool) { _mc_cfg_cb_check("value to enable/disable advance runtime verification"); }};
+
 simgrid::config::Flag<std::string> _sg_mc_buffering{
     "smpi/buffering",
     "Buffering semantic to use for MPI (only used in MC)",
