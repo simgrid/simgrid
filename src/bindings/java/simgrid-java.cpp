@@ -76,7 +76,9 @@
 #include "simgrid/plugins/live_migration.h"
 #include "simgrid/s4u.hpp"
 
+#include "simgrid/s4u/Activity.hpp"
 #include "simgrid/s4u/ActivitySet.hpp"
+#include "simgrid/s4u/Actor.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextJava.hpp"
 
@@ -281,9 +283,6 @@ static struct SimGridJavaInit {
       // Initialize extensions
       ActorJavaExt::EXTENSION_ID = simgrid::s4u::Actor::extension_create<ActorJavaExt>();
       ActivityJavaExt::EXTENSION_ID = simgrid::s4u::Activity::extension_create<ActivityJavaExt>();
-
-      // Initialize plugins
-      sg_vm_live_migration_plugin_init();
 
       // Initialize the factory mechanism
       return new simgrid::kernel::context::JavaContextFactory();
@@ -1056,6 +1055,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1d
 
   auto cdep         = ((Activity*)cthis)->get_dependencies();
   jobjectArray jres = jenv->NewObjectArray(cdep.size(), activity_class, nullptr);
+
   int i             = 0;
   for (ActivityPtr const& act : cdep) {
     intrusive_ptr_add_ref(act.get());
@@ -1103,43 +1103,6 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1s
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Activity(JNIEnv* jenv, jclass jcls, jlong cthis)
 {
   intrusive_ptr_release((Activity*)cthis);
-}
-
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1vetoed_1activities(JNIEnv* jenv,
-                                                                                                  jclass jcls)
-{
-  auto [activity_class, activity_ctor] = get_classctor_activity(jenv);
-  auto [comm_class, comm_ctor]         = get_classctor_comm(jenv);
-  auto [io_class, io_ctor]             = get_classctor_io(jenv);
-  auto [exec_class, exec_ctor]         = get_classctor_exec(jenv);
-
-  auto* csucc       = Activity::get_vetoed_activities();
-  jobjectArray jres = jenv->NewObjectArray(csucc->size(), activity_class, nullptr);
-  int i             = 0;
-  for (Activity* act : *csucc) {
-    intrusive_ptr_add_ref(act);
-    if (dynamic_cast<Comm*>(act)) {
-      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(comm_class, comm_ctor, act, (jboolean)1));
-    } else if (dynamic_cast<Io*>(act)) {
-      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(io_class, io_ctor, act, (jboolean)1));
-    } else if (dynamic_cast<Exec*>(act)) {
-      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(exec_class, exec_ctor, act, (jboolean)1));
-    } else
-      THROW_IMPOSSIBLE;
-    i++;
-  }
-  return jres;
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1set_1vetoed_1activities(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis)
-{
-  std::set<simgrid::s4u::Activity*>* arg1 = (std::set<simgrid::s4u::Activity*>*)0;
-
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(std::set<simgrid::s4u::Activity*>**)&cthis;
-  simgrid::s4u::Activity::set_vetoed_activities(arg1);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1start(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -1297,6 +1260,28 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1marked
                                                                                  jobject jthis)
 {
   return ((Activity*)cthis)->is_marked();
+}
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1data(JNIEnv* jenv, jclass jcls, jlong cthis)
+{
+  jobject cdata = ((Activity*)cthis)->get_data<_jobject>();
+  if (cdata != nullptr)
+    cdata = jenv->NewLocalRef(cdata);
+  return cdata;
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1set_1data(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                            jobject obj)
+{
+  // Clean any object already stored
+  jobject cdata = ((Activity*)cthis)->get_data<_jobject>();
+  if (cdata != nullptr)
+    jenv->DeleteGlobalRef(cdata);
+
+  // Store the new object
+  auto glob = obj;
+  if (glob != nullptr)
+    glob = jenv->NewGlobalRef(obj);
+
+  ((Activity*)cthis)->set_data(glob);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1ActivitySet(JNIEnv* jenv, jclass jcls)
@@ -2312,22 +2297,26 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1name(JNIEn
 XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1data(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                            jobject jthis)
 {
-  auto self    = (Disk*)cthis;
-  jobject glob = self->get_data<_jobject>();
-  auto local   = jenv->NewLocalRef(glob);
-  jenv->DeleteGlobalRef(glob);
-
-  return local;
+  jobject cdata = ((Host*)cthis)->get_data<_jobject>();
+  if (cdata != nullptr)
+    cdata = jenv->NewLocalRef(cdata);
+  return cdata;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1data(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis, jobject data)
+                                                                        jobject jthis, jobject jdata)
 {
+  // Clean any object already stored
+  jobject cdata = ((Disk*)cthis)->get_data<_jobject>();
+  if (cdata != nullptr)
+    jenv->DeleteGlobalRef(cdata);
 
-  auto self = (Disk*)cthis;
-  auto glob = jenv->NewGlobalRef(data);
+  // Store the new object
+  auto glob = jdata;
+  if (glob != nullptr)
+    glob = jenv->NewGlobalRef(glob);
 
-  self->set_data(glob);
+  ((Disk*)cthis)->set_data(glob);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1read_1bandwidth(JNIEnv* jenv, jclass jcls,
@@ -2710,6 +2699,37 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1track_1vetoed_1a
 {
   ((Engine*)cthis)->track_vetoed_activities(&vetoed_activities);
 }
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1clear_1vetoed_1activities(JNIEnv* jenv, jclass jcls,
+                                                                                         jlong cthis)
+{
+  vetoed_activities.clear();
+}
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1vetoed_1activities(JNIEnv* jenv,
+                                                                                               jclass jcls, jlong cthis)
+{
+  auto [activity_class, activity_ctor] = get_classctor_activity(jenv);
+  auto [comm_class, comm_ctor]         = get_classctor_comm(jenv);
+  auto [io_class, io_ctor]             = get_classctor_io(jenv);
+  auto [exec_class, exec_ctor]         = get_classctor_exec(jenv);
+
+  jobjectArray jres = jenv->NewObjectArray(vetoed_activities.size(), activity_class, nullptr);
+
+  int i = 0;
+  for (Activity* act : vetoed_activities) {
+    intrusive_ptr_add_ref(act);
+    if (dynamic_cast<Comm*>(act)) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(comm_class, comm_ctor, act, (jboolean)1));
+    } else if (dynamic_cast<Io*>(act)) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(io_class, io_ctor, act, (jboolean)1));
+    } else if (dynamic_cast<Exec*>(act)) {
+      jenv->SetObjectArrayElement(jres, i, jenv->NewObject(exec_class, exec_ctor, act, (jboolean)1));
+    } else
+      THROW_IMPOSSIBLE;
+    i++;
+  }
+  return jres;
+}
+
 /** Create a Java org.simgrid.s4u.Actor of the given subclass and using the (String,String,String[]) constructor */
 static void java_main(int argc, char* argv[])
 {
@@ -2992,6 +3012,13 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1S
   std::string val  = java_string_to_std_string(jenv, jval);
   simgrid::s4u::Engine::set_config(name, val);
 }
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1vm_1live_1migration_1init(JNIEnv* jenv,
+                                                                                                  jclass jcls,
+                                                                                                  jlong cthis)
+{
+
+  sg_vm_live_migration_plugin_init();
+}
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1platform_1created_1cb(JNIEnv* jenv, jclass jcls,
                                                                                           jobject cb)
@@ -3115,6 +3142,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1fro
   auto cres       = simgrid::s4u::create_DAG_from_dot(str);
 
   jobjectArray jres = jenv->NewObjectArray(cres.size(), activity_class, nullptr);
+
   int i             = 0;
   for (ActivityPtr const& act : cres) {
     intrusive_ptr_add_ref(act.get());
@@ -3147,6 +3175,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1fro
   auto cres       = simgrid::s4u::create_DAG_from_DAX(str);
 
   jobjectArray jres = jenv->NewObjectArray(cres.size(), activity_class, nullptr);
+
   int i             = 0;
   for (ActivityPtr const& act : cres) {
     intrusive_ptr_add_ref(act.get());
@@ -3179,6 +3208,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1fro
   auto cres       = simgrid::s4u::create_DAG_from_json(str);
 
   jobjectArray jres = jenv->NewObjectArray(cres.size(), activity_class, nullptr);
+
   int i             = 0;
   for (ActivityPtr const& act : cres) {
     intrusive_ptr_add_ref(act.get());
@@ -3366,12 +3396,40 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1name(JNIEn
 XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1speed(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                             jobject jthis)
 {
-  return (jdouble)((simgrid::s4u::Host*)cthis)->get_speed();
+  return (jdouble)((Host*)cthis)->get_speed();
 }
 XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1is_1on(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                          jobject jthis)
 {
   return ((simgrid::s4u::Host*)cthis)->is_on();
+}
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1data(JNIEnv* jenv, jclass jcls, jlong cthis)
+{
+  jobject cdata = ((Host*)cthis)->get_data<_jobject>();
+  if (cdata != nullptr)
+    cdata = jenv->NewLocalRef(cdata);
+  return cdata;
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1data(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                        jobject obj)
+{
+  // Clean any object already stored
+  jobject cdata = ((Host*)cthis)->get_data<_jobject>();
+  if (cdata != nullptr)
+    jenv->DeleteGlobalRef(cdata);
+
+  // Store the new object
+  auto glob = obj;
+  if (glob != nullptr)
+    glob = jenv->NewGlobalRef(obj);
+
+  ((Host*)cthis)->set_data(glob);
+}
+
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1concurrency_1limit(JNIEnv* jenv, jclass jcls,
+                                                                                      jlong cthis, jint limit)
+{
+  ((Host*)cthis)->set_concurrency_limit(limit);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1init(JNIEnv* jenv, jclass jcls)

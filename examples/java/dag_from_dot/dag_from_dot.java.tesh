@@ -1,0 +1,54 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:dag_from_dot.jar dag_from_dot ${platfdir}/cluster_backbone.xml ${srcdir:=.}/dag_from_dot/dag.dot --log=no_loc
+> [0.000000] [java/INFO] Using regular java threads.
+> [0.000000] [java/INFO] --------- Display all activities of the loaded DAG -----------
+> [0.000000] [java/INFO] 'root' is an Exec: 0 flops to execute. Dependencies: solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '0' is an Exec: 10000000129 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '1' is an Exec: 10000000131 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '2' is an Exec: 10000000121 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '3' is an Exec: 10000000230 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '4' is an Exec: 10000000004 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '5' is an Exec: 10000000046 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '6' is an Exec: 10000000091 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '7' is an Exec: 10000000040 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '8' is an Exec: 10000000250 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '9' is an Exec: 10000000079 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '0->1' is a Comm: 10001 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '1->2' is a Comm: 10004 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '2->3' is a Comm: 10001 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '4->5' is a Comm: 10029 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '6->7' is a Comm: 10004 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '7->8' is a Comm: 10000 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] '7->end' is a Comm: 10014000 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] 'root->5' is a Comm: 10014000 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] 'end' is an Exec: 10000000129 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [java/INFO] ------------------- Schedule tasks ---------------------------
+> [0.000000] [java/INFO] ------------------- Run the schedule -------------------------
+> [110.047415] [java/INFO] -------------- Summary of executed schedule ------------------
+> [110.047415] [java/INFO] [0.000000->0.000000] 'root' executed on node-0.simgrid.org
+> [110.047415] [java/INFO] [0.000000->10.000000] '0' executed on node-1.simgrid.org
+> [110.047415] [java/INFO] [10.007889->20.007889] '1' executed on node-10.simgrid.org
+> [110.047415] [java/INFO] [20.015777->30.015777] '2' executed on node-11.simgrid.org
+> [110.047415] [java/INFO] [30.023666->40.023666] '3' executed on node-12.simgrid.org
+> [110.047415] [java/INFO] [40.023666->50.023666] '4' executed on node-13.simgrid.org
+> [110.047415] [java/INFO] [50.031555->60.031555] '5' executed on node-14.simgrid.org
+> [110.047415] [java/INFO] [60.031555->70.031555] '6' executed on node-15.simgrid.org
+> [110.047415] [java/INFO] [70.039443->80.039443] '7' executed on node-16.simgrid.org
+> [110.047415] [java/INFO] [80.047414->90.047415] '8' executed on node-17.simgrid.org
+> [110.047415] [java/INFO] [90.047415->100.047415] '9' executed on node-18.simgrid.org
+> [110.047415] [java/INFO] [10.000000->10.007889] '0->1' transferred from node-1.simgrid.org to node-10.simgrid.org
+> [110.047415] [java/INFO] [20.007889->20.015777] '1->2' transferred from node-10.simgrid.org to node-11.simgrid.org
+> [110.047415] [java/INFO] [30.015777->30.023666] '2->3' transferred from node-11.simgrid.org to node-12.simgrid.org
+> [110.047415] [java/INFO] [50.023666->50.031555] '4->5' transferred from node-13.simgrid.org to node-14.simgrid.org
+> [110.047415] [java/INFO] [70.031555->70.039443] '6->7' transferred from node-15.simgrid.org to node-16.simgrid.org
+> [110.047415] [java/INFO] [80.039443->80.047414] '7->8' transferred from node-16.simgrid.org to node-17.simgrid.org
+> [110.047415] [java/INFO] [80.039443->80.129922] '7->end' transferred from node-16.simgrid.org to node-0.simgrid.org
+> [110.047415] [java/INFO] [0.000000->0.090396] 'root->5' transferred from node-0.simgrid.org to node-14.simgrid.org
+> [110.047415] [java/INFO] [100.047415->110.047415] 'end' executed on node-19.simgrid.org
+
+! expect return 2
+$ ${javacmd} -cp ../../simgrid.jar:dag_from_dot.jar dag_from_dot ${platfdir}/cluster_backbone.xml ${srcdir:=.}/dag_from_dot/dag_with_cycle.dot --log=no_loc
+> [0.000000] [java/INFO] Using regular java threads.
+> [0.000000] [dag_parsing/ERROR] The DOT described in dag_with_cycle.dot is not a DAG. It contains a cycle.
+> [0.000000] [java/ERROR] No dot loaded. Do you have a cycle in your graph?

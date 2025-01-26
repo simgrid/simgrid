@@ -101,11 +101,9 @@ public class Engine {
     return simgridJNI.Engine_get_link_count(swigCPtr, this);
   }
 
-  public void track_vetoed_activities(SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t vetoed_activities)
-  {
-    simgridJNI.Engine_track_vetoed_activities(swigCPtr);
-  }
+  public void track_vetoed_activities() { simgridJNI.Engine_track_vetoed_activities(swigCPtr); }
   public Activity[] get_vetoed_activities() { return simgridJNI.Engine_get_vetoed_activities(swigCPtr); }
+  public void clear_vetoed_activities() { simgridJNI.Engine_clear_vetoed_activities(swigCPtr); }
 
   public Link[] get_all_links() { return simgridJNI.Engine_get_all_links(swigCPtr, this); }
 
@@ -179,7 +177,7 @@ public class Engine {
     return (cPtr == 0) ? null : new NetZone(cPtr);
   }
 
-  public NetZone create_wifi_zone(String name)
+  public NetZone set_rootzone_wifi(String name)
   {
     long cPtr = simgridJNI.Engine_set_root_netzone_wifi(swigCPtr, this, name);
     return (cPtr == 0) ? null : new NetZone(cPtr);
@@ -222,6 +220,8 @@ public class Engine {
   public static void set_config(String name, String value) {
     simgridJNI.Engine_set_config__SWIG_4(name, value);
   }
+
+  public void plugin_vm_live_migration_init() { simgridJNI.Engine_plugin_vm_live_migration_init(swigCPtr); }
 
   public static void on_platform_created_cb(CallbackVoid cb) { simgridJNI.Engine_on_platform_created_cb(cb); }
 

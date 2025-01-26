@@ -58,8 +58,6 @@ public class simgridJNI {
   public final static native Activity[] Activity_get_dependencies(long jarg1, Activity jarg1_);
   public final static native Activity[] Activity_get_successors(long jarg1, Activity jarg1_);
   public final static native void delete_Activity(long jarg1);
-  public final static native Activity[] Activity_get_vetoed_activities();
-  public final static native void Activity_set_vetoed_activities(long jarg1);
   public final static native void Activity_start(long jarg1, Activity jarg1_);
   public final static native boolean Activity_test(long jarg1, Activity jarg1_);
   public final static native void Activity_await_for(long jarg1, Activity jarg1_, double jarg2);
@@ -235,6 +233,7 @@ public class simgridJNI {
   public final static native String Engine_flatify_platform(long jarg1, Engine jarg1_);
   public final static native void Engine_track_vetoed_activities(long cthis);
   public final static native Activity[] Engine_get_vetoed_activities(long cthis);
+  public final static native void Engine_clear_vetoed_activities(long cthis);
   public final static native void Engine_load_deployment(long jarg1, Engine jarg1_, String jarg2);
   public final static native long Engine_get_host_count(long jarg1, Engine jarg1_);
   public final static native Host[] Engine_get_all_hosts(long jarg1, Engine jarg1_);
@@ -264,6 +263,7 @@ public class simgridJNI {
   public final static native void Engine_set_config__SWIG_2(String jarg1, boolean jarg2);
   public final static native void Engine_set_config__SWIG_3(String jarg1, double jarg2);
   public final static native void Engine_set_config__SWIG_4(String jarg1, String jarg2);
+  public final static native void Engine_plugin_vm_live_migration_init(long jarg1);
   public final static native void Engine_on_platform_created_cb(CallbackVoid jarg1);
   public final static native void Engine_on_platform_creation_cb(CallbackVoid jarg1);
   public final static native void Engine_on_simulation_start_cb(CallbackVoid jarg1);

@@ -53,12 +53,6 @@ public class Activity {
 
   public Activity[] get_successors() { return simgridJNI.Activity_get_successors(swigCPtr, this); }
 
-  public static Activity[] get_vetoed_activities() { return simgridJNI.Activity_get_vetoed_activities(); }
-
-  public static void set_vetoed_activities(SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t whereto) {
-    simgridJNI.Activity_set_vetoed_activities(SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.getCPtr(whereto));
-  }
-
   public Activity start() {
     simgridJNI.Activity_start(swigCPtr, this);
     return this;
