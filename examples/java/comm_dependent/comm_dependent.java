@@ -7,12 +7,8 @@ import org.simgrid.s4u.*;
 
 class Sender extends Actor {
   Mailbox mailbox;
-  public Sender(String name, Host location, Mailbox mb)
-  {
-    super(name, location);
-    mailbox = mb;
-  }
-  public void run()
+  public Sender(Mailbox mb) { mailbox = mb; }
+  public void run() throws SimgridException
   {
     Double computation_amount = get_host().get_speed();
 
@@ -27,12 +23,8 @@ class Sender extends Actor {
 }
 class Receiver extends Actor {
   Mailbox mailbox;
-  public Receiver(String name, Host location, Mailbox mb)
-  {
-    super(name, location);
-    mailbox = mb;
-  }
-  public void run()
+  public Receiver(Mailbox mb) { mailbox = mb; }
+  public void run() throws SimgridException
   {
     Double computation_amount = get_host().get_speed();
 
@@ -44,7 +36,7 @@ class Receiver extends Actor {
 
     comm.await();
     exec.await();
-    var received = (double)comm.get_payload();
+    double received = (double)comm.get_payload();
     Engine.info("Received: " + (int)received + " flops were computed on sender");
   }
 }
@@ -53,14 +45,14 @@ public class comm_dependent {
 
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
 
     e.load_platform(args[0]);
 
-    var mbox = e.mailbox_by_name_or_create("Mailbox");
+    Mailbox mbox = e.mailbox_by_name("Mailbox");
 
-    new Sender("sender", e.host_by_name("Tremblay"), mbox);
-    new Receiver("receiver", e.host_by_name("Jupiter"), mbox);
+    e.add_actor("sender", e.host_by_name("Tremblay"), new Sender(mbox));
+    e.add_actor("receiver", e.host_by_name("Jupiter"), new Receiver(mbox));
 
     e.run();
 

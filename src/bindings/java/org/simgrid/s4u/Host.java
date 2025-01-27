@@ -23,11 +23,6 @@ public class Host {
 
   public boolean is_on() { return simgridJNI.Host_is_on(swigCPtr, this); }
 
-  public static Host by_name(String name)
-  {
-    long cPtr = simgridJNI.Host_by_name(name);
-    return (cPtr == 0) ? null : new Host(cPtr);
-  }
   public static Host current()
   {
     long cPtr = simgridJNI.Host_current();
@@ -36,7 +31,7 @@ public class Host {
   public Disk create_disk(String name, double read_bandwidth, double write_bandwidth)
   {
     long cPtr = simgridJNI.Host_create_disk(swigCPtr, this, name, read_bandwidth, write_bandwidth);
-    return (cPtr == 0) ? null : new Disk(cPtr, false);
+    return (cPtr == 0) ? null : new Disk(cPtr);
   }
   public String[] get_properties_names() { return simgridJNI.Host_get_properties_names(swigCPtr, this); }
   public String get_property(String name) { return simgridJNI.Host_get_property(swigCPtr, this, name); }
@@ -48,4 +43,10 @@ public class Host {
     long cPtr = simgridJNI.Host_create_vm(swigCPtr, this, name, core_amount);
     return (cPtr == 0) ? null : new VirtualMachine(cPtr);
   }
+
+  public Link[] route_links_to(Host host) { return simgridJNI.Host_route_links_to(swigCPtr, Host.getCPtr(host)); }
+  public double route_latency_to(Host host) { return simgridJNI.Host_route_latency_to(swigCPtr, Host.getCPtr(host)); }
+  public Object get_data() { return simgridJNI.Host_get_data(swigCPtr); }
+  public void set_data(Object o) { simgridJNI.Host_set_data(swigCPtr, o); }
+  public void set_concurrency_limit(int i) { simgridJNI.Host_set_concurrency_limit(swigCPtr, i); }
 }

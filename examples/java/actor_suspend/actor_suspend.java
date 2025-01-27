@@ -7,7 +7,6 @@ import org.simgrid.s4u.*;
 
 /* The Lazy guy only wants to sleep, but can be awaken by the dream_master actor. */
 class LazyGuy extends Actor {
-  LazyGuy(String name, Host location) { super(name, location); }
   public void run()
   {
     Engine.info("Nobody's watching me ? Let's go to sleep.");
@@ -31,12 +30,11 @@ class LazyGuy extends Actor {
 
 /* The Dream master: */
 class DreamMaster extends Actor {
-  DreamMaster(String name, Host location) { super(name, location); }
 
   public void run()
   {
     Engine.info("Let's create a lazy guy."); /* - Create a lazy_guy actor */
-    Actor lazy = new LazyGuy("Lazy", this.get_host());
+    Actor lazy = this.get_engine().add_actor("Lazy", this.get_host(), new LazyGuy());
     Engine.info("Let's wait a little bit...");
     this.sleep_for(10); /* - Wait for 10 seconds */
     Engine.info("Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!");
@@ -74,9 +72,9 @@ class DreamMaster extends Actor {
 public class actor_suspend {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]);
-    new DreamMaster("dream_master", Host.by_name("Boivin"));
+    e.add_actor("dream_master", e.host_by_name("Boivin"), new DreamMaster());
     e.run();
   }
 }

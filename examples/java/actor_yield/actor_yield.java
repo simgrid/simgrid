@@ -16,11 +16,7 @@ import org.simgrid.s4u.*;
 
 class Yielder extends Actor {
   long number_of_yields;
-  public Yielder(String name, Host location, long number_of_yields)
-  {
-    super(name, location);
-    this.number_of_yields = number_of_yields;
-  }
+  public Yielder(long number_of_yields) { this.number_of_yields = number_of_yields; }
   public void run()
   {
     for (int i = 0; i < number_of_yields; i++)
@@ -32,11 +28,11 @@ class Yielder extends Actor {
 public class actor_yield {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]);
 
-    new Yielder("yielder", e.host_by_name("Tremblay"), 10);
-    new Yielder("yielder", e.host_by_name("Ruby"), 15);
+    e.add_actor("yielder", e.host_by_name("Tremblay"), new Yielder(10));
+    e.add_actor("yielder", e.host_by_name("Ruby"), new Yielder(15));
 
     e.run(); /* - Run the simulation */
   }

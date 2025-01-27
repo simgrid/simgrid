@@ -7,12 +7,8 @@ import org.simgrid.s4u.*;
 
 class sender extends Actor {
   Mailbox mailbox;
-  public sender(String name, Host location, Mailbox mailbox_)
-  {
-    super(name, location);
-    mailbox = mailbox_;
-  }
-  public void run()
+  public sender(Mailbox mailbox_) { mailbox = mailbox_; }
+  public void run() throws SimgridException
   {
     Engine.info("Send at full bandwidth");
 
@@ -34,12 +30,8 @@ class sender extends Actor {
 
 class receiver extends Actor {
   Mailbox mailbox;
-  public receiver(String name, Host location, Mailbox mailbox_)
-  {
-    super(name, location);
-    mailbox = mailbox_;
-  }
-  public void run()
+  public receiver(Mailbox mailbox) { this.mailbox = mailbox; }
+  public void run() throws SimgridException
   {
     /* - Receive the first payload sent at full bandwidth */
     Double sender_time        = (Double)mailbox.get();
@@ -56,13 +48,13 @@ class receiver extends Actor {
 public class comm_throttling {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]);
 
-    Mailbox mbox = e.mailbox_by_name_or_create("Mailbox");
+    Mailbox mbox = e.mailbox_by_name("Mailbox");
 
-    new sender("sender", e.host_by_name("node-0.simgrid.org"), mbox);
-    new receiver("receiver", e.host_by_name("node-1.simgrid.org"), mbox);
+    e.add_actor("sender", e.host_by_name("node-0.simgrid.org"), new sender(mbox));
+    e.add_actor("receiver", e.host_by_name("node-1.simgrid.org"), new receiver(mbox));
 
     e.run();
   }

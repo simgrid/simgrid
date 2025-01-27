@@ -14,10 +14,8 @@ class producer extends Actor {
   Semaphore sem_empty;
   Semaphore sem_full;
   Vector<String> args;
-  public producer(String name, Host location, Semaphore sem_empty, Semaphore sem_full, Vector<String> args)
+  public producer(Semaphore sem_empty, Semaphore sem_full, Vector<String> args)
   {
-    super(name, location);
-
     this.sem_empty = sem_empty;
     this.sem_full  = sem_full;
     this.args      = args;
@@ -25,7 +23,7 @@ class producer extends Actor {
 
   public void run()
   {
-    for (var str : args) {
+    for (String str : args) {
       sem_empty.acquire();
       Engine.info("Pushing '%s'", str);
       synchro_semaphore.buffer = str;
@@ -39,10 +37,8 @@ class producer extends Actor {
 class consumer extends Actor {
   Semaphore sem_empty;
   Semaphore sem_full;
-  public consumer(String name, Host location, Semaphore sem_empty, Semaphore sem_full)
+  public consumer(Semaphore sem_empty, Semaphore sem_full)
   {
-    super(name, location);
-
     this.sem_empty = sem_empty;
     this.sem_full  = sem_full;
   }
@@ -65,16 +61,16 @@ public class synchro_semaphore {
 
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args.length >= 1 ? args[0] : "../../platforms/two_hosts.xml");
 
     Vector<String> params = new Vector<>(List.of("one", "two", "three", ""));
 
-    var sem_empty = Semaphore.create(1); /* indicates whether the buffer is empty */
-    var sem_full  = Semaphore.create(0); /* indicates whether the buffer is full */
+    Semaphore sem_empty = Semaphore.create(1); /* indicates whether the buffer is empty */
+    Semaphore sem_full  = Semaphore.create(0); /* indicates whether the buffer is full */
 
-    new producer("producer", e.host_by_name("Tremblay"), sem_empty, sem_full, params);
-    new consumer("consumer", e.host_by_name("Jupiter"), sem_empty, sem_full);
+    e.add_actor("producer", e.host_by_name("Tremblay"), new producer(sem_empty, sem_full, params));
+    e.add_actor("consumer", e.host_by_name("Jupiter"), new consumer(sem_empty, sem_full));
     e.run();
   }
 }

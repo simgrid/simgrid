@@ -11,19 +11,18 @@ class sender extends Actor {
   int messages_count;
   int payload_size;
 
-  public sender(String name, Host location, int messages_count_, int payload_size_)
+  public sender(int messages_count_, int payload_size_)
   {
-    super(name, location);
     messages_count = messages_count_;
     payload_size   = payload_size_;
   }
 
-  public void run()
+  public void run() throws SimgridException
   {
     double sleep_start_time = 5.0;
     double sleep_test_time  = 0;
 
-    Mailbox mbox = Mailbox.by_name("receiver");
+    Mailbox mbox = this.get_engine().mailbox_by_name("receiver");
 
     Engine.info("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time, sleep_test_time);
     sleep_for(sleep_start_time);
@@ -51,13 +50,12 @@ class sender extends Actor {
 }
 
 class receiver extends Actor {
-  public receiver(String name, Host location) { super(name, location); }
   public void run()
   {
     double sleep_start_time = 1.0;
     double sleep_test_time  = 0.1;
 
-    Mailbox mbox = Mailbox.by_name("receiver");
+    Mailbox mbox = this.get_engine().mailbox_by_name("receiver");
 
     Engine.info("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time, sleep_test_time);
     sleep_for(sleep_start_time);
@@ -83,12 +81,12 @@ class receiver extends Actor {
 public class comm_await {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
 
     e.load_platform(args[0]);
 
-    new sender("sender", e.host_by_name("Tremblay"), 3, 482117300);
-    new receiver("receiver", e.host_by_name("Ruby"));
+    e.add_actor("sender", e.host_by_name("Tremblay"), new sender(3, 482117300));
+    e.add_actor("receiver", e.host_by_name("Ruby"), new receiver());
 
     e.run();
   }

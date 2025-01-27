@@ -18,11 +18,6 @@ public class Mailbox {
     return simgridJNI.Mailbox_get_name(swigCPtr, this);
   }
 
-  public static Mailbox by_name(String name) {
-    long cPtr = simgridJNI.Mailbox_by_name(name);
-    return (cPtr == 0) ? null : new Mailbox(cPtr);
-  }
-
   public boolean empty() {
     return simgridJNI.Mailbox_empty(swigCPtr, this);
   }
@@ -47,10 +42,7 @@ public class Mailbox {
     simgridJNI.Mailbox_set_receiver(swigCPtr, this, Actor.getCPtr(actor), actor);
   }
 
-  public Actor get_receiver() {
-    long cPtr = simgridJNI.Mailbox_get_receiver(swigCPtr, this);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
+  public Actor get_receiver() { return simgridJNI.Mailbox_get_receiver(swigCPtr, this); }
 
   public Comm put_init() {
     long cPtr = simgridJNI.Mailbox_put_init__SWIG_0(swigCPtr, this);
@@ -100,9 +92,7 @@ public class Mailbox {
     simgridJNI.Mailbox_put__SWIG_1(swigCPtr, this, payload, simulated_size_in_bytes, timeout);
   }
 
-  public java.lang.Object get() {
-    return simgridJNI.Mailbox_get(swigCPtr, this);
-  }
+  public java.lang.Object get() throws NetworkFailureException { return simgridJNI.Mailbox_get(swigCPtr, this); }
 
   public final static class IprobeKind {
     public final static Mailbox.IprobeKind SEND = new Mailbox.IprobeKind("SEND");

@@ -8,14 +8,13 @@ import org.simgrid.s4u.*;;
 class Pinger extends Actor {
   Mailbox mailbox_in;
   Mailbox mailbox_out;
-  public Pinger(String name, Host location, Mailbox mailbox_in, Mailbox mailbox_out)
+  public Pinger(Mailbox mailbox_in, Mailbox mailbox_out)
   {
-    super(name, location);
     this.mailbox_in = mailbox_in;
     this.mailbox_out = mailbox_out;
   }
-  @Override
-  public void run() {
+  @Override public void run() throws SimgridException
+  {
     Engine.info("Ping from mailbox "+mailbox_in.get_name()+" to mailbox "+mailbox_out.get_name());
 
     /* - Do the ping with a 1-Byte payload (latency bound) ... */
@@ -34,14 +33,13 @@ class Pinger extends Actor {
 class Ponger extends Actor {
   Mailbox mailbox_in;
   Mailbox mailbox_out;
-  public Ponger(String name, Host location, Mailbox mailbox_in, Mailbox mailbox_out)
+  public Ponger(Mailbox mailbox_in, Mailbox mailbox_out)
   {
-    super(name, location);
     this.mailbox_in = mailbox_in;
     this.mailbox_out = mailbox_out;
   }
-  @Override
-  public void run() {
+  @Override public void run() throws SimgridException
+  {
     Engine.info("Pong from mailbox "+mailbox_in.get_name()+" to mailbox "+mailbox_out.get_name());
 
     /* - Receive the (small) ping first ....*/
@@ -65,11 +63,11 @@ public class comm_pingpong {
     Engine e = new Engine(args);
     e.load_platform(args[0]);
 
-    Mailbox mb1 = e.mailbox_by_name_or_create("Mailbox 1");
-    Mailbox mb2 = e.mailbox_by_name_or_create("Mailbox 2");
+    Mailbox mb1 = e.mailbox_by_name("Mailbox 1");
+    Mailbox mb2 = e.mailbox_by_name("Mailbox 2");
 
-    new Pinger("pinger", e.host_by_name("Tremblay"), mb1, mb2);
-    new Ponger("ponger", e.host_by_name("Jupiter"), mb2, mb1);
+    e.add_actor("pinger", e.host_by_name("Tremblay"), new Pinger(mb1, mb2));
+    e.add_actor("ponger", e.host_by_name("Jupiter"), new Ponger(mb2, mb1));
 
     e.run();
     Engine.info("The simulation is terminating.");

@@ -19,27 +19,25 @@ import org.simgrid.s4u.*;
 
 class sender extends Actor {
   Host h1, h2, h3, h4;
-  public sender(String name, Host location, Host host1, Host host2, Host host3, Host host4)
+  public sender(Host host1, Host host2, Host host3, Host host4)
   {
-    super(name, location);
-
     h1 = host1;
     h2 = host2;
     h3 = host3;
     h4 = host4;
   }
-  public void run()
+  public void run() throws SimgridException
   {
     Engine.info("Send c12 with sendto_async(" + h1.get_name() + " -> " + h2.get_name() +
                 "), and c34 with sendto_init(" + h3.get_name() + " -> " + h4.get_name() + ")");
 
-    var c12 = Comm.sendto_async(h1, h2, 1.5e7); // Creates and start a direct communication
-    var c34 = Comm.sendto_init(h3, h4);         // Creates but do not start another direct communication
+    Comm c12 = Comm.sendto_async(h1, h2, 1.5e7); // Creates and start a direct communication
+    Comm c34 = Comm.sendto_init(h3, h4);         // Creates but do not start another direct communication
     c34.set_payload_size(1e7);                  // Specify the amount of bytes to exchange in this comm
 
     // You can also detach() communications that you never plan to test() or wait().
     // Here we create a communication that only slows down the other ones
-    var noise = Comm.sendto_init(h1, h2);
+    Comm noise = Comm.sendto_init(h1, h2);
     noise.set_payload_size(10000);
     noise.detach();
 
@@ -69,7 +67,7 @@ class sender extends Actor {
 
     /* As usual, you don't have to explicitly start communications that were just init()ed.
        The await() will start it automatically. */
-    var c14 = Comm.sendto_init(h1, h4);
+    Comm c14 = Comm.sendto_init(h1, h4);
     c14.set_payload_size(100).await(); // Chaining 2 operations on this new communication
   }
 }
@@ -78,13 +76,12 @@ public class comm_host2host {
 
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
 
     e.load_platform(args[0]);
-
-    new sender("sender", e.host_by_name("Boivin"), e.host_by_name("Tremblay"), e.host_by_name("Jupiter"),
-               e.host_by_name("Fafard"), e.host_by_name("Ginette"));
-
+    e.add_actor("sender", e.host_by_name("Boivin"),
+                new sender(e.host_by_name("Tremblay"), e.host_by_name("Jupiter"), e.host_by_name("Fafard"),
+                           e.host_by_name("Ginette")));
     e.run();
 
     Engine.info("Simulation ends");

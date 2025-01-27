@@ -33,13 +33,14 @@ int main(int argc, char* argv[])
   }
 
   simgrid::s4u::Exec::on_completion_cb([](simgrid::s4u::Exec const& exec) {
-    XBT_INFO("Exec '%s' is complete (start time: %f, finish time: %f)", exec.get_cname(),
-             exec.get_start_time(), exec.get_finish_time());
+    XBT_INFO("Exec '%s' on %s is complete (start time: %f, finish time: %f)", exec.get_cname(),
+             exec.get_host()->get_cname(), exec.get_start_time(), exec.get_finish_time());
   });
 
   simgrid::s4u::Comm::on_completion_cb([](simgrid::s4u::Comm const& comm) {
-    XBT_INFO("Comm '%s' is complete (start time: %f, finish time: %f)", comm.get_cname(),
-             comm.get_start_time(), comm.get_finish_time());
+    XBT_INFO("Comm '%s' from %s to %s is complete (start time: %f, finish time: %f)", comm.get_cname(),
+             comm.get_source()->get_cname(), comm.get_destination()->get_cname(), comm.get_start_time(),
+             comm.get_finish_time());
   });
 
   e.run();

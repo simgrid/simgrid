@@ -14,6 +14,8 @@ public class Activity {
     swigCPtr = cPtr;
   }
 
+  protected final long getCPtr() { return swigCPtr; }
+
   protected static long getCPtr(Activity obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
@@ -47,18 +49,11 @@ public class Activity {
     return simgridJNI.Activity_has_no_successor(swigCPtr, this);
   }
 
-  public SWIGTYPE_p_std__setT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t get_dependencies() {
-    return new SWIGTYPE_p_std__setT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t(simgridJNI.Activity_get_dependencies(swigCPtr, this), false);
-  }
+  public Activity[] get_dependencies() { return simgridJNI.Activity_get_dependencies(swigCPtr, this); }
 
-  public SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t get_successors() {
-    return new SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Activity_t_t(simgridJNI.Activity_get_successors(swigCPtr, this), false);
-  }
+  public Activity[] get_successors() { return simgridJNI.Activity_get_successors(swigCPtr, this); }
 
-  public static SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t get_vetoed_activities() {
-    long cPtr = simgridJNI.Activity_get_vetoed_activities();
-    return (cPtr == 0) ? null : new SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t(cPtr, false);
-  }
+  public static Activity[] get_vetoed_activities() { return simgridJNI.Activity_get_vetoed_activities(); }
 
   public static void set_vetoed_activities(SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t whereto) {
     simgridJNI.Activity_set_vetoed_activities(SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.getCPtr(whereto));
@@ -73,19 +68,19 @@ public class Activity {
     return simgridJNI.Activity_test(swigCPtr, this);
   }
 
-  public Activity await_for(double timeout) throws TimeoutException
+  public Activity await_for(double timeout) throws SimgridException
   {
     simgridJNI.Activity_await_for(swigCPtr, this, timeout);
     return this;
   }
 
-  public Activity await_for_or_cancel(double timeout) throws TimeoutException
+  public Activity await_for_or_cancel(double timeout) throws SimgridException
   {
     simgridJNI.Activity_await_for_or_cancel(swigCPtr, this, timeout);
     return this;
   }
 
-  public void await_until(double time_limit) throws TimeoutException
+  public void await_until(double time_limit) throws SimgridException
   {
     simgridJNI.Activity_await_until(swigCPtr, this, time_limit);
   }
@@ -136,6 +131,8 @@ public class Activity {
   public String get_name() {
     return simgridJNI.Activity_get_name(swigCPtr, this);
   }
+  public Object get_data() { return simgridJNI.Activity_get_data(swigCPtr); }
+  public void set_data(Object o) { simgridJNI.Activity_set_data(swigCPtr, o); }
 
   public double get_remaining() {
     return simgridJNI.Activity_get_remaining(swigCPtr, this);

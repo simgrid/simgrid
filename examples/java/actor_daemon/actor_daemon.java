@@ -7,7 +7,6 @@ import org.simgrid.s4u.*;
 
 /* The worker actor, working for a while before leaving */
 class worker extends Actor {
-  public worker(String name, Host location) { super(name, location); }
   public void run()
   {
     Engine.info("Let's do some work (for 10 sec on Boivin).");
@@ -19,7 +18,6 @@ class worker extends Actor {
 
 /* The daemon, displaying a message every 3 seconds until all other actors stop */
 class my_daemon extends Actor {
-  public my_daemon(String name, Host location) { super(name, location); }
   public void run()
   {
     Actor.self().daemonize();
@@ -36,11 +34,11 @@ class my_daemon extends Actor {
 public class actor_daemon {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
 
     e.load_platform(args[0]);
-    new worker("worker", e.host_by_name("Boivin"));
-    new my_daemon("daemon", e.host_by_name("Tremblay"));
+    e.add_actor("worker", e.host_by_name("Boivin"), new worker());
+    e.add_actor("daemon", e.host_by_name("Tremblay"), new my_daemon());
 
     e.run();
   }

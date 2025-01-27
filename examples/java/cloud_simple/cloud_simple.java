@@ -6,7 +6,6 @@
 import org.simgrid.s4u.*;
 
 class ComputationWorker extends Actor {
-  ComputationWorker(String name, Host location) { super(name, location); }
   public void run()
   {
     double clock_sta = Engine.get_clock();
@@ -25,15 +24,11 @@ class Payload {
 
 class CommunicationTX extends Actor {
   String mbox_name;
-  CommunicationTX(String name, Host location, String mbox_name)
-  {
-    super(name, location);
-    this.mbox_name = mbox_name;
-  }
+  CommunicationTX(String mbox_name) { this.mbox_name = mbox_name; }
   public void run()
   {
-    Mailbox mbox          = Mailbox.by_name(mbox_name);
-    var payload           = new Payload();
+    Mailbox mbox          = this.get_engine().mailbox_by_name(mbox_name);
+    Payload payload       = new Payload();
     payload.tx_actor_name = Actor.self().get_name();
     payload.tx_host       = this.get_host();
     payload.clock_sta     = Engine.get_clock();
@@ -44,18 +39,14 @@ class CommunicationTX extends Actor {
 
 class CommunicationRX extends Actor {
   String mbox_name;
-  CommunicationRX(String name, Host location, String mbox_name)
-  {
-    super(name, location);
-    this.mbox_name = mbox_name;
-  }
-  public void run()
+  CommunicationRX(String mbox_name) { this.mbox_name = mbox_name; }
+  public void run() throws SimgridException
   {
     String actor_name = Actor.self().get_name();
     String host_name  = this.get_host().get_name();
-    Mailbox mbox      = Mailbox.by_name(mbox_name);
+    Mailbox mbox      = this.get_engine().mailbox_by_name(mbox_name);
 
-    var payload      = (Payload)mbox.get();
+    Payload payload  = (Payload)mbox.get();
     double clock_end = Engine.get_clock();
 
     Engine.info("%s:%s to %s:%s => %g sec", payload.tx_host.get_name(), payload.tx_actor_name, host_name, actor_name,
@@ -64,34 +55,34 @@ class CommunicationRX extends Actor {
 }
 
 class Main extends Actor {
-  Main(String name, Host location) { super(name, location); }
   void launch_communication_worker(Host tx_host, Host rx_host)
   {
     String mbox_name = "MBOX:" + tx_host.get_name() + "-" + rx_host.get_name();
 
-    new CommunicationTX("comm_tx", tx_host, mbox_name);
-    new CommunicationRX("comm_rx", rx_host, mbox_name);
+    this.get_engine().add_actor("comm_tx", tx_host, new CommunicationTX(mbox_name));
+    this.get_engine().add_actor("comm_rx", rx_host, new CommunicationRX(mbox_name));
   }
   public void run()
   {
-    Host pm0 = Host.by_name("Fafard");
-    Host pm1 = Host.by_name("Tremblay");
-    Host pm2 = Host.by_name("Bourassa");
+    Engine e = this.get_engine();
+    Host pm0 = e.host_by_name("Fafard");
+    Host pm1 = e.host_by_name("Tremblay");
+    Host pm2 = e.host_by_name("Bourassa");
 
     Engine.info("## Test 1 (started): check computation on normal PMs");
 
     Engine.info("### Put an activity on a PM");
-    new ComputationWorker("compute", pm0);
+    e.add_actor("compute", pm0, new ComputationWorker());
     this.sleep_for(2);
 
     Engine.info("### Put two activities on a PM");
-    new ComputationWorker("compute", pm0);
-    new ComputationWorker("compute", pm0);
+    e.add_actor("compute", pm0, new ComputationWorker());
+    e.add_actor("compute", pm0, new ComputationWorker());
     this.sleep_for(2);
 
     Engine.info("### Put an activity on each PM");
-    new ComputationWorker("compute", pm0);
-    new ComputationWorker("compute", pm1);
+    e.add_actor("compute", pm0, new ComputationWorker());
+    e.add_actor("compute", pm1, new ComputationWorker());
     this.sleep_for(2);
 
     Engine.info("## Test 1 (ended)");
@@ -100,9 +91,9 @@ class Main extends Actor {
                 + "the moment)");
 
     Engine.info("### Put a VM on a PM, and put an activity to the VM");
-    var vm0 = pm0.create_vm("VM0", 1);
+    VirtualMachine vm0 = pm0.create_vm("VM0", 1);
     vm0.start();
-    new ComputationWorker("compute", vm0);
+    e.add_actor("compute", vm0, new ComputationWorker());
     this.sleep_for(2);
     vm0.destroy();
 
@@ -115,7 +106,7 @@ class Main extends Actor {
     Engine.info("### Put a VM on a PM, and put an activity to the PM");
     vm0 = pm0.create_vm("VM0", 1);
     vm0.start();
-    new ComputationWorker("compute", pm0);
+    e.add_actor("compute", pm0, new ComputationWorker());
     this.sleep_for(2);
     vm0.destroy();
     Engine.info("## Test 3 (ended)");
@@ -128,9 +119,9 @@ class Main extends Actor {
     Engine.info("### Put two VMs on a PM, and put an activity to each VM");
     vm0 = pm0.create_vm("VM0", 1);
     vm0.start();
-    var vm1 = pm0.create_vm("VM1", 1);
-    new ComputationWorker("compute", vm0);
-    new ComputationWorker("compute", vm1);
+    VirtualMachine vm1 = pm0.create_vm("VM1", 1);
+    e.add_actor("compute", vm0, new ComputationWorker());
+    e.add_actor("compute", vm1, new ComputationWorker());
     this.sleep_for(2);
     vm0.destroy();
     vm1.destroy();
@@ -140,8 +131,8 @@ class Main extends Actor {
     vm1 = pm1.create_vm("VM1", 1);
     vm0.start();
     vm1.start();
-    new ComputationWorker("compute", vm0);
-    new ComputationWorker("compute", vm1);
+    e.add_actor("compute", vm0, new ComputationWorker());
+    e.add_actor("compute", vm1, new ComputationWorker());
     this.sleep_for(2);
     vm0.destroy();
     vm1.destroy();
@@ -219,10 +210,10 @@ class Main extends Actor {
 public class cloud_simple {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]);
 
-    new Main("main", e.host_by_name("Fafard"));
+    e.add_actor("main", e.host_by_name("Fafard"), new Main());
 
     e.run();
 

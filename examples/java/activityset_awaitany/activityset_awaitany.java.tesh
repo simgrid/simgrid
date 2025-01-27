@@ -1,0 +1,13 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:activityset_awaitany.jar activityset_awaitany ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%7.6r]%e[%5a]%e%m%n"
+> [0.000000] [maestro] Using regular java threads.
+> [0.000000] [alice] Send 'Message'
+> [0.000000] [  bob] Create my asynchronous activities
+> [0.000000] [  bob] Wait for asynchronous activities to complete
+> [2.000000] [ carl] Send 'Control Message'
+> [2.000000] [  bob] Completed a Mess
+> [3.000000] [  bob] Completed an I/O
+> [5.000000] [  bob] Completed an Exec
+> [5.197828] [  bob] Completed a Comm
+> [5.197828] [  bob] Last activity is complete

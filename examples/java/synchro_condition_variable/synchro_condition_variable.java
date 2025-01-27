@@ -5,42 +5,41 @@
 
 import org.simgrid.s4u.*;
 
-class worker extends Actor {
+class Worker extends Actor {
   ConditionVariable cv;
   Mutex mutex;
-  public worker(String name, Host location, ConditionVariable cv, Mutex mutex)
+  public Worker(ConditionVariable cv, Mutex mutex)
   {
-    super(name, location);
     this.cv    = cv;
     this.mutex = mutex;
   }
 
   public void run()
   {
-    Engine.info("Start processing data which is '%s'.", master.data);
-    master.data += " after processing";
+    Engine.info("Start processing data which is '%s'.", Main.data);
+    Main.data += " after processing";
 
     // Send data back to main()
     Engine.info("Signal to master that the data processing is completed, and exit.");
 
-    master.done = true;
+    Main.done = true;
     mutex.lock();
     cv.notify_one();
     mutex.unlock();
   }
 }
 
-class master extends Actor {
-  public master(String name, Host location) { super(name, location); }
+class Main extends Actor {
   static String data  = "Example data";
   static boolean done = false;
   public void run()
   {
-    var mutex = Mutex.create();
-    var cv    = ConditionVariable.create();
+    Engine e             = this.get_engine();
+    Mutex mutex          = Mutex.create();
+    ConditionVariable cv = ConditionVariable.create();
 
     mutex.lock();
-    var worker = new worker("worker", Host.by_name("Jupiter"), cv, mutex);
+    Actor worker = e.add_actor("worker", e.host_by_name("Jupiter"), new Worker(cv, mutex));
 
     // wait for the worker
     cv.await(mutex);
@@ -54,9 +53,9 @@ class master extends Actor {
 public class synchro_condition_variable {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
     e.load_platform(args[0]);
-    new master("main", e.host_by_name("Tremblay"));
+    e.add_actor("main", e.host_by_name("Tremblay"), new Main());
     e.run();
   }
 }

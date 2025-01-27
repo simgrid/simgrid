@@ -24,13 +24,11 @@ public class NetZone {
   }
 
   public NetZone set_parent(NetZone parent) {
-    long cPtr = simgridJNI.NetZone_set_parent(swigCPtr, this, NetZone.getCPtr(parent), parent);
-    return (cPtr == 0) ? null : new NetZone(cPtr);
+    simgridJNI.NetZone_set_parent(swigCPtr, this, NetZone.getCPtr(parent), parent);
+    return this;
   }
 
-  public SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t get_children() {
-    return new SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t(simgridJNI.NetZone_get_children(swigCPtr, this), true);
-  }
+  public NetZone[] get_children() { return simgridJNI.NetZone_get_children(swigCPtr, this); }
 
   public Host[] get_all_hosts() { return simgridJNI.NetZone_get_all_hosts(swigCPtr, this); }
 
@@ -48,8 +46,9 @@ public class NetZone {
 
   public static void on_seal_cb(CallbackNetzone cb) { simgridJNI.NetZone_on_seal_cb(cb); }
 
-  public Host create_host(String name, SWIGTYPE_p_std__vectorT_double_t speed_per_pstate) {
-    long cPtr = simgridJNI.NetZone_create_host__SWIG_0(swigCPtr, this, name, SWIGTYPE_p_std__vectorT_double_t.getCPtr(speed_per_pstate));
+  public Host create_host(String name, double[] speed_per_pstate)
+  {
+    long cPtr = simgridJNI.NetZone_create_host__SWIG_0(swigCPtr, this, name, speed_per_pstate);
     return (cPtr == 0) ? null : new Host(cPtr);
   }
 
@@ -58,8 +57,9 @@ public class NetZone {
     return (cPtr == 0) ? null : new Host(cPtr);
   }
 
-  public Host create_host(String name, SWIGTYPE_p_std__vectorT_std__string_t speed_per_pstate) {
-    long cPtr = simgridJNI.NetZone_create_host__SWIG_2(swigCPtr, this, name, SWIGTYPE_p_std__vectorT_std__string_t.getCPtr(speed_per_pstate));
+  public Host create_host(String name, String[] speed_per_pstate)
+  {
+    long cPtr = simgridJNI.NetZone_create_host__SWIG_2(swigCPtr, this, name, speed_per_pstate);
     return (cPtr == 0) ? null : new Host(cPtr);
   }
 
@@ -68,8 +68,9 @@ public class NetZone {
     return (cPtr == 0) ? null : new Host(cPtr);
   }
 
-  public Link create_link(String name, SWIGTYPE_p_std__vectorT_double_t bandwidths) {
-    long cPtr = simgridJNI.NetZone_create_link__SWIG_0(swigCPtr, this, name, SWIGTYPE_p_std__vectorT_double_t.getCPtr(bandwidths));
+  public Link create_link(String name, double[] bandwidths)
+  {
+    long cPtr = simgridJNI.NetZone_create_link__SWIG_0(swigCPtr, this, name, bandwidths);
     return (cPtr == 0) ? null : new Link(cPtr, false);
   }
 
@@ -78,14 +79,29 @@ public class NetZone {
     return (cPtr == 0) ? null : new Link(cPtr, false);
   }
 
-  public Link create_link(String name, SWIGTYPE_p_std__vectorT_std__string_t bandwidths) {
-    long cPtr = simgridJNI.NetZone_create_link__SWIG_2(swigCPtr, this, name, SWIGTYPE_p_std__vectorT_std__string_t.getCPtr(bandwidths));
+  public Link create_link(String name, String[] bandwidths)
+  {
+    long cPtr = simgridJNI.NetZone_create_link__SWIG_2(swigCPtr, this, name, bandwidths);
     return (cPtr == 0) ? null : new Link(cPtr, false);
   }
 
   public Link create_link(String name, String bandwidth) {
     long cPtr = simgridJNI.NetZone_create_link__SWIG_3(swigCPtr, this, name, bandwidth);
     return (cPtr == 0) ? null : new Link(cPtr, false);
+  }
+  public void add_route(NetZone src, NetZone dst, Link[] links)
+  {
+    long[] clinks = new long[links.length];
+    for (int i = 0; i < links.length; i++)
+      clinks[i] = Link.getCPtr(links[i]);
+    simgridJNI.NetZone_add_route_netzones(swigCPtr, this, NetZone.getCPtr(src), NetZone.getCPtr(dst), clinks);
+  }
+  public void add_route(Host src, Host dst, Link[] links)
+  {
+    long[] clinks = new long[links.length];
+    for (int i = 0; i < links.length; i++)
+      clinks[i] = Link.getCPtr(links[i]);
+    simgridJNI.NetZone_add_route_hosts(swigCPtr, this, Host.getCPtr(src), Host.getCPtr(dst), clinks);
   }
 
   public NetZone seal() {

@@ -6,7 +6,6 @@
 import org.simgrid.s4u.*;
 
 class VictimA extends Actor {
-  public VictimA(String name, Host location) { super(name, location); }
   public void run()
   {
     on_exit(new CallbackBoolean() {
@@ -25,17 +24,16 @@ class VictimA extends Actor {
 }
 
 class VictimB extends Actor {
-  public VictimB(String name, Host location) { super(name, location); }
   public void run() { Engine.info("Terminate before being killed"); }
 }
 
 class Killer extends Actor {
-  public Killer(String name, Host location) { super(name, location); }
   public void run()
   {
+    Engine e = this.get_engine();
     Engine.info("Hello!"); /* - First start a victim actor */
-    Actor victimA = new VictimA("victim A", Host.by_name("Fafard"));
-    Actor victimB = new VictimB("victim B", Host.by_name("Jupiter"));
+    Actor victimA = e.add_actor("victim A", e.host_by_name("Fafard"), new VictimA());
+    Actor victimB = e.add_actor("victim B", e.host_by_name("Jupiter"), new VictimB());
     sleep_for(10); /* - Wait for 10 seconds */
 
     Engine.info("Resume the victim A"); /* - Resume it from its suspended state */
@@ -52,9 +50,8 @@ class Killer extends Actor {
 
     sleep_for(1);
 
-    Engine.info("Start a new actor, and kill it right away. Its on_exit() callback does not appear since it did not "
-                + "even start before being killed.");
-    Actor victimC = new VictimA("victim C", Host.by_name("Jupiter"));
+    Engine.info("Start a new actor, and kill it right away.");
+    Actor victimC = e.add_actor("victim C", e.host_by_name("Jupiter"), new VictimA());
     victimC.kill();
 
     sleep_for(1);
@@ -72,11 +69,11 @@ class Killer extends Actor {
 public class actor_kill {
   public static void main(String[] args)
   {
-    var e = new Engine(args);
+    Engine e = new Engine(args);
 
     e.load_platform(args[0]); /* - Load the platform description */
     /* - Create and deploy killer actor, that will create the victim actors  */
-    new Killer("killer", e.host_by_name("Tremblay"));
+    e.add_actor("killer", e.host_by_name("Tremblay"), new Killer());
 
     e.run(); /* - Run the simulation */
   }

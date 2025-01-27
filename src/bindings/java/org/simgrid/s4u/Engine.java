@@ -64,10 +64,6 @@ public class Engine {
     return (cPtr == 0) ? null : new Engine(cPtr, false);
   }
 
-  public static boolean has_instance() {
-    return simgridJNI.Engine_has_instance();
-  }
-
   public void load_platform(String platf) {
     simgridJNI.Engine_load_platform(swigCPtr, this, platf);
   }
@@ -78,10 +74,6 @@ public class Engine {
 
   public String flatify_platform() {
     return simgridJNI.Engine_flatify_platform(swigCPtr, this);
-  }
-
-  public void track_vetoed_activities(SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t vetoed_activities) {
-    simgridJNI.Engine_track_vetoed_activities(swigCPtr, this, SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.getCPtr(vetoed_activities));
   }
 
   public void load_deployment(String deploy) {
@@ -99,13 +91,9 @@ public class Engine {
     return simgridJNI.Engine_get_hosts_from_MPI_hostfile(swigCPtr, this, hostfile);
   }
 
+  /** If no host of that name exists, throws an IllegalArgumentError. */
   public Host host_by_name(String name) {
     long cPtr = simgridJNI.Engine_host_by_name(swigCPtr, this, name);
-    return (cPtr == 0) ? null : new Host(cPtr);
-  }
-
-  public Host host_by_name_or_null(String name) {
-    long cPtr = simgridJNI.Engine_host_by_name_or_null(swigCPtr, this, name);
     return (cPtr == 0) ? null : new Host(cPtr);
   }
 
@@ -113,30 +101,39 @@ public class Engine {
     return simgridJNI.Engine_get_link_count(swigCPtr, this);
   }
 
-  public SWIGTYPE_p_std__vectorT_simgrid__s4u__Link_p_t get_all_links() {
-    return new SWIGTYPE_p_std__vectorT_simgrid__s4u__Link_p_t(simgridJNI.Engine_get_all_links(swigCPtr, this), true);
+  public void track_vetoed_activities(SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t vetoed_activities)
+  {
+    simgridJNI.Engine_track_vetoed_activities(swigCPtr);
   }
+  public Activity[] get_vetoed_activities() { return simgridJNI.Engine_get_vetoed_activities(swigCPtr); }
 
+  public Link[] get_all_links() { return simgridJNI.Engine_get_all_links(swigCPtr, this); }
+
+  /** If no link of that name exists, throws an IllegalArgumentError. */
   public Link link_by_name(String name) {
     long cPtr = simgridJNI.Engine_link_by_name(swigCPtr, this, name);
     return (cPtr == 0) ? null : new Link(cPtr, false);
   }
 
-  public Link link_by_name_or_null(String name) {
-    long cPtr = simgridJNI.Engine_link_by_name_or_null(swigCPtr, this, name);
-    return (cPtr == 0) ? null : new Link(cPtr, false);
-  }
-
-  public Mailbox mailbox_by_name_or_create(String name) {
+  /** If no mailbox of that name exists, create it. */
+  public Mailbox mailbox_by_name(String name)
+  {
     long cPtr = simgridJNI.Engine_mailbox_by_name_or_create(swigCPtr, this, name);
     return (cPtr == 0) ? null : new Mailbox(cPtr);
   }
 
-  public MessageQueue message_queue_by_name_or_create(String name) {
+  /** If no message queue of that name exists, create it. */
+  public MessageQueue message_queue_by_name(String name)
+  {
     long cPtr = simgridJNI.Engine_message_queue_by_name_or_create(swigCPtr, this, name);
     return (cPtr == 0) ? null : new MessageQueue(cPtr, false);
   }
 
+  public Actor add_actor(String name, Host location, Actor actor)
+  {
+    simgridJNI.Actor_create(name, Host.getCPtr(location), location, actor);
+    return actor;
+  }
   public long get_actor_count() {
     return simgridJNI.Engine_get_actor_count(swigCPtr, this);
   }
@@ -145,21 +142,64 @@ public class Engine {
     return simgridJNI.Engine_get_actor_max_pid(swigCPtr, this);
   }
 
-  public SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t get_all_actors() {
-    return new SWIGTYPE_p_std__vectorT_boost__intrusive_ptrT_simgrid__s4u__Actor_t_t(simgridJNI.Engine_get_all_actors(swigCPtr, this), true);
-  }
-
-  public NetZone get_netzone_root() {
-    long cPtr = simgridJNI.Engine_get_netzone_root(swigCPtr, this);
+  public Actor[] get_all_actors() { return simgridJNI.Engine_get_all_actors(swigCPtr, this); }
+  public NetZone set_rootzone_full(String name)
+  {
+    long cPtr = simgridJNI.Engine_set_root_netzone_full(swigCPtr, this, name);
     return (cPtr == 0) ? null : new NetZone(cPtr);
   }
 
-  public SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t get_all_netzones() {
-    return new SWIGTYPE_p_std__vectorT_simgrid__s4u__NetZone_p_t(simgridJNI.Engine_get_all_netzones(swigCPtr, this), true);
+  public NetZone set_rootzone_star(String name)
+  {
+    long cPtr = simgridJNI.Engine_set_root_netzone_star(swigCPtr, this, name);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
   }
 
-  public NetZone netzone_by_name_or_null(String name) {
+  public NetZone set_rootzone_dijkstra(String name, boolean cache)
+  {
+    long cPtr = simgridJNI.Engine_set_root_netzone_dijkstra(swigCPtr, this, name, cache);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
+  }
+
+  public NetZone set_rootzone_empty(String name)
+  {
+    long cPtr = simgridJNI.Engine_set_root_netzone_empty(swigCPtr, this, name);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
+  }
+
+  public NetZone set_rootzone_floyd(String name)
+  {
+    long cPtr = simgridJNI.Engine_set_root_netzone_floyd(swigCPtr, this, name);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
+  }
+
+  public NetZone set_rootzone_vivaldi(String name)
+  {
+    long cPtr = simgridJNI.Engine_set_root_netzone_vivaldi(swigCPtr, this, name);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
+  }
+
+  public NetZone create_wifi_zone(String name)
+  {
+    long cPtr = simgridJNI.Engine_set_root_netzone_wifi(swigCPtr, this, name);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
+  }
+
+  public NetZone get_root_netzone()
+  {
+    long cPtr = simgridJNI.Engine_get_root_netzone(swigCPtr, this);
+    return (cPtr == 0) ? null : new NetZone(cPtr);
+  }
+
+  public NetZone[] get_all_netzones() { return simgridJNI.Engine_get_all_netzones(swigCPtr, this); }
+
+  /** If no link of that name exists, throws an IllegalArgumentError. */
+  public NetZone netzone_by_name(String name)
+  {
     long cPtr = simgridJNI.Engine_netzone_by_name_or_null(swigCPtr, this, name);
+    if (cPtr == 0)
+      throw new IllegalArgumentException("NetZone '" + name + "' does not exist. Did you spell its name correctly?");
+
     return (cPtr == 0) ? null : new NetZone(cPtr);
   }
 
@@ -205,31 +245,34 @@ public class Engine {
 
   public static void info(String fmt, Object... args) { simgridJNI.Engine_info(String.format(fmt, args)); }
 
-  public static void verbose(String msg) {
-    simgridJNI.Engine_verbose(msg);
+  public static void verbose(String fmt, Object... args) { simgridJNI.Engine_verbose(String.format(fmt, args)); }
+
+  public static void debug(String fmt, Object... args) { simgridJNI.Engine_debug(String.format(fmt, args)); }
+
+  public Activity[] create_DAG_from_dot(String filename) { return simgridJNI.create_DAG_from_dot(filename); }
+
+  public Activity[] create_DAG_from_DAX(String filename) { return simgridJNI.create_DAG_from_DAX(filename); }
+
+  public Activity[] create_DAG_from_json(String filename) { return simgridJNI.create_DAG_from_json(filename); }
+
+  /** Example launcher. You can use it or provide your own launcher, as you wish */
+  public static void main(String[] args)
+  {
+
+    /* initialize the SimGrid simulation. Must be done before anything else */
+    Engine e = new Engine(args);
+
+    if (args.length < 2) {
+      Engine.info("Usage: org.simgrid.s4u.Engine platform_file deployment_file");
+      System.exit(1);
+    }
+
+    /* Load the platform and deploy the application */
+    e.load_platform(args[0]);
+    e.load_deployment(args[1]);
+    /* Execute the simulation */
+    e.run();
   }
-
-  public static void debug(String msg) {
-    simgridJNI.Engine_debug(msg);
-  }
-
-	/** Example launcher. You can use it or provide your own launcher, as you wish */
-	public static void main(String[]args) {
-  
-		/* initialize the SimGrid simulation. Must be done before anything else */
-                Engine e = new Engine(args);
-
-                if (args.length < 2) {
-                  Engine.info("Usage: org.simgrid.s4u.Engine platform_file deployment_file");
-                  System.exit(1);
-                }
-
-                /* Load the platform and deploy the application */
-                e.load_platform(args[0]);
-                e.load_deployment(args[1]);
-                /* Execute the simulation */
-                e.run();
-        }
 
         /* Class initializer, to initialize various JNI stuff */
         static { org.simgrid.s4u.NativeLib.nativeInit(); }

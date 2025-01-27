@@ -6,100 +6,70 @@
 package org.simgrid.s4u;
 
 public class Mess extends Activity {
-  private transient long swigCPtr;
-  private transient boolean swigCMemOwnDerived;
-
-  protected Mess(long cPtr, boolean cMemoryOwn)
-  {
-    super(cPtr, true);
-    swigCMemOwnDerived = cMemoryOwn;
-    swigCPtr           = cPtr;
-  }
-
-  protected static long getCPtr(Mess obj) { return (obj == null) ? 0 : obj.swigCPtr; }
-
-  @SuppressWarnings({"deprecation", "removal"}) protected void finalize() { delete(); }
-
-  public synchronized void delete()
-  {
-    if (swigCPtr != 0 && swigCMemOwnDerived) {
-      swigCMemOwnDerived = false;
-      simgridJNI.delete_Mess(swigCPtr);
-    }
-    swigCPtr = 0;
-    super.delete();
-  }
+  protected Mess(long cPtr, boolean cMemoryOwn) { super(cPtr, cMemoryOwn); }
 
   public Mess set_queue(MessageQueue queue)
   {
-    simgridJNI.Mess_set_queue(swigCPtr, this, MessageQueue.getCPtr(queue), queue);
+    simgridJNI.Mess_set_queue(getCPtr(), this, MessageQueue.getCPtr(queue), queue);
     return this;
   }
 
   public MessageQueue get_queue()
   {
-    long cPtr = simgridJNI.Mess_get_queue(swigCPtr, this);
+    long cPtr = simgridJNI.Mess_get_queue(getCPtr(), this);
     return (cPtr == 0) ? null : new MessageQueue(cPtr, false);
   }
 
   public Mess set_payload(Object payload)
   {
-    simgridJNI.Mess_set_payload(swigCPtr, this, payload);
+    simgridJNI.Mess_set_payload(getCPtr(), this, payload);
     return this;
   }
 
-  public Object get_payload() { return simgridJNI.Mess_get_payload(swigCPtr, this); }
+  public Object get_payload() { return simgridJNI.Mess_get_payload(getCPtr(), this); }
 
-  public Actor get_sender()
-  {
-    long cPtr = simgridJNI.Mess_get_sender(swigCPtr, this);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
-  public boolean is_assigned() { return simgridJNI.Mess_is_assigned(swigCPtr, this); }
+  public Actor get_sender() { return simgridJNI.Mess_get_sender(getCPtr(), this); }
+  public boolean is_assigned() { return simgridJNI.Mess_is_assigned(getCPtr(), this); }
 
-  public Actor get_receiver()
-  {
-    long cPtr = simgridJNI.Mess_get_receiver(swigCPtr, this);
-    return (cPtr == 0) ? null : new Actor(cPtr, true);
-  }
+  public Actor get_receiver() { return simgridJNI.Mess_get_receiver(getCPtr(), this); }
 
   public Mess add_successor(Activity a)
   {
-    simgridJNI.Mess_add_successor(swigCPtr, this, Activity.getCPtr(a), a);
+    simgridJNI.Mess_add_successor(getCPtr(), this, Activity.getCPtr(a), a);
     return this;
   }
 
   public Mess remove_successor(Activity a)
   {
-    simgridJNI.Mess_remove_successor(swigCPtr, this, Activity.getCPtr(a), a);
+    simgridJNI.Mess_remove_successor(getCPtr(), this, Activity.getCPtr(a), a);
     return this;
   }
 
   public Mess set_name(String name)
   {
-    simgridJNI.Mess_set_name(swigCPtr, this, name);
+    simgridJNI.Mess_set_name(getCPtr(), this, name);
     return this;
   }
 
-  public String get_name() { return simgridJNI.Mess_get_name(swigCPtr, this); }
+  public String get_name() { return simgridJNI.Mess_get_name(getCPtr(), this); }
 
   public Mess set_tracing_category(String category)
   {
-    simgridJNI.Mess_set_tracing_category(swigCPtr, this, category);
+    simgridJNI.Mess_set_tracing_category(getCPtr(), this, category);
     return this;
   }
 
-  public String get_tracing_category() { return simgridJNI.Mess_get_tracing_category(swigCPtr, this); }
+  public String get_tracing_category() { return simgridJNI.Mess_get_tracing_category(getCPtr(), this); }
 
   public Mess cancel()
   {
-    simgridJNI.Mess_cancel(swigCPtr, this);
+    simgridJNI.Mess_cancel(getCPtr(), this);
     return this;
   }
 
   public Mess await_for(double timeout)
   {
-    simgridJNI.Mess_await_for(swigCPtr, this, timeout);
+    simgridJNI.Mess_await_for(getCPtr(), this, timeout);
     return this;
   }
 

@@ -44,11 +44,6 @@ public class MessageQueue {
     return simgridJNI.MessageQueue_get_name(swigCPtr, this);
   }
 
-  public static MessageQueue by_name(String name) {
-    long cPtr = simgridJNI.MessageQueue_by_name(name);
-    return (cPtr == 0) ? null : new MessageQueue(cPtr, false);
-  }
-
   public boolean empty() {
     return simgridJNI.MessageQueue_empty(swigCPtr, this);
   }

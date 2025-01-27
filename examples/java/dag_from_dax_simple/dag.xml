@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<adag xmlns="http://pegasus.isi.edu/schema/DAX" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-2.1.xsd"
+      version="2.1">
+  <job id="1" name="c1" runtime="10">
+    <uses file="i1" link="input" register="true" transfer="true" optional="false" type="data" size="2e8"/>
+    <uses file="o1" link="output" register="true" transfer="true" optional="false" type="data" size="5e8"/>
+  </job>
+  <job id="2" name="c2" runtime="50">
+    <uses file="i2" link="input" register="true" transfer="true" optional="false" type="data" size="1e8"/>
+  </job>
+  <job id="3" name="c3" runtime="20">
+    <uses file="o1" link="input" register="true" transfer="true" optional="false" type="data" size="5e8"/>
+    <uses file="o3" link="output" register="true" transfer="true" optional="false" type="data" size="2e8"/>
+  </job>
+  <child ref="3">
+    <parent ref="1"/>
+    <parent ref="2"/>
+  </child>
+</adag>
