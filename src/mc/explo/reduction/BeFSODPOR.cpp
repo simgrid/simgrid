@@ -110,7 +110,7 @@ aid_t BeFSODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
               s->get_actors_list().at(next).get_transition()->to_string(true).c_str());
     s->remove_subtree_at_aid(next);
     s->add_sleep_set(s->get_actors_list().at(next).get_transition());
-    return -1;
+    return next_to_explore(E, S);
   }
 
   return next;
