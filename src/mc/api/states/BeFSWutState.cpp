@@ -12,6 +12,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
+#include "xbt/asserts.h"
 #include "xbt/log.h"
 #include <algorithm>
 #include <cassert>
@@ -32,6 +33,8 @@ void BeFSWutState::compare_final_and_wut()
 
 BeFSWutState::BeFSWutState(RemoteApp& remote_app) : WutState(remote_app)
 {
+  is_leftmost_ = true; // The first state is the only one at that depth, so the leftmost one.
+
   aid_t chosen_actor = wakeup_tree_.get_min_single_process_actor().value();
   auto actor_state   = get_actors_list().at(chosen_actor);
   // For each variant of the transition that is enabled, we want to insert the action into the tree.
@@ -49,6 +52,8 @@ BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutSt
     if (not get_transition_in()->depends(transition_in_done_set.get()))
       sleep_add_and_mark(transition_in_done_set);
   }
+
+  is_leftmost_ = parent->is_leftmost_ and parent->done_.size() == parent->closed_.size();
 
   aid_t incoming_actor = parent_state->get_transition_out()->aid_;
   parent->done_.push_back(incoming_actor);
@@ -203,6 +208,56 @@ StatePtr BeFSWutState::force_insert_into_wakeup_tree(const odpor::PartialExecuti
   this->wakeup_tree_.force_insert(pe);
   compare_final_and_wut();
   return this;
+}
+
+BeFSWutState::~BeFSWutState()
+{
+
+  auto parent_state = get_parent_state();
+  if (parent_state != nullptr) {
+    auto parent = static_cast<BeFSWutState*>(parent_state);
+    parent->closed_.emplace_back(get_transition_in()->aid_);
+    parent->signal_on_backtrack();
+  }
+}
+
+void BeFSWutState::signal_on_backtrack()
+{
+  XBT_DEBUG("State n°%ld, son of %ld, being signaled to backtrack", get_num(),
+            get_parent_state() != nullptr ? get_parent_state()->get_num() : -1);
+  XBT_DEBUG("... %s",
+            is_leftmost_ ? "This state is the leftmost at this depth" : "This state is NOT the leftmost at this depth");
+  XBT_DEBUG("... There are %lu done children, %lu closed children and %lu recorded children StatePtr", done_.size(),
+            closed_.size(), children_states_.size());
+  if (not is_leftmost_)
+    return;
+
+  if (closed_.size() < done_.size()) {
+
+    // if there are children states that are being visited, we may need to update the leftmost information
+    aid_t leftmost_aid = done_[closed_.size()];
+    auto children_aid  = children_states_.find(leftmost_aid);
+    xbt_assert(children_aid != children_states_.end());
+    auto children_befs_aid          = static_cast<BeFSWutState*>(children_aid->second.get());
+    children_befs_aid->is_leftmost_ = true;
+    children_befs_aid->signal_on_backtrack();
+    return;
+  }
+
+  XBT_DEBUG("... there's still at least one actor to execute (%ld)", next_transition());
+  if (next_transition() == -1) {
+    // This is the leftmost state, it doesn't have anymore open children and nothing left to do
+    // Let's close this by removing it from it's parent
+    auto parent_state = get_parent_state();
+    if (parent_state != nullptr) {
+      auto parent = static_cast<BeFSWutState*>(parent_state);
+      XBT_DEBUG("\t... there are %lu recorded children StatePtr in its parent state n°%ld",
+                parent->children_states_.size(), parent->get_num());
+      auto find_aid = parent->children_states_.find(get_transition_in()->aid_);
+      xbt_assert(find_aid != parent->children_states_.end());
+      parent->children_states_.erase(find_aid);
+    }
+  }
 }
 
 } // namespace simgrid::mc

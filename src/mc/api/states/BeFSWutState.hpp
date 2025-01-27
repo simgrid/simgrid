@@ -32,9 +32,17 @@ class XBT_PRIVATE BeFSWutState : public WutState {
    *  being important for the correction. */
   std::vector<aid_t> done_;
 
+  /** Only leftmosts states of the tree can be closed. This is decided on creation based on parent
+   *  value, and then updated when nearby states are closed. */
+  bool is_leftmost_;
+
+  /** Store the aid that have been closed. This is usefull to determine wether a given state is leftmost. */
+  std::vector<aid_t> closed_;
+
 public:
   explicit BeFSWutState(RemoteApp& remote_app);
   explicit BeFSWutState(RemoteApp& remote_app, StatePtr parent_state);
+  ~BeFSWutState();
 
   void record_child_state(StatePtr child);
 
@@ -66,6 +74,12 @@ public:
   StatePtr force_insert_into_wakeup_tree(const odpor::PartialExecution&);
 
   void compare_final_and_wut();
+
+  /**
+   * @brief Called when this state is backtracked in the exploration. Since this state is used in best first search,
+   * the signal is also called by other states being backtracked, making sure every state can be closed accordingly.
+   */
+  void signal_on_backtrack() override;
 };
 
 } // namespace simgrid::mc

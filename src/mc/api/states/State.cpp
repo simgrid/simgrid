@@ -20,10 +20,17 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc, "Logging specific to MC states");
 namespace simgrid::mc {
 
 long State::expended_states_ = 0;
+long State::in_memory_states_ = 0;
+
+State::~State()
+{
+  in_memory_states_--;
+  XBT_VERB("Closing state n°%ld! There are %ld remaining states", this->get_num(), get_in_memory_states());
+}
 
 State::State(const RemoteApp& remote_app) : num_(++expended_states_)
 {
-  XBT_VERB("Creating a guide for the state");
+  in_memory_states_++;
   if (_sg_mc_strategy == "none")
     strategy_ = std::make_shared<BasicStrategy>();
   else if (_sg_mc_strategy == "max_match_comm")
@@ -44,6 +51,8 @@ State::State(const RemoteApp& remote_app, StatePtr parent_state) : State(remote_
 {
   parent_state_        = parent_state;
   incoming_transition_ = parent_state->get_transition_out();
+
+  XBT_DEBUG("Creating %ld, son of %ld", get_num(), parent_state->get_num());
 
   strategy_->copy_from(parent_state_->strategy_.get());
 }

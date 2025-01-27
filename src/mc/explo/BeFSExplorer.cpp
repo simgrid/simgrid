@@ -248,6 +248,8 @@ void BeFSExplorer::backtrack()
 
   Exploration::check_deadlock();
 
+  stack_.back()->signal_on_backtrack();
+
   // Take the point with smallest distance
   auto backtracking_point = best_opened_state();
 

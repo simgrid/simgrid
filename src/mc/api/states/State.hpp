@@ -23,6 +23,8 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
 
   static long expended_states_; /* Count total amount of states, for stats */
 
+  static long in_memory_states_; // Count the number of states currently still in memory
+
   /** A forked application stationned in this state, to quickly recreate child states w/o replaying from the beginning
    */
   std::unique_ptr<CheckerSide> state_factory_ = nullptr;
@@ -51,7 +53,7 @@ protected:
 public:
   explicit State(const RemoteApp& remote_app);
   explicit State(const RemoteApp& remote_app, StatePtr parent_state);
-  virtual ~State() = default;
+  virtual ~State();
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const; // this function should disapear as it is redundant with the next one
 
@@ -125,6 +127,9 @@ public:
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }
 
+  /* Returns the total amount of states created so far (for statistics) */
+  static long get_in_memory_states() { return in_memory_states_; }
+
   /**
    * @brief Register this state as leading to a correct execution and
    * does the same for all its predecessors
@@ -132,6 +137,10 @@ public:
   void register_as_correct();
 
   bool has_correct_execution() { return has_correct_descendent_; }
+  /**
+   * @brief To be called when this state is backtracked in the exploration.
+   */
+  virtual void signal_on_backtrack(){};
 };
 } // namespace simgrid::mc
 
