@@ -22,6 +22,8 @@ void WakeupTreeNode::add_child(WakeupTreeNode* node)
 {
   this->children_.push_back(node);
   node->parent_ = this;
+  node->sequence_ = this->sequence_;
+  node->sequence_.emplace_back(node->action_);
 }
 
 std::string WakeupTreeNode::string_of_whole_tree(const std::string& prefix, bool is_first, bool is_last) const
@@ -43,15 +45,7 @@ std::string WakeupTreeNode::string_of_whole_tree(const std::string& prefix, bool
 
 PartialExecution WakeupTreeNode::get_sequence() const
 {
-  // TODO: Prevent having to compute this at the node level
-  // and instead track this with the iterator
-  PartialExecution seq_;
-  const WakeupTreeNode* cur_node = this;
-  while (cur_node != nullptr && not cur_node->is_root()) {
-    seq_.emplace(seq_.begin(), cur_node->action_);
-    cur_node = cur_node->parent_;
-  }
-  return seq_;
+  return sequence_;
 }
 
 void WakeupTreeNode::detatch_from_parent()
