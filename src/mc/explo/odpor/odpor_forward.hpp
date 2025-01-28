@@ -18,7 +18,7 @@
 
 namespace simgrid::mc::odpor {
 
-using PartialExecution = std::list<std::shared_ptr<Transition>>;
+using PartialExecution = std::vector<std::shared_ptr<Transition>>;
 
 class Event;
 class Execution;

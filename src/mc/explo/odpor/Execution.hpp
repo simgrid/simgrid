@@ -94,6 +94,8 @@ private:
   std::vector<Event> contents_;
   Execution(std::vector<Event>&& contents) : contents_(std::move(contents)) {}
 
+  static PartialExecution preallocated_partial_execution_;
+
 public:
   using EventHandle = uint32_t;
 

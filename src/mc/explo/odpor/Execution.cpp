@@ -6,6 +6,8 @@
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/api/states/State.hpp"
+#include "src/mc/explo/odpor/odpor_forward.hpp"
+#include "src/mc/mc_config.hpp"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/string.hpp"
@@ -36,6 +38,8 @@ std::string one_string_textual_trace(const PartialExecution& w)
   }
   return res;
 }
+
+PartialExecution Execution::preallocated_partial_execution_ = PartialExecution();
 
 Execution::Execution(const PartialExecution& w)
 {
@@ -365,14 +369,18 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
 {
   // See section 4 of Abdulla. et al.'s 2017 ODPOR paper for details (specifically
   // where the [iterative] computation of `v ~_[E] w` is described)
-  auto w_now = w;
+  preallocated_partial_execution_.clear();
+  if (preallocated_partial_execution_.max_size() < w.size())
+    preallocated_partial_execution_.resize(w.size());
+
+  preallocated_partial_execution_ = w;
   XBT_DEBUG("Computing 'v~_[E]w' with v:=\n%s w:=\n%s", one_string_textual_trace(v).c_str(),
             one_string_textual_trace(w).c_str());
 
   for (const auto& next_E_p : v) {
     // Is `p in `I_[E](w)`?
 
-    if (const aid_t p = next_E_p->aid_; is_initial_after_execution_of(w_now, p)) {
+    if (const aid_t p = next_E_p->aid_; is_initial_after_execution_of(preallocated_partial_execution_, p)) {
       // Remove `p` from w and continue
 
       // INVARIANT: If `p` occurs in `w`, it had better refer to the same
@@ -382,40 +390,45 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
       // they should always refer to the same value; but as a sanity check,
       // we have an assert that tests that at least the types are the same.
       const auto action_by_p_in_w =
-          std::find_if(w_now.begin(), w_now.end(), [=](const auto& action) { return action->aid_ == p; });
-      xbt_assert(action_by_p_in_w != w_now.end(), "Invariant violated: actor `p` "
-                                                  "is claimed to be an initial after `w` but is "
-                                                  "not actually contained in `w`. This indicates that there "
-                                                  "is a bug computing initials");
+          std::find_if(preallocated_partial_execution_.begin(), preallocated_partial_execution_.end(),
+                       [=](const auto& action) { return action->aid_ == p; });
+      xbt_assert(action_by_p_in_w != preallocated_partial_execution_.end(),
+                 "Invariant violated: actor `p` "
+                 "is claimed to be an initial after `w` but is "
+                 "not actually contained in `w`. This indicates that there "
+                 "is a bug computing initials");
       const auto& w_action = *action_by_p_in_w;
       xbt_assert(w_action->type_ == next_E_p->type_,
                  "Invariant violated: `v` claims that actor `%ld` executes '%s' while "
                  "`w` claims that it executes '%s'. These two partial executions both "
                  "refer to `next_[E](p)`, which should be the same",
                  p, next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
-      w_now.erase(action_by_p_in_w);
+      preallocated_partial_execution_.erase(action_by_p_in_w);
     }
     // Is `E ⊢ p ◇ w`?
-    else if (is_independent_with_execution_of(w_now, next_E_p)) {
+    else if (is_independent_with_execution_of(preallocated_partial_execution_, next_E_p)) {
       // INVARIANT: Note that it is impossible for `p` to be
       // excluded from the set `I_[E](w)` BUT ALSO be contained in
       // `w` itself if `E ⊢ p ◇ w` (intuitively, the fact that `E ⊢ p ◇ w`
       // means that are able to move `p` anywhere in `w` IF it occurred, so
       // if it really does occur we know it must then be an initial).
       // We assert this is the case here
-      const auto action_by_p_in_w =
-          std::find_if(w_now.begin(), w_now.end(), [=](const auto& action) { return action->aid_ == p; });
-      xbt_assert(action_by_p_in_w == w_now.end(),
-                 "Invariant violated: We claimed that actor `%ld` is not an initial "
-                 "after `w`, yet it's independent with all actions of `w` AND occurs in `w`."
-                 "This indicates that there is a bug computing initials",
-                 p);
+      if (_sg_mc_debug) {
+        const auto action_by_p_in_w =
+            std::find_if(preallocated_partial_execution_.begin(), preallocated_partial_execution_.end(),
+                         [=](const auto& action) { return action->aid_ == p; });
+        xbt_assert(action_by_p_in_w == preallocated_partial_execution_.end(),
+                   "Invariant violated: We claimed that actor `%ld` is not an initial "
+                   "after `w`, yet it's independent with all actions of `w` AND occurs in `w`."
+                   "This indicates that there is a bug computing initials",
+                   p);
+      }
     } else {
       // Neither of the two above conditions hold, so the relation fails
       return std::nullopt;
     }
   }
-  return std::optional<PartialExecution>{std::move(w_now)};
+  return std::optional<PartialExecution>{std::move(preallocated_partial_execution_)};
 }
 
 bool Execution::happens_before_process(Execution::EventHandle e, aid_t p) const

@@ -48,7 +48,7 @@ PartialExecution WakeupTreeNode::get_sequence() const
   PartialExecution seq_;
   const WakeupTreeNode* cur_node = this;
   while (cur_node != nullptr && not cur_node->is_root()) {
-    seq_.push_front(cur_node->action_);
+    seq_.emplace(seq_.begin(), cur_node->action_);
     cur_node = cur_node->parent_;
   }
   return seq_;
