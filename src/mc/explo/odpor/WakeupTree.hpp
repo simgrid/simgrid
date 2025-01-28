@@ -47,12 +47,14 @@ private:
   /** @brief Removes the node as a child from the parent */
   void detatch_from_parent();
 
+  PartialExecution sequence_;
+
   /** Allows the owning tree to insert directly into the child */
   friend WakeupTree;
   friend WakeupTreeIterator;
 
 public:
-  explicit WakeupTreeNode(std::shared_ptr<Transition> u) : action_(u) {}
+  explicit WakeupTreeNode(std::shared_ptr<Transition> u) : action_(u), sequence_({u}) {}
 
   WakeupTreeNode()                                 = default;
   ~WakeupTreeNode()                                = default;
