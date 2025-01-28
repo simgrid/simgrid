@@ -133,7 +133,7 @@ void BeFSWutState::unwind_wakeup_tree_from_parent()
 
     // Remove the aid from the sequence
     auto v = node->get_sequence();
-    v.pop_front();
+    v.erase(v.begin());
 
     const odpor::PartialExecution v_prime = final_wakeup_tree_.insert_and_get_inserted_seq(v);
     if (not v_prime.empty())
@@ -201,7 +201,7 @@ StatePtr BeFSWutState::force_insert_into_wakeup_tree(const odpor::PartialExecuti
   auto first_actor = pe.front()->aid_;
   if (StatePtr children = get_children_state_of_aid(first_actor); children != nullptr) {
     odpor::PartialExecution suffix = pe;
-    suffix.pop_front();
+    suffix.erase(suffix.begin());
     return static_cast<BeFSWutState*>(children.get())->force_insert_into_wakeup_tree(std::move(suffix));
   }
 
