@@ -20,8 +20,11 @@ public class Host {
   public double get_speed() {
     return simgridJNI.Host_get_speed(swigCPtr, this);
   }
+  public double get_load() { return simgridJNI.Host_get_load(swigCPtr); }
 
   public boolean is_on() { return simgridJNI.Host_is_on(swigCPtr, this); }
+  public void turn_off() { simgridJNI.Host_turn_off(swigCPtr); }
+  public void turn_on() { simgridJNI.Host_turn_on(swigCPtr); }
 
   public static Host current()
   {
