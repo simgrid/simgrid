@@ -81,7 +81,10 @@
 #include "simgrid/s4u/Actor.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextJava.hpp"
+#include "xbt/asserts.h"
+#include "xbt/log.h"
 
+#include <boost/core/demangle.hpp>
 #include <jni.h>
 #include <stdlib.h>
 #include <string.h>
@@ -302,6 +305,7 @@ static void rethrow_simgrid_exception(JNIEnv* jenv, std::exception const& e)
 {
   static jclass timeout_ex     = 0; // org/simgrid/s4u/TimeoutException
   static jclass networkfail_ex = 0; // org/simgrid/s4u/NetworkFailureException
+  static jclass hostfail_ex    = 0; // org/simgrid/s4u/HostFailureException
   static jclass illegal_ex     = 0; // std::invalid_argument <-> java/lang/IllegalArgumentException
 
   jenv->ExceptionClear();
@@ -315,7 +319,12 @@ static void rethrow_simgrid_exception(JNIEnv* jenv, std::exception const& e)
   } else if (dynamic_cast<const simgrid::NetworkFailureException*>(&e) != nullptr) {
     init_exception_class(jenv, networkfail_ex, "org/simgrid/s4u/NetworkFailureException");
     jenv->ThrowNew(networkfail_ex, e.what());
+  } else if (dynamic_cast<const simgrid::HostFailureException*>(&e) != nullptr) {
+    init_exception_class(jenv, hostfail_ex, "org/simgrid/s4u/HostFailureException");
+    jenv->ThrowNew(hostfail_ex, e.what());
   } else {
+    xbt_backtrace_display_current();
+    XBT_INFO("Exception %s is not handled by the Java bindings", boost::core::demangle(typeid(e).name()).c_str());
     THROW_UNIMPLEMENTED;
   }
 }
@@ -632,13 +641,47 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1thread_1execute(J
   }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis, jdouble flops_amounts)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1seq_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                                jobject jthis, jdouble flops_amounts)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
              "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   auto result = simgrid::s4u::this_actor::exec_init(flops_amounts);
+  intrusive_ptr_add_ref(result.get());
+  return (jlong)result.get();
+}
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1par_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                                jobject jthis, jlongArray jhosts,
+                                                                                jdoubleArray jcompute_amounts,
+                                                                                jdoubleArray jcomm_amounts)
+{
+  xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
+             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
+             cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
+
+  std::vector<Host*> chosts;
+  int len        = jenv->GetArrayLength(jhosts);
+  jlong* cjhosts = jenv->GetLongArrayElements(jhosts, nullptr);
+  for (int i = 0; i < len; i++)
+    chosts.push_back((Host*)cjhosts[i]);
+  jenv->ReleaseLongArrayElements(jhosts, cjhosts, JNI_ABORT);
+
+  std::vector<double> ccompute_amounts;
+  len                       = jenv->GetArrayLength(jcompute_amounts);
+  double* cjcompute_amounts = jenv->GetDoubleArrayElements(jcompute_amounts, nullptr);
+  for (int i = 0; i < len; i++)
+    ccompute_amounts.push_back(cjcompute_amounts[i]);
+  jenv->ReleaseDoubleArrayElements(jcompute_amounts, cjcompute_amounts, JNI_ABORT);
+
+  std::vector<double> ccomm_amounts;
+  len                    = jenv->GetArrayLength(jcomm_amounts);
+  double* cjcomm_amounts = jenv->GetDoubleArrayElements(jcomm_amounts, nullptr);
+  for (int i = 0; i < len; i++)
+    ccomm_amounts.push_back(cjcomm_amounts[i]);
+  jenv->ReleaseDoubleArrayElements(jcomm_amounts, cjcomm_amounts, JNI_ABORT);
+
+  auto result = simgrid::s4u::this_actor::exec_init(chosts, ccompute_amounts, ccomm_amounts);
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
@@ -3398,10 +3441,22 @@ XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1speed(JNIE
 {
   return (jdouble)((Host*)cthis)->get_speed();
 }
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1load(JNIEnv* jenv, jclass jcls, jlong cthis)
+{
+  return (jdouble)((Host*)cthis)->get_load();
+}
 XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1is_1on(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                          jobject jthis)
 {
   return ((simgrid::s4u::Host*)cthis)->is_on();
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1turn_1on(JNIEnv* jenv, jclass jcls, jlong cthis)
+{
+  return ((simgrid::s4u::Host*)cthis)->turn_on();
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1turn_1off(JNIEnv* jenv, jclass jcls, jlong cthis)
+{
+  return ((simgrid::s4u::Host*)cthis)->turn_off();
 }
 XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1data(JNIEnv* jenv, jclass jcls, jlong cthis)
 {

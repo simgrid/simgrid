@@ -1,0 +1,11 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:exec_suspend.jar exec_suspend ${platfdir}/small_platform.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [Tremblay:executor:(1) 1.000000] [java/INFO] Task is suspended (remaining: 196190000.000000)
+> [Tremblay:executor:(1) 11.000000] [java/INFO] Task is resumed (remaining: 196190000.000000)
+> [Tremblay:executor:(1) 11.000000] [java/INFO] Activity hasn't advanced: yes. (remaining before sleep: 196190000.000000, remaining after sleep: 196190000.000000)
+> [Tremblay:executor:(1) 12.000000] [java/INFO] Task is suspended (remaining: 98095000.000000)
+> [Tremblay:executor:(1) 22.000000] [java/INFO] Task is resumed (remaining: 98095000.000000)
+> [Tremblay:executor:(1) 22.000000] [java/INFO] Activity hasn't advanced: yes. (remaining before sleep: 98095000.000000, remaining after sleep: 98095000.000000)
+> [Tremblay:executor:(1) 23.000000] [java/INFO] Finished
