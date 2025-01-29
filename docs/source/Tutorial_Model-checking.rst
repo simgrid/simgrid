@@ -3,22 +3,25 @@
 Formal Verification and Model checking
 ======================================
 
-SimGrid can not only predict the performance of your application, but also assess its correctness through formal methods. Mc
-SimGrid is a full-featured model-checker that is embedded in the SimGrid framework. It can be used to formally verify safety
+Mc SimGrid is a full-featured model-checker that is embedded in the SimGrid framework. It can be used to formally verify safety
 properties on codes running on top of SimGrid, be them classical pthread applications, :ref:`simple algorithms
-<usecase_simalgo>`, or :ref:`full MPI applications <usecase_smpi>`.
+<usecase_simalgo>`, or :ref:`full MPI applications <usecase_smpi>`. This module is under heavy development since 15 years now.
+It is less stable than the parts of SimGrid intended to predict the performance of your application, but should still be usable
+if you're motivated and patient with us.
 
 Primer on formal methods
 ------------------------
 
-Formal methods are techniques leveraging mathematics to test and assess systems. They are routinely used to assess computer hardware,
-transportation systems or any other complex engineering process. Among these methods, model checking is a technique to automatically
-prove that a given model verifies a given property by systematically checking all states of the model. The property and model are
-written in a mathematical language and fed to an automated tool called model checker. When the model does not verify the property, the
-model checker gives a counter-example that can be used to refine and improve the model. Conversely, if no counter-example can be found
-after an exhaustive exploration of the model, we know that the property holds for the model. It may also happen that the model is too
-large to be exhaustively explored, in which case the model checker is not conclusive. Model checkers rely on so-called reduction
-techniques (based on symmetries and equivalence) to efficiently explore the system state.
+Formal methods are techniques leveraging mathematics to test and assess systems. They are routinely used to assess computer
+hardware, transportation systems or any other complex engineering process. Among these methods, model checking is a technique to
+automatically prove that a given model verifies a given property by systematically checking all states of the model. The
+property and model are written in a mathematical language and fed to an automated tool called model checker.  When the model
+does not verify the property, the model checker gives a counter-example that can be used to refine and improve the model.
+Conversely, if no counter-example can be found after an exhaustive exploration of the model, we know that the property holds for
+the model. It may also happen that the model is too large to be exhaustively explored, in which case the model checker is not
+conclusive. Model checkers rely on so-called reduction techniques (based on symmetries and equivalence) to efficiently explore
+the system state. `Spin <https://spinroot.com/spin/whatispin.html>` is a renowned model checker while `TLA+
+<https://en.wikipedia.org/wiki/TLA%2B>` is a mathematical language that can be used in such context.
 
 Software model checking applies similar ideas to programs, without requiring a mathematical model of the system. Instead, the
 program itself is used as a model to verify against a property. Along these lines, Mc SimGrid is a stateless model checker: it
