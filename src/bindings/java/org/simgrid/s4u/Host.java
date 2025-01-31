@@ -26,6 +26,17 @@ public class Host {
   public void turn_off() { simgridJNI.Host_turn_off(swigCPtr); }
   public void turn_on() { simgridJNI.Host_turn_on(swigCPtr); }
 
+  public void set_pstate(int p) { simgridJNI.Host_set_pstate(swigCPtr, p); }
+  public Exec exec_init(double flops_amounts)
+  {
+    long cPtr = simgridJNI.Host_exec_init(swigCPtr, flops_amounts);
+    return (cPtr == 0) ? null : new Exec(cPtr, true);
+  }
+  public Exec exec_async(double flops_amounts)
+  {
+    long cPtr = simgridJNI.Host_exec_async(swigCPtr, flops_amounts);
+    return (cPtr == 0) ? null : new Exec(cPtr, true);
+  }
   public static Host current()
   {
     long cPtr = simgridJNI.Host_current();

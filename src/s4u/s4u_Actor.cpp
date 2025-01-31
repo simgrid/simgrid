@@ -17,6 +17,8 @@
 #include "src/kernel/resource/HostImpl.hpp"
 #include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
+#include "xbt/asserts.h"
+#include "xbt/asserts.hpp"
 #include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 
@@ -402,25 +404,25 @@ ExecPtr exec_init(double flops_amount)
 ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                   const std::vector<double>& bytes_amounts)
 {
-  xbt_assert(not hosts.empty(), "Your parallel executions must span over at least one host.");
-  xbt_assert(hosts.size() == flops_amounts.size() || flops_amounts.empty(),
-             "Host count (%zu) does not match flops_amount count (%zu).", hosts.size(), flops_amounts.size());
-  xbt_assert(hosts.size() * hosts.size() == bytes_amounts.size() || bytes_amounts.empty(),
-             "bytes_amounts must be a matrix of size host_count * host_count (%zu*%zu), but it's of size %zu.",
-             hosts.size(), hosts.size(), bytes_amounts.size());
+  xbt_enforce(not hosts.empty(), "Your parallel executions must span over at least one host.");
+  xbt_enforce(hosts.size() == flops_amounts.size() || flops_amounts.empty(),
+              "Host count (%zu) does not match flops_amount count (%zu).", hosts.size(), flops_amounts.size());
+  xbt_enforce(hosts.size() * hosts.size() == bytes_amounts.size() || bytes_amounts.empty(),
+              "bytes_amounts must be a matrix of size host_count * host_count (%zu*%zu), but it's of size %zu.",
+              hosts.size(), hosts.size(), bytes_amounts.size());
   /* Check that we are not mixing VMs and PMs in the parallel task */
   bool is_a_vm = (nullptr != dynamic_cast<VirtualMachine*>(hosts.front()));
-  xbt_assert(std::all_of(hosts.begin(), hosts.end(),
-                         [is_a_vm](s4u::Host* elm) {
-                           bool tmp_is_a_vm = (nullptr != dynamic_cast<VirtualMachine*>(elm));
-                           return is_a_vm == tmp_is_a_vm;
-                         }),
-             "parallel_execute: mixing VMs and PMs is not supported (yet).");
+  xbt_enforce(std::all_of(hosts.begin(), hosts.end(),
+                          [is_a_vm](s4u::Host* elm) {
+                            bool tmp_is_a_vm = (nullptr != dynamic_cast<VirtualMachine*>(elm));
+                            return is_a_vm == tmp_is_a_vm;
+                          }),
+              "parallel_execute: mixing VMs and PMs is not supported (yet).");
   /* checking for infinite values */
-  xbt_assert(std::all_of(flops_amounts.begin(), flops_amounts.end(), [](double elm) { return std::isfinite(elm); }),
-             "flops_amounts comprises infinite values!");
-  xbt_assert(std::all_of(bytes_amounts.begin(), bytes_amounts.end(), [](double elm) { return std::isfinite(elm); }),
-             "flops_amounts comprises infinite values!");
+  xbt_enforce(std::all_of(flops_amounts.begin(), flops_amounts.end(), [](double elm) { return std::isfinite(elm); }),
+              "flops_amounts comprises infinite values!");
+  xbt_enforce(std::all_of(bytes_amounts.begin(), bytes_amounts.end(), [](double elm) { return std::isfinite(elm); }),
+              "flops_amounts comprises infinite values!");
 
   return Exec::init()->set_flops_amounts(flops_amounts)->set_bytes_amounts(bytes_amounts)->set_hosts(hosts);
 }

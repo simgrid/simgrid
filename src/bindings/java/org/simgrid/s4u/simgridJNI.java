@@ -10,6 +10,8 @@ public class simgridJNI {
   public final static native void Actor_sleep_until(long jarg1, Actor jarg1_, double jarg2);
   public final static native void Actor_execute__SWIG_0(long jarg1, Actor jarg1_, double jarg2);
   public final static native void Actor_execute__SWIG_1(long jarg1, Actor jarg1_, double jarg2, double jarg3);
+  public final static native void Actor_parallel_execute(long jarg1, Actor jarg1_, long[] hosts, double[] flops_amounts,
+                                                         double[] bytes_amounts);
   public final static native void Actor_thread_execute(long jarg1, Actor jarg1_, long chost, Host jhost, double jarg3,
                                                        int jarg4);
   public final static native long Actor_exec_seq_init(long jarg1, Actor jarg1_, double jarg2);
@@ -316,6 +318,9 @@ public class simgridJNI {
   public final static native boolean Host_is_on(long jarg1, Host jarg1_);
   public final static native void Host_turn_on(long jarg1);
   public final static native void Host_turn_off(long jarg1);
+  public final static native void Host_set_pstate(long jarg1, int pstate);
+  public final static native long Host_exec_init(long jarg1, double flops_amount);
+  public final static native long Host_exec_async(long jarg1, double flops_amount);
   public final static native Link[] Host_route_links_to(long swigCPtr, long host);
   public final static native double Host_route_latency_to(long swigCPtr, long host);
   public final static native Object Host_get_data(long swigCPtr);

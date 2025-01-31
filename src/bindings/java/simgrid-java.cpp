@@ -73,6 +73,7 @@
  * Java executions?
  */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/plugins/live_migration.h"
 #include "simgrid/s4u.hpp"
 
@@ -303,6 +304,7 @@ static void inline init_exception_class(JNIEnv* jenv, jclass& klass, const char*
 }
 static void rethrow_simgrid_exception(JNIEnv* jenv, std::exception const& e)
 {
+  static jclass assert_ex      = 0; // org/simgrid/s4u/AssertionError
   static jclass timeout_ex     = 0; // org/simgrid/s4u/TimeoutException
   static jclass networkfail_ex = 0; // org/simgrid/s4u/NetworkFailureException
   static jclass hostfail_ex    = 0; // org/simgrid/s4u/HostFailureException
@@ -322,6 +324,9 @@ static void rethrow_simgrid_exception(JNIEnv* jenv, std::exception const& e)
   } else if (dynamic_cast<const simgrid::HostFailureException*>(&e) != nullptr) {
     init_exception_class(jenv, hostfail_ex, "org/simgrid/s4u/HostFailureException");
     jenv->ThrowNew(hostfail_ex, e.what());
+  } else if (dynamic_cast<const simgrid::AssertionError*>(&e) != nullptr) {
+    init_exception_class(jenv, assert_ex, "org/simgrid/s4u/AssertionError");
+    jenv->ThrowNew(assert_ex, e.what());
   } else {
     xbt_backtrace_display_current();
     XBT_INFO("Exception %s is not handled by the Java bindings", boost::core::demangle(typeid(e).name()).c_str());
@@ -593,7 +598,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1sleep_1until(JNIE
                                                                             jobject jthis, jdouble wakeup_time)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
+             "You cannot call sleep_until() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::sleep_until(wakeup_time);
@@ -606,7 +611,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1execute_1_1SWIG_1
                                                                                   jdouble flop)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
+             "You cannot call execute() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::execute(flop);
@@ -619,7 +624,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1execute_1_1SWIG_1
                                                                                   jdouble flop, jdouble priority)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
+             "You cannot call execute() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::execute(flop, priority);
@@ -633,11 +638,54 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1thread_1execute(J
                                                                                jint thread_count)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
+             "You cannot call thread_execute() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::thread_execute((Host*)chost, flop_amounts, thread_count);
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  }
+}
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1parallel_1execute(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                                jobject jthis, jlongArray jhosts,
+                                                                                jdoubleArray jcompute_amounts,
+                                                                                jdoubleArray jcomm_amounts)
+{
+  xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
+             "You cannot call parallel_execute() on a remote actor %ld:%s, only on the currently executing actor.",
+             cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
+
+  std::vector<Host*> chosts;
+  if (jhosts) {
+    int len        = jenv->GetArrayLength(jhosts);
+    jlong* cjhosts = jenv->GetLongArrayElements(jhosts, nullptr);
+    for (int i = 0; i < len; i++)
+      chosts.push_back((Host*)cjhosts[i]);
+    jenv->ReleaseLongArrayElements(jhosts, cjhosts, JNI_ABORT);
+  }
+
+  std::vector<double> ccompute_amounts;
+  if (jcompute_amounts) {
+    int len                   = jenv->GetArrayLength(jcompute_amounts);
+    double* cjcompute_amounts = jenv->GetDoubleArrayElements(jcompute_amounts, nullptr);
+    for (int i = 0; i < len; i++)
+      ccompute_amounts.push_back(cjcompute_amounts[i]);
+    jenv->ReleaseDoubleArrayElements(jcompute_amounts, cjcompute_amounts, JNI_ABORT);
+  }
+
+  std::vector<double> ccomm_amounts;
+  if (jcomm_amounts) {
+    int len                = jenv->GetArrayLength(jcomm_amounts);
+    double* cjcomm_amounts = jenv->GetDoubleArrayElements(jcomm_amounts, nullptr);
+    for (int i = 0; i < len; i++)
+      ccomm_amounts.push_back(cjcomm_amounts[i]);
+    jenv->ReleaseDoubleArrayElements(jcomm_amounts, cjcomm_amounts, JNI_ABORT);
+  }
+
+  try {
+    simgrid::s4u::this_actor::parallel_execute(chosts, ccompute_amounts, ccomm_amounts);
+  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (Exception const& ex) {
+    rethrow_simgrid_exception(jenv, ex);
   }
 }
 
@@ -645,7 +693,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1seq_1init(
                                                                                 jobject jthis, jdouble flops_amounts)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
+             "You cannot call exec_init() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   auto result = simgrid::s4u::this_actor::exec_init(flops_amounts);
   intrusive_ptr_add_ref(result.get());
@@ -657,7 +705,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1par_1init(
                                                                                 jdoubleArray jcomm_amounts)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
+             "You cannot call exec_init() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
 
   std::vector<Host*> chosts;
@@ -690,7 +738,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1async(JNIE
                                                                             jobject jthis, jdouble flops_amounts)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
+             "You cannot call exec_async() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   auto result = simgrid::s4u::this_actor::exec_async(flops_amounts);
   intrusive_ptr_add_ref(result.get());
@@ -707,7 +755,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1yield(JNIEnv* jen
                                                                      jobject jthis)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
-             "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
+             "You cannot call yield() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::yield();
@@ -2663,13 +2711,13 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1destruct
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jenv, jclass jcls, jobjectArray cthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jenv, jclass jcls, jobjectArray jargs)
 {
-  if (cthis == (jobjectArray)0) {
+  if (jargs == (jobjectArray)0) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "The engine arguments shall not be null");
     return 0;
   }
-  int len = (int)jenv->GetArrayLength(cthis);
+  int len = (int)jenv->GetArrayLength(jargs);
   if (len < 0) {
     SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, "array length negative");
     return 0;
@@ -2680,7 +2728,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jen
     return 0;
   }
   for (jsize i = 0; i < len; i++) {
-    jstring j_string     = (jstring)jenv->GetObjectArrayElement(cthis, i);
+    jstring j_string     = (jstring)jenv->GetObjectArrayElement(jargs, i);
     const char* c_string = jenv->GetStringUTFChars(j_string, 0);
     cargs[i]             = (char*)c_string;
   }
@@ -3458,6 +3506,28 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1turn_1off(JNIEnv* 
 {
   return ((simgrid::s4u::Host*)cthis)->turn_off();
 }
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1pstate(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                         jint pstate)
+{
+  ((simgrid::s4u::Host*)cthis)->set_pstate(pstate);
+}
+JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1exec_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                         jdouble flops)
+{
+  ExecPtr result = ((simgrid::s4u::Host*)cthis)->exec_init(flops);
+  intrusive_ptr_add_ref(result.get());
+
+  return (jlong)result.get();
+}
+JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1exec_1async(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                          jdouble flops)
+{
+  ExecPtr result = ((simgrid::s4u::Host*)cthis)->exec_async(flops);
+  intrusive_ptr_add_ref(result.get());
+
+  return (jlong)result.get();
+}
+
 XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1data(JNIEnv* jenv, jclass jcls, jlong cthis)
 {
   jobject cdata = ((Host*)cthis)->get_data<_jobject>();
@@ -4450,9 +4520,7 @@ XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1receive
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1init_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
                                                                                        jlong cthis, jobject jthis)
 {
-  auto self = (Mailbox*)cthis;
-
-  CommPtr result = self->put_init();
+  CommPtr result = ((Mailbox*)cthis)->put_init();
   intrusive_ptr_add_ref(result.get());
 
   return (jlong)result.get();
@@ -4463,10 +4531,9 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1init_1_1S
                                                                                        jobject payload,
                                                                                        jlong simulated_size_in_bytes)
 {
-  auto self = (Mailbox*)cthis;
   auto glob = jenv->NewGlobalRef(payload);
 
-  CommPtr result = self->put_init(glob, simulated_size_in_bytes);
+  CommPtr result = ((Mailbox*)cthis)->put_init(glob, simulated_size_in_bytes);
   intrusive_ptr_add_ref(result.get());
 
   return (jlong)result.get();

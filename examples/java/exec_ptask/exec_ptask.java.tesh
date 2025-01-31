@@ -1,0 +1,55 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:exec_ptask.jar exec_ptask ${platfdir}/energy_platform.xml --cfg=host/model:ptask_L07 --cfg=tracing:yes --cfg=tracing/uncategorized:yes --log=instr_resource.t:verbose --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'ptask_L07'
+> [  0.000000] (0:maestro@) Configuration change: Set 'tracing' to 'yes'
+> [  0.000000] (0:maestro@) Configuration change: Set 'tracing/uncategorized' to 'yes'
+> [  0.000000] (0:maestro@) Using regular java threads.
+> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
+> [  0.000000] (1:test@MyHost1) First, build a classical parallel activity, with 1 Gflop to execute on each node, and 10MB to exchange between each pair
+> [300.000000] (0:maestro@) UNCAT HOST [0.000000 - 300.000000] MyHost1 speed_used 3333333.333333
+> [300.000000] (0:maestro@) UNCAT HOST [0.000000 - 300.000000] MyHost2 speed_used 3333333.333333
+> [300.000000] (0:maestro@) UNCAT HOST [0.000000 - 300.000000] MyHost3 speed_used 3333333.333333
+> [300.000000] (0:maestro@) UNCAT LINK [0.000000 - 300.000000] bus bandwidth_used 100000.000000
+> [300.000000] (1:test@MyHost1) We can do the same with a timeout of 10 seconds enabled.
+> [310.000000] (1:test@MyHost1) Caught the expected timeout exception.
+> [310.000000] (0:maestro@) UNCAT HOST [300.000000 - 310.000000] MyHost1 speed_used 3333333.333333
+> [310.000000] (0:maestro@) UNCAT HOST [300.000000 - 310.000000] MyHost2 speed_used 3333333.333333
+> [310.000000] (0:maestro@) UNCAT HOST [300.000000 - 310.000000] MyHost3 speed_used 3333333.333333
+> [310.000000] (0:maestro@) UNCAT LINK [300.000000 - 310.000000] bus bandwidth_used 100000.000000
+> [310.000000] (1:test@MyHost1) Then, build a parallel activity involving only computations (of different amounts) and no communication
+> [320.000000] (0:maestro@) UNCAT HOST [310.000000 - 320.000000] MyHost1 speed_used 30000000.000000
+> [320.000000] (0:maestro@) UNCAT HOST [310.000000 - 320.000000] MyHost2 speed_used 60000000.000000
+> [320.000000] (0:maestro@) UNCAT HOST [310.000000 - 320.000000] MyHost3 speed_used 100000000.000000
+> [320.000000] (1:test@MyHost1) Then, build a parallel activity with no computation nor communication (synchro only)
+> [320.000000] (1:test@MyHost1) Then, Monitor the execution of a parallel activity
+> [320.000000] (1:test@MyHost1) Remaining flop ratio: 100%
+> [325.000000] (1:test@MyHost1) Remaining flop ratio: 83%
+> [330.000000] (1:test@MyHost1) Remaining flop ratio: 67%
+> [335.000000] (1:test@MyHost1) Remaining flop ratio: 50%
+> [340.000000] (1:test@MyHost1) Remaining flop ratio: 33%
+> [345.000000] (1:test@MyHost1) Remaining flop ratio: 17%
+> [350.000000] (0:maestro@) UNCAT HOST [320.000000 - 350.000000] MyHost1 speed_used 33333.333333
+> [350.000000] (0:maestro@) UNCAT HOST [320.000000 - 350.000000] MyHost2 speed_used 33333.333333
+> [350.000000] (0:maestro@) UNCAT HOST [320.000000 - 350.000000] MyHost3 speed_used 33333.333333
+> [350.000000] (0:maestro@) UNCAT LINK [320.000000 - 350.000000] bus bandwidth_used 100000.000000
+> [350.000000] (1:test@MyHost1) Finally, simulate a malleable task (a parallel execution that gets reconfigured after its start).
+> [350.000000] (1:test@MyHost1)   - Start a regular parallel execution, with both comm and computation
+> [360.000000] (1:test@MyHost1)   - After 10 seconds, 50.00% remains to be done. Change it from 3 hosts to 2 hosts only.
+> [360.000000] (1:test@MyHost1)     Let's first suspend the task.
+> [360.000000] (1:test@MyHost1) UNCAT HOST [350.000000 - 360.000000] MyHost1 speed_used 50000.000000
+> [360.000000] (1:test@MyHost1) UNCAT HOST [350.000000 - 360.000000] MyHost2 speed_used 50000.000000
+> [360.000000] (1:test@MyHost1) UNCAT HOST [350.000000 - 360.000000] MyHost3 speed_used 50000.000000
+> [360.000000] (1:test@MyHost1) UNCAT LINK [350.000000 - 360.000000] bus bandwidth_used 100000.000000
+> [360.000000] (1:test@MyHost1)   - Now, simulate the reconfiguration (modeled as a comm from the removed host to the remaining ones).
+> [360.500000] (0:maestro@) UNCAT LINK [360.000000 - 360.500000] bus bandwidth_used 100000.000000
+> [360.500000] (1:test@MyHost1)   - Now, let's cancel the old task and create a new task with modified comm and computation vectors:
+> [360.500000] (1:test@MyHost1)     What was already done is removed, and the load of the removed host is shared between remaining ones.
+> [360.500000] (1:test@MyHost1)   - Done, let's wait for the task completion
+> [375.500000] (0:maestro@) UNCAT HOST [360.500000 - 375.500000] MyHost1 speed_used 50000.000000
+> [375.500000] (0:maestro@) UNCAT HOST [360.500000 - 375.500000] MyHost2 speed_used 50000.000000
+> [375.500000] (0:maestro@) UNCAT LINK [360.500000 - 375.500000] bus bandwidth_used 100000.000000
+> [375.500000] (1:test@MyHost1) Goodbye now!
+> [375.500000] (0:maestro@) Simulation done.
+
+$ rm -f ./simgrid.trace
