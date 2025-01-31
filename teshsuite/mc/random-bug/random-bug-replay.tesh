@@ -10,7 +10,7 @@ $ ${bindir:=.}/random-bug printf ${platfdir}/small_platform.xml --log=xbt_cfg.th
 > [  0.000000] (0:maestro@) * Path chunk #2 '1/4' Actor app(pid:1): Random(min:0 max:5)
 > [  0.000000] (0:maestro@) ***********************************************************************************
 > [  0.000000] (1:app@Fafard) Error reached
-> [  0.000000] (0:maestro@) The replay of the trace is complete. The application is terminating.
+> [  0.000000] (0:maestro@) The replay of the trace is complete and no actor remains to be executed. The application is terminating.
 
 # Behavior: assert does not have the same output within and without MC, so don't test it here. That's already covered with the other ones
 

@@ -50,13 +50,15 @@ void RecordTrace::replay() const
 
   const auto& actor_list = engine->get_actor_list();
   if (actor_list.empty()) {
-    XBT_INFO("The replay of the trace is complete. The application is terminating.");
+    XBT_INFO(
+        "The replay of the trace is complete and no actor remains to be executed. The application is terminating.");
   } else if (std::none_of(std::begin(actor_list), std::end(actor_list),
                           [](const auto& kv) { return mc::actor_is_enabled(kv.second); })) {
     XBT_INFO("The replay of the trace is complete. DEADLOCK detected.");
     engine->display_all_actor_status();
   } else {
-    XBT_INFO("The replay of the trace is complete. The application could run further.");
+    XBT_INFO("The replay of the trace is complete. The application could run further:");
+    kernel::EngineImpl::get_instance()->display_all_actor_status();
   }
 }
 
