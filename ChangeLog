@@ -13,6 +13,10 @@ sthread:
 
 Python:
  - Add many missing bindings [Sergey Teryoshkin].
+ - Add MPI bindings [Jean-Noël Quintin].
+
+Java:
+ - Reintroduce the bindings, on top of S4U.
 
 Chaos Monkey plugin:
  - Allow to restart the actors by pid at a given time.

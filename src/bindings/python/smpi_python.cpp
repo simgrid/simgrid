@@ -31,6 +31,9 @@
 
 namespace py = pybind11;
 using simgrid::s4u::Host;
+
+void SMPI_bindings(py::module& m);
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(smpi_python, "python");
 
 namespace {
@@ -41,8 +44,7 @@ void wrap_mpi_alltoall(py::array_t<T> data, int sendcount, MPI_Datatype sendtype
   py::buffer_info out_buffer = output.request();
   py::buffer_info in_buffer  = data.request();
 
-  auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
-  auto* input_ptr            = static_cast<T*>(in_buffer.ptr);
+  auto* output_ptr = static_cast<T*>(out_buffer.ptr);
   py::gil_scoped_release release;
   MPI_Alltoall(data.data(), sendcount, sendtype, output_ptr, recvcount, recvtype, comm);
 }
@@ -238,7 +240,7 @@ void SMPI_bindings(py::module& m)
           "compare",
           [](simgrid::smpi::Group* group, simgrid::smpi::Group* group2) {
             int result;
-            int status = MPI_Group_compare(group, group2, &result);
+            MPI_Group_compare(group, group2, &result);
             return result;
           },
           py::call_guard<py::gil_scoped_release>(), "Compare two groups")

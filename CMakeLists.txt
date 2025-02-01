@@ -799,12 +799,10 @@ if(enable_python)
     if(NOT enable_lto)
       set(pybind11_options NO_EXTRAS)
     endif()
-    set(python_files
-        ${CMAKE_SOURCE_DIR}/src/bindings/python/simgrid_python.cpp)
+    set(python_files ${CMAKE_SOURCE_DIR}/src/bindings/python/simgrid_python.cpp)
 
     if (((NOT DEFINED enable_smpi) OR enable_smpi))
-      set(python_files ${python_files}
-           ${CMAKE_SOURCE_DIR}/src/bindings/python/smpi_python.cpp)
+      set(python_files ${python_files} ${CMAKE_SOURCE_DIR}/src/bindings/python/smpi_python.cpp)
       add_compile_definitions(SIMGRID_PYTHON_SMPI)
     endif()
 
