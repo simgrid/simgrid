@@ -21,6 +21,16 @@ Java:
 Chaos Monkey plugin:
  - Allow to restart the actors by pid at a given time.
 
+C API:
+ - Deprecate some functions (we want to kill xbt_dict and xbt_dynar at some point)
+   - sg_actor_get_properties() -> sg_actor_get_property_names()
+   - sg_host_get_properties() -> sg_host_get_property_names()
+   - sg_zone_get_properties() -> sg_zone_get_property_names()
+   - sg_zone_get_sons() -> sg_zone_get_childs()
+   - sg_zone_get_hosts() -> sg_zone_get_all_hosts()
+   - sg_actor_attach() now takes only 2 parameters (the props are removed)
+ - Introduce sg_zone_get_property_names()
+
 ----------------------------------------------------------------------------
 
 

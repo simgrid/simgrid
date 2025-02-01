@@ -16,18 +16,18 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 
 static void test_host(const char* hostname)
 {
-  sg_host_t thehost        = sg_host_by_name(hostname);
-  xbt_dict_t props         = sg_host_get_properties(thehost);
-  xbt_dict_cursor_t cursor = NULL;
-  char* key;
-  char* data;
+  sg_host_t thehost   = sg_host_by_name(hostname);
   const char* noexist = "Unknown";
   const char* value;
   char exist[] = "Hdd";
 
   XBT_INFO("== Print the properties of the host '%s'", hostname);
-  xbt_dict_foreach (props, cursor, key, data)
-    XBT_INFO("  Host property: '%s' -> '%s'", key, data);
+  int propcount;
+  const char** propnames = sg_host_get_property_names(thehost, &propcount);
+  for (int cpt = 0; cpt < propcount; cpt++)
+    XBT_INFO("  Host property: '%s' -> '%s'", propnames[cpt],
+             (char*)sg_host_get_property_value(thehost, propnames[cpt]));
+  free(propnames);
 
   XBT_INFO("== Try to get a host property that does not exist");
   value = sg_host_get_property_value(thehost, noexist);
@@ -50,8 +50,6 @@ static void test_host(const char* hostname)
 
   /* Restore the value for the next test */
   sg_host_set_property_value(thehost, exist, (char*)"180");
-
-  xbt_dict_free(&props);
 }
 
 static void alice(int argc, char* argv[])
@@ -81,22 +79,16 @@ static void bob(int argc, char* argv[])
   XBT_INFO("   Actor property: author -> %s", sg_zone_get_property_value(root, "author"));
 
   /* Get the property list of current bob actor */
-  xbt_dict_t props         = sg_actor_get_properties(sg_actor_self());
-  xbt_dict_cursor_t cursor = NULL;
-  char* key;
-  char* data;
-  const char* noexist = "UnknownActorProp";
-  const char* value;
-
+  const char** propnames = sg_actor_get_property_names(sg_actor_self(), NULL);
   XBT_INFO("== Print the properties of the actor");
-  xbt_dict_foreach (props, cursor, key, data)
-    XBT_INFO("   Actor property: %s -> %s", key, data);
+  for (int cpt = 0; propnames[cpt] != NULL; cpt++)
+    XBT_INFO("   Actor property: %s -> %s", propnames[cpt],
+             (char*)sg_actor_get_property_value(sg_actor_self(), propnames[cpt]));
+  free(propnames);
 
   XBT_INFO("== Try to get an actor property that does not exist");
-
-  value = sg_actor_get_property_value(sg_actor_self(), noexist);
+  const char* value = sg_actor_get_property_value(sg_actor_self(), "UnknownActorProp");
   xbt_assert(!value, "The property is defined (it shouldn't)");
-  xbt_dict_free(&props);
 }
 
 int main(int argc, char* argv[])

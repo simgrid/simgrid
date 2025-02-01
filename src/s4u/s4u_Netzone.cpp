@@ -334,7 +334,34 @@ void sg_zone_get_sons(const_sg_netzone_t netzone, xbt_dict_t whereto)
     xbt_dict_set(whereto, elem->get_cname(), elem);
   }
 }
+sg_netzone_t* sg_zone_get_childs(const_sg_netzone_t netzone, int* size)
+{
+  auto children     = netzone->get_children();
+  if (size)
+    *size = children.size();
+  sg_netzone_t* res = (sg_netzone_t*)xbt_malloc(sizeof(char*) * (children.size() + 1));
+  int i             = 0;
+  for (auto child : children)
+    res[i++] = child;
+  res[i] = nullptr;
 
+  return res;
+}
+const char** sg_zone_get_property_names(const_sg_netzone_t zone)
+{
+  const std::unordered_map<std::string, std::string>* props = zone->get_properties();
+
+  if (props == nullptr)
+    return nullptr;
+
+  const char** res = (const char**)xbt_malloc(sizeof(char*) * (props->size() + 1));
+  int i            = 0;
+  for (auto const& [key, _] : *props)
+    res[i++] = key.c_str();
+  res[i] = nullptr;
+
+  return res;
+}
 const char* sg_zone_get_property_value(const_sg_netzone_t netzone, const char* name)
 {
   return netzone->get_property(name);
@@ -345,10 +372,24 @@ void sg_zone_set_property_value(sg_netzone_t netzone, const char* name, const ch
   netzone->set_property(name, value);
 }
 
-void sg_zone_get_hosts(const_sg_netzone_t netzone, xbt_dynar_t whereto)
+void sg_zone_get_hosts(const_sg_netzone_t netzone, xbt_dynar_t whereto) // deprecate 3.39
 {
   /* converts vector to dynar */
   std::vector<simgrid::s4u::Host*> hosts = netzone->get_all_hosts();
   for (auto const& host : hosts)
     xbt_dynar_push(whereto, &host);
+}
+const_sg_host_t* sg_zone_get_all_hosts(const_sg_netzone_t zone, int* size)
+{
+  std::vector<simgrid::s4u::Host*> hosts = zone->get_all_hosts();
+
+  const_sg_host_t* res = (const_sg_host_t*)xbt_malloc(sizeof(const_sg_link_t) * (hosts.size() + 1));
+  if (size)
+    *size = hosts.size();
+  int i = 0;
+  for (auto host : hosts)
+    res[i++] = host;
+  res[i] = nullptr;
+
+  return res;
 }

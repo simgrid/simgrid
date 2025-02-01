@@ -607,11 +607,6 @@ const char* sg_actor_get_property_value(const_sg_actor_t actor, const char* name
   return actor->get_property(name);
 }
 
-/**
- * @brief Return the list of properties
- *
- * This function returns all the parameters associated with an actor
- */
 xbt_dict_t sg_actor_get_properties(const_sg_actor_t actor)
 {
   xbt_assert(actor != nullptr, "Invalid parameter: First argument must not be nullptr");
@@ -623,6 +618,26 @@ xbt_dict_t sg_actor_get_properties(const_sg_actor_t actor)
     xbt_dict_set(as_dict, key.c_str(), xbt_strdup(value.c_str()));
   }
   return as_dict;
+}
+const char** sg_actor_get_property_names(const_sg_actor_t actor, int* size)
+{
+  const std::unordered_map<std::string, std::string>* props = actor->get_properties();
+
+  if (props == nullptr) {
+    if (size)
+      *size = 0;
+    return nullptr;
+  }
+
+  const char** res = (const char**)xbt_malloc(sizeof(char*) * (props->size() + 1));
+  if (size)
+    *size = props->size();
+  int i = 0;
+  for (auto const& [key, _] : *props)
+    res[i++] = key.c_str();
+  res[i] = nullptr;
+
+  return res;
 }
 
 /**
@@ -742,22 +757,14 @@ void sg_actor_sleep_until(double wakeup_time)
   simgrid::s4u::this_actor::sleep_until(wakeup_time);
 }
 
-sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host, xbt_dict_t properties)
+sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host)
 {
-  xbt_assert(host != nullptr, "Invalid parameters: host and code params must not be nullptr");
-  std::unordered_map<std::string, std::string> props;
-  xbt_dict_cursor_t cursor = nullptr;
-  char* key;
-  char* value;
-  xbt_dict_foreach (properties, cursor, key, value)
-    props[key] = value;
-  xbt_dict_free(&properties);
+  xbt_assert(host != nullptr, "Invalid parameters: host must not be nullptr");
 
   /* Let's create the actor: SIMIX may decide to start it right now, even before returning the flow control to us */
   simgrid::kernel::actor::ActorImpl* actor = nullptr;
   try {
     actor = simgrid::kernel::actor::ActorImpl::attach(name, data, host).get();
-    actor->set_properties(props);
   } catch (simgrid::HostFailureException const&) {
     xbt_die("Could not attach");
   }
