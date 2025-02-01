@@ -1,4 +1,4 @@
-if(enable_java)
+if(SIMGRID_HAVE_JAVA)
   add_custom_target(java-all COMMENT "Building all Java examples...")
   add_dependencies(tests java-all)
   add_dependencies(java-all simgrid_jar)
@@ -35,7 +35,7 @@ foreach (example activityset_awaitall activityset_awaitallfor activityset_awaita
     set(_${example}_teshfile ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
   endif()
 
-  if(enable_java AND (NOT DEFINED _${example}_disable))
+  if(SIMGRID_HAVE_JAVA AND (NOT DEFINED _${example}_disable))
     add_jar(java-${example} SOURCES ${_${example}_sources}
             INCLUDE_JARS simgrid_jar
             ENTRY_POINT ${example}

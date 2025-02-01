@@ -826,7 +826,7 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/TimeoutException.java
     src/bindings/java/org/simgrid/s4u/VirtualMachine.java
 )
-if(NOT Java_FOUND)
+if(NOT SIMGRID_HAVE_JAVA)
   set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_C_SOURCES} ${SIMGRID_JAVA_JAVA_SOURCES})
 endif()
 

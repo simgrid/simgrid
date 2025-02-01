@@ -1,21 +1,9 @@
 ##
 ## The Cmake definitions for the use of Java
-##   This file is loaded only if the Java option is activated
+##
+## This file is loaded only if the Java option is activated, and Java+JNI are found
 ##
 
-find_package(Java 1.8 COMPONENTS Runtime Development)
-if (NOT ${Java_FOUND})
-  message(FATAL_ERROR "Java not found (need at least Java 8). Please install the JDK, or disable the 'enable_java' option.")
-endif()
-message(STATUS "[Java] Compiler: ${Java_JAVAC_EXECUTABLE}; Runtime: ${Java_JAVA_EXECUTABLE}; Version: ${Java_VERSION_STRING}")
-
-find_package(JNI)
-if (NOT ${JNI_FOUND})
-  message(FATAL_ERROR "JNI not found. Please install it, or disable the 'enable_java' option.")
-endif()
-message(STATUS "[Java] JNI include dirs: ${JNI_INCLUDE_DIRS}")
-
-set(Java_FOUND 1)
 include(UseJava)
 
 # Generate the native part of the bindings
