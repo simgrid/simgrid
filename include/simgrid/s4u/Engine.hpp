@@ -133,8 +133,8 @@ protected:
   friend kernel::resource::StandardLinkImpl;
   void netpoint_register(simgrid::kernel::routing::NetPoint* card);
   void netpoint_unregister(simgrid::kernel::routing::NetPoint* card);
-  XBT_ATTRIB_DEPRECATED_v339("Use one of the Engine::set_rootnetzone_*() method instead");
-  void set_netzone_root(const NetZone* netzone);
+  XBT_ATTRIB_DEPRECATED_v339("Use one of the Engine::set_rootnetzone_*() method instead") void set_netzone_root(
+      const NetZone* netzone);
 #endif /*DOXYGEN*/
 
 public:

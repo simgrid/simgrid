@@ -122,6 +122,11 @@ public:
   }
 
   routing::NetZoneImpl* get_netzone_root() const { return netzone_root_; }
+  void set_netzone_root(routing::NetZoneImpl* netzone)
+  {
+    xbt_assert(netzone_root_ == nullptr, "The root NetZone cannot be changed once set");
+    netzone_root_ = netzone;
+  }
 
   void add_daemon(actor::ActorImpl* d) { daemons_.insert(d); }
   void remove_daemon(actor::ActorImpl* d);

@@ -42,7 +42,7 @@ NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
    * the root netzone to exist when creating the models.
    * This is usually done at sg_platf.cpp, during XML parsing */
   if (not engine->get_netzone_root()) {
-    engine->set_netzone_root(&piface_);
+    engine->get_impl()->set_netzone_root(this);
     /* root netzone set, initialize models */
     simgrid::s4u::Engine::on_platform_creation();
 
