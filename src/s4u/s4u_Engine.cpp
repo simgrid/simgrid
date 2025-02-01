@@ -11,6 +11,13 @@
 #include <simgrid/s4u/Engine.hpp>
 
 #include "simgrid/forward.h"
+#include "simgrid/kernel/routing/DijkstraZone.hpp"
+#include "simgrid/kernel/routing/EmptyZone.hpp"
+#include "simgrid/kernel/routing/FloydZone.hpp"
+#include "simgrid/kernel/routing/FullZone.hpp"
+#include "simgrid/kernel/routing/StarZone.hpp"
+#include "simgrid/kernel/routing/VivaldiZone.hpp"
+#include "simgrid/kernel/routing/WifiZone.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
@@ -657,6 +664,48 @@ void Engine::track_vetoed_activities(std::set<Activity*>* vetoed_activities) con
   Activity::set_vetoed_activities(vetoed_activities);
 }
 
+NetZone* Engine::set_rootnetzone_full(const std::string& name)
+{
+  xbt_assert(get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
+  auto* res = new kernel::routing::FullZone(name);
+  return res->get_iface();
+}
+NetZone* Engine::set_rootnetzone_star(const std::string& name)
+{
+  xbt_assert(get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
+  auto* res = new kernel::routing::StarZone(name);
+  return res->get_iface();
+}
+NetZone* Engine::set_rootnetzone_dijkstra(const std::string& name, bool cache)
+{
+  xbt_assert(get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
+  auto* res = new kernel::routing::DijkstraZone(name, cache);
+  return res->get_iface();
+}
+NetZone* Engine::set_rootnetzone_empty(const std::string& name)
+{
+  xbt_assert(get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
+  auto* res = new kernel::routing::EmptyZone(name);
+  return res->get_iface();
+}
+NetZone* Engine::set_rootnetzone_floyd(const std::string& name)
+{
+  xbt_assert(get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
+  auto* res = new kernel::routing::FloydZone(name);
+  return res->get_iface();
+}
+NetZone* Engine::set_rootnetzone_vivaldi(const std::string& name)
+{
+  xbt_assert(get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
+  auto* res = new kernel::routing::VivaldiZone(name);
+  return res->get_iface();
+}
+NetZone* Engine::set_rootnetzone_wifi(const std::string& name)
+{
+  xbt_assert(get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
+  auto* res = new kernel::routing::WifiZone(name);
+  return res->get_iface();
+}
 /** @brief Retrieve the root netzone, containing all others */
 s4u::NetZone* Engine::get_netzone_root() const
 {

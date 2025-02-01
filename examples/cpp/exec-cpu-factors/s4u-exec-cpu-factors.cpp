@@ -6,6 +6,7 @@
 /* This example shows how to simulate variability for CPUs, using multiplicative factors
  */
 
+#include "simgrid/s4u/Engine.hpp"
 #include <simgrid/s4u.hpp>
 
 namespace sg4 = simgrid::s4u;
@@ -37,9 +38,9 @@ static double cpu_variability(const sg4::Host* host, double flops)
 }
 
 /** @brief Create a simple 1-host platform */
-static void load_platform()
+static void load_platform(sg4::Engine& e)
 {
-  auto* zone        = sg4::create_empty_zone("Zone1");
+  auto* zone        = e.set_rootnetzone_empty("Zone1");
   auto* runner_host = zone->create_host("runner", 1e6);
   runner_host->set_factor_cb(std::bind(&cpu_variability, runner_host, std::placeholders::_1))->seal();
   zone->seal();
@@ -54,7 +55,7 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
 
   /* create platform */
-  load_platform();
+  load_platform(e);
 
   /* runs the simulation */
   e.run();

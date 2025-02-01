@@ -4090,13 +4090,6 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1parent(JN
   return jresult;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1set_1parent(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                             jobject jthis, jlong cparent,
-                                                                             jobject jparent)
-{
-  ((NetZone*)cthis)->set_parent((NetZone*)cparent);
-}
-
 XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1children(JNIEnv* jenv, jclass jcls,
                                                                                        jlong cthis, jobject jthis)
 {
@@ -4343,10 +4336,9 @@ JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1root_1netzo
                                                                                          jstring jname)
 {
   auto self = ((Engine*)cthis);
-  xbt_assert(self->get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
   if (jname) {
     std::string name = java_string_to_std_string(jenv, jname);
-    return (jlong)simgrid::s4u::create_full_zone(name);
+    return (jlong)self->set_rootnetzone_full(name);
   }
   SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Netzone names shall not be null.");
   return 0;
@@ -4357,10 +4349,9 @@ JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1root_1netzo
                                                                                          jstring jname)
 {
   auto self = ((Engine*)cthis);
-  xbt_assert(self->get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
   if (jname) {
     std::string name = java_string_to_std_string(jenv, jname);
-    return (jlong)simgrid::s4u::create_star_zone(name);
+    return (jlong)self->set_rootnetzone_star(name);
   }
   SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Netzone names shall not be null.");
   return 0;
@@ -4372,10 +4363,9 @@ JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1root_1netzo
                                                                                              jboolean cached)
 {
   auto self = ((Engine*)cthis);
-  xbt_assert(self->get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
   if (jname) {
     std::string name = java_string_to_std_string(jenv, jname);
-    return (jlong)simgrid::s4u::create_dijkstra_zone(name, cached);
+    return (jlong)self->set_rootnetzone_dijkstra(name, cached);
   }
   SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Netzone names shall not be null.");
   return 0;
@@ -4386,10 +4376,9 @@ JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1root_1netzo
                                                                                           jstring jname)
 {
   auto self = ((Engine*)cthis);
-  xbt_assert(self->get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
   if (jname) {
     std::string name = java_string_to_std_string(jenv, jname);
-    return (jlong)simgrid::s4u::create_empty_zone(name);
+    return (jlong)self->set_rootnetzone_empty(name);
   }
   SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Netzone names shall not be null.");
   return 0;
@@ -4400,10 +4389,9 @@ JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1root_1netzo
                                                                                           jstring jname)
 {
   auto self = ((Engine*)cthis);
-  xbt_assert(self->get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
   if (jname) {
     std::string name = java_string_to_std_string(jenv, jname);
-    return (jlong)simgrid::s4u::create_floyd_zone(name);
+    return (jlong)self->set_rootnetzone_floyd(name);
   }
   SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Netzone names shall not be null.");
   return 0;
@@ -4414,10 +4402,9 @@ JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1root_1netzo
                                                                                             jstring jname)
 {
   auto self = ((Engine*)cthis);
-  xbt_assert(self->get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
   if (jname) {
     std::string name = java_string_to_std_string(jenv, jname);
-    return (jlong)simgrid::s4u::create_vivaldi_zone(name);
+    return (jlong)self->set_rootnetzone_vivaldi(name);
   }
   SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Netzone names shall not be null.");
   return 0;
@@ -4428,10 +4415,9 @@ JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1root_1netzo
                                                                                          jstring jname)
 {
   auto self = ((Engine*)cthis);
-  xbt_assert(self->get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
   if (jname) {
     std::string name = java_string_to_std_string(jenv, jname);
-    return (jlong)simgrid::s4u::create_wifi_zone(name);
+    return (jlong)self->set_rootnetzone_wifi(name);
   }
   SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Netzone names shall not be null.");
   return 0;

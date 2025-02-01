@@ -87,7 +87,7 @@ public:
  * @param id Internal identifier in the torus (for information)
  * @return netpoint, gateway: the netpoint to the StarZone and CPU0 as gateway
  */
-static sg4::NetZone* create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
+static sg4::NetZone* create_hostzone(sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
 {
   constexpr int num_cpus    = 8;     //!< Number of CPUs in the zone
   constexpr double speed    = 1e9;   //!< Speed of each CPU
@@ -96,9 +96,7 @@ static sg4::NetZone* create_hostzone(const sg4::NetZone* zone, const std::vector
 
   std::string hostname = "host" + std::to_string(id);
   /* create the StarZone */
-  auto* host_zone = sg4::create_star_zone(hostname);
-  /* setting my Torus parent zone */
-  host_zone->set_parent(zone);
+  auto* host_zone = zone->add_netzone_star(hostname);
 
   /* create CPUs */
   for (int i = 0; i < num_cpus; i++) {

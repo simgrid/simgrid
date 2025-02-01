@@ -78,7 +78,7 @@ def link_nonlinear(link: Link, capacity: float, n: int) -> float:
     this_actor.info("Link %s, %d active communications, new capacity %f" % (link.name, n, capacity))
     return capacity
 
-def load_platform():
+def load_platform(e: Engine):
     """
     Create a simple 2-hosts platform
      ________                 __________
@@ -86,7 +86,7 @@ def load_platform():
     |________|    Link1      |__________|
 
     """
-    zone = NetZone.create_full_zone("Zone1")
+    zone = e.set_rootnetzone_full("Zone1")
     sender = zone.create_host("sender", 1).seal()
     receiver = zone.create_host("receiver", 1).seal()
 
@@ -112,7 +112,7 @@ if __name__ == '__main__':
     e = Engine(sys.argv)
 
     # create platform
-    load_platform()
+    load_platform(e)
 
     # runs the simulation
     e.run()

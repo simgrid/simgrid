@@ -4,6 +4,12 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/Exception.hpp"
+#include "simgrid/kernel/routing/DijkstraZone.hpp"
+#include "simgrid/kernel/routing/EmptyZone.hpp"
+#include "simgrid/kernel/routing/FloydZone.hpp"
+#include "simgrid/kernel/routing/StarZone.hpp"
+#include "simgrid/kernel/routing/VivaldiZone.hpp"
+#include "simgrid/kernel/routing/WifiZone.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
@@ -204,6 +210,42 @@ void NetZone::set_bandwidth_factor_cb(
                          const std::unordered_set<s4u::NetZone*>& /*netzones*/)> const& cb) const
 {
   kernel::actor::simcall_answered([this, &cb]() { pimpl_->get_network_model()->set_bw_factor_cb(cb); });
+}
+
+NetZone* NetZone::add_netzone_full(const std::string& name)
+{
+  auto* res = new kernel::routing::FloydZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_star(const std::string& name)
+{
+  auto* res = new kernel::routing::StarZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_dijkstra(const std::string& name, bool cache)
+{
+  auto* res = new kernel::routing::DijkstraZone(name, cache);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_empty(const std::string& name)
+{
+  auto* res = new kernel::routing::EmptyZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_floyd(const std::string& name)
+{
+  auto* res = new kernel::routing::FloydZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_vivaldi(const std::string& name)
+{
+  auto* res = new kernel::routing::VivaldiZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_wifi(const std::string& name)
+{
+  auto* res = new kernel::routing::WifiZone(name);
+  return res->set_parent(get_impl())->get_iface();
 }
 
 s4u::Host* NetZone::create_host(const std::string& name, double speed)

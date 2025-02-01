@@ -44,9 +44,9 @@ static double cpu_nonlinear(const sg4::Host* host, double capacity, int n)
 }
 
 /** @brief Create a simple 1-host platform */
-static void load_platform()
+static void load_platform(sg4::Engine& e)
 {
-  auto* zone        = sg4::create_empty_zone("Zone1");
+  auto* zone        = e.set_rootnetzone_empty("Zone1");
   auto* runner_host = zone->create_host("runner", 1e6);
   runner_host->set_sharing_policy(sg4::Host::SharingPolicy::NONLINEAR,
                                   std::bind(&cpu_nonlinear, runner_host, std::placeholders::_1, std::placeholders::_2));
@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
 
   /* create platform */
-  load_platform();
+  load_platform(e);
 
   /* runs the simulation */
   e.run();

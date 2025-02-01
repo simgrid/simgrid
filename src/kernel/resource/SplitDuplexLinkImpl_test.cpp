@@ -13,7 +13,7 @@
 TEST_CASE("SplitDuplexLink: create", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone = simgrid::s4u::create_star_zone("test");
+  auto* zone = e.set_rootnetzone_star("test");
 
   SECTION("create string")
   {
@@ -36,7 +36,7 @@ TEST_CASE("SplitDuplexLink: create", "")
 TEST_CASE("SplitDuplexLink: sets", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone            = simgrid::s4u::create_star_zone("test");
+  auto* zone            = e.set_rootnetzone_star("test");
   auto* link            = zone->create_split_duplex_link("link", 100e6);
   auto const* link_up   = link->get_link_up();
   auto const* link_down = link->get_link_down();

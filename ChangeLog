@@ -11,6 +11,11 @@ S4U:
 sthread:
  - Implement pthread_exit() and pthread_cond_timedwait()
 
+Platform API:
+ - Deprecate the create_*_zone() functions, add Engine::set_rootnetzone_*() and NetZone::add_netzone_*()
+   Methods are better than functions.
+ - Deprecate NetZone::set_parent(): it's useless with the new API.
+
 Python:
  - Add many missing bindings [Sergey Teryoshkin].
  - Add MPI bindings [Jean-Noël Quintin].
@@ -18,8 +23,8 @@ Python:
 Java:
  - Reintroduce the bindings, on top of S4U.
 
-Chaos Monkey plugin:
- - Allow to restart the actors by pid at a given time.
+Plugins:
+ - Chaos Monkey: Allow to restart the actors by pid at a given time.
 
 C API:
  - Deprecate some functions (we want to kill xbt_dict and xbt_dynar at some point)

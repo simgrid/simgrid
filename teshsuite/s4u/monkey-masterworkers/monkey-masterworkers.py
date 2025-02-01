@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
   mailbox = Mailbox.by_name("mailbox")
 
-  rootzone = NetZone.create_full_zone("Zone1")
+  rootzone = e.set_rootnetzone_full("Zone1")
   main = rootzone.create_host("lilibeth 0", 1e9)
   Actor.create("master", main, master).set_auto_restart(True)
 

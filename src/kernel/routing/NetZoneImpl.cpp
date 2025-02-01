@@ -726,7 +726,7 @@ void NetZoneImpl::seal()
   s4u::NetZone::on_seal(piface_);
 }
 
-void NetZoneImpl::set_parent(NetZoneImpl* parent)
+NetZoneImpl* NetZoneImpl::set_parent(NetZoneImpl* parent)
 {
   xbt_enforce(not sealed_, "Impossible to set parent to an already sealed NetZone(%s)", this->get_cname());
   parent_ = parent;
@@ -741,6 +741,7 @@ void NetZoneImpl::set_parent(NetZoneImpl* parent)
     set_disk_model(parent->get_disk_model());
     set_host_model(parent->get_host_model());
   }
+  return this;
 }
 
 void NetZoneImpl::set_network_model(std::shared_ptr<resource::NetworkModel> netmodel)

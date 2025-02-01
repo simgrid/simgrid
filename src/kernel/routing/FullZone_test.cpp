@@ -12,17 +12,10 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/kernel/resource/LinkImpl.hpp"
 
-TEST_CASE("kernel::routing::FullZone: Creating Zone", "")
-{
-  simgrid::s4u::Engine e("test");
-
-  REQUIRE(simgrid::s4u::create_full_zone("test"));
-}
-
 TEST_CASE("kernel::routing::FullZone: mix new routes and hosts", "[bug]")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone = simgrid::s4u::create_full_zone("test");
+  auto* zone = e.set_rootnetzone_full("test");
 
   const simgrid::s4u::Host* nic  = zone->create_host("nic", 1e9);
   const simgrid::s4u::Link* link = zone->create_link("my_link", 1e6);

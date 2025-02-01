@@ -88,10 +88,7 @@ def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], ident: int) 
     link_lat = "1ns"  # Link latency
 
     hostname = "host" + str(ident)
-    # create the StarZone
-    host_zone = simgrid.NetZone.create_star_zone(hostname)
-    # setting my Torus parent zone
-    host_zone.set_parent(zone)
+    host_zone = zone.add_netzone_star(hostname)
 
     # create CPUs
     for i in range(num_cpus):

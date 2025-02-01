@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
    * | Sender |===============| Receiver |
    * |________|    Link1      |__________|
    */
-  auto* zone     = sg4::create_full_zone("Zone1");
+  auto* zone     = e.set_rootnetzone_full("Zone1");
   auto* sender   = zone->create_host("sender", 1)->seal();
   auto* receiver = zone->create_host("receiver", 1)->seal();
 

@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
 
-  auto* root  = sg4::create_full_zone("root");
+  auto* root  = e.set_rootnetzone_full("root");
   auto* host1 = root->create_host("host1", 1e9);
   host1->create_disk("disk-1", 1e9, 1e6);
   host1->create_disk("disk-2", 1e9, 1e6);

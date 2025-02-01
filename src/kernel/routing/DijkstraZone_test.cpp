@@ -10,20 +10,25 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/NetZone.hpp"
-#include "src/kernel/resource/LinkImpl.hpp"
 
-TEST_CASE("kernel::routing::DijkstraZone: Creating Zone", "")
+TEST_CASE("kernel::routing::DijkstraZone (cached): mix new routes and hosts", "")
 {
   simgrid::s4u::Engine e("test");
+  auto* zone = e.set_rootnetzone_dijkstra("test", true);
 
-  SECTION("Regular Dijkstra") { REQUIRE(simgrid::s4u::create_dijkstra_zone("test", false)); }
-  SECTION("DijkstraCache") { REQUIRE(simgrid::s4u::create_dijkstra_zone("test", true)); }
+  const simgrid::s4u::Host* nic  = zone->create_host("nic", 1e9)->seal();
+  const simgrid::s4u::Link* link = zone->create_link("my_link", 1e6)->seal();
+  for (int i = 0; i < 10; i++) {
+    std::string cpu_name          = "CPU" + std::to_string(i);
+    const simgrid::s4u::Host* cpu = zone->create_host(cpu_name, 1e9)->seal();
+    REQUIRE_NOTHROW(zone->add_route(cpu, nic, {link}));
+  }
 }
 
-TEST_CASE("kernel::routing::DijkstraZone: mix new routes and hosts", "")
+TEST_CASE("kernel::routing::DijkstraZone (not cached): mix new routes and hosts", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone = simgrid::s4u::create_dijkstra_zone("test", false);
+  auto* zone = e.set_rootnetzone_dijkstra("test", false);
 
   const simgrid::s4u::Host* nic  = zone->create_host("nic", 1e9)->seal();
   const simgrid::s4u::Link* link = zone->create_link("my_link", 1e6)->seal();

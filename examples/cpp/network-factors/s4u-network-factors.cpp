@@ -50,7 +50,7 @@ constexpr static double LATENCY   = .1e-6;
 
 /*************************************************************************************************/
 /** @brief Create a simple platform based on Dahu cluster */
-static void load_platform()
+static void load_platform(sg4::Engine& e)
 {
   /**
    * Inspired on dahu cluster on Grenoble
@@ -64,7 +64,7 @@ static void load_platform()
    * host1     ...      hostN
    */
 
-  auto* root         = sg4::create_star_zone("dahu");
+  auto* root         = e.set_rootnetzone_star("dahu");
   std::string prefix = "dahu-";
   std::string suffix = ".grid5000.fr";
 
@@ -228,7 +228,7 @@ int main(int argc, char* argv[])
   }
 
   /* create platform */
-  load_platform();
+  load_platform(e);
   /* setting network factors callbacks */
   e.get_netzone_root()->set_latency_factor_cb(latency_factor_cb);
   e.get_netzone_root()->set_bandwidth_factor_cb(bandwidth_factor_cb);

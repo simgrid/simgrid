@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
 
-  sg4::NetZone* world = sg4::create_full_zone("world");
+  sg4::NetZone* world = e.set_rootnetzone_full("world");
   sg4::Host* hostGl01 = world->create_host("host-gl01", "98Mf")->seal();
   sg4::Host* hostSa01 = world->create_host("host-sa01", "98Mf")->seal();
 

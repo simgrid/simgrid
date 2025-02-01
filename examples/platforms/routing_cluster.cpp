@@ -16,10 +16,10 @@ namespace sg4 = simgrid::s4u;
  * @param host List of hostname inside the cluster
  * @param single_link_host Hostname of "special" node
  */
-static sg4::NetZone* create_cluster(const sg4::NetZone* root, const std::string& cluster_suffix,
-                           const std::vector<std::string>& hosts, const std::string& single_link_host)
+static sg4::NetZone* create_cluster(sg4::NetZone* root, const std::string& cluster_suffix,
+                                    const std::vector<std::string>& hosts, const std::string& single_link_host)
 {
-  auto* cluster = sg4::create_star_zone("cluster" + cluster_suffix)->set_parent(root);
+  auto* cluster = root->add_netzone_star("cluster" + cluster_suffix);
 
   /* create the backbone link */
   const sg4::Link* l_bb = cluster->create_link("backbone" + cluster_suffix, "20Gbps")->set_latency("500us");
@@ -53,8 +53,8 @@ static sg4::NetZone* create_cluster(const sg4::NetZone* root, const std::string&
 }
 
 /** @brief Programmatic version of routing_cluster.xml */
-extern "C" void load_platform(const sg4::Engine& e);
-void load_platform(const sg4::Engine&)
+extern "C" void load_platform(sg4::Engine& e);
+void load_platform(sg4::Engine& e)
 {
   /**
    *
@@ -73,7 +73,7 @@ void load_platform(const sg4::Engine&)
    *   host1         host3         host2           host4         host6          host5
    */
 
-  auto* root = sg4::create_full_zone("AS0");
+  auto* root = e.set_rootnetzone_full("world");
 
   /* create left cluster */
   const auto* left_cluster = create_cluster(root, "1", {"host1", "host2", "host3"}, "host3");

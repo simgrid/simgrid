@@ -98,7 +98,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
   }
 
   sg4::Engine e(&argc, argv);
-  auto* zone = sg4::create_full_zone("world");
+  auto* zone = e.set_rootnetzone_empty("world");
   lilibeth   = zone->create_host("Lilibeth", 1e15);
   zone->seal();
 

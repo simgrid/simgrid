@@ -7,6 +7,7 @@
 #define SIMGRID_S4U_NETZONE_HPP
 
 #include "simgrid/s4u/Host.hpp"
+#include "xbt/base.h"
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Link.hpp>
 #include <xbt/graph.h>
@@ -44,7 +45,10 @@ public:
   const char* get_cname() const;
 
   NetZone* get_parent() const;
-  NetZone* set_parent(const NetZone* parent);
+#ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v339("Please stop using NetZone::set_parent(). It is useless with the new platform API.")
+      NetZone* set_parent(const NetZone* parent);
+#endif
   std::vector<NetZone*> get_children() const;
 
   std::vector<Host*> get_all_hosts() const;
@@ -244,16 +248,32 @@ public:
   set_bandwidth_factor_cb(std::function<double(double size, const s4u::Host* src, const s4u::Host* dst,
                                                const std::vector<s4u::Link*>& /*links*/,
                                                const std::unordered_set<s4u::NetZone*>& /*netzones*/)> const& cb) const;
+
+  NetZone* add_netzone_full(const std::string& name);
+  NetZone* add_netzone_star(const std::string& name);
+  NetZone* add_netzone_dijkstra(const std::string& name, bool cache);
+  NetZone* add_netzone_empty(const std::string& name);
+  NetZone* add_netzone_floyd(const std::string& name);
+  NetZone* add_netzone_vivaldi(const std::string& name);
+  NetZone* add_netzone_wifi(const std::string& name);
 };
 
-// External constructors so that the types (and the types of their content) remain hidden
-XBT_PUBLIC NetZone* create_full_zone(const std::string& name);
-XBT_PUBLIC NetZone* create_star_zone(const std::string& name);
-XBT_PUBLIC NetZone* create_dijkstra_zone(const std::string& name, bool cache);
-XBT_PUBLIC NetZone* create_empty_zone(const std::string& name);
-XBT_PUBLIC NetZone* create_floyd_zone(const std::string& name);
-XBT_PUBLIC NetZone* create_vivaldi_zone(const std::string& name);
-XBT_PUBLIC NetZone* create_wifi_zone(const std::string& name);
+#ifndef DOXYGEN
+XBT_ATTRIB_DEPRECATED_v339("Please use Engine::set_rootnetzone_full or NetZone::add_netzone_full")
+    XBT_PUBLIC NetZone* create_full_zone(const std::string& name);
+XBT_ATTRIB_DEPRECATED_v339("Please use Engine::set_rootnetzone_star or NetZone::add_netzone_star")
+    XBT_PUBLIC NetZone* create_star_zone(const std::string& name);
+XBT_ATTRIB_DEPRECATED_v339("Please use Engine::set_rootnetzone_dijkstra or NetZone::add_netzone_dijkstra")
+    XBT_PUBLIC NetZone* create_dijkstra_zone(const std::string& name, bool cache);
+XBT_ATTRIB_DEPRECATED_v339("Please use Engine::set_rootnetzone_empty or NetZone::add_netzone_empty")
+    XBT_PUBLIC NetZone* create_empty_zone(const std::string& name);
+XBT_ATTRIB_DEPRECATED_v339("Please use Engine::set_rootnetzone_floyd or NetZone::add_netzone_floyd")
+    XBT_PUBLIC NetZone* create_floyd_zone(const std::string& name);
+XBT_ATTRIB_DEPRECATED_v339("Please use Engine::set_rootnetzone_vivaldi or NetZone::add_netzone_vivaldi")
+    XBT_PUBLIC NetZone* create_vivaldi_zone(const std::string& name);
+XBT_ATTRIB_DEPRECATED_v339("Please use Engine::set_rootnetzone_wifi or NetZone::add_netzone_wifi")
+    XBT_PUBLIC NetZone* create_wifi_zone(const std::string& name);
+#endif
 
 // Extra data structure for complex constructors
 

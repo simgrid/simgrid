@@ -133,6 +133,7 @@ protected:
   friend kernel::resource::StandardLinkImpl;
   void netpoint_register(simgrid::kernel::routing::NetPoint* card);
   void netpoint_unregister(simgrid::kernel::routing::NetPoint* card);
+  XBT_ATTRIB_DEPRECATED_v339("Use one of the Engine::set_rootnetzone_*() method instead");
   void set_netzone_root(const NetZone* netzone);
 #endif /*DOXYGEN*/
 
@@ -178,6 +179,21 @@ public:
    * @throw std::invalid_argument if netpoint doesn't exist
    */
   kernel::routing::NetPoint* netpoint_by_name(const std::string& name) const;
+
+  /** Specify that the root netzone uses the Full routing */
+  NetZone* set_rootnetzone_full(const std::string& name);
+  /** Specify that the root netzone uses the Star routing */
+  NetZone* set_rootnetzone_star(const std::string& name);
+  /** Specify that the root netzone uses the Dijikstra routing */
+  NetZone* set_rootnetzone_dijkstra(const std::string& name, bool cache);
+  /** Specify that the root netzone uses no routing */
+  NetZone* set_rootnetzone_empty(const std::string& name);
+  /** Specify that the root netzone uses the Floyd routing */
+  NetZone* set_rootnetzone_floyd(const std::string& name);
+  /** Specify that the root netzone uses the Vivaldi routing */
+  NetZone* set_rootnetzone_vivaldi(const std::string& name);
+  /** Specify that the root netzone uses the wifi routing */
+  NetZone* set_rootnetzone_wifi(const std::string& name);
 
   s4u::NetZone* get_netzone_root() const;
   std::vector<s4u::NetZone*> get_all_netzones() const;

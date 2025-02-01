@@ -7,6 +7,7 @@
  * network links.
  */
 
+#include "simgrid/s4u/Engine.hpp"
 #include <simgrid/s4u.hpp>
 #include <string>
 
@@ -109,14 +110,14 @@ static double link_nonlinear(const sg4::Link* link, double capacity, int n)
 }
 
 /** @brief Create a simple 2-hosts platform */
-static void load_platform()
+static void load_platform(simgrid::s4u::Engine& e)
 {
   /* Creates the platform
    *  ________                 __________
    * | Sender |===============| Receiver |
    * |________|    Link1      |__________|
    */
-  auto* zone     = sg4::create_full_zone("Zone1");
+  auto* zone     = e.set_rootnetzone_full("Zone1");
   auto* sender   = zone->create_host("sender", 1)->seal();
   auto* receiver = zone->create_host("receiver", 1)->seal();
 
@@ -145,7 +146,7 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
 
   /* create platform */
-  load_platform();
+  load_platform(e);
 
   /* runs the simulation */
   e.run();

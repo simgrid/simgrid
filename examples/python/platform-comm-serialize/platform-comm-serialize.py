@@ -60,7 +60,7 @@ def main():
     # | Sender |===============| Receiver |
     # |________|    Link1      |__________|
     #
-    zone: NetZone = NetZone.create_full_zone("Zone1")
+    zone: NetZone = e.set_rootnetzone_full("Zone1")
     sender_host: Host = zone.create_host("sender", 1).seal()
     receiver_host: Host = zone.create_host("receiver", 1).seal()
 

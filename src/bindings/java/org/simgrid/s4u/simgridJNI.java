@@ -397,7 +397,6 @@ public class simgridJNI {
   public final static native void Mess_await_for(long cmess, Mess jmess, double timeout);
   public final static native String NetZone_get_name(long jarg1, NetZone jarg1_);
   public final static native long NetZone_get_parent(long jarg1, NetZone jarg1_);
-  public final static native void NetZone_set_parent(long jarg1, NetZone jarg1_, long jarg2, NetZone jarg2_);
   public final static native NetZone[] NetZone_get_children(long jarg1, NetZone jarg1_);
   public final static native Host[] NetZone_get_all_hosts(long jarg1, NetZone jarg1_);
   public final static native long NetZone_get_host_count(long jarg1, NetZone jarg1_);

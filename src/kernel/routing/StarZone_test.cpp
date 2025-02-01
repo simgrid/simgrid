@@ -12,17 +12,10 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 
-TEST_CASE("kernel::routing::StarZone: Creating Zone", "[creation]")
-{
-  simgrid::s4u::Engine e("test");
-
-  REQUIRE(simgrid::s4u::create_star_zone("test"));
-}
-
 TEST_CASE("kernel::routing::StarZone: Create links: exceptions", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone = simgrid::s4u::create_star_zone("test");
+  auto* zone = e.set_rootnetzone_star("test");
   SECTION("create_link: invalid bandwidth")
   {
     REQUIRE_THROWS_AS(zone->create_link("link", "speed"), std::invalid_argument);
@@ -281,7 +274,7 @@ TEST_CASE("kernel::routing::StarZone: Get routes (netzones)", "")
 TEST_CASE("kernel::routing::StarZone: mix new routes and hosts", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone = simgrid::s4u::create_star_zone("test");
+  auto* zone = e.set_rootnetzone_star("test");
 
   const simgrid::s4u::Link* link = zone->create_link("my_link", 1e6)->seal();
   for (int i = 0; i < 10; i++) {

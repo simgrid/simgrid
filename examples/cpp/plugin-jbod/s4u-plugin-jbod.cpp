@@ -34,7 +34,7 @@ static void write_then_read(simgrid::plugin::JbodPtr jbod)
 int main(int argc, char** argv)
 {
   sg4::Engine e(&argc, argv);
-  auto* zone = sg4::create_full_zone("zone");
+  auto* zone = e.set_rootnetzone_full("zone");
   auto* host = zone->create_host("host", "1Gf");
   // set up link so that data transfer from host to JBOD takes exactly 1 second (without crosstraffic)
   const auto* link = zone->create_link("link", 1e7 / 0.97)->set_latency(0);
