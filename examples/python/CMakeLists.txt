@@ -3,6 +3,11 @@ if(NOT SIMGRID_HAVE_MC)
     set(_${example}_disable 1)
   endforeach()
 endif()
+if(NOT SIMGRID_HAVE_PYTHON_SMPI)
+  foreach (example mc-smpi_all2all smpi_allreduce smpi_allgather smpi_bcast smpi_reduce smpi_reducescatter)
+    set(_${example}_disable 1)
+  endforeach()
+endif()
 
 foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate actor-suspend actor-yield actor-lifetime
         activityset-testany activityset-waitall activityset-waitallfor activityset-waitany

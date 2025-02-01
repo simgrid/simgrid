@@ -68,9 +68,10 @@ using simgrid::s4u::TaskPtr;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(python, "python");
 
-#ifdef SIMGRID_PYTHON_SMPI
+#ifdef SIMGRID_HAVE_PYTHON_SMPI
 void SMPI_bindings(py::module& m);
 #endif
+
 namespace {
 
 std::string get_simgrid_version()
@@ -1035,7 +1036,7 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "__repr__", [](const ActivitySetPtr) { return "ActivitySet([...])"; },
           "Textual representation of the ActivitySet");
-#ifdef SIMGRID_PYTHON_SMPI
+#ifdef SIMGRID_HAVE_PYTHON_SMPI
   SMPI_bindings(m);
 #endif
 }
