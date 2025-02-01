@@ -37,7 +37,10 @@ get_ns3(){
 get_python(){
   found=$(grep -c "Compile Python bindings .....: ON" ./consoleText)
   if [ "$found" != 0 ]; then
-    grep -m 1 "Found Python3" ./consoleText| sed "s/.*-- Found Python3.*found version \"\([a-zA-Z0-9\.]*\)\".*/\1/g"
+    grep --max-count=1 "Found Python3" ./consoleText| sed "s/.*-- Found Python3.*found version \"\([a-zA-Z0-9\.]*\)\".*/\1/g"
+    if grep "Found Python3" ./consoleText | grep -q- "NumPy" ; then
+      echo "numpy"
+    fi
   else
     echo ""
   fi
@@ -139,8 +142,8 @@ function sortTable(n, type) {
     <td class=matrix-header style=min-width:50px onclick='sortTable($((++col,0)));'>Debug</td>
     <td class=matrix-header style=min-width:50px onclick='sortTable($((++col,0)));'>Release</td>
     <td class=matrix-header style=min-width:75px onclick='sortTable($((++col)));'>Compiler</td>
-    <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Boost</td>
-    <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Cmake</td>
+    <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">Boost</td>
+    <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">Cmake</td>
     <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">Eigen3</td>
     <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">JSON</td>
     <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">ns-3</td>

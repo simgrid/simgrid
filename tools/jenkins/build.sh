@@ -171,9 +171,6 @@ echo "Search for Java"
 if javac --version ; then : else
   have_Java="no"
 fi
-if swig -version ; then : else
-  have_Java="no"
-fi
 echo "XX have_Java=$have_Java"
 echo
 
