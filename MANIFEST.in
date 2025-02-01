@@ -510,6 +510,12 @@ include examples/java/exec_basic/exec_basic.java
 include examples/java/exec_basic/exec_basic.java.tesh
 include examples/java/exec_dependent/exec_dependent.java
 include examples/java/exec_dependent/exec_dependent.java.tesh
+include examples/java/exec_ptask/exec_ptask.java
+include examples/java/exec_ptask/exec_ptask.java.tesh
+include examples/java/exec_ptask_multicore/exec_ptask_multicore.java
+include examples/java/exec_ptask_multicore/exec_ptask_multicore.java.tesh
+include examples/java/exec_ptask_multicore_latency/exec_ptask_multicore_latency.java
+include examples/java/exec_ptask_multicore_latency/exec_ptask_multicore_latency.java.tesh
 include examples/java/exec_remote/exec_remote.java
 include examples/java/exec_remote/exec_remote.java.tesh
 include examples/java/exec_suspend/exec_suspend.java
@@ -2235,6 +2241,7 @@ include src/3rd-party/catch.hpp
 include src/bindings/java/org/simgrid/s4u/Activity.java
 include src/bindings/java/org/simgrid/s4u/ActivitySet.java
 include src/bindings/java/org/simgrid/s4u/Actor.java
+include src/bindings/java/org/simgrid/s4u/AssertionError.java
 include src/bindings/java/org/simgrid/s4u/Barrier.java
 include src/bindings/java/org/simgrid/s4u/CallbackActor.java
 include src/bindings/java/org/simgrid/s4u/CallbackActorHost.java
@@ -2274,6 +2281,7 @@ include src/bindings/java/org/simgrid/s4u/VirtualMachine.java
 include src/bindings/java/org/simgrid/s4u/simgridJNI.java
 include src/bindings/java/simgrid-java.cpp
 include src/bindings/python/simgrid_python.cpp
+include src/bindings/python/smpi_python.cpp
 include src/dag/dax.dtd
 include src/dag/dax_dtd.c
 include src/dag/dax_dtd.h
