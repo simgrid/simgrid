@@ -137,7 +137,7 @@ function sortTable(n, type) {
     <td class=matrix-header style=min-width:75px onclick='sortTable($((col=0)));'>Name of the Builder</td>
     <td class=matrix-header style=min-width:75px onclick='sortTable($((++col)));'>OS</td>
     <td class=matrix-header style=min-width:50px onclick='sortTable($((++col,0)));'>Debug</td>
-    <td class=matrix-header style=min-width:50px onclick='sortTable($((++col,0)));'>MC</td>
+    <td class=matrix-header style=min-width:50px onclick='sortTable($((++col,0)));'>Release</td>
     <td class=matrix-header style=min-width:75px onclick='sortTable($((++col)));'>Compiler</td>
     <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Boost</td>
     <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Cmake</td>
@@ -160,7 +160,7 @@ for node in "${nodes[@]}"
 do
     wget --quiet --output-document=consoleText \
          ${BUILD_URL}/build_mode=Debug,node=${node}/consoleText \
-         ${BUILD_URL}/build_mode=ModelChecker,node=${node}/consoleText \
+         ${BUILD_URL}/build_mode=Release,node=${node}/consoleText \
          >/dev/null 2>&1
     if [ ! -f consoleText ]; then
       echo "file not existing for node ${node}"
@@ -188,14 +188,14 @@ do
     rm status
     statusdebug="<a href=\"build_mode=Debug,node=${node}/\"><img src=\"https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=${node}/badge/icon?style=ball-24x24${color1}\"/>"
 
-    statusmc="<${icons[disabled]}>"
-    wget --quiet https://ci.inria.fr/simgrid/buildStatus/text?job=SimGrid%2Fbuild_mode%3DModelChecker%2Cnode%3D"${node}" -O status >/dev/null 2>&1
+    statusrelease="<${icons[disabled]}>"
+    wget --quiet https://ci.inria.fr/simgrid/buildStatus/text?job=SimGrid%2Fbuild_mode%3DRelease%2Cnode%3D"${node}" -O status >/dev/null 2>&1
     status=$(cat status)
     if [ "$status" ]; then
       if [ "$status" == "Success" ]; then
         color2="&color=green"
       fi
-      statusmc="<a href=\"build_mode=ModelChecker,node=${node}/\"><img src=\"https://ci.inria.fr/simgrid/job/SimGrid/build_mode=ModelChecker,node=${node}/badge/icon?style=ball-24x24${color2}\"/>"
+      statusrelease="<a href=\"build_mode=Release,node=${node}/\"><img src=\"https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Release,node=${node}/badge/icon?style=ball-24x24${color2}\"/>"
     fi
     rm status
 
@@ -204,7 +204,7 @@ do
     <td class="matrix-leftcolumn">$node</td>
     <td class="matrix-cell" style="text-align:left">$os</td>
     <td class="matrix-cell" style="text-align:center">${statusdebug}</td>
-    <td class="matrix-cell" style="text-align:center">${statusmc}</td>
+    <td class="matrix-cell" style="text-align:center">${statusrelease}</td>
     <td class="matrix-cell" style="text-align:left">$compiler</td>
     <td class="matrix-cell" style="text-align:left">$boost</td>
     <td class="matrix-cell" style="text-align:left">$cmake</td>

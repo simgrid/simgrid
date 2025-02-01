@@ -111,6 +111,11 @@ case "$build_mode" in
       INSTALL="$HOME/mc_simgrid_install"
   ;;
 
+  "Release")
+      INSTALL="$HOME/simgrid_install_release"
+      rm -rf "$HOME/mc_simgrid_install" # FIXME we can remove it once it ran once after the move from MC build to release builds
+  ;;
+
   "DynamicAnalysis")
       INSTALL=""
   ;;
@@ -221,18 +226,17 @@ fi
 
 cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
-  -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
-  -Denable_testsuite_smpi_MBI=OFF -Denable_testsuite_McMini=ON \
-  -Denable_compile_optimizations=$(onoff test "$build_mode" != "DynamicAnalysis") \
-  -Denable_testsuite_smpi_MPICH3=$(onoff test "$build_mode" = "Debug") \
+  -Denable_model-checking=ON \
+  -Denable_testsuite_smpi_MBI=OFF -Denable_testsuite_McMini=ON -Denable_testsuite_smpi_MPICH3=ON \
+  -Denable_compile_optimizations=$(onoff test "$build_mode" != "DynamicAnalysis" -a "$build_mode" != "Debug") \
   -Denable_mallocators=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
-  -Denable_compile_warnings=$(onoff test "$GENERATOR" != "MSYS Makefiles") -Denable_smpi=ON \
-  -Denable_ns3=$(onoff test "$have_NS3" = "yes" -a "$build_mode" = "Debug") \
+  -Denable_compile_warnings=ON -Denable_smpi=ON \
+  -Denable_ns3=$(onoff test "$have_NS3" = "yes") \
   -Denable_java=$(onoff test "$have_Java" = "yes") \
   -DSIMGRID_PYTHON_LIBDIR=${SIMGRID_PYTHON_LIBDIR} \
-  -DCMAKE_DISABLE_SOURCE_CHANGES=ON ${MAY_DISABLE_LTO} \
-  -DLTO_EXTRA_FLAG="auto" \
+  ${MAY_DISABLE_LTO} -DLTO_EXTRA_FLAG="auto" \
+  -DCMAKE_DISABLE_SOURCE_CHANGES=ON \
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
   "$SRCFOLDER"
 
