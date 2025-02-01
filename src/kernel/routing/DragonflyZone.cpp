@@ -413,12 +413,9 @@ NetZone* create_dragonfly_zone(const std::string& name, const NetZone* parent, c
   std::vector<unsigned long> dimensions = {params.groups.first, params.chassis.first, params.routers.first,
                                            params.nodes};
   int tot_elements                     = std::accumulate(dimensions.begin(), dimensions.end(), 1, std::multiplies<>());
-  for (int i = 0; i < tot_elements; i++) {
-    kernel::routing::NetPoint* netpoint;
-    Link* limiter;
-    Link* loopback;
-    zone->fill_leaf_from_cb(i, dimensions, set_callbacks, &netpoint, &loopback, &limiter);
-  }
+  for (int i = 0; i < tot_elements; i++)
+    zone->fill_leaf_from_cb(i, dimensions, set_callbacks);
+
   zone->build_upper_levels(set_callbacks);
   return zone->get_iface();
 }

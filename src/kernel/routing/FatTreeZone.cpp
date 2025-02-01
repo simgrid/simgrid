@@ -522,11 +522,8 @@ NetZone* create_fatTree_zone(const std::string& name, const NetZone* parent, con
   /* populating it */
   unsigned int tot_elements = std::accumulate(params.down.begin(), params.down.end(), 1, std::multiplies<>());
   for (unsigned int i = 0; i < tot_elements; i++) {
-    kernel::routing::NetPoint* netpoint;
-    Link* limiter;
-    Link* loopback;
     /* coordinates are based on 2 indexes: number of levels and id */
-    zone->fill_leaf_from_cb(i, {params.levels + 1, tot_elements}, set_callbacks, &netpoint, &loopback, &limiter);
+    auto [netpoint, loopback, limiter] = zone->fill_leaf_from_cb(i, {params.levels + 1, tot_elements}, set_callbacks);
     zone->add_processing_node(i, limiter ? limiter->get_impl() : nullptr, loopback ? loopback->get_impl() : nullptr);
   }
   zone->build_upper_levels(set_callbacks);
