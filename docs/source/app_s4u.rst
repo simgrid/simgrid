@@ -479,7 +479,7 @@ See also :ref:`the relevant example <s4u_ex_actors_create>`.
       .. doxygenfunction:: sg_actor_start_voidp
       .. doxygenfunction:: sg_actor_set_stacksize
 
-      .. doxygenfunction:: sg_actor_attach(const char *name, void *data, sg_host_t host, xbt_dict_t properties)
+      .. doxygenfunction:: sg_actor_attach(const char *name, void *data, sg_host_t host)
       .. doxygenfunction:: sg_actor_detach()
 
       See also :ref:`s4u_ex_actor_attach` for an example of use of ``sg_actor_attach()`` and ``sg_actor_detach()``.
@@ -538,7 +538,7 @@ Querying info
       .. doxygenfunction:: sg_actor_get_name(const_sg_actor_t actor)
       .. doxygenfunction:: sg_actor_get_pid(const_sg_actor_t actor)
       .. doxygenfunction:: sg_actor_get_ppid(const_sg_actor_t actor)
-      .. doxygenfunction:: sg_actor_get_properties(const_sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_get_property_names(const_sg_actor_t actor, int* size)
       .. doxygenfunction:: sg_actor_get_property_value(const_sg_actor_t actor, const char *name)
 
       .. doxygenfunction:: sg_actor_get_host(const_sg_actor_t actor)
@@ -1496,7 +1496,7 @@ User data and properties
    .. group-tab:: C
 
       .. doxygenfunction:: sg_host_set_property_value(sg_host_t host, const char *name, const char *value)
-      .. doxygenfunction:: sg_host_get_properties(const_sg_host_t host)
+      .. doxygenfunction:: sg_host_get_property_names(const_sg_host_t host, int* size)
       .. doxygenfunction:: sg_host_get_property_value(const_sg_host_t host, const char *name)
       .. doxygenfunction:: sg_host_extension_create(void(*deleter)(void *))
       .. doxygenfunction:: sg_host_extension_get(const_sg_host_t host, size_t rank)
@@ -1524,7 +1524,7 @@ Retrieving components
 
    .. group-tab:: C
 
-      .. doxygenfunction:: sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto)
+      .. doxygenfunction:: sg_host_get_all_actors(const_sg_host_t host, int* size)
 
 On/Off
 ------
@@ -1629,7 +1629,7 @@ using :cpp:func:`Comm::sendto() <simgrid::s4u::Comm::sendto()>`.
 
    .. group-tab:: C
 
-      .. doxygenfunction:: sg_host_get_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
+      .. doxygenfunction:: sg_host_get_route_links(const_sg_host_t from, const_sg_host_t to, int* size)
       .. doxygenfunction:: sg_host_get_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
       .. doxygenfunction:: sg_host_get_route_latency(const_sg_host_t from, const_sg_host_t to)
       .. doxygenfunction:: sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
@@ -2041,7 +2041,6 @@ Routing data
       .. doxygenfunction:: simgrid::s4u::NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst, const std::vector<LinkInRoute>& link_list)
       .. doxygenfunction:: simgrid::s4u::NetZone::get_children() const
       .. doxygenfunction:: simgrid::s4u::NetZone::get_parent() const
-      .. doxygenfunction:: simgrid::s4u::NetZone::set_parent(const NetZone* parent)
       .. doxygenfunction:: simgrid::s4u::NetZone::get_gateway() const
       .. doxygenfunction:: simgrid::s4u::NetZone::get_gateway(const std::string& name) const
       .. doxygenfunction:: simgrid::s4u::NetZone::set_gateway(kernel::routing::NetPoint* router)
@@ -2053,14 +2052,13 @@ Routing data
       .. automethod:: simgrid.NetZone.add_component
       .. automethod:: simgrid.NetZone.add_route
       .. automethod:: simgrid.NetZone.add_bypass_route
-      .. automethod:: simgrid.NetZone.set_parent
       .. automethod:: simgrid.NetZone.set_gateway
       .. automethod:: simgrid.NetZone.get_children
       .. autoattribute:: simgrid.NetZone.parent
 
    .. group-tab:: C
 
-      .. doxygenfunction:: sg_zone_get_sons(const_sg_netzone_t zone, xbt_dict_t whereto)
+      .. doxygenfunction:: sg_zone_get_children(const_sg_netzone_t zone)
 
 Signals
 -------
@@ -2081,29 +2079,29 @@ Zones
 
   .. group-tab:: C++
 
-     .. doxygenfunction:: simgrid::s4u::create_full_zone
-     .. doxygenfunction:: simgrid::s4u::create_empty_zone
-     .. doxygenfunction:: simgrid::s4u::create_star_zone
-     .. doxygenfunction:: simgrid::s4u::create_dijkstra_zone
-     .. doxygenfunction:: simgrid::s4u::create_floyd_zone
-     .. doxygenfunction:: simgrid::s4u::create_vivaldi_zone
-     .. doxygenfunction:: simgrid::s4u::create_wifi_zone
-     .. doxygenfunction:: simgrid::s4u::create_torus_zone
-     .. doxygenfunction:: simgrid::s4u::create_fatTree_zone
-     .. doxygenfunction:: simgrid::s4u::create_dragonfly_zone
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_full
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_empty
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_star
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_dijkstra
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_floyd
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_vivaldi
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_wifi
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_torus
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_fatTree
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_dragonfly
 
   .. group-tab:: Python
 
-     .. automethod:: simgrid.NetZone.create_full_zone
-     .. automethod:: simgrid.NetZone.create_empty_zone
-     .. automethod:: simgrid.NetZone.create_star_zone
-     .. automethod:: simgrid.NetZone.create_dijkstra_zone
-     .. automethod:: simgrid.NetZone.create_floyd_zone
-     .. automethod:: simgrid.NetZone.create_vivaldi_zone
-     .. automethod:: simgrid.NetZone.create_wifi_zone
-     .. automethod:: simgrid.NetZone.create_torus_zone
-     .. automethod:: simgrid.NetZone.create_fatTree_zone
-     .. automethod:: simgrid.NetZone.create_dragonfly_zone
+     .. automethod:: simgrid.NetZone.add_netzone_full
+     .. automethod:: simgrid.NetZone.add_netzone_empty
+     .. automethod:: simgrid.NetZone.add_netzone_star
+     .. automethod:: simgrid.NetZone.add_netzone_dijkstra
+     .. automethod:: simgrid.NetZone.add_netzone_floyd
+     .. automethod:: simgrid.NetZone.add_netzone_vivaldi
+     .. automethod:: simgrid.NetZone.add_netzone_wifi
+     .. automethod:: simgrid.NetZone.add_netzone_torus
+     .. automethod:: simgrid.NetZone.add_netzone_fatTree
+     .. automethod:: simgrid.NetZone.add_netzone_dragonfly
 
 Hosts
 ^^^^^
