@@ -206,46 +206,6 @@ void WakeupTree::insert_at_root(std::shared_ptr<Transition> u)
   this->root_->add_child(new_node);
 }
 
-InsertionResult WakeupTree::insert(const PartialExecution& w)
-{
-  return recursive_insert(w);
-
-  // See section 6.2 of Abdulla. et al.'s 2017 ODPOR paper for details
-
-  // Find the first node `v` in the tree such that
-  // `v ~_[E] w` and `v`  is not a leaf node
-  for (WakeupTreeNode* node : *this) {
-    if (const auto shortest_sequence = Execution::get_shortest_odpor_sq_subset_insertion(node->get_sequence(), w);
-        shortest_sequence.has_value()) {
-      // Insert the sequence as a child of `node`, but only
-      // if the node is not already a leaf
-      if (not node->is_leaf() || node == this->root_) {
-        // NOTE: It's entirely possible that the shortest
-        // sequence we are inserting is empty. Consider the
-        // following two cases:
-        //
-        // 1. `w` is itself empty. Evidently, insertion succeeds but nothing needs
-        // to happen
-        //
-        // 2. a leaf node in the tree already contains `w` exactly.
-        // In this case, the empty `w'` returned (viz. `shortest_seq`)
-        // such that `w [=_[E] v.w'` would be empty
-        XBT_DEBUG("Inserting the following sequence in WuT %s",
-                  one_string_textual_trace(shortest_sequence.value()).c_str());
-        this->insert_sequence_after(node, shortest_sequence.value());
-        return node == this->root_ ? InsertionResult::root : InsertionResult::interior_node;
-      }
-      // Since we're following the post-order traversal of the tree,
-      // the first such node we see is the smallest w.r.t "<"
-      return InsertionResult::leaf;
-    }
-  }
-  xbt_die("Insertion should always succeed with the root node (which contains no "
-          "prior execution). If we've reached this point, this implies either that "
-          "the wakeup tree traversal is broken or that computation of the shortest "
-          "sequence to insert into the tree is broken");
-}
-
 InsertionResult WakeupTreeNode::recursive_insert(WakeupTree& father, PartialExecution& w)
 {
   // If we reached a leaf, then there is nothing to insert. The exploration from this leaf
@@ -305,7 +265,7 @@ InsertionResult WakeupTreeNode::recursive_insert(WakeupTree& father, PartialExec
   return this->is_root() ? InsertionResult::root : InsertionResult::interior_node;
 }
 
-InsertionResult WakeupTree::recursive_insert(const PartialExecution& w)
+InsertionResult WakeupTree::insert(const PartialExecution& w)
 {
   auto w_copy = w;
   return this->root_->recursive_insert(*this, w_copy);
@@ -369,34 +329,11 @@ WakeupTreeNode* WakeupTreeNode::recursive_insert_and_get_inserted_seq(WakeupTree
   return father.insert_sequence_after(this, w);
 }
 
-const PartialExecution WakeupTree::recursive_insert_and_get_inserted_seq(const PartialExecution& w)
+const PartialExecution WakeupTree::insert_and_get_inserted_seq(const PartialExecution& w)
 {
   auto w_copy                   = w;
   WakeupTreeNode* inserted_node = this->root_->recursive_insert_and_get_inserted_seq(*this, w_copy);
   return inserted_node->get_sequence();
-}
-
-const PartialExecution WakeupTree::insert_and_get_inserted_seq(const PartialExecution& w)
-{
-  return recursive_insert_and_get_inserted_seq(w);
-
-  PartialExecution inserted_seq;
-  for (WakeupTreeNode* node : *this) {
-    if (const auto shortest_sequence = Execution::get_shortest_odpor_sq_subset_insertion(node->get_sequence(), w);
-        shortest_sequence.has_value()) {
-      if (not node->is_leaf() || node == this->root_) {
-        this->insert_sequence_after(node, shortest_sequence.value());
-        inserted_seq = node->get_sequence();
-        inserted_seq.insert(inserted_seq.end(), shortest_sequence.value().begin(), shortest_sequence.value().end());
-        return inserted_seq;
-      }
-      return inserted_seq;
-    }
-  }
-  xbt_die("Insertion should always succeed with the root node (which contains no "
-          "prior execution). If we've reached this point, this implies either that "
-          "the wakeup tree traversal is broken or that computation of the shortest "
-          "sequence to insert into the tree is broken");
 }
 
 WakeupTreeNode* WakeupTree::insert_sequence_after(WakeupTreeNode* node, const PartialExecution& w)

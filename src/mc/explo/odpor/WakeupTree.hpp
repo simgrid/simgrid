@@ -106,8 +106,10 @@ public:
     return nullptr;
   }
 
+  // Does the actual job of recursively inserting a sequence inside a WuT.
+  // The second version needs to return the node in order for the calling method to obtain
+  // the inserted sequence.
   InsertionResult recursive_insert(WakeupTree& father, PartialExecution& w);
-
   WakeupTreeNode* recursive_insert_and_get_inserted_seq(WakeupTree& father, PartialExecution& w);
 };
 
@@ -261,9 +263,9 @@ public:
    * | and add `v.w'` as a new leaf, ordered after all already existing nodes
    * | of the form `v.w''`
    *
-   * This method performs the post-order search of part one and the insertion of
-   * `v.w'` of part two of the above procedure. Note that the execution will
-   * provide `v.w'` (see `Execution::get_shortest_odpor_sq_subset_insertion()`).
+   * This method performs a recursive exploration of the existing tree. Compared
+   * to the method proposed in the original paper, it is linear in the height of
+   * the WuT and not in its size.
    *
    * @invariant: It is assumed that this tree is a wakeup tree
    * with respect to the given execution `E`
@@ -273,15 +275,11 @@ public:
    */
   InsertionResult insert(const PartialExecution& seq);
 
-  InsertionResult recursive_insert(const PartialExecution& seq);
-
   /**
    * @brief Does the same as 'insert' but instead of returning a result type, yield the
    * inserted sequence.
    */
   const PartialExecution insert_and_get_inserted_seq(const PartialExecution& seq);
-
-  const PartialExecution recursive_insert_and_get_inserted_seq(const PartialExecution& seq);
 
   /**
    * @brief The number of children at depth one
