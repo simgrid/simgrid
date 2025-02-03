@@ -9,7 +9,6 @@
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
-#include "xbt/log.h"
 #include <memory>
 
 namespace simgrid::mc {

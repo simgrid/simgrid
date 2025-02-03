@@ -11,9 +11,6 @@
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "xbt/log.h"
-#include <map>
-#include <memory>
 #include <unordered_set>
 #include <vector>
 

@@ -10,9 +10,7 @@
 #include "xbt/string.hpp"
 
 #include <algorithm>
-#include <exception>
 #include <memory>
-#include <queue>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wut, mc, "Logging specific to ODPOR WakeupTrees");
 

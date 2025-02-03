@@ -7,7 +7,6 @@
 #define SIMGRID_MC_STATE_HPP
 
 #include "src/mc/api/ActorState.hpp"
-#include "src/mc/api/ClockVector.hpp"
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/strategy/StratLocalInfo.hpp"
 #include "src/mc/transition/Transition.hpp"

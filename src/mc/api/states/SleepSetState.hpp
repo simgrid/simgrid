@@ -8,7 +8,6 @@
 
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/states/State.hpp"
-#include "xbt/log.h"
 
 namespace simgrid::mc {
 
