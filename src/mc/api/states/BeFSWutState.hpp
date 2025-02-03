@@ -20,7 +20,7 @@
 namespace simgrid::mc {
 
 class XBT_PRIVATE BeFSWutState : public WutState {
-  std::map<aid_t, StatePtr> children_states_;
+  std::vector<StatePtr> children_states_; // Key is aid
 
   /** This wakeup tree is used to store the whole tree explored during the process,
       it is only growing. There could be an optimization where we store only one wakeup
@@ -54,8 +54,8 @@ public:
 
   StatePtr get_children_state_of_aid(aid_t next)
   {
-    if (auto children_state = children_states_.find(next); children_state != children_states_.end())
-      return children_state->second;
+    if (next >= 0 && children_states_.size() > static_cast<long unsigned>(next))
+      return children_states_[next];
     return nullptr;
   }
 

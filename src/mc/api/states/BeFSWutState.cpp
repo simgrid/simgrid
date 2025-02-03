@@ -105,7 +105,9 @@ BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutSt
 void BeFSWutState::record_child_state(StatePtr child)
 {
   aid_t child_aid = outgoing_transition_->aid_;
-  children_states_.emplace(child_aid, child);
+  if (children_states_.size() < static_cast<long unsigned>(child_aid + 1))
+    children_states_.resize(child_aid + 1);
+  children_states_[child_aid] = child;
 }
 
 std::pair<aid_t, int> BeFSWutState::next_transition_guided() const
@@ -236,9 +238,8 @@ void BeFSWutState::signal_on_backtrack()
 
     // if there are children states that are being visited, we may need to update the leftmost information
     aid_t leftmost_aid = done_[closed_.size()];
-    auto children_aid  = children_states_.find(leftmost_aid);
-    xbt_assert(children_aid != children_states_.end());
-    auto children_befs_aid          = static_cast<BeFSWutState*>(children_aid->second.get());
+    auto children_aid               = children_states_[leftmost_aid];
+    auto children_befs_aid          = static_cast<BeFSWutState*>(children_aid.get());
     children_befs_aid->is_leftmost_ = true;
     children_befs_aid->signal_on_backtrack();
     return;
@@ -253,9 +254,7 @@ void BeFSWutState::signal_on_backtrack()
       auto parent = static_cast<BeFSWutState*>(parent_state);
       XBT_DEBUG("\t... there are %lu recorded children StatePtr in its parent state n°%ld",
                 parent->children_states_.size(), parent->get_num());
-      auto find_aid = parent->children_states_.find(get_transition_in()->aid_);
-      xbt_assert(find_aid != parent->children_states_.end());
-      parent->children_states_.erase(find_aid);
+      parent->children_states_[get_transition_in()->aid_] = nullptr;
     }
   }
 }
