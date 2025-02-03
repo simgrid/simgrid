@@ -9,7 +9,7 @@ foreach(x
         mutex-simple mutex-recursive
       	producer-consumer)
 
-  if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  if("${CMAKE_SYSTEM}" MATCHES "Linux" AND (NOT SIMGRID_HAVE_MUSL))
     add_executable       (pthread-${x} EXCLUDE_FROM_ALL pthread-${x}.c)
     set_target_properties(pthread-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(pthread-${x} PRIVATE Threads::Threads)
