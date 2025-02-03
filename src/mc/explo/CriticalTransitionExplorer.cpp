@@ -133,10 +133,4 @@ CriticalTransitionExplorer::CriticalTransitionExplorer(std::unique_ptr<RemoteApp
   run();
 }
 
-Exploration* create_critical_transition_exploration(std::unique_ptr<RemoteApp> remote_app, ReductionMode mode,
-                                                    stack_t* stack)
-{
-  return new CriticalTransitionExplorer(std::move(remote_app), mode, stack);
-}
-
 } // namespace simgrid::mc

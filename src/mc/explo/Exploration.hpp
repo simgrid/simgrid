@@ -171,8 +171,6 @@ public:
 XBT_PUBLIC Exploration* create_dfs_exploration(const std::vector<char*>& args, ReductionMode mode);
 XBT_PUBLIC Exploration* create_befs_exploration(const std::vector<char*>& args, ReductionMode mode);
 XBT_PUBLIC Exploration* create_parallelized_exploration(const std::vector<char*>& args, ReductionMode mode);
-XBT_PUBLIC Exploration* create_critical_transition_exploration(std::unique_ptr<RemoteApp> remote_app,
-                                                               ReductionMode mode, stack_t* stack);
 
 XBT_PUBLIC Exploration* create_communication_determinism_checker(const std::vector<char*>& args, ReductionMode mode);
 XBT_PUBLIC Exploration* create_udpor_checker(const std::vector<char*>& args);

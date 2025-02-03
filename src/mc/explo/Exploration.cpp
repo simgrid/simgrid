@@ -129,7 +129,7 @@ void Exploration::run_critical_exploration_on_need(ExitStatus error)
   if (_sg_mc_max_errors == 0 && _sg_mc_search_critical_transition && not is_looking_for_critical) {
     is_looking_for_critical = true;
     stack_t stack           = get_stack();
-    create_critical_transition_exploration(std::move(remote_app_), get_model_checking_reduction(), &stack);
+    CriticalTransitionExplorer explorer(std::move(remote_app_), get_model_checking_reduction(), &stack);
 
     // This will be executed after the first (and only) critical exploration:
     // we raise the same error, so the checker can return the correct failure code in the end

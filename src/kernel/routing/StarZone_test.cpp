@@ -93,6 +93,7 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): exception", "")
     REQUIRE_THROWS_AS(zone->add_route(nullptr, zone->get_netpoint(), nullptr, netpoint3, {}, false),
                       std::invalid_argument);
   }
+  delete zone;
 }
 
 // One day we may be able to test contracts and asserts with catch2
