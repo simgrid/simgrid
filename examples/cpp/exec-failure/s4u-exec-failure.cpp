@@ -78,7 +78,7 @@ int main(int argc, char** argv)
 {
   sg4::Engine engine(&argc, argv);
 
-  auto* zone = engine.set_rootnetzone_full("world");
+  auto* zone = engine.get_netzone_root();
   std::vector<sg4::Host*> hosts;
   for (const auto* name : {"Host1", "Host2", "Host3"}) {
     auto* host = zone->create_host(name, "1f");

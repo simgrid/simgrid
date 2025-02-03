@@ -103,7 +103,7 @@ int main(int argc, char** argv)
   /* dog-bone platform */
   std::unordered_map<std::string, sg4::Host*> hosts;
   std::unordered_map<std::string, sg4::Link*> links;
-  auto* zone = e.set_rootnetzone_full("dog_zone");
+  auto* zone = e.get_netzone_root();
   for (const auto& name : {"S1", "S2", "C1", "C2"}) {
     hosts[name] = zone->create_host(name, 1e6)->seal();
   }

@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${javacmd} -cp ../../simgrid.jar:dag_comm.jar dag_comm ${platfdir}/two_hosts.xml --log=s4u_activity.t:verbose "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+$ ${javacmd} -Xcheck:jni -cp ../../simgrid.jar:dag_comm.jar dag_comm ${platfdir}/two_hosts.xml --log=s4u_activity.t:verbose "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Using regular java threads.
 > [  0.000000] (0:maestro@) Execution 'parent' vetoed. Dependencies: solved; Ressources: NOT assigned
 > [  0.000000] (0:maestro@) Communication 'transfer' vetoed. Dependencies: NOT solved; Ressources: NOT assigned

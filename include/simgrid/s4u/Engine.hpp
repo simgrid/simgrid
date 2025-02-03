@@ -180,21 +180,6 @@ public:
    */
   kernel::routing::NetPoint* netpoint_by_name(const std::string& name) const;
 
-  /** Specify that the root netzone uses the Full routing */
-  NetZone* set_rootnetzone_full(const std::string& name);
-  /** Specify that the root netzone uses the Star routing */
-  NetZone* set_rootnetzone_star(const std::string& name);
-  /** Specify that the root netzone uses the Dijikstra routing */
-  NetZone* set_rootnetzone_dijkstra(const std::string& name, bool cache);
-  /** Specify that the root netzone uses no routing */
-  NetZone* set_rootnetzone_empty(const std::string& name);
-  /** Specify that the root netzone uses the Floyd routing */
-  NetZone* set_rootnetzone_floyd(const std::string& name);
-  /** Specify that the root netzone uses the Vivaldi routing */
-  NetZone* set_rootnetzone_vivaldi(const std::string& name);
-  /** Specify that the root netzone uses the wifi routing */
-  NetZone* set_rootnetzone_wifi(const std::string& name);
-
   s4u::NetZone* get_netzone_root() const;
   std::vector<s4u::NetZone*> get_all_netzones() const;
 

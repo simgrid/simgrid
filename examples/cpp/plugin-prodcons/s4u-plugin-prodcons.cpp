@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
 
   // Platform creation
-  auto* cluster = e.set_rootnetzone_star("cluster");
+  auto* cluster = e.get_netzone_root()->add_netzone_star("cluster");
   for (int i = 0; i < 8; i++) {
     std::string hostname = "node-" + std::to_string(i) + ".simgrid.org";
 

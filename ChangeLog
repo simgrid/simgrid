@@ -12,7 +12,9 @@ sthread:
  - Implement pthread_exit() and pthread_cond_timedwait()
 
 Platform API:
- - Deprecate the create_*_zone() functions, add Engine::set_rootnetzone_*() and NetZone::add_netzone_*()
+ - The root netzone of every platform uses the full routing. It's created by default.
+   The ability to change the root zone does not increase the expressivity in any way, but it greatly complicates our code.
+ - Deprecate the create_*_zone() functions, add NetZone::add_netzone_*()
    Methods are better than functions.
  - Deprecate NetZone::set_parent(): it's useless with the new API.
 

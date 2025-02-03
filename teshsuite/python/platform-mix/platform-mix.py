@@ -46,7 +46,7 @@ def load_platform(e: Engine):
     """ Creates a mixed platform, using many methods available in the API
     """
 
-    root = e.set_rootnetzone_floyd("root")
+    root = e.netzone_root.add_netzone_floyd("root")
     hosts = []
     # dijkstra
     dijkstra = root.add_netzone_dijkstra("dijkstra", True)

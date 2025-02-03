@@ -203,16 +203,6 @@ PYBIND11_MODULE(simgrid, m)
       .def("load_deployment", &Engine::load_deployment, "Load a deployment file and launch the actors that it contains")
       .def("mailbox_by_name_or_create", &Engine::mailbox_by_name_or_create, py::call_guard<py::gil_scoped_release>(),
            py::arg("name"), "Find a mailbox from its name or create one if it does not exist")
-      .def("set_rootnetzone_full", &Engine::set_rootnetzone_full, "Creates a zone of type FullZone")
-      .def("set_rootnetzone_torus", &simgrid::s4u::create_torus_zone, "Creates a cluster of type Torus")
-      .def("set_rootnetzone_fatTree", &simgrid::s4u::create_fatTree_zone, "Creates a cluster of type Fat-Tree")
-      .def("set_rootnetzone_dragonfly", &simgrid::s4u::create_dragonfly_zone, "Creates a cluster of type Dragonfly")
-      .def("set_rootnetzone_star", &Engine::set_rootnetzone_star, "Creates a zone of type Star")
-      .def("set_rootnetzone_floyd", &Engine::set_rootnetzone_floyd, "Creates a zone of type Floyd")
-      .def("set_rootnetzone_dijkstra", &Engine::set_rootnetzone_dijkstra, "Creates a zone of type Dijkstra")
-      .def("set_rootnetzone_vivaldi", &Engine::set_rootnetzone_vivaldi, "Creates a zone of type Vivaldi")
-      .def("set_rootnetzone_empty", &Engine::set_rootnetzone_empty, "Creates a zone of type Empty")
-      .def("set_rootnetzone_wifi", &Engine::set_rootnetzone_wifi, "Creates a zone of type Wi-Fi")
       .def("run", &Engine::run, py::call_guard<py::gil_scoped_release>(), "Run the simulation until its end")
       .def("run_until", py::overload_cast<double>(&Engine::run_until, py::const_),
            py::call_guard<py::gil_scoped_release>(), "Run the simulation until the given date",
@@ -258,11 +248,7 @@ PYBIND11_MODULE(simgrid, m)
                 PyExc_DeprecationWarning,
                 "create_full_zone() is deprecated, use Engine.set_rootnetzone_full() or Netzone.add_netzone_full().",
                 2);
-            Engine* e = Engine::get_instance();
-            if (e->get_netzone_root() == nullptr)
-              e->set_rootnetzone_full(name);
-            else
-              throw std::logic_error("Please call Netzone.add_netzone_full() instead");
+            throw std::logic_error("Please call Netzone.add_netzone_full() instead");
           },
           "Creates a zone of type FullZone") // XBT_ATTRIB_DEPRECATED_v339
       .def_static("create_torus_zone", &simgrid::s4u::create_torus_zone, "Creates a cluster of type Torus")
@@ -275,11 +261,7 @@ PYBIND11_MODULE(simgrid, m)
                 PyExc_DeprecationWarning,
                 "create_star_zone() is deprecated, use Engine.set_rootnetzone_star() or Netzone.add_netzone_star().",
                 2);
-            Engine* e = Engine::get_instance();
-            if (e->get_netzone_root() == nullptr)
-              e->set_rootnetzone_star(name);
-            else
-              throw std::logic_error("Please call Netzone.add_netzone_star() instead");
+            throw std::logic_error("Please call Netzone.add_netzone_star() instead");
           },
           "Creates a zone of type Star") // XBT_ATTRIB_DEPRECATED_v339
       .def_static(
@@ -289,11 +271,7 @@ PYBIND11_MODULE(simgrid, m)
                 PyExc_DeprecationWarning,
                 "create_floyd_zone() is deprecated, use Engine.set_rootnetzone_floyd() or Netzone.add_netzone_floyd().",
                 2);
-            Engine* e = Engine::get_instance();
-            if (e->get_netzone_root() == nullptr)
-              e->set_rootnetzone_floyd(name);
-            else
-              throw std::logic_error("Please call Netzone.add_netzone_floyd() instead");
+            throw std::logic_error("Please call Netzone.add_netzone_floyd() instead");
           },
           "Creates a zone of type Floyd") // XBT_ATTRIB_DEPRECATED_v339
       .def_static(
@@ -303,11 +281,7 @@ PYBIND11_MODULE(simgrid, m)
                          "create_dijkstra_zone() is deprecated, use Engine.set_rootnetzone_dijkstra() or "
                          "Netzone.add_netzone_dijkstra().",
                          2);
-            Engine* e = Engine::get_instance();
-            if (e->get_netzone_root() == nullptr)
-              e->set_rootnetzone_dijkstra(name, true);
-            else
-              throw std::logic_error("Please call Netzone.add_netzone_dijkstra() instead");
+            throw std::logic_error("Please call Netzone.add_netzone_dijkstra() instead");
           },
           "Creates a zone of type Dijkstra") // XBT_ATTRIB_DEPRECATED_v339
       .def_static(
@@ -317,11 +291,7 @@ PYBIND11_MODULE(simgrid, m)
                          "create_vivaldi_zone() is deprecated, use Engine.set_rootnetzone_vivaldi() or "
                          "Netzone.add_netzone_vivaldi().",
                          2);
-            Engine* e = Engine::get_instance();
-            if (e->get_netzone_root() == nullptr)
-              e->set_rootnetzone_vivaldi(name);
-            else
-              throw std::logic_error("Please call Netzone.add_netzone_vivaldi() instead");
+            throw std::logic_error("Please call Netzone.add_netzone_vivaldi() instead");
           },
           "Creates a zone of type Vivaldi") // XBT_ATTRIB_DEPRECATED_v339
       .def_static(
@@ -331,11 +301,7 @@ PYBIND11_MODULE(simgrid, m)
                 PyExc_DeprecationWarning,
                 "create_empty_zone() is deprecated, use Engine.set_rootnetzone_empty() or Netzone.add_netzone_empty().",
                 2);
-            Engine* e = Engine::get_instance();
-            if (e->get_netzone_root() == nullptr)
-              e->set_rootnetzone_empty(name);
-            else
-              throw std::logic_error("Please call Netzone.add_netzone_empty() instead");
+            throw std::logic_error("Please call Netzone.add_netzone_empty() instead");
           },
           "Creates a zone of type Empty") // XBT_ATTRIB_DEPRECATED_v339
       .def_static(
@@ -345,11 +311,7 @@ PYBIND11_MODULE(simgrid, m)
                 PyExc_DeprecationWarning,
                 "create_wifi_zone() is deprecated, use Engine.set_rootnetzone_wifi() or Netzone.add_netzone_wifi().",
                 2);
-            Engine* e = Engine::get_instance();
-            if (e->get_netzone_root() == nullptr)
-              e->set_rootnetzone_wifi(name);
-            else
-              throw std::logic_error("Please call Netzone.add_netzone_wifi() instead");
+            throw std::logic_error("Please call Netzone.add_netzone_wifi() instead");
           },
           "Creates a zone of type Wi-Fi") // XBT_ATTRIB_DEPRECATED_v339
       .def("add_netzone_full", &simgrid::s4u::NetZone::add_netzone_full, "Creates a zone of type FullZone")

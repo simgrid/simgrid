@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
 
   /* create platform: intentionally do not do the seal of objects */
-  auto* root       = e.set_rootnetzone_full("root");
+  auto* root       = e.get_netzone_root();
   auto* zoneA = create_zone(root, "A");
   auto* zoneB = create_zone(root, "B");
   const auto* link = root->create_link("root-link", 1e10);

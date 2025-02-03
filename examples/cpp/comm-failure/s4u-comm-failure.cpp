@@ -77,7 +77,7 @@ public:
 int main(int argc, char** argv)
 {
   sg4::Engine engine(&argc, argv);
-  auto* zone        = engine.set_rootnetzone_full("world");
+  auto* zone        = engine.get_netzone_root();
   auto* host1 = zone->create_host("Host1", "1f");
   auto* host2 = zone->create_host("Host2", "1f");
   auto* host3 = zone->create_host("Host3", "1f");

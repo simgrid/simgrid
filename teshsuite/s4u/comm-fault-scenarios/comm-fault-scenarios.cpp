@@ -396,7 +396,7 @@ int main(int argc, char* argv[])
   MBoxes mbox;
   mbox.eager                  = e.mailbox_by_name_or_create("eager");
   mbox.rdv                    = e.mailbox_by_name_or_create("rdv");
-  sg4::NetZone* zone          = e.set_rootnetzone_full("Top");
+  sg4::NetZone* zone          = e.get_netzone_root();
   pr::Profile* profile_sender = pr::ProfileBuilder::from_string("sender_profile", ctx.sender_profile.str(), 0);
   sg4::Host* sender_host = zone->create_host("senderHost", HostComputePower)->set_state_profile(profile_sender)->seal();
   pr::Profile* profile_receiver = pr::ProfileBuilder::from_string("receiver_profile", ctx.receiver_profile.str(), 0);

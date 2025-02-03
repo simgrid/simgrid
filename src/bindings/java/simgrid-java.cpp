@@ -3011,7 +3011,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all
   return result;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1root_1netzone(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1netzone_1root(JNIEnv* jenv, jclass jcls,
                                                                                     jlong cthis, jobject jthis)
 {
   return (jlong)((Engine*)cthis)->get_netzone_root();
@@ -4329,98 +4329,6 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1seal(JNIEnv* je
                                                                       jobject jthis)
 {
   ((NetZone*)cthis)->seal();
-}
-
-JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1root_1netzone_1full(JNIEnv* jenv, jclass jcls,
-                                                                                         jlong cthis, jobject jthis,
-                                                                                         jstring jname)
-{
-  auto self = ((Engine*)cthis);
-  if (jname) {
-    std::string name = java_string_to_std_string(jenv, jname);
-    return (jlong)self->set_rootnetzone_full(name);
-  }
-  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Netzone names shall not be null.");
-  return 0;
-}
-
-JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1root_1netzone_1star(JNIEnv* jenv, jclass jcls,
-                                                                                         jlong cthis, jobject jthis,
-                                                                                         jstring jname)
-{
-  auto self = ((Engine*)cthis);
-  if (jname) {
-    std::string name = java_string_to_std_string(jenv, jname);
-    return (jlong)self->set_rootnetzone_star(name);
-  }
-  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Netzone names shall not be null.");
-  return 0;
-}
-
-JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1root_1netzone_1dijkstra(JNIEnv* jenv, jclass jcls,
-                                                                                             jlong cthis, jobject jthis,
-                                                                                             jstring jname,
-                                                                                             jboolean cached)
-{
-  auto self = ((Engine*)cthis);
-  if (jname) {
-    std::string name = java_string_to_std_string(jenv, jname);
-    return (jlong)self->set_rootnetzone_dijkstra(name, cached);
-  }
-  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Netzone names shall not be null.");
-  return 0;
-}
-
-JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1root_1netzone_1empty(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis, jobject jthis,
-                                                                                          jstring jname)
-{
-  auto self = ((Engine*)cthis);
-  if (jname) {
-    std::string name = java_string_to_std_string(jenv, jname);
-    return (jlong)self->set_rootnetzone_empty(name);
-  }
-  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Netzone names shall not be null.");
-  return 0;
-}
-
-JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1root_1netzone_1floyd(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis, jobject jthis,
-                                                                                          jstring jname)
-{
-  auto self = ((Engine*)cthis);
-  if (jname) {
-    std::string name = java_string_to_std_string(jenv, jname);
-    return (jlong)self->set_rootnetzone_floyd(name);
-  }
-  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Netzone names shall not be null.");
-  return 0;
-}
-
-JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1root_1netzone_1vivaldi(JNIEnv* jenv, jclass jcls,
-                                                                                            jlong cthis, jobject jthis,
-                                                                                            jstring jname)
-{
-  auto self = ((Engine*)cthis);
-  if (jname) {
-    std::string name = java_string_to_std_string(jenv, jname);
-    return (jlong)self->set_rootnetzone_vivaldi(name);
-  }
-  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Netzone names shall not be null.");
-  return 0;
-}
-
-JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1root_1netzone_1wifi(JNIEnv* jenv, jclass jcls,
-                                                                                         jlong cthis, jobject jthis,
-                                                                                         jstring jname)
-{
-  auto self = ((Engine*)cthis);
-  if (jname) {
-    std::string name = java_string_to_std_string(jenv, jname);
-    return (jlong)self->set_rootnetzone_wifi(name);
-  }
-  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Netzone names shall not be null.");
-  return 0;
 }
 
 XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,

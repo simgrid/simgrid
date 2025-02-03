@@ -40,7 +40,7 @@ static double cpu_variability(const sg4::Host* host, double flops)
 /** @brief Create a simple 1-host platform */
 static void load_platform(sg4::Engine& e)
 {
-  auto* zone        = e.set_rootnetzone_empty("Zone1");
+  auto* zone        = e.get_netzone_root();
   auto* runner_host = zone->create_host("runner", 1e6);
   runner_host->set_factor_cb(std::bind(&cpu_variability, runner_host, std::placeholders::_1))->seal();
   zone->seal();

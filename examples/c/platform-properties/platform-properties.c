@@ -72,7 +72,7 @@ static void david(int argc, char* argv[])
 static void bob(int argc, char* argv[])
 {
   /* this host also tests the properties of the NetZone*/
-  const_sg_netzone_t root = sg_zone_get_root();
+  const_sg_netzone_t root = sg_zone_get_by_name("AS0");
   XBT_INFO("== Print the properties of the NetZone");
   XBT_INFO("   Actor property: filename -> %s", sg_zone_get_property_value(root, "filename"));
   XBT_INFO("   Actor property: date -> %s", sg_zone_get_property_value(root, "date"));

@@ -117,7 +117,7 @@ static void load_platform(simgrid::s4u::Engine& e)
    * | Sender |===============| Receiver |
    * |________|    Link1      |__________|
    */
-  auto* zone     = e.set_rootnetzone_full("Zone1");
+  auto* zone     = e.get_netzone_root();
   auto* sender   = zone->create_host("sender", 1)->seal();
   auto* receiver = zone->create_host("receiver", 1)->seal();
 

@@ -8,6 +8,7 @@
 
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/xml/platf.hpp" // simgrid_parse_error() and simgrid_parse_assert()
+#include "xbt/asserts.hpp"
 
 #include <fstream>
 #include <numeric>
@@ -515,8 +516,7 @@ NetZone* create_fatTree_zone(const std::string& name, const NetZone* parent, con
   /* creating zone */
   auto* zone = new kernel::routing::FatTreeZone(name);
   zone->set_topology(params.levels, params.down, params.up, params.number);
-  if (parent)
-    zone->set_parent(parent->get_impl());
+  zone->set_parent(parent->get_impl());
   zone->set_link_characteristics(bandwidth, latency, sharing_policy);
 
   /* populating it */

@@ -15,7 +15,7 @@
 TEST_CASE("kernel::routing::FullZone: mix new routes and hosts", "[bug]")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone = e.set_rootnetzone_full("test");
+  auto* zone = e.get_netzone_root();
 
   const simgrid::s4u::Host* nic  = zone->create_host("nic", 1e9);
   const simgrid::s4u::Link* link = zone->create_link("my_link", 1e6);

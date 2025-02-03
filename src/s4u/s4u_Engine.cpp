@@ -27,6 +27,8 @@
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
+#include "src/simgrid/module.hpp"
+#include "xbt/asserts.h"
 #include "xbt/config.hpp"
 
 #if HAVE_PAPI
@@ -663,55 +665,35 @@ void Engine::track_vetoed_activities(std::set<Activity*>* vetoed_activities) con
 {
   Activity::set_vetoed_activities(vetoed_activities);
 }
-
-NetZone* Engine::set_rootnetzone_full(const std::string& name)
-{
-  xbt_assert(get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
-  auto* res = new kernel::routing::FullZone(name);
-  return res->get_iface();
-}
-NetZone* Engine::set_rootnetzone_star(const std::string& name)
-{
-  xbt_assert(get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
-  auto* res = new kernel::routing::StarZone(name);
-  return res->get_iface();
-}
-NetZone* Engine::set_rootnetzone_dijkstra(const std::string& name, bool cache)
-{
-  xbt_assert(get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
-  auto* res = new kernel::routing::DijkstraZone(name, cache);
-  return res->get_iface();
-}
-NetZone* Engine::set_rootnetzone_empty(const std::string& name)
-{
-  xbt_assert(get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
-  auto* res = new kernel::routing::EmptyZone(name);
-  return res->get_iface();
-}
-NetZone* Engine::set_rootnetzone_floyd(const std::string& name)
-{
-  xbt_assert(get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
-  auto* res = new kernel::routing::FloydZone(name);
-  return res->get_iface();
-}
-NetZone* Engine::set_rootnetzone_vivaldi(const std::string& name)
-{
-  xbt_assert(get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
-  auto* res = new kernel::routing::VivaldiZone(name);
-  return res->get_iface();
-}
-NetZone* Engine::set_rootnetzone_wifi(const std::string& name)
-{
-  xbt_assert(get_netzone_root() == nullptr, "Cannot create a second root netzone in this simulation engine.");
-  auto* res = new kernel::routing::WifiZone(name);
-  return res->get_iface();
-}
 /** @brief Retrieve the root netzone, containing all others */
 s4u::NetZone* Engine::get_netzone_root() const
 {
-  if (pimpl_->netzone_root_)
-    return pimpl_->netzone_root_->get_iface();
-  return nullptr;
+  if (not pimpl_->netzone_root_) {
+    /* The platform is getting populated with netzones. It's time to finish the initialization.
+     *
+     * Without globals and with current model description init functions (see module.hpp), we need
+     * the root netzone to exist when creating the models.
+     */
+    pimpl_->netzone_root_ = new kernel::routing::FullZone("_world_");
+
+    simgrid::s4u::Engine::on_platform_creation();
+
+    /* Initialize the models. That must be done after we got all config, and before we need the models.
+     * That is, after the last <config> tag, if any, and before the first of cluster|peer|zone|trace|trace_cb
+     *
+     * I'm not sure for <trace> and <trace_cb>, there may be a bug here
+     * (FIXME: check it out by creating a file beginning with one of these tags)
+     * but cluster and peer come down to zone creations, so putting this verification here is correct.
+     */
+    simgrid_host_models().init_from_flag_value();
+    simgrid_vm_model_init_HL13();
+
+    /* HACK: direct access to the global controlling the level of configuration to prevent
+     * any further config now that we created some real content */
+    _sg_cfg_init_status = 2;
+  }
+
+  return pimpl_->netzone_root_->get_iface();
 }
 /** @brief Set the root netzone, containing all others. Once set, it cannot be changed. */
 void Engine::set_netzone_root(const s4u::NetZone* netzone)

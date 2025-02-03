@@ -14,7 +14,7 @@
 TEST_CASE("kernel::routing::DijkstraZone (cached): mix new routes and hosts", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone = e.set_rootnetzone_dijkstra("test", true);
+  auto* zone = e.get_netzone_root()->add_netzone_dijkstra("test", true);
 
   const simgrid::s4u::Host* nic  = zone->create_host("nic", 1e9)->seal();
   const simgrid::s4u::Link* link = zone->create_link("my_link", 1e6)->seal();
@@ -28,7 +28,7 @@ TEST_CASE("kernel::routing::DijkstraZone (cached): mix new routes and hosts", ""
 TEST_CASE("kernel::routing::DijkstraZone (not cached): mix new routes and hosts", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone = e.set_rootnetzone_dijkstra("test", false);
+  auto* zone = e.get_netzone_root()->add_netzone_dijkstra("test", false);
 
   const simgrid::s4u::Host* nic  = zone->create_host("nic", 1e9)->seal();
   const simgrid::s4u::Link* link = zone->create_link("my_link", 1e6)->seal();

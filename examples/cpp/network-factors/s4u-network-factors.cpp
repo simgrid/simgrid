@@ -64,7 +64,7 @@ static void load_platform(sg4::Engine& e)
    * host1     ...      hostN
    */
 
-  auto* root         = e.set_rootnetzone_star("dahu");
+  auto* root         = e.get_netzone_root()->add_netzone_star("dahu");
   std::string prefix = "dahu-";
   std::string suffix = ".grid5000.fr";
 

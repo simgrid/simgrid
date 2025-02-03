@@ -44,6 +44,7 @@ public:
   /** @brief Retrieves the name of that netzone as a C string */
   const char* get_cname() const;
 
+  kernel::routing::NetZoneImpl* get_pimpl() { return pimpl_; }
   NetZone* get_parent() const;
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v339("Please stop using NetZone::set_parent(). It is useless with the new platform API.")

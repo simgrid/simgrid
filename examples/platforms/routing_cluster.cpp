@@ -73,7 +73,7 @@ void load_platform(sg4::Engine& e)
    *   host1         host3         host2           host4         host6          host5
    */
 
-  auto* root = e.set_rootnetzone_full("world");
+  auto* root = e.get_netzone_root();
 
   /* create left cluster */
   const auto* left_cluster = create_cluster(root, "1", {"host1", "host2", "host3"}, "host3");

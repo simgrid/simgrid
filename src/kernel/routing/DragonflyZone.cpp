@@ -405,8 +405,7 @@ NetZone* create_dragonfly_zone(const std::string& name, const NetZone* parent, c
   auto* zone = new kernel::routing::DragonflyZone(name);
   zone->set_topology(params.groups.first, params.groups.second, params.chassis.first, params.chassis.second,
                      params.routers.first, params.routers.second, params.nodes);
-  if (parent)
-    zone->set_parent(parent->get_impl());
+  zone->set_parent(parent->get_impl());
   zone->set_link_characteristics(bandwidth, latency, sharing_policy);
 
   /* populating it */

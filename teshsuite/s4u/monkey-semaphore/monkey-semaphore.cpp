@@ -113,7 +113,7 @@ int main(int argc, char** argv)
 {
   sg4::Engine e(&argc, argv);
 
-  auto* rootzone = e.set_rootnetzone_full("root");
+  auto* rootzone = e.get_netzone_root();
   auto* paul     = rootzone->create_host("Paul", 1e9);
   auto* carol    = rootzone->create_host("Carol", 1e9);
   auto* link     = rootzone->create_link("link", "1MBps")->set_latency("24us")->seal();

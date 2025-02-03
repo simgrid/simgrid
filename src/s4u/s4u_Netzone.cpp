@@ -7,6 +7,7 @@
 #include "simgrid/kernel/routing/DijkstraZone.hpp"
 #include "simgrid/kernel/routing/EmptyZone.hpp"
 #include "simgrid/kernel/routing/FloydZone.hpp"
+#include "simgrid/kernel/routing/FullZone.hpp"
 #include "simgrid/kernel/routing/StarZone.hpp"
 #include "simgrid/kernel/routing/VivaldiZone.hpp"
 #include "simgrid/kernel/routing/WifiZone.hpp"
@@ -214,7 +215,7 @@ void NetZone::set_bandwidth_factor_cb(
 
 NetZone* NetZone::add_netzone_full(const std::string& name)
 {
-  auto* res = new kernel::routing::FloydZone(name);
+  auto* res = new kernel::routing::FullZone(name);
   return res->set_parent(get_impl())->get_iface();
 }
 NetZone* NetZone::add_netzone_star(const std::string& name)

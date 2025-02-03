@@ -72,7 +72,7 @@ static sg4::NetZone* create_supernode(sg4::NetZone* root, const std::string& sup
 static sg4::NetZone* create_cluster(sg4::Engine& e, const std::string& cluster_name, const int nb_supernodes,
                                     const int nb_nodes, const int nb_cpu)
 {
-  auto* cluster = e.set_rootnetzone_star(cluster_name);
+  auto* cluster = e.get_netzone_root()->add_netzone_star(cluster_name);
 
   /* create all supernodes and connect them to outside world */
   for (int i = 0; i < nb_supernodes; i++) {

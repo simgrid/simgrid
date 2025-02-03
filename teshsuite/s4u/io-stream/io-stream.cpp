@@ -108,7 +108,7 @@ int main(int argc, char** argv)
   sg4::Engine e(&argc, argv);
 
   /* simple platform containing 2 hosts and 2 disks */
-  auto* zone   = e.set_rootnetzone_full("");
+  auto* zone   = e.get_netzone_root();
   auto* bob  = zone->create_host("bob", 1e6);
   auto* alice  = zone->create_host("alice", 1e6);
 

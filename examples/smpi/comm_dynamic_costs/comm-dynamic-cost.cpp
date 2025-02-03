@@ -40,7 +40,7 @@ extern "C" void load_platform(sg4::Engine& e);
 void load_platform(sg4::Engine& e)
 {
   /* create a simple 2 host platform inspired from small_platform.xml */
-  auto* root = e.set_rootnetzone_full("zone0");
+  auto* root = e.get_netzone_root();
 
   const sg4::Host* tremblay = root->create_host("Tremblay", "98.095Mf")->seal();
   const sg4::Host* jupiter  = root->create_host("Jupiter", "76.296Mf")->seal();

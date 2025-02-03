@@ -70,7 +70,7 @@ void load_platform(sg4::Engine& e)
    * host1     ...      hostN      host1      ...      hostM      host1      ...       hostQ
    */
 
-  auto* root = e.set_rootnetzone_star("AS_griffon");
+  auto* root = e.get_netzone_root()->add_netzone_star("AS_griffon");
 
   /* create top link */
   const sg4::Link* l_bb = root->create_link("backbone", "1.25GBps")->set_latency("24us")->seal();

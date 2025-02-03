@@ -251,15 +251,7 @@ public class simgridJNI {
   public final static native long Engine_get_actor_count(long jarg1, Engine jarg1_);
   public final static native int Engine_get_actor_max_pid(long jarg1, Engine jarg1_);
   public final static native Actor[] Engine_get_all_actors(long jarg1, Engine jarg1_);
-  public final static native long Engine_get_root_netzone(long jarg1, Engine jarg1_);
-  public final static native long Engine_set_root_netzone_full(long jarg1, Engine jarg1_, String jname);
-  public final static native long Engine_set_root_netzone_star(long jarg1, Engine jarg1_, String jname);
-  public final static native long Engine_set_root_netzone_dijkstra(long jarg1, Engine jarg1_, String jname,
-                                                                   boolean jarg2);
-  public final static native long Engine_set_root_netzone_empty(long jarg1, Engine jarg1_, String jname);
-  public final static native long Engine_set_root_netzone_floyd(long jarg1, Engine jarg1_, String jname);
-  public final static native long Engine_set_root_netzone_vivaldi(long jarg1, Engine jarg1_, String jname);
-  public final static native long Engine_set_root_netzone_wifi(long jarg1, Engine jarg1_, String jname);
+  public final static native long Engine_get_netzone_root(long jarg1, Engine jarg1_);
   public final static native NetZone[] Engine_get_all_netzones(long jarg1, Engine jarg1_);
   public final static native long Engine_netzone_by_name_or_null(long jarg1, Engine jarg1_, String jarg2);
   public final static native void Engine_set_config__SWIG_0(String jarg1);

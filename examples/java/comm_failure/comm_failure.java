@@ -76,7 +76,7 @@ public class comm_failure {
   public static void main(String[] args)
   {
     Engine e     = new Engine(args);
-    NetZone zone = e.set_rootzone_full("AS0");
+    NetZone zone = e.get_netzone_root();
     Host host1   = zone.create_host("Host1", "1f");
     Host host2   = zone.create_host("Host2", "1f");
     Host host3   = zone.create_host("Host3", "1f");

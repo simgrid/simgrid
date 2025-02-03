@@ -199,8 +199,7 @@ NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const
 
   auto* zone = new kernel::routing::TorusZone(name);
   zone->set_topology(dimensions);
-  if (parent)
-    zone->set_parent(parent->get_impl());
+  zone->set_parent(parent->get_impl());
 
   zone->set_link_characteristics(bandwidth, latency, sharing_policy);
 

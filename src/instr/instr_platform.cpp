@@ -17,6 +17,7 @@
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
+#include "xbt/log.h"
 
 #include <fstream>
 
@@ -278,19 +279,24 @@ static void on_netzone_creation(s4u::NetZone const& netzone)
     auto* root = new NetZoneContainer(id, 0, nullptr);
     xbt_assert(Container::get_root() == root);
 
-    if (TRACE_smpi_is_enabled()) {
-      auto* mpi = root->get_type()->by_name_or_create<ContainerType>("MPI");
-      if (not TRACE_smpi_is_grouped())
-        mpi->by_name_or_create<StateType>("MPI_STATE");
-      root->get_type()->by_name_or_create("MPI_LINK", mpi, mpi);
-      root->get_type()->by_name_or_create("MIGRATE_LINK", mpi, mpi);
-      mpi->by_name_or_create<StateType>("MIGRATE_STATE");
-    }
-
     if (TRACE_needs_platform()) {
       currentContainer.push_back(root);
     }
     return;
+  }
+
+  // This static is ugly, but I fail to make it work otherwise
+  static bool inited = false;
+  if (TRACE_smpi_is_enabled() && not inited) {
+    inited = true;
+
+    auto root = Container::get_root();
+    auto* mpi = root->get_type()->by_name_or_create<ContainerType>("MPI");
+    if (not TRACE_smpi_is_grouped())
+      mpi->by_name_or_create<StateType>("MPI_STATE");
+    root->get_type()->by_name_or_create("MPI_LINK", mpi, mpi);
+    root->get_type()->by_name_or_create("MIGRATE_LINK", mpi, mpi);
+    mpi->by_name_or_create<StateType>("MIGRATE_STATE");
   }
 
   if (TRACE_needs_platform()) {
@@ -302,7 +308,8 @@ static void on_netzone_creation(s4u::NetZone const& netzone)
 
 static void on_link_creation(s4u::Link const& link)
 {
-  if (currentContainer.empty()) // No ongoing parsing. Are you creating the loopback?
+  if (currentContainer.empty() ||
+      link.get_name() == "__loopback__") // No ongoing parsing. Are you creating the loopback?
     return;
 
   auto* container = new Container(link.get_name(), "LINK", currentContainer.back());
@@ -476,6 +483,9 @@ void define_callbacks()
   }
 
   s4u::NetZone::on_creation_cb(on_netzone_creation);
+  // The root netzone is created earlier when we are parsing an XML file, so handle it now
+  for (auto nz : s4u::Engine::get_instance()->get_all_netzones())
+    on_netzone_creation(*nz);
 
   s4u::Host::on_exec_state_change_cb(on_action_state_change);
   s4u::Link::on_communication_state_change_cb(on_action_state_change);
