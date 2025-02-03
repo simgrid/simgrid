@@ -181,7 +181,8 @@ void BeFSExplorer::run()
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     auto next_state = reduction_algo_->state_create(get_remote_app(), state);
-    if (_sg_mc_cached_states_interval > 0 && stack_.size() % _sg_mc_cached_states_interval == 0) {
+    if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
+
       next_state->set_state_factory(get_remote_app().clone_checker_side());
     }
     on_state_creation_signal(next_state.get(), get_remote_app());

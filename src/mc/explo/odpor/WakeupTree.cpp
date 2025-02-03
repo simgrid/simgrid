@@ -43,7 +43,7 @@ std::string WakeupTreeNode::string_of_whole_tree(const std::string& prefix, bool
   return final_string;
 }
 
-PartialExecution WakeupTreeNode::get_sequence() const
+const PartialExecution& WakeupTreeNode::get_sequence() const
 {
   return sequence_;
 }
@@ -206,8 +206,10 @@ void WakeupTree::insert_at_root(std::shared_ptr<Transition> u)
   this->root_->add_child(new_node);
 }
 
-WakeupTree::InsertionResult WakeupTree::insert(const PartialExecution& w)
+InsertionResult WakeupTree::insert(const PartialExecution& w)
 {
+  return recursive_insert(w);
+
   // See section 6.2 of Abdulla. et al.'s 2017 ODPOR paper for details
 
   // Find the first node `v` in the tree such that
@@ -244,8 +246,140 @@ WakeupTree::InsertionResult WakeupTree::insert(const PartialExecution& w)
           "sequence to insert into the tree is broken");
 }
 
+InsertionResult WakeupTreeNode::recursive_insert(WakeupTree& father, PartialExecution& w)
+{
+  // If we reached a leaf, then there is nothing to insert. The exploration from this leaf
+  // will eventually take care of this execution if needed
+  if (this->is_leaf() and not this->is_root())
+    return InsertionResult::leaf;
+
+  for (auto& node : this->children_) {
+    const auto& next_E_p = node->action_;
+    // Is `p in `I_[E](w)`?
+    if (const aid_t p = next_E_p->aid_; Execution::is_initial_after_execution_of(w, p)) {
+      // Remove `p` from w and continue with this node
+
+      // INVARIANT: If `p` occurs in `w`, it had better refer to the same
+      // transition referenced by `v`. Unfortunately, we have two
+      // sources of truth here which can be manipulated at the same
+      // time as arguments to the function. If ODPOR works correctly,
+      // they should always refer to the same value; but as a sanity check,
+      // we have an assert that tests that at least the types are the same.
+      const auto action_by_p_in_w =
+          std::find_if(w.begin(), w.end(), [=](const auto& action) { return action->aid_ == p; });
+      xbt_assert(action_by_p_in_w != w.end(), "Invariant violated: actor `p` "
+                                              "is claimed to be an initial after `w` but is "
+                                              "not actually contained in `w`. This indicates that there "
+                                              "is a bug computing initials");
+      const auto& w_action = *action_by_p_in_w;
+      xbt_assert(w_action->type_ == next_E_p->type_,
+                 "Invariant violated: `v` claims that actor `%ld` executes '%s' while "
+                 "`w` claims that it executes '%s'. These two partial executions both "
+                 "refer to `next_[E](p)`, which should be the same",
+                 p, next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
+      w.erase(action_by_p_in_w);
+      return node->recursive_insert(father, w);
+    }
+    // Is `E ⊢ p ◇ w`?
+    else if (Execution::is_independent_with_execution_of(w, next_E_p)) {
+      // Nothing to remove, we simply move on
+
+      // INVARIANT: Note that it is impossible for `p` to be
+      // excluded from the set `I_[E](w)` BUT ALSO be contained in
+      // `w` itself if `E ⊢ p ◇ w` (intuitively, the fact that `E ⊢ p ◇ w`
+      // means that are able to move `p` anywhere in `w` IF it occurred, so
+      // if it really does occur we know it must then be an initial).
+      // We assert this is the case here
+      const auto action_by_p_in_w =
+          std::find_if(w.begin(), w.end(), [=](const auto& action) { return action->aid_ == p; });
+      xbt_assert(action_by_p_in_w == w.end(),
+                 "Invariant violated: We claimed that actor `%ld` is not an initial "
+                 "after `w`, yet it's independent with all actions of `w` AND occurs in `w`."
+                 "This indicates that there is a bug computing initials",
+                 p);
+      return node->recursive_insert(father, w);
+    }
+  }
+  // We can't insert w anymore from there. Let's insert the remaining and tell the world about that
+  father.insert_sequence_after(this, w);
+  return this->is_root() ? InsertionResult::root : InsertionResult::interior_node;
+}
+
+InsertionResult WakeupTree::recursive_insert(const PartialExecution& w)
+{
+  auto w_copy = w;
+  return this->root_->recursive_insert(*this, w_copy);
+}
+
+WakeupTreeNode* WakeupTreeNode::recursive_insert_and_get_inserted_seq(WakeupTree& father, PartialExecution& w)
+{
+  // If we reached a leaf, then there is nothing to insert. The exploration from this leaf
+  // will eventually take care of this execution if needed
+  if (this->is_leaf())
+    return this;
+
+  for (auto& node : this->children_) {
+    const auto& next_E_p = node->action_;
+    // Is `p in `I_[E](w)`?
+    if (const aid_t p = next_E_p->aid_; Execution::is_initial_after_execution_of(w, p)) {
+      // Remove `p` from w and continue with this node
+
+      // INVARIANT: If `p` occurs in `w`, it had better refer to the same
+      // transition referenced by `v`. Unfortunately, we have two
+      // sources of truth here which can be manipulated at the same
+      // time as arguments to the function. If ODPOR works correctly,
+      // they should always refer to the same value; but as a sanity check,
+      // we have an assert that tests that at least the types are the same.
+      const auto action_by_p_in_w =
+          std::find_if(w.begin(), w.end(), [=](const auto& action) { return action->aid_ == p; });
+      xbt_assert(action_by_p_in_w != w.end(), "Invariant violated: actor `p` "
+                                              "is claimed to be an initial after `w` but is "
+                                              "not actually contained in `w`. This indicates that there "
+                                              "is a bug computing initials");
+      const auto& w_action = *action_by_p_in_w;
+      xbt_assert(w_action->type_ == next_E_p->type_,
+                 "Invariant violated: `v` claims that actor `%ld` executes '%s' while "
+                 "`w` claims that it executes '%s'. These two partial executions both "
+                 "refer to `next_[E](p)`, which should be the same",
+                 p, next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
+      w.erase(action_by_p_in_w);
+      return node->recursive_insert_and_get_inserted_seq(father, w);
+    }
+    // Is `E ⊢ p ◇ w`?
+    else if (Execution::is_independent_with_execution_of(w, next_E_p)) {
+      // Nothing to remove, we simply move on
+
+      // INVARIANT: Note that it is impossible for `p` to be
+      // excluded from the set `I_[E](w)` BUT ALSO be contained in
+      // `w` itself if `E ⊢ p ◇ w` (intuitively, the fact that `E ⊢ p ◇ w`
+      // means that are able to move `p` anywhere in `w` IF it occurred, so
+      // if it really does occur we know it must then be an initial).
+      // We assert this is the case here
+      const auto action_by_p_in_w =
+          std::find_if(w.begin(), w.end(), [=](const auto& action) { return action->aid_ == p; });
+      xbt_assert(action_by_p_in_w == w.end(),
+                 "Invariant violated: We claimed that actor `%ld` is not an initial "
+                 "after `w`, yet it's independent with all actions of `w` AND occurs in `w`."
+                 "This indicates that there is a bug computing initials",
+                 p);
+      return node->recursive_insert_and_get_inserted_seq(father, w);
+    }
+  }
+  // We can't insert w anymore from there. Let's insert the remaining and tell the world about that
+  return father.insert_sequence_after(this, w);
+}
+
+const PartialExecution WakeupTree::recursive_insert_and_get_inserted_seq(const PartialExecution& w)
+{
+  auto w_copy                   = w;
+  WakeupTreeNode* inserted_node = this->root_->recursive_insert_and_get_inserted_seq(*this, w_copy);
+  return inserted_node->get_sequence();
+}
+
 const PartialExecution WakeupTree::insert_and_get_inserted_seq(const PartialExecution& w)
 {
+  return recursive_insert_and_get_inserted_seq(w);
+
   PartialExecution inserted_seq;
   for (WakeupTreeNode* node : *this) {
     if (const auto shortest_sequence = Execution::get_shortest_odpor_sq_subset_insertion(node->get_sequence(), w);
@@ -265,7 +399,7 @@ const PartialExecution WakeupTree::insert_and_get_inserted_seq(const PartialExec
           "sequence to insert into the tree is broken");
 }
 
-void WakeupTree::insert_sequence_after(WakeupTreeNode* node, const PartialExecution& w)
+WakeupTreeNode* WakeupTree::insert_sequence_after(WakeupTreeNode* node, const PartialExecution& w)
 {
   WakeupTreeNode* cur_node = node;
   for (const auto& w_i : w) {
@@ -273,6 +407,7 @@ void WakeupTree::insert_sequence_after(WakeupTreeNode* node, const PartialExecut
     cur_node->add_child(new_node);
     cur_node = new_node;
   }
+  return cur_node;
 }
 
 WakeupTreeNode* WakeupTree::get_node_after_actor(aid_t aid) const

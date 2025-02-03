@@ -8,6 +8,7 @@
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "src/mc/explo/udpor/udpor_tests_private.hpp"
 #include "src/xbt/utils/iter/LazyPowerset.hpp"
+#include <iostream>
 
 using namespace simgrid::mc;
 using namespace simgrid::mc::odpor;
@@ -76,7 +77,8 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Constructing Trees")
     // action `a2`) are added such that they are "greater than" (under
     // the tree's `<` relation) all those that exist under the given parent
     WakeupTree tree;
-    tree.insert({a1, a2, a3, a4});
+    REQUIRE(tree.insert({a1, a2, a3, a4}) == InsertionResult::root);
+    REQUIRE(tree.get_num_nodes() == 5);
     tree.insert({a1, a3, a2, a4});
     tree.insert({a1, a3, a2, a4, a5});
     tree.insert({a1, a3, a5});

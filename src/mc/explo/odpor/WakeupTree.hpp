@@ -19,6 +19,9 @@
 
 namespace simgrid::mc::odpor {
 
+/** @brief Describes how a tree insertion was carried out */
+enum class InsertionResult { leaf, interior_node, root };
+
 /**
  * @brief A single node in a wakeup tree
  *
@@ -47,7 +50,7 @@ private:
   /** @brief Removes the node as a child from the parent */
   void detatch_from_parent();
 
-  PartialExecution sequence_;
+  PartialExecution sequence_ = PartialExecution{};
 
   /** Allows the owning tree to insert directly into the child */
   friend WakeupTree;
@@ -71,7 +74,7 @@ public:
   bool is_leaf() const { return children_.empty(); }
   bool is_root() const { return parent_ == nullptr; }
   aid_t get_actor() const { return action_->aid_; }
-  PartialExecution get_sequence() const;
+  const PartialExecution& get_sequence() const;
 
   /** @brief Return a shared pointer to the transition if the action exists.
 
@@ -102,6 +105,10 @@ public:
 
     return nullptr;
   }
+
+  InsertionResult recursive_insert(WakeupTree& father, PartialExecution& w);
+
+  WakeupTreeNode* recursive_insert_and_get_inserted_seq(WakeupTree& father, PartialExecution& w);
 };
 
 /**
@@ -142,7 +149,8 @@ private:
   std::unordered_map<WakeupTreeNode*, std::unique_ptr<WakeupTreeNode>> nodes_;
 
   void insert_node(std::unique_ptr<WakeupTreeNode> node);
-  void insert_sequence_after(WakeupTreeNode* node, const PartialExecution& w);
+  // Returns a pointer to the lastly inserted node
+  WakeupTreeNode* insert_sequence_after(WakeupTreeNode* node, const PartialExecution& w);
   void remove_node(WakeupTreeNode* node);
   bool contains(const WakeupTreeNode* node) const;
 
@@ -235,9 +243,6 @@ public:
 
   void insert_at_root(std::shared_ptr<Transition> u);
 
-  /** @brief Describes how a tree insertion was carried out */
-  enum class InsertionResult { leaf, interior_node, root };
-
   /**
    * @brief Inserts an sequence `seq` of processes into the tree
    * such that that this tree is a wakeup tree relative to the
@@ -267,11 +272,16 @@ public:
    * as a leaf node in the tree
    */
   InsertionResult insert(const PartialExecution& seq);
+
+  InsertionResult recursive_insert(const PartialExecution& seq);
+
   /**
    * @brief Does the same as 'insert' but instead of returning a result type, yield the
    * inserted sequence.
    */
   const PartialExecution insert_and_get_inserted_seq(const PartialExecution& seq);
+
+  const PartialExecution recursive_insert_and_get_inserted_seq(const PartialExecution& seq);
 
   /**
    * @brief The number of children at depth one
@@ -309,6 +319,8 @@ public:
    *
    */
   void force_insert(const PartialExecution& seq);
+
+  friend WakeupTreeNode;
 };
 
 } // namespace simgrid::mc::odpor

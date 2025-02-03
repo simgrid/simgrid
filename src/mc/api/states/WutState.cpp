@@ -149,7 +149,7 @@ void WutState::remove_subtree_at_aid(const aid_t proc)
   wakeup_tree_.remove_subtree_at_aid(proc);
 }
 
-odpor::WakeupTree::InsertionResult WutState::insert_into_wakeup_tree(const odpor::PartialExecution& pe)
+odpor::InsertionResult WutState::insert_into_wakeup_tree(const odpor::PartialExecution& pe)
 {
   return this->wakeup_tree_.insert(pe);
 }
