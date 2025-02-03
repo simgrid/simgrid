@@ -4,6 +4,13 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/Exception.hpp"
+#include "simgrid/kernel/routing/DijkstraZone.hpp"
+#include "simgrid/kernel/routing/EmptyZone.hpp"
+#include "simgrid/kernel/routing/FloydZone.hpp"
+#include "simgrid/kernel/routing/FullZone.hpp"
+#include "simgrid/kernel/routing/StarZone.hpp"
+#include "simgrid/kernel/routing/VivaldiZone.hpp"
+#include "simgrid/kernel/routing/WifiZone.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
@@ -206,6 +213,42 @@ void NetZone::set_bandwidth_factor_cb(
   kernel::actor::simcall_answered([this, &cb]() { pimpl_->get_network_model()->set_bw_factor_cb(cb); });
 }
 
+NetZone* NetZone::add_netzone_full(const std::string& name)
+{
+  auto* res = new kernel::routing::FullZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_star(const std::string& name)
+{
+  auto* res = new kernel::routing::StarZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_dijkstra(const std::string& name, bool cache)
+{
+  auto* res = new kernel::routing::DijkstraZone(name, cache);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_empty(const std::string& name)
+{
+  auto* res = new kernel::routing::EmptyZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_floyd(const std::string& name)
+{
+  auto* res = new kernel::routing::FloydZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_vivaldi(const std::string& name)
+{
+  auto* res = new kernel::routing::VivaldiZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_wifi(const std::string& name)
+{
+  auto* res = new kernel::routing::WifiZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+
 s4u::Host* NetZone::create_host(const std::string& name, double speed)
 {
   return create_host(name, std::vector<double>{speed});
@@ -334,7 +377,34 @@ void sg_zone_get_sons(const_sg_netzone_t netzone, xbt_dict_t whereto)
     xbt_dict_set(whereto, elem->get_cname(), elem);
   }
 }
+sg_netzone_t* sg_zone_get_childs(const_sg_netzone_t netzone, int* size)
+{
+  auto children     = netzone->get_children();
+  if (size)
+    *size = children.size();
+  sg_netzone_t* res = (sg_netzone_t*)xbt_malloc(sizeof(char*) * (children.size() + 1));
+  int i             = 0;
+  for (auto child : children)
+    res[i++] = child;
+  res[i] = nullptr;
 
+  return res;
+}
+const char** sg_zone_get_property_names(const_sg_netzone_t zone)
+{
+  const std::unordered_map<std::string, std::string>* props = zone->get_properties();
+
+  if (props == nullptr)
+    return nullptr;
+
+  const char** res = (const char**)xbt_malloc(sizeof(char*) * (props->size() + 1));
+  int i            = 0;
+  for (auto const& [key, _] : *props)
+    res[i++] = key.c_str();
+  res[i] = nullptr;
+
+  return res;
+}
 const char* sg_zone_get_property_value(const_sg_netzone_t netzone, const char* name)
 {
   return netzone->get_property(name);
@@ -345,10 +415,24 @@ void sg_zone_set_property_value(sg_netzone_t netzone, const char* name, const ch
   netzone->set_property(name, value);
 }
 
-void sg_zone_get_hosts(const_sg_netzone_t netzone, xbt_dynar_t whereto)
+void sg_zone_get_hosts(const_sg_netzone_t netzone, xbt_dynar_t whereto) // deprecate 3.39
 {
   /* converts vector to dynar */
   std::vector<simgrid::s4u::Host*> hosts = netzone->get_all_hosts();
   for (auto const& host : hosts)
     xbt_dynar_push(whereto, &host);
+}
+const_sg_host_t* sg_zone_get_all_hosts(const_sg_netzone_t zone, int* size)
+{
+  std::vector<simgrid::s4u::Host*> hosts = zone->get_all_hosts();
+
+  const_sg_host_t* res = (const_sg_host_t*)xbt_malloc(sizeof(const_sg_link_t) * (hosts.size() + 1));
+  if (size)
+    *size = hosts.size();
+  int i = 0;
+  for (auto host : hosts)
+    res[i++] = host;
+  res[i] = nullptr;
+
+  return res;
 }

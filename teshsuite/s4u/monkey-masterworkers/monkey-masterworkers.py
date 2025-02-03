@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
   mailbox = Mailbox.by_name("mailbox")
 
-  rootzone = NetZone.create_full_zone("Zone1")
+  rootzone = e.netzone_root
   main = rootzone.create_host("lilibeth 0", 1e9)
   Actor.create("master", main, master).set_auto_restart(True)
 
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     rootzone.add_route(main, host, [link])
     Actor.create("worker", host, worker, i).set_auto_restart(True)
 
-  e.netzone_root.seal()
+  rootzone.seal()
   e.run()
 
   this_actor.info("WE SURVIVED!")

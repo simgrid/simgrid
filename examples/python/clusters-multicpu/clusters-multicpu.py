@@ -88,10 +88,7 @@ def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], ident: int) 
     link_lat = "1ns"  # Link latency
 
     hostname = "host" + str(ident)
-    # create the StarZone
-    host_zone = simgrid.NetZone.create_star_zone(hostname)
-    # setting my Torus parent zone
-    host_zone.set_parent(zone)
+    host_zone = zone.add_netzone_star(hostname)
 
     # create CPUs
     for i in range(num_cpus):
@@ -133,7 +130,7 @@ def create_limiter(zone: simgrid.NetZone, coord: typing.List[int], ident: int) -
     return zone.create_link("limiter-" + str(ident), [1e9]).seal()
 
 
-def create_torus_cluster():
+def create_torus_cluster(parent: simgrid.NetZone):
     """
     Creates a TORUS cluster
 
@@ -169,14 +166,14 @@ def create_torus_cluster():
     Cluster</a>
     """
     # create the torus cluster, 10Gbs link between elements in the cluster
-    simgrid.NetZone.create_torus_zone("cluster", None, [2, 2, 2],
+    simgrid.NetZone.create_torus_zone("cluster", parent, [2, 2, 2],
                                       simgrid.ClusterCallbacks(create_hostzone, None, create_limiter), 10e9, 10e-6,
                                       simgrid.Link.SharingPolicy.SPLITDUPLEX).seal()
 
 #####################################################################################################
 
 
-def create_fat_tree_cluster():
+def create_fat_tree_cluster(parent: simgrid.NetZone):
     r"""
     Creates a Fat-Tree cluster
 
@@ -225,14 +222,14 @@ def create_fat_tree_cluster():
     Cluster</a>
     """
     # create the fat tree cluster, 10Gbs link between elements in the cluster
-    simgrid.NetZone.create_fatTree_zone("cluster", None, simgrid.FatTreeParams(2, [2, 3], [1, 2], [1, 1]),
+    simgrid.NetZone.create_fatTree_zone("cluster", parent, simgrid.FatTreeParams(2, [2, 3], [1, 2], [1, 1]),
                                         simgrid.ClusterCallbacks(create_hostzone, None, create_limiter), 10e9, 10e-6,
                                         simgrid.Link.SharingPolicy.SPLITDUPLEX).seal()
 
 #####################################################################################################
 
 
-def create_dragonfly_cluster():
+def create_dragonfly_cluster(parent: simgrid.NetZone):
     r"""
     Creates a Dragonfly cluster
 
@@ -271,7 +268,7 @@ def create_dragonfly_cluster():
     Cluster</a>
     """
     # create the dragonfly cluster, 10Gbs link between elements in the cluster
-    simgrid.NetZone.create_dragonfly_zone("cluster", None, simgrid.DragonflyParams([2, 2], [2, 1], [2, 2], 2),
+    simgrid.NetZone.create_dragonfly_zone("cluster", parent, simgrid.DragonflyParams([2, 2], [2, 1], [2, 2], 2),
                                           simgrid.ClusterCallbacks(create_hostzone, None, create_limiter), 10e9, 10e-6,
                                           simgrid.Link.SharingPolicy.SPLITDUPLEX).seal()
 
@@ -284,11 +281,11 @@ def main():
 
     # create platform
     if platform == "torus":
-        create_torus_cluster()
+        create_torus_cluster(e.netzone_root)
     elif platform == "fatTree":
-        create_fat_tree_cluster()
+        create_fat_tree_cluster(e.netzone_root)
     elif platform == "dragonfly":
-        create_dragonfly_cluster()
+        create_dragonfly_cluster(e.netzone_root)
     else:
         sys.exit("invalid param")
 

@@ -1,0 +1,42 @@
+{
+  "name": "simple_json",
+  "schemaVersion": "1.0",
+  "workflow": {
+    "makespanInSeconds": 0,
+    "executedAt": "2023-03-09T00:00:00-00:00",
+    "tasks": [
+      {
+        "name": "c1",
+        "type": "compute",
+        "parents": [],
+        "runtimeInSeconds": 1e9,
+        "machine": "Tremblay"
+      },
+      {
+        "name": "t1",
+        "type": "transfer",
+        "parents": ["c1"],
+        "writtenBytes": 5e8,
+        "machine": "Jupiter"
+      },
+      {
+        "name": "c2",
+        "type": "compute",
+        "parents": [],
+        "runtimeInSeconds": 5e9,
+        "machine": "Jupiter"
+      },
+      {
+        "name": "c3",
+        "type": "compute",
+        "parents": ["t1","c2"],
+        "runtimeInSeconds": 2e9,
+        "machine": "Jupiter"
+      }
+    ],
+    "machines": [
+      {"nodeName": "Tremblay"},
+      {"nodeName": "Jupiter"}
+    ]
+  }
+}

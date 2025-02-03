@@ -67,7 +67,7 @@ public:
   void operator()()
   {
     /* Where we store all incoming msgs */
-    std::unordered_map<sg4::CommPtr, std::shared_ptr<std::string*>> pending_msgs;
+    std::map<sg4::CommPtr, std::shared_ptr<std::string*>> pending_msgs;
     sg4::ActivitySet pending_comms;
 
     XBT_INFO("Wait for %d messages asynchronously", messages_count);
@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
    * | Sender |===============| Receiver |
    * |________|    Link1      |__________|
    */
-  auto* zone     = sg4::create_full_zone("Zone1");
+  auto* zone     = e.get_netzone_root();
   auto* sender   = zone->create_host("sender", 1)->seal();
   auto* receiver = zone->create_host("receiver", 1)->seal();
 

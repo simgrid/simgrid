@@ -17,6 +17,8 @@
 #include "src/kernel/resource/HostImpl.hpp"
 #include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
+#include "xbt/asserts.h"
+#include "xbt/asserts.hpp"
 #include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 
@@ -402,25 +404,25 @@ ExecPtr exec_init(double flops_amount)
 ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                   const std::vector<double>& bytes_amounts)
 {
-  xbt_assert(not hosts.empty(), "Your parallel executions must span over at least one host.");
-  xbt_assert(hosts.size() == flops_amounts.size() || flops_amounts.empty(),
-             "Host count (%zu) does not match flops_amount count (%zu).", hosts.size(), flops_amounts.size());
-  xbt_assert(hosts.size() * hosts.size() == bytes_amounts.size() || bytes_amounts.empty(),
-             "bytes_amounts must be a matrix of size host_count * host_count (%zu*%zu), but it's of size %zu.",
-             hosts.size(), hosts.size(), bytes_amounts.size());
+  xbt_enforce(not hosts.empty(), "Your parallel executions must span over at least one host.");
+  xbt_enforce(hosts.size() == flops_amounts.size() || flops_amounts.empty(),
+              "Host count (%zu) does not match flops_amount count (%zu).", hosts.size(), flops_amounts.size());
+  xbt_enforce(hosts.size() * hosts.size() == bytes_amounts.size() || bytes_amounts.empty(),
+              "bytes_amounts must be a matrix of size host_count * host_count (%zu*%zu), but it's of size %zu.",
+              hosts.size(), hosts.size(), bytes_amounts.size());
   /* Check that we are not mixing VMs and PMs in the parallel task */
   bool is_a_vm = (nullptr != dynamic_cast<VirtualMachine*>(hosts.front()));
-  xbt_assert(std::all_of(hosts.begin(), hosts.end(),
-                         [is_a_vm](s4u::Host* elm) {
-                           bool tmp_is_a_vm = (nullptr != dynamic_cast<VirtualMachine*>(elm));
-                           return is_a_vm == tmp_is_a_vm;
-                         }),
-             "parallel_execute: mixing VMs and PMs is not supported (yet).");
+  xbt_enforce(std::all_of(hosts.begin(), hosts.end(),
+                          [is_a_vm](s4u::Host* elm) {
+                            bool tmp_is_a_vm = (nullptr != dynamic_cast<VirtualMachine*>(elm));
+                            return is_a_vm == tmp_is_a_vm;
+                          }),
+              "parallel_execute: mixing VMs and PMs is not supported (yet).");
   /* checking for infinite values */
-  xbt_assert(std::all_of(flops_amounts.begin(), flops_amounts.end(), [](double elm) { return std::isfinite(elm); }),
-             "flops_amounts comprises infinite values!");
-  xbt_assert(std::all_of(bytes_amounts.begin(), bytes_amounts.end(), [](double elm) { return std::isfinite(elm); }),
-             "flops_amounts comprises infinite values!");
+  xbt_enforce(std::all_of(flops_amounts.begin(), flops_amounts.end(), [](double elm) { return std::isfinite(elm); }),
+              "flops_amounts comprises infinite values!");
+  xbt_enforce(std::all_of(bytes_amounts.begin(), bytes_amounts.end(), [](double elm) { return std::isfinite(elm); }),
+              "flops_amounts comprises infinite values!");
 
   return Exec::init()->set_flops_amounts(flops_amounts)->set_bytes_amounts(bytes_amounts)->set_hosts(hosts);
 }
@@ -605,11 +607,6 @@ const char* sg_actor_get_property_value(const_sg_actor_t actor, const char* name
   return actor->get_property(name);
 }
 
-/**
- * @brief Return the list of properties
- *
- * This function returns all the parameters associated with an actor
- */
 xbt_dict_t sg_actor_get_properties(const_sg_actor_t actor)
 {
   xbt_assert(actor != nullptr, "Invalid parameter: First argument must not be nullptr");
@@ -621,6 +618,26 @@ xbt_dict_t sg_actor_get_properties(const_sg_actor_t actor)
     xbt_dict_set(as_dict, key.c_str(), xbt_strdup(value.c_str()));
   }
   return as_dict;
+}
+const char** sg_actor_get_property_names(const_sg_actor_t actor, int* size)
+{
+  const std::unordered_map<std::string, std::string>* props = actor->get_properties();
+
+  if (props == nullptr) {
+    if (size)
+      *size = 0;
+    return nullptr;
+  }
+
+  const char** res = (const char**)xbt_malloc(sizeof(char*) * (props->size() + 1));
+  if (size)
+    *size = props->size();
+  int i = 0;
+  for (auto const& [key, _] : *props)
+    res[i++] = key.c_str();
+  res[i] = nullptr;
+
+  return res;
 }
 
 /**
@@ -740,22 +757,14 @@ void sg_actor_sleep_until(double wakeup_time)
   simgrid::s4u::this_actor::sleep_until(wakeup_time);
 }
 
-sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host, xbt_dict_t properties)
+sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host)
 {
-  xbt_assert(host != nullptr, "Invalid parameters: host and code params must not be nullptr");
-  std::unordered_map<std::string, std::string> props;
-  xbt_dict_cursor_t cursor = nullptr;
-  char* key;
-  char* value;
-  xbt_dict_foreach (properties, cursor, key, value)
-    props[key] = value;
-  xbt_dict_free(&properties);
+  xbt_assert(host != nullptr, "Invalid parameters: host must not be nullptr");
 
   /* Let's create the actor: SIMIX may decide to start it right now, even before returning the flow control to us */
   simgrid::kernel::actor::ActorImpl* actor = nullptr;
   try {
     actor = simgrid::kernel::actor::ActorImpl::attach(name, data, host).get();
-    actor->set_properties(props);
   } catch (simgrid::HostFailureException const&) {
     xbt_die("Could not attach");
   }

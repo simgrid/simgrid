@@ -3,10 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/Host.hpp"
 #include "simgrid/kernel/routing/ClusterZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/Link.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
+#include <tuple>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_cluster, ker_platform, "Kernel Cluster Routing");
 
@@ -57,15 +59,12 @@ NetPoint* ClusterBase::get_gateway(unsigned long position)
   return it == gateways_.end() ? nullptr : it->second;
 }
 
-void ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<unsigned long>& dimensions,
-                                    const s4u::ClusterCallbacks& set_callbacks, NetPoint** node_netpoint,
-                                    s4u::Link** lb_link, s4u::Link** limiter_link)
+std::tuple<NetPoint*, s4u::Link*, s4u::Link*>
+ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<unsigned long>& dimensions,
+                               const s4u::ClusterCallbacks& set_callbacks)
 {
-  xbt_assert(node_netpoint, "Invalid node_netpoint parameter");
-  xbt_assert(lb_link, "Invalid lb_link parameter");
-  xbt_assert(limiter_link, "Invalid limiter_link paramater");
-  *lb_link      = nullptr;
-  *limiter_link = nullptr;
+  s4u::Link* loopback_res = nullptr;
+  s4u::Link* limiter_res  = nullptr;
 
   // auxiliary function to get dims from index
   auto index_to_dims = [&dimensions](unsigned long index) {
@@ -110,7 +109,7 @@ void ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<un
     xbt_assert(loopback, "set_loopback: Invalid loopback link (nullptr) for element %lu", position);
     set_loopback();
     add_private_link_at(node_pos(netpoint->id()), {loopback->get_impl(), loopback->get_impl()});
-    *lb_link = loopback;
+    loopback_res = loopback;
   }
 
   if (set_callbacks.limiter) {
@@ -118,9 +117,9 @@ void ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<un
     xbt_assert(limiter, "set_limiter: Invalid limiter link (nullptr) for element %lu", position);
     set_limiter();
     add_private_link_at(node_pos_with_loopback(netpoint->id()), {limiter->get_impl(), limiter->get_impl()});
-    *limiter_link = limiter;
+    limiter_res = limiter;
   }
-  *node_netpoint = netpoint;
+  return std::make_tuple(netpoint, loopback_res, limiter_res);
 }
 
 } // namespace simgrid::kernel::routing

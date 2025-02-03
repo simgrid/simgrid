@@ -85,13 +85,21 @@ XBT_PUBLIC void sg_host_turn_on(sg_host_t host);
 XBT_PUBLIC void sg_host_turn_off(sg_host_t host);
 XBT_PUBLIC int sg_host_is_on(const_sg_host_t host);
 
-/** @ingroup m_host_management
- * @brief Returns a xbt_dict_t consisting of the list of properties assigned to this host
+#ifndef DOXYGEN
+XBT_ATTRIB_DEPRECATED_v339("Please use sg_host_get_property_names instead: we want to kill xbt_dict at some point")
+    XBT_PUBLIC xbt_dict_t sg_host_get_properties(const_sg_host_t host); // deprecated v3.39
+XBT_ATTRIB_DEPRECATED_v339("Please use sg_host_get_route_links instead: we want to kill xbt_dynar at some point")
+    XBT_PUBLIC void sg_host_get_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links);
+XBT_ATTRIB_DEPRECATED_v339("Please use sg_host_get_actors instead: we want to kill xbt_dynar at some point") XBT_PUBLIC
+    void sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto);
+#endif
+
+/** @brief Returns a NULL-terminated list of the existing properties' names.
  *
- * @param host a host
- * @return a dict containing the properties
+ * if @c size is not null, the properties count is also stored in it
+ * Only free the vector after use, do not mess with the names stored in it as they are the original strings, not copies.
  */
-XBT_PUBLIC xbt_dict_t sg_host_get_properties(const_sg_host_t host);
+XBT_PUBLIC const char** sg_host_get_property_names(const_sg_host_t host, int* size);
 
 /** @ingroup m_host_management
  * @brief Returns the value of a given host property
@@ -102,8 +110,7 @@ XBT_PUBLIC xbt_dict_t sg_host_get_properties(const_sg_host_t host);
  */
 XBT_PUBLIC const char* sg_host_get_property_value(const_sg_host_t host, const char* name);
 
-/** @ingroup m_host_management
- * @brief Change the value of a given host property
+/** @brief Change the value of a given host property
  *
  * @param host a host
  * @param name a property name
@@ -111,12 +118,24 @@ XBT_PUBLIC const char* sg_host_get_property_value(const_sg_host_t host, const ch
  */
 XBT_PUBLIC void sg_host_set_property_value(sg_host_t host, const char* name, const char* value);
 
-XBT_PUBLIC void sg_host_get_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links);
+/** @brief Returns a NULL-terminated list of links.
+ *
+ * if @c size is not null, the properties count is also stored in it
+ *
+ * Only free the vector after use, do not mess with the data stored in it as they are the original ones, not copies.
+ */
+XBT_PUBLIC const_sg_link_t* sg_host_get_route_links(const_sg_host_t from, const_sg_host_t to, int* size);
 XBT_PUBLIC double sg_host_get_route_latency(const_sg_host_t from, const_sg_host_t to);
 XBT_PUBLIC double sg_host_get_route_bandwidth(const_sg_host_t from, const_sg_host_t to);
 XBT_PUBLIC void sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount);
 
-XBT_PUBLIC void sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto);
+/** @brief Returns a NULL-terminated list of actors.
+ *
+ * if @c size is not null, the properties count is also stored in it
+ *
+ * Only free the vector after use, do not mess with the data stored in it as they are the original ones, not copies.
+ */
+XBT_PUBLIC const_sg_actor_t* sg_host_get_actors(const_sg_host_t host, int* size);
 SG_END_DECL
 
 #endif /* SIMGRID_HOST_H_ */

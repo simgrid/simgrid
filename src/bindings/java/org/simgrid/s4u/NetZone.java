@@ -23,11 +23,6 @@ public class NetZone {
     return (cPtr == 0) ? null : new NetZone(cPtr);
   }
 
-  public NetZone set_parent(NetZone parent) {
-    simgridJNI.NetZone_set_parent(swigCPtr, this, NetZone.getCPtr(parent), parent);
-    return this;
-  }
-
   public NetZone[] get_children() { return simgridJNI.NetZone_get_children(swigCPtr, this); }
 
   public Host[] get_all_hosts() { return simgridJNI.NetZone_get_all_hosts(swigCPtr, this); }

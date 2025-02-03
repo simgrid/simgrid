@@ -20,6 +20,7 @@
 #include "src/simgrid/module.hpp"
 #include "src/simgrid/sg_config.hpp"
 #include "xbt/asserts.hpp"
+#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_platform, kernel, "Kernel platform-related information");
 
@@ -37,32 +38,11 @@ xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routi
 NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
 {
   auto* engine = s4u::Engine::get_instance();
-  /* workaroud: first netzoneImpl will be the root netzone.
-   * Without globals and with current model description init functions (see module.hpp), we need
-   * the root netzone to exist when creating the models.
-   * This is usually done at sg_platf.cpp, during XML parsing */
-  if (not engine->get_netzone_root()) {
-    engine->set_netzone_root(&piface_);
-    /* root netzone set, initialize models */
-    simgrid::s4u::Engine::on_platform_creation();
-
-    /* Initialize the models. That must be done after we got all config, and before we need the models.
-     * That is, after the last <config> tag, if any, and before the first of cluster|peer|zone|trace|trace_cb
-     *
-     * I'm not sure for <trace> and <trace_cb>, there may be a bug here
-     * (FIXME: check it out by creating a file beginning with one of these tags)
-     * but cluster and peer come down to zone creations, so putting this verification here is correct.
-     */
-    simgrid_host_models().init_from_flag_value();
-    simgrid_vm_model_init_HL13();
-  }
 
   xbt_enforce(nullptr == engine->netpoint_by_name_or_null(get_name()),
              "Refusing to create a second NetZone called '%s'.", get_cname());
   netpoint_ = new NetPoint(name_, NetPoint::Type::NetZone);
   XBT_DEBUG("NetZone '%s' created with the id '%lu'", get_cname(), netpoint_->id());
-  _sg_cfg_init_status = 2; /* HACK: direct access to the global controlling the level of configuration to prevent
-                            * any further config now that we created some real content */
   simgrid::s4u::NetZone::on_creation(piface_); // notify the signal
 }
 
@@ -726,7 +706,7 @@ void NetZoneImpl::seal()
   s4u::NetZone::on_seal(piface_);
 }
 
-void NetZoneImpl::set_parent(NetZoneImpl* parent)
+NetZoneImpl* NetZoneImpl::set_parent(NetZoneImpl* parent)
 {
   xbt_enforce(not sealed_, "Impossible to set parent to an already sealed NetZone(%s)", this->get_cname());
   parent_ = parent;
@@ -741,6 +721,7 @@ void NetZoneImpl::set_parent(NetZoneImpl* parent)
     set_disk_model(parent->get_disk_model());
     set_host_model(parent->get_host_model());
   }
+  return this;
 }
 
 void NetZoneImpl::set_network_model(std::shared_ptr<resource::NetworkModel> netmodel)

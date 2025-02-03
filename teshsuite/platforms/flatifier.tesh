@@ -3,7 +3,7 @@ $ ${bindir:=.}/flatifier ./one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="AS0" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="bob0.hamburger.edu" speed="1e+09"/>
 >   <host id="bob2.hamburger.edu" speed="1e+09"/>
 >   <host id="bob3.hamburger.edu" speed="1e+09"/>
@@ -134,7 +134,7 @@ $ ${bindir:=.}/flatifier ./one_cluster_multicore.xml "--log=root.fmt:[%10.6r]%e[
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="AS0" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="bob0.hamburger.edu" speed="1e+09" core="6"/>
 >   <host id="bob2.hamburger.edu" speed="1e+09" core="6"/>
 >   <host id="bob3.hamburger.edu" speed="1e+09" core="6"/>
@@ -264,7 +264,7 @@ $ ${bindir:=.}/flatifier ./host_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%a@
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="AS0" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="alice" speed="1e+09"/>
 >   <host id="bob" speed="1e+09"/>
 >   <host id="carol" speed="5e+08"/>
@@ -297,7 +297,7 @@ $ ${bindir:=.}/flatifier ./link_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%a@
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="AS0" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="bob" speed="5e+08"/>
 >   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
 >   <link id="link1" bandwidth="1.25e+08" latency="5e-05"/>
@@ -314,7 +314,7 @@ $ ${bindir:=.}/flatifier ./three_hosts_non_symmetric_route.xml "--log=root.fmt:[
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="AS0" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="alice" speed="5e+08"/>
 >   <host id="bob" speed="1e+09"/>
 >   <host id="trudy" speed="2.5e+08"/>
@@ -356,7 +356,7 @@ $ ${bindir:=.}/flatifier ./two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="AS0" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="alice0.crepe.fr" speed="1e+09"/>
 >   <host id="alice1.crepe.fr" speed="1e+09"/>
 >   <host id="bob0.hamburger.edu" speed="1e+09"/>
@@ -484,7 +484,7 @@ $ ${bindir:=.}/flatifier ./two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e[%i
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="AS0" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="alice" speed="5e+08"/>
 >   <host id="bob" speed="1e+09"/>
 >   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
@@ -510,7 +510,7 @@ $ ${bindir:=.}/flatifier ./two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e[%i:
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="AS0" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="alice" speed="5e+08"/>
 >   <host id="bob" speed="1e+09"/>
 >   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
@@ -534,7 +534,7 @@ $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/bypassZoneRoute.xml "--
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="AS0" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="1" speed="1e+09"/>
 >   <host id="2" speed="1e+09"/>
 >   <host id="3" speed="1e+09"/>
@@ -658,7 +658,7 @@ $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/cluster_torus.xml "--lo
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="world" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="node-0.simgrid.org" speed="1e+09"/>
 >   <host id="node-1.simgrid.org" speed="1e+09"/>
 >   <host id="node-10.simgrid.org" speed="1e+09"/>
@@ -1195,7 +1195,7 @@ $ ${bindir:=.}/flatifier ./cluster_dragonfly_noncontiguous_rad.xml "--log=root.f
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="world" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="node-0.simgrid.org" speed="1e+09"/>
 >   <host id="node-1002.simgrid.org" speed="1e+09"/>
 >   <host id="node-1003.simgrid.org" speed="1e+09"/>
@@ -1284,7 +1284,7 @@ $ ${bindir:=.}/flatifier ./cluster_fat_tree_noncontiguous_rad.xml "--log=root.fm
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="world" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="node-100.simgrid.org" speed="1e+09"/>
 >   <host id="node-101.simgrid.org" speed="1e+09"/>
 >   <host id="node-119.simgrid.org" speed="1e+09"/>
@@ -1381,7 +1381,7 @@ $ ${bindir:=.}/flatifier ./cluster_torus_noncontiguous_rad.xml "--log=root.fmt:[
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="world" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="node-0.simgrid.org" speed="1e+09"/>
 >   <host id="node-1.simgrid.org" speed="1e+09"/>
 >   <host id="node-102.simgrid.org" speed="1e+09"/>
@@ -1474,7 +1474,7 @@ $ ${bindir:=.}/flatifier ./two_hosts_one_link_splitduplex.xml "--log=root.fmt:[%
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="AS0" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="alice" speed="5e+08"/>
 >   <host id="bob" speed="1e+09"/>
 >   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>

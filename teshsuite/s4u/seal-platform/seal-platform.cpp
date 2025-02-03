@@ -56,9 +56,9 @@ public:
 };
 
 /*************************************************************************************************/
-static sg4::NetZone* create_zone(const sg4::NetZone* root, const std::string& id)
+static sg4::NetZone* create_zone(sg4::NetZone* root, const std::string& id)
 {
-  auto* zone = sg4::create_star_zone(id)->set_parent(root);
+  auto* zone           = root->add_netzone_star(id);
   constexpr int n_host = 2;
 
   zone->set_gateway(zone->create_router("router" + id));
@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
 
   /* create platform: intentionally do not do the seal of objects */
-  auto* root  = sg4::create_full_zone("root");
+  auto* root       = e.get_netzone_root();
   auto* zoneA = create_zone(root, "A");
   auto* zoneB = create_zone(root, "B");
   const auto* link = root->create_link("root-link", 1e10);

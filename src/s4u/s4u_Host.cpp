@@ -13,6 +13,7 @@
 #include <simgrid/s4u/VirtualMachine.hpp>
 #include <xbt/parse_units.hpp>
 
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/simcall.hpp"
 #include "src/kernel/resource/HostImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
@@ -618,6 +619,26 @@ xbt_dict_t sg_host_get_properties(const_sg_host_t host)
   }
   return as_dict;
 }
+const char** sg_host_get_property_names(const_sg_host_t host, int* size)
+{
+  const std::unordered_map<std::string, std::string>* props = host->get_properties();
+
+  if (props == nullptr) {
+    if (size)
+      *size = 0;
+    return nullptr;
+  }
+
+  const char** res = (const char**)xbt_malloc(sizeof(char*) * (props->size() + 1));
+  if (size)
+    *size = props->size();
+  int i = 0;
+  for (auto const& [key, _] : *props)
+    res[i++] = key.c_str();
+  res[i] = nullptr;
+
+  return res;
+}
 
 /** @ingroup m_host_management
  * @brief Returns the value of a given host property
@@ -650,6 +671,22 @@ void sg_host_get_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t lin
   for (auto const& link : vlinks)
     xbt_dynar_push(links, &link);
 }
+const_sg_link_t* sg_host_get_route_links(const_sg_host_t from, const_sg_host_t to, int* size)
+{
+  std::vector<simgrid::s4u::Link*> vlinks;
+  from->route_to(to, vlinks, nullptr);
+
+  const_sg_link_t* res = (const_sg_link_t*)xbt_malloc(sizeof(const_sg_link_t) * (vlinks.size() + 1));
+  if (size)
+    *size = vlinks.size();
+  int i = 0;
+  for (auto const& link : vlinks)
+    res[i++] = link;
+  res[i] = nullptr;
+
+  return res;
+}
+
 /**
  * @brief Find the latency of the route between two hosts
  *
@@ -688,16 +725,25 @@ void sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
   simgrid::s4u::Comm::sendto(from, to, byte_amount);
 }
 
-/** @brief Return the list of actors attached to a host.
- *
- * @param host a host
- * @param whereto a dynar in which we should push actors living on that host
- */
 void sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto)
 {
   auto const actors = host->get_all_actors();
   for (auto const& actor : actors)
     xbt_dynar_push(whereto, &actor);
+}
+const_sg_actor_t* sg_host_get_actors(const_sg_host_t host, int* size)
+{
+  std::vector<simgrid::s4u::ActorPtr> actors = host->get_all_actors();
+
+  const_sg_actor_t* res = (const_sg_actor_t*)xbt_malloc(sizeof(const_sg_link_t) * (actors.size() + 1));
+  if (size)
+    *size = actors.size();
+  int i = 0;
+  for (auto actor : actors)
+    res[i++] = actor.get();
+  res[i] = nullptr;
+
+  return res;
 }
 
 sg_host_t sg_host_self()

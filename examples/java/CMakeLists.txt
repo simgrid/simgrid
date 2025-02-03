@@ -1,4 +1,4 @@
-if(enable_java)
+if(SIMGRID_HAVE_JAVA)
   add_custom_target(java-all COMMENT "Building all Java examples...")
   add_dependencies(tests java-all)
   add_dependencies(java-all simgrid_jar)
@@ -16,8 +16,10 @@ foreach (example activityset_awaitall activityset_awaitallfor activityset_awaita
                  actor_create actor_daemon actor_exiting actor_join actor_kill
                  actor_lifetime actor_migrate actor_suspend actor_yield
                  cloud_migration cloud_simple #cloud_capping
-                 dag_comm dag_failure dag_from_dax_simple dag_from_dot_simple dag_io dag_tuto # dag_from_dax #dag_scheduling
-                 exec_async exec_basic exec_dependent
+                 dag_comm dag_failure dag_from_dax_simple dag_from_dax dag_from_dot_simple dag_from_dot dag_from_json_simple dag_io dag_scheduling dag_simple dag_tuto
+                 exec_async exec_awaitfor exec_basic exec_dependent exec_threads exec_ptask exec_ptask_multicore exec_ptask_multicore_latency exec_remote exec_suspend exec_unassigned
+#                 exec_cpu_factors exec_failure    
+#                 exec_cpu_nonlinear exec_dvfs  
                  comm_await comm_awaituntil comm_dependent comm_failure comm_host2host comm_pingpong comm_ready comm_suspend comm_throttling
                  io_async io_disk_raw io_priority # io_degradation 
                  mess_await
@@ -33,7 +35,7 @@ foreach (example activityset_awaitall activityset_awaitallfor activityset_awaita
     set(_${example}_teshfile ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
   endif()
 
-  if(enable_java AND (NOT DEFINED _${example}_disable))
+  if(SIMGRID_HAVE_JAVA AND (NOT DEFINED _${example}_disable))
     add_jar(java-${example} SOURCES ${_${example}_sources}
             INCLUDE_JARS simgrid_jar
             ENTRY_POINT ${example}
@@ -51,14 +53,15 @@ set(examples_src  ${examples_src}                                               
 set(tesh_files    ${tesh_files}                                                                            PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor_lifetime/actor_lifetime_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor_create/actor_create_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag_scheduling/Montage_25.xml
                   PARENT_SCOPE)
-set(txt_files     ${txt_files}    #${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dax/simple-dax-with-cycle.xml
-                                  #${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dax/smalldax.xml
+set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dax/simple_dax_with_cycle.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dax/smalldax.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dax_simple/dag.xml
-                                  #${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dot/dag.dot
-                                  #${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dot/dag-with-cycle.dot
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dot/dag.dot
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dot/dag_with_cycle.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dot_simple/dag.dot
-                                  #${CMAKE_CURRENT_SOURCE_DIR}/dag_from_json_simple/dag.json
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag_from_json_simple/dag.json
                                   #${CMAKE_CURRENT_SOURCE_DIR}/replay_comm/s4u-replay-comm-split-p0.txt
                                   #${CMAKE_CURRENT_SOURCE_DIR}/replay_comm/s4u-replay-comm-split-p1.txt
                                   #${CMAKE_CURRENT_SOURCE_DIR}/replay_comm/s4u-replay-comm.txt

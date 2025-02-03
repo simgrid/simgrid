@@ -11,11 +11,32 @@ S4U:
 sthread:
  - Implement pthread_exit() and pthread_cond_timedwait()
 
+Platform API:
+ - The root netzone of every platform uses the full routing. It's created by default.
+   The ability to change the root zone does not increase the expressivity in any way, but it greatly complicates our code.
+ - Deprecate the create_*_zone() functions, add NetZone::add_netzone_*()
+   Methods are better than functions.
+ - Deprecate NetZone::set_parent(): it's useless with the new API.
+
 Python:
  - Add many missing bindings [Sergey Teryoshkin].
+ - Add MPI bindings [Jean-Noël Quintin].
 
-Chaos Monkey plugin:
- - Allow to restart the actors by pid at a given time.
+Java:
+ - Reintroduce the bindings, on top of S4U.
+
+Plugins:
+ - Chaos Monkey: Allow to restart the actors by pid at a given time.
+
+C API:
+ - Deprecate some functions (we want to kill xbt_dict and xbt_dynar at some point)
+   - sg_actor_get_properties() -> sg_actor_get_property_names()
+   - sg_host_get_properties() -> sg_host_get_property_names()
+   - sg_zone_get_properties() -> sg_zone_get_property_names()
+   - sg_zone_get_sons() -> sg_zone_get_childs()
+   - sg_zone_get_hosts() -> sg_zone_get_all_hosts()
+   - sg_actor_attach() now takes only 2 parameters (the props are removed)
+ - Introduce sg_zone_get_property_names()
 
 ----------------------------------------------------------------------------
 

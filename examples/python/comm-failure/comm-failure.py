@@ -60,7 +60,7 @@ def link_killer(link_name: str) -> None:
 
 def main():
     e = Engine(sys.argv)
-    zone: NetZone = NetZone.create_full_zone("AS0")
+    zone: NetZone = e.netzone_root
     host1 = zone.create_host("Host1", "1f")
     host2 = zone.create_host("Host2", "1f")
     host3 = zone.create_host("Host3", "1f")

@@ -10,19 +10,11 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/NetZone.hpp"
-#include "src/kernel/resource/LinkImpl.hpp"
-
-TEST_CASE("kernel::routing::FloydZone: Creating Zone", "")
-{
-  simgrid::s4u::Engine e("test");
-
-  REQUIRE(simgrid::s4u::create_floyd_zone("test"));
-}
 
 TEST_CASE("kernel::routing::FloydZone: mix new routes and hosts", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone = simgrid::s4u::create_floyd_zone("test");
+  auto* zone = e.get_netzone_root()->add_netzone_floyd("test");
 
   const simgrid::s4u::Host* nic  = zone->create_host("nic", 1e9);
   const simgrid::s4u::Link* link = zone->create_link("my_link", 1e6);

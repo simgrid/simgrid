@@ -86,7 +86,7 @@ static void david()
 static void bob()
 {
   /* this host also tests the properties of the AS*/
-  const sg4::NetZone* root = sg4::Engine::get_instance()->get_netzone_root();
+  const sg4::NetZone* root = sg4::Engine::get_instance()->netzone_by_name_or_null("AS0");
   XBT_INFO("== Print the properties of the root zone");
   XBT_INFO("   Zone property: filename -> %s", root->get_property("filename"));
   XBT_INFO("   Zone property: date -> %s", root->get_property("date"));

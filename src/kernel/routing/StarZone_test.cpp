@@ -12,17 +12,10 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 
-TEST_CASE("kernel::routing::StarZone: Creating Zone", "[creation]")
-{
-  simgrid::s4u::Engine e("test");
-
-  REQUIRE(simgrid::s4u::create_star_zone("test"));
-}
-
 TEST_CASE("kernel::routing::StarZone: Create links: exceptions", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone = simgrid::s4u::create_star_zone("test");
+  auto* zone = e.get_netzone_root()->add_netzone_star("test");
   SECTION("create_link: invalid bandwidth")
   {
     REQUIRE_THROWS_AS(zone->create_link("link", "speed"), std::invalid_argument);
@@ -55,6 +48,7 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (hosts): exception", "")
   {
     REQUIRE_THROWS_AS(zone->add_route(netpoint1, netpoint2, nullptr, nullptr, {}, false), std::invalid_argument);
   }
+  delete zone;
 }
 
 TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): exception", "")
@@ -156,6 +150,7 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (hosts): valid", "")
   }
 
   SECTION("Source == destination") { zone->add_route(netpoint, netpoint, nullptr, nullptr, {}, false); }
+  delete zone;
 }
 
 TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): valid", "")
@@ -168,12 +163,14 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): valid", "")
   SECTION("src: is a netzone, src_gw: is a router") { zone->add_route(netpoint, nullptr, gw, nullptr, {}, true); }
 
   SECTION("dst: is a netzone, dst_gw: is a router") { zone->add_route(nullptr, netpoint, nullptr, gw, {}, false); }
+  delete zone;
 }
 
 TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone = new simgrid::kernel::routing::StarZone("test");
+  auto* zone =
+      static_cast<simgrid::kernel::routing::StarZone*>(e.get_netzone_root()->add_netzone_star("test")->get_pimpl());
 
   const auto* host1 = zone->create_host("netpoint1", {100});
   const auto* host2 = zone->create_host("netpoint2", {100});
@@ -246,7 +243,8 @@ TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
 TEST_CASE("kernel::routing::StarZone: Get routes (netzones)", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone = new simgrid::kernel::routing::StarZone("test");
+  auto* zone =
+      static_cast<simgrid::kernel::routing::StarZone*>(e.get_netzone_root()->add_netzone_star("test")->get_pimpl());
 
   auto* subzone1 = new simgrid::kernel::routing::StarZone("subzone1");
   subzone1->set_parent(zone);
@@ -281,7 +279,7 @@ TEST_CASE("kernel::routing::StarZone: Get routes (netzones)", "")
 TEST_CASE("kernel::routing::StarZone: mix new routes and hosts", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone = simgrid::s4u::create_star_zone("test");
+  auto* zone = e.get_netzone_root()->add_netzone_star("test");
 
   const simgrid::s4u::Link* link = zone->create_link("my_link", 1e6)->seal();
   for (int i = 0; i < 10; i++) {

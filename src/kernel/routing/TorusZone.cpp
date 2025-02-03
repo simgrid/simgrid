@@ -199,17 +199,12 @@ NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const
 
   auto* zone = new kernel::routing::TorusZone(name);
   zone->set_topology(dimensions);
-  if (parent)
-    zone->set_parent(parent->get_impl());
+  zone->set_parent(parent->get_impl());
 
   zone->set_link_characteristics(bandwidth, latency, sharing_policy);
 
   for (int i = 0; i < tot_elements; i++) {
-    kernel::routing::NetPoint* netpoint;
-    Link* limiter;
-    Link* loopback;
-    zone->fill_leaf_from_cb(i, dimensions, set_callbacks, &netpoint, &loopback, &limiter);
-
+    auto [netpoint, loopback, limiter] = zone->fill_leaf_from_cb(i, dimensions, set_callbacks);
     zone->create_torus_links(netpoint->id(), i, zone->node_pos_with_loopback_limiter(netpoint->id()));
   }
 

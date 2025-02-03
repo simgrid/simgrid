@@ -29,7 +29,7 @@ class detached extends Actor {
 /* This actor simply waits for its activity completion after starting it.
  * That's exactly equivalent to synchronous execution. */
 class waiter extends Actor {
-  public void run()
+  public void run() throws SimgridException
   {
     double computation_amount = get_host().get_speed();
     Engine.info("Execute %g flops, should take 1 second.", computation_amount);

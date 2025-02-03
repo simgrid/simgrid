@@ -175,14 +175,24 @@ public abstract class Actor {
   }
   public void parallel_execute(Host[] hosts, double[] flops_amounts, double[] bytes_amounts)
   {
-    Engine.die("TODO: parallel_execute not implemented");
-    // simgridJNI.Actor_parallel_execute(swigCPtr, this, hosts, flops_amounts, bytes_amounts);
+    long[] jhosts = new long[hosts.length];
+    for (int i = 0; i < hosts.length; i++)
+      jhosts[i] = Host.getCPtr(hosts[i]);
+    simgridJNI.Actor_parallel_execute(swigCPtr, this, jhosts, flops_amounts, bytes_amounts);
   }
   /** Only call this on the current thread (on `this`) */
   public Exec exec_init(double flops_amounts)
   {
-    return new Exec(simgridJNI.Actor_exec_init(swigCPtr, this, flops_amounts), true);
+    return new Exec(simgridJNI.Actor_exec_seq_init(swigCPtr, this, flops_amounts), true);
   }
+  public Exec exec_init(Host[] hosts, double[] flops_amounts, double[] bytes_amounts)
+  {
+    long[] jhosts = new long[hosts.length];
+    for (int i = 0; i < hosts.length; i++)
+      jhosts[i] = Host.getCPtr(hosts[i]);
+    return new Exec(simgridJNI.Actor_exec_par_init(swigCPtr, this, jhosts, flops_amounts, bytes_amounts), true);
+  }
+
   public Exec exec_async(double flops_amounts)
   {
     return new Exec(simgridJNI.Actor_exec_async(swigCPtr, this, flops_amounts), true);

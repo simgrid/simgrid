@@ -248,7 +248,7 @@ public:
   virtual void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                          const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical);
   /** @brief Set parent of this Netzone */
-  void set_parent(NetZoneImpl* parent);
+  NetZoneImpl* set_parent(NetZoneImpl* parent);
   /** @brief Set network model for this Netzone */
   void set_network_model(std::shared_ptr<resource::NetworkModel> netmodel);
   void set_cpu_vm_model(std::shared_ptr<resource::CpuModel> cpu_model);

@@ -246,9 +246,12 @@ static void sg_platf_new_cluster_hierarchical(const simgrid::kernel::routing::Cl
 /** @brief Create regular Cluster */
 static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationArgs* cluster)
 {
-  auto* zone = simgrid::s4u::create_star_zone(cluster->id);
-  if (const auto* parent = current_routing ? current_routing->get_iface() : nullptr)
-    zone->set_parent(parent);
+  simgrid::s4u::NetZone* parent;
+  if (current_routing != nullptr)
+    parent = current_routing->get_iface();
+  else
+    parent = simgrid::s4u::Engine::get_instance()->get_netzone_root();
+  simgrid::s4u::NetZone* zone = parent->add_netzone_star(cluster->id);
 
   /* set properties */
   for (auto const& [key, value] : cluster->properties)
@@ -514,30 +517,34 @@ sg_platf_create_zone(const simgrid::kernel::routing::ZoneCreationArgs* zone)
   /* search the routing model */
   const simgrid::s4u::NetZone* new_zone = nullptr;
 
+  XBT_DEBUG("Create zone name:%s routing:%s", zone->id.c_str(), zone->routing.c_str());
+  simgrid::s4u::NetZone* parent;
+  if (current_routing != nullptr)
+    parent = current_routing->get_iface();
+  else
+    parent = simgrid::s4u::Engine::get_instance()->get_netzone_root();
+
   if (strcasecmp(zone->routing.c_str(), "Cluster") == 0) {
-    new_zone = simgrid::s4u::create_star_zone(zone->id);
+    new_zone = parent->add_netzone_star(zone->id);
   } else if (strcasecmp(zone->routing.c_str(), "Dijkstra") == 0) {
-    new_zone = simgrid::s4u::create_dijkstra_zone(zone->id, false);
+    new_zone = parent->add_netzone_dijkstra(zone->id, false);
   } else if (strcasecmp(zone->routing.c_str(), "DijkstraCache") == 0) {
-    new_zone = simgrid::s4u::create_dijkstra_zone(zone->id, true);
+    new_zone = parent->add_netzone_dijkstra(zone->id, true);
   } else if (strcasecmp(zone->routing.c_str(), "Floyd") == 0) {
-    new_zone = simgrid::s4u::create_floyd_zone(zone->id);
+    new_zone = parent->add_netzone_floyd(zone->id);
   } else if (strcasecmp(zone->routing.c_str(), "Full") == 0) {
-    new_zone = simgrid::s4u::create_full_zone(zone->id);
+    new_zone = parent->add_netzone_full(zone->id);
   } else if (strcasecmp(zone->routing.c_str(), "None") == 0) {
-    new_zone = simgrid::s4u::create_empty_zone(zone->id);
+    new_zone = parent->add_netzone_empty(zone->id);
   } else if (strcasecmp(zone->routing.c_str(), "Vivaldi") == 0) {
-    new_zone = simgrid::s4u::create_vivaldi_zone(zone->id);
+    new_zone = parent->add_netzone_vivaldi(zone->id);
   } else if (strcasecmp(zone->routing.c_str(), "Wifi") == 0) {
-    new_zone = simgrid::s4u::create_wifi_zone(zone->id);
+    new_zone = parent->add_netzone_wifi(zone->id);
   } else {
     xbt_die("Not a valid model!");
   }
 
-  simgrid::kernel::routing::NetZoneImpl* new_zone_impl = new_zone->get_impl();
-  new_zone_impl->set_parent(current_routing);
-
-  return new_zone_impl;
+  return new_zone->get_impl();
 }
 
 /**

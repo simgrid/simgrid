@@ -36,11 +36,11 @@ static double smpi_cost_cb(SmpiOperation op, size_t /*size*/, const sg4::Host* s
  *
  * Sets specific cost for MPI_Send and MPI_Recv operations
  */
-extern "C" void load_platform(const sg4::Engine& e);
-void load_platform(const sg4::Engine& /*e*/)
+extern "C" void load_platform(sg4::Engine& e);
+void load_platform(sg4::Engine& e)
 {
   /* create a simple 2 host platform inspired from small_platform.xml */
-  auto* root = sg4::create_full_zone("zone0");
+  auto* root = e.get_netzone_root();
 
   const sg4::Host* tremblay = root->create_host("Tremblay", "98.095Mf")->seal();
   const sg4::Host* jupiter  = root->create_host("Jupiter", "76.296Mf")->seal();

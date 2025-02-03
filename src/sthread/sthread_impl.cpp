@@ -67,9 +67,11 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
                                        "cat",
                                        "dirname",
                                        "gdb",
+                                       "ls",
                                        "make",
                                        "md5sum",
                                        "rm",
+                                       "sed",
                                        "simgrid-mc",
                                        "wc"};
   for (int i = 0; envp[i] != nullptr; i++) {
@@ -96,7 +98,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
   }
 
   sg4::Engine e(&argc, argv);
-  auto* zone = sg4::create_full_zone("world");
+  auto* zone = e.get_netzone_root();
   lilibeth   = zone->create_host("Lilibeth", 1e15);
   zone->seal();
 

@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
 1 0.5
 )";
   /* simple platform containing 1 host and 2 disk */
-  auto* zone = sg4::create_full_zone("red");
+  auto* zone = e.get_netzone_root();
   zone->create_host("erin", 1e6)
       ->set_core_count(2)
       ->set_state_profile(simgrid::kernel::profile::ProfileBuilder::from_string("erin_state", erin_state_file, 0))

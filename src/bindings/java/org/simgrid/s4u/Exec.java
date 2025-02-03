@@ -98,7 +98,8 @@ public class Exec extends Activity {
 
   public boolean is_assigned() { return simgridJNI.Exec_is_assigned(getCPtr(), this); }
 
-  public Exec await() {
+  public Exec await() throws TimeoutException, HostFailureException
+  {
     await_for(-1);
     return this;
   }
@@ -159,7 +160,7 @@ public class Exec extends Activity {
     return this;
   }
 
-  public Exec await_for(double timeout)
+  public Exec await_for(double timeout) throws TimeoutException, HostFailureException
   {
     simgridJNI.Exec_await_for(getCPtr(), this, timeout);
     return this;

@@ -18,10 +18,9 @@ namespace sg4 = simgrid::s4u;
  * @param radicals IDs of nodes inside the cabinet
  * @return netzone the created netzone
  */
-static sg4::NetZone*
-create_cabinet(const sg4::NetZone* root, const std::string& name, const std::vector<int>& radicals)
+static sg4::NetZone* create_cabinet(sg4::NetZone* root, const std::string& name, const std::vector<int>& radicals)
 {
-  auto* cluster      = sg4::create_star_zone(name)->set_parent(root);
+  auto* cluster      = root->add_netzone_star(name);
   std::string prefix = "griffon-";
   std::string suffix = ".nancy.grid5000.fr";
 
@@ -49,8 +48,8 @@ create_cabinet(const sg4::NetZone* root, const std::string& name, const std::vec
 }
 
 /** @brief Programmatic version of griffon.xml */
-extern "C" void load_platform(const sg4::Engine& e);
-void load_platform(const sg4::Engine& /*e*/)
+extern "C" void load_platform(sg4::Engine& e);
+void load_platform(sg4::Engine& e)
 {
   /**
    * C++ version of griffon.xml
@@ -71,7 +70,7 @@ void load_platform(const sg4::Engine& /*e*/)
    * host1     ...      hostN      host1      ...      hostM      host1      ...       hostQ
    */
 
-  auto* root = sg4::create_star_zone("AS_griffon");
+  auto* root = e.get_netzone_root()->add_netzone_star("AS_griffon");
 
   /* create top link */
   const sg4::Link* l_bb = root->create_link("backbone", "1.25GBps")->set_latency("24us")->seal();

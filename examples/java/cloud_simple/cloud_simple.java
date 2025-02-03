@@ -211,6 +211,7 @@ public class cloud_simple {
   public static void main(String[] args)
   {
     Engine e = new Engine(args);
+    e.plugin_vm_live_migration_init();
     e.load_platform(args[0]);
 
     e.add_actor("main", e.host_by_name("Fafard"), new Main());

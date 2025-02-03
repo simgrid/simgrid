@@ -109,7 +109,7 @@ def create_sata_disk(host: Host, disk_name: str):
 if __name__ == '__main__':
     e = Engine(sys.argv)
     # simple platform containing 1 host and 2 disk
-    zone = NetZone.create_full_zone("bob_zone")
+    zone = e.netzone_root.add_netzone_full("bob_zone")
     bob = zone.create_host("bob", 1e6)
     create_ssd_disk(bob, "Edel (SSD)")
     create_sata_disk(bob, "Griffon (SATA II)")

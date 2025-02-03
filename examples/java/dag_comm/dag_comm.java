@@ -11,8 +11,8 @@ public class dag_comm {
     Engine e = new Engine(args);
     e.load_platform(args[0]);
 
-    var tremblay = e.host_by_name("Tremblay");
-    var jupiter  = e.host_by_name("Jupiter");
+    Host tremblay = e.host_by_name("Tremblay");
+    Host jupiter  = e.host_by_name("Jupiter");
 
     // Display the details on vetoed activities
     Exec.on_veto_cb(new CallbackExec() {

@@ -23,11 +23,12 @@ option(enable_debug                 "Turn this off to remove all debug messages 
 option(enable_documentation "Whether to produce documentation" off)
 
 option(enable_ns3            "Whether ns-3 model is activated." off)
-option(enable_java           "Whether the Java bindings are activated." off)
-option(enable_msg            "Java was removed from SimGrid v3.33. Please do not enable it here." off)
+option(enable_msg            "MSG was removed from SimGrid v3.33. Please do not enable it here." off)
+# Python and Java are not here because they are auto-sensed unless -Denable_<lang>=OFF is provided
+# The option() macro takes a boolean and does not allow for an "unset" or "auto" value
 mark_as_advanced(enable_msg)
 if (enable_msg)
-  message(FATAL_ERROR "MSG was removed from SimGrid v3.33. Please stick to v3.32 or earlier if you need Java.")
+  message(FATAL_ERROR "MSG was removed from SimGrid v3.33. Please stick to v3.32 or earlier if you need MSG.")
 endif()
 option(enable_lib_in_jar     "Whether the native libraries are bundled in a Java jar file" on)
 

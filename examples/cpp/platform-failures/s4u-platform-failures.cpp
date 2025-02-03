@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
   e.load_deployment(argv[2]);
 
   // Add a new host programatically, and attach a state profile to it
-  auto* root     = e.get_netzone_root();
+  auto* root     = e.netzone_by_name_or_null("AS0");
   auto* lilibeth = root->create_host("Lilibeth", 1e15);
   auto link      = e.link_by_name("10");
   root->add_route(e.host_by_name("Tremblay"), lilibeth, {link});

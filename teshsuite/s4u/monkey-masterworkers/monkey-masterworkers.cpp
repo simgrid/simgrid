@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
 
-  auto* rootzone = sg4::create_full_zone("root");
+  auto* rootzone = e.get_netzone_root();
   std::vector<sg4::Host*> worker_hosts;
 
   int todo = cfg_task_count; // remaining amount of tasks to execute, a shared variable

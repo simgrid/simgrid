@@ -146,43 +146,46 @@ $ tail -n +3 simgrid.trace
 > %       Container string
 > %       Value string
 > %EndEventDef
-> 0 1 0 HOST
-> 6 0.000000 1 1 0 "host1"
-> 2 2 1 HOST_STATE
-> 5 3 2 receive "1 0 0"
-> 5 4 2 send "0 0 1"
-> 5 5 2 execute "0 1 1"
-> 6 0.000000 2 1 0 "host2"
-> 6 0.000000 3 1 0 "host3"
-> 6 0.000000 4 1 0 "host4"
-> 0 6 0 LINK
-> 6 0.000000 5 6 0 "link1"
-> 6 0.000000 6 6 0 "link2"
-> 6 0.000000 7 6 0 "link3"
-> 6 0.000000 8 6 0 "link4"
-> 4 7 0 6 1 0-LINK6-HOST1
-> 4 8 0 1 6 0-HOST1-LINK6
-> 4 9 0 6 6 0-LINK6-LINK6
-> 15 0.000000 7 0 topology 5 0
-> 16 0.000000 7 0 topology 2 0
-> 15 0.000000 7 0 topology 6 1
-> 16 0.000000 7 0 topology 3 1
-> 15 0.000000 7 0 topology 7 2
-> 16 0.000000 7 0 topology 3 2
-> 15 0.000000 7 0 topology 8 3
-> 16 0.000000 7 0 topology 4 3
-> 15 0.000000 8 0 topology 1 4
-> 16 0.000000 8 0 topology 5 4
-> 15 0.000000 8 0 topology 1 5
-> 16 0.000000 8 0 topology 6 5
-> 15 0.000000 8 0 topology 2 6
-> 16 0.000000 8 0 topology 7 6
-> 15 0.000000 8 0 topology 3 7
-> 16 0.000000 8 0 topology 8 7
-> 15 0.000000 9 0 topology 6 8
-> 16 0.000000 9 0 topology 8 8
-> 15 0.000000 9 0 topology 7 9
-> 16 0.000000 9 0 topology 8 9
+> 0 1 0 L1
+> 6 0.000000 1 1 0 "AS0"
+> 0 2 1 HOST
+> 6 0.000000 2 2 1 "host1"
+> 2 3 2 HOST_STATE
+> 5 4 3 receive "1 0 0"
+> 5 5 3 send "0 0 1"
+> 5 6 3 execute "0 1 1"
+> 6 0.000000 3 2 1 "host2"
+> 6 0.000000 4 2 1 "host3"
+> 6 0.000000 5 2 1 "host4"
+> 0 7 1 LINK
+> 6 0.000000 6 7 1 "link1"
+> 6 0.000000 7 7 1 "link2"
+> 6 0.000000 8 7 1 "link3"
+> 6 0.000000 9 7 1 "link4"
+> 4 8 1 7 2 L1-LINK7-HOST2
+> 4 9 1 2 7 L1-HOST2-LINK7
+> 4 10 1 7 7 L1-LINK7-LINK7
+> 15 0.000000 8 1 topology 6 0
+> 16 0.000000 8 1 topology 3 0
+> 15 0.000000 8 1 topology 7 1
+> 16 0.000000 8 1 topology 4 1
+> 15 0.000000 8 1 topology 8 2
+> 16 0.000000 8 1 topology 4 2
+> 15 0.000000 8 1 topology 9 3
+> 16 0.000000 8 1 topology 5 3
+> 15 0.000000 9 1 topology 2 4
+> 16 0.000000 9 1 topology 6 4
+> 15 0.000000 9 1 topology 2 5
+> 16 0.000000 9 1 topology 7 5
+> 15 0.000000 9 1 topology 3 6
+> 16 0.000000 9 1 topology 8 6
+> 15 0.000000 9 1 topology 4 7
+> 16 0.000000 9 1 topology 9 7
+> 15 0.000000 10 1 topology 7 8
+> 16 0.000000 10 1 topology 9 8
+> 15 0.000000 10 1 topology 8 9
+> 16 0.000000 10 1 topology 9 9
+
 $ rm -f simgrid.trace
 
 ! output sort

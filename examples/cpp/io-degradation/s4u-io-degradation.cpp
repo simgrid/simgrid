@@ -134,7 +134,7 @@ int main(int argc, char** argv)
 {
   sg4::Engine e(&argc, argv);
   /* simple platform containing 1 host and 2 disk */
-  auto* zone = sg4::create_full_zone("bob_zone");
+  auto* zone = e.get_netzone_root();
   auto* bob  = zone->create_host("bob", 1e6);
   create_ssd_disk(bob, "Edel (SSD)");
   create_sata_disk(bob, "Griffon (SATA II)");

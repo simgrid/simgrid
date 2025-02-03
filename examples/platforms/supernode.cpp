@@ -24,9 +24,9 @@ static std::string int_string(int n)
  *
  * This function creates one node made of nb_cpu CPUs.
  */
-static sg4::NetZone* create_node(const sg4::NetZone* root, const std::string& node_name, const int nb_cpu)
+static sg4::NetZone* create_node(sg4::NetZone* root, const std::string& node_name, const int nb_cpu)
 {
-  auto* node = sg4::create_star_zone(node_name)->set_parent(root);
+  auto* node = root->add_netzone_star(node_name);
 
   /* create all hosts and connect them to outside world */
   for (int i = 0; i < nb_cpu; i++) {
@@ -45,10 +45,10 @@ static sg4::NetZone* create_node(const sg4::NetZone* root, const std::string& no
  *
  * This function creates one super-node made of nb_nodes nodes with nb_cpu CPUs.
  */
-static sg4::NetZone* create_supernode(const sg4::NetZone* root, const std::string& supernode_name, const int nb_nodes,
+static sg4::NetZone* create_supernode(sg4::NetZone* root, const std::string& supernode_name, const int nb_nodes,
                                       const int nb_cpu)
 {
-  auto* supernode = sg4::create_star_zone(supernode_name)->set_parent(root);
+  auto* supernode = root->add_netzone_star(supernode_name);
 
   /* create all nodes and connect them to outside world */
   for (int i = 0; i < nb_nodes; i++) {
@@ -69,10 +69,10 @@ static sg4::NetZone* create_supernode(const sg4::NetZone* root, const std::strin
  *
  * This function creates one cluster of nb_supernodes super-nodes made of nb_nodes nodes with nb_cpu CPUs.
  */
-static sg4::NetZone* create_cluster(const std::string& cluster_name, const int nb_supernodes, const int nb_nodes,
-                                    const int nb_cpu)
+static sg4::NetZone* create_cluster(sg4::Engine& e, const std::string& cluster_name, const int nb_supernodes,
+                                    const int nb_nodes, const int nb_cpu)
 {
-  auto* cluster = sg4::create_star_zone(cluster_name);
+  auto* cluster = e.get_netzone_root()->add_netzone_star(cluster_name);
 
   /* create all supernodes and connect them to outside world */
   for (int i = 0; i < nb_supernodes; i++) {
@@ -89,8 +89,8 @@ static sg4::NetZone* create_cluster(const std::string& cluster_name, const int n
   return cluster;
 }
 
-extern "C" void load_platform(const sg4::Engine& e);
-void load_platform(const sg4::Engine&)
+extern "C" void load_platform(sg4::Engine& e);
+void load_platform(sg4::Engine& e)
 {
-  create_cluster("cluster", 4, 6, 2)->seal();
+  create_cluster(e, "cluster", 4, 6, 2)->seal();
 }

@@ -42,17 +42,16 @@ class Receiver:
         this_actor.info("I got '%s'." % msg)
         this_actor.info("Finished executing. Goodbye!")
 
-def load_platform():
+def load_platform(e: Engine):
     """ Creates a mixed platform, using many methods available in the API
     """
 
-    root = NetZone.create_floyd_zone("root")
+    root = e.netzone_root.add_netzone_floyd("root")
     hosts = []
     # dijkstra
-    dijkstra = NetZone.create_dijkstra_zone("dijkstra")
+    dijkstra = root.add_netzone_dijkstra("dijkstra", True)
     msg_base = "Creating zone: "
     this_actor.info(msg_base + dijkstra.name)
-    dijkstra.set_parent(root)
     host1 = dijkstra.create_host("host1", [1e9, 1e8])
     host1.core_count = 2
     hosts.append(host1)
@@ -69,9 +68,8 @@ def load_platform():
     dijkstra.seal()
 
     # vivaldi
-    vivaldi = NetZone.create_vivaldi_zone("vivaldi")
+    vivaldi = root.add_netzone_vivaldi("vivaldi")
     this_actor.info(msg_base + vivaldi.name)
-    vivaldi.set_parent(root)
     host3 = vivaldi.create_host("host3", 1e9).set_coordinates("1 1 1").seal()
     vivaldi.set_gateway(host3)
     host4 = vivaldi.create_host("host4", "1Gf").set_coordinates("2 2 2").seal()
@@ -79,18 +77,16 @@ def load_platform():
     hosts.append(host4)
 
     # empty
-    empty = NetZone.create_empty_zone("empty")
+    empty = root.add_netzone_empty("empty")
     this_actor.info(msg_base + empty.name)
-    empty.set_parent(root)
     host5 = empty.create_host("host5", 1e9)
     empty.set_gateway(host5)
     hosts.append(host5)
     empty.seal()
 
     # wifi
-    wifi = NetZone.create_wifi_zone("wifi")
+    wifi = root.add_netzone_wifi("wifi")
     this_actor.info(msg_base + wifi.name)
-    wifi.set_parent(root)
     router = wifi.create_router("wifi_router")
     wifi.set_gateway(router)
     wifi.set_property("access_point", "wifi_router")
@@ -120,7 +116,7 @@ if __name__ == '__main__':
     e = Engine(sys.argv)
 
     # create platform
-    load_platform()
+    load_platform(e)
 
     # runs the simulation
     e.run()

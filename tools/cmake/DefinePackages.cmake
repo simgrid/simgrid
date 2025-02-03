@@ -3,6 +3,7 @@
 set(EXTRA_DIST
   src/3rd-party/catch.hpp
   src/bindings/python/simgrid_python.cpp
+  src/bindings/python/smpi_python.cpp
   src/dag/dax.dtd
   src/dag/dax_dtd.c
   src/dag/dax_dtd.h
@@ -786,6 +787,7 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/Activity.java
     src/bindings/java/org/simgrid/s4u/ActivitySet.java
     src/bindings/java/org/simgrid/s4u/Actor.java
+    src/bindings/java/org/simgrid/s4u/AssertionError.java
     src/bindings/java/org/simgrid/s4u/Barrier.java
     src/bindings/java/org/simgrid/s4u/CallbackActor.java
     src/bindings/java/org/simgrid/s4u/CallbackActorHost.java
@@ -806,6 +808,7 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/Exec.java
     src/bindings/java/org/simgrid/s4u/ForcefulKillException.java
     src/bindings/java/org/simgrid/s4u/Host.java
+    src/bindings/java/org/simgrid/s4u/HostFailureException.java
     src/bindings/java/org/simgrid/s4u/Io.java
     src/bindings/java/org/simgrid/s4u/LinkInRoute.java
     src/bindings/java/org/simgrid/s4u/Link.java
@@ -820,11 +823,10 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/SimgridException.java
     src/bindings/java/org/simgrid/s4u/simgridJNI.java
     src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_t.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__setT_simgrid__s4u__Activity_p_t.java
     src/bindings/java/org/simgrid/s4u/TimeoutException.java
     src/bindings/java/org/simgrid/s4u/VirtualMachine.java
 )
-if(NOT Java_FOUND)
+if(NOT SIMGRID_HAVE_JAVA)
   set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_C_SOURCES} ${SIMGRID_JAVA_JAVA_SOURCES})
 endif()
 

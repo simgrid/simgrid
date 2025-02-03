@@ -31,6 +31,7 @@ int main(int argc, char** argv)
   }
 
   printf("thread exited with '%s'\n", (char*)ret);
+  free(ret);
 
   pthread_exit(NULL);
 }
