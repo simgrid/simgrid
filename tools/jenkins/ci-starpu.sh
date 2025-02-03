@@ -12,7 +12,7 @@ echo "XXXXXXXXXXXXXXXX Install APT dependencies"
 $SUDO apt-get update
 $SUDO apt-get -y install build-essential libboost-all-dev wget git xsltproc python3-setuptools
 
-for i in master starpu-1.3 ; do
+for i in starpu-1.4 starpu-1.3 master ; do
   echo "XXXXXXXXXXXXXXXX Build and test StarPU $i"
   rm -rf starpu*
   wget https://files.inria.fr/starpu/testing/$i/starpu-nightly-latest.tar.gz
@@ -29,6 +29,7 @@ for i in master starpu-1.3 ; do
     CFLAGS="-Werror=deprecated-declarations"
     CXXFLAGS="-Werror=deprecated-declarations"
   else
+    # Check that released versions still go fine with just a few warnings at worse.
     CFLAGS=""
     CXXFLAGS=""
   fi
