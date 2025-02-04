@@ -835,6 +835,15 @@ memory. In some small scenarios, the new version is 5 times faster. But actually
 amount of states while it used to be polynomial, 5x faster is the less you can get from that version. The amount of states to
 explore for a given scenario is still the same (ODPOR was not improved), but we explore these states much faster now.
 
+**On the storage simulation side**, we finally allowed disks to be turned off and on as it was already possible for hosts and
+links. When a disk is turned off, all the I/O activities currently using that resource are canceled. When the disk is turned 
+back on, these activities have to be manually restarted. Moreover, if disks are attached to a host and this host is turned off
+(resp. on), the disks are also turned off (resp. on).
+
+**On the interface front**, we added a few signals for a better consistency across activities and resources. Additionally, 
+the platform parsing now raises a ``on_platform_sealed()`` when the platform cannot be modified anymore and its routing has
+been set. 
+
 .. |br| raw:: html
 
    <br />
