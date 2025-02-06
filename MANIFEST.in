@@ -2454,6 +2454,8 @@ include src/mc/api/ClockVector.cpp
 include src/mc/api/ClockVector.hpp
 include src/mc/api/RemoteApp.cpp
 include src/mc/api/RemoteApp.hpp
+include src/mc/api/Strategy.cpp
+include src/mc/api/Strategy.hpp
 include src/mc/api/states/BeFSWutState.cpp
 include src/mc/api/states/BeFSWutState.hpp
 include src/mc/api/states/SleepSetState.cpp
@@ -2463,17 +2465,6 @@ include src/mc/api/states/State.cpp
 include src/mc/api/states/State.hpp
 include src/mc/api/states/WutState.cpp
 include src/mc/api/states/WutState.hpp
-include src/mc/api/strategy/BasicStrategy.cpp
-include src/mc/api/strategy/BasicStrategy.hpp
-include src/mc/api/strategy/MaxMatchComm.cpp
-include src/mc/api/strategy/MaxMatchComm.hpp
-include src/mc/api/strategy/MinContextSwitch.cpp
-include src/mc/api/strategy/MinContextSwitch.hpp
-include src/mc/api/strategy/MinMatchComm.cpp
-include src/mc/api/strategy/MinMatchComm.hpp
-include src/mc/api/strategy/StratLocalInfo.hpp
-include src/mc/api/strategy/UniformStrategy.cpp
-include src/mc/api/strategy/UniformStrategy.hpp
 include src/mc/datatypes.h
 include src/mc/explo/BeFSExplorer.cpp
 include src/mc/explo/BeFSExplorer.hpp
