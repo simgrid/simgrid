@@ -9,7 +9,6 @@
 #include "src/mc/explo/odpor/WakeupTreeIterator.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
-#include "xbt/asserts.h"
 
 #include <memory>
 #include <optional>

@@ -10,6 +10,7 @@ S4U:
 
 sthread:
  - Implement pthread_exit() and pthread_cond_timedwait()
+ - Further restrict its portability: Linux only, and now also GLIBC only.
 
 Platform API:
  - The root netzone of every platform uses the full routing. It's created by default.

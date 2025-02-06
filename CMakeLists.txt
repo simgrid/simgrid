@@ -188,7 +188,7 @@ ELSE()
 ENDIF()
 
 ### Determine wether we use the MUSL libc, as some advanced privatization features fail with it
-set(HAVE_MUSL OFF)
+set(SIMGRID_HAVE_MUSL OFF)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   try_run(run_musl compile_musl ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_musl.c
     COMPILE_OUTPUT_VARIABLE compile_musl_output)
@@ -198,7 +198,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(FATAL "Error: Failed to detect whether we use the MUSL libc.\n${compile_musl_output}")
   elseif(run_musl)
     message(STATUS "MUSL libc detected.")
-    set(HAVE_MUSL ON)
+    set(SIMGRID_HAVE_MUSL ON)
   else()
     message(STATUS "GNU libc detected.")
   endif()

@@ -792,6 +792,57 @@ bug. Still, we did not find any such bug yet, so the chase continues.
 Version 3.37 (unreleased)
 -------------------------
 
+We reworked **the platform generation API** to simplify it and make it more natural. Earlier, you had to specify the routing
+algorithm specified in the root netzone (the one englobing the whole platform), and you had to create this netzone yourself
+before installing it in the Engine. This forced either a manual handling of the parent/child relationships between zones (as in
+v3.36 and earlier), or a duplication of the API between the Engine and the Netzone classes that can both contain Netzones. Now,
+the root netzone gets created automatically, with the Full routing. If you wanted your platform to have a Full root netzone,
+then it's already created for you. If you wanted your root netzone to have another routing algorithm, simply add a new netzone
+with the routing algorithm you want to the root netzone, and put your whole platform in this netzone.
+
+This allows to replace the ``create_*_zone()`` functions with the nice ``NetZone::add_netzone_*()`` methods. So
+``NetZone::set_parent()`` is now useless (and thus deprecated), and the whole platform creation feels much more natural (to me,
+at least).
+
+**On the bindings API**, we reintroduced the **Java bindings**. You can now use the S4U API from Java, as demonstrated in the
+many examples that got converted. It was the occasion to proofread the S4U API as we ported it to Java, explaining the changes
+to the platform API presented above. The main issue is that the Java bindings are not documented yet, because Java is not
+supported by `Sphinx <https://www.sphinx-doc.org>`_ and `breath <https://breathe.readthedocs.io/en/latest/>`_, the systems we
+use to generate the doc. This is very unfortunate, even if the Java API is very very close to the C++ one. We could add the doc
+manually in Sphinx, but it's very time consuming. Any helping patch would be very welcome here.
+
+Porting S4U to Java was a big commitment (requiring 5k lines of C++ and 3.5k lines of Java for the library, plus 5k lines of
+Java for the examples). We think that Java is a much better programming language for PhD students than C++. Java is rather easy
+and forgiving compared to C++, which should be reserved to seasoned programmers despite its power (or, *because* of its power).
+Python is also easy, but it's meant for small scripts. The medium-sized projects that are typically written during the course of
+a PhD are probably easier to write in Java instead. To be honnest, another motivation for this development was fun. Writing this
+code felt like a very large grid of Sudoku where you have to be careful, but it's not too difficult once you got it. I may
+consider some Rust bindings in the future, but I'm concerned of the maintenance burden if we add too many bindings.
+
+The **Python bindings** were also extended, with two great contributions. Sergey Teryoshkin added many missing bindings, while
+Jean-Noël Quintin implemented most of the MPI standard in Python for SimGrid. Many thanks, guys!
+
+**On the software lifecycle side**, this release is one of the last of the 3.x serie. The current form of the S4U API is nice,
+so it's about time to release SimGrid 4.0. The only missing bits before the big jump seem to be some parts of the documentation
+which were not ported from Doxygen to Sphinx.
+
+We are done deprecating the old xbt_dict and xbt_dynar data containers, which will be fully removed in a few releases (be it
+3.39 as currently planned or one of the 4.x serie).
+
+**On the model-checking side**, we worked mostly on the performance of the verification process, and fixed some bugs. Our
+prefered algorithm (ODPOR reduction + Best-first exploration to enable random walk) is now much faster and consumes much less
+memory. In some small scenarios, the new version is 5 times faster. But actually, since its performance is now linear with the
+amount of states while it used to be polynomial, 5x faster is the less you can get from that version. The amount of states to
+explore for a given scenario is still the same (ODPOR was not improved), but we explore these states much faster now.
+
+**On the storage simulation side**, we finally allowed disks to be turned off and on as it was already possible for hosts and
+links. When a disk is turned off, all the I/O activities currently using that resource are canceled. When the disk is turned 
+back on, these activities have to be manually restarted. Moreover, if disks are attached to a host and this host is turned off
+(resp. on), the disks are also turned off (resp. on).
+
+**On the interface front**, we added a few signals for a better consistency across activities and resources. Additionally, 
+the platform parsing now raises a ``on_platform_sealed()`` when the platform cannot be modified anymore and its routing has
+been set. 
 
 .. |br| raw:: html
 
