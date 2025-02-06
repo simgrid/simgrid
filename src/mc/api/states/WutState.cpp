@@ -70,13 +70,13 @@ void WutState::initialize_if_empty_wut()
 void WutState::add_arbitrary_todo()
 {
   // Find an enabled transition to pick
-  auto const [best_actor, _] = this->strategy_->best_transition(false);
+  auto const [best_actor, _] = Exploration::get_strategy()->best_transition_in(this, false);
   if (best_actor == -1)
     return; // This means that no transitions are enabled at this point
   xbt_assert(sleep_set_.find(best_actor) == sleep_set_.end(),
              "Why is a transition in a sleep set not marked as done? <%ld, %s> is in the sleep set", best_actor,
              sleep_set_.find(best_actor)->second->to_string().c_str());
-  this->strategy_->consider_one(best_actor);
+  consider_one(best_actor);
   auto actor_state = get_actors_list().at(best_actor);
   // For each variant of the transition that is enabled, we want to insert the action into the tree.
   // This ensures that all variants are searched

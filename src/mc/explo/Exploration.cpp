@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/Exploration.hpp"
 #include "simgrid/forward.h"
+#include "src/mc/api/Strategy.hpp"
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/CriticalTransitionExplorer.hpp"
 #include "src/mc/mc_config.hpp"
@@ -16,6 +17,7 @@
 #include "xbt/string.hpp"
 
 #include <algorithm>
+#include <memory>
 #include <sys/wait.h>
 #include <utility>
 
@@ -27,6 +29,7 @@ static simgrid::config::Flag<std::string> cfg_dot_output_file{
     "model-check/dot-output", "Name of dot output file corresponding to graph state", ""};
 
 Exploration* Exploration::instance_ = nullptr; // singleton instance
+std::unique_ptr<ExplorationStrategy> Exploration::strategy_ = std::make_unique<ExplorationStrategy>();
 
 xbt::signal<void(State&, RemoteApp&)> Exploration::on_restore_state_signal;
 xbt::signal<void(Transition*, RemoteApp&)> Exploration::on_transition_replay_signal;

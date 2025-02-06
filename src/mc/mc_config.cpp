@@ -80,12 +80,10 @@ simgrid::config::Flag<std::string> _sg_mc_strategy{
     "model-check/strategy",
     "Specify the kind of heuristic to use for guided model-checking",
     "none",
-    {{"none", "No specific strategy: simply pick the first available transition and act as a DFS."},
-     {"max_match_comm", "Try to minimize the number of in-fly communication by appairing matching send and receive."},
-     {"min_match_comm",
-      "Try to maximize the number of in-fly communication by not appairing matching send and receive."},
-     {"uniform", "No specific strategy: choices are made randomly based on a uniform sampling."},
-     {"min_context_switch", "Explores in priority branches that make fewer context switches."}}};
+    {
+        {"none", "No specific strategy: simply pick the first available transition and act as a DFS."},
+        {"uniform", "No specific strategy: choices are made randomly based on a uniform sampling."},
+    }};
 
 simgrid::config::Flag<int> _sg_mc_random_seed{"model-check/rand-seed",
                                               "give a specific random seed to initialize the uniform distribution", 0,

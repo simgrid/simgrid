@@ -9,7 +9,6 @@
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/api/ClockVector.hpp"
 #include "src/mc/api/RemoteApp.hpp"
-#include "src/mc/api/strategy/StratLocalInfo.hpp"
 #include "src/mc/transition/Transition.hpp"
 
 namespace simgrid::mc {
@@ -35,6 +34,9 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   /** Sequential state ID (used for debugging) */
   long num_ = 0;
 
+  /** Depth of this state in the tree. Used for DFS-like strategy in BeFS algorithm */
+  unsigned long depth_ = 0;
+
   /** Unique parent of this state */
   StatePtr parent_state_ = nullptr;
 
@@ -43,12 +45,13 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   bool has_correct_descendent_ = false;
 
 protected:
-  std::shared_ptr<StratLocalInfo> strategy_;
+  /** State's exploration status by actor. All actors should be present, eventually disabled for now. */
+  std::map<aid_t, ActorState> actors_to_run_;
 
   /** @brief The outgoing transition is the last transition that we took to leave this state.  */
   std::shared_ptr<Transition> outgoing_transition_ = nullptr;
 
-  ActorState get_actor_at(aid_t aid) { return strategy_->actors_to_run_.at(aid); }
+  ActorState get_actor_at(aid_t aid) { return actors_to_run_.at(aid); }
 
 public:
   explicit State(const RemoteApp& remote_app);
@@ -61,8 +64,6 @@ public:
    internal cost of the transition is returned */
   virtual std::pair<aid_t, int> next_transition_guided() const;
 
-  int get_actor_strategy_valuation(aid_t actor) const { return strategy_->get_actor_valuation(actor); }
-
   /**
    * Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
    * next_transition()
@@ -70,6 +71,7 @@ public:
   std::shared_ptr<Transition> execute_next(aid_t next, RemoteApp& app);
 
   long get_num() const { return num_; }
+  unsigned long get_depth() const { return depth_; }
   std::size_t count_todo() const;
 
   virtual bool has_more_to_be_explored() const;
@@ -78,20 +80,32 @@ public:
    *  + consider_one mark aid actor (and assert it is possible)
    *  + consider_best ensure one actor is marked by eventually marking the best regarding its guiding method
    *  + consider_all mark all enabled actor that are not done yet */
-  void consider_one(aid_t aid) const { strategy_->consider_one(aid); }
-  void consider_best() const { strategy_->consider_best(); }
-  void ensure_one_considered_among_set(std::unordered_set<aid_t> E) { strategy_->ensure_one_considered_among_set(E); }
-  unsigned long consider_all() const { return strategy_->consider_all(); }
+  void consider_one(aid_t aid)
+  {
+    xbt_assert(actors_to_run_.at(aid).is_enabled() && not actors_to_run_.at(aid).is_done(),
+               "Tried to mark as TODO actor %ld but it is either not enabled or already done", aid);
+    actors_to_run_.at(aid).mark_todo();
+  }
+  unsigned long consider_all()
+  {
+    unsigned long count = 0;
+    for (auto& [_, actor] : actors_to_run_)
+      if (actor.is_enabled() && not actor.is_done()) {
+        actor.mark_todo();
+        count++;
+      }
+    return count;
+  }
 
-  bool is_actor_done(aid_t actor) const { return strategy_->actors_to_run_.at(actor).is_done(); }
+  bool is_actor_done(aid_t actor) const { return actors_to_run_.at(actor).is_done(); }
   std::shared_ptr<Transition> get_transition_out() const { return outgoing_transition_; }
   std::shared_ptr<Transition> get_transition_in() const { return incoming_transition_; }
   State* get_parent_state() const { return parent_state_.get(); }
 
-  std::map<aid_t, ActorState> const& get_actors_list() const { return strategy_->actors_to_run_; }
+  std::map<aid_t, ActorState> const& get_actors_list() const { return actors_to_run_; }
 
-  unsigned long get_actor_count() const { return strategy_->actors_to_run_.size(); }
-  bool is_actor_enabled(aid_t actor) const { return strategy_->actors_to_run_.at(actor).is_enabled(); }
+  unsigned long get_actor_count() const { return actors_to_run_.size(); }
+  bool is_actor_enabled(aid_t actor) const { return actors_to_run_.at(actor).is_enabled(); }
 
   /** Returns whether this state has a state factory.
    *

@@ -5,6 +5,9 @@
 
 #include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/api/states/SleepSetState.hpp"
+#include "src/mc/explo/Exploration.hpp"
+#include "src/mc/mc_forward.hpp"
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_reduction, mc, "Logging specific to the reduction algorithms");
 
 namespace simgrid::mc {
@@ -29,7 +32,7 @@ void Reduction::on_backtrack(State* s)
 
 void Reduction::consider_best(StatePtr state)
 {
-  state->consider_best();
+  Exploration::get_strategy()->consider_best_in(state.get());
 }
 
 } // namespace simgrid::mc

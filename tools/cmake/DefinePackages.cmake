@@ -508,7 +508,9 @@ set(MC_SRC_STATELESS
   src/mc/api/ClockVector.hpp
   src/mc/api/RemoteApp.cpp
   src/mc/api/RemoteApp.hpp
- 
+  src/mc/api/Strategy.cpp
+  src/mc/api/Strategy.hpp
+  
   src/mc/explo/CriticalTransitionExplorer.cpp
   src/mc/explo/CriticalTransitionExplorer.hpp
   src/mc/explo/DFSExplorer.cpp
@@ -589,18 +591,7 @@ set(MC_SRC_STATELESS
   src/mc/mc_private.hpp
   src/mc/mc_record.cpp
 
-  src/mc/api/strategy/BasicStrategy.cpp
-  src/mc/api/strategy/BasicStrategy.hpp
-  src/mc/api/strategy/MaxMatchComm.cpp
-  src/mc/api/strategy/MaxMatchComm.hpp
-  src/mc/api/strategy/MinContextSwitch.cpp
-  src/mc/api/strategy/MinContextSwitch.hpp
-  src/mc/api/strategy/MinMatchComm.cpp
-  src/mc/api/strategy/MinMatchComm.hpp
-  src/mc/api/strategy/StratLocalInfo.hpp
-  src/mc/api/strategy/UniformStrategy.cpp
-  src/mc/api/strategy/UniformStrategy.hpp
-
+  
   src/mc/explo/reduction/BeFSODPOR.cpp
   src/mc/explo/reduction/BeFSODPOR.hpp
   src/mc/explo/reduction/Reduction.cpp

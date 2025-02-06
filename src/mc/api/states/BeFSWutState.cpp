@@ -5,6 +5,7 @@
 
 #include "src/mc/api/states/BeFSWutState.hpp"
 #include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/api/Strategy.hpp"
 #include "src/mc/api/states/WutState.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
@@ -116,7 +117,7 @@ std::pair<aid_t, int> BeFSWutState::next_transition_guided() const
   aid_t best_actor = this->next_transition();
   if (best_actor == -1)
     return std::make_pair(best_actor, std::numeric_limits<int>::max());
-  return std::make_pair(best_actor, strategy_->get_actor_valuation(best_actor));
+  return std::make_pair(best_actor, Exploration::get_strategy()->get_actor_valuation_in(this, best_actor));
 }
 
 void BeFSWutState::unwind_wakeup_tree_from_parent()
@@ -163,8 +164,8 @@ aid_t BeFSWutState::next_transition() const
       XBT_CRITICAL("While the WuT is:\n%s\n", wakeup_tree_.string_of_whole_tree().c_str());
       xbt_die("Fix me!");
     }
-    if (strategy_->get_actor_valuation(aid) < best_valuation) {
-      best_valuation = strategy_->get_actor_valuation(aid);
+    if (Exploration::get_strategy()->get_actor_valuation_in(this, aid) < best_valuation) {
+      best_valuation = Exploration::get_strategy()->get_actor_valuation_in(this, aid);
       best_actor     = aid;
     }
   }
@@ -214,7 +215,6 @@ StatePtr BeFSWutState::force_insert_into_wakeup_tree(const odpor::PartialExecuti
 
 BeFSWutState::~BeFSWutState()
 {
-
   auto parent_state = get_parent_state();
   if (parent_state != nullptr) {
     auto parent = static_cast<BeFSWutState*>(parent_state);
@@ -235,11 +235,11 @@ void BeFSWutState::signal_on_backtrack()
     return;
 
   if (closed_.size() < done_.size()) {
-
     // if there are children states that are being visited, we may need to update the leftmost information
     aid_t leftmost_aid = done_[closed_.size()];
     auto children_aid               = children_states_[leftmost_aid];
     auto children_befs_aid          = static_cast<BeFSWutState*>(children_aid.get());
+    xbt_assert(children_aid != nullptr);
     children_befs_aid->is_leftmost_ = true;
     children_befs_aid->signal_on_backtrack();
     return;

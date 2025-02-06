@@ -7,6 +7,7 @@
 #define SIMGRID_MC_SDPOR_HPP
 
 #include "simgrid/forward.h"
+#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
 
@@ -67,7 +68,7 @@ public:
     unsigned long nb_updates = 0;
 
     for (auto& [state, choices] : sdpor_updates->get_value()) {
-      state->ensure_one_considered_among_set(choices);
+      Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), choices);
       if (opened_states != nullptr) {
         opened_states->emplace_back(state);
         nb_updates++;
@@ -82,7 +83,7 @@ public:
     auto sleep_set_state = static_cast<SleepSetState*>(res.get());
 
     if (not sleep_set_state->get_enabled_minus_sleep().empty()) {
-      sleep_set_state->consider_best();
+      Exploration::get_strategy()->consider_best_in(sleep_set_state);
     }
 
     return res;

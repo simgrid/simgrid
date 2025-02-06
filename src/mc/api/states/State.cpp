@@ -4,11 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/api/states/State.hpp"
-#include "src/mc/api/strategy/BasicStrategy.hpp"
-#include "src/mc/api/strategy/MaxMatchComm.hpp"
-#include "src/mc/api/strategy/MinContextSwitch.hpp"
-#include "src/mc/api/strategy/MinMatchComm.hpp"
-#include "src/mc/api/strategy/UniformStrategy.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "xbt/log.h"
 
@@ -31,41 +26,27 @@ State::~State()
 State::State(const RemoteApp& remote_app) : num_(++expended_states_)
 {
   in_memory_states_++;
-  if (_sg_mc_strategy == "none")
-    strategy_ = std::make_shared<BasicStrategy>();
-  else if (_sg_mc_strategy == "max_match_comm")
-    strategy_ = std::make_shared<MaxMatchComm>();
-  else if (_sg_mc_strategy == "min_match_comm")
-    strategy_ = std::make_shared<MinMatchComm>();
-  else if (_sg_mc_strategy == "uniform") {
-    strategy_ = std::make_shared<UniformStrategy>();
-  } else if (_sg_mc_strategy == "min_context_switch") {
-    strategy_ = std::make_shared<MinContextSwitch>();
-  } else
-    THROW_IMPOSSIBLE;
-
-  remote_app.get_actors_status(strategy_->actors_to_run_);
+  remote_app.get_actors_status(actors_to_run_);
 }
 
 State::State(const RemoteApp& remote_app, StatePtr parent_state) : State(remote_app)
 {
   parent_state_        = parent_state;
   incoming_transition_ = parent_state->get_transition_out();
+  depth_               = parent_state_->depth_ + 1;
 
   XBT_DEBUG("Creating %ld, son of %ld", get_num(), parent_state->get_num());
-
-  strategy_->copy_from(parent_state_->strategy_.get());
 }
 
 std::size_t State::count_todo() const
 {
-  return boost::range::count_if(this->strategy_->actors_to_run_, [](auto& pair) { return pair.second.is_todo(); });
+  return boost::range::count_if(actors_to_run_, [](auto& pair) { return pair.second.is_todo(); });
 }
 
 bool State::has_more_to_be_explored() const
 {
   size_t count = 0;
-  for (auto const& [_, actor] : strategy_->actors_to_run_)
+  for (auto const& [_, actor] : actors_to_run_)
     if (actor.is_todo())
       count += actor.get_times_not_considered();
 
@@ -74,8 +55,8 @@ bool State::has_more_to_be_explored() const
 
 aid_t State::next_transition() const
 {
-  XBT_DEBUG("Search for an actor to run. %zu actors to consider", strategy_->actors_to_run_.size());
-  for (auto const& [aid, actor] : strategy_->actors_to_run_) {
+  XBT_DEBUG("Search for an actor to run. %zu actors to consider", actors_to_run_.size());
+  for (auto const& [aid, actor] : actors_to_run_) {
     /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
     if (not actor.is_todo() || not actor.is_enabled() || actor.is_done()) {
       if (not actor.is_todo())
@@ -97,20 +78,17 @@ aid_t State::next_transition() const
 
 std::pair<aid_t, int> State::next_transition_guided() const
 {
-  return strategy_->next_transition();
+  return Exploration::get_strategy()->next_transition_in(this);
 }
 
 // This should be done in GuidedState, or at least interact with it
 std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
 {
-  // First, warn the guide, so it knows how to build a proper child state
-  strategy_->execute_next(next, app);
-
   // This actor is ready to be executed. Execution involves three phases:
 
   // 1. Identify the appropriate ActorState to prepare for execution
   // when simcall_handle will be called on it
-  auto& actor_state                        = strategy_->actors_to_run_.at(next);
+  auto& actor_state                        = actors_to_run_.at(next);
   const unsigned times_considered          = actor_state.do_consider();
   const auto* expected_executed_transition = actor_state.get_transition(times_considered).get();
   xbt_assert(actor_state.is_enabled(), "Tried to execute a disabled actor");

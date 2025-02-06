@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/reduction/DPOR.hpp"
+#include "src/mc/explo/Exploration.hpp"
+#include "xbt/asserts.h"
 #include "xbt/log.h"
 #include <cstddef>
 #include <memory>
@@ -91,7 +93,7 @@ unsigned long DPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> upd
   unsigned long nb_updates = 0;
   for (auto& [state, ancestors] : dpor_updates->get_value()) {
     if (not ancestors.empty()) {
-      state->ensure_one_considered_among_set(ancestors);
+      Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), ancestors);
     } else {
       state->consider_all();
     }
@@ -109,7 +111,7 @@ StatePtr DPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
   auto sleep_set_state = static_cast<SleepSetState*>(res.get());
 
   if (not sleep_set_state->get_enabled_minus_sleep().empty()) {
-    sleep_set_state->consider_best();
+    Exploration::get_strategy()->consider_best_in(sleep_set_state);
   }
 
   return res;

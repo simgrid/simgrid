@@ -8,6 +8,7 @@
 
 #include "simgrid/forward.h"
 #include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/api/Strategy.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_record.hpp"
@@ -32,6 +33,7 @@ namespace simgrid::mc {
 // abstract
 class Exploration : public xbt::Extendable<Exploration> {
   std::unique_ptr<RemoteApp> remote_app_;
+  static std::unique_ptr<ExplorationStrategy> strategy_;
   static Exploration* instance_;
 
   FILE* dot_output_ = nullptr;
@@ -52,6 +54,7 @@ public:
   virtual ~Exploration();
 
   static Exploration* get_instance() { return instance_; }
+  static ExplorationStrategy* get_strategy() { return strategy_.get(); }
   // No copy:
   Exploration(Exploration const&)            = delete;
   Exploration& operator=(Exploration const&) = delete;

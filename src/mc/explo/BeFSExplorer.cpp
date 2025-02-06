@@ -21,6 +21,7 @@
 
 #include "xbt/asserts.h"
 #include "xbt/log.h"
+#include "xbt/random.hpp"
 #include "xbt/string.hpp"
 #include "xbt/sysdep.h"
 
@@ -141,7 +142,7 @@ void BeFSExplorer::run()
     xbt_assert(state->is_actor_enabled(next));
 
     if (_sg_mc_befs_threshold != 0) {
-      auto dist = state->get_actor_strategy_valuation(next);
+      auto dist = Exploration::get_strategy()->get_actor_valuation_in(state.get(), next);
       auto best = best_opened_state();
       if (best != nullptr) {
         int best_dist = best->next_transition_guided().second;
@@ -207,39 +208,34 @@ void BeFSExplorer::run()
 
 StatePtr BeFSExplorer::best_opened_state()
 {
-  int best_prio = 0; // cache the value for the best priority found so far (initialized to silence gcc)
-  auto best     = end(opened_states_);   // iterator to the state to explore having the best priority
-  auto valid    = begin(opened_states_); // iterator marking the limit between states still to explore, and already
-                                         // explored ones
-
-  // Keep only still non-explored states (aid != -1), and record the one with the best (smaller) priority.
-  for (auto current = begin(opened_states_); current != end(opened_states_); ++current) {
-    xbt_assert(current->get() != nullptr);
-    auto [aid, prio] = (*current)->next_transition_guided();
-    if (aid == -1)
-      continue;
-    if (valid != current) {
-      *valid = std::move(*current);
+  // If we work in a DFS like manner, just forget about the opened_states
+  if (_sg_mc_strategy == "none") {
+    opened_states_.clear();
+    auto candidate = stack_.back();
+    while (candidate->next_transition_guided().first == -1) {
+      if (candidate->get_parent_state() != nullptr)
+        candidate = candidate->get_parent_state();
+      else
+        return nullptr; // There is no one with something to do left
     }
-    if (best == end(opened_states_) || prio <= best_prio) {
-      best_prio = prio;
-      best      = valid;
+    return candidate;
+
+    // Else we are picking uniformly among opened_states
+  } else {
+    if (opened_states_.size() == 0)
+      return nullptr;
+    int guess          = xbt::random::uniform_int(0, opened_states_.size() - 1);
+    StatePtr candidate = opened_states_[guess];
+    opened_states_.erase(opened_states_.begin() + guess);
+    while (candidate->next_transition_guided().first == -1) {
+      if (opened_states_.size() == 0)
+        return nullptr;
+      guess     = xbt::random::uniform_int(0, opened_states_.size() - 1);
+      candidate = opened_states_[guess];
+      opened_states_.erase(opened_states_.begin() + guess);
     }
-    ++valid;
+    return candidate;
   }
-
-  StatePtr best_state;
-  if (best < valid) {
-    // There are non-explored states, and one of them has the best priority.  Remove it from opened_states_ before
-    // returning.
-    best_state = std::move(*best);
-    --valid;
-    if (best != valid)
-      *best = std::move(*valid);
-  }
-  opened_states_.erase(valid, end(opened_states_));
-
-  return best_state;
 }
 
 void BeFSExplorer::backtrack()

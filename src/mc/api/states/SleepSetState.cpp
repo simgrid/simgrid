@@ -35,8 +35,8 @@ void SleepSetState::sleep_add_and_mark(std::shared_ptr<Transition> transition)
   XBT_DEBUG("Adding transition Actor %ld:%s to the sleep set from parent state", transition->aid_,
             transition->to_string().c_str());
   sleep_set_.try_emplace(transition->aid_, transition);
-  if (strategy_->actors_to_run_.count(transition->aid_) != 0) {
-    strategy_->actors_to_run_.at(transition->aid_).mark_done();
+  if (actors_to_run_.count(transition->aid_) != 0) {
+    actors_to_run_.at(transition->aid_).mark_done();
   }
 }
 
@@ -51,7 +51,7 @@ std::unordered_set<aid_t> SleepSetState::get_sleeping_actors(aid_t) const
 std::vector<aid_t> SleepSetState::get_enabled_minus_sleep() const
 {
   std::vector<aid_t> actors;
-  for (const auto& [aid, state] : strategy_->actors_to_run_) {
+  for (const auto& [aid, state] : actors_to_run_) {
     if (state.is_enabled() && sleep_set_.count(aid) < 1) {
       actors.insert(actors.begin(), aid);
     }
