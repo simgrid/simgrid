@@ -85,8 +85,11 @@ bool WaitAnyTransition::reversible_race(const Transition* other) const
 {
   xbt_assert(type_ == Type::WAITANY, "Unexpected transition type %s", to_c_str(type_));
 
-  // TODO: We need to check if any of the transitions waited on occurred before `e1`
-  return true; // Let's overapproximate to not miss branches
+  for (auto const& transition : transitions_)
+    if (transition->reversible_race(other))
+      return true; // Let's overapproximate to not miss branches, if we can reverse any transition, let's go for it
+
+  return false;
 }
 
 } // namespace simgrid::mc

@@ -93,9 +93,9 @@ bool ActorSleepTransition::depends(const Transition* other) const
 
 bool ActorSleepTransition::reversible_race(const Transition* other) const
 {
-  xbt_assert(type_ == Type::ACTOR_SLEEP, "Unexpected transition type %s", to_c_str(type_));
+  xbt_assert(other->type_ == Type::ACTOR_CREATE, "Unexpected transition type %s", to_c_str(type_));
 
-  return true; // Always enabled
+  return false; // The creation of the actor is the only way to be dependent with a sleep
 }
 
 ActorCreateTransition::ActorCreateTransition(aid_t issuer, int times_considered, std::stringstream& stream)
