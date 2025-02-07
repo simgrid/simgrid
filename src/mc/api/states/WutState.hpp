@@ -54,13 +54,6 @@ public:
   void seed_wakeup_tree_if_needed(const odpor::Execution& prior);
 
   /**
-   * @brief Initializes the wakeup_tree_ instance by taking the subtree rooted at the
-   * single-process node `N` running actor `p := "actor taken by parent to form this state"`
-   * of the *parent's* wakeup tree
-   */
-  void sprout_tree_from_parent_state();
-
-  /**
    * @brief Removes the subtree rooted at the single-process node
    * `N` running actor `p` of this state's wakeup tree
    */

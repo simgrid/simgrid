@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/reduction/BeFSODPOR.hpp"
 #include "src/mc/api/states/BeFSWutState.hpp"
+#include "src/mc/api/states/WutState.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 
@@ -45,8 +46,6 @@ std::shared_ptr<Reduction::RaceUpdate> BeFSODPOR::races_computation(odpor::Execu
    */
   XBT_DEBUG("Going to compute all the reversible races on sequence \n%s", E.get_one_string_textual_trace().c_str());
   for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
-    if (E.get_event_with_handle(e_prime).has_race_been_computed())
-      continue;
     XBT_VERB("Computing reversible races of Event `%u`", e_prime);
     for (const auto e : E.get_reversible_races_of(e_prime)) {
       XBT_DEBUG("... racing event `%u`", e);
@@ -56,8 +55,9 @@ std::shared_ptr<Reduction::RaceUpdate> BeFSODPOR::races_computation(odpor::Execu
       BeFSWutState* prev_state = static_cast<BeFSWutState*>((*S)[e].get());
       xbt_assert(prev_state != nullptr, "ODPOR should use WutState. Fix me");
 
-      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state, prev_state->get_transition_out()->aid_);
-          v.has_value()) {
+      auto actor_after_e = ((*S)[e + 1].get())->get_transition_in()->aid_;
+
+      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state, actor_after_e); v.has_value()) {
         XBT_DEBUG("... inserting sequence %s in final_wut before event `%u`",
                   odpor::one_string_textual_trace(v.value()).c_str(), e);
         updates->add_element(prev_state, v.value());
@@ -78,18 +78,17 @@ unsigned long BeFSODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate
   auto befsodpor_updates   = static_cast<RaceUpdate*>(updates.get());
   unsigned long nb_updates = 0;
   for (auto& [raw_state, v] : befsodpor_updates->get_value()) {
+    XBT_DEBUG("Going to insert sequence\n%s", odpor::one_string_textual_trace(v).c_str());
+    XBT_DEBUG("... at state #%ld", raw_state->get_num());
     auto state         = static_cast<BeFSWutState*>(raw_state.get());
-    const auto v_prime = state->insert_into_final_wakeup_tree(v);
-    XBT_DEBUG("... after insertion final_wut looks like this @state %ld: %s", state->get_num(),
-              state->get_string_of_final_wut().c_str());
-    if (not v_prime.empty()) {
-      state->compare_final_and_wut();
-      auto modified_state = state->force_insert_into_wakeup_tree(v_prime);
-      if (opened_states != nullptr and modified_state != nullptr)
-        opened_states->push_back(modified_state);
-      nb_updates++;
-      state->compare_final_and_wut();
+    const auto inserted_state = state->insert_into_final_wakeup_tree(v);
+    if (opened_states != nullptr and inserted_state != nullptr) {
+      opened_states->push_back(inserted_state);
+      XBT_DEBUG("... ended up adding work to do at state #%ld", inserted_state->get_num());
+      XBT_DEBUG("... WuT at that state after insertion\n%s",
+                static_cast<WutState*>(inserted_state.get())->string_of_wut().c_str());
     }
+    nb_updates++;
   }
   return nb_updates;
 }
@@ -124,12 +123,6 @@ StatePtr BeFSODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
     BeFSWutState* befswut_state = static_cast<BeFSWutState*>(parent_state.get());
     if (auto existing_state = befswut_state->get_children_state_of_aid(parent_state->get_transition_out()->aid_);
         existing_state != nullptr) {
-      auto wut_state = static_cast<BeFSWutState*>(existing_state.get());
-      XBT_DEBUG("Found an existing state. Its WuT: %s\n finalWut: %s", wut_state->string_of_wut().c_str(),
-                wut_state->get_string_of_final_wut().c_str());
-      wut_state->unwind_wakeup_tree_from_parent();
-      XBT_DEBUG("After update. Its WuT: %s\n finalWut: %s", wut_state->string_of_wut().c_str(),
-                wut_state->get_string_of_final_wut().c_str());
       return existing_state;
     }
     auto new_state = StatePtr(new BeFSWutState(remote_app, befswut_state), true);

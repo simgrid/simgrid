@@ -25,7 +25,6 @@ class Execution;
 class ReversibleRaceCalculator;
 class WakeupTree;
 class WakeupTreeNode;
-class WakeupTreeIterator;
 
 } // namespace simgrid::mc::odpor
 

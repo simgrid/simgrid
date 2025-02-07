@@ -6,7 +6,6 @@
 #ifndef SIMGRID_MC_ODPOR_WAKEUP_TREE_HPP
 #define SIMGRID_MC_ODPOR_WAKEUP_TREE_HPP
 
-#include "src/mc/explo/odpor/WakeupTreeIterator.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
 
@@ -41,7 +40,7 @@ private:
   WakeupTreeNode* parent_ = nullptr;
 
   /** An ordered list of children of for this node in the tree */
-  std::list<WakeupTreeNode*> children_;
+  std::list<std::unique_ptr<WakeupTreeNode>> children_;
 
   /** @brief The contents of the node */
   std::shared_ptr<Transition> action_ = nullptr;
@@ -81,12 +80,12 @@ public:
    *  In that case, get_action() return nullptr.
    **/
   std::shared_ptr<Transition> get_action() const { return action_; }
-  const std::list<WakeupTreeNode*>& get_ordered_children() const { return children_; }
+  const std::list<std::unique_ptr<WakeupTreeNode>>& get_ordered_children() const { return children_; }
 
   std::string string_of_whole_tree(const std::string& prefix, bool is_first, bool is_last) const;
 
   /** Insert a node `node` as a new child of this node */
-  void add_child(WakeupTreeNode* node);
+  void add_child(std::unique_ptr<WakeupTreeNode> node);
 
   /**
    * @brief returns true iff calling object is a subset of called object
@@ -98,9 +97,9 @@ public:
 
   WakeupTreeNode* get_node_after_actor(aid_t aid) const
   {
-    for (auto const node : children_)
+    for (auto const& node : children_)
       if (node->get_actor() == aid)
-        return node;
+        return node.get();
 
     return nullptr;
   }
@@ -137,19 +136,8 @@ public:
  */
 class WakeupTree {
 private:
-  WakeupTreeNode* root_;
+  std::unique_ptr<WakeupTreeNode> root_;
 
-  /**
-   * @brief All of the nodes that are currently are a part of the tree
-   *
-   * @invariant Each node event maps itself to the owner of that node,
-   * i.e. the unique pointer that manages the data at the address. The tree owns all
-   * of the addresses that are referenced by the nodes WakeupTreeNode.
-   * ODPOR guarantees that nodes are persisted as long as needed.
-   */
-  std::unordered_map<WakeupTreeNode*, std::unique_ptr<WakeupTreeNode>> nodes_;
-
-  void insert_node(std::unique_ptr<WakeupTreeNode> node);
   // Returns a pointer to the lastly inserted node
   WakeupTreeNode* insert_sequence_after(WakeupTreeNode* node, const PartialExecution& w);
   void remove_node(WakeupTreeNode* node);
@@ -164,45 +152,18 @@ private:
    */
   void remove_subtree_rooted_at(WakeupTreeNode* root);
 
-  /**
-   * @brief Adds a new node to the tree, disconnected from
-   * any other, which represents the partial execution
-   * "fragment" `u`
-   */
-  WakeupTreeNode* make_node(std::shared_ptr<Transition> u);
-
-  /* Allow the iterator to access the contents of the tree */
-  friend WakeupTreeIterator;
-
 public:
   WakeupTree();
   explicit WakeupTree(std::unique_ptr<WakeupTreeNode> root);
 
   /**
-   * @brief Creates a copy of the subtree whose root is the node
-   * `root` in this tree
+   * @brief extract the subtree after the left-most action
    */
-  static WakeupTree make_subtree_rooted_at(WakeupTreeNode* root);
-
-  auto begin() const { return WakeupTreeIterator(*this); }
-  auto end() const { return WakeupTreeIterator(); }
+  WakeupTree get_first_subtree();
 
   std::vector<std::string> get_single_process_texts() const;
 
   std::string string_of_whole_tree() const;
-
-  /**
-   * @brief Remove the subtree of the smallest (with respect
-   * to the tree's "<" relation) single-process node.
-   *
-   * A "single-process" node is one whose execution represents
-   * taking a single action (i.e. those of the root node). The
-   * smallest under "<" is that which is continuously selected and
-   * removed by ODPOR.
-   *
-   * If the tree is empty, this method has no effect.
-   */
-  void remove_min_single_process_subtree();
 
   void remove_subtree_at_aid(aid_t proc);
 
@@ -213,19 +174,7 @@ public:
    * considered "empty" if it only contains the root node;
    * that is, if it is "uninteresting". In such a case,
    */
-  bool empty() const { return nodes_.size() == static_cast<size_t>(1); }
-
-  /**
-   * @brief Returns the number of *non-empty* entries in the tree, viz. the
-   * number of nodes in the tree that have an action mapped to them
-   */
-  size_t get_num_entries() const { return not empty() ? (nodes_.size() - 1) : static_cast<size_t>(0); }
-
-  /**
-   * @brief Returns the number of nodes in the tree, including the root node
-   */
-  size_t get_num_nodes() const { return nodes_.size(); }
-
+  bool empty() const { return root_->children_.size() == 0; }
   /**
    * @brief Gets the actor of the node that is the "smallest" (with respect
    * to the tree's "<" relation) single-process node.
@@ -288,7 +237,7 @@ public:
   std::vector<aid_t> get_direct_children_actors() const
   {
     std::vector<aid_t> result;
-    for (auto const leaf : root_->get_ordered_children())
+    for (auto const& leaf : root_->get_ordered_children())
       result.push_back(leaf->get_actor());
     return result;
   }

@@ -8,6 +8,7 @@
 #include "src/mc/api/Strategy.hpp"
 #include "src/mc/api/states/WutState.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/mc_config.hpp"
@@ -25,27 +26,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_befswutstate, mc_state,
 
 namespace simgrid::mc {
 
-void BeFSWutState::compare_final_and_wut()
-{
-  if (_sg_mc_debug)
-    xbt_assert(wakeup_tree_.is_contained_in(final_wakeup_tree_), "final_wut: %s\n versus curren wut: %s",
-               get_string_of_final_wut().c_str(), string_of_wut().c_str());
-}
-
 BeFSWutState::BeFSWutState(RemoteApp& remote_app) : WutState(remote_app)
 {
   is_leftmost_ = true; // The first state is the only one at that depth, so the leftmost one.
-
-  aid_t chosen_actor = wakeup_tree_.get_min_single_process_actor().value();
-  auto actor_state   = get_actors_list().at(chosen_actor);
-  // For each variant of the transition that is enabled, we want to insert the action into the tree.
-  // This ensures that all variants are searched
-  for (unsigned times = 0; times < actor_state.get_max_considered(); ++times) {
-    final_wakeup_tree_.insert_at_root(actor_state.get_transition(times));
-  }
 }
 
-BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutState(remote_app, parent_state, false)
+BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutState(remote_app, parent_state, true)
 {
   auto parent = static_cast<BeFSWutState*>(parent_state.get());
   for (const aid_t actor : parent->done_) {
@@ -58,49 +44,6 @@ BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutSt
 
   aid_t incoming_actor = parent_state->get_transition_out()->aid_;
   parent->done_.push_back(incoming_actor);
-
-  auto child_node = parent->final_wakeup_tree_.get_node_after_actor(incoming_actor);
-  if (child_node == nullptr) {
-    XBT_CRITICAL("Since this state is created from something, it should exist in its parent final_wakeup_tree! Fix Me. "
-                 "I was created from transition %s. Going to display WuT from everyone of this dynastie",
-                 parent->get_transition_out().get()->to_string().c_str());
-
-    auto curr_state = this;
-    while (curr_state != nullptr) {
-      XBT_CRITICAL("Final WuT at state %ld:", curr_state->get_num());
-      XBT_CRITICAL("%s", curr_state->get_string_of_final_wut().c_str());
-      XBT_CRITICAL("Current WuT at state %ld:", curr_state->get_num());
-      XBT_CRITICAL("%s", curr_state->string_of_wut().c_str());
-      curr_state = static_cast<BeFSWutState*>(curr_state->get_parent_state());
-    }
-
-    xbt_die("Find the culprit and fix me!");
-  }
-  final_wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(child_node);
-
-  wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(parent->wakeup_tree_.get_node_after_actor(incoming_actor));
-
-  parent->wakeup_tree_.remove_subtree_at_aid(incoming_actor);
-  compare_final_and_wut();
-  if (not wakeup_tree_.empty())
-    // We reach a state that is already guided by a wakeup tree
-    // We don't need to worry about initializing it
-    return;
-
-  initialize_if_empty_wut();
-  auto choice = wakeup_tree_.get_min_single_process_actor();
-
-  if (not choice.has_value())
-    // This means that we reached the end of the exploration, no more actor to consider here
-    return;
-
-  auto actor_state = get_actors_list().at(choice.value());
-  // For each variant of the transition that is enabled, we want to insert the action into the tree.
-  // This ensures that all variants are searched
-  for (unsigned times = 0; times < actor_state.get_max_considered(); ++times) {
-    final_wakeup_tree_.insert_at_root(actor_state.get_transition(times));
-  }
-  compare_final_and_wut();
 }
 
 void BeFSWutState::record_child_state(StatePtr child)
@@ -118,33 +61,6 @@ std::pair<aid_t, int> BeFSWutState::next_transition_guided() const
   if (best_actor == -1)
     return std::make_pair(best_actor, std::numeric_limits<int>::max());
   return std::make_pair(best_actor, Exploration::get_strategy()->get_actor_valuation_in(this, best_actor));
-}
-
-void BeFSWutState::unwind_wakeup_tree_from_parent()
-{
-  auto parent = static_cast<BeFSWutState*>(get_parent_state());
-
-  // For each leaf of the parent WuT corresponding to this actor,
-  // try to insert the corresponding sequence. If it still correponds to a new
-  // possibility, insert it for real in the WuT.
-  for (odpor::WakeupTreeNode* node : *parent->wakeup_tree_.get_node_after_actor(parent->get_transition_out()->aid_)) {
-    if (not node->is_leaf())
-      continue;
-
-    XBT_DEBUG("Going to insert sequence from parent to children %s",
-              node->string_of_whole_tree("", false, true).c_str());
-
-    // Remove the aid from the sequence
-    auto v = node->get_sequence();
-    v.erase(v.begin());
-
-    const odpor::PartialExecution v_prime = final_wakeup_tree_.insert_and_get_inserted_seq(v);
-    if (not v_prime.empty())
-      wakeup_tree_.insert(v_prime);
-  }
-
-  parent->wakeup_tree_.remove_subtree_at_aid(parent->get_transition_out()->aid_);
-  compare_final_and_wut();
 }
 
 aid_t BeFSWutState::next_transition() const
@@ -188,28 +104,83 @@ std::unordered_set<aid_t> BeFSWutState::get_sleeping_actors(aid_t after_actor) c
   return actors;
 }
 
-odpor::PartialExecution BeFSWutState::insert_into_final_wakeup_tree(const odpor::PartialExecution& pe)
+StatePtr BeFSWutState::insert_into_final_wakeup_tree(odpor::PartialExecution& w)
 {
-  return this->final_wakeup_tree_.insert_and_get_inserted_seq(pe);
-}
 
-StatePtr BeFSWutState::force_insert_into_wakeup_tree(const odpor::PartialExecution& pe)
-{
-  if (pe.size() == 0)
-    return nullptr;
+  // if (sleep_set_.count(w.begin()->get()->aid_ > 0) or
+  //     std::find(done_.begin(), done_.end(), w.begin()->get()->aid_) != done_.end())
+  //   return nullptr; // The idea here is that the sequence we try to insert has already been covered in some way
 
-  // If the start of the sequence corresponds to an already explored state
-  final_wakeup_tree_.force_insert(pe);
+  XBT_DEBUG("Inserting at state #%ld sequence\n%s", get_num(), odpor::one_string_textual_trace(w).c_str());
+  XBT_DEBUG("... potential children are %s",
+            std::accumulate(children_states_.begin(), children_states_.end(), std::string(), [](std::string a, auto b) {
+              if (b != nullptr)
+                return std::move(a) + ';' + b->get_transition_in()->to_string().c_str();
+              else
+                return a;
+            }).c_str());
 
-  auto first_actor = pe.front()->aid_;
-  if (StatePtr children = get_children_state_of_aid(first_actor); children != nullptr) {
-    odpor::PartialExecution suffix = pe;
-    suffix.erase(suffix.begin());
-    return static_cast<BeFSWutState*>(children.get())->force_insert_into_wakeup_tree(std::move(suffix));
+  for (auto& state_aid : this->done_) {
+    auto state = this->children_states_[state_aid];
+    if (state == nullptr)
+      continue;
+
+    const auto& next_E_p = state->get_transition_in();
+
+    XBT_DEBUG("... considering state after transition Actor %ld:%s as a candidate", next_E_p->aid_,
+              next_E_p->to_string().c_str());
+
+    // Is `p in `I_[E](w)`?
+    if (const aid_t p = next_E_p->aid_; odpor::Execution::is_initial_after_execution_of(w, p)) {
+      // Remove `p` from w and continue with this node
+
+      // INVARIANT: If `p` occurs in `w`, it had better refer to the same
+      // transition referenced by `v`. Unfortunately, we have two
+      // sources of truth here which can be manipulated at the same
+      // time as arguments to the function. If ODPOR works correctly,
+      // they should always refer to the same value; but as a sanity check,
+      // we have an assert that tests that at least the types are the same.
+      const auto action_by_p_in_w =
+          std::find_if(w.begin(), w.end(), [=](const auto& action) { return action->aid_ == p; });
+      xbt_assert(action_by_p_in_w != w.end(), "Invariant violated: actor `p` "
+                                              "is claimed to be an initial after `w` but is "
+                                              "not actually contained in `w`. This indicates that there "
+                                              "is a bug computing initials");
+      const auto& w_action = *action_by_p_in_w;
+      xbt_assert(w_action->type_ == next_E_p->type_,
+                 "Invariant violated: `v` claims that actor `%ld` executes '%s' while "
+                 "`w` claims that it executes '%s'. These two partial executions both "
+                 "refer to `next_[E](p)`, which should be the same",
+                 p, next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
+      w.erase(action_by_p_in_w);
+      auto state_befs = static_cast<BeFSWutState*>(state.get());
+      return state_befs->insert_into_final_wakeup_tree(w);
+    }
+    // Is `E ⊢ p ◇ w`?
+    else if (odpor::Execution::is_independent_with_execution_of(w, next_E_p)) {
+      // Nothing to remove, we simply move on
+
+      // INVARIANT: Note that it is impossible for `p` to be
+      // excluded from the set `I_[E](w)` BUT ALSO be contained in
+      // `w` itself if `E ⊢ p ◇ w` (intuitively, the fact that `E ⊢ p ◇ w`
+      // means that are able to move `p` anywhere in `w` IF it occurred, so
+      // if it really does occur we know it must then be an initial).
+      // We assert this is the case here
+      const auto action_by_p_in_w =
+          std::find_if(w.begin(), w.end(), [=](const auto& action) { return action->aid_ == p; });
+      xbt_assert(action_by_p_in_w == w.end(),
+                 "Invariant violated: We claimed that actor `%ld` is not an initial "
+                 "after `w`, yet it's independent with all actions of `w` AND occurs in `w`."
+                 "This indicates that there is a bug computing initials",
+                 p);
+      auto state_befs = static_cast<BeFSWutState*>(state.get());
+      return state_befs->insert_into_final_wakeup_tree(w);
+    }
   }
 
-  this->wakeup_tree_.force_insert(pe);
-  compare_final_and_wut();
+  if (w.size() == 0)
+    return nullptr;
+  insert_into_wakeup_tree(w);
   return this;
 }
 

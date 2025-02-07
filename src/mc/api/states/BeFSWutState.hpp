@@ -19,11 +19,6 @@ namespace simgrid::mc {
 class XBT_PRIVATE BeFSWutState : public WutState {
   std::vector<StatePtr> children_states_; // Key is aid
 
-  /** This wakeup tree is used to store the whole tree explored during the process,
-      it is only growing. There could be an optimization where we store only one wakeup
-      tree and color the subtree that correponds to the current WuT. */
-  odpor::WakeupTree final_wakeup_tree_;
-
   /** Store the aid that have been visited at least once. This is usefull both to know what not to
    *  revisit, but also to remember the order in which the children were visited. The latter information
    *  being important for the correction. */
@@ -45,7 +40,12 @@ public:
 
   aid_t next_transition() const;
 
-  odpor::PartialExecution insert_into_final_wakeup_tree(const odpor::PartialExecution&);
+  /** Insert the sequence given inside the current exploration tree. The name is given in reference to the
+   *  article (yet to be published). The idea of the implementation is to consider the existing tree-like structure
+   *  of the state as the final wakeuptree and recursively insert the sequence at the right place. When we cannot
+   *  recursively visit any children, insert the remaining stuff in the WuT of the obtained state, and return that
+   *  state.*/
+  StatePtr insert_into_final_wakeup_tree(odpor::PartialExecution&);
 
   std::pair<aid_t, int> next_transition_guided() const override;
 
@@ -62,7 +62,6 @@ public:
   void unwind_wakeup_tree_from_parent();
 
   std::unordered_set<aid_t> get_sleeping_actors(aid_t after_actor) const override;
-  std::string get_string_of_final_wut() const { return final_wakeup_tree_.string_of_whole_tree(); }
 
   /**
    * @brief Recursively unroll the given sequence into childs until none corresponding is find. The function
