@@ -52,7 +52,6 @@ private:
 
   /** Allows the owning tree to insert directly into the child */
   friend WakeupTree;
-  friend WakeupTreeIterator;
 
 public:
   explicit WakeupTreeNode(std::shared_ptr<Transition> u) : action_(u), sequence_({u}) {}
@@ -123,7 +122,6 @@ public:
  * then, represent paths that are guaranteed to explore different parts
  * of the search space.
  *
- * Iteration over a wakeup tree occurs as a post-order traversal of its nodes
  *
  * @note A wakeup tree is defined relative to some execution `E`. The
  * structure itself does not hold onto a reference of the execution with
