@@ -129,6 +129,9 @@ void BeFSExplorer::run()
         reduction_algo_->apply_race_update(std::move(todo_updates), &opened_states_);
 
         explored_traces_++;
+	// Costly verification used to check against algorithm optimality
+	if (_sg_mc_debug)
+	  odpor::MazurkiewiczTraces::record_new_execution(execution_seq_); 
         get_remote_app().finalize_app();
         XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
         XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(), explored_traces_);

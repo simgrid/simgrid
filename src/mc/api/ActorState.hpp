@@ -10,6 +10,8 @@
 
 #include <algorithm>
 #include <exception>
+#include <memory>
+#include <numeric>
 #include <vector>
 
 namespace simgrid::mc {
@@ -147,8 +149,12 @@ public:
   {
     xbt_assert(times_considered < this->pending_transitions_.size(),
                "Actor %ld does not have a state available transition with `times_considered = %u`,\n"
-               "yet one was asked for",
-               aid_, times_considered);
+               "yet one was asked for. Pending transitions are: %s",
+               aid_, times_considered,
+               std::accumulate(
+                   pending_transitions_.begin(), pending_transitions_.end(), std::string(),
+                   [](std::string a, std::shared_ptr<Transition> b) { return std::move(a) + ';' + b->to_string(); })
+                   .c_str());
     return this->pending_transitions_[times_considered];
   }
 

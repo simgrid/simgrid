@@ -8,11 +8,15 @@
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/mc_config.hpp"
+#include "src/mc/transition/Transition.hpp"
 #include "xbt/asserts.h"
+#include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 #include "xbt/string.hpp"
 #include <algorithm>
 #include <limits>
+#include <memory>
+#include <string>
 #include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor_execution, mc_reduction, "ODPOR exploration algorithm of the model-checker");
@@ -281,6 +285,11 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   std::unordered_set<aid_t> disqualified_actors = {get_actor_with_handle(e)};
   const std::unordered_set<aid_t> sleep_E_prime = state_at_e.get_sleeping_actors(actor_after_e);
 
+  XBT_DEBUG("... Sleepinging set at E_prime containing %s",
+            std::accumulate(sleep_E_prime.begin(), sleep_E_prime.end(), std::string(), [](std::string a, aid_t b) {
+              return std::move(a) + ';' + std::to_string(b);
+            }).c_str());
+
   // For each event after e, find the first dependent on each actor. From this point,
   // all other event on those actors "happens-after" and are then disqualified from
   // the construction of v.
@@ -465,6 +474,60 @@ bool Execution::happens_before(Execution::EventHandle e1_handle, Execution::Even
   // are independent, but further that there are no transitive
   // dependencies between e1 and e2
   return false;
+}
+
+bool MazurkiewiczTraces::are_equivalent(const PartialExecution& u, const PartialExecution& v)
+{
+
+  if (u.size() != v.size())
+    return false;
+
+  if (u.size() == 0)
+    return true;
+
+  const std::shared_ptr<Transition> a = u[0];
+
+  auto new_v = v;
+  auto new_u = u;
+
+  // We look through v until we find a.
+  // If we encounter any dependent transition on the way, then those two executions are not equivalent
+  auto b = new_v.begin();
+  for (; b != new_v.end(); b++) {
+    if ((*b)->type_ == a->type_ && (*b)->aid_ == a->aid_)
+      break;
+
+    if ((*b)->depends(a.get()))
+      return false;
+  }
+
+  if (b == new_v.end())
+    return false;
+
+  new_u.erase(new_u.begin());
+  new_v.erase(b);
+
+  return are_equivalent(new_u, new_v);
+}
+
+std::set<PartialExecution> MazurkiewiczTraces::classes_ = {};
+
+void MazurkiewiczTraces::record_new_execution(const Execution& exec)
+{
+  auto seq = PartialExecution{};
+  for (auto const& e : exec)
+    seq.push_back(e.get_transition());
+
+  for (auto const& can_be_equivalent : classes_) {
+
+    if (are_equivalent(seq, can_be_equivalent)) {
+      XBT_CRITICAL("Inserted a sequence that is equivalent with an already explored one! Be carefull!");
+      XBT_CRITICAL("Previous sequence was:\n%s", one_string_textual_trace(can_be_equivalent).c_str());
+      XBT_CRITICAL("New one is:\n%s", one_string_textual_trace(seq).c_str());
+      xbt_die("Fix me!");
+    }
+  }
+  classes_.insert(seq);
 }
 
 } // namespace simgrid::mc::odpor

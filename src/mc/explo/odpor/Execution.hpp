@@ -13,7 +13,9 @@
 #include "src/mc/transition/Transition.hpp"
 
 #include <list>
+#include <map>
 #include <optional>
+#include <set>
 #include <unordered_set>
 #include <vector>
 
@@ -390,6 +392,18 @@ public:
    * the execution
    */
   void push_partial_execution(const PartialExecution&);
+};
+
+class MazurkiewiczTraces {
+
+  static std::set<PartialExecution> classes_;
+
+  static bool are_equivalent(const PartialExecution&, const PartialExecution&);
+
+public:
+  MazurkiewiczTraces() = delete;
+
+  static void record_new_execution(const Execution&);
 };
 
 } // namespace simgrid::mc::odpor
