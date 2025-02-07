@@ -68,10 +68,12 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
                                        "dirname",
                                        "gdb",
                                        "ls",
+                                       "ltrace",
                                        "make",
                                        "md5sum",
                                        "rm",
                                        "sed",
+                                       "strace",
                                        "simgrid-mc",
                                        "wc"};
   for (int i = 0; envp[i] != nullptr; i++) {
