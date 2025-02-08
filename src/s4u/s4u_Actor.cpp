@@ -759,7 +759,7 @@ void sg_actor_sleep_until(double wakeup_time)
   simgrid::s4u::this_actor::sleep_until(wakeup_time);
 }
 
-sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host)
+sg_actor_t sg_actor_attach_pthread(const char* name, void* data, sg_host_t host)
 {
   xbt_assert(host != nullptr, "Invalid parameters: host must not be nullptr");
 
@@ -773,6 +773,10 @@ sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host)
 
   simgrid::s4u::this_actor::yield();
   return actor->get_ciface();
+}
+sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host, xbt_dict_t properties)
+{
+  return sg_actor_attach_pthread(name, data, host);
 }
 
 void sg_actor_detach()

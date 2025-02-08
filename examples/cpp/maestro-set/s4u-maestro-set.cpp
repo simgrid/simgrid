@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
   e.load_platform(argv[1]);
 
   /* Become one of the simulated actors (must be done after the platform creation, or the host won't exist). */
-  sg_actor_attach("sender", nullptr, e.host_by_name("Tremblay"));
+  sg_actor_attach_pthread("sender", nullptr, e.host_by_name("Tremblay"));
 
   ensure_root_tid(); // Only useful in this test: we ensure that SimGrid is not broken and that this code is executed in
                      // the correct system thread
