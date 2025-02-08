@@ -135,6 +135,8 @@ PYBIND11_MODULE(simgrid, m)
            py::overload_cast<const std::vector<simgrid::s4u::Host*>&, const std::vector<double>&,
                              const std::vector<double>&>(&simgrid::s4u::this_actor::exec_init),
            py::call_guard<py::gil_scoped_release>(), "Initiate a parallel task (requires the 'ptask_L07' model)")
+      .def("get_engine", &simgrid::s4u::this_actor::get_engine,
+           "The engine on which this actor is running (read-only property).")
       .def("get_host", &simgrid::s4u::this_actor::get_host, "Retrieves host on which the current actor is located")
       .def("set_host", &simgrid::s4u::this_actor::set_host, py::call_guard<py::gil_scoped_release>(),
            "Moves the current actor to another host.", py::arg("dest"))
@@ -234,7 +236,29 @@ PYBIND11_MODULE(simgrid, m)
               }
             });
           },
-          "Registers the main function of an actor")
+          "Registers the main function of an actor (used for the deployment file)")
+      .def(
+          "add_actor",
+          [](Engine* engine, const std::string& name, Host* h, py::object fun, py::args args) {
+            fun.inc_ref();  // keep alive after return
+            args.inc_ref(); // keep alive after return
+            const py::gil_scoped_release gil_release;
+            return engine->add_actor(name, h, [fun_p = fun.ptr(), args_p = args.ptr()]() {
+              const py::gil_scoped_acquire py_context;
+              try {
+                const auto fun  = py::reinterpret_borrow<py::object>(fun_p);
+                const auto args = py::reinterpret_borrow<py::args>(args_p);
+                fun(*args);
+              } catch (const py::error_already_set& ex) {
+                if (ex.matches(pyForcefulKillEx)) {
+                  XBT_VERB("Actor killed");
+                  simgrid::ForcefulKillException::do_throw(); // Forward that ForcefulKill exception
+                }
+                throw;
+              }
+            });
+          },
+          "Create an actor from a function or an object. See the :ref:`example <s4u_ex_actors_create>`.")
       .def("set_log_control", [](Engine*, const std::string& settings) { xbt_log_control_set(settings.c_str()); });
 
   /* Class Netzone */
@@ -244,10 +268,8 @@ PYBIND11_MODULE(simgrid, m)
       .def_static(
           "create_full_zone",
           [](std::string const& name) {
-            PyErr_WarnEx(
-                PyExc_DeprecationWarning,
-                "create_full_zone() is deprecated, use Engine.set_rootnetzone_full() or Netzone.add_netzone_full().",
-                2);
+            PyErr_WarnEx(PyExc_DeprecationWarning, "create_full_zone() is deprecated, use Netzone.add_netzone_full().",
+                         2);
             throw std::logic_error("Please call Netzone.add_netzone_full() instead");
           },
           "Creates a zone of type FullZone") // XBT_ATTRIB_DEPRECATED_v339
@@ -257,20 +279,16 @@ PYBIND11_MODULE(simgrid, m)
       .def_static(
           "create_star_zone",
           [](std::string const& name) {
-            PyErr_WarnEx(
-                PyExc_DeprecationWarning,
-                "create_star_zone() is deprecated, use Engine.set_rootnetzone_star() or Netzone.add_netzone_star().",
-                2);
+            PyErr_WarnEx(PyExc_DeprecationWarning, "create_star_zone() is deprecated, use Netzone.add_netzone_star().",
+                         2);
             throw std::logic_error("Please call Netzone.add_netzone_star() instead");
           },
           "Creates a zone of type Star") // XBT_ATTRIB_DEPRECATED_v339
       .def_static(
           "create_floyd_zone",
           [](std::string const& name) {
-            PyErr_WarnEx(
-                PyExc_DeprecationWarning,
-                "create_floyd_zone() is deprecated, use Engine.set_rootnetzone_floyd() or Netzone.add_netzone_floyd().",
-                2);
+            PyErr_WarnEx(PyExc_DeprecationWarning,
+                         "create_floyd_zone() is deprecated, use Netzone.add_netzone_floyd().", 2);
             throw std::logic_error("Please call Netzone.add_netzone_floyd() instead");
           },
           "Creates a zone of type Floyd") // XBT_ATTRIB_DEPRECATED_v339
@@ -278,9 +296,7 @@ PYBIND11_MODULE(simgrid, m)
           "create_dijkstra_zone",
           [](std::string const& name) {
             PyErr_WarnEx(PyExc_DeprecationWarning,
-                         "create_dijkstra_zone() is deprecated, use Engine.set_rootnetzone_dijkstra() or "
-                         "Netzone.add_netzone_dijkstra().",
-                         2);
+                         "create_dijkstra_zone() is deprecated, use Netzone.add_netzone_dijkstra().", 2);
             throw std::logic_error("Please call Netzone.add_netzone_dijkstra() instead");
           },
           "Creates a zone of type Dijkstra") // XBT_ATTRIB_DEPRECATED_v339
@@ -288,29 +304,23 @@ PYBIND11_MODULE(simgrid, m)
           "create_vivaldi_zone",
           [](std::string const& name) {
             PyErr_WarnEx(PyExc_DeprecationWarning,
-                         "create_vivaldi_zone() is deprecated, use Engine.set_rootnetzone_vivaldi() or "
-                         "Netzone.add_netzone_vivaldi().",
-                         2);
+                         "create_vivaldi_zone() is deprecated, use Netzone.add_netzone_vivaldi().", 2);
             throw std::logic_error("Please call Netzone.add_netzone_vivaldi() instead");
           },
           "Creates a zone of type Vivaldi") // XBT_ATTRIB_DEPRECATED_v339
       .def_static(
           "create_empty_zone",
           [](std::string const& name) {
-            PyErr_WarnEx(
-                PyExc_DeprecationWarning,
-                "create_empty_zone() is deprecated, use Engine.set_rootnetzone_empty() or Netzone.add_netzone_empty().",
-                2);
+            PyErr_WarnEx(PyExc_DeprecationWarning,
+                         "create_empty_zone() is deprecated, use Netzone.add_netzone_empty().", 2);
             throw std::logic_error("Please call Netzone.add_netzone_empty() instead");
           },
           "Creates a zone of type Empty") // XBT_ATTRIB_DEPRECATED_v339
       .def_static(
           "create_wifi_zone",
           [](std::string const& name) {
-            PyErr_WarnEx(
-                PyExc_DeprecationWarning,
-                "create_wifi_zone() is deprecated, use Engine.set_rootnetzone_wifi() or Netzone.add_netzone_wifi().",
-                2);
+            PyErr_WarnEx(PyExc_DeprecationWarning, "create_wifi_zone() is deprecated, use Netzone.add_netzone_wifi().",
+                         2);
             throw std::logic_error("Please call Netzone.add_netzone_wifi() instead");
           },
           "Creates a zone of type Wi-Fi") // XBT_ATTRIB_DEPRECATED_v339
@@ -924,13 +934,15 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",
                                             "An actor is an independent stream of execution in your distributed "
                                             "application. See the C++ documentation for details.")
-      .def(
+      .def( // XBT_ATTRIB_DEPRECATED_v339
           "create",
           [](const std::string& name, Host* h, py::object fun, py::args args) {
+            PyErr_WarnEx(PyExc_DeprecationWarning, "Actor.create() is deprecated, use Engine.add_actor().", 2);
+
             fun.inc_ref();  // keep alive after return
             args.inc_ref(); // keep alive after return
             const py::gil_scoped_release gil_release;
-            return simgrid::s4u::Actor::create(name, h, [fun_p = fun.ptr(), args_p = args.ptr()]() {
+            return Engine::get_instance()->add_actor(name, h, [fun_p = fun.ptr(), args_p = args.ptr()]() {
               const py::gil_scoped_acquire py_context;
               try {
                 const auto fun  = py::reinterpret_borrow<py::object>(fun_p);

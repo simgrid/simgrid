@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
       [](const sg4::Task* t) { XBT_INFO("Task %s finished (%d)", t->get_name().c_str(), t->get_count()); });
 
   // Create the actor that will inject load during the simulation
-  sg4::Actor::create("input", tremblay, variable_load, comm);
+  e.add_actor("input", tremblay, variable_load, comm);
 
   // Start the simulation
   e.run();

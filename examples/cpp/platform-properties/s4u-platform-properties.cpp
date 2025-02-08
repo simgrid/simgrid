@@ -120,10 +120,10 @@ int main(int argc, char* argv[])
   for (sg4::Host const* host : hosts)
     XBT_INFO("Host '%s' runs at %.0f flops/s", host->get_cname(), host->get_speed());
 
-  sg4::Actor::create("alice", host1, alice);
-  sg4::Actor::create("bob", host1, bob)->set_property("SomeProp", "SomeValue");
-  sg4::Actor::create("carole", host2, carole);
-  sg4::Actor::create("david", host2, david);
+  e.add_actor("alice", host1, alice);
+  e.add_actor("bob", host1, bob)->set_property("SomeProp", "SomeValue");
+  e.add_actor("carole", host2, carole);
+  e.add_actor("david", host2, david);
 
   e.run();
 

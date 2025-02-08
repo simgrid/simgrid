@@ -55,8 +55,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("dvfs_test", e.host_by_name("MyHost1"), dvfs);
-  sg4::Actor::create("dvfs_test", e.host_by_name("MyHost2"), dvfs);
+  e.add_actor("dvfs_test", e.host_by_name("MyHost1"), dvfs);
+  e.add_actor("dvfs_test", e.host_by_name("MyHost2"), dvfs);
 
   e.run();
 

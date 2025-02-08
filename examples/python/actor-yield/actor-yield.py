@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     e.load_platform(sys.argv[1])             # Load the platform description
 
-    Actor.create("yielder", Host.by_name("Tremblay"), yielder, 10)
-    Actor.create("yielder", Host.by_name("Ruby"), yielder, 15)
+    e.add_actor("yielder", Host.by_name("Tremblay"), yielder, 10)
+    e.add_actor("yielder", Host.by_name("Ruby"), yielder, 15)
 
     e.run()  # - Run the simulation

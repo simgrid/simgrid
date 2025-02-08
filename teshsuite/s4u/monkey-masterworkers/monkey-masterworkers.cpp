@@ -120,10 +120,10 @@ int main(int argc, char* argv[])
   }
   rootzone->seal();
 
-  sg4::Actor::create("master", master_host, master, mailbox)->daemonize()->set_auto_restart(true);
+  e.add_actor("master", master_host, master, mailbox)->daemonize()->set_auto_restart(true);
   int id = 0;
   for (auto* h : worker_hosts) {
-    sg4::Actor::create("worker", h, worker, id, mailbox, std::ref(todo))->set_auto_restart(true);
+    e.add_actor("worker", h, worker, id, mailbox, std::ref(todo))->set_auto_restart(true);
     id++;
   }
 

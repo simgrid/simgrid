@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Actor.hpp"
 #include <mutex>           /* std::mutex and std::scoped_lock */
 #include <simgrid/s4u.hpp> /* All of S4U */
 
@@ -36,14 +37,15 @@ static void go(sg4::ConditionVariablePtr cv, sg4::MutexPtr mtx, std::shared_ptr<
 
 static void main_actor()
 {
+  sg4::Engine& e = *simgrid::s4u::this_actor::get_engine();
   auto mtx   = sg4::Mutex::create();
   auto cv    = sg4::ConditionVariable::create();
   auto ready = std::make_shared<bool>(false);
 
   auto* host = sg4::this_actor::get_host();
   for (int i = 0; i < 10; ++i)
-    sg4::Actor::create("competitor", host, competitor, i, cv, mtx, ready);
-  sg4::Actor::create("go", host, go, cv, mtx, ready);
+    e.add_actor("competitor", host, competitor, i, cv, mtx, ready);
+  e.add_actor("go", host, go, cv, mtx, ready);
 }
 
 int main(int argc, char* argv[])
@@ -51,7 +53,7 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
   e.load_platform("../../platforms/small_platform.xml");
 
-  sg4::Actor::create("main", e.host_by_name("Tremblay"), main_actor);
+  e.add_actor("main", e.host_by_name("Tremblay"), main_actor);
 
   e.run();
   return 0;

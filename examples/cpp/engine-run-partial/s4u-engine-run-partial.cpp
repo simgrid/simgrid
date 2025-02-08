@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
   sg4::Host* fafard = e.host_by_name("Fafard");
 
   sg4::ExecPtr activity = sg4::this_actor::exec_init(fafard->get_speed() * 10.)->set_host(fafard);
-  sg4::Actor::create("runner", fafard, runner, activity);
+  e.add_actor("runner", fafard, runner, activity);
 
   while (activity->get_remaining() > 0) {
     XBT_INFO("Remaining amount of flops: %g (%.0f%%)", activity->get_remaining(),

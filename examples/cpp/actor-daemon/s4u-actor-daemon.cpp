@@ -35,8 +35,8 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
 
   e.load_platform(argv[1]);
-  sg4::Actor::create("worker", e.host_by_name("Boivin"), worker);
-  sg4::Actor::create("daemon", e.host_by_name("Tremblay"), my_daemon);
+  e.add_actor("worker", e.host_by_name("Boivin"), worker);
+  e.add_actor("daemon", e.host_by_name("Tremblay"), my_daemon);
 
   e.run();
   return 0;

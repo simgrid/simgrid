@@ -6,6 +6,7 @@
 
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u.hpp"
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include <cmath>
 
@@ -32,7 +33,7 @@ static void computation_fun(double size)
 
 static void run_test_process(const std::string& name, simgrid::s4u::Host* location, double size)
 {
-  simgrid::s4u::Actor::create(name, location, computation_fun, floor(size));
+  simgrid::s4u::this_actor::get_engine()->add_actor(name, location, computation_fun, floor(size));
 }
 
 static void test_energy_consumption(const std::string& name, int nb_cores)
@@ -582,7 +583,7 @@ int main(int argc, char* argv[])
 
   simgrid::s4u::Host* pm0 = e.host_by_name("node-0.1core.org");
   xbt_assert(pm0, "Host 'node-0.1core.org' not found");
-  simgrid::s4u::Actor::create("master", pm0, master_main);
+  e.add_actor("master", pm0, master_main);
 
   e.run();
 }

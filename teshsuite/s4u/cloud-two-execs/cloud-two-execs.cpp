@@ -31,12 +31,13 @@ static void computation_fun(simgrid::s4u::ExecPtr& exec)
 
 static void master_main()
 {
+  simgrid::s4u::Engine& e = *simgrid::s4u::this_actor::get_engine();
   auto* pm0 = simgrid::s4u::Host::by_name("Fafard");
   auto* vm0 = pm0->create_vm("VM0", 1);
   vm0->start();
 
   simgrid::s4u::ExecPtr exec;
-  simgrid::s4u::Actor::create("compute", vm0, computation_fun, std::ref(exec));
+  e.add_actor("compute", vm0, computation_fun, std::ref(exec));
 
   while (simgrid::s4u::Engine::get_clock() < 100) {
     if (exec)
@@ -54,7 +55,7 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("master_", e.host_by_name("Fafard"), master_main);
+  e.add_actor("master_", e.host_by_name("Fafard"), master_main);
 
   e.run();
   XBT_INFO("Bye (simulation time %g)", simgrid::s4u::Engine::get_clock());

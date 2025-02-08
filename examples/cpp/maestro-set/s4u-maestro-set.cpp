@@ -54,9 +54,11 @@ static void receiver()
 
 static void maestro(void* /* data */)
 {
+  sg4::Engine& e = *sg4::this_actor::get_engine();
+
   ensure_other_tid();
-  sg4::Actor::create("receiver", sg4::Host::by_name("Jupiter"), receiver);
-  sg4::Engine::get_instance()->run();
+  e.add_actor("receiver", sg4::Host::by_name("Jupiter"), receiver);
+  e.run();
 }
 
 /** Main function */

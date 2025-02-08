@@ -57,6 +57,6 @@ if __name__ == '__main__':
 
     e.load_platform(sys.argv[1])
 
-    Actor.create("test", Host.by_name("Fafard"), Wizard())
+    e.add_actor("test", Host.by_name("Fafard"), Wizard())
 
     e.run()

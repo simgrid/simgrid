@@ -78,10 +78,10 @@ int main(int argc, char* argv[])
   sg4::Host* boivin  = e.host_by_name("Boivin");
   sg4::Host* tremblay  = e.host_by_name("Tremblay");
 
-  sg4::Actor::create("wait", fafard, waiter);
-  sg4::Actor::create("monitor", ginette, monitor);
-  sg4::Actor::create("cancel", boivin, canceller);
-  sg4::Actor::create("detach", tremblay, detached);
+  e.add_actor("wait", fafard, waiter);
+  e.add_actor("monitor", ginette, monitor);
+  e.add_actor("cancel", boivin, canceller);
+  e.add_actor("detach", tremblay, detached);
 
   e.run();
 

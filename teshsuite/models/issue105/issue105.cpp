@@ -79,8 +79,8 @@ int main(int argc, char* argv[])
   world->seal();
 
   sg4::Mailbox* mb1 = e.mailbox_by_name_or_create("Mailbox 1");
-  sg4::Actor::create("load-generator", hostGl01, load_generator, mb1);
-  sg4::Actor::create("cluster-node-sa01", hostSa01, receiver, mb1);
+  e.add_actor("load-generator", hostGl01, load_generator, mb1);
+  e.add_actor("cluster-node-sa01", hostSa01, receiver, mb1);
 
   e.run();
 

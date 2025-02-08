@@ -38,10 +38,10 @@ int main(int argc, char* argv[])
 
   simgrid::s4u::Actor::kill_all();
 
-  simgrid::s4u::Actor::create("sendpid", e.host_by_name("Tremblay"), sendpid);
-  simgrid::s4u::Actor::create("sendpid", e.host_by_name("Tremblay"), sendpid);
-  simgrid::s4u::Actor::create("sendpid", e.host_by_name("Tremblay"), sendpid);
-  simgrid::s4u::Actor::create("killall", e.host_by_name("Tremblay"), killall);
+  e.add_actor("sendpid", e.host_by_name("Tremblay"), sendpid);
+  e.add_actor("sendpid", e.host_by_name("Tremblay"), sendpid);
+  e.add_actor("sendpid", e.host_by_name("Tremblay"), sendpid);
+  e.add_actor("killall", e.host_by_name("Tremblay"), killall);
 
   e.run();
 

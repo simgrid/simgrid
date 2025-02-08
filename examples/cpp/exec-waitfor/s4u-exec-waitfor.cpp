@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
-  sg4::Actor::create("worker", e.host_by_name("Tremblay"), worker);
+  e.add_actor("worker", e.host_by_name("Tremblay"), worker);
   e.run();
 
   return 0;

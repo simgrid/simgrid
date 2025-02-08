@@ -150,8 +150,8 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n", argv[0]);
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("server", e.host_by_name("alice"), server);
-  simgrid::s4u::Actor::create("client", e.host_by_name("bob"), client);
+  e.add_actor("server", e.host_by_name("alice"), server);
+  e.add_actor("client", e.host_by_name("bob"), client);
 
   e.run();
 

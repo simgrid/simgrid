@@ -44,7 +44,7 @@ def monitor():
     jacquelin = Host.by_name("Jacquelin")
     fafard = Host.by_name("Fafard")
 
-    actor = Actor.create("worker", fafard, worker, boivin, jacquelin)
+    actor = e.add_actor("worker", fafard, worker, boivin, jacquelin)
 
     this_actor.sleep_for(5)
 
@@ -66,5 +66,5 @@ if __name__ == '__main__':
             "Usage: actor-migration.py platform_file [other parameters]")
     e.load_platform(sys.argv[1])
 
-    Actor.create("monitor", Host.by_name("Boivin"), monitor)
+    e.add_actor("monitor", Host.by_name("Boivin"), monitor)
     e.run()

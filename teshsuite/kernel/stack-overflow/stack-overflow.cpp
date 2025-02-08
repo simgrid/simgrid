@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform.xml\n", argv[0]);
 
   e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), master);
+  e.add_actor("master", e.host_by_name("Tremblay"), master);
   e.run();
 
   return 0;

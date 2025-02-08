@@ -5,6 +5,7 @@
 
 #include "simgrid/plugins/load.h"
 #include "simgrid/s4u.hpp"
+#include "simgrid/s4u/Engine.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 namespace sg4 = simgrid::s4u;
@@ -22,25 +23,27 @@ static void receiver(const std::string& mailbox)
   mbox->get<int>();
 }
 
-static void run_transfer(sg4::Host* src_host, sg4::Host* dst_host, const std::string& mailbox, unsigned long msg_size)
+static void run_transfer(sg4::Engine& e, sg4::Host* src_host, sg4::Host* dst_host, const std::string& mailbox,
+                         unsigned long msg_size)
 {
   XBT_INFO("Launching the transfer of %lu bytes", msg_size);
-  sg4::Actor::create("sender", src_host, sender, mailbox, msg_size);
-  sg4::Actor::create("receiver", dst_host, receiver, mailbox);
+  e.add_actor("sender", src_host, sender, mailbox, msg_size);
+  e.add_actor("receiver", dst_host, receiver, mailbox);
 }
 
 static void execute_load_test()
 {
+  sg4::Engine& e = *sg4::this_actor::get_engine();
   auto* host0 = sg4::Host::by_name("node-0.simgrid.org");
   auto* host1 = sg4::Host::by_name("node-1.simgrid.org");
 
   sg4::this_actor::sleep_for(1);
-  run_transfer(host0, host1, "1", 1000 * 1000 * 1000);
+  run_transfer(e, host0, host1, "1", 1000 * 1000 * 1000);
 
   sg4::this_actor::sleep_for(10);
-  run_transfer(host0, host1, "2", 1000 * 1000 * 1000);
+  run_transfer(e, host0, host1, "2", 1000 * 1000 * 1000);
   sg4::this_actor::sleep_for(3);
-  run_transfer(host0, host1, "3", 1000 * 1000 * 1000);
+  run_transfer(e, host0, host1, "3", 1000 * 1000 * 1000);
 }
 
 static void show_link_load(const std::string& link_name, const sg4::Link* link)
@@ -94,8 +97,8 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/energy_platform.xml\n", argv[0], argv[0]);
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("load_test", e.host_by_name("node-42.simgrid.org"), execute_load_test);
-  sg4::Actor::create("monitor", e.host_by_name("node-51.simgrid.org"), monitor);
+  e.add_actor("load_test", e.host_by_name("node-42.simgrid.org"), execute_load_test);
+  e.add_actor("monitor", e.host_by_name("node-51.simgrid.org"), monitor);
 
   e.run();
 

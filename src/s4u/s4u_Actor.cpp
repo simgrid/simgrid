@@ -92,9 +92,7 @@ ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::func
 ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::string& function,
                        std::vector<std::string> args)
 {
-  const simgrid::kernel::actor::ActorCodeFactory& factory =
-      simgrid::kernel::EngineImpl::get_instance()->get_function(function);
-  return create(name, host, factory(std::move(args)));
+  return s4u::Engine::get_instance()->add_actor(name, host, function, std::move(args));
 }
 
 void intrusive_ptr_add_ref(const Actor* actor)
@@ -443,6 +441,10 @@ aid_t get_pid()
 aid_t get_ppid()
 {
   return simgrid::kernel::actor::ActorImpl::self()->get_ppid();
+}
+Engine* get_engine()
+{
+  return simgrid::s4u::Engine::get_instance();
 }
 
 std::string get_name()

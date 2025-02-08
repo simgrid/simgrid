@@ -20,13 +20,13 @@ static void computation_fun()
            clock_end - clock_sta);
 }
 
-static void launch_computation_worker(s4u_Host* host)
+static void launch_computation_worker(sg4::Engine* e, sg4::Host* host)
 {
-  sg4::Actor::create("compute", host, computation_fun);
+  e->add_actor("compute", host, computation_fun);
 }
 
 struct s_payload {
-  s4u_Host* tx_host;
+  sg4::Host* tx_host;
   const char* tx_actor_name;
   double clock_sta;
 };
@@ -55,36 +55,38 @@ static void communication_rx_fun(std::vector<std::string> args)
            clock_end - payload->clock_sta);
 }
 
-static void launch_communication_worker(s4u_Host* tx_host, s4u_Host* rx_host)
+static void launch_communication_worker(sg4::Engine* e, sg4::Host* tx_host, sg4::Host* rx_host)
 {
   std::string mbox_name = "MBOX:" + tx_host->get_name() + "-" + rx_host->get_name();
   std::vector<std::string> args;
   args.push_back(mbox_name);
 
-  sg4::Actor::create("comm_tx", tx_host, communication_tx_fun, args);
-  sg4::Actor::create("comm_rx", rx_host, communication_rx_fun, args);
+  e->add_actor("comm_tx", tx_host, communication_tx_fun, args);
+  e->add_actor("comm_rx", rx_host, communication_rx_fun, args);
 }
 
 static void master_main()
 {
-  s4u_Host* pm0 = sg4::Host::by_name("Fafard");
-  s4u_Host* pm1 = sg4::Host::by_name("Tremblay");
-  s4u_Host* pm2 = sg4::Host::by_name("Bourassa");
+  auto e = simgrid::s4u::this_actor::get_engine();
+
+  sg4::Host* pm0 = sg4::Host::by_name("Fafard");
+  sg4::Host* pm1 = sg4::Host::by_name("Tremblay");
+  sg4::Host* pm2 = sg4::Host::by_name("Bourassa");
 
   XBT_INFO("## Test 1 (started): check computation on normal PMs");
 
   XBT_INFO("### Put an activity on a PM");
-  launch_computation_worker(pm0);
+  launch_computation_worker(e, pm0);
   sg4::this_actor::sleep_for(2);
 
   XBT_INFO("### Put two activities on a PM");
-  launch_computation_worker(pm0);
-  launch_computation_worker(pm0);
+  launch_computation_worker(e, pm0);
+  launch_computation_worker(e, pm0);
   sg4::this_actor::sleep_for(2);
 
   XBT_INFO("### Put an activity on each PM");
-  launch_computation_worker(pm0);
-  launch_computation_worker(pm1);
+  launch_computation_worker(e, pm0);
+  launch_computation_worker(e, pm1);
   sg4::this_actor::sleep_for(2);
 
   XBT_INFO("## Test 1 (ended)");
@@ -95,7 +97,7 @@ static void master_main()
   XBT_INFO("### Put a VM on a PM, and put an activity to the VM");
   auto* vm0 = pm0->create_vm("VM0", 1);
   vm0->start();
-  launch_computation_worker(vm0);
+  launch_computation_worker(e, vm0);
   sg4::this_actor::sleep_for(2);
   vm0->destroy();
 
@@ -107,7 +109,7 @@ static void master_main()
   XBT_INFO("### Put a VM on a PM, and put an activity to the PM");
   vm0 = pm0->create_vm("VM0", 1);
   vm0->start();
-  launch_computation_worker(pm0);
+  launch_computation_worker(e, pm0);
   sg4::this_actor::sleep_for(2);
   vm0->destroy();
   XBT_INFO("## Test 3 (ended)");
@@ -121,8 +123,8 @@ static void master_main()
   vm0->start();
   auto* vm1 = pm0->create_vm("VM1", 1);
   vm1->start();
-  launch_computation_worker(vm0);
-  launch_computation_worker(vm1);
+  launch_computation_worker(e, vm0);
+  launch_computation_worker(e, vm1);
   sg4::this_actor::sleep_for(2);
   vm0->destroy();
   vm1->destroy();
@@ -132,8 +134,8 @@ static void master_main()
   vm1 = pm1->create_vm("VM1", 1);
   vm0->start();
   vm1->start();
-  launch_computation_worker(vm0);
-  launch_computation_worker(vm1);
+  launch_computation_worker(e, vm0);
+  launch_computation_worker(e, vm1);
   sg4::this_actor::sleep_for(2);
   vm0->destroy();
   vm1->destroy();
@@ -141,40 +143,40 @@ static void master_main()
 
   XBT_INFO("## Test 5  (started): Analyse network impact");
   XBT_INFO("### Make a connection between PM0 and PM1");
-  launch_communication_worker(pm0, pm1);
+  launch_communication_worker(e, pm0, pm1);
   sg4::this_actor::sleep_for(5);
 
   XBT_INFO("### Make two connection between PM0 and PM1");
-  launch_communication_worker(pm0, pm1);
-  launch_communication_worker(pm0, pm1);
+  launch_communication_worker(e, pm0, pm1);
+  launch_communication_worker(e, pm0, pm1);
   sg4::this_actor::sleep_for(5);
 
   XBT_INFO("### Make a connection between PM0 and VM0@PM0");
   vm0 = pm0->create_vm("VM0", 1);
   vm0->start();
-  launch_communication_worker(pm0, vm0);
+  launch_communication_worker(e, pm0, vm0);
   sg4::this_actor::sleep_for(5);
   vm0->destroy();
 
   XBT_INFO("### Make a connection between PM0 and VM0@PM1");
   vm0 = pm1->create_vm("VM0", 1);
-  launch_communication_worker(pm0, vm0);
+  launch_communication_worker(e, pm0, vm0);
   sg4::this_actor::sleep_for(5);
   vm0->destroy();
 
   XBT_INFO("### Make two connections between PM0 and VM0@PM1");
   vm0 = pm1->create_vm("VM0", 1);
   vm0->start();
-  launch_communication_worker(pm0, vm0);
-  launch_communication_worker(pm0, vm0);
+  launch_communication_worker(e, pm0, vm0);
+  launch_communication_worker(e, pm0, vm0);
   sg4::this_actor::sleep_for(5);
   vm0->destroy();
 
   XBT_INFO("### Make a connection between PM0 and VM0@PM1, and also make a connection between PM0 and PM1");
   vm0 = pm1->create_vm("VM0", 1);
   vm0->start();
-  launch_communication_worker(pm0, vm0);
-  launch_communication_worker(pm0, pm1);
+  launch_communication_worker(e, pm0, vm0);
+  launch_communication_worker(e, pm0, pm1);
   sg4::this_actor::sleep_for(5);
   vm0->destroy();
 
@@ -183,8 +185,8 @@ static void master_main()
   vm1 = pm1->create_vm("VM1", 1);
   vm0->start();
   vm1->start();
-  launch_communication_worker(vm0, vm1);
-  launch_communication_worker(vm0, vm1);
+  launch_communication_worker(e, vm0, vm1);
+  launch_communication_worker(e, vm0, vm1);
   sg4::this_actor::sleep_for(5);
   vm0->destroy();
   vm1->destroy();
@@ -197,7 +199,7 @@ static void master_main()
   vm0->set_ramsize(1L * 1024 * 1024 * 1024); // 1GiB
 
   vm0->start();
-  launch_communication_worker(vm0, pm2);
+  launch_communication_worker(e, vm0, pm2);
   sg4::this_actor::sleep_for(0.01);
   sg_vm_migrate(vm0, pm1);
   sg4::this_actor::sleep_for(0.01);
@@ -213,7 +215,7 @@ int main(int argc, char* argv[])
   sg_vm_live_migration_plugin_init();
   e.load_platform(argv[1]); /* - Load the platform description */
 
-  sg4::Actor::create("master_", e.host_by_name("Fafard"), master_main);
+  e.add_actor("master_", e.host_by_name("Fafard"), master_main);
 
   e.run();
 

@@ -73,8 +73,8 @@ def main():
 
     # create actors Sender/Receiver
     messages_count = 10
-    Actor.create("receiver", receiver_host, Receiver(messages_count=messages_count))
-    Actor.create("sender", sender_host, Sender(messages_count=messages_count, message_size=int(1e6)))
+    e.add_actor("receiver", receiver_host, Receiver(messages_count=messages_count))
+    e.add_actor("sender", sender_host, Sender(messages_count=messages_count, message_size=int(1e6)))
 
     e.run()
 

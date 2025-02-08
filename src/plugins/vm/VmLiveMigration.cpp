@@ -6,6 +6,7 @@
 #include <simgrid/Exception.hpp>
 #include <simgrid/plugins/live_migration.h>
 
+#include "simgrid/s4u/Engine.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/plugins/vm/VmLiveMigration.hpp"
@@ -336,10 +337,9 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   std::string rx_name = "__pr_mig_rx:" + vm->get_name() + "(" + src_pm->get_name() + "-" + dst_pm->get_name() + ")";
   std::string tx_name = "__pr_mig_tx:" + vm->get_name() + "(" + src_pm->get_name() + "-" + dst_pm->get_name() + ")";
 
-  simgrid::s4u::ActorPtr rx =
-      simgrid::s4u::Actor::create(rx_name.c_str(), dst_pm, simgrid::plugin::vm::MigrationRx(vm, dst_pm));
-  simgrid::s4u::ActorPtr tx =
-      simgrid::s4u::Actor::create(tx_name.c_str(), src_pm, simgrid::plugin::vm::MigrationTx(vm, dst_pm));
+  auto e                    = simgrid::s4u::Engine::get_instance();
+  simgrid::s4u::ActorPtr rx = e->add_actor(rx_name.c_str(), dst_pm, simgrid::plugin::vm::MigrationRx(vm, dst_pm));
+  simgrid::s4u::ActorPtr tx = e->add_actor(tx_name.c_str(), src_pm, simgrid::plugin::vm::MigrationTx(vm, dst_pm));
 
   vm->extension_set<VmMigrationExt>(new VmMigrationExt(simgrid::s4u::Actor::self(), rx, tx));
 

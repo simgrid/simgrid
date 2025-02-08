@@ -4,6 +4,8 @@ SMPI:
  - Allow automatic benchmarking with --cfg=smpi/host-speed:auto
 
 S4U:
+ - Reduce the amount of static functions: deprecate Actor::create() functions in flavor for Engine::add_actor()
+ - Introduce Actor::get_instance() so that you don't have to call the static Engine::get_instance()
  - Allow to turn disks on and off (was limited to the kernel side until now). Tested in the activity livecycle tests.
  - Turning off a host now turns off the disks attached to this host. Conversely, turning the host back on brings back
    the disks online. Tested in teshsuite/src/host-on-off-disks.

@@ -56,8 +56,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("sender", e.host_by_name("Tremblay"), sender);
-  sg4::Actor::create("receiver", e.host_by_name("Jupiter"), receiver);
+  e.add_actor("sender", e.host_by_name("Tremblay"), sender);
+  e.add_actor("receiver", e.host_by_name("Jupiter"), receiver);
 
   e.run();
 

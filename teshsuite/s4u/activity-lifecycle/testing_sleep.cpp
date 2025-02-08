@@ -14,11 +14,12 @@ TEST_CASE("Activity lifecycle: sleep activities")
     XBT_INFO("Launch a sleep(5), and let it proceed");
     bool global = false;
 
-    simgrid::s4u::ActorPtr sleeper5 = simgrid::s4u::Actor::create("sleep5", all_hosts[1], [&global]() {
-      assert_exit(true, 5);
-      simgrid::s4u::this_actor::sleep_for(5);
-      global = true;
-    });
+    simgrid::s4u::ActorPtr sleeper5 =
+        simgrid::s4u::Engine::get_instance()->add_actor("sleep5", all_hosts[1], [&global]() {
+          assert_exit(true, 5);
+          simgrid::s4u::this_actor::sleep_for(5);
+          global = true;
+        });
 
     simgrid::s4u::this_actor::sleep_for(9);
     INFO("Did the forked actor modify the global after sleeping, or was it killed before?");
@@ -30,11 +31,12 @@ TEST_CASE("Activity lifecycle: sleep activities")
   BEGIN_SECTION("sleep killed at start")
   {
     XBT_INFO("Launch a sleep(5), and kill it right after start");
-    simgrid::s4u::ActorPtr sleeper5 = simgrid::s4u::Actor::create("sleep5_killed", all_hosts[1], []() {
-      assert_exit(false, 0);
-      simgrid::s4u::this_actor::sleep_for(5);
-      FAIL("I should be dead now");
-    });
+    simgrid::s4u::ActorPtr sleeper5 =
+        simgrid::s4u::Engine::get_instance()->add_actor("sleep5_killed", all_hosts[1], []() {
+          assert_exit(false, 0);
+          simgrid::s4u::this_actor::sleep_for(5);
+          FAIL("I should be dead now");
+        });
 
     simgrid::s4u::this_actor::yield();
     sleeper5->kill();
@@ -45,11 +47,12 @@ TEST_CASE("Activity lifecycle: sleep activities")
   BEGIN_SECTION("sleep killed in middle")
   {
     XBT_INFO("Launch a sleep(5), and kill it after 2 secs");
-    simgrid::s4u::ActorPtr sleeper5 = simgrid::s4u::Actor::create("sleep5_killed", all_hosts[1], []() {
-      assert_exit(false, 2);
-      simgrid::s4u::this_actor::sleep_for(5);
-      FAIL("I should be dead now");
-    });
+    simgrid::s4u::ActorPtr sleeper5 =
+        simgrid::s4u::Engine::get_instance()->add_actor("sleep5_killed", all_hosts[1], []() {
+          assert_exit(false, 2);
+          simgrid::s4u::this_actor::sleep_for(5);
+          FAIL("I should be dead now");
+        });
 
     simgrid::s4u::this_actor::sleep_for(2);
     sleeper5->kill();
@@ -63,11 +66,12 @@ TEST_CASE("Activity lifecycle: sleep activities")
   BEGIN_SECTION("sleep restarted at start")
   {
     XBT_INFO("Launch a sleep(5), and restart its host right after start");
-    simgrid::s4u::ActorPtr sleeper5 = simgrid::s4u::Actor::create("sleep5_restarted", all_hosts[1], []() {
-      assert_exit(false, 0);
-      simgrid::s4u::this_actor::sleep_for(5);
-      FAIL("I should be dead now");
-    });
+    simgrid::s4u::ActorPtr sleeper5 =
+        simgrid::s4u::Engine::get_instance()->add_actor("sleep5_restarted", all_hosts[1], []() {
+          assert_exit(false, 0);
+          simgrid::s4u::this_actor::sleep_for(5);
+          FAIL("I should be dead now");
+        });
 
     simgrid::s4u::this_actor::yield();
     sleeper5->get_host()->turn_off();
@@ -79,11 +83,12 @@ TEST_CASE("Activity lifecycle: sleep activities")
   BEGIN_SECTION("sleep restarted in middle")
   {
     XBT_INFO("Launch a sleep(5), and restart its host after 2 secs");
-    simgrid::s4u::ActorPtr sleeper5 = simgrid::s4u::Actor::create("sleep5_restarted", all_hosts[1], []() {
-      assert_exit(false, 2);
-      simgrid::s4u::this_actor::sleep_for(5);
-      FAIL("I should be dead now");
-    });
+    simgrid::s4u::ActorPtr sleeper5 =
+        simgrid::s4u::Engine::get_instance()->add_actor("sleep5_restarted", all_hosts[1], []() {
+          assert_exit(false, 2);
+          simgrid::s4u::this_actor::sleep_for(5);
+          FAIL("I should be dead now");
+        });
 
     simgrid::s4u::this_actor::sleep_for(2);
     sleeper5->get_host()->turn_off();
@@ -97,13 +102,13 @@ TEST_CASE("Activity lifecycle: sleep activities")
     XBT_INFO("Launch a sleep(5), and restart its host right when it stops");
     bool sleeper_done = false;
 
-    simgrid::s4u::Actor::create("sleep5_restarted", all_hosts[1], [&sleeper_done]() {
+    simgrid::s4u::Engine::get_instance()->add_actor("sleep5_restarted", all_hosts[1], [&sleeper_done]() {
       assert_exit(true, 5);
       simgrid::s4u::this_actor::sleep_for(5);
       sleeper_done = true;
     });
 
-    simgrid::s4u::Actor::create("killer", all_hosts[0], []() {
+    simgrid::s4u::Engine::get_instance()->add_actor("killer", all_hosts[0], []() {
       simgrid::s4u::this_actor::sleep_for(5);
       XBT_VERB("Killer!");
       all_hosts[1]->turn_off();
@@ -120,7 +125,7 @@ TEST_CASE("Activity lifecycle: sleep activities")
   BEGIN_SECTION("turn off its own host")
   {
     XBT_INFO("Launch a sleep(5), then saw off the branch it's sitting on");
-    simgrid::s4u::Actor::create("sleep5_restarted", all_hosts[1], []() {
+    simgrid::s4u::Engine::get_instance()->add_actor("sleep5_restarted", all_hosts[1], []() {
       assert_exit(false, 5);
       simgrid::s4u::this_actor::sleep_for(5);
       simgrid::s4u::this_actor::get_host()->turn_off();

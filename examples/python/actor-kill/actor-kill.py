@@ -29,8 +29,8 @@ def victim_b_fun():
 
 def killer():
     this_actor.info("Hello!")  # - First start a victim actor
-    victim_a = Actor.create("victim A", Host.by_name("Fafard"), victim_a_fun)
-    victim_b = Actor.create("victim B", Host.by_name("Jupiter"), victim_b_fun)
+    victim_a = e.add_actor("victim A", Host.by_name("Fafard"), victim_a_fun)
+    victim_b = e.add_actor("victim B", Host.by_name("Jupiter"), victim_b_fun)
     this_actor.sleep_for(10)  # - Wait for 10 seconds
 
     # - Resume it from its suspended state
@@ -50,7 +50,7 @@ def killer():
     this_actor.sleep_for(1)
 
     this_actor.info("Start a new actor, and kill it right away")
-    victim_c = Actor.create("victim C", Host.by_name("Jupiter"), victim_a_fun)
+    victim_c = e.add_actor("victim C", Host.by_name("Jupiter"), victim_a_fun)
     victim_c.kill()
 
     this_actor.sleep_for(1)
@@ -73,6 +73,6 @@ if __name__ == '__main__':
 
     e.load_platform(sys.argv[1])     # Load the platform description
     # Create and deploy killer actor, that will create the victim actors
-    Actor.create("killer", Host.by_name("Tremblay"), killer)
+    e.add_actor("killer", Host.by_name("Tremblay"), killer)
 
     e.run()

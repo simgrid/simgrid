@@ -80,6 +80,7 @@
 #include "simgrid/s4u/Activity.hpp"
 #include "simgrid/s4u/ActivitySet.hpp"
 #include "simgrid/s4u/Actor.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextJava.hpp"
 #include "xbt/asserts.h"
@@ -2959,7 +2960,7 @@ static void java_main(int argc, char* argv[])
   // creates the java actor
   jobject jactor = env->NewObject(actor_class, actor_constructor, args);
 
-  ActorPtr result = Actor::create(argv[0], simgrid::s4u::Host::current(), [jactor]() {
+  ActorPtr result = Engine::get_instance()->add_actor(argv[0], simgrid::s4u::Host::current(), [jactor]() {
     auto jenv = ((simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self())->jenv_;
 
     jenv->CallVoidMethod(jactor, Actor_methodId, s4u::Actor::self());

@@ -103,8 +103,8 @@ def load_platform(e: Engine):
     zone.seal()
 
     # create actors Sender/Receiver
-    Actor.create("receiver", receiver, Receiver(9))
-    Actor.create("sender", sender, Sender(9))
+    e.add_actor("receiver", receiver, Receiver(9))
+    e.add_actor("sender", sender, Sender(9))
 
 ###################################################################################################
 

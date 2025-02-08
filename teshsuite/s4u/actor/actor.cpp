@@ -30,9 +30,9 @@ static void master()
     if (simgrid::s4u::this_actor::get_pid() != actor->get_pid())
       actor->kill();
   }
+  simgrid::s4u::Engine& e = *simgrid::s4u::this_actor::get_engine();
 
-  simgrid::s4u::ActorPtr actor =
-      simgrid::s4u::Actor::create("worker from master", simgrid::s4u::this_actor::get_host(), worker);
+  simgrid::s4u::ActorPtr actor = e.add_actor("worker from master", simgrid::s4u::this_actor::get_host(), worker);
   simgrid::s4u::this_actor::sleep_for(2);
 
   XBT_INFO("Suspend Actor (pid=%ld)", actor->get_pid());
@@ -56,8 +56,8 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), master);
-  simgrid::s4u::Actor::create("worker", e.host_by_name("Tremblay"), worker);
+  e.add_actor("master", e.host_by_name("Tremblay"), master);
+  e.add_actor("worker", e.host_by_name("Tremblay"), worker);
 
   e.run();
   XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());

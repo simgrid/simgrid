@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     e.load_platform(sys.argv[1])             # Load the platform description
 
-    Actor.create("sender", Host.by_name("Tremblay"), sender, 3, 50000000, 1)
-    Actor.create("receiver", Host.by_name("Ruby"), receiver, 0)
+    e.add_actor("sender", Host.by_name("Tremblay"), sender, 3, 50000000, 1)
+    e.add_actor("receiver", Host.by_name("Ruby"), receiver, 0)
 
     e.run()

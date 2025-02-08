@@ -54,9 +54,9 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("bob", e.host_by_name("bob"), bob);
-  sg4::Actor::create("alice", e.host_by_name("alice"), alice);
-  sg4::Actor::create("carl", e.host_by_name("carl"), carl);
+  e.add_actor("bob", e.host_by_name("bob"), bob);
+  e.add_actor("alice", e.host_by_name("alice"), alice);
+  e.add_actor("carl", e.host_by_name("carl"), carl);
 
   e.run();
 

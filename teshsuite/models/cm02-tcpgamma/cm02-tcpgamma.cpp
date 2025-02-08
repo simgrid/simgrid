@@ -23,9 +23,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(cm02_tcpgamma, "Messages specific for this simulati
 
 static void run_ping_test(sg4::Link const* testlink)
 {
+  simgrid::s4u::Engine& e = *simgrid::s4u::this_actor::get_engine();
   auto* mailbox = simgrid::s4u::Mailbox::by_name("Test");
 
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("host1"), [mailbox, testlink]() {
+  e.add_actor("sender", simgrid::s4u::Host::by_name("host1"), [mailbox, testlink]() {
     double start_time   = simgrid::s4u::Engine::get_clock();
     static auto message = std::string("message");
     mailbox->put(&message, 1e10);
@@ -34,8 +35,7 @@ static void run_ping_test(sg4::Link const* testlink)
              testlink->get_bandwidth(), testlink->get_latency(), end_time - start_time,
              simgrid::config::get_value<double>("network/TCP-gamma"));
   });
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("host2"),
-                              [mailbox]() { mailbox->get<std::string>(); });
+  e.add_actor("receiver", simgrid::s4u::Host::by_name("host2"), [mailbox]() { mailbox->get<std::string>(); });
   simgrid::s4u::this_actor::sleep_for(500);
 }
 
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
   auto* testlink    = zone->create_link("L1", 1e10)->seal();
   zone->add_route(host1, host2, {testlink});
 
-  simgrid::s4u::Actor::create("dispatcher", engine.host_by_name("host1"), main_dispatcher, testlink);
+  engine.add_actor("dispatcher", engine.host_by_name("host1"), main_dispatcher, testlink);
   engine.run();
 
   return 0;

@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
   chiller->add_host(e.host_by_name("MyHost1"));
   chiller->add_host(e.host_by_name("MyHost2"));
   chiller->add_host(e.host_by_name("MyHost3"));
-  sg4::Actor::create("manager", e.host_by_name("MyHost1"), manager, chiller);
+  e.add_actor("manager", e.host_by_name("MyHost1"), manager, chiller);
 
   e.run();
   return 0;

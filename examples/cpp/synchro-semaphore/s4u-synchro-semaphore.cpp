@@ -49,8 +49,8 @@ int main(int argc, char **argv)
   auto sem_empty = sg4::Semaphore::create(1); /* indicates whether the buffer is empty */
   auto sem_full  = sg4::Semaphore::create(0); /* indicates whether the buffer is full */
 
-  sg4::Actor::create("producer", e.host_by_name("Tremblay"), producer, &buffer, sem_empty, sem_full, std::cref(args));
-  sg4::Actor::create("consumer", e.host_by_name("Jupiter"), consumer, &buffer, sem_empty, sem_full);
+  e.add_actor("producer", e.host_by_name("Tremblay"), producer, &buffer, sem_empty, sem_full, std::cref(args));
+  e.add_actor("consumer", e.host_by_name("Jupiter"), consumer, &buffer, sem_empty, sem_full);
   e.run();
 
   return 0;

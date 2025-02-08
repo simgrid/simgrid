@@ -63,7 +63,7 @@ int main(int argc, char** argv)
   std::vector<sg4::Host*> list = e.get_all_hosts();
   for (auto const& host : list) {
     /* - Give a unique rank to each host and create a @ref relay_runner actor on each */
-    sg4::Actor::create((std::to_string(id)).c_str(), host, RelayRunner());
+    e.add_actor((std::to_string(id)).c_str(), host, RelayRunner());
     id++;
   }
   e.run();

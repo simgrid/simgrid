@@ -133,8 +133,8 @@ protected:
   friend kernel::resource::StandardLinkImpl;
   void netpoint_register(simgrid::kernel::routing::NetPoint* card);
   void netpoint_unregister(simgrid::kernel::routing::NetPoint* card);
-  XBT_ATTRIB_DEPRECATED_v339("Use one of the Engine::set_rootnetzone_*() method instead") void set_netzone_root(
-      const NetZone* netzone);
+  XBT_ATTRIB_DEPRECATED_v339("The root netzone was already created for you. Please use one of the "
+                             "Netzone::add_netzone_*() method instead") void set_netzone_root(const NetZone* netzone);
 #endif /*DOXYGEN*/
 
 public:
@@ -185,18 +185,6 @@ public:
 
   s4u::NetZone* netzone_by_name_or_null(const std::string& name) const;
 
-  /**
-   * @brief Add a model to engine list
-   *
-   * @param model        Pointer to model
-   * @param dependencies List of dependencies for this model (optional)
-   */
-  void add_model(std::shared_ptr<simgrid::kernel::resource::Model> model,
-                 const std::vector<kernel::resource::Model*>& dependencies = {});
-
-  /** @brief Get list of all models managed by this engine */
-  const std::vector<simgrid::kernel::resource::Model*>& get_all_models() const;
-
   /** @brief Retrieves all netzones of the type indicated by the template argument */
   template <class T> std::vector<T*> get_filtered_netzones() const
   {
@@ -207,11 +195,50 @@ public:
     return res;
   }
 
-  kernel::EngineImpl* get_impl() const
+  /**
+   * @brief Add a model to engine list
+   *
+   * @param model        Pointer to model
+   * @param dependencies List of dependencies for this model (optional)
+   */
+  void add_model(std::shared_ptr<simgrid::kernel::resource::Model> model,
+                 const std::vector<kernel::resource::Model*>& dependencies = {});
+
+  /** Get list of all models managed by this engine */
+  const std::vector<simgrid::kernel::resource::Model*>& get_all_models() const;
+
+  /** Create an actor from a @c std::function<void()>.
+   *  If the actor is restarted, it gets a fresh copy of the function.
+   *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  static ActorPtr add_actor(const std::string& name, s4u::Host* host, const std::function<void()>& code);
+
+  /** Add an actor taking a vector of strings as parameters.
+   *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  ActorPtr add_actor(const std::string& name, s4u::Host* host, const std::string& function,
+                     std::vector<std::string> args);
+  /** Create an actor from a callable thing.
+   *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  template <class F> ActorPtr add_actor(const std::string& name, s4u::Host* host, F code)
   {
-    return pimpl_;
+    return add_actor(name, host, std::function<void()>(std::move(code)));
   }
 
+  /** Create an actor using a callable thing and its arguments.
+   *
+   * Note that the arguments will be copied, so move-only parameters are forbidden.
+   * @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  template <class F, class... Args // This constructor is enabled only if calling code(args...) is valid
+#ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
+            ,
+            typename = typename std::invoke_result_t<F, Args...>
+#endif
+            >
+  ActorPtr add_actor(const std::string& name, s4u::Host* host, F code, Args... args)
+  {
+    return add_actor(name, host, std::bind(std::move(code), std::move(args)...));
+  }
+
+  kernel::EngineImpl* get_impl() const { return pimpl_; }
   /** Returns whether SimGrid was initialized yet -- mostly for internal use */
   static bool is_initialized();
   /** @brief set a configuration variable

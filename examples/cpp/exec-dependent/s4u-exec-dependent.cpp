@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("worker", e.host_by_name("Fafard"), worker);
+  e.add_actor("worker", e.host_by_name("Fafard"), worker);
 
   sg4::Exec::on_veto_cb([&e](sg4::Exec& exec) {
     // First display the situation

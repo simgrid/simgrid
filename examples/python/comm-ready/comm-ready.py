@@ -77,9 +77,9 @@ def main():
     settings = create_parser().parse_known_args()[0]
     e = Engine(sys.argv)
     e.load_platform(settings.platform)
-    Actor.create("peer", e.host_by_name("Tremblay"), peer, 0, 2, int(5e7), 3)
-    Actor.create("peer", e.host_by_name("Ruby"), peer, 1, 6, int(2.5e5), 3)
-    Actor.create("peer", e.host_by_name("Perl"), peer, 2, 0, int(5e7), 3)
+    e.add_actor("peer", e.host_by_name("Tremblay"), peer, 0, 2, int(5e7), 3)
+    e.add_actor("peer", e.host_by_name("Ruby"), peer, 1, 6, int(2.5e5), 3)
+    e.add_actor("peer", e.host_by_name("Perl"), peer, 2, 0, int(5e7), 3)
     e.run()
 
 

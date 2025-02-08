@@ -102,14 +102,14 @@ int main(int argc, char* argv[])
   /* Handlers create simulation events preventing the simulation from finishing
      To avoid this behaviour this actor sleeps for 2 days and then delete all handlers
   */
-  sg4::Actor::create("end_manager", myhost1, end_manager, battery);
+  e.add_actor("end_manager", myhost1, end_manager, battery);
 
   // This actor updates the solar irradiance of the solar panel
-  sg4::Actor::create("irradiance_manager", myhost1, irradiance_manager, solar_panel)->daemonize();
+  e.add_actor("irradiance_manager", myhost1, irradiance_manager, solar_panel)->daemonize();
 
   // These actors start a job on a host for a specific duration
-  sg4::Actor::create("host_job_manager", myhost1, host_job_manager, 12 * 60 * 60, 4 * 60 * 60);
-  sg4::Actor::create("host_job_manager", myhost2, host_job_manager, 12 * 60 * 60, 4 * 60 * 60);
+  e.add_actor("host_job_manager", myhost1, host_job_manager, 12 * 60 * 60, 4 * 60 * 60);
+  e.add_actor("host_job_manager", myhost2, host_job_manager, 12 * 60 * 60, 4 * 60 * 60);
 
   e.run();
   XBT_INFO("State of charge of the battery: %0.1f%%", battery->get_state_of_charge() * 100);

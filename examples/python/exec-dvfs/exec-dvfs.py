@@ -56,7 +56,7 @@ if __name__ == '__main__':
                              .format(len(sys.argv)))
 
     e.load_platform(sys.argv[1])
-    Actor.create("dvfs_test", Host.by_name("MyHost1"), Dvfs())
-    Actor.create("dvfs_test", Host.by_name("MyHost2"), Dvfs())
+    e.add_actor("dvfs_test", Host.by_name("MyHost1"), Dvfs())
+    e.add_actor("dvfs_test", Host.by_name("MyHost2"), Dvfs())
 
     e.run()

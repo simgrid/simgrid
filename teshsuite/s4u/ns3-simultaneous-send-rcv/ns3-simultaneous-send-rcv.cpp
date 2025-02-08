@@ -48,9 +48,9 @@ int main(int argc, char *argv[])
 
   auto hosts = e.get_all_hosts();
 
-  simgrid::s4u::Actor::create("receiver", hosts[0], test_receive);
+  e.add_actor("receiver", hosts[0], test_receive);
   for (int i = 0; i < nb_sender; i++)
-    simgrid::s4u::Actor::create("sender_" + std::to_string(i), hosts[i % (e.get_host_count() - 1) + 1], test_send);
+    e.add_actor("sender_" + std::to_string(i), hosts[i % (e.get_host_count() - 1) + 1], test_send);
 
   e.run();
 

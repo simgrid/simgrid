@@ -46,9 +46,9 @@ int main(int argc, char* argv[])
   e.load_platform(argv[1]);
 
   auto hosts = e.get_all_hosts();
-  simgrid::s4u::Actor::create("receiver", hosts[0], test_receive);
-  simgrid::s4u::Actor::create("send_same", hosts[0], test_send);
-  simgrid::s4u::Actor::create("send_other", hosts[1], test_send);
+  e.add_actor("receiver", hosts[0], test_receive);
+  e.add_actor("send_same", hosts[0], test_send);
+  e.add_actor("send_other", hosts[1], test_send);
 
   e.run();
 

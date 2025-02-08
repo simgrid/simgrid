@@ -59,12 +59,12 @@ int main(int argc, char* argv[])
   simgrid::instr::declare_link_variable("Link_Capacity");
   simgrid::instr::declare_link_variable("Link_Utilization", "0.9 0.1 0.1");
 
-  sg4::Actor::create("master", e.host_by_name("Tremblay"), trace_fun);
-  sg4::Actor::create("worker", e.host_by_name("Tremblay"), trace_fun);
-  sg4::Actor::create("worker", e.host_by_name("Jupiter"), trace_fun);
-  sg4::Actor::create("worker", e.host_by_name("Fafard"), trace_fun);
-  sg4::Actor::create("worker", e.host_by_name("Ginette"), trace_fun);
-  sg4::Actor::create("worker", e.host_by_name("Bourassa"), trace_fun);
+  e.add_actor("master", e.host_by_name("Tremblay"), trace_fun);
+  e.add_actor("worker", e.host_by_name("Tremblay"), trace_fun);
+  e.add_actor("worker", e.host_by_name("Jupiter"), trace_fun);
+  e.add_actor("worker", e.host_by_name("Fafard"), trace_fun);
+  e.add_actor("worker", e.host_by_name("Ginette"), trace_fun);
+  e.add_actor("worker", e.host_by_name("Bourassa"), trace_fun);
 
   e.run();
   return 0;

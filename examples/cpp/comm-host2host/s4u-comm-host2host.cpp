@@ -62,8 +62,8 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("sender", e.host_by_name("Boivin"), sender, e.host_by_name("Tremblay"), e.host_by_name("Jupiter"),
-                     e.host_by_name("Fafard"), e.host_by_name("Ginette"));
+  e.add_actor("sender", e.host_by_name("Boivin"), sender, e.host_by_name("Tremblay"), e.host_by_name("Jupiter"),
+              e.host_by_name("Fafard"), e.host_by_name("Ginette"));
 
   e.run();
 

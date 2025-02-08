@@ -54,7 +54,7 @@ int main(int argc, char** argv)
 {
   simgrid::s4u::Engine engine(&argc, argv);
   engine.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("dispatcher", engine.host_by_name("node1"), main_dispatcher);
+  engine.add_actor("dispatcher", engine.host_by_name("node1"), main_dispatcher);
   engine.run();
 
   return 0;
@@ -62,9 +62,10 @@ int main(int argc, char** argv)
 
 void run_ping_test(const char* src, const char* dest, int data_size)
 {
+  simgrid::s4u::Engine& e = *simgrid::s4u::this_actor::get_engine();
   auto* mailbox = simgrid::s4u::Mailbox::by_name("Test");
 
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name(src), [mailbox, dest, data_size]() {
+  e.add_actor("sender", simgrid::s4u::Host::by_name(src), [mailbox, dest, data_size]() {
     double start_time          = simgrid::s4u::Engine::get_clock();
     static std::string message = "message";
     mailbox->put(&message, data_size);
@@ -72,8 +73,7 @@ void run_ping_test(const char* src, const char* dest, int data_size)
     XBT_INFO("Actual result: Sending %d bytes from '%s' to '%s' takes %f seconds.", data_size,
              simgrid::s4u::this_actor::get_host()->get_cname(), dest, end_time - start_time);
   });
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name(dest),
-                              [mailbox]() { mailbox->get<std::string>(); });
+  e.add_actor("receiver", simgrid::s4u::Host::by_name(dest), [mailbox]() { mailbox->get<std::string>(); });
   const auto* ap1 = simgrid::s4u::Link::by_name("AP1");
   ap1->set_host_wifi_rate(simgrid::s4u::Host::by_name(src), 0);
   ap1->set_host_wifi_rate(simgrid::s4u::Host::by_name(dest), 0);

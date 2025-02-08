@@ -49,8 +49,8 @@ int main(int argc, char* argv[])
   sg4::Mailbox* mb1 = e.mailbox_by_name_or_create("Mailbox 1");
   sg4::Mailbox* mb2 = e.mailbox_by_name_or_create("Mailbox 2");
 
-  sg4::Actor::create("pinger", e.host_by_name("Tremblay"), pinger, mb1, mb2);
-  sg4::Actor::create("ponger", e.host_by_name("Jupiter"), ponger, mb2, mb1);
+  e.add_actor("pinger", e.host_by_name("Tremblay"), pinger, mb1, mb2);
+  e.add_actor("ponger", e.host_by_name("Jupiter"), ponger, mb2, mb1);
 
   e.run();
 

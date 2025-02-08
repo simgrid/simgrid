@@ -78,8 +78,8 @@ if __name__ == '__main__':
   e = Engine(sys.argv)
   e.load_platform(args.platform)
 
-  Actor.create('load_test', e.host_by_name('MyHost1'), execute_load_test)
-  Actor.create('change_speed', e.host_by_name('MyHost1'), change_speed)
+  e.add_actor('load_test', e.host_by_name('MyHost1'), execute_load_test)
+  e.add_actor('change_speed', e.host_by_name('MyHost1'), change_speed)
 
   e.run()
 

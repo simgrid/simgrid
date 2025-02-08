@@ -47,6 +47,6 @@ if __name__ == '__main__':
     lili.seal()
 
     # Add a watcher of the changes
-    Actor.create("watcher", Host.by_name("Fafard"), watcher)
+    e.add_actor("watcher", Host.by_name("Fafard"), watcher)
 
     e.run()

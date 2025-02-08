@@ -102,8 +102,8 @@ int main(int argc, char* argv[])
       ->seal();
   zone->seal();
 
-  sg4::Actor::create("carol", e.host_by_name("carol"), worker);
-  sg4::Actor::create("erin", e.host_by_name("erin"), failed_worker)->set_auto_restart(true);
+  e.add_actor("carol", e.host_by_name("carol"), worker);
+  e.add_actor("erin", e.host_by_name("erin"), failed_worker)->set_auto_restart(true);
 
   e.run();
 

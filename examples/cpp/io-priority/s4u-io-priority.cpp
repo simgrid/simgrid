@@ -67,8 +67,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("writer", e.host_by_name("bob"), writer);
-  sg4::Actor::create("privileged_writer", e.host_by_name("bob"), privileged_writer);
+  e.add_actor("writer", e.host_by_name("bob"), writer);
+  e.add_actor("privileged_writer", e.host_by_name("bob"), privileged_writer);
 
   e.run();
 

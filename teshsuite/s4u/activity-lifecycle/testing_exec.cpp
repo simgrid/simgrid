@@ -14,7 +14,7 @@ TEST_CASE("Activity lifecycle: exec activities")
     XBT_INFO("Launch an execute(5s), and let it proceed");
     bool global = false;
 
-    simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5", all_hosts[1], [&global]() {
+    simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Engine::get_instance()->add_actor("exec5", all_hosts[1], [&global]() {
       assert_exit(true, 5.);
       simgrid::s4u::this_actor::execute(500000000);
       global = true;
@@ -30,7 +30,7 @@ TEST_CASE("Activity lifecycle: exec activities")
   BEGIN_SECTION("exec killed at start")
   {
     XBT_INFO("Launch an execute(5s), and kill it right after start");
-    simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5_killed", all_hosts[1], []() {
+    simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Engine::get_instance()->add_actor("exec5_killed", all_hosts[1], []() {
       assert_exit(false, 0);
       simgrid::s4u::this_actor::execute(500000000);
       FAIL("I should be dead now");
@@ -45,7 +45,7 @@ TEST_CASE("Activity lifecycle: exec activities")
   BEGIN_SECTION("exec killed in middle")
   {
     XBT_INFO("Launch an execute(5s), and kill it after 2 secs");
-    simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5_killed", all_hosts[1], []() {
+    simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Engine::get_instance()->add_actor("exec5_killed", all_hosts[1], []() {
       assert_exit(false, 2);
       simgrid::s4u::this_actor::execute(500000000);
       FAIL("I should be dead now");
@@ -60,11 +60,12 @@ TEST_CASE("Activity lifecycle: exec activities")
   BEGIN_SECTION("exec restarted at start")
   {
     XBT_INFO("Launch an execute(5s), and restart its host right after start");
-    simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5_restarted", all_hosts[1], []() {
-      assert_exit(false, 0);
-      simgrid::s4u::this_actor::execute(500000000);
-      FAIL("I should be dead now");
-    });
+    simgrid::s4u::ActorPtr exec5 =
+        simgrid::s4u::Engine::get_instance()->add_actor("exec5_restarted", all_hosts[1], []() {
+          assert_exit(false, 0);
+          simgrid::s4u::this_actor::execute(500000000);
+          FAIL("I should be dead now");
+        });
 
     simgrid::s4u::this_actor::yield();
     exec5->get_host()->turn_off();
@@ -76,11 +77,12 @@ TEST_CASE("Activity lifecycle: exec activities")
   BEGIN_SECTION("exec restarted in middle")
   {
     XBT_INFO("Launch an execute(5s), and restart its host after 2 secs");
-    simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5_restarted", all_hosts[1], []() {
-      assert_exit(false, 2);
-      simgrid::s4u::this_actor::execute(500000000);
-      FAIL("I should be dead now");
-    });
+    simgrid::s4u::ActorPtr exec5 =
+        simgrid::s4u::Engine::get_instance()->add_actor("exec5_restarted", all_hosts[1], []() {
+          assert_exit(false, 2);
+          simgrid::s4u::this_actor::execute(500000000);
+          FAIL("I should be dead now");
+        });
 
     simgrid::s4u::this_actor::sleep_for(2);
     exec5->get_host()->turn_off();
@@ -94,13 +96,13 @@ TEST_CASE("Activity lifecycle: exec activities")
     XBT_INFO("Launch an execute(5s), and restart its host right when it stops");
     bool execution_done = false;
 
-    simgrid::s4u::Actor::create("exec5_restarted", all_hosts[1], [&execution_done]() {
+    simgrid::s4u::Engine::get_instance()->add_actor("exec5_restarted", all_hosts[1], [&execution_done]() {
       assert_exit(true, 5);
       simgrid::s4u::this_actor::execute(500000000);
       execution_done = true;
     });
 
-    simgrid::s4u::Actor::create("killer", all_hosts[0], []() {
+    simgrid::s4u::Engine::get_instance()->add_actor("killer", all_hosts[0], []() {
       simgrid::s4u::this_actor::sleep_for(5);
       XBT_VERB("Killer!");
       all_hosts[1]->turn_off();

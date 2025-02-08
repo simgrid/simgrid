@@ -64,8 +64,8 @@ int main(int argc, char* argv[])
 
   int status = 42;
   all_hosts  = e.get_all_hosts();
-  simgrid::s4u::Actor::create("main_dispatcher", all_hosts[0],
-                              [&argc, &argv, &status]() { status = Catch::Session().run(argc, argv); });
+  e.add_actor("main_dispatcher", all_hosts[0],
+              [&argc, &argv, &status]() { status = Catch::Session().run(argc, argv); });
 
   e.run();
   XBT_INFO("Simulation done");

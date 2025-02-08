@@ -65,7 +65,7 @@ static void master()
     delete payload;
   }
 
-  simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Jupiter"), worker);
+  simgrid::s4u::this_actor::get_engine()->add_actor("worker", simgrid::s4u::Host::by_name("Jupiter"), worker);
 
   XBT_INFO("Sending \"task on with actor\"");
   payload = new std::string("task on with actor");
@@ -93,8 +93,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), master);
-  simgrid::s4u::Actor::create("worker", e.host_by_name("Jupiter"), worker);
+  e.add_actor("master", e.host_by_name("Tremblay"), master);
+  e.add_actor("worker", e.host_by_name("Jupiter"), worker);
 
   e.run();
 

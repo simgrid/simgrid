@@ -38,8 +38,8 @@ int main(int argc, char* argv[])
   auto* mailbox  = sg4::Mailbox::by_name("mailbox");
   auto* station1 = e.host_by_name("Station 1");
   auto* station2 = e.host_by_name("Station 2");
-  sg4::Actor::create("sender", station1, sender, mailbox, 1e7);
-  sg4::Actor::create("receiver", station2, receiver, mailbox);
+  e.add_actor("sender", station1, sender, mailbox, 1e7);
+  e.add_actor("receiver", station2, receiver, mailbox);
 
   /* Declare that the stations are not at the same distance from their AP */
   const auto* ap = e.link_by_name("AP1");

@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
   rootzone->add_route(hostA, hostB, {backb});
   rootzone->seal();
 
-  sg4::Actor::create("ptask", hostA, ptask, hostA, hostB);
+  e.add_actor("ptask", hostA, ptask, hostA, hostB);
 
   e.run();
 
