@@ -306,6 +306,8 @@ public class simgridJNI {
   public final static native String Host_get_property(long jarg1, Host jarg1_, String name);
   public final static native long Host_current();
   public final static native double Host_get_speed(long jarg1, Host jarg1_);
+  public final static native int Host_get_pstate_count(long jarg1, Host jarg1_);
+  public final static native double Host_get_pstate_speed(long jarg1, Host jarg1_, int pstate);
   public final static native double Host_get_load(long jarg1);
   public final static native boolean Host_is_on(long jarg1, Host jarg1_);
   public final static native void Host_turn_on(long jarg1);

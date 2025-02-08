@@ -3620,6 +3620,18 @@ XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1speed(JNIE
 {
   return (jdouble)((Host*)cthis)->get_speed();
 }
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1pstate_1count(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                                 jobject jthis)
+{
+  return (jint)((Host*)cthis)->get_pstate_count();
+}
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1pstate_1speed(JNIEnv* jenv, jclass jcls,
+                                                                                    jlong cthis, jobject jthis,
+                                                                                    jint pstate)
+{
+  return (jdouble)((Host*)cthis)->get_pstate_speed(pstate);
+}
+
 XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1load(JNIEnv* jenv, jclass jcls, jlong cthis)
 {
   return (jdouble)((Host*)cthis)->get_load();
