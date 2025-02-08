@@ -36,7 +36,8 @@ public:
  ************/
 
 class CpuCas01 : public CpuImpl {
-  std::function<s4u::Host::CpuFactorCb> factor_cb_ = {};
+  std::function<s4u::Host::CpuFactorCb> factor_cb_         = {}; // XBT_ATTRIB_DEPRECATED_v339
+  std::function<double(s4u::Host&, double)> factor_cpu_cb_ = {};
 
 public:
   using CpuImpl::CpuImpl;
@@ -47,6 +48,7 @@ public:
   CpuAction* execution_start(double size, int requested_cores, double user_bound) override;
   CpuAction* sleep(double duration) override;
   void set_factor_cb(const std::function<s4u::Host::CpuFactorCb>& cb) override;
+  void set_cpu_factor_cb(const std::function<double(s4u::Host&, double)>& cb) override;
 
 protected:
   void on_speed_change() override;

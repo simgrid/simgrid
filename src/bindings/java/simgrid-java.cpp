@@ -81,6 +81,7 @@
 #include "simgrid/s4u/ActivitySet.hpp"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextJava.hpp"
 #include "xbt/asserts.h"
@@ -104,6 +105,7 @@ static jmethodID CallbackBoolean_methodId   = 0;
 static jmethodID CallbackComm_methodId      = 0;
 static jmethodID CallbackDisk_methodId      = 0;
 static jmethodID CallbackDouble_methodId    = 0;
+static jmethodID CallbackDHostDouble_methodId = 0;
 static jmethodID CallbackExec_methodId      = 0;
 static jmethodID CallbackIo_methodId        = 0;
 static jmethodID CallbackLink_methodId      = 0;
@@ -282,6 +284,7 @@ static struct SimGridJavaInit {
       CallbackComm_methodId      = init_methodId(maestro_jenv, "CallbackComm", "run", "(J)V");
       CallbackDisk_methodId      = init_methodId(maestro_jenv, "CallbackDisk", "run", "(J)V");
       CallbackDouble_methodId    = init_methodId(maestro_jenv, "CallbackDouble", "run", "(D)V");
+      CallbackDHostDouble_methodId = init_methodId(maestro_jenv, "CallbackDHostDouble", "run", "(JD)D");
       CallbackExec_methodId      = init_methodId(maestro_jenv, "CallbackExec", "run", "(J)V");
       CallbackIo_methodId        = init_methodId(maestro_jenv, "CallbackIo", "run", "(J)V");
       CallbackLink_methodId      = init_methodId(maestro_jenv, "CallbackLink", "run", "(J)V");
@@ -3698,6 +3701,21 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1concurrency_1
                                                                                       jlong cthis, jint limit)
 {
   ((Host*)cthis)->set_concurrency_limit(limit);
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1cpu_1factor_1cb(JNIEnv* jenv, jclass jcls,
+                                                                                   jlong cthis, jobject cb)
+{
+  if (cb) {
+    cb                                                = jenv->NewGlobalRef(cb);
+    const std::function<double(Host&, double)> lambda = [cb](Host const& h, double flops) -> double {
+      double res = get_jenv()->CallDoubleMethod(cb, CallbackDHostDouble_methodId, &h, flops);
+      exception_check_after_upcall(get_jenv());
+      return res;
+    };
+
+    ((Host*)cthis)->set_cpu_factor_cb(lambda);
+  } else
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1init(JNIEnv* jenv, jclass jcls)

@@ -129,19 +129,18 @@ public:
   Host* set_cpu(kernel::resource::CpuImpl* cpu);
   kernel::resource::CpuImpl* get_cpu() const { return pimpl_cpu_; }
   kernel::routing::NetPoint* get_netpoint() const { return pimpl_netpoint_; }
-  /**
-   * @brief Callback to set CPU factor
+
+  /** Configure the factor callback to the CPU associated to this host
    *
-   * This callback offers a flexible way to create variability in CPU executions
-   *
-   * @param flops Execution size in flops
-   * @return Multiply factor
+   * This callback takes the execution size in flops and returns the multiply factor
    */
+  Host* set_cpu_factor_cb(const std::function<double(Host&, double)>& cb);
+
+#ifndef DOXYGEN
   using CpuFactorCb = double(double flops);
-  /**
-   * @brief Configure the factor callback to the CPU associated to this host
-   */
-  Host* set_factor_cb(const std::function<CpuFactorCb>& cb);
+  XBT_ATTRIB_DEPRECATED_v339("Please use set_cpu_factor_cb() instead") Host* set_factor_cb(
+      const std::function<CpuFactorCb>& cb);
+#endif
 
   size_t get_actor_count() const;
   std::vector<ActorPtr> get_all_actors() const;

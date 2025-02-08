@@ -9,6 +9,7 @@ S4U:
  - Allow to turn disks on and off (was limited to the kernel side until now). Tested in the activity livecycle tests.
  - Turning off a host now turns off the disks attached to this host. Conversely, turning the host back on brings back
    the disks online. Tested in teshsuite/src/host-on-off-disks.
+ - Deprecate Host::set_factor_cb for Host::set_cpu_factor_cb to give the concerned host as a callback parameter.
 
 sthread:
  - Implement pthread_exit() and pthread_cond_timedwait()

@@ -320,6 +320,7 @@ public class simgridJNI {
   public final static native Object Host_get_data(long swigCPtr);
   public final static native void Host_set_data(long swigCPtr, Object o);
   public final static native void Host_set_concurrency_limit(long swigCPtr, int i);
+  public final static native void Host_set_cpu_factor_cb(long swigCPtr, CallbackDHostDouble cb);
   public final static native long Io_init();
   public final static native double Io_get_remaining(long jarg1, Io jarg1_);
   public final static native int Io_get_performed_ioops(long jarg1, Io jarg1_);

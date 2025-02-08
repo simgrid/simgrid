@@ -508,8 +508,12 @@ include examples/java/exec_awaitfor/exec_awaitfor.java
 include examples/java/exec_awaitfor/exec_awaitfor.java.tesh
 include examples/java/exec_basic/exec_basic.java
 include examples/java/exec_basic/exec_basic.java.tesh
+include examples/java/exec_cpu_factors/exec_cpu_factors.java
+include examples/java/exec_cpu_factors/exec_cpu_factors.java.tesh
 include examples/java/exec_dependent/exec_dependent.java
 include examples/java/exec_dependent/exec_dependent.java.tesh
+include examples/java/exec_dvfs/exec_dvfs.java
+include examples/java/exec_dvfs/exec_dvfs.java.tesh
 include examples/java/exec_ptask/exec_ptask.java
 include examples/java/exec_ptask/exec_ptask.java.tesh
 include examples/java/exec_ptask_multicore/exec_ptask_multicore.java
@@ -2247,6 +2251,7 @@ include src/bindings/java/org/simgrid/s4u/CallbackActor.java
 include src/bindings/java/org/simgrid/s4u/CallbackActorHost.java
 include src/bindings/java/org/simgrid/s4u/CallbackBoolean.java
 include src/bindings/java/org/simgrid/s4u/CallbackComm.java
+include src/bindings/java/org/simgrid/s4u/CallbackDHostDouble.java
 include src/bindings/java/org/simgrid/s4u/CallbackDisk.java
 include src/bindings/java/org/simgrid/s4u/CallbackDouble.java
 include src/bindings/java/org/simgrid/s4u/CallbackExec.java

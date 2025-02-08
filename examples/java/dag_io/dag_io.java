@@ -16,7 +16,7 @@ public class dag_io {
 
     // Display the details on vetoed activities
     Exec.on_veto_cb(new CallbackExec() {
-      public void run(Exec exec)
+      @Override public void run(Exec exec)
       {
         Engine.info("Exec '%s' vetoed. Dependencies: %s; Ressources: %s", exec.get_name(),
                     (exec.dependencies_solved() ? "solved" : "NOT solved"),
