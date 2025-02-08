@@ -74,6 +74,7 @@
  */
 
 #include "simgrid/Exception.hpp"
+#include "simgrid/plugins/energy.h"
 #include "simgrid/plugins/live_migration.h"
 #include "simgrid/s4u.hpp"
 
@@ -2827,6 +2828,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1destruct
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
+jobjectArray cleaned_args;
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jenv, jclass jcls, jobjectArray jargs)
 {
   if (jargs == (jobjectArray)0) {
@@ -2851,8 +2853,21 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jen
   cargs[len] = NULL;
 
   auto* result = new simgrid::s4u::Engine(&len, cargs);
+
+  /* Reallocate the args now that SimGrid just removed its parameters */
+  cleaned_args = jenv->NewObjectArray(len, string_class, nullptr);
+
+  for (int i = 0; cargs[i] != nullptr; i++) {
+    jenv->SetObjectArrayElement(cleaned_args, i, jenv->NewStringUTF(cargs[i]));
+  }
+
   free(cargs);
   return (jlong)result;
+}
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1args(JNIEnv* jenv, jclass jcls,
+                                                                                  jlong cthis)
+{
+  return cleaned_args;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1run(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -3223,8 +3238,23 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1vm_1live
                                                                                                   jclass jcls,
                                                                                                   jlong cthis)
 {
-
   sg_vm_live_migration_plugin_init();
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1host_1energy_1init(JNIEnv* jenv, jclass jcls,
+                                                                                           jlong cthis)
+{
+  sg_host_energy_plugin_init();
+}
+
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1link_1energy_1init(JNIEnv* jenv, jclass jcls,
+                                                                                           jlong cthis)
+{
+  sg_link_energy_plugin_init();
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1wifi_1energy_1init(JNIEnv* jenv, jclass jcls,
+                                                                                           jlong cthis)
+{
+  sg_wifi_energy_plugin_init();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1platform_1created_1cb(JNIEnv* jenv, jclass jcls,
@@ -3657,6 +3687,10 @@ JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1pstate(JNIEnv*
 {
   ((simgrid::s4u::Host*)cthis)->set_pstate(pstate);
 }
+JNIEXPORT jint JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1pstate(JNIEnv* jenv, jclass jcls, jlong cthis)
+{
+  return ((simgrid::s4u::Host*)cthis)->get_pstate();
+}
 JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1exec_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                          jdouble flops)
 {
@@ -3716,6 +3750,21 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1cpu_1factor_1
     ((Host*)cthis)->set_cpu_factor_cb(lambda);
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
+}
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1consumed_1energy(JNIEnv* jenv, jclass jcls,
+                                                                                       jlong cthis)
+{
+  return sg_host_get_consumed_energy((Host*)cthis);
+}
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1wattmax_1at(JNIEnv* jenv, jclass jcls,
+                                                                                  jlong cthis, jint pstate)
+{
+  return sg_host_get_wattmax_at((Host*)cthis, pstate);
+}
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1wattmin_1at(JNIEnv* jenv, jclass jcls,
+                                                                                  jlong cthis, jint pstate)
+{
+  return sg_host_get_wattmin_at((Host*)cthis, pstate);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1init(JNIEnv* jenv, jclass jcls)

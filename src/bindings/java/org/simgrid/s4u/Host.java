@@ -20,6 +20,7 @@ public class Host {
   public double get_speed() {
     return simgridJNI.Host_get_speed(swigCPtr, this);
   }
+  public int get_pstate() { return simgridJNI.Host_get_pstate(swigCPtr); }
   public void set_pstate(int p) { simgridJNI.Host_set_pstate(swigCPtr, p); }
   public int get_pstate_count() { return simgridJNI.Host_get_pstate_count(swigCPtr, this); }
   public double get_pstate_speed(int pstate) { return simgridJNI.Host_get_pstate_speed(swigCPtr, this, pstate); }
@@ -67,4 +68,8 @@ public class Host {
   public void set_concurrency_limit(int i) { simgridJNI.Host_set_concurrency_limit(swigCPtr, i); }
   /** If the action runs on more than one Host, only the first one is returned */
   public void set_cpu_factor_cb(CallbackDHostDouble cb) { simgridJNI.Host_set_cpu_factor_cb(swigCPtr, cb); }
+
+  public double get_consumed_energy() { return simgridJNI.Host_get_consumed_energy(swigCPtr); }
+  public double get_wattmin_at(int pstate) { return simgridJNI.Host_get_wattmin_at(swigCPtr, pstate); }
+  public double get_wattmax_at(int pstate) { return simgridJNI.Host_get_wattmax_at(swigCPtr, pstate); }
 }

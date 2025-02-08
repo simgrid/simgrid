@@ -18,12 +18,15 @@ foreach (example activityset_awaitall activityset_awaitallfor activityset_awaita
                  actor_lifetime actor_migrate actor_suspend actor_yield
                  cloud_migration cloud_simple #cloud_capping
                  dag_comm dag_failure dag_from_dax_simple dag_from_dax dag_from_dot_simple dag_from_dot dag_from_json_simple dag_io dag_scheduling dag_simple dag_tuto
+                 energy_boot energy_exec energy_exec_ptask energy_link energy_vm energy_wifi
                  exec_async exec_awaitfor exec_basic exec_cpu_factors exec_dependent exec_dvfs exec_threads exec_ptask exec_ptask_multicore exec_ptask_multicore_latency exec_remote exec_suspend exec_unassigned
 #                 exec_cpu_nonlinear
                  comm_await comm_awaituntil comm_dependent comm_failure comm_host2host comm_pingpong comm_ready comm_suspend comm_throttling
                  io_async io_disk_raw io_priority # io_degradation 
                  mess_await
+                 #platform_comm_serialize # platform_failures  platform_profile  platform_properties
                  synchro_barrier synchro_condition_variable synchro_mutex synchro_semaphore
+                 #task_dispatch  task_io  task_microservice  task_parallelism  task_simple  task_storm  task_switch_host  task_variable_load
                  )
   
   # Use default source file unless specified otherwise
