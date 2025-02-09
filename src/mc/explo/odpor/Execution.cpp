@@ -105,9 +105,9 @@ std::list<Execution::EventHandle> Execution::get_racing_events_of(Execution::Eve
 {
   std::list<Execution::EventHandle> racing_events;
   std::list<Execution::EventHandle> candidates;
-  for (auto const& [aid, event_handle] : get_event_with_handle(target).get_clock_vector())
-    if (aid != get_actor_with_handle(target))
-      candidates.push_back(event_handle);
+  for (aid_t aid = 0; (unsigned)aid < get_event_with_handle(target).get_clock_vector().size(); aid++)
+    if (aid != get_actor_with_handle(target) and get_event_with_handle(target).get_clock_vector().get(aid).value() >= 0)
+      candidates.push_back(get_event_with_handle(target).get_clock_vector().get(aid).value());
 
   candidates.sort(std::greater<EventHandle>());
   candidates.unique();
@@ -466,7 +466,8 @@ bool Execution::happens_before(Execution::EventHandle e1_handle, Execution::Even
   const Event& e2     = get_event_with_handle(e2_handle);
   const aid_t proc_e1 = get_actor_with_handle(e1_handle);
 
-  if (const auto e1_in_e2_clock = e2.get_clock_vector().get(proc_e1); e1_in_e2_clock.has_value()) {
+  if (const auto e1_in_e2_clock = e2.get_clock_vector().get(proc_e1);
+      e1_in_e2_clock.has_value() and e1_in_e2_clock >= 0) {
     return e1_handle <= e1_in_e2_clock.value();
   }
   // If `e1` does not appear in e2's clock vector, this implies
