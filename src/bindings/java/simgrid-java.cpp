@@ -2376,38 +2376,40 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1crea
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await_1until(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jlong cmutex, jobject jmutex, jdouble jarg3)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await_1until(JNIEnv* jenv, jclass jcls,
+                                                                                        jlong cthis, jobject jthis,
+                                                                                        jlong cmutex, jobject jmutex,
+                                                                                        jdouble jarg3)
 {
   if (!cmutex) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "the mutex associated to this CV is null");
-    return false;
+    return;
   }
   try {
-    return std::cv_status::timeout == ((ConditionVariable*)cthis)->wait_until(((Mutex*)cmutex), jarg3);
+    if (std::cv_status::timeout == ((ConditionVariable*)cthis)->wait_until(((Mutex*)cmutex), jarg3))
+      throw TimeoutException(XBT_THROW_POINT, "timeouted!");
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
-  return false;
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await_1for(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis, jobject jthis,
-                                                                                          jlong cmutex, jobject jmutex,
-                                                                                          jdouble jarg3)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await_1for(JNIEnv* jenv, jclass jcls,
+                                                                                      jlong cthis, jobject jthis,
+                                                                                      jlong cmutex, jobject jmutex,
+                                                                                      jdouble jarg3)
 {
   if (!cmutex) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "the mutex associated to this CV is null");
-    return false;
+    return;
   }
   try {
-    return (std::cv_status::timeout == ((ConditionVariable*)cthis)->wait_for(((Mutex*)cmutex), jarg3));
+    if (std::cv_status::timeout == ((ConditionVariable*)cthis)->wait_for(((Mutex*)cmutex), jarg3))
+      throw TimeoutException(XBT_THROW_POINT, "timeouted!");
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
-  return false;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1notify_1one(JNIEnv* jenv, jclass jcls,

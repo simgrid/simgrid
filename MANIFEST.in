@@ -552,6 +552,8 @@ include examples/java/synchro_barrier/synchro_barrier.java
 include examples/java/synchro_barrier/synchro_barrier.java.tesh
 include examples/java/synchro_condition_variable/synchro_condition_variable.java
 include examples/java/synchro_condition_variable/synchro_condition_variable.java.tesh
+include examples/java/synchro_condition_variable_awaituntil/synchro_condition_variable_awaituntil.java
+include examples/java/synchro_condition_variable_awaituntil/synchro_condition_variable_awaituntil.java.tesh
 include examples/java/synchro_mutex/synchro_mutex.java
 include examples/java/synchro_mutex/synchro_mutex.java.tesh
 include examples/java/synchro_semaphore/synchro_semaphore.java

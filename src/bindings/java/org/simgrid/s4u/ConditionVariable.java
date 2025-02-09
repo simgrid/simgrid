@@ -39,19 +39,22 @@ public class ConditionVariable {
   /** Blocks until awaken, no timeout possible */
   public void await(Mutex lock)
   {
-    simgridJNI.ConditionVariable_await_for(swigCPtr, this, Mutex.getCPtr(lock), lock, -1);
+    try {
+      simgridJNI.ConditionVariable_await_for(swigCPtr, this, Mutex.getCPtr(lock), lock, -1);
+    } catch (TimeoutException ex) {
+      throw new RuntimeException(
+          "ConditionVariable.await() is not supposed to timeout, but it just did. Please report that bug.");
+    }
   }
 
-  /** Returns true if the wait timeouted */
-  public boolean await_until(Mutex lock, double timeout_time)
+  public void await_until(Mutex lock, double timeout_time) throws TimeoutException
   {
-    return simgridJNI.ConditionVariable_await_until(swigCPtr, this, Mutex.getCPtr(lock), lock, timeout_time);
+    simgridJNI.ConditionVariable_await_until(swigCPtr, this, Mutex.getCPtr(lock), lock, timeout_time);
   }
 
-  /** Returns true if the wait timeouted */
-  public boolean wait_for(Mutex lock, double duration)
+  public void await_for(Mutex lock, double duration) throws TimeoutException
   {
-    return simgridJNI.ConditionVariable_await_for(swigCPtr, this, Mutex.getCPtr(lock), lock, duration);
+    simgridJNI.ConditionVariable_await_for(swigCPtr, this, Mutex.getCPtr(lock), lock, duration);
   }
 
   public void notify_one() {
