@@ -403,6 +403,13 @@ static std::vector<std::string> java_stringarray_to_vector(JNIEnv* jenv, jobject
     res.push_back(java_string_to_std_string(jenv, (jstring)jenv->GetObjectArrayElement(jarray, i)));
   return res;
 }
+#define check_javaexception(jenv)                                                                                      \
+  do {                                                                                                                 \
+    if (jenv->ExceptionCheck()) {                                                                                      \
+      jenv->ExceptionDescribe();                                                                                       \
+      jenv->ExceptionClear();                                                                                          \
+    }                                                                                                                  \
+  } while (0)
 
 #define check_nullparam(val, msg)                                                                                      \
   do {                                                                                                                 \
@@ -1059,10 +1066,13 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1d
     intrusive_ptr_add_ref(act.get());
     if (dynamic_cast<Comm*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(comm_class, comm_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else if (dynamic_cast<Io*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(io_class, io_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else if (dynamic_cast<Exec*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(exec_class, exec_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else
       THROW_IMPOSSIBLE;
     i++;
@@ -1086,10 +1096,13 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1s
     intrusive_ptr_add_ref(act.get());
     if (dynamic_cast<Comm*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(comm_class, comm_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else if (dynamic_cast<Io*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(io_class, io_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else if (dynamic_cast<Exec*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(exec_class, exec_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else
       THROW_IMPOSSIBLE;
     i++;
@@ -2335,8 +2348,10 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1disks
   auto cres = ((Host*)cthis)->get_disks();
 
   jobjectArray jres = jenv->NewObjectArray(cres.size(), disk_class, nullptr);
-  for (unsigned int i = 0; i < cres.size(); i++)
+  for (unsigned int i = 0; i < cres.size(); i++) {
     jenv->SetObjectArrayElement(jres, i, jenv->NewObject(disk_class, disk_ctor, cres.at(i)));
+    check_javaexception(jenv);
+  }
 
   return jres;
 }
@@ -2348,6 +2363,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1prope
   int i             = 0;
   for (auto [key, _] : *cproperties) {
     jenv->SetObjectArrayElement(jres, i, jenv->NewStringUTF(key.c_str()));
+    check_javaexception(jenv);
     i++;
   }
   return jres;
@@ -2713,10 +2729,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1destruct
 jobjectArray cleaned_args;
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jenv, jclass jcls, jobjectArray jargs)
 {
-  if (jargs == (jobjectArray)0) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "The engine arguments shall not be null");
-    return 0;
-  }
+  check_nullparam(jargs, "The engine arguments shall not be null");
   int len = (int)jenv->GetArrayLength(jargs);
   if (len < 0) {
     SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, "array length negative");
@@ -2744,6 +2757,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jen
 
   for (int i = 1; cargs[i] != nullptr; i++) {
     jenv->SetObjectArrayElement(cleaned_args, i - 1, jenv->NewStringUTF(cargs[i]));
+    check_javaexception(jenv);
   }
 
   free(cargs);
@@ -2826,10 +2840,13 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1veto
     intrusive_ptr_add_ref(act);
     if (dynamic_cast<Comm*>(act)) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(comm_class, comm_ctor, act, (jboolean)1));
+      check_javaexception(jenv);
     } else if (dynamic_cast<Io*>(act)) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(io_class, io_ctor, act, (jboolean)1));
+      check_javaexception(jenv);
     } else if (dynamic_cast<Exec*>(act)) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(exec_class, exec_ctor, act, (jboolean)1));
+      check_javaexception(jenv);
     } else
       THROW_IMPOSSIBLE;
     i++;
@@ -2840,28 +2857,30 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1veto
 /** Create a Java org.simgrid.s4u.Actor of the given subclass and using the (String,String,String[]) constructor */
 static void java_main(int argc, char* argv[])
 {
-  JNIEnv* env = get_jenv();
+  JNIEnv* jenv = get_jenv();
 
   // Change the "." in class name for "/".
   std::string arg0 = argv[0];
   std::replace(begin(arg0), end(arg0), '.', '/');
-  jclass actor_class = env->FindClass(arg0.c_str());
+  jclass actor_class = jenv->FindClass(arg0.c_str());
   // Retrieve the methodID for the constructor
   xbt_assert((actor_class != nullptr),
              "Class not found (%s). The deployment file must use the fully qualified class name, including the "
              "package. The upper/lower case is important.",
              argv[0]);
-  jmethodID actor_constructor = env->GetMethodID(actor_class, "<init>", "([Ljava/lang/String;)V");
+  jmethodID actor_constructor = jenv->GetMethodID(actor_class, "<init>", "([Ljava/lang/String;)V");
   xbt_assert(actor_constructor != nullptr,
              "Constructor %s(String[] args) not found. Is there such a constructor in your class?", argv[0]);
 
   // Build the arguments
-  jobjectArray args = env->NewObjectArray(argc - 1, string_class, nullptr);
-  for (int i = 1; i < argc; i++)
-    env->SetObjectArrayElement(args, i - 1, env->NewStringUTF(argv[i]));
+  jobjectArray args = jenv->NewObjectArray(argc - 1, string_class, nullptr);
+  for (int i = 1; i < argc; i++) {
+    jenv->SetObjectArrayElement(args, i - 1, jenv->NewStringUTF(argv[i]));
+    check_javaexception(jenv);
+  }
 
   // creates the java actor
-  jobject jactor = env->NewObject(actor_class, actor_constructor, args);
+  jobject jactor = jenv->NewObject(actor_class, actor_constructor, args);
 
   ActorPtr result = Engine::get_instance()->add_actor(argv[0], simgrid::s4u::Host::current(), [jactor]() {
     auto jenv = ((simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self())->jenv_;
@@ -2872,7 +2891,7 @@ static void java_main(int argc, char* argv[])
   result->extension_set<ActorJavaExt>(new ActorJavaExt(jactor));
   intrusive_ptr_add_ref(result.get());
 
-  handle_exception(env);
+  handle_exception(jenv);
   xbt_assert((jactor != nullptr), "Actor creation failed.");
 }
 
@@ -2901,8 +2920,10 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all
   auto chosts = ((Engine*)cthis)->get_all_hosts();
 
   jobjectArray result = jenv->NewObjectArray(chosts.size(), host_class, nullptr);
-  for (unsigned i = 0; i < chosts.size(); i++)
+  for (unsigned i = 0; i < chosts.size(); i++) {
     jenv->SetObjectArrayElement(result, i, jenv->NewObject(host_class, host_ctor, chosts.at(i)));
+    check_javaexception(jenv);
+  }
 
   return result;
 }
@@ -2921,8 +2942,10 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1hos
   auto chosts   = ((Engine*)cthis)->get_hosts_from_MPI_hostfile(hostfile);
 
   jobjectArray result = jenv->NewObjectArray(chosts.size(), host_class, nullptr);
-  for (unsigned i = 0; i < chosts.size(); i++)
+  for (unsigned i = 0; i < chosts.size(); i++) {
     jenv->SetObjectArrayElement(result, i, jenv->NewObject(host_class, host_ctor, chosts.at(i)));
+    check_javaexception(jenv);
+  }
 
   return result;
 }
@@ -2957,8 +2980,10 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all
   auto clinks = ((Engine*)cthis)->get_all_links();
 
   jobjectArray result = jenv->NewObjectArray(clinks.size(), link_class, nullptr);
-  for (unsigned i = 0; i < clinks.size(); i++)
+  for (unsigned i = 0; i < clinks.size(); i++) {
     jenv->SetObjectArrayElement(result, i, jenv->NewObject(link_class, link_ctor, clinks.at(i)));
+    check_javaexception(jenv);
+  }
 
   return result;
 }
@@ -3021,8 +3046,10 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all
   auto cactors = ((Engine*)cthis)->get_all_actors();
 
   jobjectArray result = jenv->NewObjectArray(cactors.size(), actor_class, nullptr);
-  for (unsigned i = 0; i < cactors.size(); i++)
+  for (unsigned i = 0; i < cactors.size(); i++) {
     jenv->SetObjectArrayElement(result, i, cactors.at(i)->extension<ActorJavaExt>()->jactor_);
+    check_javaexception(jenv);
+  }
 
   return result;
 }
@@ -3041,8 +3068,10 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all
   auto cnetzones = ((Engine*)cthis)->get_all_netzones();
 
   jobjectArray result = jenv->NewObjectArray(cnetzones.size(), netzone_class, nullptr);
-  for (unsigned i = 0; i < cnetzones.size(); i++)
+  for (unsigned i = 0; i < cnetzones.size(); i++) {
     jenv->SetObjectArrayElement(result, i, jenv->NewObject(netzone_class, netzone_ctor, cnetzones.at(i)));
+    check_javaexception(jenv);
+  }
 
   return result;
 }
@@ -3288,10 +3317,13 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1fro
     intrusive_ptr_add_ref(act.get());
     if (dynamic_cast<Comm*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(comm_class, comm_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else if (dynamic_cast<Io*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(io_class, io_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else if (dynamic_cast<Exec*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(exec_class, exec_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else
       THROW_IMPOSSIBLE;
     i++;
@@ -3321,10 +3353,13 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1fro
     intrusive_ptr_add_ref(act.get());
     if (dynamic_cast<Comm*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(comm_class, comm_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else if (dynamic_cast<Io*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(io_class, io_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else if (dynamic_cast<Exec*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(exec_class, exec_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else
       THROW_IMPOSSIBLE;
     i++;
@@ -3354,10 +3389,13 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1fro
     intrusive_ptr_add_ref(act.get());
     if (dynamic_cast<Comm*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(comm_class, comm_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else if (dynamic_cast<Io*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(io_class, io_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else if (dynamic_cast<Exec*>(act.get())) {
       jenv->SetObjectArrayElement(jres, i, jenv->NewObject(exec_class, exec_ctor, act.get(), (jboolean)1));
+      check_javaexception(jenv);
     } else
       THROW_IMPOSSIBLE;
     i++;
@@ -4205,8 +4243,10 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1ch
   auto cnetzones = ((NetZone*)cthis)->get_children();
 
   jobjectArray result = jenv->NewObjectArray(cnetzones.size(), netzone_class, nullptr);
-  for (unsigned i = 0; i < cnetzones.size(); i++)
+  for (unsigned i = 0; i < cnetzones.size(); i++) {
     jenv->SetObjectArrayElement(result, i, jenv->NewObject(netzone_class, netzone_ctor, cnetzones.at(i)));
+    check_javaexception(jenv);
+  }
 
   return result;
 }
@@ -4219,8 +4259,10 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1al
   auto chosts = ((NetZone*)cthis)->get_all_hosts();
 
   jobjectArray result = jenv->NewObjectArray(chosts.size(), host_class, nullptr);
-  for (unsigned i = 0; i < chosts.size(); i++)
+  for (unsigned i = 0; i < chosts.size(); i++) {
     jenv->SetObjectArrayElement(result, i, jenv->NewObject(host_class, host_ctor, chosts.at(i)));
+    check_javaexception(jenv);
+  }
 
   return result;
 }
