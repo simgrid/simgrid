@@ -222,6 +222,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_mallocators=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
   -Denable_compile_warnings=ON -Denable_smpi=ON \
+  -Denable_lib_in_jar=OFF \
   -Denable_ns3=$(onoff test "$have_NS3" = "yes") \
   -DSIMGRID_PYTHON_LIBDIR=${SIMGRID_PYTHON_LIBDIR} \
   ${MAY_DISABLE_LTO} -DLTO_EXTRA_FLAG="auto" \
