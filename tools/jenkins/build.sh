@@ -167,14 +167,6 @@ if [ "$os" = "nixos" ] ; then
 fi
 echo "XX have_NS3: ${have_NS3}"
 
-have_Java="yes"
-echo "Search for Java"
-if javac --version ; then : else
-  have_Java="no"
-fi
-echo "XX have_Java=$have_Java"
-echo
-
 SIMGRID_PYTHON_LIBDIR=""
 if [ "$os" = "nixos" ] ; then
   SIMGRID_PYTHON_LIBDIR="/home/ci/simgrid_install/lib64"
@@ -231,7 +223,6 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
   -Denable_compile_warnings=ON -Denable_smpi=ON \
   -Denable_ns3=$(onoff test "$have_NS3" = "yes") \
-  -Denable_java=$(onoff test "$have_Java" = "yes") \
   -DSIMGRID_PYTHON_LIBDIR=${SIMGRID_PYTHON_LIBDIR} \
   ${MAY_DISABLE_LTO} -DLTO_EXTRA_FLAG="auto" \
   -DCMAKE_DISABLE_SOURCE_CHANGES=ON \
