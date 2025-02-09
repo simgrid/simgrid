@@ -8,6 +8,7 @@
 
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/states/State.hpp"
+#include <string>
 
 namespace simgrid::mc {
 
@@ -29,6 +30,21 @@ public:
   void add_sleep_set(std::shared_ptr<Transition> t) { sleep_set_.insert_or_assign(t->aid_, std::move(t)); }
   void sleep_add_and_mark(std::shared_ptr<Transition> t);
   bool is_actor_sleeping(aid_t actor) const;
+
+  std::string string_of_sleep_set() const
+  {
+    if (sleep_set_.size() == 0)
+      return "[]";
+    else
+      return std::to_string('[') +
+             std::accumulate(std::next(sleep_set_.begin()), sleep_set_.end(),
+                             '<' + std::to_string(sleep_set_.begin()->first) + ',' +
+                                 sleep_set_.begin()->second->to_string(),
+                             [](std::string a, auto b) {
+                               return std::move(a) + ';' + '<' + std::to_string(b.first) + ',' + b.second->to_string();
+                             }) +
+             std::to_string(']');
+  }
 };
 
 } // namespace simgrid::mc

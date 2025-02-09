@@ -6,6 +6,7 @@
 #include "src/mc/explo/DFSExplorer.hpp"
 #include "simgrid/forward.h"
 #include "src/mc/api/states/SoftLockedState.hpp"
+#include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/explo/reduction/BeFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
@@ -203,6 +204,8 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
     XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
     XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", s->get_num(), state_stack.size(), backtrack_count_ + 1);
     report_correct_execution(s);
+    if (_sg_mc_debug)
+      odpor::MazurkiewiczTraces::record_new_execution(S);
   }
 
   XBT_DEBUG("End of Exploration at depth %lu", S.size() + 1);

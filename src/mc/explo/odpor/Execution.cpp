@@ -514,6 +514,7 @@ std::set<PartialExecution> MazurkiewiczTraces::classes_ = {};
 
 void MazurkiewiczTraces::record_new_execution(const Execution& exec)
 {
+  XBT_INFO("Recording a new mazurkiewicz trace");
   auto seq = PartialExecution{};
   for (auto const& e : exec)
     seq.push_back(e.get_transition());
