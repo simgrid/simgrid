@@ -235,9 +235,9 @@ int main(int argc, char* argv[])
 
   sg4::Host* host        = e.host_by_name("dahu-1.grid5000.fr");
   sg4::Host* host_remote = e.host_by_name("dahu-10.grid5000.fr");
-  sg4::Actor::create("receiver-local", host, Receiver());
-  sg4::Actor::create("receiver-remote", host_remote, Receiver());
-  sg4::Actor::create("sender" + host->get_name(), host, Sender({host, host_remote}, crosstraffic));
+  e.add_actor("receiver-local", host, Receiver());
+  e.add_actor("receiver-remote", host_remote, Receiver());
+  e.add_actor("sender" + host->get_name(), host, Sender({host, host_remote}, crosstraffic));
 
   /* runs the simulation */
   e.run();

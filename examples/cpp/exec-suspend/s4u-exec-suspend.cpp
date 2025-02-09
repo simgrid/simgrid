@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
   e.load_platform(argv[1]);
 
   auto* tremblay = e.host_by_name("Tremblay");
-  sg4::Actor::create("executor", tremblay, executor);
+  e.add_actor("executor", tremblay, executor);
 
   // Start the simulation
   e.run();

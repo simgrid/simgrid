@@ -785,6 +785,7 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/CallbackDisk.java
     src/bindings/java/org/simgrid/s4u/CallbackDouble.java
     src/bindings/java/org/simgrid/s4u/CallbackExec.java
+    src/bindings/java/org/simgrid/s4u/CallbackDHostDouble.java
     src/bindings/java/org/simgrid/s4u/CallbackIo.java
     src/bindings/java/org/simgrid/s4u/CallbackLink.java
     src/bindings/java/org/simgrid/s4u/CallbackNetzone.java

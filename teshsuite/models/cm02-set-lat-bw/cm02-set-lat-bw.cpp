@@ -116,10 +116,10 @@ int main(int argc, char** argv)
   zone->add_route(hosts["S2"], hosts["C2"], {links["L3"], links["L0"], links["L4"]});
   zone->seal();
 
-  sg4::Actor::create("", hosts["S1"], sender, "C1", nullptr);
-  sg4::Actor::create("", hosts["C1"], receiver);
-  sg4::Actor::create("", hosts["S2"], sender, "C2", links["L4"]);
-  sg4::Actor::create("", hosts["C2"], receiver);
+  e.add_actor("", hosts["S1"], sender, "C1", nullptr);
+  e.add_actor("", hosts["C1"], receiver);
+  e.add_actor("", hosts["S2"], sender, "C2", links["L4"]);
+  e.add_actor("", hosts["C2"], receiver);
 
   e.run();
 

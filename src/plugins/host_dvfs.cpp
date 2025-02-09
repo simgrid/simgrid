@@ -359,7 +359,7 @@ static void on_host_added(simgrid::s4u::Host& host)
     return;
 
   std::string name              = "dvfs-daemon-" + host.get_name();
-  simgrid::s4u::ActorPtr daemon = simgrid::s4u::Actor::create(name.c_str(), &host, []() {
+  simgrid::s4u::ActorPtr daemon = simgrid::s4u::Engine::get_instance()->add_actor(name.c_str(), &host, []() {
     /**
      * This lambda function is the function the actor (daemon) will execute
      * all the time - in the case of the dvfs plugin, this controls when to

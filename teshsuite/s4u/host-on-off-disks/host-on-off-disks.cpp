@@ -46,8 +46,8 @@ int main(int argc, char* argv[])
   root->add_route(host1, host2, {link});
   root->seal();
 
-  sg4::Actor::create("I/O manager", host1, io_manager)->set_auto_restart();
-  sg4::Actor::create("host_killer", host2, host_killer);
+  e.add_actor("I/O manager", host1, io_manager)->set_auto_restart();
+  e.add_actor("host_killer", host2, host_killer);
 
   e.run();
 

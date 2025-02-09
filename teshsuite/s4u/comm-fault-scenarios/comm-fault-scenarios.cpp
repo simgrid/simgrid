@@ -402,9 +402,9 @@ int main(int argc, char* argv[])
   pr::Profile* profile_receiver = pr::ProfileBuilder::from_string("receiver_profile", ctx.receiver_profile.str(), 0);
   sg4::Host* receiver_host =
       zone->create_host("receiverHost", HostComputePower)->set_state_profile(profile_receiver)->seal();
-  sg4::ActorPtr sender = sg4::Actor::create("sender", sender_host, SendAgent(0, receiver_host, mbox, ctx));
+  sg4::ActorPtr sender = e.add_actor("sender", sender_host, SendAgent(0, receiver_host, mbox, ctx));
   sender->set_auto_restart(true);
-  sg4::ActorPtr receiver = sg4::Actor::create("receiver", receiver_host, ReceiveAgent(1, sender_host, mbox, ctx));
+  sg4::ActorPtr receiver = e.add_actor("receiver", receiver_host, ReceiveAgent(1, sender_host, mbox, ctx));
   receiver->set_auto_restart(true);
   pr::Profile* profile_link = pr::ProfileBuilder::from_string("link_profile", ctx.link_profile.str(), 0);
   sg4::Link const* link =

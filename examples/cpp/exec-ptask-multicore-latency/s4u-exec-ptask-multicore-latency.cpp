@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s <platform file>", argv[0]);
 
   e.load_platform(argv[1]);
-  sg4::Actor::create("test", sg4::Host::by_name("MyHost1"), runner);
+  e.add_actor("test", sg4::Host::by_name("MyHost1"), runner);
 
   e.run();
   XBT_INFO("Simulation done.");

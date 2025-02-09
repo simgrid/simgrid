@@ -34,7 +34,7 @@ if __name__ == '__main__':
     e = Engine(sys.argv)
     e.load_platform(sys.argv[1])
 
-    Actor.create("executor", Host.by_name("Tremblay"), executor)
-    Actor.create("privileged", Host.by_name("Tremblay"), privileged)
+    e.add_actor("executor", Host.by_name("Tremblay"), executor)
+    e.add_actor("privileged", Host.by_name("Tremblay"), privileged)
 
     e.run()

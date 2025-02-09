@@ -56,8 +56,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), master);
-  simgrid::s4u::Actor::create("worker", e.host_by_name("Jupiter"), worker);
+  e.add_actor("master", e.host_by_name("Tremblay"), master);
+  e.add_actor("worker", e.host_by_name("Jupiter"), worker);
 
   e.run();
 

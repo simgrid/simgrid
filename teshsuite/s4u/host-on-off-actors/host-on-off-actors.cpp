@@ -52,6 +52,7 @@ static void commRX()
 
 static void test_launcher(int test_number)
 {
+  simgrid::s4u::Engine& e     = *simgrid::s4u::this_actor::get_engine();
   simgrid::s4u::Host* jupiter = simgrid::s4u::Host::by_name("Jupiter");
   simgrid::s4u::ActorPtr daemon;
   simgrid::s4u::VirtualMachine* vm0 = nullptr;
@@ -62,7 +63,7 @@ static void test_launcher(int test_number)
       // Create a process running a simple task on a host and turn the host off during the execution of the actor.
       XBT_INFO("Test 1:");
       XBT_INFO("  Create an actor on Jupiter");
-      simgrid::s4u::Actor::create("actor_daemon", jupiter, actor_daemon, std::ref(tasks_done));
+      e.add_actor("actor_daemon", jupiter, actor_daemon, std::ref(tasks_done));
       simgrid::s4u::this_actor::sleep_for(3);
       XBT_INFO("  Turn off Jupiter");
       jupiter->turn_off();
@@ -78,7 +79,7 @@ static void test_launcher(int test_number)
       // adsein: This can be one additional test, to check that you cannot shutdown twice a host
       jupiter->turn_off();
       try {
-        simgrid::s4u::Actor::create("actor_daemon", jupiter, actor_daemon, std::ref(tasks_done));
+        e.add_actor("actor_daemon", jupiter, actor_daemon, std::ref(tasks_done));
         simgrid::s4u::this_actor::sleep_for(10);
         XBT_INFO("  Test 2 does crash as it should. This message will not be displayed.");
       } catch (const simgrid::HostFailureException&) {
@@ -94,8 +95,8 @@ static void test_launcher(int test_number)
                "Jupiter and Tremblay and turn off Jupiter during the communication");
       jupiter->turn_on();
       simgrid::s4u::this_actor::sleep_for(10);
-      simgrid::s4u::Actor::create("commRX", simgrid::s4u::Host::by_name("Tremblay"), commRX);
-      simgrid::s4u::Actor::create("commTX", jupiter, commTX);
+      e.add_actor("commRX", simgrid::s4u::Host::by_name("Tremblay"), commRX);
+      e.add_actor("commTX", jupiter, commTX);
       XBT_INFO("  number of actors: %zu", simgrid::s4u::Engine::get_instance()->get_actor_count());
       simgrid::s4u::this_actor::sleep_for(10);
       XBT_INFO("  Turn Jupiter off");
@@ -110,8 +111,8 @@ static void test_launcher(int test_number)
                "Tremblay and Jupiter and turn off Jupiter during the communication");
       jupiter->turn_on();
       simgrid::s4u::this_actor::sleep_for(10);
-      simgrid::s4u::Actor::create("commRX", jupiter, commRX);
-      simgrid::s4u::Actor::create("commTX", simgrid::s4u::Host::by_name("Tremblay"), commTX);
+      e.add_actor("commRX", jupiter, commRX);
+      e.add_actor("commTX", simgrid::s4u::Host::by_name("Tremblay"), commTX);
       XBT_INFO("  number of actors: %zu", simgrid::s4u::Engine::get_instance()->get_actor_count());
       simgrid::s4u::this_actor::sleep_for(10);
       XBT_INFO("  Turn Jupiter off");
@@ -127,8 +128,8 @@ static void test_launcher(int test_number)
       vm0 = jupiter->create_vm("vm0", 1);
       vm0->start();
 
-      daemon = simgrid::s4u::Actor::create("actor_daemon", vm0, actor_daemon, std::ref(tasks_done));
-      simgrid::s4u::Actor::create("actor_daemonJUPI", jupiter, actor_daemon, std::ref(tasks_done));
+      daemon = e.add_actor("actor_daemon", vm0, actor_daemon, std::ref(tasks_done));
+      e.add_actor("actor_daemonJUPI", jupiter, actor_daemon, std::ref(tasks_done));
 
       daemon->suspend();
       vm0->set_bound(90);
@@ -159,7 +160,7 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("test_launcher", e.host_by_name("Tremblay"), test_launcher, std::stoi(argv[2]));
+  e.add_actor("test_launcher", e.host_by_name("Tremblay"), test_launcher, std::stoi(argv[2]));
 
   e.run();
 

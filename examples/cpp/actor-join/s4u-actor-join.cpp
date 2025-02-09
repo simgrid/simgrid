@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u.hpp"
+#include "simgrid/s4u/Engine.hpp"
 namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
@@ -17,25 +18,26 @@ static void sleeper()
 
 static void master()
 {
+  auto e = simgrid::s4u::this_actor::get_engine();
   sg4::ActorPtr actor;
 
   XBT_INFO("Start sleeper");
-  actor = sg4::Actor::create("sleeper from master", sg4::Host::current(), sleeper);
+  actor = e->add_actor("sleeper from master", sg4::Host::current(), sleeper);
   XBT_INFO("Join the sleeper (timeout 2)");
   actor->join(2);
 
   XBT_INFO("Start sleeper");
-  actor = sg4::Actor::create("sleeper from master", sg4::Host::current(), sleeper);
+  actor = e->add_actor("sleeper from master", sg4::Host::current(), sleeper);
   XBT_INFO("Join the sleeper (timeout 4)");
   actor->join(4);
 
   XBT_INFO("Start sleeper");
-  actor = sg4::Actor::create("sleeper from master", sg4::Host::current(), sleeper);
+  actor = e->add_actor("sleeper from master", sg4::Host::current(), sleeper);
   XBT_INFO("Join the sleeper (timeout 2)");
   actor->join(2);
 
   XBT_INFO("Start sleeper");
-  actor = sg4::Actor::create("sleeper from master", sg4::Host::current(), sleeper);
+  actor = e->add_actor("sleeper from master", sg4::Host::current(), sleeper);
   XBT_INFO("Waiting 4");
   sg4::this_actor::sleep_for(4);
   XBT_INFO("Join the sleeper after its end (timeout 1)");
@@ -55,7 +57,7 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("master", e.host_by_name("Tremblay"), master);
+  e.add_actor("master", e.host_by_name("Tremblay"), master);
 
   e.run();
 

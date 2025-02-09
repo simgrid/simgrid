@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
       [](const sg4::Task* t) { XBT_INFO("Task %s finished (%d)", t->get_name().c_str(), t->get_count()); });
   sg4::Task::on_start_cb([](const sg4::Task* t) { XBT_INFO("Task %s start", t->get_name().c_str()); });
 
-  sg4::Actor::create("manager", PM0, manager, a);
+  e.add_actor("manager", PM0, manager, a);
 
   e.run();
   return 0;

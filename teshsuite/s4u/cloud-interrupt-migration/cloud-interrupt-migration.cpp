@@ -21,7 +21,8 @@ static void vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst
 
 static simgrid::s4u::ActorPtr vm_migrate_async(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
 {
-  return simgrid::s4u::Actor::create("mig_wrk", simgrid::s4u::Host::current(), vm_migrate, vm, dst_pm);
+  return simgrid::s4u::this_actor::get_engine()->add_actor("mig_wrk", simgrid::s4u::Host::current(), vm_migrate, vm,
+                                                           dst_pm);
 }
 
 static void master_main()
@@ -61,7 +62,7 @@ int main(int argc, char* argv[])
   /* load the platform file */
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("master_", e.host_by_name("Fafard"), master_main);
+  e.add_actor("master_", e.host_by_name("Fafard"), master_main);
 
   e.run();
 

@@ -79,10 +79,10 @@ int main(int argc, char* argv[])
 
   for (int i = 0; i < 3; i++) {
     std::string hostname = "node-" + std::to_string(i) + ".simgrid.org";
-    sg4::Actor::create("ingester-" + std::to_string(i), e.host_by_name(hostname), &ingester, i, pc);
+    e.add_actor("ingester-" + std::to_string(i), e.host_by_name(hostname), &ingester, i, pc);
 
     hostname = "node-" + std::to_string(i + 3) + ".simgrid.org";
-    sg4::Actor::create("retriever-" + std::to_string(i), e.host_by_name(hostname), &retriever, pc);
+    e.add_actor("retriever-" + std::to_string(i), e.host_by_name(hostname), &retriever, pc);
   }
 
   e.run();

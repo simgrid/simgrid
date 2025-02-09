@@ -54,9 +54,11 @@ static void receiver()
 
 static void maestro(void* /* data */)
 {
+  sg4::Engine& e = *sg4::this_actor::get_engine();
+
   ensure_other_tid();
-  sg4::Actor::create("receiver", sg4::Host::by_name("Jupiter"), receiver);
-  sg4::Engine::get_instance()->run();
+  e.add_actor("receiver", sg4::Host::by_name("Jupiter"), receiver);
+  e.run();
 }
 
 /** Main function */
@@ -75,7 +77,7 @@ int main(int argc, char* argv[])
   e.load_platform(argv[1]);
 
   /* Become one of the simulated actors (must be done after the platform creation, or the host won't exist). */
-  sg_actor_attach("sender", nullptr, e.host_by_name("Tremblay"));
+  sg_actor_attach_pthread("sender", nullptr, e.host_by_name("Tremblay"));
 
   ensure_root_tid(); // Only useful in this test: we ensure that SimGrid is not broken and that this code is executed in
                      // the correct system thread

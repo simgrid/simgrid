@@ -58,8 +58,8 @@ int main(int argc, char** argv)
   l->set_host_wifi_rate(engine.host_by_name("Station 2"), 0);
 
   // create the two actors for the test
-  sg4::Actor::create("act0", engine.host_by_name("Station 1"), sender);
-  sg4::Actor::create("act1", engine.host_by_name("Station 2"), receiver);
+  engine.add_actor("act0", engine.host_by_name("Station 1"), sender);
+  engine.add_actor("act1", engine.host_by_name("Station 2"), receiver);
 
   engine.run();
 

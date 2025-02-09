@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
                            e.host_by_name_or_null("Jupiter"), e.host_by_name_or_null("Fafard")});
 
   // Start a third MPI application, from a S4U actor after a delay of 10 sec
-  simgrid::s4u::Actor::create("launcher", e.host_by_name_or_null("Ginette"), [&e]() {
+  e.add_actor("launcher", e.host_by_name_or_null("Ginette"), [&e]() {
     simgrid::s4u::this_actor::sleep_for(10);
     XBT_INFO("Start another alltoall_mpi instance");
     SMPI_app_instance_start("alltoall_mpi", alltoall_mpi,

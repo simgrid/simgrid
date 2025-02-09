@@ -76,8 +76,8 @@ public:
 
 int main(int argc, char** argv)
 {
-  sg4::Engine engine(&argc, argv);
-  auto* zone        = engine.get_netzone_root();
+  sg4::Engine e(&argc, argv);
+  auto* zone        = e.get_netzone_root();
   auto* host1 = zone->create_host("Host1", "1f");
   auto* host2 = zone->create_host("Host2", "1f");
   auto* host3 = zone->create_host("Host3", "1f");
@@ -88,17 +88,17 @@ int main(int argc, char** argv)
   zone->add_route(host1, host3, {link3});
   zone->seal();
 
-  sg4::Actor::create("Sender", host1, Sender("mailbox2", "mailbox3"));
-  sg4::Actor::create("Receiver", host2, Receiver("mailbox2"));
-  sg4::Actor::create("Receiver", host3, Receiver("mailbox3"));
+  e.add_actor("Sender", host1, Sender("mailbox2", "mailbox3"));
+  e.add_actor("Receiver", host2, Receiver("mailbox2"));
+  e.add_actor("Receiver", host3, Receiver("mailbox3"));
 
-  sg4::Actor::create("LinkKiller", host1, [](){
+  e.add_actor("LinkKiller", host1, []() {
     sg4::this_actor::sleep_for(10.0);
     XBT_INFO("Turning off link 'linkto2'");
     sg4::Link::by_name("linkto2")->turn_off();
   });
 
-  engine.run();
+  e.run();
 
   return 0;
 }

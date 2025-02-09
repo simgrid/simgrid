@@ -291,10 +291,10 @@ def main():
 
     host_list = e.all_hosts
     # create the sender actor running on first host
-    simgrid.Actor.create("sender", host_list[0], Sender(host_list))
+    e.add_actor("sender", host_list[0], Sender(host_list))
     # create receiver in every host
     for host in host_list:
-        simgrid.Actor.create("receiver-" + host.name, host, Receiver())
+        e.add_actor("receiver-" + host.name, host, Receiver())
 
     # runs the simulation
     e.run()

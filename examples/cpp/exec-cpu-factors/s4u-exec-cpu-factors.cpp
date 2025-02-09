@@ -28,12 +28,12 @@ static void runner()
 }
 /*************************************************************************************************/
 /** @brief Variability for CPU */
-static double cpu_variability(const sg4::Host* host, double flops)
+static double cpu_variability(const sg4::Host& host, double flops)
 {
   /* creates variability for tasks smaller than 1% of CPU power.
    * unrealistic, for learning purposes */
-  double factor = (flops < host->get_speed() / 100) ? 0.5 : 1.0;
-  XBT_INFO("Host %s, task with %lf flops, new factor %lf", host->get_cname(), flops, factor);
+  double factor = (flops < host.get_speed() / 100) ? 0.5 : 1.0;
+  XBT_INFO("Host %s, task with %lf flops, new factor %lf", host.get_cname(), flops, factor);
   return factor;
 }
 
@@ -42,11 +42,11 @@ static void load_platform(sg4::Engine& e)
 {
   auto* zone        = e.get_netzone_root();
   auto* runner_host = zone->create_host("runner", 1e6);
-  runner_host->set_factor_cb(std::bind(&cpu_variability, runner_host, std::placeholders::_1))->seal();
+  runner_host->set_cpu_factor_cb(cpu_variability);
   zone->seal();
 
   /* create actor runner */
-  sg4::Actor::create("runner", runner_host, runner);
+  e.add_actor("runner", runner_host, runner);
 }
 
 /*************************************************************************************************/

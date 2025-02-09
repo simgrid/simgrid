@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/remote/Channel.hpp"
+#include "xbt/asserts.hpp"
 #include <xbt/log.h>
 
 #include <algorithm>
@@ -65,7 +66,7 @@ ssize_t Channel::receive(void* message, size_t size, int flags)
   if (todo > 0) {
     errno = 0;
     res   = recv(this->socket_, whereto, todo, flags);
-    xbt_assert(res != -1 || errno == EAGAIN, "Channel::receive failure: %s", strerror(errno));
+    xbt_enforce(res != -1 || errno == EAGAIN, "Channel::receive failure: %s", strerror(errno));
     if (res == -1) {
       res = 0;
     }

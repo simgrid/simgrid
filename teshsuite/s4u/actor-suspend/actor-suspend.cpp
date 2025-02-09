@@ -58,8 +58,8 @@ int main(int argc, char** argv)
   simgrid::s4u::Host* host = engine.host_by_name("Tremblay");
 
   simgrid::s4u::ActorPtr receiver;
-  simgrid::s4u::Actor::create("Suspender", host, Suspender(receiver));
-  receiver = simgrid::s4u::Actor::create("Receiver", host, Receiver());
+  engine.add_actor("Suspender", host, Suspender(receiver));
+  receiver = engine.add_actor("Receiver", host, Receiver());
 
   engine.run();
 

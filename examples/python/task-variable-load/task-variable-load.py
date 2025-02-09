@@ -61,7 +61,7 @@ if __name__ == '__main__':
     Task.on_completion_cb(callback)
 
     # Create the actor that will inject load during the simulation
-    Actor.create("input", tremblay, variable_load, comm)
+    e.add_actor("input", tremblay, variable_load, comm)
 
     # runs the simulation
     e.run()

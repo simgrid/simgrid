@@ -35,7 +35,7 @@ int main(int argc, char** argv)
   e.load_platform(argv[1]);
 
   for (int i = 0; i < 5; i++)
-    sg4::Actor::create("host", e.host_by_name("bob"), host);
+    e.add_actor("host", e.host_by_name("bob"), host);
 
   e.run();
   XBT_INFO("Simulation time %g", sg4::Engine::get_clock());

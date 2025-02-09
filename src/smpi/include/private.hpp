@@ -83,7 +83,7 @@ XBT_PRIVATE void smpi_deployment_unregister_process(const std::string& instance_
 
 XBT_PRIVATE MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
-XBT_PRIVATE int smpi_deployment_smpirun(const simgrid::s4u::Engine* e, const std::string& hostfile, int np,
+XBT_PRIVATE int smpi_deployment_smpirun(simgrid::s4u::Engine* e, const std::string& hostfile, int np,
                                         const std::string& replayfile, int map,
                                         const std::vector<const char*>& run_args);
 

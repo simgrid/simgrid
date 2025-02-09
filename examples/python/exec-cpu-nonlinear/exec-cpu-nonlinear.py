@@ -48,7 +48,7 @@ def load_platform(e:Engine):
     zone.seal()
 
     # create actor runner
-    Actor.create("runner", runner_host, runner)
+    e.add_actor("runner", runner_host, runner)
 
 
 if __name__ == '__main__':

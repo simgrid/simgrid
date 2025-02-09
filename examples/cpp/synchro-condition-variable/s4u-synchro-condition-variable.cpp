@@ -25,13 +25,14 @@ static void worker_fun(sg4::ConditionVariablePtr cv, sg4::MutexPtr mutex, std::s
 
 static void master_fun()
 {
+  sg4::Engine& e   = *simgrid::s4u::this_actor::get_engine();
   auto mutex  = sg4::Mutex::create();
   auto cv     = sg4::ConditionVariable::create();
   std::string data = "Example data";
   bool done        = false;
 
-  auto worker = sg4::Actor::create("worker", sg4::Host::by_name("Jupiter"), worker_fun, cv, mutex, std::ref(data),
-                                   std::ref(done));
+  auto worker =
+      e.add_actor("worker", sg4::Host::by_name("Jupiter"), worker_fun, cv, mutex, std::ref(data), std::ref(done));
 
   // wait for the worker
   cv->wait(std::unique_lock(*mutex), [&done]() { return done; });
@@ -44,7 +45,7 @@ int main(int argc, char** argv)
 {
   sg4::Engine e(&argc, argv);
   e.load_platform("../../platforms/two_hosts.xml");
-  sg4::Actor::create("main", e.host_by_name("Tremblay"), master_fun);
+  e.add_actor("main", e.host_by_name("Tremblay"), master_fun);
   e.run();
 
   return 0;

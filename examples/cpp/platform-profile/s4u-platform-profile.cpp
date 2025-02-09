@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
       ->seal();
 
   // Add a watcher of the changes
-  sg4::Actor::create("watcher", e.host_by_name("Fafard"), watcher);
+  e.add_actor("watcher", e.host_by_name("Fafard"), watcher);
 
   e.run();
 

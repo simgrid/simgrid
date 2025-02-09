@@ -87,7 +87,7 @@ int main(int argc, char** argv)
   disk->set_readwrite_bandwidth(1e6);
   zone->seal();
 
-  sg4::Actor::create("", bob, host);
+  e.add_actor("", bob, host);
 
   e.run();
 

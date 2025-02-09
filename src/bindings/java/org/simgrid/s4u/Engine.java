@@ -46,6 +46,7 @@ public class Engine {
   }
 
   public Engine(String[] args) { this(simgridJNI.new_Engine(args), true); }
+  public String[] get_args() { return simgridJNI.Engine_get_args(swigCPtr); }
 
   public void run() {
     simgridJNI.Engine_run(swigCPtr, this);
@@ -181,6 +182,9 @@ public class Engine {
   }
 
   public void plugin_vm_live_migration_init() { simgridJNI.Engine_plugin_vm_live_migration_init(swigCPtr); }
+  public void plugin_host_energy_init() { simgridJNI.Engine_plugin_host_energy_init(swigCPtr); }
+  public void plugin_link_energy_init() { simgridJNI.Engine_plugin_link_energy_init(swigCPtr); }
+  public void plugin_wifi_energy_init() { simgridJNI.Engine_plugin_wifi_energy_init(swigCPtr); }
 
   public static void on_platform_created_cb(CallbackVoid cb) { simgridJNI.Engine_on_platform_created_cb(cb); }
 

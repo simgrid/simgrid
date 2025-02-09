@@ -108,7 +108,7 @@ template <typename Activity, creator_type<Activity> Create, tester_type<Activity
 {
   XBT_INFO("Launch an activity for 5s, and let it proceed before test");
 
-  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::create("actor", all_hosts[1], []() {
+  simgrid::s4u::ActorPtr actor = simgrid::s4u::Engine::get_instance()->add_actor("actor", all_hosts[1], []() {
     assert_exit(true, 6.);
     Activity activity = Create(5.0);
     simgrid::s4u::this_actor::sleep_for(6.0);
@@ -122,7 +122,7 @@ template <typename Activity, creator_type<Activity> Create, tester_type<Activity
 {
   XBT_INFO("Launch an activity for 5s, and test while it proceeds");
 
-  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::create("actor", all_hosts[1], []() {
+  simgrid::s4u::ActorPtr actor = simgrid::s4u::Engine::get_instance()->add_actor("actor", all_hosts[1], []() {
     assert_exit(true, 6.);
     Activity activity = Create(5.0);
     for (int i = 0; i < 3; i++) {
@@ -141,7 +141,7 @@ template <typename Activity, creator_type<Activity> Create, tester_type<Activity
 {
   XBT_INFO("Launch an activity for 5s, and cancel it after 2s");
 
-  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::create("actor", all_hosts[1], []() {
+  simgrid::s4u::ActorPtr actor = simgrid::s4u::Engine::get_instance()->add_actor("actor", all_hosts[1], []() {
     assert_exit(true, 2.);
     Activity activity = Create(5.0);
     simgrid::s4u::this_actor::sleep_for(2.0);
@@ -158,7 +158,7 @@ void test_failure_actor()
   XBT_INFO("Launch an activity for 5s, and kill running actor after 2s");
 
   Activity activity;
-  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::create("actor", all_hosts[1], [&activity]() {
+  simgrid::s4u::ActorPtr actor = simgrid::s4u::Engine::get_instance()->add_actor("actor", all_hosts[1], [&activity]() {
     assert_exit(false, 2.);
     activity = Create(5.0);
     Wait(activity);
@@ -180,7 +180,7 @@ void test_failure_host()
   XBT_INFO("Launch an activity for 5s, and shutdown host 2s");
 
   Activity activity;
-  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::create("actor", all_hosts[1], [&activity]() {
+  simgrid::s4u::ActorPtr actor = simgrid::s4u::Engine::get_instance()->add_actor("actor", all_hosts[1], [&activity]() {
     assert_exit(false, 2.);
     activity = Create(5.0);
     Wait(activity);

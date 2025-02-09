@@ -46,7 +46,7 @@ if __name__ == '__main__':
   # Load the platform description
   e.load_platform(sys.argv[1])
 
-  Actor.create("bob",   Host.by_name("bob"), bob)
-  Actor.create("alice", Host.by_name("alice"), alice)
+  e.add_actor("bob",   Host.by_name("bob"), bob)
+  e.add_actor("alice", Host.by_name("alice"), alice)
 
   e.run()

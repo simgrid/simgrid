@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/simcall.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/kernel/routing/NetPoint.hpp>
@@ -75,7 +76,7 @@ void VirtualMachine::destroy()
 
   if (not this_actor::is_maestro() && this_actor::get_host() == this) {
     XBT_VERB("Launch another actor on physical host %s to destroy my own VM: %s", get_pm()->get_cname(), get_cname());
-    simgrid::s4u::Actor::create(get_name() + "-vm_destroy", get_pm(), destroy_code);
+    simgrid::s4u::Engine::get_instance()->add_actor(get_name() + "-vm_destroy", get_pm(), destroy_code);
     simgrid::s4u::this_actor::yield();
     XBT_CRITICAL("I should be dead now!");
     DIE_IMPOSSIBLE;

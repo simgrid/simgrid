@@ -140,7 +140,7 @@ int main(int argc, char** argv)
   create_sata_disk(bob, "Griffon (SATA II)");
   zone->seal();
 
-  sg4::Actor::create("", bob, host);
+  e.add_actor("", bob, host);
 
   e.run();
   XBT_INFO("Simulated time: %g", sg4::Engine::get_clock());

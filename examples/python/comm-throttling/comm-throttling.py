@@ -57,8 +57,8 @@ def main():
 
     mailbox = e.mailbox_by_name_or_create("Mailbox")
 
-    Actor.create("sender", e.host_by_name("node-0.simgrid.org"), sender, mailbox)
-    Actor.create("receiver", e.host_by_name("node-1.simgrid.org"), receiver, mailbox)
+    e.add_actor("sender", e.host_by_name("node-0.simgrid.org"), sender, mailbox)
+    e.add_actor("receiver", e.host_by_name("node-1.simgrid.org"), receiver, mailbox)
 
     e.run()
 

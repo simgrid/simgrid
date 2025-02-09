@@ -74,12 +74,15 @@
  */
 
 #include "simgrid/Exception.hpp"
+#include "simgrid/plugins/energy.h"
 #include "simgrid/plugins/live_migration.h"
 #include "simgrid/s4u.hpp"
 
 #include "simgrid/s4u/Activity.hpp"
 #include "simgrid/s4u/ActivitySet.hpp"
 #include "simgrid/s4u/Actor.hpp"
+#include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextJava.hpp"
 #include "xbt/asserts.h"
@@ -103,6 +106,7 @@ static jmethodID CallbackBoolean_methodId   = 0;
 static jmethodID CallbackComm_methodId      = 0;
 static jmethodID CallbackDisk_methodId      = 0;
 static jmethodID CallbackDouble_methodId    = 0;
+static jmethodID CallbackDHostDouble_methodId = 0;
 static jmethodID CallbackExec_methodId      = 0;
 static jmethodID CallbackIo_methodId        = 0;
 static jmethodID CallbackLink_methodId      = 0;
@@ -281,6 +285,7 @@ static struct SimGridJavaInit {
       CallbackComm_methodId      = init_methodId(maestro_jenv, "CallbackComm", "run", "(J)V");
       CallbackDisk_methodId      = init_methodId(maestro_jenv, "CallbackDisk", "run", "(J)V");
       CallbackDouble_methodId    = init_methodId(maestro_jenv, "CallbackDouble", "run", "(D)V");
+      CallbackDHostDouble_methodId = init_methodId(maestro_jenv, "CallbackDHostDouble", "run", "(JD)D");
       CallbackExec_methodId      = init_methodId(maestro_jenv, "CallbackExec", "run", "(J)V");
       CallbackIo_methodId        = init_methodId(maestro_jenv, "CallbackIo", "run", "(J)V");
       CallbackLink_methodId      = init_methodId(maestro_jenv, "CallbackLink", "run", "(J)V");
@@ -2371,38 +2376,40 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1crea
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await_1until(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jlong cmutex, jobject jmutex, jdouble jarg3)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await_1until(JNIEnv* jenv, jclass jcls,
+                                                                                        jlong cthis, jobject jthis,
+                                                                                        jlong cmutex, jobject jmutex,
+                                                                                        jdouble jarg3)
 {
   if (!cmutex) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "the mutex associated to this CV is null");
-    return false;
+    return;
   }
   try {
-    return std::cv_status::timeout == ((ConditionVariable*)cthis)->wait_until(((Mutex*)cmutex), jarg3);
+    if (std::cv_status::timeout == ((ConditionVariable*)cthis)->wait_until(((Mutex*)cmutex), jarg3))
+      throw TimeoutException(XBT_THROW_POINT, "timeouted!");
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
-  return false;
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await_1for(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis, jobject jthis,
-                                                                                          jlong cmutex, jobject jmutex,
-                                                                                          jdouble jarg3)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await_1for(JNIEnv* jenv, jclass jcls,
+                                                                                      jlong cthis, jobject jthis,
+                                                                                      jlong cmutex, jobject jmutex,
+                                                                                      jdouble jarg3)
 {
   if (!cmutex) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "the mutex associated to this CV is null");
-    return false;
+    return;
   }
   try {
-    return (std::cv_status::timeout == ((ConditionVariable*)cthis)->wait_for(((Mutex*)cmutex), jarg3));
+    if (std::cv_status::timeout == ((ConditionVariable*)cthis)->wait_for(((Mutex*)cmutex), jarg3))
+      throw TimeoutException(XBT_THROW_POINT, "timeouted!");
   } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
-  return false;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1notify_1one(JNIEnv* jenv, jclass jcls,
@@ -2823,6 +2830,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1destruct
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
+jobjectArray cleaned_args;
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jenv, jclass jcls, jobjectArray jargs)
 {
   if (jargs == (jobjectArray)0) {
@@ -2847,8 +2855,21 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jen
   cargs[len] = NULL;
 
   auto* result = new simgrid::s4u::Engine(&len, cargs);
+
+  /* Reallocate the args now that SimGrid just removed its parameters */
+  cleaned_args = jenv->NewObjectArray(len, string_class, nullptr);
+
+  for (int i = 0; cargs[i] != nullptr; i++) {
+    jenv->SetObjectArrayElement(cleaned_args, i, jenv->NewStringUTF(cargs[i]));
+  }
+
   free(cargs);
   return (jlong)result;
+}
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1args(JNIEnv* jenv, jclass jcls,
+                                                                                  jlong cthis)
+{
+  return cleaned_args;
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1run(JNIEnv* jenv, jclass jcls, jlong cthis,
@@ -2959,7 +2980,7 @@ static void java_main(int argc, char* argv[])
   // creates the java actor
   jobject jactor = env->NewObject(actor_class, actor_constructor, args);
 
-  ActorPtr result = Actor::create(argv[0], simgrid::s4u::Host::current(), [jactor]() {
+  ActorPtr result = Engine::get_instance()->add_actor(argv[0], simgrid::s4u::Host::current(), [jactor]() {
     auto jenv = ((simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self())->jenv_;
 
     jenv->CallVoidMethod(jactor, Actor_methodId, s4u::Actor::self());
@@ -3219,8 +3240,23 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1vm_1live
                                                                                                   jclass jcls,
                                                                                                   jlong cthis)
 {
-
   sg_vm_live_migration_plugin_init();
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1host_1energy_1init(JNIEnv* jenv, jclass jcls,
+                                                                                           jlong cthis)
+{
+  sg_host_energy_plugin_init();
+}
+
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1link_1energy_1init(JNIEnv* jenv, jclass jcls,
+                                                                                           jlong cthis)
+{
+  sg_link_energy_plugin_init();
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1wifi_1energy_1init(JNIEnv* jenv, jclass jcls,
+                                                                                           jlong cthis)
+{
+  sg_wifi_energy_plugin_init();
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1platform_1created_1cb(JNIEnv* jenv, jclass jcls,
@@ -3619,6 +3655,18 @@ XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1speed(JNIE
 {
   return (jdouble)((Host*)cthis)->get_speed();
 }
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1pstate_1count(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                                 jobject jthis)
+{
+  return (jint)((Host*)cthis)->get_pstate_count();
+}
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1pstate_1speed(JNIEnv* jenv, jclass jcls,
+                                                                                    jlong cthis, jobject jthis,
+                                                                                    jint pstate)
+{
+  return (jdouble)((Host*)cthis)->get_pstate_speed(pstate);
+}
+
 XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1load(JNIEnv* jenv, jclass jcls, jlong cthis)
 {
   return (jdouble)((Host*)cthis)->get_load();
@@ -3640,6 +3688,10 @@ JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1pstate(JNIEnv*
                                                                          jint pstate)
 {
   ((simgrid::s4u::Host*)cthis)->set_pstate(pstate);
+}
+JNIEXPORT jint JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1pstate(JNIEnv* jenv, jclass jcls, jlong cthis)
+{
+  return ((simgrid::s4u::Host*)cthis)->get_pstate();
 }
 JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1exec_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                          jdouble flops)
@@ -3685,6 +3737,36 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1concurrency_1
                                                                                       jlong cthis, jint limit)
 {
   ((Host*)cthis)->set_concurrency_limit(limit);
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1cpu_1factor_1cb(JNIEnv* jenv, jclass jcls,
+                                                                                   jlong cthis, jobject cb)
+{
+  if (cb) {
+    cb                                                = jenv->NewGlobalRef(cb);
+    const std::function<double(Host&, double)> lambda = [cb](Host const& h, double flops) -> double {
+      double res = get_jenv()->CallDoubleMethod(cb, CallbackDHostDouble_methodId, &h, flops);
+      exception_check_after_upcall(get_jenv());
+      return res;
+    };
+
+    ((Host*)cthis)->set_cpu_factor_cb(lambda);
+  } else
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
+}
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1consumed_1energy(JNIEnv* jenv, jclass jcls,
+                                                                                       jlong cthis)
+{
+  return sg_host_get_consumed_energy((Host*)cthis);
+}
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1wattmax_1at(JNIEnv* jenv, jclass jcls,
+                                                                                  jlong cthis, jint pstate)
+{
+  return sg_host_get_wattmax_at((Host*)cthis, pstate);
+}
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1wattmin_1at(JNIEnv* jenv, jclass jcls,
+                                                                                  jlong cthis, jint pstate)
+{
+  return sg_host_get_wattmin_at((Host*)cthis, pstate);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1init(JNIEnv* jenv, jclass jcls)

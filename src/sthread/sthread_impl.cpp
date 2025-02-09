@@ -68,10 +68,12 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
                                        "dirname",
                                        "gdb",
                                        "ls",
+                                       "ltrace",
                                        "make",
                                        "md5sum",
                                        "rm",
                                        "sed",
+                                       "strace",
                                        "simgrid-mc",
                                        "wc"};
   for (int i = 0; envp[i] != nullptr; i++) {
@@ -104,7 +106,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 
   /* Launch the user's main() on an actor */
   sthread_enable();
-  sg4::ActorPtr main_actor = sg4::Actor::create("main thread", lilibeth, raw_main, argc, argv, envp);
+  sg4::ActorPtr main_actor = e.add_actor("main thread", lilibeth, raw_main, argc, argv, envp);
 
   sg4::Engine::get_instance()->run();
   sthread_disable();
@@ -132,7 +134,7 @@ int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr
     name = simgrid::xbt::string_printf("%d:%d", rank, TID);
   }
 #endif
-  sg4::ActorPtr actor = sg4::Actor::create(
+  sg4::ActorPtr actor = sg4::Engine::get_instance()->add_actor(
       name, lilibeth,
       [](auto* user_function, auto* param) {
 #if HAVE_SMPI

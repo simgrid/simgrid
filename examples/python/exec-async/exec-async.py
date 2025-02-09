@@ -66,8 +66,8 @@ if __name__ == '__main__':
 
     e.load_platform(sys.argv[1])
 
-    Actor.create("wait", Host.by_name("Fafard"), Waiter())
-    Actor.create("monitor", Host.by_name("Ginette"), Monitor())
-    Actor.create("cancel", Host.by_name("Boivin"), Canceller())
+    e.add_actor("wait", Host.by_name("Fafard"), Waiter())
+    e.add_actor("monitor", Host.by_name("Ginette"), Monitor())
+    e.add_actor("cancel", Host.by_name("Boivin"), Canceller())
 
     e.run()

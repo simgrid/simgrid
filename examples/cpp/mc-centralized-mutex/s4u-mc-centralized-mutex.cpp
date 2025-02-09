@@ -88,11 +88,11 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("coordinator", e.host_by_name("Tremblay"), coordinator);
-  sg4::Actor::create("client", e.host_by_name("Fafard"), client);
-  sg4::Actor::create("client", e.host_by_name("Boivin"), client);
-  sg4::Actor::create("client", e.host_by_name("Jacquelin"), client);
-  sg4::Actor::create("client", e.host_by_name("Ginette"), client);
+  e.add_actor("coordinator", e.host_by_name("Tremblay"), coordinator);
+  e.add_actor("client", e.host_by_name("Fafard"), client);
+  e.add_actor("client", e.host_by_name("Boivin"), client);
+  e.add_actor("client", e.host_by_name("Jacquelin"), client);
+  e.add_actor("client", e.host_by_name("Ginette"), client);
 
   e.run();
 

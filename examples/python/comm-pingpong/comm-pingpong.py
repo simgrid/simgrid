@@ -57,8 +57,8 @@ def main():
     mb1: Mailbox = e.mailbox_by_name_or_create("Mailbox 1")
     mb2: Mailbox = e.mailbox_by_name_or_create("Mailbox 2")
 
-    Actor.create("pinger", e.host_by_name("Tremblay"), pinger, mb1, mb2)
-    Actor.create("ponger", e.host_by_name("Jupiter"), ponger, mb2, mb1)
+    e.add_actor("pinger", e.host_by_name("Tremblay"), pinger, mb1, mb2)
+    e.add_actor("ponger", e.host_by_name("Jupiter"), ponger, mb2, mb1)
 
     e.run()
 

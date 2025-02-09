@@ -1,0 +1,29 @@
+#!/usr/bin/env tesh
+
+p Testing the mechanism for computing link energy consumption (using CM02 as a network model)
+
+$ ${javacmd} -cp ../../simgrid.jar:energy_link.jar energy_link ${platfdir}/energy_platform.xml  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --cfg=network/model:CM02 --cfg=network/crosstraffic:no
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to 'no'
+> [  0.000000] (0:maestro@) Using regular java threads.
+> [  0.000000] (0:maestro@) Activating the SimGrid link energy plugin
+> [  0.000000] (1:sender@MyHost1) Send 25000 bytes, in 1 flows
+> [  0.000000] (2:receiver@MyHost2) Receiving 1 flows ...
+> [ 10.250000] (2:receiver@MyHost2) receiver done.
+> [ 10.250000] (1:sender@MyHost1) sender done.
+> [ 10.250000] (0:maestro@) Total energy over all links: 10.750000
+> [ 10.250000] (0:maestro@) Energy consumption of link 'bus': 10.750000 Joules
+
+p And now test with 500000 bytes
+
+$ ${javacmd} -cp ../../simgrid.jar:energy_link.jar energy_link ${platfdir}/energy_platform.xml 1 50000000 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --cfg=network/model:CM02 --cfg=network/crosstraffic:no
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to 'no'
+> [  0.000000] (0:maestro@) Using regular java threads.
+> [  0.000000] (0:maestro@) Activating the SimGrid link energy plugin
+> [  0.000000] (1:sender@MyHost1) Send 50000000 bytes, in 1 flows
+> [  0.000000] (2:receiver@MyHost2) Receiving 1 flows ...
+> [510.000000] (2:receiver@MyHost2) receiver done.
+> [510.000000] (1:sender@MyHost1) sender done.
+> [510.000000] (0:maestro@) Total energy over all links: 1510.000000
+> [510.000000] (0:maestro@) Energy consumption of link 'bus': 1510.000000 Joules

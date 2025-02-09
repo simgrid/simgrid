@@ -161,16 +161,16 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("broadcaster", e.host_by_name("node-0.simgrid.org"), broadcaster, 8, 256);
+  e.add_actor("broadcaster", e.host_by_name("node-0.simgrid.org"), broadcaster, 8, 256);
 
-  sg4::Actor::create("peer", e.host_by_name("node-1.simgrid.org"), peer);
-  sg4::Actor::create("peer", e.host_by_name("node-2.simgrid.org"), peer);
-  sg4::Actor::create("peer", e.host_by_name("node-3.simgrid.org"), peer);
-  sg4::Actor::create("peer", e.host_by_name("node-4.simgrid.org"), peer);
-  sg4::Actor::create("peer", e.host_by_name("node-5.simgrid.org"), peer);
-  sg4::Actor::create("peer", e.host_by_name("node-6.simgrid.org"), peer);
-  sg4::Actor::create("peer", e.host_by_name("node-7.simgrid.org"), peer);
-  sg4::Actor::create("peer", e.host_by_name("node-8.simgrid.org"), peer);
+  e.add_actor("peer", e.host_by_name("node-1.simgrid.org"), peer);
+  e.add_actor("peer", e.host_by_name("node-2.simgrid.org"), peer);
+  e.add_actor("peer", e.host_by_name("node-3.simgrid.org"), peer);
+  e.add_actor("peer", e.host_by_name("node-4.simgrid.org"), peer);
+  e.add_actor("peer", e.host_by_name("node-5.simgrid.org"), peer);
+  e.add_actor("peer", e.host_by_name("node-6.simgrid.org"), peer);
+  e.add_actor("peer", e.host_by_name("node-7.simgrid.org"), peer);
+  e.add_actor("peer", e.host_by_name("node-8.simgrid.org"), peer);
 
   e.run();
   XBT_INFO("Total simulation time: %e", sg4::Engine::get_clock());

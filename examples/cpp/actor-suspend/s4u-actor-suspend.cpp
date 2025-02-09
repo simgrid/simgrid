@@ -32,8 +32,9 @@ static void lazy_guy()
 /* The Dream master: */
 static void dream_master()
 {
+  auto e = simgrid::s4u::this_actor::get_engine();
   XBT_INFO("Let's create a lazy guy."); /* - Create a lazy_guy actor */
-  sg4::ActorPtr lazy = sg4::Actor::create("Lazy", sg4::this_actor::get_host(), lazy_guy);
+  sg4::ActorPtr lazy = e->add_actor("Lazy", sg4::this_actor::get_host(), lazy_guy);
   XBT_INFO("Let's wait a little bit...");
   sg4::this_actor::sleep_for(10); /* - Wait for 10 seconds */
   XBT_INFO("Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!");
@@ -75,7 +76,7 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]); /* - Load the platform description */
   std::vector<sg4::Host*> list = e.get_all_hosts();
-  sg4::Actor::create("dream_master", list.front(), dream_master);
+  e.add_actor("dream_master", list.front(), dream_master);
 
   e.run(); /* - Run the simulation */
 

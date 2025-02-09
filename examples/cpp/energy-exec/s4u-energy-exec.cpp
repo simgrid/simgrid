@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/energy_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
-  sg4::Actor::create("dvfs_test", e.host_by_name("MyHost1"), dvfs);
+  e.add_actor("dvfs_test", e.host_by_name("MyHost1"), dvfs);
 
   e.run();
 

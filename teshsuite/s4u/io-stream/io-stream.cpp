@@ -120,9 +120,9 @@ int main(int argc, char** argv)
 
   zone->seal();
 
-  sg4::Actor::create("streamer", bob, streamer, 4e6);
-  sg4::Actor::create("background send", bob, background_send);
-  sg4::Actor::create("background recv", alice, background_recv);
+  e.add_actor("streamer", bob, streamer, 4e6);
+  e.add_actor("background send", bob, background_send);
+  e.add_actor("background recv", alice, background_recv);
 
   e.run();
 

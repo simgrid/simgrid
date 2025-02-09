@@ -113,8 +113,8 @@ int main(int argc, char* argv[])
   zone->seal();
 
   /* create actors Sender/Receiver */
-  sg4::Actor::create("receiver", receiver, Receiver(10));
-  sg4::Actor::create("sender", sender, Sender(1e6, 10));
+  e.add_actor("receiver", receiver, Receiver(10));
+  e.add_actor("sender", sender, Sender(1e6, 10));
 
   e.run();
 

@@ -195,7 +195,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
   #If can have both context
   if(NOT compile_musl)
-    message(FATAL "Error: Failed to detect whether we use the MUSL libc.\n${compile_musl_output}")
+    message(FATAL_ERROR "Error: Failed to detect whether we use the MUSL libc.\n${compile_musl_output}")
   elseif(run_musl)
     message(STATUS "MUSL libc detected.")
     set(SIMGRID_HAVE_MUSL ON)

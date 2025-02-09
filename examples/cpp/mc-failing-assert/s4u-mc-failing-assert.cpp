@@ -53,9 +53,9 @@ int main(int argc, char* argv[])
   auto hosts = e.get_all_hosts();
   xbt_assert(hosts.size() >= 3, "This example requires at least 3 hosts");
 
-  sg4::Actor::create("server", hosts[0], &server, 2);
-  sg4::Actor::create("client1", hosts[1], &client, 1);
-  sg4::Actor::create("client2", hosts[2], &client, 2);
+  e.add_actor("server", hosts[0], &server, 2);
+  e.add_actor("client1", hosts[1], &client, 1);
+  e.add_actor("client2", hosts[2], &client, 2);
 
   e.run();
   return 0;

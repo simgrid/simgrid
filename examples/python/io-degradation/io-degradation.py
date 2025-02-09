@@ -115,7 +115,7 @@ if __name__ == '__main__':
     create_sata_disk(bob, "Griffon (SATA II)")
     zone.seal()
 
-    Actor.create("runner", bob, host_runner)
+    e.add_actor("runner", bob, host_runner)
 
     e.run()
     this_actor.info("Simulated time: %g" % e.clock)

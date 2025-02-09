@@ -73,8 +73,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("sender", e.host_by_name("Tremblay"), sender, 3, 5e7);
-  sg4::Actor::create("receiver", e.host_by_name("Ruby"), receiver);
+  e.add_actor("sender", e.host_by_name("Tremblay"), sender, 3, 5e7);
+  e.add_actor("receiver", e.host_by_name("Ruby"), receiver);
 
   e.run();
 

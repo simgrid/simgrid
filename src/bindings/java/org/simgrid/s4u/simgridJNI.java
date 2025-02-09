@@ -184,10 +184,10 @@ public class simgridJNI {
   public final static native boolean Barrier_await(long jarg1, Barrier jarg1_);
   public final static native void delete_ConditionVariable(long jarg1);
   public final static native long ConditionVariable_create();
-  public final static native boolean ConditionVariable_await_until(long jarg1, ConditionVariable jarg1_, long cmutex,
-                                                                   Mutex jmutex, double jarg3);
-  public final static native boolean ConditionVariable_await_for(long jarg1, ConditionVariable jarg1_, long cmutex,
-                                                                 Mutex jmutex, double jarg3);
+  public final static native void ConditionVariable_await_until(long jarg1, ConditionVariable jarg1_, long cmutex,
+                                                                Mutex jmutex, double jarg3) throws TimeoutException;
+  public final static native void ConditionVariable_await_for(long jarg1, ConditionVariable jarg1_, long cmutex,
+                                                              Mutex jmutex, double jarg3) throws TimeoutException;
   public final static native void ConditionVariable_notify_one(long jarg1, ConditionVariable jarg1_);
   public final static native void ConditionVariable_notify_all(long jarg1, ConditionVariable jarg1_);
   public final static native String Disk_get_name(long jarg1, Disk jarg1_);
@@ -228,6 +228,7 @@ public class simgridJNI {
   public final static native void Disk_on_destruction_cb(CallbackDisk cb);
   public final static native void Disk_on_this_destruction_cb(long jarg1, Disk jarg1_, CallbackDisk cb);
   public final static native long new_Engine(String[] jarg1);
+  public final static native String[] Engine_get_args(long jarg1);
   public final static native void Engine_run(long jarg1, Engine jarg1_);
   public final static native void Engine_run_until(long jarg1, Engine jarg1_, double jarg2);
   public final static native double Engine_get_clock();
@@ -260,6 +261,9 @@ public class simgridJNI {
   public final static native void Engine_set_config__SWIG_3(String jarg1, double jarg2);
   public final static native void Engine_set_config__SWIG_4(String jarg1, String jarg2);
   public final static native void Engine_plugin_vm_live_migration_init(long jarg1);
+  public final static native void Engine_plugin_host_energy_init(long jarg1);
+  public final static native void Engine_plugin_link_energy_init(long jarg1);
+  public final static native void Engine_plugin_wifi_energy_init(long jarg1);
   public final static native void Engine_on_platform_created_cb(CallbackVoid jarg1);
   public final static native void Engine_on_platform_creation_cb(CallbackVoid jarg1);
   public final static native void Engine_on_simulation_start_cb(CallbackVoid jarg1);
@@ -306,10 +310,13 @@ public class simgridJNI {
   public final static native String Host_get_property(long jarg1, Host jarg1_, String name);
   public final static native long Host_current();
   public final static native double Host_get_speed(long jarg1, Host jarg1_);
+  public final static native int Host_get_pstate_count(long jarg1, Host jarg1_);
+  public final static native double Host_get_pstate_speed(long jarg1, Host jarg1_, int pstate);
   public final static native double Host_get_load(long jarg1);
   public final static native boolean Host_is_on(long jarg1, Host jarg1_);
   public final static native void Host_turn_on(long jarg1);
   public final static native void Host_turn_off(long jarg1);
+  public final static native int Host_get_pstate(long jarg1);
   public final static native void Host_set_pstate(long jarg1, int pstate);
   public final static native long Host_exec_init(long jarg1, double flops_amount);
   public final static native long Host_exec_async(long jarg1, double flops_amount);
@@ -318,6 +325,10 @@ public class simgridJNI {
   public final static native Object Host_get_data(long swigCPtr);
   public final static native void Host_set_data(long swigCPtr, Object o);
   public final static native void Host_set_concurrency_limit(long swigCPtr, int i);
+  public final static native void Host_set_cpu_factor_cb(long swigCPtr, CallbackDHostDouble cb);
+  public final static native double Host_get_consumed_energy(long swigCPtr);
+  public final static native double Host_get_wattmax_at(long swigCPtr, int pstate);
+  public final static native double Host_get_wattmin_at(long swigCPtr, int pstate);
   public final static native long Io_init();
   public final static native double Io_get_remaining(long jarg1, Io jarg1_);
   public final static native int Io_get_performed_ioops(long jarg1, Io jarg1_);

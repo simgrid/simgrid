@@ -68,23 +68,23 @@ int main(int argc, char** argv)
     XBT_INFO("'jbod_raid3' is not a valid JBOD");
 
   XBT_INFO("XXXXXXXXXXXXXXX RAID 0 XXXXXXXXXXXXXXXX");
-  sg4::Actor::create("", host, write_then_read, jbod_raid0);
+  e.add_actor("", host, write_then_read, jbod_raid0);
   e.run();
 
   XBT_INFO("XXXXXXXXXXXXXXX RAID 1 XXXXXXXXXXXXXXXX");
-  sg4::Actor::create("", host, write_then_read, jbod_raid1);
+  e.add_actor("", host, write_then_read, jbod_raid1);
   e.run();
 
   XBT_INFO("XXXXXXXXXXXXXXX RAID 4 XXXXXXXXXXXXXXXX");
-  sg4::Actor::create("", host, write_then_read, jbod_raid4);
+  e.add_actor("", host, write_then_read, jbod_raid4);
   e.run();
 
   XBT_INFO("XXXXXXXXXXXXXXX RAID 5 XXXXXXXXXXXXXXXX");
-  sg4::Actor::create("", host, write_then_read, jbod_raid5);
+  e.add_actor("", host, write_then_read, jbod_raid5);
   e.run();
 
   XBT_INFO("XXXXXXXXXXXXXXX RAID 6 XXXXXXXXXXXXXXXX");
-  sg4::Actor::create("", host, write_then_read, jbod_raid6);
+  e.add_actor("", host, write_then_read, jbod_raid6);
   e.run();
 
   XBT_INFO("Simulated time: %g", sg4::Engine::get_clock());
