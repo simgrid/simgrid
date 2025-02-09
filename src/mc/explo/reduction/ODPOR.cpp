@@ -71,6 +71,9 @@ aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
   xbt_assert(s != nullptr, "ODPOR should use WutState. Fix me");
   const aid_t next = s->next_odpor_transition();
 
+  XBT_DEBUG("Asking for the next actor in state #%ld that has the following WuT\n%s", s->get_num(),
+            s->string_of_wut().c_str());
+
   if (next == -1)
     return -1;
 
@@ -79,7 +82,7 @@ aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
               s->get_actors_list().at(next).get_transition()->to_string(true).c_str());
     s->remove_subtree_at_aid(next);
     s->add_sleep_set(s->get_actors_list().at(next).get_transition());
-    return -1;
+    return next_to_explore(E, S);
   }
   return next;
 }
@@ -98,7 +101,6 @@ void ODPOR::on_backtrack(State* s)
     return;              // Backtracking from the root means we end exploration, nothing to do
 
   auto wut_state = static_cast<WutState*>(s);
-  xbt_assert(wut_state != nullptr, "ODPOR should use WutState. Fix me");
   wut_state->do_odpor_unwind();
 }
 
