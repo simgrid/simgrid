@@ -10,6 +10,9 @@ if(NOT HAVE_GRAPHVIZ)
   set(_dag_from_dot_disable 1)
   set(_dag_from_dot_simple_disable 1)
 endif()
+if (NOT SIMGRID_HAVE_JSON)
+  set(_dag_from_json_simple_disable 1)
+endif()
 
 # io_dependent io_file_system io_file_remote: need a plugin
 # exec_failure: needs state profiles
