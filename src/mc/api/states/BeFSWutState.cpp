@@ -31,7 +31,7 @@ BeFSWutState::BeFSWutState(RemoteApp& remote_app) : WutState(remote_app)
   is_leftmost_ = true; // The first state is the only one at that depth, so the leftmost one.
 }
 
-BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutState(remote_app, parent_state, true)
+BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutState(remote_app, parent_state)
 {
   auto parent = static_cast<BeFSWutState*>(parent_state.get());
   for (const aid_t actor : parent->done_) {

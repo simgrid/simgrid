@@ -9,6 +9,7 @@
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
+#include "xbt/asserts.h"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wutstate, mc_state, "States using wakeup tree for ODPOR algorithm");
@@ -20,11 +21,8 @@ WutState::WutState(RemoteApp& remote_app) : SleepSetState(remote_app)
   initialize_if_empty_wut();
 }
 
-WutState::WutState(RemoteApp& remote_app, StatePtr parent_state, bool initialize_wut)
-    : SleepSetState(remote_app, parent_state)
+WutState::WutState(RemoteApp& remote_app, StatePtr parent_state) : SleepSetState(remote_app, parent_state)
 {
-  if (not initialize_wut) // We don't initialize the WUT when running in BeFS order
-    return;
 
   auto parent = static_cast<WutState*>(parent_state.get());
 
@@ -114,37 +112,6 @@ void WutState::seed_wakeup_tree_if_needed(const odpor::Execution& prior)
   has_initialized_wakeup_tree = true;
 }
 
-// void WutState::sprout_tree_from_parent_state()
-// {
-//   xbt_assert(get_parent_state() != nullptr, "Attempting to construct a wakeup tree for the root state "
-//                                             "(or what appears to be, rather for state without a parent defined)");
-
-//   auto parent = static_cast<WutState*>(get_parent_state());
-
-//   XBT_DEBUG("Initializing Wut with parent one:");
-//   XBT_DEBUG("\n%s", parent->wakeup_tree_.string_of_whole_tree().c_str());
-
-//   const auto min_process_node = parent->wakeup_tree_.get_min_single_process_node();
-//   xbt_assert(min_process_node.has_value(), "Attempting to construct a subtree for a substate from a "
-//                                            "parent with an empty wakeup tree. This indicates either that ODPOR "
-//                                            "actor selection in State.cpp is incorrect, or that the code "
-//                                            "deciding when to make subtrees in ODPOR is incorrect");
-//   if (not(get_transition_in()->aid_ == min_process_node.value()->get_actor() &&
-//           get_transition_in()->type_ == min_process_node.value()->get_action()->type_)) {
-//     XBT_ERROR("We tried to make a subtree from a parent state who claimed to have executed `%s` on actor %ld "
-//               "but whose wakeup tree indicates it should have executed `%s` on actor %ld. This indicates "
-//               "that exploration is not following ODPOR. Are you sure you're choosing actors "
-//               "to schedule from the wakeup tree? Trace so far:",
-//               get_transition_in()->to_string(false).c_str(), get_transition_in()->aid_,
-//               min_process_node.value()->get_action()->to_string(false).c_str(),
-//               min_process_node.value()->get_actor());
-//     for (auto const& elm : Exploration::get_instance()->get_textual_trace())
-//       XBT_ERROR("%s", elm.c_str());
-//     xbt_abort();
-//   }
-//   this->wakeup_tree_ = odpor::WakeupTree::make_subtree_rooted_at(min_process_node.value());
-// }
-
 void WutState::remove_subtree_at_aid(const aid_t proc)
 {
   wakeup_tree_.remove_subtree_at_aid(proc);
@@ -171,6 +138,13 @@ void WutState::do_odpor_unwind()
   if (not parent->get_actors_list().at(get_transition_in()->aid_).has_more_to_consider()) {
     parent->add_sleep_set((get_transition_in()));
     parent->get_actor_at(get_transition_in()->aid_).mark_done();
+
+    if (parent->wakeup_tree_.get_node_after_actor(get_transition_in()->aid_) != nullptr) {
+      xbt_assert(Exploration::get_instance()->is_critical_transition_explorer(),
+                 "From my understanding, the only case for the wut to still have something here is that it's the final "
+                 "leaf explored before going into critical transition search mode");
+      parent->remove_subtree_at_aid(get_transition_in()->aid_);
+    }
   }
 }
 

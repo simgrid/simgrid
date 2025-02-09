@@ -40,7 +40,7 @@ private:
   WakeupTreeNode* parent_ = nullptr;
 
   /** An ordered list of children of for this node in the tree */
-  std::list<std::unique_ptr<WakeupTreeNode>> children_;
+  std::list<std::unique_ptr<WakeupTreeNode>> children_ = {};
 
   /** @brief The contents of the node */
   std::shared_ptr<Transition> action_ = nullptr;
@@ -138,17 +138,8 @@ private:
 
   // Returns a pointer to the lastly inserted node
   WakeupTreeNode* insert_sequence_after(WakeupTreeNode* node, const PartialExecution& w);
-  void remove_node(WakeupTreeNode* node);
-  bool contains(const WakeupTreeNode* node) const;
 
-  /**
-   * @brief Removes the node `root` and all of its descendants from
-   * this wakeup tree
-   *
-   * @throws: If the node `root` is not contained in this tree, an
-   * exception is raised
-   */
-  void remove_subtree_rooted_at(WakeupTreeNode* root);
+  bool contains(const WakeupTreeNode* node) const;
 
 public:
   WakeupTree();
