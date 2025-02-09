@@ -12,7 +12,6 @@
 #include "simgrid/kernel/routing/VivaldiZone.hpp"
 #include "simgrid/kernel/routing/WifiZone.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include <python3.12/pyconfig.h>
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Engine.hpp>
