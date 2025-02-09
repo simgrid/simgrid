@@ -122,7 +122,7 @@ void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args)
 {
   simgrid::s4u::Link* link;
   if (args->policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    link = current_routing->create_split_duplex_link(args->id, args->bandwidths);
+    link = current_routing->create_split_duplex_link(args->id, args->bandwidths, args->bandwidths);
   } else {
     link = current_routing->create_link(args->id, args->bandwidths);
     link->get_impl()->set_sharing_policy(args->policy, {});
@@ -309,7 +309,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
     // create link
     const simgrid::s4u::Link* link;
     if (cluster->sharing_policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
-      link = zone->create_split_duplex_link(link_id, cluster->bw)->set_latency(cluster->lat)->seal();
+      link = zone->create_split_duplex_link(link_id, cluster->bw, cluster->bw)->set_latency(cluster->lat)->seal();
     } else {
       link = zone->create_link(link_id, cluster->bw)->set_latency(cluster->lat)->seal();
     }

@@ -12,6 +12,7 @@
 #include "simgrid/kernel/routing/VivaldiZone.hpp"
 #include "simgrid/kernel/routing/WifiZone.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include <python3.12/pyconfig.h>
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Engine.hpp>
@@ -285,22 +286,32 @@ s4u::Link* NetZone::create_link(const std::string& name, const std::string& band
   return create_link(name, std::vector<std::string>{bandwidth});
 }
 
-s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name, const std::string& bandwidth)
+s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name, const std::string& str_up,
+                                                        const std::string& str_down)
 {
-  double speed;
+  double bw_up, bw_down;
+
   try {
-    speed = xbt_parse_get_bandwidth("", 0, bandwidth, "");
+    bw_up = xbt_parse_get_bandwidth("", 0, str_up, "");
+  } catch (const simgrid::ParseError&) {
+    throw std::invalid_argument("Impossible to create split-duplex link: " + name + ". Invalid bandwidths: " + str_up);
+  }
+  try {
+    bw_down = str_down == "" ? bw_up : xbt_parse_get_bandwidth("", 0, str_down, "");
   } catch (const simgrid::ParseError&) {
     throw std::invalid_argument("Impossible to create split-duplex link: " + name +
-                                ". Invalid bandwidth: " + bandwidth);
+                                ". Invalid bandwidths: " + str_down);
   }
-  return create_split_duplex_link(name, speed);
+  return create_split_duplex_link(name, bw_up, bw_down);
 }
 
-s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name, double bandwidth)
+s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name, double bw_up, double bw_down)
 {
-  return kernel::actor::simcall_answered(
-      [this, &name, &bandwidth] { return pimpl_->create_split_duplex_link(name, std::vector<double>{bandwidth}); });
+  if (bw_down < 0)
+    bw_down = bw_up;
+  return kernel::actor::simcall_answered([this, &name, &bw_up, &bw_down] {
+    return pimpl_->create_split_duplex_link(name, std::vector<double>{bw_up}, std::vector<double>{bw_down});
+  });
 }
 
 s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::string>& bandwidths)

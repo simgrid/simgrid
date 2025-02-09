@@ -84,6 +84,34 @@ public class NetZone {
     long cPtr = simgridJNI.NetZone_create_link__SWIG_3(swigCPtr, this, name, bandwidth);
     return (cPtr == 0) ? null : new Link(cPtr, false);
   }
+  public Link create_split_duplex_link(String name, double bw)
+  {
+    long cPtr = simgridJNI.NetZone_create_splitlink_from_double(swigCPtr, this, name, bw, bw);
+    return (cPtr == 0) ? null : new Link(cPtr, false);
+  }
+  public Link create_split_duplex_link(String name, double up, double down)
+  {
+    long cPtr = simgridJNI.NetZone_create_splitlink_from_double(swigCPtr, this, name, up, down);
+    return (cPtr == 0) ? null : new Link(cPtr, false);
+  }
+
+  public Link create_split_duplex_link(String name, String bw)
+  {
+    long cPtr = simgridJNI.NetZone_create_splitlink_from_string(swigCPtr, this, name, bw, bw);
+    return (cPtr == 0) ? null : new Link(cPtr, false);
+  }
+  public Link create_split_duplex_link(String name, String up, String down)
+  {
+    long cPtr = simgridJNI.NetZone_create_splitlink_from_string(swigCPtr, this, name, up, down);
+    return (cPtr == 0) ? null : new Link(cPtr, false);
+  }
+  public Link create_split_duplex_link(String name, Link up, Link down)
+  {
+    long cPtr =
+        simgridJNI.NetZone_create_splitlink_from_links(swigCPtr, this, name, Link.getCPtr(up), Link.getCPtr(down));
+    return (cPtr == 0) ? null : new Link(cPtr, false);
+  }
+
   public void add_route(NetZone src, NetZone dst, Link[] links)
   {
     long[] clinks = new long[links.length];

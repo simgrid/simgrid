@@ -180,8 +180,8 @@ s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<d
   return links_[name]->get_iface();
 }
 
-s4u::SplitDuplexLink* NetZoneImpl::create_split_duplex_link(const std::string& name,
-                                                            const std::vector<double>& bandwidths)
+s4u::SplitDuplexLink* NetZoneImpl::create_split_duplex_link(const std::string& name, const std::vector<double>& bw_up,
+                                                            const std::vector<double>& bw_down)
 {
   xbt_enforce(
       network_model_,
@@ -189,8 +189,8 @@ s4u::SplitDuplexLink* NetZoneImpl::create_split_duplex_link(const std::string& n
       name.c_str(), get_cname());
   xbt_enforce(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
 
-  auto* link_up             = create_link(name + "_UP", bandwidths)->get_impl()->set_englobing_zone(this);
-  auto* link_down           = create_link(name + "_DOWN", bandwidths)->get_impl()->set_englobing_zone(this);
+  auto* link_up             = create_link(name + "_UP", bw_up)->get_impl()->set_englobing_zone(this);
+  auto* link_down           = create_link(name + "_DOWN", bw_down)->get_impl()->set_englobing_zone(this);
   split_duplex_links_[name] = std::make_unique<resource::SplitDuplexLinkImpl>(name, link_up, link_down);
   return split_duplex_links_[name]->get_iface();
 }

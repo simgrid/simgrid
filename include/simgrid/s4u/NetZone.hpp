@@ -226,8 +226,9 @@ public:
    * @param name Name of the link
    * @param bandwidth Speed
    */
-  s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, const std::string& bandwidth);
-  s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, double bandwidth);
+  s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, const std::string& bw_up,
+                                                 const std::string& bw_down = "");
+  s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, double bw_up, double bw_down = -1);
 
   kernel::resource::NetworkModel* get_network_model() const;
 
