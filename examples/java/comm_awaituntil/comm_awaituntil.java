@@ -50,7 +50,7 @@ class sender extends Actor {
 
     /* Now that all message exchanges were initiated, wait for their completion, in order of creation. */
     while (pending_comms.size() > 0) {
-      Comm comm = pending_comms.removeFirst();
+      Comm comm = pending_comms.remove(0);
       comm.await_for(1);
     }
 
