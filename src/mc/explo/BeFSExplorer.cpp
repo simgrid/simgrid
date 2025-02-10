@@ -203,8 +203,9 @@ void BeFSExplorer::run()
     stack_.emplace_back(std::move(next_state));
     execution_seq_.push_transition(std::move(executed_transition));
 
-    dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
-               state->get_transition_out()->dot_string().c_str());
+    if (dot_output_ != nullptr)
+      dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
+		 state->get_transition_out()->dot_string().c_str());
   }
   log_state();
 }
