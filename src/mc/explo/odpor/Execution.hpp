@@ -92,15 +92,17 @@ public:
  * the two concepts are analogous if not identical
  */
 class Execution {
+public:
+  using EventHandle = uint32_t;
+
 private:
   std::vector<Event> contents_;
+  std::vector<std::vector<EventHandle>> skip_list_ = {{}};
   Execution(std::vector<Event>&& contents) : contents_(std::move(contents)) {}
 
   static PartialExecution preallocated_partial_execution_;
 
 public:
-  using EventHandle = uint32_t;
-
   Execution()                            = default;
   Execution(const Execution&)            = default;
   Execution& operator=(Execution const&) = default;
@@ -376,7 +378,7 @@ public:
    * notation of [1]) `E.proc(t)` where `proc(t)` is the
    * actor which executed transition `t`.
    */
-  void push_transition(std::shared_ptr<Transition>);
+  void push_transition(std::shared_ptr<Transition>, bool are_we_restoring_execution = false);
 
   /**
    * @brief Shorten the execution by one step

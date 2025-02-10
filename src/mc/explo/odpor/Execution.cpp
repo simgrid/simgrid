@@ -50,24 +50,34 @@ Execution::Execution(const PartialExecution& w)
   push_partial_execution(w);
 }
 
-void Execution::push_transition(std::shared_ptr<Transition> t)
+void Execution::push_transition(std::shared_ptr<Transition> t, bool are_we_restoring_execution)
 {
   xbt_assert(t != nullptr, "Unexpectedly received `nullptr`");
-
   ClockVector max_clock_vector;
-  for (const Event& e : this->contents_) {
-    if (e.get_transition()->depends(t.get())) {
-      ClockVector::max_emplace_left(max_clock_vector, e.get_clock_vector());
+  for (const auto& events : this->skip_list_) {
+    for (auto event_it = events.crbegin(); event_it != events.crend(); ++event_it) {
+      if (contents_[*event_it].get_transition()->depends(t.get())) {
+        ClockVector::max_emplace_left(max_clock_vector, contents_[*event_it].get_clock_vector());
+        break;
+      }
     }
   }
   max_clock_vector[t->aid_] = this->size();
-  contents_.push_back(Event({std::move(t), std::move(max_clock_vector)}));
+  contents_.push_back(Event({t, std::move(max_clock_vector)}));
+  if (skip_list_.size() <= (unsigned)t->aid_)
+    skip_list_.resize(t->aid_ + 1, {});
+  skip_list_[t->aid_].push_back(this->size() - 1);
+
+  if (are_we_restoring_execution)
+    contents_.back().consider_races();
 }
 
 void Execution::remove_last_event()
 {
   xbt_assert(!contents_.empty(), "Tried to remove an element from an empty Execution");
+  auto aid = contents_.back().get_transition()->aid_;
   contents_.pop_back();
+  skip_list_[aid].pop_back();
 }
 
 void Execution::push_partial_execution(const PartialExecution& w)

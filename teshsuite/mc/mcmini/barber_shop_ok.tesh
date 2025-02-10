@@ -13,4 +13,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BeFS'
 > [0.000000] [mc_befs/INFO] Start a BeFS exploration. Reduction is: odpor.
-> [0.000000] [mc_befs/INFO] BeFS exploration ended. 16004 unique states visited; 344 explored traces (145312 transition replays, 161316 states visited overall)
+> [0.000000] [mc_befs/INFO] BeFS exploration ended. 15585 unique states visited; 344 explored traces (142860 transition replays, 158445 states visited overall)
