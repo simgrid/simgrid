@@ -37,6 +37,8 @@ static simgrid::config::Flag<std::string> _sg_mc_setenv{
 
 namespace simgrid::mc {
 
+unsigned CheckerSide::count_ = 0;
+
 XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<char*>& args)
 {
   /* On startup, simix_global_init() calls simgrid::mc::Client::initialize(), which checks whether the MC_ENV_SOCKET_FD
@@ -171,6 +173,7 @@ void CheckerSide::setup_events()
 /* When this constructor is called, no other checkerside exists */
 CheckerSide::CheckerSide(const std::vector<char*>& args) : running_(true)
 {
+  count_++;
   XBT_DEBUG("Create a CheckerSide.");
 
   // Create an AF_UNIX socketpair used for exchanging messages between the model-checker process (ancestor)
@@ -183,7 +186,8 @@ CheckerSide::CheckerSide(const std::vector<char*>& args) : running_(true)
                         SOCK_SEQPACKET,
 #endif
                         0, sockets) != -1,
-             "Could not create socketpair: %s", strerror(errno));
+             "Could not create socketpair: %s.\nPlease increase the file limit with `ulimit -n 10000`.",
+             strerror(errno));
 
   pid_ = fork();
   xbt_assert(pid_ >= 0, "Could not fork application process");
@@ -204,6 +208,7 @@ CheckerSide::CheckerSide(const std::vector<char*>& args) : running_(true)
 
 CheckerSide::~CheckerSide()
 {
+  count_--;
   event_del(socket_event_);
   event_free(socket_event_);
   if (signal_event_ != nullptr) {
@@ -216,6 +221,7 @@ CheckerSide::~CheckerSide()
 CheckerSide::CheckerSide(int socket, CheckerSide* child_checker)
     : channel_(socket, child_checker->channel_), running_(true), child_checker_(child_checker)
 {
+  count_++;
   setup_events();
 
   s_mc_message_int_t answer;
@@ -245,13 +251,15 @@ std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket, const std::st
       case EMFILE:
         xbt_die("Cannot accept the incomming connection of the forked app: the per-process limit on the number of open "
                 "file has been reached (errno: EMFILE).\n"
-                "You may want to increase the limit using for example `ulimit -n 10000`");
+                "You may want to increase the limit using for example `ulimit -n 10000` to improve the overall "
+                "performance.");
       case ENFILE:
         xbt_die("Cannot accept the incomming connection of the forked app: the system-wide limit on the number of open "
                 "file has been reached (errno: ENFILE).\n"
                 "If you want to push the limit, try increasing the value in /proc/sys/fs/file-max (at your own risk).");
       default:
-        perror("Cannot accept the incomming connection of the forked app");
+        perror("Cannot accept the incomming connection of the forked app.");
+        xbt_die("Bailing out now.");
     }
   }
 

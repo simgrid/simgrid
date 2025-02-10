@@ -25,6 +25,7 @@ class CheckerSide {
   Channel channel_;
   bool running_ = false;
   pid_t pid_;
+  static unsigned count_;
   // Because of the way we fork, the real app is our grandchild.
   // child_checker_ is a CheckerSide to our child that can waitpid our grandchild on our behalf
   CheckerSide* child_checker_ = nullptr;
@@ -43,6 +44,8 @@ public:
   CheckerSide& operator=(CheckerSide const&) = delete;
   CheckerSide& operator=(CheckerSide&&) = delete;
 
+  // To avoid file descriptor exhaustion
+  static unsigned get_count() { return count_; }
   /* Communicating with the application */
   Channel const& get_channel() const { return channel_; }
   Channel& get_channel() { return channel_; }

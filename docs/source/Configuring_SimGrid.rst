@@ -785,9 +785,12 @@ the begining.
 
 By default, one in every 1000 states is cached this way. If the used value is 0, then no state gets cached. Caching too little
 states forces many useless transitions replays (consuming time) while caching too much states may exhaust the memory and other
-resources. Increasing the maximal amount of open file per process on your machine may allow to cache more states if your memory
-allows. States get removed from the memory once they become useless, so your resource consumption should plateau at some point
-during the exploration.
+resources (SimGrid will refuse caching more states if the file limit is almost reached). Increasing the maximal amount of open
+file per process on your machine with ``ulimit -n <value>`` may allow to cache more states if your memory allows. States get
+removed from the memory once they become useless, so your resource consumption *should* plateau at some point during the
+exploration. This is not true when the randomized exploration strategy is used, as it keeps exploring random branches that must
+be stored, while branches can only removed once every branches on their left was explored. A random exploration results in
+sparsly explored trees where no memory can be reclaimed.
 
 .. _cfg=model-check/no-fork:
 

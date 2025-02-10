@@ -10,8 +10,6 @@
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/remote/CheckerSide.hpp"
 
-#include <functional>
-
 namespace simgrid::mc {
 
 /** High-level view of the verified application, from the model-checker POV

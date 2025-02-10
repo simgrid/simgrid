@@ -4,12 +4,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/BeFSExplorer.hpp"
+#include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
+#include "src/mc/remote/CheckerSide.hpp"
 #include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"
 
@@ -26,12 +28,15 @@
 #include "xbt/sysdep.h"
 
 #include <cassert>
+#include <climits>
 #include <cstdio>
 
 #include <algorithm>
+#include <filesystem>
 #include <limits>
 #include <memory>
 #include <string>
+#include <unistd.h>
 #include <unordered_set>
 #include <vector>
 
@@ -185,9 +190,23 @@ void BeFSExplorer::run()
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     auto next_state = reduction_algo_->state_create(get_remote_app(), state);
-    if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
 
-      next_state->set_state_factory(get_remote_app().clone_checker_side());
+    if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
+      static int max_files = INT_MAX;
+      if (max_files == INT_MAX)
+        max_files = sysconf(_SC_OPEN_MAX);
+      int cur_files =
+          std::distance(std::filesystem::directory_iterator("/proc/self/fd"), std::filesystem::directory_iterator{});
+
+      // TODO: we have to save many FDs because our code consumes 4 FDs per child process.
+      // We should not create a new event_base per CheckerSide to save FDs (but bad things happen if I try to do so
+      // tonight)
+      if (max_files < INT_MAX && max_files - cur_files < 5)
+        XBT_CRITICAL("Skipping a cached state because the amount of open files is too high: %d open files out of %d. "
+                     "Please increase the max with `ulimit -n <value>` to improve the performances.",
+                     (int)cur_files, max_files);
+      else
+        next_state->set_state_factory(get_remote_app().clone_checker_side());
     }
     on_state_creation_signal(next_state.get(), get_remote_app());
 
