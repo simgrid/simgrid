@@ -10,6 +10,9 @@ if(NOT HAVE_GRAPHVIZ)
   set(_dag_from_dot_disable 1)
   set(_dag_from_dot_simple_disable 1)
 endif()
+if (NOT SIMGRID_HAVE_JSON)
+  set(_dag_from_json_simple_disable 1)
+endif()
 
 # io_dependent io_file_system io_file_remote: need a plugin
 # exec_failure: needs state profiles
@@ -24,7 +27,7 @@ foreach (example activityset_awaitall activityset_awaitallfor activityset_awaita
                  comm_await comm_awaituntil comm_dependent comm_failure comm_host2host comm_pingpong comm_ready comm_suspend comm_throttling
                  io_async io_disk_raw io_priority # io_degradation 
                  mess_await
-                 #platform_comm_serialize # platform_failures  platform_profile  platform_properties
+                 platform_comm_serialize # platform_failures  platform_profile  platform_properties
                  synchro_barrier synchro_condition_variable synchro_condition_variable_awaituntil synchro_mutex synchro_semaphore
                  #task_dispatch  task_io  task_microservice  task_parallelism  task_simple  task_storm  task_switch_host  task_variable_load
                  )

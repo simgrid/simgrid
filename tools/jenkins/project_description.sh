@@ -27,7 +27,8 @@ get_json(){
 
 get_java(){
   # Found Java: /usr/bin/java (found suitable version "17.0.13", minimum required is "1.8") found components: Runtime Development
-  sed -n 's/.* Found Java: [^"]*"\([^"]*\)".*/\1/p;T;q' ./consoleText
+  # -- [Java] Version: 21.0.5; Compiler: /usr/bin/javac; Runtime: /usr/bin/java
+  sed -n 's/.* Java version: \([^;]*\).*/\1/p;T;q' ./consoleText
 }
 
 get_ns3(){

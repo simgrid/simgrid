@@ -375,11 +375,24 @@ PYBIND11_MODULE(simgrid, m)
            py::overload_cast<const std::string&, const std::vector<std::string>&>(&simgrid::s4u::NetZone::create_link),
            "Creates a network link")
       .def("create_split_duplex_link",
-           py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_split_duplex_link),
+           py::overload_cast<const std::string&, double, double>(&simgrid::s4u::NetZone::create_split_duplex_link),
            "Creates a split-duplex link")
       .def("create_split_duplex_link",
-           py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::create_split_duplex_link),
+           py::overload_cast<const std::string&, const std::string&, const std::string&>(
+               &simgrid::s4u::NetZone::create_split_duplex_link),
            "Creates a split-duplex link")
+      .def(
+          "create_split_duplex_link",
+          [](simgrid::s4u::NetZone& net, const std::string& name, double bw) {
+            return net.create_split_duplex_link(name, bw);
+          },
+          "Creates a split-duplex link")
+      .def(
+          "create_split_duplex_link",
+          [](simgrid::s4u::NetZone& net, const std::string& name, const std::string& bw) {
+            return net.create_split_duplex_link(name, bw);
+          },
+          "Creates a split-duplex link")
       .def("create_router", &simgrid::s4u::NetZone::create_router, "Create a router")
       .def_property_readonly("parent", &simgrid::s4u::NetZone::get_parent, "NetZone parent (read-only property).")
       // Keep `set_parent` method for backward compatibility.
