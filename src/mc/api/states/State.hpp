@@ -40,7 +40,7 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   StatePtr parent_state_ = nullptr;
 
   /** @brief Wether this state can lead to a correct execution.
-   *  Used by the critical transisition algorithm */
+   *  Used by the critical transition algorithm */
   bool has_correct_descendent_ = false;
 
 protected:

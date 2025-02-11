@@ -125,26 +125,23 @@ void CheckerSide::setup_events()
       base, get_channel().get_socket(), EV_READ | EV_PERSIST,
       [](evutil_socket_t, short events, void* arg) {
         auto* checker = static_cast<simgrid::mc::CheckerSide*>(arg);
-        if (events == EV_READ) {
-          do {
-            std::array<char, MC_MESSAGE_LENGTH> buffer;
-            ssize_t size = checker->get_channel().receive(buffer.data(), buffer.size(), MSG_DONTWAIT);
-            if (size == -1) {
-              XBT_ERROR("Channel::receive failure: %s", strerror(errno));
-              if (errno != EAGAIN)
-                throw simgrid::xbt::errno_error();
-            }
+        xbt_assert(events == EV_READ, "Unexpected event");
+        do {
+          std::array<char, MC_MESSAGE_LENGTH> buffer;
+          ssize_t size = checker->get_channel().receive(buffer.data(), buffer.size(), MSG_DONTWAIT);
+          if (size == -1) {
+            XBT_ERROR("Channel::receive failure: %s", strerror(errno));
+            if (errno != EAGAIN)
+              throw simgrid::xbt::errno_error();
+          }
 
-            if (size == 0) // The app closed the socket. It must be dead by now.
-              checker->handle_waitpid();
-            else if (not checker->handle_message(buffer.data(), size)) {
-              checker->break_loop();
-              break;
-            }
-          } while (checker->get_channel().has_pending_data());
-        } else {
-          xbt_die("Unexpected event");
-        }
+          if (size == 0) // The app closed the socket. It must be dead by now.
+            checker->handle_waitpid();
+          else if (not checker->handle_message(buffer.data(), size)) {
+            event_base_loopbreak(checker->base_.get());
+            break;
+          }
+        } while (checker->get_channel().has_pending_data());
       },
       this);
   event_add(socket_event_, nullptr);
@@ -156,14 +153,9 @@ void CheckerSide::setup_events()
         base, SIGCHLD, EV_SIGNAL | EV_PERSIST,
         [](evutil_socket_t sig, short events, void* arg) {
           auto* checker = static_cast<simgrid::mc::CheckerSide*>(arg);
-          if (events == EV_SIGNAL) {
-            if (sig == SIGCHLD)
-              checker->handle_waitpid();
-            else
-              xbt_die("Unexpected signal: %d", sig);
-          } else {
-            xbt_die("Unexpected event");
-          }
+          xbt_assert(events == EV_SIGNAL, "Unexpected event");
+          xbt_assert(sig == SIGCHLD, "Unexpected signal: %d", sig);
+          checker->handle_waitpid();
         },
         this);
     event_add(signal_event_, nullptr);
@@ -171,7 +163,7 @@ void CheckerSide::setup_events()
 }
 
 /* When this constructor is called, no other checkerside exists */
-CheckerSide::CheckerSide(const std::vector<char*>& args) : running_(true)
+CheckerSide::CheckerSide(const std::vector<char*>& args)
 {
   count_++;
   XBT_DEBUG("Create a CheckerSide.");
@@ -219,7 +211,7 @@ CheckerSide::~CheckerSide()
 
 /* This constructor is called when cloning a checkerside to get its application to fork away */
 CheckerSide::CheckerSide(int socket, CheckerSide* child_checker)
-    : channel_(socket, child_checker->channel_), running_(true), child_checker_(child_checker)
+    : channel_(socket, child_checker->channel_), child_checker_(child_checker)
 {
   count_++;
   setup_events();
@@ -266,6 +258,27 @@ std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket, const std::st
   return std::make_unique<CheckerSide>(sock, this);
 }
 
+Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool new_transition)
+{
+  get_channel().send(s_mc_message_simcall_execute_t{MessageType::SIMCALL_EXECUTE, aid, times_considered});
+
+  dispatch_events(); // The app may send messages while processing the transition
+
+  s_mc_message_simcall_execute_answer_t answer;
+  ssize_t s = get_channel().receive(answer);
+  xbt_assert(s != -1, "Could not receive message");
+  xbt_assert(s > 0 && answer.type == MessageType::SIMCALL_EXECUTE_REPLY,
+             "%d Received unexpected message %s (%i); expected MessageType::SIMCALL_EXECUTE_REPLY (%i)", getpid(),
+             to_c_str(answer.type), (int)answer.type, (int)MessageType::SIMCALL_EXECUTE_REPLY);
+  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
+
+  if (new_transition) {
+    std::stringstream stream(answer.buffer.data());
+    return deserialize_transition(aid, times_considered, stream);
+  } else
+    return nullptr;
+}
+
 void CheckerSide::finalize(bool terminate_asap)
 {
   s_mc_message_int_t m = {};
@@ -285,11 +298,6 @@ void CheckerSide::finalize(bool terminate_asap)
 void CheckerSide::dispatch_events() const
 {
   event_base_dispatch(base_.get());
-}
-
-void CheckerSide::break_loop() const
-{
-  event_base_loopbreak(base_.get());
 }
 
 bool CheckerSide::handle_message(const char* buffer, ssize_t size)
@@ -334,8 +342,7 @@ void CheckerSide::wait_for_requests()
   if (get_channel().send(MessageType::CONTINUE) != 0)
     throw xbt::errno_error();
 
-  if (running())
-    dispatch_events();
+  dispatch_events();
 }
 
 void CheckerSide::handle_dead_child(int status)
@@ -347,7 +354,6 @@ void CheckerSide::handle_dead_child(int status)
     xbt_assert(ptrace(PTRACE_GETEVENTMSG, pid_, 0, &eventmsg) != -1, "Could not get exit status");
     status = static_cast<int>(eventmsg);
     if (WIFSIGNALED(status)) {
-      this->terminate();
       Exploration::get_instance()->report_crash(status);
     }
   }
@@ -366,11 +372,9 @@ void CheckerSide::handle_dead_child(int status)
   }
 
   else if (WIFSIGNALED(status)) {
-    this->terminate();
     Exploration::get_instance()->report_crash(status);
   } else if (WIFEXITED(status)) {
     XBT_DEBUG("Child process is over");
-    this->terminate();
   }
 }
 
@@ -384,16 +388,14 @@ void CheckerSide::handle_waitpid()
     pid_t pid;
     while ((pid = waitpid(-1, &status, WNOHANG)) != 0) {
       if (pid == -1) {
-        if (errno == ECHILD) { // No more children:
-          xbt_assert(not this->running(), "Inconsistent state");
-          break;
-        } else {
-          xbt_die("Could not wait for pid: %s", strerror(errno));
-        }
+        xbt_assert(errno == ECHILD, "Could not wait for pid: %s", strerror(errno));
+        break; // Having no more children to wait for is OK
       }
 
       if (pid == get_pid())
         handle_dead_child(status);
+      else
+        THROW_IMPOSSIBLE;
     }
 
   } else { // Ask our proxy to wait for us

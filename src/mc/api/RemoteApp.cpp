@@ -227,28 +227,7 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
   XBT_DEBUG("Handle simcall of pid %d (time considered: %d; new? %s)", (int)aid, times_considered,
             (new_transition ? "yes" : "no"));
 
-  s_mc_message_simcall_execute_t m = {};
-  m.type                           = MessageType::SIMCALL_EXECUTE;
-  m.aid_                           = aid;
-  m.times_considered_              = times_considered;
-  checker_side_->get_channel().send(m);
-
-  if (checker_side_->running())
-    checker_side_->dispatch_events(); // The app may send messages while processing the transition
-
-  s_mc_message_simcall_execute_answer_t answer;
-  ssize_t s = checker_side_->get_channel().receive(answer);
-  xbt_assert(s != -1, "Could not receive message");
-  xbt_assert(s > 0 && answer.type == MessageType::SIMCALL_EXECUTE_REPLY,
-             "%d Received unexpected message %s (%i); expected MessageType::SIMCALL_EXECUTE_REPLY (%i)", getpid(),
-             to_c_str(answer.type), (int)answer.type, (int)MessageType::SIMCALL_EXECUTE_REPLY);
-  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
-
-  if (new_transition) {
-    std::stringstream stream(answer.buffer.data());
-    return deserialize_transition(aid, times_considered, stream);
-  } else
-    return nullptr;
+  return checker_side_->handle_simcall(aid, times_considered, new_transition);
 }
 
 void RemoteApp::finalize_app(bool terminate_asap)

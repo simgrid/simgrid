@@ -8,6 +8,7 @@
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/remote/Channel.hpp"
+#include "src/mc/transition/Transition.hpp"
 
 #include <event2/event.h>
 #include <functional>
@@ -23,7 +24,6 @@ class CheckerSide {
   std::unique_ptr<event_base, decltype(&event_base_free)> base_{nullptr, &event_base_free};
 
   Channel channel_;
-  bool running_ = false;
   pid_t pid_;
   static unsigned count_;
   // Because of the way we fork, the real app is our grandchild.
@@ -40,6 +40,9 @@ public:
   ~CheckerSide();
 
   // No copy:
+  /* Create a new CheckerSide by forking the currently existing one, and connect it through the master_socket */
+  std::unique_ptr<CheckerSide> clone(int master_socket, const std::string& master_socket_name);
+
   CheckerSide(CheckerSide const&) = delete;
   CheckerSide& operator=(CheckerSide const&) = delete;
   CheckerSide& operator=(CheckerSide&&) = delete;
@@ -52,19 +55,16 @@ public:
 
   bool handle_message(const char* buffer, ssize_t size);
   void dispatch_events() const;
-  void break_loop() const;
   void wait_for_requests();
 
-  /* Create a new CheckerSide by forking the currently existing one, and connect it through the master_socket */
-  std::unique_ptr<CheckerSide> clone(int master_socket, const std::string& master_socket_name);
+  /** Ask the application to run one step. A transition is built iff new_transition = true */
+  Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
 
   /** Ask the application to run post-mortem analysis, and maybe to stop ASAP */
   void finalize(bool terminate_asap = false);
 
   /* Interacting with the application process */
   pid_t get_pid() const { return pid_; }
-  bool running() const { return running_; }
-  void terminate() { running_ = false; }
 };
 
 } // namespace simgrid::mc
