@@ -50,24 +50,34 @@ Execution::Execution(const PartialExecution& w)
   push_partial_execution(w);
 }
 
-void Execution::push_transition(std::shared_ptr<Transition> t)
+void Execution::push_transition(std::shared_ptr<Transition> t, bool are_we_restoring_execution)
 {
   xbt_assert(t != nullptr, "Unexpectedly received `nullptr`");
-
   ClockVector max_clock_vector;
-  for (const Event& e : this->contents_) {
-    if (e.get_transition()->depends(t.get())) {
-      ClockVector::max_emplace_left(max_clock_vector, e.get_clock_vector());
+  for (const auto& events : this->skip_list_) {
+    for (auto event_it = events.crbegin(); event_it != events.crend(); ++event_it) {
+      if (contents_[*event_it].get_transition()->depends(t.get())) {
+        ClockVector::max_emplace_left(max_clock_vector, contents_[*event_it].get_clock_vector());
+        break;
+      }
     }
   }
   max_clock_vector[t->aid_] = this->size();
-  contents_.push_back(Event({std::move(t), std::move(max_clock_vector)}));
+  contents_.push_back(Event({t, std::move(max_clock_vector)}));
+  if (skip_list_.size() <= (unsigned)t->aid_)
+    skip_list_.resize(t->aid_ + 1, {});
+  skip_list_[t->aid_].push_back(this->size() - 1);
+
+  if (are_we_restoring_execution)
+    contents_.back().consider_races();
 }
 
 void Execution::remove_last_event()
 {
   xbt_assert(!contents_.empty(), "Tried to remove an element from an empty Execution");
+  auto aid = contents_.back().get_transition()->aid_;
   contents_.pop_back();
+  skip_list_[aid].pop_back();
 }
 
 void Execution::push_partial_execution(const PartialExecution& w)
@@ -105,9 +115,9 @@ std::list<Execution::EventHandle> Execution::get_racing_events_of(Execution::Eve
 {
   std::list<Execution::EventHandle> racing_events;
   std::list<Execution::EventHandle> candidates;
-  for (auto const& [aid, event_handle] : get_event_with_handle(target).get_clock_vector())
-    if (aid != get_actor_with_handle(target))
-      candidates.push_back(event_handle);
+  for (aid_t aid = 0; (unsigned)aid < get_event_with_handle(target).get_clock_vector().size(); aid++)
+    if (aid != get_actor_with_handle(target) and get_event_with_handle(target).get_clock_vector().get(aid).value() >= 0)
+      candidates.push_back(get_event_with_handle(target).get_clock_vector().get(aid).value());
 
   candidates.sort(std::greater<EventHandle>());
   candidates.unique();
@@ -466,7 +476,8 @@ bool Execution::happens_before(Execution::EventHandle e1_handle, Execution::Even
   const Event& e2     = get_event_with_handle(e2_handle);
   const aid_t proc_e1 = get_actor_with_handle(e1_handle);
 
-  if (const auto e1_in_e2_clock = e2.get_clock_vector().get(proc_e1); e1_in_e2_clock.has_value()) {
+  if (const auto e1_in_e2_clock = e2.get_clock_vector().get(proc_e1);
+      e1_in_e2_clock.has_value() and e1_in_e2_clock >= 0) {
     return e1_handle <= e1_in_e2_clock.value();
   }
   // If `e1` does not appear in e2's clock vector, this implies

@@ -84,7 +84,7 @@ void CriticalTransitionExplorer::run()
   if (stack_->back()->get_transition_out() == nullptr) {
     reduction_algo_->on_backtrack(stack_->back().get());
     stack_->pop_back();
-    execution_seq_ = execution_seq_.get_prefix_before(execution_seq_.size() - 1);
+    execution_seq_.remove_last_event();
   }
   while (stack_->size() > 1 and not stack_->back()->has_correct_execution()) {
     auto current_candidate = stack_->back()->get_transition_out();
@@ -110,7 +110,7 @@ void CriticalTransitionExplorer::run()
     }
     reduction_algo_->on_backtrack(stack_->back().get());
     stack_->pop_back();
-    execution_seq_ = execution_seq_.get_prefix_before(execution_seq_.size() - 1);
+    execution_seq_.remove_last_event();
   }
 
   log_end_exploration();

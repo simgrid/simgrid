@@ -36,7 +36,6 @@ class Exploration : public xbt::Extendable<Exploration> {
   static std::unique_ptr<ExplorationStrategy> strategy_;
   static Exploration* instance_;
 
-  FILE* dot_output_ = nullptr;
   int errors_       = 0; // Amount of errors seen so far; tested against model-check/max-errors
 
   /** @brief Wether the current exploration is a CriticalTransitionExplorer */
@@ -47,6 +46,8 @@ protected:
   unsigned long visited_states_count_ = 0; // for statistics
 
   time_t starting_time_; // For timeouts
+
+  FILE* dot_output_ = nullptr;
 
 public:
   explicit Exploration(const std::vector<char*>& args);

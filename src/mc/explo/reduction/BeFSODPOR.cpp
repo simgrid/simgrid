@@ -46,6 +46,8 @@ std::shared_ptr<Reduction::RaceUpdate> BeFSODPOR::races_computation(odpor::Execu
    */
   XBT_DEBUG("Going to compute all the reversible races on sequence \n%s", E.get_one_string_textual_trace().c_str());
   for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
+    if (E.get_event_with_handle(e_prime).has_race_been_computed())
+      continue;
     XBT_VERB("Computing reversible races of Event `%u`", e_prime);
     for (const auto e : E.get_reversible_races_of(e_prime)) {
       XBT_DEBUG("... racing event `%u`", e);

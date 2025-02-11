@@ -7,12 +7,14 @@
 
 namespace simgrid::mc {
 
+size_t ClockVector::max_size = 3;
+
 ClockVector ClockVector::max(const ClockVector& cv1, const ClockVector& cv2)
 {
   auto max_vector = ClockVector(cv1);
 
-  for (const auto& [aid, value] : cv2.contents_)
-    max_vector[aid] = std::max(value, max_vector.get(aid).value_or(0));
+  for (size_t aid = 0; aid < cv2.size(); aid++)
+    max_vector[aid] = std::max<signed long>(cv2.get(aid).value(), cv1.get(aid).value_or(-1));
 
   return max_vector;
 }
