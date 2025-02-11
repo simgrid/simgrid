@@ -36,6 +36,9 @@ std::shared_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution
    * ("eventually looks like C", viz. the `~_E` relation)
    */
   for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
+    if (E.get_event_with_handle(e_prime).has_race_been_computed())
+      continue;
+
     XBT_VERB("Computing reversible races of Event `%u`", e_prime);
     for (const auto e : E.get_reversible_races_of(e_prime)) {
       XBT_DEBUG("... racing event `%u``", e);
@@ -45,6 +48,7 @@ std::shared_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution
       if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value())
         updates->add_element(prev_state, v.value());
     }
+    E.get_event_with_handle(e_prime).consider_races();
   }
   return updates;
 }
