@@ -25,6 +25,61 @@ namespace simgrid::s4u {
 xbt::signal<void(Comm const&)> Comm::on_send;
 xbt::signal<void(Comm const&)> Comm::on_recv;
 
+template <> xbt::signal<void(Comm&)> Activity_T<Comm>::on_veto             = xbt::signal<void(Comm&)>();
+template <> xbt::signal<void(Comm const&)> Activity_T<Comm>::on_start      = xbt::signal<void(Comm const&)>();
+template <> xbt::signal<void(Comm const&)> Activity_T<Comm>::on_completion = xbt::signal<void(Comm const&)>();
+template <> xbt::signal<void(Comm const&)> Activity_T<Comm>::on_suspend    = xbt::signal<void(Comm const&)>();
+template <> xbt::signal<void(Comm const&)> Activity_T<Comm>::on_resume     = xbt::signal<void(Comm const&)>();
+template <> void Activity_T<Comm>::fire_on_start() const
+{
+  on_start(static_cast<const Comm&>(*this));
+}
+template <> void Activity_T<Comm>::fire_on_completion() const
+{
+  on_completion(static_cast<const Comm&>(*this));
+}
+template <> void Activity_T<Comm>::fire_on_suspend() const
+{
+  on_suspend(static_cast<const Comm&>(*this));
+}
+template <> void Activity_T<Comm>::fire_on_resume() const
+{
+  on_resume(static_cast<const Comm&>(*this));
+}
+template <> void Activity_T<Comm>::fire_on_veto()
+{
+  on_veto(static_cast<Comm&>(*this));
+}
+template <> void Activity_T<Comm>::on_start_cb(const std::function<void(Comm const&)>& cb)
+{
+  on_start.connect(cb);
+}
+template <> void Activity_T<Comm>::on_completion_cb(const std::function<void(Comm const&)>& cb)
+{
+  on_completion.connect(cb);
+}
+template <> void Activity_T<Comm>::on_suspend_cb(const std::function<void(Comm const&)>& cb)
+{
+  on_suspend.connect(cb);
+}
+template <> void Activity_T<Comm>::on_resume_cb(const std::function<void(Comm const&)>& cb)
+{
+  on_resume.connect(cb);
+}
+template <> void Activity_T<Comm>::on_veto_cb(const std::function<void(Comm&)>& cb)
+{
+  on_veto.connect(cb);
+}
+
+void Comm::fire_on_completion_for_real() const
+{
+  Activity_T<Comm>::fire_on_completion();
+}
+void Comm::fire_on_this_completion_for_real() const
+{
+  Activity_T<Comm>::fire_on_this_completion();
+}
+
 CommPtr Comm::set_copy_data_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback)
 {
   copy_data_function_ = callback;

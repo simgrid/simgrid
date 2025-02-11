@@ -17,6 +17,51 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous executions");
 
 namespace simgrid::s4u {
+template <> xbt::signal<void(Exec&)> Activity_T<Exec>::on_veto             = xbt::signal<void(Exec&)>();
+template <> xbt::signal<void(Exec const&)> Activity_T<Exec>::on_start      = xbt::signal<void(Exec const&)>();
+template <> xbt::signal<void(Exec const&)> Activity_T<Exec>::on_completion = xbt::signal<void(Exec const&)>();
+template <> xbt::signal<void(Exec const&)> Activity_T<Exec>::on_suspend    = xbt::signal<void(Exec const&)>();
+template <> xbt::signal<void(Exec const&)> Activity_T<Exec>::on_resume     = xbt::signal<void(Exec const&)>();
+template <> void Activity_T<Exec>::fire_on_start() const
+{
+  on_start(static_cast<const Exec&>(*this));
+}
+template <> void Activity_T<Exec>::fire_on_completion() const
+{
+  on_completion(static_cast<const Exec&>(*this));
+}
+template <> void Activity_T<Exec>::fire_on_suspend() const
+{
+  on_suspend(static_cast<const Exec&>(*this));
+}
+template <> void Activity_T<Exec>::fire_on_resume() const
+{
+  on_resume(static_cast<const Exec&>(*this));
+}
+template <> void Activity_T<Exec>::fire_on_veto()
+{
+  on_veto(static_cast<Exec&>(*this));
+}
+template <> void Activity_T<Exec>::on_start_cb(const std::function<void(Exec const&)>& cb)
+{
+  on_start.connect(cb);
+}
+template <> void Activity_T<Exec>::on_completion_cb(const std::function<void(Exec const&)>& cb)
+{
+  on_completion.connect(cb);
+}
+template <> void Activity_T<Exec>::on_suspend_cb(const std::function<void(Exec const&)>& cb)
+{
+  on_suspend.connect(cb);
+}
+template <> void Activity_T<Exec>::on_resume_cb(const std::function<void(Exec const&)>& cb)
+{
+  on_resume.connect(cb);
+}
+template <> void Activity_T<Exec>::on_veto_cb(const std::function<void(Exec&)>& cb)
+{
+  on_veto.connect(cb);
+}
 
 Exec::Exec(kernel::activity::ExecImplPtr pimpl)
 {

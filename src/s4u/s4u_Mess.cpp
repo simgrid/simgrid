@@ -22,6 +22,60 @@ namespace simgrid::s4u {
 xbt::signal<void(Mess const&)> Mess::on_send;
 xbt::signal<void(Mess const&)> Mess::on_recv;
 
+template <> xbt::signal<void(Mess&)> Activity_T<Mess>::on_veto             = xbt::signal<void(Mess&)>();
+template <> xbt::signal<void(Mess const&)> Activity_T<Mess>::on_start      = xbt::signal<void(Mess const&)>();
+template <> xbt::signal<void(Mess const&)> Activity_T<Mess>::on_completion = xbt::signal<void(Mess const&)>();
+template <> xbt::signal<void(Mess const&)> Activity_T<Mess>::on_suspend    = xbt::signal<void(Mess const&)>();
+template <> xbt::signal<void(Mess const&)> Activity_T<Mess>::on_resume     = xbt::signal<void(Mess const&)>();
+template <> void Activity_T<Mess>::fire_on_start() const
+{
+  on_start(static_cast<const Mess&>(*this));
+}
+template <> void Activity_T<Mess>::fire_on_completion() const
+{
+  on_completion(static_cast<const Mess&>(*this));
+}
+template <> void Activity_T<Mess>::fire_on_suspend() const
+{
+  on_suspend(static_cast<const Mess&>(*this));
+}
+template <> void Activity_T<Mess>::fire_on_resume() const
+{
+  on_resume(static_cast<const Mess&>(*this));
+}
+template <> void Activity_T<Mess>::fire_on_veto()
+{
+  on_veto(static_cast<Mess&>(*this));
+}
+template <> void Activity_T<Mess>::on_start_cb(const std::function<void(Mess const&)>& cb)
+{
+  on_start.connect(cb);
+}
+template <> void Activity_T<Mess>::on_completion_cb(const std::function<void(Mess const&)>& cb)
+{
+  on_completion.connect(cb);
+}
+template <> void Activity_T<Mess>::on_suspend_cb(const std::function<void(Mess const&)>& cb)
+{
+  on_suspend.connect(cb);
+}
+template <> void Activity_T<Mess>::on_resume_cb(const std::function<void(Mess const&)>& cb)
+{
+  on_resume.connect(cb);
+}
+template <> void Activity_T<Mess>::on_veto_cb(const std::function<void(Mess&)>& cb)
+{
+  on_veto.connect(cb);
+}
+void Mess::fire_on_completion_for_real() const
+{
+  Activity_T<Mess>::fire_on_completion();
+}
+void Mess::fire_on_this_completion_for_real() const
+{
+  Activity_T<Mess>::fire_on_this_completion();
+}
+
 MessPtr Mess::set_queue(MessageQueue* queue)
 {
   queue_ = queue;

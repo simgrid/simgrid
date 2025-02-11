@@ -44,8 +44,8 @@ class XBT_PUBLIC Mess : public Activity_T<Mess> {
   }
 
   /* These ensure that the on_completion signals are really thrown */
-  void fire_on_completion_for_real() const { Activity_T<Mess>::fire_on_completion(); }
-  void fire_on_this_completion_for_real() const { Activity_T<Mess>::fire_on_this_completion(); }
+  void fire_on_completion_for_real() const;
+  void fire_on_this_completion_for_real() const;
 
 public:
 #ifndef DOXYGEN

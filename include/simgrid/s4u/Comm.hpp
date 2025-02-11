@@ -53,8 +53,8 @@ protected:
      */
   }
   /* These ensure that the on_completion signals are really thrown */
-  void fire_on_completion_for_real() const { Activity_T<Comm>::fire_on_completion(); }
-  void fire_on_this_completion_for_real() const { Activity_T<Comm>::fire_on_this_completion(); }
+  void fire_on_completion_for_real() const;
+  void fire_on_this_completion_for_real() const;
 
 public:
   /*! \static Add a callback fired when the send of any Comm is posted  */
