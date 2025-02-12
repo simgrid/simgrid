@@ -20,7 +20,6 @@ namespace simgrid::mc {
 
 class CheckerSide {
   event* socket_event_;
-  event* signal_event_ = nullptr;
   std::unique_ptr<event_base, decltype(&event_base_free)> base_{nullptr, &event_base_free};
 
   Channel channel_;

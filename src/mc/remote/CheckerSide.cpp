@@ -130,9 +130,8 @@ void CheckerSide::setup_events()
         /* Handle an ASSERTION message if any */
         MessageType type;
         bool more_data = checker->get_channel().peek_message(type);
-        if (not more_data) { // The app closed the socket. It must be dead by now.
+        if (not more_data) // The app closed the socket. It must be dead by now.
           checker->handle_waitpid();
-        }
 
         if (type == MessageType::ASSERTION_FAILED)
           Exploration::get_instance()->report_assertion_failure(); // This is a noreturn function
@@ -146,21 +145,6 @@ void CheckerSide::setup_events()
       },
       this);
   event_add(socket_event_, nullptr);
-
-  static bool first_time = true;
-  if (first_time) {
-    first_time    = false;
-    signal_event_ = event_new(
-        base, SIGCHLD, EV_SIGNAL | EV_PERSIST,
-        [](evutil_socket_t sig, short events, void* arg) {
-          auto* checker = static_cast<simgrid::mc::CheckerSide*>(arg);
-          xbt_assert(events == EV_SIGNAL, "Unexpected event");
-          xbt_assert(sig == SIGCHLD, "Unexpected signal: %d", sig);
-          checker->handle_waitpid();
-        },
-        this);
-    event_add(signal_event_, nullptr);
-  }
 }
 
 /* When this constructor is called, no other checkerside exists */
@@ -204,10 +188,6 @@ CheckerSide::~CheckerSide()
   count_--;
   event_del(socket_event_);
   event_free(socket_event_);
-  if (signal_event_ != nullptr) {
-    event_del(signal_event_);
-    event_free(signal_event_);
-  }
 }
 
 /* This constructor is called when cloning a checkerside to get its application to fork away */
