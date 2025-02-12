@@ -22,6 +22,7 @@
 #include <numeric>
 #include <string>
 #include <sys/ptrace.h>
+#include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/wait.h>
 

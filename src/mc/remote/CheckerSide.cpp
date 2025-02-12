@@ -18,6 +18,8 @@
 #include <csignal>
 #include <fcntl.h>
 #include <sys/ptrace.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <sys/wait.h>
 
 #ifdef __linux__
@@ -116,37 +118,6 @@ static void wait_application_process(pid_t pid)
   XBT_DEBUG("%d ptrace correctly setup.", getpid());
 }
 
-void CheckerSide::setup_events()
-{
-  auto* base = event_base_new();
-  base_.reset(base);
-
-  socket_event_ = event_new(
-      base, get_channel().get_socket(), EV_READ | EV_PERSIST,
-      [](evutil_socket_t, short events, void* arg) {
-        auto* checker = static_cast<simgrid::mc::CheckerSide*>(arg);
-        xbt_assert(events == EV_READ, "Unexpected event");
-
-        /* Handle an ASSERTION message if any */
-        MessageType type;
-        bool more_data = checker->get_channel().peek_message(type);
-        if (not more_data) // The app closed the socket. It must be dead by now.
-          checker->handle_waitpid();
-
-        if (type == MessageType::ASSERTION_FAILED)
-          Exploration::get_instance()->report_assertion_failure(); // This is a noreturn function
-
-        /* Stop waiting for eventual ASSERTION message when we get something else, that must be WAITING */
-        s_mc_message_t msg;
-        checker->get_channel().receive(msg);
-        xbt_assert(msg.type == MessageType::WAITING, "Unexpected message");
-
-        event_base_loopbreak(checker->base_.get());
-      },
-      this);
-  event_add(socket_event_, nullptr);
-}
-
 /* When this constructor is called, no other checkerside exists */
 CheckerSide::CheckerSide(const std::vector<char*>& args)
 {
@@ -179,15 +150,12 @@ CheckerSide::CheckerSide(const std::vector<char*>& args)
   ::close(sockets[0]);
   channel_.reset_socket(sockets[1]);
 
-  setup_events();
   wait_for_requests();
 }
 
 CheckerSide::~CheckerSide()
 {
   count_--;
-  event_del(socket_event_);
-  event_free(socket_event_);
 }
 
 /* This constructor is called when cloning a checkerside to get its application to fork away */
@@ -195,7 +163,6 @@ CheckerSide::CheckerSide(int socket, CheckerSide* child_checker)
     : channel_(socket, child_checker->channel_), child_checker_(child_checker)
 {
   count_++;
-  setup_events();
 
   s_mc_message_int_t answer;
   ssize_t s = get_channel().receive(answer);
@@ -276,9 +243,21 @@ void CheckerSide::finalize(bool terminate_asap)
              (int)answer.type, (int)MessageType::FINALIZE_REPLY);
 }
 
-void CheckerSide::dispatch_events() const
+void CheckerSide::dispatch_events()
 {
-  event_base_dispatch(base_.get());
+  /* Handle an ASSERTION message if any */
+  MessageType type;
+  bool more_data = get_channel().peek_message(type);
+  if (not more_data) // The app closed the socket. It must be dead by now.
+    handle_waitpid();
+
+  if (type == MessageType::ASSERTION_FAILED)
+    Exploration::get_instance()->report_assertion_failure(); // This is a noreturn function
+
+  /* Stop waiting for eventual ASSERTION message when we get something else, that must be WAITING */
+  s_mc_message_t msg;
+  get_channel().receive(msg);
+  xbt_assert(msg.type == MessageType::WAITING, "Unexpected message");
 }
 
 bool CheckerSide::handle_message(const char* buffer, ssize_t size)
