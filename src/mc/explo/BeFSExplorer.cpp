@@ -194,20 +194,19 @@ void BeFSExplorer::run()
     auto next_state = reduction_algo_->state_create(get_remote_app(), state);
 
     if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
-      static int max_files = INT_MAX;
-      if (max_files == INT_MAX)
-        max_files = sysconf(_SC_OPEN_MAX);
-      int cur_files =
-          std::distance(std::filesystem::directory_iterator("/proc/self/fd"), std::filesystem::directory_iterator{});
+      static unsigned max_files = sysconf(_SC_OPEN_MAX);
 
       // TODO: we have to save many FDs because our code consumes 4 FDs per child process.
       // We should not create a new event_base per CheckerSide to save FDs (but bad things happen if I try to do so
       // tonight)
-      if (max_files < INT_MAX && max_files - cur_files < 5)
-        XBT_CRITICAL("Skipping a cached state because the amount of open files is too high: %d open files out of %d. "
+      if (max_files < INT_MAX && ((CheckerSide::get_count() + 1) * 4 + 12) > max_files) {
+        // For now, each CheckerSide takes 4 FDs, and we have about 12 FDs before creating the first CheckerSide
+        int cur_files =
+            std::distance(std::filesystem::directory_iterator("/proc/self/fd"), std::filesystem::directory_iterator{});
+        XBT_CRITICAL("Skipping a cached state because the amount of open files is too high: %d open files out of %u. "
                      "Please increase the max with `ulimit -n <value>` to improve the performances.",
                      (int)cur_files, max_files);
-      else
+      } else
         next_state->set_state_factory(get_remote_app().clone_checker_side());
     }
     on_state_creation_signal(next_state.get(), get_remote_app());
