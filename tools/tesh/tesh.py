@@ -96,6 +96,7 @@ def setenv(arg):
         arg = re.sub(r"\${(\w+):=([^}]*)}", replace_perl_variables, arg)
         arg = expandvars2(arg)
     (var, val) = arg.split("=", 1)
+    val = val.strip('"') # Remove the "" around the value (but not the ones within the string)
     print("[Tesh/INFO] setenv " + var + "=" + val)
     os.environ[var] = val
     # os.putenv(var, val) does not work
