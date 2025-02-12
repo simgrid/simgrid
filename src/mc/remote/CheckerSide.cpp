@@ -126,24 +126,23 @@ void CheckerSide::setup_events()
       [](evutil_socket_t, short events, void* arg) {
         auto* checker = static_cast<simgrid::mc::CheckerSide*>(arg);
         xbt_assert(events == EV_READ, "Unexpected event");
-        do {
-          std::array<char, MC_MESSAGE_LENGTH> buffer;
-          ssize_t size = checker->get_channel().receive(buffer.data(), buffer.size(), MSG_DONTWAIT);
-          if (size == -1) {
-            XBT_ERROR("Channel::receive failure: %s", strerror(errno));
-            if (errno != EAGAIN)
-              throw simgrid::xbt::errno_error();
-          }
 
-          if (size == 0) { // The app closed the socket. It must be dead by now.
-            checker->handle_waitpid();
-            break;
-          }
-          if (not checker->handle_message(buffer.data(), size)) {
-            event_base_loopbreak(checker->base_.get());
-            break;
-          }
-        } while (checker->get_channel().has_pending_data());
+        /* Handle an ASSERTION message if any */
+        MessageType type;
+        bool more_data = checker->get_channel().peek_message(type);
+        if (not more_data) { // The app closed the socket. It must be dead by now.
+          checker->handle_waitpid();
+        }
+
+        if (type == MessageType::ASSERTION_FAILED)
+          Exploration::get_instance()->report_assertion_failure(); // This is a noreturn function
+
+        /* Stop waiting for eventual ASSERTION message when we get something else, that must be WAITING */
+        s_mc_message_t msg;
+        checker->get_channel().receive(msg);
+        xbt_assert(msg.type == MessageType::WAITING, "Unexpected message");
+
+        event_base_loopbreak(checker->base_.get());
       },
       this);
   event_add(socket_event_, nullptr);
