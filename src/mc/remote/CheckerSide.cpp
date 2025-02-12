@@ -210,7 +210,7 @@ Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool ne
 {
   get_channel().send(s_mc_message_simcall_execute_t{MessageType::SIMCALL_EXECUTE, aid, times_considered});
 
-  dispatch_events(); // The app may send messages while processing the transition
+  sync_with_app(); // The app may send messages while processing the transition
 
   s_mc_message_simcall_execute_answer_t answer;
   ssize_t s = get_channel().receive(answer);
@@ -243,7 +243,7 @@ void CheckerSide::finalize(bool terminate_asap)
              (int)answer.type, (int)MessageType::FINALIZE_REPLY);
 }
 
-void CheckerSide::dispatch_events()
+void CheckerSide::sync_with_app()
 {
   /* Handle an ASSERTION message if any */
   MessageType type;
@@ -260,38 +260,13 @@ void CheckerSide::dispatch_events()
   xbt_assert(msg.type == MessageType::WAITING, "Unexpected message");
 }
 
-bool CheckerSide::handle_message(const char* buffer, ssize_t size)
-{
-  MessageType type = ((s_mc_message_t*)buffer)->type;
-  ssize_t consumed = sizeof(s_mc_message_t);
-
-  xbt_assert(size >= consumed, "Broken message. Got only %ld bytes out of %ld.", size, consumed);
-  if (size > consumed) {
-    XBT_DEBUG("%d reinject %d bytes after a %s message", getpid(), (int)(size - consumed), to_c_str(type));
-    channel_.reinject(&buffer[consumed], size - consumed);
-  }
-
-  switch (type) {
-
-    case MessageType::WAITING:
-      return false;
-
-    case MessageType::ASSERTION_FAILED:
-      Exploration::get_instance()->report_assertion_failure();
-      return true;
-
-    default:
-      xbt_die("Unexpected message from the application");
-  }
-}
-
 void CheckerSide::wait_for_requests()
 {
   XBT_DEBUG("Resume the application");
   if (get_channel().send(MessageType::CONTINUE) != 0)
     throw xbt::errno_error();
 
-  dispatch_events();
+  sync_with_app();
 }
 
 void CheckerSide::handle_dead_child(int status)

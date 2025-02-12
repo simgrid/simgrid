@@ -46,8 +46,7 @@ public:
   Channel const& get_channel() const { return channel_; }
   Channel& get_channel() { return channel_; }
 
-  bool handle_message(const char* buffer, ssize_t size);
-  void dispatch_events();
+  void sync_with_app();
   void wait_for_requests();
 
   /** Ask the application to run one step. A transition is built iff new_transition = true */
