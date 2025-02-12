@@ -135,9 +135,11 @@ void CheckerSide::setup_events()
               throw simgrid::xbt::errno_error();
           }
 
-          if (size == 0) // The app closed the socket. It must be dead by now.
+          if (size == 0) { // The app closed the socket. It must be dead by now.
             checker->handle_waitpid();
-          else if (not checker->handle_message(buffer.data(), size)) {
+            break;
+          }
+          if (not checker->handle_message(buffer.data(), size)) {
             event_base_loopbreak(checker->base_.get());
             break;
           }
@@ -302,38 +304,27 @@ void CheckerSide::dispatch_events() const
 
 bool CheckerSide::handle_message(const char* buffer, ssize_t size)
 {
-  s_mc_message_t base_message;
-  ssize_t consumed;
-  xbt_assert(size >= (ssize_t)sizeof(base_message), "Broken message. Got only %ld bytes.", size);
-  memcpy(&base_message, buffer, sizeof(base_message));
+  MessageType type = ((s_mc_message_t*)buffer)->type;
+  ssize_t consumed = sizeof(s_mc_message_t);
 
-  switch (base_message.type) {
+  xbt_assert(size >= consumed, "Broken message. Got only %ld bytes out of %ld.", size, consumed);
+  if (size > consumed) {
+    XBT_DEBUG("%d reinject %d bytes after a %s message", getpid(), (int)(size - consumed), to_c_str(type));
+    channel_.reinject(&buffer[consumed], size - consumed);
+  }
+
+  switch (type) {
 
     case MessageType::WAITING:
-      consumed = sizeof(s_mc_message_t);
-      if (size > consumed) {
-        XBT_DEBUG("%d reinject %d bytes after a %s message", getpid(), (int)(size - consumed),
-                  to_c_str(base_message.type));
-        channel_.reinject(&buffer[consumed], size - consumed);
-      }
-
       return false;
 
     case MessageType::ASSERTION_FAILED:
-      // report_assertion_failure() is NORETURN, but it may change when we report more than one error per run,
-      // so please keep the consumed computation even if clang-static detects it as a dead affectation.
-      consumed = sizeof(s_mc_message_t);
       Exploration::get_instance()->report_assertion_failure();
-      break;
+      return true;
 
     default:
       xbt_die("Unexpected message from the application");
   }
-  if (size > consumed) {
-    XBT_DEBUG("%d reinject %d bytes after a %s message", getpid(), (int)(size - consumed), to_c_str(base_message.type));
-    channel_.reinject(&buffer[consumed], size - consumed);
-  }
-  return true;
 }
 
 void CheckerSide::wait_for_requests()
