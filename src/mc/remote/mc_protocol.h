@@ -65,6 +65,7 @@ struct s_mc_message_simcall_execute_t {
   simgrid::mc::MessageType type;
   aid_t aid_;
   int times_considered_;
+  bool want_transition;
 };
 struct s_mc_message_simcall_execute_answer_t {
   simgrid::mc::MessageType type;
