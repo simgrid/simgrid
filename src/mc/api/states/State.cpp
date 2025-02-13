@@ -91,7 +91,7 @@ std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
   // when simcall_handle will be called on it
   auto& actor_state               = actors_to_run_.at(next);
   const unsigned times_considered = actor_state.do_consider();
-  const Transition* expected_executed_transition;
+  const Transition* expected_executed_transition = nullptr;
   if (_sg_mc_debug) {
     expected_executed_transition = actor_state.get_transition(times_considered).get();
     xbt_assert(actor_state.is_enabled(), "Tried to execute a disabled actor");

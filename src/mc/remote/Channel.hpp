@@ -54,7 +54,7 @@ public:
   }
   // Write the type of the next message in the reference parameter, and return false if no message is to be read (socket
   // closed by peer)
-  bool peek_message(MessageType& type);
+  std::pair<bool, MessageType> peek_message_type();
   void reinject(const char* data, size_t size);
   bool has_pending_data() const { return buffer_size_ != 0; }
 

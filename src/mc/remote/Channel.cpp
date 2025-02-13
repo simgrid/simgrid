@@ -4,7 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/remote/Channel.hpp"
+#include "src/mc/remote/mc_protocol.h"
 #include "xbt/asserts.hpp"
+#include <utility>
 #include <xbt/log.h>
 
 #include <algorithm>
@@ -84,21 +86,18 @@ ssize_t Channel::receive(void* message, size_t size, int flags)
   return res;
 }
 
-bool Channel::peek_message(MessageType& type)
+std::pair<bool, MessageType> Channel::peek_message_type()
 {
-  type = MessageType::NONE;
-
   if (buffer_size_ == 0) {
     int res = recv(this->socket_, buffer_, MC_MESSAGE_LENGTH, 0);
     xbt_assert(res >= 0, "Cannot receive any data while peeking the message type. Errno: %s (%d)", strerror(errno),
                errno);
     buffer_size_ += res;
     if (res == 0)
-      return false;
+      return std::make_pair(false, MessageType::NONE);
   }
 
-  type = ((s_mc_message_t*)buffer_)->type;
-  return true;
+  return std::make_pair(true, ((s_mc_message_t*)buffer_)->type);
 }
 
 void Channel::reinject(const char* data, size_t size)

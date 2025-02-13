@@ -272,8 +272,7 @@ void CheckerSide::finalize(bool terminate_asap)
 void CheckerSide::sync_with_app()
 {
   /* Handle an ASSERTION message if any */
-  MessageType type;
-  bool more_data = get_channel().peek_message(type);
+  auto [more_data, type] = get_channel().peek_message_type();
   if (not more_data) // The app closed the socket. It must be dead by now.
     handle_waitpid();
 
