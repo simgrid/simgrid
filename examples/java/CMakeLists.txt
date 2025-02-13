@@ -4,6 +4,12 @@ if(SIMGRID_HAVE_JAVA)
   add_dependencies(java-all simgrid_jar)
   add_dependencies(java-all simgrid-java) # useful when the libs are not included in the jar
   add_dependencies(java-all simgrid)      # useful when the libs are not included in the jar
+
+  if(${Java_VERSION} VERSION_GREATER_EQUAL "24.0.0")
+    set(javac_args "--enable-native-access=ALL-UNNAMED")
+  else()
+    message(STATUS "Java version is ${Java_VERSION}, no need to specifically enable the access to native libs.")
+  endif()
 endif()
 
 if(NOT HAVE_GRAPHVIZ)
@@ -12,12 +18,6 @@ if(NOT HAVE_GRAPHVIZ)
 endif()
 if (NOT SIMGRID_HAVE_JSON)
   set(_dag_from_json_simple_disable 1)
-endif()
-
-if(${Java_VERSION} VERSION_GREATER_EQUAL "24.0.0")
-  set(javac_args "--enable-native-access=ALL-UNNAMED")
-else()
-  message(STATUS "Java version is ${Java_VERSION}, no need to specifically enable the access to native libs.")
 endif()
 
 # io_dependent io_file_system io_file_remote: need a plugin
