@@ -14,6 +14,12 @@ if (NOT SIMGRID_HAVE_JSON)
   set(_dag_from_json_simple_disable 1)
 endif()
 
+if(${Java_VERSION} VERSION_GREATER_EQUAL "24.0.0")
+  set(javac_args "--enable-native-access=ALL-UNNAMED")
+else()
+  message(STATUS "Java version is ${Java_VERSION}, no need to specifically enable the access to native libs.")
+endif()
+
 # io_dependent io_file_system io_file_remote: need a plugin
 # exec_failure: needs state profiles
 foreach (example activityset_awaitall activityset_awaitallfor activityset_awaitany activityset_testany
@@ -48,7 +54,7 @@ foreach (example activityset_awaitall activityset_awaitallfor activityset_awaita
             OUTPUT_NAME ${example}
             OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${example_dir})
     add_dependencies(java-all java-${example})
-    ADD_TESH(java-${example} --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib --setenv LC_CTYPE=C --setenv javacmd="${Java_JAVA_EXECUTABLE} -Xcheck:jni" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
+    ADD_TESH(java-${example} --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib --setenv LC_CTYPE=C --setenv javacmd="${Java_JAVA_EXECUTABLE} -Xcheck:jni ${javac_args}" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
   endif()
 
   set(examples_src  ${examples_src}  ${_${example}_sources})
