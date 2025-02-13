@@ -608,6 +608,10 @@ def main():
             re.compile(
                 r".*mmap broken on FreeBSD, but dlopen\+thread broken too\. Switching to dlopen\+raw contexts\."),
             re.compile(r".*dlopen\+thread broken on Apple and BSD\. Switching to raw contexts\."),
+            # Supurious warning from OpenJDK with -Xcheck:jni
+            # https://forums.oracle.com/ords/apexds/post/xcheck-jni-with-jdk-1-8-0-60-now-causes-a-flood-of-warning-6661
+            re.compile(r"WARNING: JNI local refs: .*"),
+            re.compile(r"  	at .*"),
         ]
         TeshState().jenkins = True  # This is a Jenkins build
 
