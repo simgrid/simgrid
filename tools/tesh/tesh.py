@@ -611,7 +611,7 @@ def main():
             # Supurious warning from OpenJDK with -Xcheck:jni
             # https://forums.oracle.com/ords/apexds/post/xcheck-jni-with-jdk-1-8-0-60-now-causes-a-flood-of-warning-6661
             re.compile(r"WARNING: JNI local refs: .*"),
-            re.compile(r"  	at .*"),
+            re.compile(r"\s*at \S*"), # This RE is maybe too generic but I struggled to make it as specific as possible
         ]
         TeshState().jenkins = True  # This is a Jenkins build
 
