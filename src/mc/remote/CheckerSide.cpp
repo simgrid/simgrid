@@ -237,11 +237,14 @@ void CheckerSide::handle_replay(std::deque<std::pair<aid_t, int>> to_replay)
   replay_msg.type  = MessageType::REPLAY;
   replay_msg.count = to_replay.size();
 
-  xbt_assert(to_replay.size() < MC_MAX_REPLAY_SIZE, "Not enough space to replay the sequence. Fix me!");
+  xbt_assert(to_replay.size() < MC_MAX_REPLAY_SIZE,
+             "Not enough space to replay the sequence (size:%d; max size: %u). Fix me!", (int)to_replay.size(),
+             MC_MAX_REPLAY_SIZE);
 
   XBT_DEBUG("send a replay of size %lu", to_replay.size());
   int i = 0;
   for (auto const& [aid, time] : to_replay) {
+    xbt_assert(aid < 255, "Overflow on the aid value. %ld is too big to fit in an unsigned char", aid);
     replay_msg.aids[i]  = aid;
     replay_msg.times[i] = time;
     i++;

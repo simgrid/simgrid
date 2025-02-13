@@ -30,10 +30,10 @@ XBT_DECLARE_ENUM_CLASS(MessageType, NONE, FORK, FORK_REPLY, WAIT_CHILD, WAIT_CHI
                        REPLAY);
 } // namespace simgrid::mc
 
-constexpr unsigned MC_MESSAGE_LENGTH                 = 2048;
+constexpr unsigned MC_MESSAGE_LENGTH                 = 4096;
 constexpr unsigned MC_SOCKET_NAME_LEN                = sizeof(sockaddr_un::sun_path);
 constexpr unsigned SIMCALL_SERIALIZATION_BUFFER_SIZE = 2048;
-constexpr unsigned MC_MAX_REPLAY_SIZE                = 512;
+constexpr unsigned MC_MAX_REPLAY_SIZE                = 1024;
 
 /** Basic structure for a MC message
  *
@@ -77,7 +77,7 @@ struct s_mc_message_simcall_execute_answer_t {
 struct s_mc_message_replay_t {
   simgrid::mc::MessageType type;
   int count;
-  short aids[MC_MAX_REPLAY_SIZE];
+  unsigned char aids[MC_MAX_REPLAY_SIZE];
   unsigned char times[MC_MAX_REPLAY_SIZE];
 };
 
