@@ -112,19 +112,23 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
   // Finish the RPC from the server: return a serialized observer, to build a Transition on Checker side
   s_mc_message_simcall_execute_answer_t answer;
   answer.type                                  = MessageType::SIMCALL_EXECUTE_REPLY;
-  std::stringstream stream;
-  if (actor->simcall_.observer_ != nullptr) {
-    actor->simcall_.observer_->serialize(stream);
-  } else {
-    stream << (short)mc::Transition::Type::UNKNOWN;
-  }
-  std::string str = stream.str();
-  xbt_assert(str.size() + 1 <= answer.buffer.size(),
-             "The serialized simcall is too large for the buffer. Please fix the code.");
-  strncpy(answer.buffer.data(), str.c_str(), answer.buffer.size() - 1);
-  answer.buffer.back() = '\0';
+  if (message->want_transition) {
 
-  XBT_VERB("send SIMCALL_EXECUTE_ANSWER(%s) ~> '%s'", actor->get_cname(), str.c_str());
+    std::stringstream stream;
+    if (actor->simcall_.observer_ != nullptr) {
+      actor->simcall_.observer_->serialize(stream);
+    } else {
+      stream << (short)mc::Transition::Type::UNKNOWN;
+    }
+    std::string str = stream.str();
+    xbt_assert(str.size() + 1 <= answer.buffer.size(),
+               "The serialized simcall is too large for the buffer. Please fix the code.");
+    strncpy(answer.buffer.data(), str.c_str(), answer.buffer.size() - 1);
+    answer.buffer.back() = '\0';
+    XBT_VERB("send SIMCALL_EXECUTE_ANSWER(%s) ~> '%s'", actor->get_cname(), str.c_str());
+  } else
+    XBT_VERB("send SIMCALL_EXECUTE_ANSWER(%s) with no transition inside", actor->get_cname());
+
   xbt_assert(channel_.send(answer) == 0, "Could not send response: %s", strerror(errno));
 }
 

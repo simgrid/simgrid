@@ -210,7 +210,8 @@ std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket, const std::st
 
 Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool new_transition)
 {
-  get_channel().send(s_mc_message_simcall_execute_t{MessageType::SIMCALL_EXECUTE, aid, times_considered});
+  get_channel().send(
+      s_mc_message_simcall_execute_t{MessageType::SIMCALL_EXECUTE, aid, times_considered, new_transition});
 
   sync_with_app(); // The app may send messages while processing the transition
 
