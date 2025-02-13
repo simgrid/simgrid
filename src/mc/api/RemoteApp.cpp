@@ -13,6 +13,7 @@
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
+#include <limits>
 #include <signal.h>
 
 #include <algorithm>
@@ -150,6 +151,10 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   // Message sanity checks
   xbt_assert(answer.count >= 0, "Received an ACTORS_STATUS_REPLY_COUNT message with an actor count of '%d' < 0",
              answer.count);
+  xbt_assert(answer.count < std::numeric_limits<short>::max(),
+             "The applications has more than %d actors, but the model-checker saves aid_t on an "
+             "short int to save memory. Such app is probably too big for MC anyway.",
+             std::numeric_limits<short>::max());
 
   std::vector<s_mc_message_actors_status_one_t> status(answer.count);
   if (answer.count > 0) {
