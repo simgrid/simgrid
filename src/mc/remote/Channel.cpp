@@ -52,7 +52,7 @@ int Channel::send(const void* message, size_t size) const
   return 0;
 }
 
-ssize_t Channel::receive(void* message, size_t size, int flags)
+ssize_t Channel::receive(void* message, size_t size)
 {
   ssize_t copied = 0;
   auto* whereto  = static_cast<char*>(message);
@@ -69,7 +69,7 @@ ssize_t Channel::receive(void* message, size_t size, int flags)
   ssize_t res = 0;
   if (todo > 0) {
     errno = 0;
-    res   = recv(this->socket_, whereto, todo, flags);
+    res   = recv(this->socket_, whereto, todo, 0);
     xbt_enforce(res != -1 || errno == EAGAIN, "Channel::receive failure: %s", strerror(errno));
     if (res == -1) {
       res = 0;

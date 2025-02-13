@@ -47,10 +47,10 @@ public:
   }
 
   // Receive
-  ssize_t receive(void* message, size_t size, int flags = 0);
+  ssize_t receive(void* message, size_t size);
   template <class M> typename std::enable_if_t<messageType<M>(), ssize_t> receive(M& m)
   {
-    return this->receive(&m, sizeof(M), 0);
+    return this->receive(&m, sizeof(M));
   }
   // Write the type of the next message in the reference parameter, and return false if no message is to be read (socket
   // closed by peer)
