@@ -66,6 +66,9 @@ public:
 
   /** Take a transition. A new Transition is created iff the last parameter is true */
   Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
+
+  /** Replay a whole sequence on the application with a single communication */
+  void replay_sequence(std::deque<std::pair<aid_t, int>> to_replay);
 };
 } // namespace simgrid::mc
 
