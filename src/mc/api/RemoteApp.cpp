@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/api/RemoteApp.hpp"
+#include "simgrid/forward.h"
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
@@ -137,7 +138,9 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   // Note that we also receive disabled transitions, because the guiding strategies need them to decide what could
   // unlock actors.
 
-  checker_side_->get_channel().send(MessageType::ACTORS_STATUS);
+  s_mc_message_restore_t msg = {MessageType::ACTORS_STATUS,
+                                Exploration::get_instance()->need_actor_status_transitions()};
+  checker_side_->get_channel().send(msg);
 
   s_mc_message_actors_status_answer_t answer;
   ssize_t answer_size = checker_side_->get_channel().receive(answer);
@@ -162,21 +165,25 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
 
   for (const auto& actor : status) {
     std::vector<std::shared_ptr<Transition>> actor_transitions;
-    int n_transitions = actor.max_considered;
-    for (int times_considered = 0; times_considered < n_transitions; times_considered++) {
-      s_mc_message_simcall_probe_one_t probe;
-      ssize_t received = checker_side_->get_channel().receive(probe);
-      xbt_assert(received >= 0, "Could not receive response to ACTORS_PROBE message (%s)", strerror(errno));
-      xbt_assert(static_cast<size_t>(received) == sizeof probe,
-                 "Could not receive response to ACTORS_PROBE message (%zd bytes received != %zu bytes expected",
-                 received, sizeof probe);
 
-      std::stringstream stream(probe.buffer.data());
-      actor_transitions.emplace_back(deserialize_transition(actor.aid, times_considered, stream));
+    if (Exploration::get_instance()->need_actor_status_transitions()) {
+      int n_transitions = actor.max_considered;
+      for (int times_considered = 0; times_considered < n_transitions; times_considered++) {
+        s_mc_message_simcall_probe_one_t probe;
+        ssize_t received = checker_side_->get_channel().receive(probe);
+        xbt_assert(received >= 0, "Could not receive response to ACTORS_PROBE message (%s)", strerror(errno));
+        xbt_assert(static_cast<size_t>(received) == sizeof probe,
+                   "Could not receive response to ACTORS_PROBE message (%zd bytes received != %zu bytes expected",
+                   received, sizeof probe);
+
+        std::stringstream stream(probe.buffer.data());
+        if (Exploration::get_instance()->need_actor_status_transitions())
+          actor_transitions.emplace_back(deserialize_transition(actor.aid, times_considered, stream));
+      }
+      XBT_DEBUG("Received %zu transitions for actor %ld. The first one is %s", actor_transitions.size(), actor.aid,
+                (actor_transitions.size() > 0 ? actor_transitions[0]->to_string().c_str() : "null"));
     }
 
-    XBT_DEBUG("Received %zu transitions for actor %ld. The first one is %s", actor_transitions.size(), actor.aid,
-              (actor_transitions.size() > 0 ? actor_transitions[0]->to_string().c_str() : "null"));
     whereto.try_emplace(actor.aid, actor.aid, actor.enabled, actor.max_considered, std::move(actor_transitions));
   }
 }
@@ -229,6 +236,12 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
             (new_transition ? "yes" : "no"));
 
   return checker_side_->handle_simcall(aid, times_considered, new_transition);
+}
+
+void RemoteApp::replay_sequence(std::deque<std::pair<aid_t, int>> to_replay)
+{
+
+  checker_side_->handle_replay(to_replay);
 }
 
 void RemoteApp::finalize_app(bool terminate_asap)

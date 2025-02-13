@@ -52,6 +52,10 @@ public:
   /** Ask the application to run one step. A transition is built iff new_transition = true */
   Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
 
+  /** Ask the application to run a full sequence of transition. The checker is not receiving any thing before the
+   *  end */
+  void handle_replay(std::deque<std::pair<aid_t, int>> to_replay);
+
   /** Ask the application to run post-mortem analysis, and maybe to stop ASAP */
   void finalize(bool terminate_asap = false);
 

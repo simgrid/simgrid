@@ -6,6 +6,8 @@
 #include "src/mc/remote/CheckerSide.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_environ.h"
+#include "src/mc/remote/mc_protocol.h"
+#include "xbt/asserts.h"
 #include "xbt/config.hpp"
 #include "xbt/system_error.hpp"
 #include <cerrno>
@@ -225,6 +227,29 @@ Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool ne
     return deserialize_transition(aid, times_considered, stream);
   } else
     return nullptr;
+}
+
+void CheckerSide::handle_replay(std::deque<std::pair<aid_t, int>> to_replay)
+{
+
+  s_mc_message_replay_t replay_msg;
+  replay_msg.type  = MessageType::REPLAY;
+  replay_msg.count = to_replay.size();
+
+  xbt_assert(to_replay.size() < MC_MAX_REPLAY_SIZE, "Not enough space to replay the sequence. Fix me!");
+
+  XBT_DEBUG("send a replay of size %lu", to_replay.size());
+  int i = 0;
+  for (auto const& [aid, time] : to_replay) {
+    replay_msg.aids[i]  = aid;
+    replay_msg.times[i] = time;
+    i++;
+  }
+
+  xbt_assert(get_channel().send(replay_msg) == 0, "Could not send message to the app: %s", strerror(errno));
+
+  // Wait for the application to signal that it is waiting
+  sync_with_app();
 }
 
 void CheckerSide::finalize(bool terminate_asap)

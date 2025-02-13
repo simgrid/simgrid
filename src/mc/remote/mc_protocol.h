@@ -26,12 +26,14 @@ namespace simgrid::mc {
 XBT_DECLARE_ENUM_CLASS(MessageType, NONE, FORK, FORK_REPLY, WAIT_CHILD, WAIT_CHILD_REPLY, CONTINUE, DEADLOCK_CHECK,
                        DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_EXECUTE, SIMCALL_EXECUTE_REPLY, ASSERTION_FAILED,
                        ACTORS_STATUS, ACTORS_STATUS_REPLY_COUNT, ACTORS_STATUS_REPLY_SIMCALL,
-                       ACTORS_STATUS_REPLY_TRANSITION, ACTORS_MAXPID, ACTORS_MAXPID_REPLY, FINALIZE, FINALIZE_REPLY);
+                       ACTORS_STATUS_REPLY_TRANSITION, ACTORS_MAXPID, ACTORS_MAXPID_REPLY, FINALIZE, FINALIZE_REPLY,
+                       REPLAY);
 } // namespace simgrid::mc
 
-constexpr unsigned MC_MESSAGE_LENGTH                 = 512;
+constexpr unsigned MC_MESSAGE_LENGTH                 = 2048;
 constexpr unsigned MC_SOCKET_NAME_LEN                = sizeof(sockaddr_un::sun_path);
 constexpr unsigned SIMCALL_SERIALIZATION_BUFFER_SIZE = 2048;
+constexpr unsigned MC_MAX_REPLAY_SIZE                = 512;
 
 /** Basic structure for a MC message
  *
@@ -71,9 +73,21 @@ struct s_mc_message_simcall_execute_answer_t {
   std::array<char, SIMCALL_SERIALIZATION_BUFFER_SIZE> buffer;
 };
 
+struct s_mc_message_replay_t {
+  simgrid::mc::MessageType type;
+  int count;
+  short aids[MC_MAX_REPLAY_SIZE];
+  unsigned char times[MC_MAX_REPLAY_SIZE];
+};
+
 struct s_mc_message_restore_t {
   simgrid::mc::MessageType type;
   int index;
+};
+
+struct s_mc_message_actors_status_t {
+  simgrid::mc::MessageType type;
+  bool want_transitions_;
 };
 
 struct s_mc_message_actors_status_answer_t {
