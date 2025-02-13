@@ -269,6 +269,20 @@ void CheckerSide::finalize(bool terminate_asap)
              (int)answer.type, (int)MessageType::FINALIZE_REPLY);
 }
 
+aid_t CheckerSide::get_aid_of_next_transition()
+{
+  auto [more_data, got] = get_channel().peek(sizeof(struct s_mc_message_simcall_execute_t));
+  if (not more_data) // The app closed the socket. It must be dead by now.
+    handle_waitpid();
+
+  auto* msg = static_cast<struct s_mc_message_simcall_execute_t*>(got);
+  xbt_assert(msg->type == MessageType::SIMCALL_EXECUTE,
+             "The next message on the wire is not a SIMCALL_EXECUTE as expected but a %s",
+             is_valid_MessageType((int)msg->type) ? to_c_str(msg->type) : "invalid message");
+
+  return msg->aid_;
+}
+
 void CheckerSide::sync_with_app()
 {
   /* Handle an ASSERTION message if any */

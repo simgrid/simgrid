@@ -56,6 +56,9 @@ public:
    *  end */
   void handle_replay(std::deque<std::pair<aid_t, int>> to_replay);
 
+  /** Read the aid in the SIMCALL_EXECUTE message that is expected to be next on the wire */
+  aid_t get_aid_of_next_transition();
+
   /** Ask the application to run post-mortem analysis, and maybe to stop ASAP */
   void finalize(bool terminate_asap = false);
 

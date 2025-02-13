@@ -52,6 +52,9 @@ public:
   {
     return this->receive(&m, sizeof(M));
   }
+  // Peek (receive without consuming)
+  std::pair<bool, void*> peek(size_t size);
+
   // Write the type of the next message in the reference parameter, and return false if no message is to be read (socket
   // closed by peer)
   std::pair<bool, MessageType> peek_message_type();

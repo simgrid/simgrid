@@ -5,6 +5,7 @@
 
 #include "src/mc/remote/Channel.hpp"
 #include "src/mc/remote/mc_protocol.h"
+#include "xbt/asserts.h"
 #include "xbt/asserts.hpp"
 #include <utility>
 #include <xbt/log.h>
@@ -84,6 +85,20 @@ ssize_t Channel::receive(void* message, size_t size)
     XBT_DEBUG("Receive %zd bytes", res);
   }
   return res;
+}
+std::pair<bool, void*> Channel::peek(size_t size)
+{
+  while (buffer_size_ < size) {
+    size_t todo = size - buffer_size_;
+    int got     = recv(this->socket_, buffer_ + buffer_size_, todo, 0);
+    xbt_assert(got != -1 || errno == EAGAIN, "Channel::receive failure: %s", strerror(errno));
+    if (got == 0)
+      return std::make_pair(false, nullptr);
+    buffer_size_ += got;
+  }
+  XBT_DEBUG("%d Peek %s", getpid(), to_c_str(*((const MessageType*)buffer_)));
+
+  return std::make_pair(true, buffer_);
 }
 
 std::pair<bool, MessageType> Channel::peek_message_type()

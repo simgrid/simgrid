@@ -69,6 +69,9 @@ public:
 
   /** Replay a whole sequence on the application with a single communication */
   void replay_sequence(std::deque<std::pair<aid_t, int>> to_replay);
+
+  /** Read the aid in the SIMCALL_EXECUTE message that is expected to be next on the wire */
+  aid_t get_aid_of_next_transition() { return checker_side_->get_aid_of_next_transition(); }
 };
 } // namespace simgrid::mc
 
