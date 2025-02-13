@@ -58,7 +58,7 @@ ssize_t Channel::receive(void* message, size_t size, int flags)
   if (buffer_size_ > 0) {
     copied = std::min(size, buffer_size_);
     memcpy(message, buffer_, copied);
-    memmove(buffer_, buffer_ + copied, copied);
+    memmove(buffer_, buffer_ + copied, buffer_size_ - copied);
     buffer_size_ -= copied;
 
     todo -= copied;
