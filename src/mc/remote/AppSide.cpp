@@ -112,7 +112,8 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
 
   // Finish the RPC from the server: return a serialized observer, to build a Transition on Checker side
   s_mc_message_simcall_execute_answer_t answer;
-  answer.type                                  = MessageType::SIMCALL_EXECUTE_REPLY;
+  answer.type = MessageType::SIMCALL_EXECUTE_REPLY;
+  answer.aid  = actor->get_pid();
   if (message->want_transition) {
 
     std::stringstream stream;
