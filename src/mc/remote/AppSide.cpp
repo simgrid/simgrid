@@ -14,6 +14,7 @@
 #include "src/mc/mc_environ.h"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
+#include "xbt/random.hpp"
 #include <cstddef>
 #include <sstream>
 #if HAVE_SMPI
@@ -158,6 +159,94 @@ void AppSide::handle_replay(const s_mc_message_replay_t* msg) const
   // Say the server that the replay is over and that it should proceed
   xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send MESSAGE_WAITING to model-checker: %s",
              strerror(errno));
+}
+
+void AppSide::handle_one_way()
+{
+  auto* engine = kernel::EngineImpl::get_instance();
+
+  std::vector<aid_t> fireables;
+  for (auto const& [aid, actor] : engine->get_actor_list())
+    if (mc::actor_is_enabled(actor))
+      fireables.emplace_back(aid);
+
+  while (fireables.size() > 0) {
+    XBT_CRITICAL("App is now going one way! There are %lu actors to run here", fireables.size());
+
+    unsigned long random = xbt::random::uniform_int(0, fireables.size() - 1);
+
+    XBT_CRITICAL("Picked actor %ld to run", fireables[random]);
+    aid_t chosen_aid = engine->get_actor_by_pid(fireables[random])->get_pid();
+
+    kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(chosen_aid);
+    xbt_assert(actor != nullptr, "Invalid pid %ld", chosen_aid);
+    xbt_assert((actor->simcall_.observer_ == nullptr &&
+                actor->simcall_.call_ != simgrid::kernel::actor::Simcall::Type::NONE) ||
+                   (actor->simcall_.observer_ != nullptr && actor->simcall_.observer_->is_enabled()),
+               "Please, model-checker, don't execute disabled transitions. You tried to execute %s which is disabled",
+               actor->simcall_.observer_->to_string().c_str());
+
+    // Since the AppSide is allowed to decide what to pick, this means this is the first time we come here
+    // hence, let's play the transition with considered_times = 0
+    actor->simcall_handle(0);
+
+    // Sending the transition message
+    s_mc_message_simcall_execute_answer_t transition_execute_msg;
+    transition_execute_msg.type = MessageType::SIMCALL_EXECUTE_REPLY;
+
+    std::stringstream stream;
+    if (actor->simcall_.observer_ != nullptr) {
+      actor->simcall_.observer_->serialize(stream);
+    } else {
+      stream << (short)mc::Transition::Type::UNKNOWN;
+    }
+    std::string str = stream.str();
+    xbt_assert(str.size() + 1 <= transition_execute_msg.buffer.size(),
+               "The serialized simcall is too large for the buffer. Please fix the code.");
+    strncpy(transition_execute_msg.buffer.data(), str.c_str(), transition_execute_msg.buffer.size() - 1);
+    transition_execute_msg.buffer.back() = '\0';
+    XBT_VERB("send SIMCALL_EXECUTE_ANSWER(%s) ~> '%s'", actor->get_cname(), str.c_str());
+    xbt_assert(channel_.send(transition_execute_msg) == 0, "Could not send response: %s", strerror(errno));
+
+    // Make a step in the app
+    simgrid::mc::execute_actors();
+
+    // Sending the actor status
+    auto const& actor_list = kernel::EngineImpl::get_instance()->get_actor_list();
+    XBT_DEBUG("Serialize the actors to answer ACTORS_STATUS from the checker. %zu actors to go.", actor_list.size());
+
+    std::vector<s_mc_message_actors_status_one_t> status;
+    for (auto const& [aid, actor] : actor_list) {
+      xbt_assert(actor);
+      xbt_assert(actor->simcall_.observer_, "simcall %s in actor %s has no observer.", actor->simcall_.get_cname(),
+                 actor->get_cname());
+      s_mc_message_actors_status_one_t one = {};
+      one.type                             = MessageType::ACTORS_STATUS_REPLY_TRANSITION;
+      one.aid                              = aid;
+      one.enabled                          = mc::actor_is_enabled(actor);
+      one.max_considered                   = actor->simcall_.observer_->get_max_consider();
+      status.push_back(one);
+    }
+
+    struct s_mc_message_actors_status_answer_t answer = {};
+    answer.type                                       = MessageType::ACTORS_STATUS_REPLY_COUNT;
+    answer.count                                      = static_cast<int>(status.size());
+
+    xbt_assert(channel_.send(answer) == 0, "Could not send ACTORS_STATUS_REPLY msg: %s", strerror(errno));
+    if (answer.count > 0) {
+      size_t size = status.size() * sizeof(s_mc_message_actors_status_one_t);
+      xbt_assert(channel_.send(status.data(), size) == 0, "Could not send ACTORS_STATUS_REPLY data: %s",
+                 strerror(errno));
+    }
+
+    // re-compute the fireables actor so we can move on
+    fireables.clear();
+    for (auto const& [aid, actor] : engine->get_actor_list())
+      if (mc::actor_is_enabled(actor))
+        fireables.emplace_back(aid);
+  }
+
+  this->handle_messages();
 }
 
 void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
@@ -359,6 +448,11 @@ void AppSide::handle_messages()
       case MessageType::REPLAY:
         assert_msg_size("REPLAY", s_mc_message_replay_t);
         handle_replay((s_mc_message_replay_t*)message_buffer.data());
+        break;
+
+      case MessageType::GO_ONE_WAY:
+        assert_msg_size("GO_ONE_WAY", s_mc_message_t);
+        handle_one_way();
         break;
 
       case MessageType::FINALIZE:
