@@ -9,6 +9,7 @@
 #include "src/mc/remote/mc_protocol.h"
 #include "xbt/asserts.h"
 #include "xbt/config.hpp"
+#include "xbt/log.h"
 #include "xbt/system_error.hpp"
 #include <cerrno>
 
@@ -181,6 +182,9 @@ CheckerSide::CheckerSide(int socket, CheckerSide* child_checker)
 
 std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket, const std::string& master_socket_name)
 {
+  if (is_one_way)
+    return nullptr;
+
   s_mc_message_fork_t m = {};
   m.type                = MessageType::FORK;
   xbt_assert(master_socket_name.size() == MC_SOCKET_NAME_LEN);
@@ -210,10 +214,12 @@ std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket, const std::st
 
 Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool new_transition)
 {
-  get_channel().send(
-      s_mc_message_simcall_execute_t{MessageType::SIMCALL_EXECUTE, aid, times_considered, new_transition});
+  if (not is_one_way) {
+    get_channel().send(
+        s_mc_message_simcall_execute_t{MessageType::SIMCALL_EXECUTE, aid, times_considered, new_transition});
 
-  sync_with_app(); // The app may send messages while processing the transition
+    sync_with_app(); // The app may send messages while processing the transition
+  }
 
   s_mc_message_simcall_execute_answer_t answer;
   ssize_t s = get_channel().receive(answer);
@@ -274,7 +280,7 @@ void CheckerSide::finalize(bool terminate_asap)
 
 aid_t CheckerSide::get_aid_of_next_transition()
 {
-  auto [more_data, got] = get_channel().peek(sizeof(struct s_mc_message_simcall_execute_t));
+  auto [more_data, got] = get_channel().peek(sizeof(struct s_mc_message_simcall_execute_answer_t));
   if (not more_data) // The app closed the socket. It must be dead by now.
     handle_waitpid();
 
@@ -381,4 +387,18 @@ void CheckerSide::handle_waitpid()
     handle_dead_child(answer.value);
   }
 }
+
+void CheckerSide::go_one_way()
+{
+
+  if (!is_one_way) {
+    XBT_CRITICAL("Application will no go one way!");
+    is_one_way = true;
+    s_mc_message_t msg;
+    msg.type = MessageType::GO_ONE_WAY;
+    xbt_assert(child_checker_->get_channel().send(msg) == 0, "Could not ask the application to go one way: %s",
+               strerror(errno));
+  }
+}
+
 } // namespace simgrid::mc
