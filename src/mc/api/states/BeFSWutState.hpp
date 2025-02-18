@@ -11,6 +11,7 @@
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/mc_forward.hpp"
+#include <algorithm>
 #include <unordered_set>
 #include <vector>
 
@@ -23,6 +24,11 @@ class XBT_PRIVATE BeFSWutState : public WutState {
    *  revisit, but also to remember the order in which the children were visited. The latter information
    *  being important for the correction. */
   std::vector<std::shared_ptr<Transition>> done_;
+
+  size_t get_done_size()
+  {
+    return std::count_if(done_.begin(), done_.end(), [](auto const& ptr_t) { return ptr_t != nullptr; });
+  }
 
   /** Only leftmosts states of the tree can be closed. This is decided on creation based on parent
    *  value, and then updated when nearby states are closed. */

@@ -7,6 +7,7 @@
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/asserts.h"
@@ -19,10 +20,11 @@ namespace simgrid::mc {
 
 WutState::WutState(RemoteApp& remote_app) : SleepSetState(remote_app)
 {
-  initialize_if_empty_wut();
+  initialize_if_empty_wut(remote_app);
 }
 
-WutState::WutState(RemoteApp& remote_app, StatePtr parent_state) : SleepSetState(remote_app, parent_state)
+WutState::WutState(RemoteApp& remote_app, StatePtr parent_state, bool initialize_wut_if_empty)
+    : SleepSetState(remote_app, parent_state)
 {
 
   auto parent = static_cast<WutState*>(parent_state.get());
@@ -52,7 +54,8 @@ WutState::WutState(RemoteApp& remote_app, StatePtr parent_state) : SleepSetState
     xbt_abort();
   }
   wakeup_tree_ = parent->wakeup_tree_.get_first_subtree();
-  initialize_if_empty_wut();
+  if (initialize_wut_if_empty)
+    initialize_if_empty_wut(remote_app);
 }
 
 aid_t WutState::next_odpor_transition() const
@@ -60,32 +63,44 @@ aid_t WutState::next_odpor_transition() const
   return wakeup_tree_.get_min_single_process_actor().value_or(-1);
 }
 
-void WutState::initialize_if_empty_wut()
+void WutState::initialize_if_empty_wut(RemoteApp& remote_app)
 {
   xbt_assert(!has_initialized_wakeup_tree);
   has_initialized_wakeup_tree = true;
 
-  if (wakeup_tree_.empty())
-    add_arbitrary_todo();
+  if (wakeup_tree_.empty()) {
+
+    if (_sg_mc_befs_threshold == 0 and sleep_set_.empty()) {
+      XBT_DEBUG("WuT is asking for one way");
+      remote_app.go_one_way();
+      aid_t aid = remote_app.get_aid_of_next_transition();
+      add_arbitrary_todo(aid);
+    } else
+      add_arbitrary_todo();
+  }
 }
 
-void WutState::add_arbitrary_todo()
+void WutState::add_arbitrary_todo(aid_t actor)
 {
-  // Find an enabled transition to pick
-  auto const [best_actor, _] = Exploration::get_strategy()->best_transition_in(this, false);
-  if (best_actor == -1)
-    return; // This means that no transitions are enabled at this point
-  xbt_assert(sleep_set_.find(best_actor) == sleep_set_.end(),
-             "Why is a transition in a sleep set not marked as done? <%ld, %s> is in the sleep set", best_actor,
-             sleep_set_.find(best_actor)->second->to_string().c_str());
-  consider_one(best_actor);
-  auto actor_state = get_actors_list().at(best_actor);
+  if (actor == -1) {
+    // Find an enabled transition to pick
+    auto const [best_actor, _] = Exploration::get_strategy()->best_transition_in(this, false);
+    if (best_actor == -1)
+      return; // This means that no transitions are enabled at this point
+    actor = best_actor;
+  }
+
+  xbt_assert(sleep_set_.find(actor) == sleep_set_.end(),
+             "Why is a transition in a sleep set not marked as done? <%ld, %s> is in the sleep set", actor,
+             sleep_set_.find(actor)->second->to_string().c_str());
+  consider_one(actor);
+  auto actor_state = get_actors_list().at(actor);
   // For each variant of the transition that is enabled, we want to insert the action into the tree.
   // This ensures that all variants are searched
   for (unsigned times = 0; times < actor_state.get_max_considered(); ++times) {
     // WuT don't really need the transition that will be executed since it will disapear anyway as soon as the child
     // state is created
-    wakeup_tree_.insert_at_root(std::make_shared<Transition>(Transition::Type::UNKNOWN, best_actor, times));
+    wakeup_tree_.insert_at_root(std::make_shared<Transition>(Transition::Type::UNKNOWN, actor, times));
   }
 }
 

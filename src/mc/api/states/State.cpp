@@ -4,8 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/api/states/State.hpp"
+#include "src/mc/api/ActorState.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
+#include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 
 #include <algorithm>
@@ -32,11 +34,11 @@ State::State(const RemoteApp& remote_app) : num_(++expended_states_)
 
 State::State(const RemoteApp& remote_app, StatePtr parent_state) : State(remote_app)
 {
-  parent_state_        = parent_state;
-  incoming_transition_ = parent_state->get_transition_out();
+  parent_state_        = std::move(parent_state);
+  incoming_transition_ = parent_state_->get_transition_out();
   depth_               = parent_state_->depth_ + 1;
 
-  XBT_DEBUG("Creating %ld, son of %ld", get_num(), parent_state->get_num());
+  XBT_DEBUG("Creating %ld, son of %ld", get_num(), parent_state_->get_num());
 }
 
 std::size_t State::count_todo() const
@@ -167,6 +169,8 @@ std::vector<aid_t> State::get_batrack_minus_done() const
 
 void State::register_as_correct()
 {
+  if (not _sg_mc_search_critical_transition)
+    return;
   has_correct_descendent_ = true;
   if (parent_state_ != nullptr)
     parent_state_->register_as_correct();
@@ -175,11 +179,13 @@ void State::register_as_correct()
 // boost::intrusive_ptr<State> support:
 void intrusive_ptr_add_ref(State* state)
 {
+  XBT_DEBUG("Adding a ref to state #%ld", state->get_num());
   state->refcount_.fetch_add(1, std::memory_order_relaxed);
 }
 
 void intrusive_ptr_release(State* state)
 {
+  XBT_DEBUG("Removing a ref to state #%ld", state->get_num());
   if (state->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
     std::atomic_thread_fence(std::memory_order_acquire);
     delete state;

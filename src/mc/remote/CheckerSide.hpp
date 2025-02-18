@@ -24,6 +24,10 @@ class CheckerSide {
   // child_checker_ is a CheckerSide to our child that can waitpid our grandchild on our behalf
   CheckerSide* child_checker_ = nullptr;
 
+  // In one way, the application is picking transitions, executing them, sending the transition and actor status until
+  // reaching a leaf or a problem
+  bool is_one_way = false;
+
   void handle_dead_child(int status); // Launched when the dying child is the PID we follow
   void handle_waitpid();              // Launched when receiving a sigchild
 
@@ -64,6 +68,10 @@ public:
 
   /* Interacting with the application process */
   pid_t get_pid() const { return pid_; }
+
+  void go_one_way();
+
+  bool get_one_way() const { return is_one_way; }
 };
 
 } // namespace simgrid::mc

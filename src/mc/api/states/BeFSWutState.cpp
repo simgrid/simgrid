@@ -20,6 +20,7 @@
 #include <cassert>
 #include <limits>
 #include <memory>
+#include <numeric>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_befswutstate, mc_state,
                                 "Model-checker state dedicated to the BeFS version of ODPOR algorithm");
@@ -31,7 +32,7 @@ BeFSWutState::BeFSWutState(RemoteApp& remote_app) : WutState(remote_app)
   is_leftmost_ = true; // The first state is the only one at that depth, so the leftmost one.
 }
 
-BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutState(remote_app, parent_state)
+BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutState(remote_app, parent_state, false)
 {
   auto parent = static_cast<BeFSWutState*>(parent_state.get());
   for (const auto& transition : parent->done_) {
@@ -41,6 +42,19 @@ BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutSt
 
   is_leftmost_ = parent->is_leftmost_ and parent->done_.size() == parent->closed_.size();
   parent->done_.push_back(get_transition_in());
+
+  if (wakeup_tree_.empty()) {
+    if (sleep_set_.empty())
+      initialize_if_empty_wut(remote_app);
+    else {
+      xbt_assert(!has_initialized_wakeup_tree);
+      has_initialized_wakeup_tree = true;
+      add_arbitrary_todo();
+    }
+  } else {
+    xbt_assert(!has_initialized_wakeup_tree);
+    has_initialized_wakeup_tree = true;
+  }
 }
 
 void BeFSWutState::record_child_state(StatePtr child)
@@ -48,13 +62,18 @@ void BeFSWutState::record_child_state(StatePtr child)
   aid_t child_aid = outgoing_transition_->aid_;
   if (children_states_.size() < static_cast<long unsigned>(child_aid + 1))
     children_states_.resize(child_aid + 1);
-  children_states_[child_aid] = child;
+  children_states_[child_aid] = std::move(child);
 }
 
 std::pair<aid_t, int> BeFSWutState::next_transition_guided() const
 {
 
   aid_t best_actor = this->next_transition();
+  xbt_assert(sleep_set_.find(best_actor) == sleep_set_.end());
+  xbt_assert(std::find_if(done_.begin(), done_.end(), [&](auto const t) { return t->aid_ == best_actor; }) ==
+                 done_.end(),
+             "Assertion failed at state #%ld with best_actor=%ld", get_num(), best_actor);
+
   if (best_actor == -1)
     return std::make_pair(best_actor, std::numeric_limits<int>::max());
   return std::make_pair(best_actor, Exploration::get_strategy()->get_actor_valuation_in(this, best_actor));
@@ -104,10 +123,6 @@ std::unordered_set<aid_t> BeFSWutState::get_sleeping_actors(aid_t after_actor) c
 
 StatePtr BeFSWutState::insert_into_final_wakeup_tree(odpor::PartialExecution& w)
 {
-
-  // if (sleep_set_.count(w.begin()->get()->aid_ > 0) or
-  //     std::find(done_.begin(), done_.end(), w.begin()->get()->aid_) != done_.end())
-  //   return nullptr; // The idea here is that the sequence we try to insert has already been covered in some way
 
   XBT_DEBUG("Inserting at state #%ld sequence\n%s", get_num(), odpor::one_string_textual_trace(w).c_str());
   XBT_DEBUG("... potential children are %s",
@@ -199,17 +214,25 @@ void BeFSWutState::signal_on_backtrack()
             get_parent_state() != nullptr ? get_parent_state()->get_num() : -1);
   XBT_DEBUG("... %s",
             is_leftmost_ ? "This state is the leftmost at this depth" : "This state is NOT the leftmost at this depth");
-  XBT_DEBUG("... There are %lu done children, %lu closed children and %lu recorded children StatePtr", done_.size(),
-            closed_.size(), children_states_.size());
+  XBT_DEBUG("... There are %lu done children, %lu closed children and %lu recorded children StatePtr(%s)", done_.size(),
+            closed_.size(), children_states_.size(),
+            std::accumulate(children_states_.begin(), children_states_.end(), std::string(),
+                            [&](std::string accu, const StatePtr s) {
+                              if (s == nullptr)
+                                return accu;
+                              else
+                                return accu + ',' + std::to_string(s->get_num());
+                            })
+                .c_str());
   if (not is_leftmost_)
     return;
 
   if (closed_.size() < done_.size()) {
     // if there are children states that are being visited, we may need to update the leftmost information
-    aid_t leftmost_aid              = done_[closed_.size()]->aid_;
-    auto children_aid               = children_states_[leftmost_aid];
-    auto children_befs_aid          = static_cast<BeFSWutState*>(children_aid.get());
-    xbt_assert(children_aid != nullptr);
+    aid_t leftmost_aid     = done_[closed_.size()]->aid_;
+    auto children_aid      = children_states_[leftmost_aid];
+    auto children_befs_aid = static_cast<BeFSWutState*>(children_aid.get());
+    xbt_assert(children_aid != nullptr, "Leftmost aid: %ld", leftmost_aid);
     children_befs_aid->is_leftmost_ = true;
     children_befs_aid->signal_on_backtrack();
     return;
@@ -222,9 +245,10 @@ void BeFSWutState::signal_on_backtrack()
     auto parent_state = get_parent_state();
     if (parent_state != nullptr) {
       auto parent = static_cast<BeFSWutState*>(parent_state);
-      XBT_DEBUG("\t... there are %lu recorded children StatePtr in its parent state n°%ld",
-                parent->children_states_.size(), parent->get_num());
+      XBT_DEBUG("\t... there are %lu recorded children StatePtr in its parent state n°%ld", parent->done_.size(),
+                parent->get_num());
       parent->children_states_[get_transition_in()->aid_] = nullptr;
+      XBT_DEBUG("\t... The count of remaining intrusive_ptr on this is %d", get_ref_count());
     }
   }
 }

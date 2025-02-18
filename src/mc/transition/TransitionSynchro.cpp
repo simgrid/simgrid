@@ -188,6 +188,12 @@ bool SemaphoreTransition::reversible_race(const Transition* other) const
     return false;
   }
 
+  if (other->type_ == Type::ACTOR_JOIN) {
+    const ActorJoinTransition* jtransition = static_cast<const ActorJoinTransition*>(other);
+    xbt_assert(aid_ == jtransition->get_target());
+    return false;
+  }
+
   switch (type_) {
     case Type::SEM_ASYNC_LOCK:
       return true; // SemAsyncLock is always enabled

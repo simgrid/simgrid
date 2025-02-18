@@ -7,6 +7,7 @@
 #include "src/mc/remote/mc_protocol.h"
 #include "xbt/asserts.h"
 #include "xbt/asserts.hpp"
+#include "xbt/backtrace.hpp"
 #include <utility>
 #include <xbt/log.h>
 

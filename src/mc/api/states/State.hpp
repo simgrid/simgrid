@@ -52,6 +52,8 @@ protected:
 
   ActorState get_actor_at(aid_t aid) { return actors_to_run_.at(aid); }
 
+  int get_ref_count() { return refcount_; }
+
 public:
   explicit State(const RemoteApp& remote_app);
   explicit State(const RemoteApp& remote_app, StatePtr parent_state);

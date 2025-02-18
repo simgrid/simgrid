@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_befsodpor, mc_reduction, "Logging specific to
 
 namespace simgrid::mc {
 
-std::shared_ptr<Reduction::RaceUpdate> BeFSODPOR::races_computation(odpor::Execution& E, stack_t* S,
+std::unique_ptr<Reduction::RaceUpdate> BeFSODPOR::races_computation(odpor::Execution& E, stack_t* S,
                                                                     std::vector<StatePtr>* opened_states)
 {
   if (opened_states == nullptr)
@@ -31,11 +31,11 @@ std::shared_ptr<Reduction::RaceUpdate> BeFSODPOR::races_computation(odpor::Execu
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
   if (not s->get_enabled_actors().empty()) {
-    return std::make_shared<RaceUpdate>();
+    return std::make_unique<RaceUpdate>();
   }
 
   const auto last_event = E.get_latest_event_handle();
-  auto updates          = std::make_shared<RaceUpdate>();
+  auto updates          = std::make_unique<RaceUpdate>();
   /**
    * ODPOR Race Detection Procedure:
    *
@@ -70,7 +70,7 @@ std::shared_ptr<Reduction::RaceUpdate> BeFSODPOR::races_computation(odpor::Execu
   return updates;
 }
 
-unsigned long BeFSODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
+unsigned long BeFSODPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates,
                                            std::vector<StatePtr>* opened_states)
 {
   if (opened_states == nullptr)
@@ -127,7 +127,7 @@ StatePtr BeFSODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
         existing_state != nullptr) {
       return existing_state;
     }
-    auto new_state = StatePtr(new BeFSWutState(remote_app, befswut_state), true);
+    StatePtr new_state = StatePtr(new BeFSWutState(remote_app, befswut_state), true);
     befswut_state->record_child_state(new_state);
     return new_state;
   }

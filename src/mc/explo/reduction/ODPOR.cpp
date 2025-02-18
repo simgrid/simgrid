@@ -19,16 +19,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor, mc_reduction, "Logging specific to the
 
 namespace simgrid::mc {
 
-std::shared_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution& E, stack_t* S,
+std::unique_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution& E, stack_t* S,
                                                                 std::vector<StatePtr>* opened_states)
 {
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
   if (not s->get_enabled_actors().empty())
-    return std::make_shared<RaceUpdate>();
+    return std::make_unique<RaceUpdate>();
 
   const auto last_event = E.get_latest_event_handle();
-  auto updates          = std::make_shared<RaceUpdate>();
+  auto updates          = std::make_unique<RaceUpdate>();
   /**
    * ODPOR Race Detection Procedure:
    *
@@ -55,7 +55,7 @@ std::shared_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution
   return updates;
 }
 
-unsigned long ODPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
+unsigned long ODPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates,
                                        std::vector<StatePtr>* opened_states)
 {
 

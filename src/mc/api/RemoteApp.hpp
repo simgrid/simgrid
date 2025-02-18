@@ -71,7 +71,11 @@ public:
   void replay_sequence(std::deque<std::pair<aid_t, int>> to_replay);
 
   /** Read the aid in the SIMCALL_EXECUTE message that is expected to be next on the wire */
-  aid_t get_aid_of_next_transition() { return checker_side_->get_aid_of_next_transition(); }
+  aid_t get_aid_of_next_transition() const { return checker_side_->get_aid_of_next_transition(); }
+
+  /** Tell the checker side that the application should now pick transitions, execute them, send the reply and actor
+   *  status until reaching a leaf or a problem */
+  void go_one_way() { checker_side_->go_one_way(); }
 };
 } // namespace simgrid::mc
 

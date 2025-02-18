@@ -121,7 +121,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
     state_stack.emplace_back(std::move(next_state));
     stack_ = &state_stack;
     S.push_transition(std::make_shared<Transition>(Transition::Type::UNKNOWN, next_actor, 0));
-    std::shared_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, stack_);
+    std::unique_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, stack_);
     reduction_algo_->apply_race_update(std::move(todo_updates));
 
     // ... If we are not already doing it, start critical exploration
@@ -193,7 +193,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
     step_exploration(S, next_to_explore, state_stack);
   }
 
-  std::shared_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, &state_stack);
+  std::unique_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, &state_stack);
   reduction_algo_->apply_race_update(std::move(todo_updates));
 
   XBT_DEBUG("%lu actors remain, but none of them need to be interleaved (depth %zu).", s->get_actor_count(),
@@ -206,7 +206,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
     XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
     XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", s->get_num(), state_stack.size(), backtrack_count_ + 1);
     report_correct_execution(s);
-    if (_sg_mc_debug)
+    if (_sg_mc_debug_soundness)
       odpor::MazurkiewiczTraces::record_new_execution(S);
   }
 

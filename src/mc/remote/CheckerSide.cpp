@@ -4,7 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/remote/CheckerSide.hpp"
+#include "src/mc/api/Strategy.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
 #include "src/mc/remote/mc_protocol.h"
 #include "xbt/asserts.h"
@@ -140,17 +142,35 @@ CheckerSide::CheckerSide(const std::vector<char*>& args)
              "Could not create socketpair: %s.\nPlease increase the file limit with `ulimit -n 10000`.",
              strerror(errno));
 
+  // Pin the checker to the core 0
+#ifdef linux
+  cpu_set_t set;
+  CPU_ZERO(&set);
+#endif
+
   pid_ = fork();
   xbt_assert(pid_ >= 0, "Could not fork application process");
 
   if (pid_ == 0) { // Child
     ::close(sockets[1]);
+
+#ifdef linux
+    CPU_SET(1, &set);
+    xbt_assert(sched_setaffinity(getpid(), sizeof(set), &set) != -1, "Cannot pin the application to the core 1: %s",
+               strerror(errno));
+#endif
+
     run_child_process(sockets[0], args);
     DIE_IMPOSSIBLE;
   }
 
   // Parent (model-checker):
   ::close(sockets[0]);
+#ifdef linux
+  CPU_SET(0, &set);
+  xbt_assert(sched_setaffinity(getpid(), sizeof(set), &set) != -1, "Cannot pin the checker to the core 0: %s",
+             strerror(errno));
+#endif
   channel_.reset_socket(sockets[1]);
 
   wait_for_requests();
@@ -215,13 +235,17 @@ std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket, const std::st
 Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool new_transition)
 {
   if (not is_one_way) {
-    get_channel().send(
-        s_mc_message_simcall_execute_t{MessageType::SIMCALL_EXECUTE, aid, times_considered, new_transition});
+    s_mc_message_simcall_execute_t execute = {};
+    execute.type                           = MessageType::SIMCALL_EXECUTE;
+    execute.aid_                           = aid;
+    execute.times_considered_              = times_considered;
+    execute.want_transition                = new_transition;
+    get_channel().send(execute);
 
     sync_with_app(); // The app may send messages while processing the transition
   }
 
-  s_mc_message_simcall_execute_answer_t answer;
+  s_mc_message_simcall_execute_answer_t answer = {};
   ssize_t s = get_channel().receive(answer);
   xbt_assert(s != -1, "Could not receive message");
   xbt_assert(s > 0 && answer.type == MessageType::SIMCALL_EXECUTE_REPLY,
@@ -239,7 +263,7 @@ Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool ne
 void CheckerSide::handle_replay(std::deque<std::pair<aid_t, int>> to_replay)
 {
 
-  s_mc_message_replay_t replay_msg;
+  s_mc_message_replay_t replay_msg = {};
   replay_msg.type  = MessageType::REPLAY;
   replay_msg.count = to_replay.size();
 
@@ -264,6 +288,7 @@ void CheckerSide::handle_replay(std::deque<std::pair<aid_t, int>> to_replay)
 
 void CheckerSide::finalize(bool terminate_asap)
 {
+  xbt_assert(!is_one_way);
   s_mc_message_int_t m = {};
   m.type               = MessageType::FINALIZE;
   m.value              = terminate_asap;
@@ -280,20 +305,35 @@ void CheckerSide::finalize(bool terminate_asap)
 
 aid_t CheckerSide::get_aid_of_next_transition()
 {
-  auto [more_data, got] = get_channel().peek(sizeof(struct s_mc_message_simcall_execute_answer_t));
-  if (not more_data) // The app closed the socket. It must be dead by now.
+  auto [more_data, type] = get_channel().peek_message_type();
+
+  if (not more_data) { // The app closed the socket. It must be dead by now.
     handle_waitpid();
+    return -1;
+  }
 
-  auto* msg = static_cast<struct s_mc_message_simcall_execute_answer_t*>(got);
-  xbt_assert(msg->type == MessageType::SIMCALL_EXECUTE,
-             "The next message on the wire is not a SIMCALL_EXECUTE as expected but a %s",
-             is_valid_MessageType((int)msg->type) ? to_c_str(msg->type) : "invalid message");
+  if (type == MessageType::WAITING) {
+    s_mc_message_t waiting_msg;
+    get_channel().receive(waiting_msg);
+    is_one_way = false;
+    return -1;
+  } else {
+    auto [more_data2, got] = get_channel().peek(sizeof(struct s_mc_message_simcall_execute_answer_t));
+    xbt_assert(more_data2);
+    auto* msg = static_cast<struct s_mc_message_simcall_execute_answer_t*>(got);
+    xbt_assert(msg->type == MessageType::SIMCALL_EXECUTE_REPLY,
+               "The next message on the wire is not a SIMCALL_EXECUTE as expected but a %s",
+               is_valid_MessageType((int)msg->type) ? to_c_str(msg->type) : "invalid message");
 
-  return msg->aid;
+    return msg->aid;
+  }
 }
 
 void CheckerSide::sync_with_app()
 {
+  if (is_one_way)
+    return;
+
   /* Handle an ASSERTION message if any */
   auto [more_data, type] = get_channel().peek_message_type();
   if (not more_data) // The app closed the socket. It must be dead by now.
@@ -310,6 +350,8 @@ void CheckerSide::sync_with_app()
 
 void CheckerSide::wait_for_requests()
 {
+  if (is_one_way)
+    return;
   XBT_DEBUG("Resume the application");
   if (get_channel().send(MessageType::CONTINUE) != 0)
     throw xbt::errno_error();
@@ -392,12 +434,12 @@ void CheckerSide::go_one_way()
 {
 
   if (!is_one_way) {
-    XBT_CRITICAL("Application will no go one way!");
     is_one_way = true;
-    s_mc_message_t msg;
+    s_mc_message_one_way_t msg;
     msg.type = MessageType::GO_ONE_WAY;
-    xbt_assert(child_checker_->get_channel().send(msg) == 0, "Could not ask the application to go one way: %s",
-               strerror(errno));
+    msg.want_transitions = Exploration::get_instance()->need_actor_status_transitions();
+    msg.is_random        = (_sg_mc_strategy == "uniform");
+    xbt_assert(get_channel().send(msg) == 0, "Could not ask the application to go one way: %s", strerror(errno));
   }
 }
 

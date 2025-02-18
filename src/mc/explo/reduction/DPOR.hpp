@@ -46,10 +46,10 @@ public:
     std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>>& get_value() { return state_and_ancestors_; }
   };
 
-  std::shared_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
+  std::unique_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
                                                            std::vector<StatePtr>* opened_states) override;
 
-  unsigned long apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
+  unsigned long apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates,
                                   std::vector<StatePtr>* opened_states = nullptr) override;
 
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override;

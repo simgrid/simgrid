@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/remote/AppSide.hpp"
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/internal_config.h"
 #include "src/kernel/EngineImpl.hpp"
@@ -15,6 +16,7 @@
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/random.hpp"
+#include <algorithm>
 #include <cstddef>
 #include <sstream>
 #if HAVE_SMPI
@@ -90,8 +92,8 @@ void AppSide::handle_deadlock_check(const s_mc_message_int_t* request) const
   }
   // Send result:
   s_mc_message_int_t answer = {};
-  answer.type  = MessageType::DEADLOCK_CHECK_REPLY;
-  answer.value = deadlock;
+  answer.type               = MessageType::DEADLOCK_CHECK_REPLY;
+  answer.value              = deadlock;
   xbt_assert(channel_.send(answer) == 0, "Could not send response: %s", strerror(errno));
 }
 void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* message) const
@@ -162,7 +164,7 @@ void AppSide::handle_replay(const s_mc_message_replay_t* msg) const
              strerror(errno));
 }
 
-void AppSide::handle_one_way()
+void AppSide::handle_one_way(const s_mc_message_one_way_t* msg)
 {
   auto* engine = kernel::EngineImpl::get_instance();
 
@@ -170,14 +172,16 @@ void AppSide::handle_one_way()
   for (auto const& [aid, actor] : engine->get_actor_list())
     if (mc::actor_is_enabled(actor))
       fireables.emplace_back(aid);
-
+  if (not msg->is_random)
+    std::sort(fireables.begin(), fireables.end());
   while (fireables.size() > 0) {
-    XBT_CRITICAL("App is now going one way! There are %lu actors to run here", fireables.size());
+    XBT_DEBUG("App<%d> is now going one way! There are %lu actors to run here", getpid(), fireables.size());
 
-    unsigned long random = xbt::random::uniform_int(0, fireables.size() - 1);
+    unsigned long chosen = msg->is_random ? xbt::random::uniform_int(0, fireables.size() - 1)
+                                          : 0; // The first aid since fireables is sorted
 
-    XBT_CRITICAL("Picked actor %ld to run", fireables[random]);
-    aid_t chosen_aid = engine->get_actor_by_pid(fireables[random])->get_pid();
+    XBT_DEBUG("Picked actor %ld to run", fireables[chosen]);
+    aid_t chosen_aid = engine->get_actor_by_pid(fireables[chosen])->get_pid();
 
     kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(chosen_aid);
     xbt_assert(actor != nullptr, "Invalid pid %ld", chosen_aid);
@@ -192,8 +196,9 @@ void AppSide::handle_one_way()
     actor->simcall_handle(0);
 
     // Sending the transition message
-    s_mc_message_simcall_execute_answer_t transition_execute_msg;
+    s_mc_message_simcall_execute_answer_t transition_execute_msg = {};
     transition_execute_msg.type = MessageType::SIMCALL_EXECUTE_REPLY;
+    transition_execute_msg.aid                                   = chosen_aid;
 
     std::stringstream stream;
     if (actor->simcall_.observer_ != nullptr) {
@@ -240,14 +245,48 @@ void AppSide::handle_one_way()
                  strerror(errno));
     }
 
+    if (msg->want_transitions) {
+      // Serialize each transition to describe what each actor is doing
+      XBT_DEBUG("Deliver ACTOR_TRANSITION_PROBE payload");
+      for (const auto& actor_status : status) {
+        const auto& actor        = actor_list.at(actor_status.aid);
+        const int max_considered = actor_status.max_considered;
+
+        for (int times_considered = 0; times_considered < max_considered; times_considered++) {
+          std::stringstream stream;
+          s_mc_message_simcall_probe_one_t probe;
+          probe.type = MessageType::ACTORS_STATUS_REPLY_SIMCALL;
+
+          if (actor->simcall_.observer_ != nullptr) {
+            actor->simcall_.observer_->prepare(times_considered);
+            actor->simcall_.observer_->serialize(stream);
+          } else {
+            stream << (short)mc::Transition::Type::UNKNOWN;
+          }
+
+          std::string str = stream.str();
+          xbt_assert(str.size() + 1 <= probe.buffer.size(),
+                     "The serialized transition is too large for the buffer. Please fix the code.");
+          strncpy(probe.buffer.data(), str.c_str(), probe.buffer.size() - 1);
+          probe.buffer.back() = '\0';
+
+          XBT_VERB("send ACTOR_TRANSITION_PROBE(%s) ~> '%s'", actor->get_cname(), str.c_str());
+          xbt_assert(channel_.send(probe) == 0, "Could not send ACTOR_TRANSITION_PROBE payload: %s", strerror(errno));
+        }
+      }
+    }
     // re-compute the fireables actor so we can move on
     fireables.clear();
     for (auto const& [aid, actor] : engine->get_actor_list())
       if (mc::actor_is_enabled(actor))
         fireables.emplace_back(aid);
+    if (!msg->is_random)
+      std::sort(fireables.begin(), fireables.end());
   }
+  XBT_DEBUG("I've finished guys! What do I do now ?");
 
-  this->handle_messages();
+  xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send WAITING message to model-checker: %s",
+             strerror(errno));
 }
 
 void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
@@ -452,8 +491,8 @@ void AppSide::handle_messages()
         break;
 
       case MessageType::GO_ONE_WAY:
-        assert_msg_size("GO_ONE_WAY", s_mc_message_t);
-        handle_one_way();
+        assert_msg_size("GO_ONE_WAY", s_mc_message_one_way_t);
+        handle_one_way((s_mc_message_one_way_t*)message_buffer.data());
         break;
 
       case MessageType::FINALIZE:

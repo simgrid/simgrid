@@ -412,6 +412,8 @@ public:
   MazurkiewiczTraces() = delete;
 
   static void record_new_execution(const Execution&);
+
+  static void log_data();
 };
 
 } // namespace simgrid::mc::odpor

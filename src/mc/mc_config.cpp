@@ -109,6 +109,11 @@ simgrid::config::Flag<bool> _sg_mc_debug{
     "Whether to enable advance runtime verification. Those may be costly and therefore are desactivated by default.",
     false, [](bool) { _mc_cfg_cb_check("value to enable/disable advance runtime verification"); }};
 
+simgrid::config::Flag<bool> _sg_mc_debug_soundness{
+    "model-check/debug-soundness",
+    "Whether to enable advance runtime verification. Those may be costly and therefore are desactivated by default.",
+    false, [](bool) { _mc_cfg_cb_check("value to enable/disable advance runtime verification"); }};
+
 simgrid::config::Flag<std::string> _sg_mc_buffering{
     "smpi/buffering",
     "Buffering semantic to use for MPI (only used in MC)",

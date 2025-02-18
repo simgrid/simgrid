@@ -15,8 +15,6 @@ namespace simgrid::mc {
 
 class XBT_PRIVATE WutState : public SleepSetState {
 
-  bool has_initialized_wakeup_tree = false;
-
 protected:
   /**
    * The wakeup tree with respect to the execution represented
@@ -25,11 +23,13 @@ protected:
    */
   odpor::WakeupTree wakeup_tree_;
 
-  void initialize_if_empty_wut();
+  bool has_initialized_wakeup_tree = false;
+
+  void initialize_if_empty_wut(RemoteApp& remote_app);
 
 public:
   explicit WutState(RemoteApp& remote_app);
-  explicit WutState(RemoteApp& remote_app, StatePtr parent_state);
+  explicit WutState(RemoteApp& remote_app, StatePtr parent_state, bool initialize_wut_if_empty = true);
 
   /**
    * Same as next_transition(), but the choice is based off the ODPOR
@@ -74,7 +74,7 @@ public:
    * you think you are in the other 1 percent, write a paper about your new
    * algorithm first, and only then use this method.
    */
-  void add_arbitrary_todo();
+  void add_arbitrary_todo(aid_t aid = -1);
 };
 
 } // namespace simgrid::mc

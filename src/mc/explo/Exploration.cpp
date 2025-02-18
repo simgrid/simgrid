@@ -8,6 +8,7 @@
 #include "src/mc/api/Strategy.hpp"
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/CriticalTransitionExplorer.hpp"
+#include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
 #include "src/mc/mc_exit.hpp"
@@ -97,6 +98,8 @@ void Exploration::log_state()
     if (ret != 0)
       XBT_WARN("Call to system(free) did not return 0, but %d", ret);
   }
+  if (_sg_mc_debug_soundness)
+    odpor::MazurkiewiczTraces::log_data();
 }
 // Make our tests fully reproducible despite the subtle differences of strsignal() across archs
 static const char* signal_name(int status)

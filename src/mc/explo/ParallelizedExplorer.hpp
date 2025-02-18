@@ -47,7 +47,7 @@ private:
   std::mutex opened_heads_lock_;
   std::condition_variable opened_heads_cv_;
 
-  std::vector<std::shared_ptr<Reduction::RaceUpdate>> race_updates_;
+  std::vector<std::unique_ptr<Reduction::RaceUpdate>> race_updates_;
   std::mutex race_updates_lock_;
   std::condition_variable race_updates_cv_;
 

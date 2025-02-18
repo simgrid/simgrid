@@ -7,6 +7,7 @@
 #define SIMGRID_MC_CHANNEL_HPP
 
 #include "src/mc/remote/mc_protocol.h"
+#include "xbt/backtrace.hpp"
 
 #include <type_traits>
 

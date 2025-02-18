@@ -12,6 +12,7 @@
 #include "src/mc/mc_private.hpp"
 #include "src/mc/remote/CheckerSide.hpp"
 #include "xbt/asserts.h"
+#include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
 #include <limits>
@@ -93,7 +94,6 @@ void RemoteApp::restore_checker_side(CheckerSide* from, bool finalize_app)
 
   if (checker_side_ and finalize_app)
     checker_side_->finalize(true);
-
   if (_sg_mc_nofork) {
     checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
   } else if (from == nullptr) {
@@ -139,10 +139,11 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   // Note that we also receive disabled transitions, because the guiding strategies need them to decide what could
   // unlock actors.
 
-  s_mc_message_restore_t msg = {MessageType::ACTORS_STATUS,
-                                Exploration::get_instance()->need_actor_status_transitions()};
-  checker_side_->get_channel().send(msg);
-
+  if (not checker_side_->get_one_way()) {
+    s_mc_message_restore_t msg = {MessageType::ACTORS_STATUS,
+                                  Exploration::get_instance()->need_actor_status_transitions()};
+    checker_side_->get_channel().send(msg);
+  }
   s_mc_message_actors_status_answer_t answer;
   ssize_t answer_size = checker_side_->get_channel().receive(answer);
   xbt_assert(answer_size != -1, "Could not receive message");
@@ -202,7 +203,7 @@ bool RemoteApp::check_deadlock(bool verbose) const
   if (explo->is_critical_transition_explorer())
     verbose = false;
 
-  s_mc_message_int_t request;
+  s_mc_message_int_t request = {};
   request.type  = MessageType::DEADLOCK_CHECK;
   request.value = verbose;
   xbt_assert(checker_side_->get_channel().send(request) == 0, "Could not check deadlock state");

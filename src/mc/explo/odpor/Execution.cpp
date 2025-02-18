@@ -91,9 +91,8 @@ std::vector<std::string> Execution::get_textual_trace() const
 {
   std::vector<std::string> trace;
   for (EventHandle e_i = 0; e_i != this->contents_.size(); e_i++) {
-    auto a = xbt::string_printf("Actor %ld: %s (Is racy = %s)", contents_[e_i].get_transition()->aid_,
-                                contents_[e_i].get_transition()->to_string(true).c_str(),
-                                get_racing_events_of(e_i).empty() ? "Yes" : "No");
+    auto a = xbt::string_printf("Actor %ld: %s", contents_[e_i].get_transition()->aid_,
+                                contents_[e_i].get_transition()->to_string(true).c_str());
 
     trace.emplace_back(std::move(a));
   }
@@ -519,8 +518,12 @@ bool MazurkiewiczTraces::are_equivalent(const PartialExecution& u, const Partial
     if ((*b)->type_ == a->type_ && (*b)->aid_ == a->aid_)
       break;
 
-    if ((*b)->depends(a.get()))
+    if ((*b)->depends(a.get())) {
+      XBT_DEBUG("The two execution are judge inequivalent because a-->b in the new one, where as b-->a in the old "
+                "one\na := Actor %ld: %s\nb := Actor %ld: %s",
+                a.get()->aid_, a.get()->to_string().c_str(), (*b)->aid_, (*b)->to_string().c_str());
       return false;
+    }
   }
 
   if (b == new_v.end())
@@ -536,13 +539,14 @@ std::set<PartialExecution> MazurkiewiczTraces::classes_ = {};
 
 void MazurkiewiczTraces::record_new_execution(const Execution& exec)
 {
-  XBT_INFO("Recording a new mazurkiewicz trace");
+  XBT_DEBUG("Recording a new mazurkiewicz trace");
   auto seq = PartialExecution{};
   for (auto const& e : exec)
     seq.push_back(e.get_transition());
 
   for (auto const& can_be_equivalent : classes_) {
-
+    XBT_DEBUG("Newly added trace:\n%s\nPreviously known one:\n%s", one_string_textual_trace(seq).c_str(),
+              one_string_textual_trace(can_be_equivalent).c_str());
     if (are_equivalent(seq, can_be_equivalent)) {
       XBT_CRITICAL("Inserted a sequence that is equivalent with an already explored one! Be carefull!");
       XBT_CRITICAL("Previous sequence was:\n%s", one_string_textual_trace(can_be_equivalent).c_str());
@@ -551,6 +555,22 @@ void MazurkiewiczTraces::record_new_execution(const Execution& exec)
     }
   }
   classes_.insert(seq);
+}
+
+void MazurkiewiczTraces::log_data()
+{
+
+  std::map<size_t, int> nb_traces_of_size;
+  for (auto const& trace : classes_) {
+    if (nb_traces_of_size.count(trace.size()) > 0) {
+      nb_traces_of_size[trace.size()] += 1;
+    } else {
+      nb_traces_of_size[trace.size()] = 1;
+    }
+  }
+  XBT_INFO("Mazurkiewicz stats:");
+  for (auto const& [size, nb] : nb_traces_of_size)
+    XBT_INFO("... There are %5d traces of size %5lu", nb, size);
 }
 
 } // namespace simgrid::mc::odpor

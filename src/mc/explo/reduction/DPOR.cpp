@@ -56,7 +56,7 @@ std::unordered_set<aid_t> DPOR::compute_ancestors(const odpor::Execution& S, sta
   return E;
 }
 
-std::shared_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution& E, stack_t* S,
+std::unique_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution& E, stack_t* S,
                                                                std::vector<StatePtr>* opened_states)
 {
   XBT_DEBUG("Doing the race computation phase with a stack of size %lu and an execution of size %lu", S->size(),
@@ -65,9 +65,9 @@ std::shared_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution&
   State* last_state = S->back().get();
   // let's look for all the races but only at the end
   if (not last_state->get_enabled_actors().empty())
-    return std::make_shared<RaceUpdate>();
+    return std::make_unique<RaceUpdate>();
 
-  auto updates = std::make_shared<RaceUpdate>();
+  auto updates = std::make_unique<RaceUpdate>();
 
   for (std::size_t i = 1; i < S->size(); i++) {
     StatePtr s = (*S)[i];
@@ -85,7 +85,7 @@ std::shared_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution&
   return updates;
 }
 
-unsigned long DPOR::apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
+unsigned long DPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates,
                                       std::vector<StatePtr>* opened_states)
 {
 

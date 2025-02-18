@@ -203,10 +203,10 @@ void ParallelizedExplorer::Explorer()
 
       if (state->get_actor_count() == 0) {
         // Compute the race when reaching a leaf, and pass them to the Reductor through the dedicated queue
-        std::shared_ptr<Reduction::RaceUpdate> todo_updates =
+        std::unique_ptr<Reduction::RaceUpdate> todo_updates =
             reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
         std::unique_lock<std::mutex> lock_ru(race_updates_lock_);
-        race_updates_.emplace_back(std::move(todo_updates));
+        race_updates_.push_back(std::move(todo_updates));
         lock_ru.unlock();
         race_updates_cv_.notify_one();
 
@@ -277,12 +277,12 @@ void ParallelizedExplorer::Reducter()
   while (true) {
     std::unique_lock<std::mutex> lock_ru(race_updates_lock_);
     race_updates_cv_.wait(lock_ru, [&] { return race_updates_.size() > 0; });
-    auto update = race_updates_.back();
+    auto update = std::move(race_updates_.back());
     race_updates_.pop_back();
     lock_ru.unlock();
 
     std::unique_lock<std::mutex> lock_oh(opened_heads_lock_);
-    possible_remaining_explo = reduction_algo_->apply_race_update(update, &opened_states_) - 1;
+    possible_remaining_explo = reduction_algo_->apply_race_update(std::move(update), &opened_states_) - 1;
     if (possible_remaining_explo == 0) {
       opened_states_.emplace_back();
     }

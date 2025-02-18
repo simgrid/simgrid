@@ -22,13 +22,13 @@ public:
   NoReduction()           = default;
   ~NoReduction() override = default;
 
-  std::shared_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
+  std::unique_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
                                                            std::vector<StatePtr>* opened_states) override
   {
-    return std::make_shared<RaceUpdate>();
+    return std::make_unique<RaceUpdate>();
   };
 
-  unsigned long apply_race_update(std::shared_ptr<RaceUpdate> updates,
+  unsigned long apply_race_update(std::unique_ptr<RaceUpdate> updates,
                                   std::vector<StatePtr>* opened_states = nullptr) override
   {
     return 0;

@@ -34,16 +34,16 @@ public:
     std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>> get_value() { return state_and_choices_; }
   };
 
-  std::shared_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
+  std::unique_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
                                                            std::vector<StatePtr>* opened_states) override
   {
 
     State* s = S->back().get();
     // let's look for race only on the maximal executions
     if (not s->get_enabled_actors().empty())
-      return std::make_shared<RaceUpdate>();
+      return std::make_unique<RaceUpdate>();
 
-    auto updates = std::make_shared<RaceUpdate>();
+    auto updates = std::make_unique<RaceUpdate>();
 
     for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= E.get_latest_event_handle();
          ++e_prime) {
@@ -60,7 +60,7 @@ public:
     return updates;
   }
 
-  unsigned long apply_race_update(std::shared_ptr<Reduction::RaceUpdate> updates,
+  unsigned long apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates,
                                   std::vector<StatePtr>* opened_states = nullptr) override
   {
     auto sdpor_updates = static_cast<SDPOR::RaceUpdate*>(updates.get());
