@@ -435,7 +435,7 @@ void CheckerSide::go_one_way()
 
   if (!is_one_way) {
     is_one_way = true;
-    s_mc_message_one_way_t msg;
+    s_mc_message_one_way_t msg{};
     msg.type = MessageType::GO_ONE_WAY;
     msg.want_transitions = Exploration::get_instance()->need_actor_status_transitions();
     msg.is_random        = (_sg_mc_strategy == "uniform");
