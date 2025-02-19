@@ -19,6 +19,7 @@ fi
 if [ "${SANITIZER}" = "address" ]
 then
     export ASAN_OPTIONS="suppressions=$WORKSPACE/tools/address_sanitizer.supp"
+    export ASAN_LIBS="/usr/lib/x86_64-linux-gnu/libasan.so.8:/usr/lib/x86_64-linux-gnu/libstdc++.so.6"
     SANITIZER_OPTIONS="-Denable_address_sanitizer=ON -Denable_undefined_sanitizer=OFF -Denable_thread_sanitizer=OFF"
 elif [ "${SANITIZER}" = "thread" ]
 then
