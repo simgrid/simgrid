@@ -180,12 +180,16 @@ void State::register_as_correct()
 void intrusive_ptr_add_ref(State* state)
 {
   XBT_DEBUG("Adding a ref to state #%ld", state->get_num());
+  if (state->get_num() == 66)
+    xbt_backtrace_display_current();
   state->refcount_.fetch_add(1, std::memory_order_relaxed);
 }
 
 void intrusive_ptr_release(State* state)
 {
   XBT_DEBUG("Removing a ref to state #%ld", state->get_num());
+  if (state->get_num() == 66)
+    xbt_backtrace_display_current();
   if (state->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
     std::atomic_thread_fence(std::memory_order_acquire);
     delete state;
