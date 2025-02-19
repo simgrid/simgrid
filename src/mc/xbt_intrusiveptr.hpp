@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* This is a reimplementation of boost::intrusive_ptr to extend it with more debugging */
+/* Inspired by https://ibob.bg/blog/2023/01/01/tracking-shared-ptr-leaks/  */
 
 #ifndef XBT_INTRUSIVE_PTR_HPP
 #define XBT_INTRUSIVE_PTR_HPP
@@ -50,7 +51,7 @@ public:
   intrusive_ptr(T* p, bool add_ref = true)
       : px(p), bt(xbt_strdup(simgrid::xbt::Backtrace().resolve().c_str())), self(this)
   {
-    if (px != 0 && add_ref) {
+    if (px != nullptr && add_ref) {
       intrusive_ptr_add_ref(px);
       px->reference_holder_.push(this);
     }
@@ -60,7 +61,7 @@ public:
   intrusive_ptr(intrusive_ptr<U> const& rhs)
       : px(rhs.get()), bt(xbt_strdup(simgrid::xbt::Backtrace().resolve().c_str()))
   {
-    if (px != 0) {
+    if (px != nullptr) {
       intrusive_ptr_add_ref(px);
       px->reference_holder_.push(this);
     }
@@ -69,7 +70,7 @@ public:
   intrusive_ptr(intrusive_ptr const& rhs)
       : px(rhs.px), bt(xbt_strdup(simgrid::xbt::Backtrace().resolve().c_str())), self(this)
   {
-    if (px != 0) {
+    if (px != nullptr) {
       intrusive_ptr_add_ref(px);
       px->reference_holder_.push(this);
     }
@@ -77,7 +78,7 @@ public:
 
   ~intrusive_ptr()
   {
-    if (px != 0) {
+    if (px != nullptr) {
       px->reference_holder_.pop(this);
       intrusive_ptr_release(px);
     }
@@ -95,17 +96,17 @@ public:
   // Move Constructor
   intrusive_ptr(intrusive_ptr&& rhs) noexcept : px(rhs.px), self(this)
   {
-    if (px) {
-      px->reference_holder_.push(this);    // Maintain reference tracking
-      rhs.px = nullptr;                    // Prevent double-release
-      px->reference_holder_.pop(rhs.self); // Maintain reference tracking
-    }
     // Ensure bt is properly initialized
     if (rhs.bt) {
       bt = bprintf("---- move constructor at\n%s\n-- Original object was allocated at\n%s",
                    simgrid::xbt::Backtrace().resolve().c_str(), rhs.bt);
     } else {
       bt = xbt_strdup(simgrid::xbt::Backtrace().resolve().c_str());
+    }
+    if (px) {
+      px->reference_holder_.push(this);    // Maintain reference tracking
+      rhs.px = nullptr;                    // Prevent double-release
+      px->reference_holder_.pop(rhs.self); // Maintain reference tracking
     }
   }
 
@@ -161,11 +162,26 @@ public:
   intrusive_ptr& operator=(T* rhs)
   {
     bt = bprintf("---- operator=(T*) at \n%s", simgrid::xbt::Backtrace().resolve().c_str());
-    this_type(rhs).swap(*this);
+    if (px != nullptr) {
+      px->reference_holder_.pop(this);
+      intrusive_ptr_release(px);
+    }
+    px = rhs;
+    if (px)
+      px->reference_holder_.push(this); // Track new reference
+
     return *this;
   }
 
-  void reset() { this_type().swap(*this); }
+  void reset()
+  {
+    if (px != nullptr) {
+      px->reference_holder_.pop(this);
+      intrusive_ptr_release(px);
+    }
+    px = nullptr;
+    free(bt);
+  }
 
   void reset(T* rhs)
   {
@@ -340,15 +356,20 @@ template <class T> struct reference_holder {
   std::unordered_map<xbt::intrusive_ptr<T>*, const char*> references_;
   void push(xbt::intrusive_ptr<T>* ref)
   {
-    if (ref->get()->get_num() == 66) {
-      XBT_CCRITICAL(root, "Push ref %p to state 66 refcount:%d\n%s", ref, ref->get()->get_ref_count(), ref->get_bt());
+    if (ref->get()->get_num() == 69) {
+      XBT_CCRITICAL(root, "Push ref %p to state 69 refcount:%d\n%s", ref, ref->get()->get_ref_count(), ref->get_bt());
     }
     references_[ref] = ref->get_bt();
+    if (ref->get_bt() == nullptr) {
+      XBT_CCRITICAL(root, "The bt of the pushed ref %p is null (refcount: %d). Current backtrace:", ref,
+                    ref->get()->get_ref_count());
+      xbt_backtrace_display_current();
+    }
   }
   void pop(xbt::intrusive_ptr<T>* ref)
   {
-    if (ref->get() != nullptr && ref->get()->get_num() == 66) {
-      XBT_CCRITICAL(root, "Pop ref %p to state 66 refcount:%d creation bt:\n%s", ref, ref->get()->get_ref_count(),
+    if (ref->get() != nullptr && ref->get()->get_num() == 69) {
+      XBT_CCRITICAL(root, "Pop ref %p to state 69 refcount:%d creation bt:\n%s", ref, ref->get()->get_ref_count(),
                     ref->get_bt());
       XBT_CCRITICAL(root, "Current bt:");
       xbt_backtrace_display_current();
