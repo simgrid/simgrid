@@ -500,6 +500,7 @@ set(MC_SRC_BASE
   src/mc/mc_record.hpp
   src/mc/mc_replay.hpp
   src/mc/transition/Transition.cpp
+  src/mc/xbt_intrusiveptr.hpp
   )
 
 set(MC_SRC_STATELESS
