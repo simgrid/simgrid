@@ -232,7 +232,9 @@ void BeFSWutState::signal_on_backtrack()
     aid_t leftmost_aid     = done_[closed_.size()]->aid_;
     auto children_aid      = children_states_[leftmost_aid];
     auto children_befs_aid = static_cast<BeFSWutState*>(children_aid.get());
-    xbt_assert(children_aid != nullptr, "Leftmost aid: %ld", leftmost_aid);
+    if (children_aid == nullptr)
+      reference_holder_.tell("Assertion (children_aid == nullptr) failed!");
+    xbt_assert(children_aid != nullptr, "Leftmost aid: %ld; state_num: %ld", leftmost_aid, get_num());
     children_befs_aid->is_leftmost_ = true;
     children_befs_aid->signal_on_backtrack();
     return;
@@ -250,6 +252,7 @@ void BeFSWutState::signal_on_backtrack()
       parent->children_states_[get_transition_in()->aid_] = nullptr;
       XBT_DEBUG("\t... The count of remaining intrusive_ptr on this is %d", get_ref_count());
     }
+    reset_parent_state();
   }
 }
 
