@@ -54,7 +54,7 @@ foreach (example activityset_awaitall activityset_awaitallfor activityset_awaita
             OUTPUT_NAME ${example}
             OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${example_dir})
     add_dependencies(java-all java-${example})
-    ADD_TESH(java-${example} --setenv LD_PRELOAD=$ENV{ASAN_LIBS} --setenv LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${CMAKE_BINARY_DIR}/lib --setenv LC_CTYPE=C --setenv javacmd="${Java_JAVA_EXECUTABLE} -Xcheck:jni ${javac_args}" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
+    ADD_TESH(java-${example} --setenv LD_PRELOAD=$ENV{SAN_LIBS} --setenv LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${CMAKE_BINARY_DIR}/lib --setenv LC_CTYPE=C --setenv javacmd="${Java_JAVA_EXECUTABLE} -Xcheck:jni ${javac_args}" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
   endif()
 
   set(examples_src  ${examples_src}  ${_${example}_sources})
