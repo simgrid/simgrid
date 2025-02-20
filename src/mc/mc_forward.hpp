@@ -33,7 +33,7 @@ class Session;
 class Exploration;
 class SleepSetState;
 
-using StatePtr = simgrid::xbt::intrusive_ptr<State>;
+using StatePtr = boost::intrusive_ptr<State>;
 XBT_PUBLIC void intrusive_ptr_release(State* o);
 XBT_PUBLIC void intrusive_ptr_add_ref(State* o);
 

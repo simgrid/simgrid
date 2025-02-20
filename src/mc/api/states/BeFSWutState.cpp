@@ -210,8 +210,8 @@ BeFSWutState::~BeFSWutState()
 
 void BeFSWutState::signal_on_backtrack()
 {
-  XBT_DEBUG("State n°%ld, son of %ld, being signaled to backtrack", get_num(),
-            get_parent_state() != nullptr ? get_parent_state()->get_num() : -1);
+  XBT_DEBUG("State n°%ld, child of %ld by actor %ld, being signaled to backtrack", get_num(),
+            get_parent_state() != nullptr ? get_parent_state()->get_num() : -1, get_transition_in()->aid_);
   XBT_DEBUG("... %s",
             is_leftmost_ ? "This state is the leftmost at this depth" : "This state is NOT the leftmost at this depth");
   XBT_DEBUG("... There are %lu done children, %lu closed children and %lu recorded children StatePtr(%s)", done_.size(),
@@ -219,7 +219,7 @@ void BeFSWutState::signal_on_backtrack()
             std::accumulate(children_states_.begin(), children_states_.end(), std::string(),
                             [&](std::string accu, const StatePtr s) {
                               if (s == nullptr)
-                                return accu;
+                                return std::string(",null");
                               else
                                 return accu + ',' + std::to_string(s->get_num());
                             })
@@ -250,7 +250,12 @@ void BeFSWutState::signal_on_backtrack()
       XBT_DEBUG("\t... there are %lu recorded children StatePtr in its parent state n°%ld", parent->done_.size(),
                 parent->get_num());
       parent->children_states_[get_transition_in()->aid_] = nullptr;
-      XBT_DEBUG("\t... The count of remaining intrusive_ptr on this is %d", get_ref_count());
+
+      auto findme = std::find(parent->closed_.begin(), parent->closed_.end(), get_transition_in()->aid_);
+      xbt_assert(findme == parent->closed_.end(), "I'm already in the closed_ of my parent");
+      parent->closed_.emplace_back(get_transition_in()->aid_);
+
+      XBT_DEBUG("\t... The count of remaining intrusive_ptr on this node #%ld is %d", get_num(), get_ref_count());
     }
     reset_parent_state();
   }

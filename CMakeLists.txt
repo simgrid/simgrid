@@ -307,8 +307,7 @@ set(_Boost_STACKTRACE_ADDR2LINE_HEADERS "boost/stacktrace.hpp")
     if (NOT minimal-bindings)
       message(STATUS "Looking for optional Boost components:")
       set(Boost_FOUND 1) # These components are optionals
-      CHECK_INCLUDE_FILE("backtrace.h" HAVE_BACKTRACE_H) # check that backtrace is actually possible
-      if (Boost_STACKTRACE_BACKTRACE_FOUND AND HAVE_BACKTRACE_H)
+      if (Boost_STACKTRACE_BACKTRACE_FOUND)
         message (STATUS "  stacktrace: found the fast 'backtrace' implementation. Activating human-readable stack traces.")
         set(HAVE_BOOST_STACKTRACE_BACKTRACE 1)
       else()
