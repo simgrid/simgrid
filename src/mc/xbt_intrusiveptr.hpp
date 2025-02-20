@@ -356,9 +356,6 @@ template <class T> struct reference_holder {
   std::unordered_map<xbt::intrusive_ptr<T>*, const char*> references_;
   void push(xbt::intrusive_ptr<T>* ref)
   {
-    if (ref->get()->get_num() == 69) {
-      XBT_CCRITICAL(root, "Push ref %p to state 69 refcount:%d\n%s", ref, ref->get()->get_ref_count(), ref->get_bt());
-    }
     references_[ref] = ref->get_bt();
     if (ref->get_bt() == nullptr) {
       XBT_CCRITICAL(root, "The bt of the pushed ref %p is null (refcount: %d). Current backtrace:", ref,
@@ -368,12 +365,6 @@ template <class T> struct reference_holder {
   }
   void pop(xbt::intrusive_ptr<T>* ref)
   {
-    if (ref->get() != nullptr && ref->get()->get_num() == 69) {
-      XBT_CCRITICAL(root, "Pop ref %p to state 69 refcount:%d creation bt:\n%s", ref, ref->get()->get_ref_count(),
-                    ref->get_bt());
-      XBT_CCRITICAL(root, "Current bt:");
-      xbt_backtrace_display_current();
-    }
     auto where = references_.find(ref);
     if (where == references_.end()) {
       XBT_CCRITICAL(root, "Cannot pop %p as it's not in the list", ref);
