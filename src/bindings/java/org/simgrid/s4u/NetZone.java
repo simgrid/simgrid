@@ -41,25 +41,25 @@ public class NetZone {
 
   public static void on_seal_cb(CallbackNetzone cb) { simgridJNI.NetZone_on_seal_cb(cb); }
 
-  public Host create_host(String name, double[] speed_per_pstate)
+  public Host add_host(String name, double[] speed_per_pstate)
   {
-    long cPtr = simgridJNI.NetZone_create_host__SWIG_0(swigCPtr, this, name, speed_per_pstate);
+    long cPtr = simgridJNI.NetZone_add_host__SWIG_0(swigCPtr, this, name, speed_per_pstate);
     return (cPtr == 0) ? null : new Host(cPtr);
   }
 
-  public Host create_host(String name, double speed) {
-    long cPtr = simgridJNI.NetZone_create_host__SWIG_1(swigCPtr, this, name, speed);
+  public Host add_host(String name, double speed) {
+    long cPtr = simgridJNI.NetZone_add_host__SWIG_1(swigCPtr, this, name, speed);
     return (cPtr == 0) ? null : new Host(cPtr);
   }
 
-  public Host create_host(String name, String[] speed_per_pstate)
+  public Host add_host(String name, String[] speed_per_pstate)
   {
-    long cPtr = simgridJNI.NetZone_create_host__SWIG_2(swigCPtr, this, name, speed_per_pstate);
+    long cPtr = simgridJNI.NetZone_add_host__SWIG_2(swigCPtr, this, name, speed_per_pstate);
     return (cPtr == 0) ? null : new Host(cPtr);
   }
 
-  public Host create_host(String name, String speed) {
-    long cPtr = simgridJNI.NetZone_create_host__SWIG_3(swigCPtr, this, name, speed);
+  public Host add_host(String name, String speed) {
+    long cPtr = simgridJNI.NetZone_add_host__SWIG_3(swigCPtr, this, name, speed);
     return (cPtr == 0) ? null : new Host(cPtr);
   }
 

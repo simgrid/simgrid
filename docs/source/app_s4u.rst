@@ -2110,14 +2110,14 @@ Hosts
 
   .. group-tab:: C++
 
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, double speed)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::string& speed)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_host(const std::string& name, const std::vector<double>& speed_per_pstate)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_host(const std::string& name, double speed)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_host(const std::string& name, const std::vector<std::string>& speed_per_pstate)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_host(const std::string& name, const std::string& speed)
 
   .. group-tab:: Python
 
-     .. automethod:: simgrid.NetZone.create_host
+     .. automethod:: simgrid.NetZone.add_host
 
 Links
 ^^^^^

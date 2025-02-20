@@ -36,11 +36,11 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
 
   auto* root  = e.get_netzone_root();
-  auto* host1 = root->create_host("host1", 1e9);
+  auto* host1 = root->add_host("host1", 1e9);
   host1->create_disk("disk-1", 1e9, 1e6);
   host1->create_disk("disk-2", 1e9, 1e6);
 
-  auto* host2 = root->create_host("host2", 1e9);
+  auto* host2 = root->add_host("host2", 1e9);
 
   const auto* link = root->create_link("link", 1e9);
   root->add_route(host1, host2, {link});

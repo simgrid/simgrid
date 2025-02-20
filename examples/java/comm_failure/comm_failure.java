@@ -77,9 +77,9 @@ public class comm_failure {
   {
     Engine e     = new Engine(args);
     NetZone zone = e.get_netzone_root();
-    Host host1   = zone.create_host("Host1", "1f");
-    Host host2   = zone.create_host("Host2", "1f");
-    Host host3   = zone.create_host("Host3", "1f");
+    Host host1   = zone.add_host("Host1", "1f");
+    Host host2   = zone.add_host("Host2", "1f");
+    Host host3   = zone.add_host("Host3", "1f");
     Link link2   = zone.create_link("linkto2", "1bps").seal();
     Link link3   = zone.create_link("linkto3", "1bps").seal();
 

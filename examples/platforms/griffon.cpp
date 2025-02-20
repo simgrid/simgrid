@@ -32,7 +32,7 @@ static sg4::NetZone* create_cabinet(sg4::NetZone* root, const std::string& name,
   for (const auto& id : radicals) {
     std::string hostname = prefix + std::to_string(id) + suffix;
     /* create host */
-    const sg4::Host* host = cluster->create_host(hostname, "286.087kf");
+    const sg4::Host* host = cluster->add_host(hostname, "286.087kf");
     /* create UP/DOWN link */
     const sg4::Link* link = cluster->create_split_duplex_link(hostname, "125MBps")->set_latency("24us");
 

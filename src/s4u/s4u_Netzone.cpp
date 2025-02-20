@@ -249,25 +249,25 @@ NetZone* NetZone::add_netzone_wifi(const std::string& name)
   return res->set_parent(get_impl())->get_iface();
 }
 
-s4u::Host* NetZone::create_host(const std::string& name, double speed)
+s4u::Host* NetZone::add_host(const std::string& name, double speed)
 {
-  return create_host(name, std::vector<double>{speed});
+  return add_host(name, std::vector<double>{speed});
 }
 
-s4u::Host* NetZone::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
+s4u::Host* NetZone::add_host(const std::string& name, const std::vector<double>& speed_per_pstate)
 {
   return kernel::actor::simcall_answered(
       [this, &name, &speed_per_pstate] { return pimpl_->create_host(name, speed_per_pstate); });
 }
 
-s4u::Host* NetZone::create_host(const std::string& name, const std::string& speed)
+s4u::Host* NetZone::add_host(const std::string& name, const std::string& speed)
 {
-  return create_host(name, std::vector<std::string>{speed});
+  return add_host(name, std::vector<std::string>{speed});
 }
 
-s4u::Host* NetZone::create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate)
+s4u::Host* NetZone::add_host(const std::string& name, const std::vector<std::string>& speed_per_pstate)
 {
-  return create_host(name, Host::convert_pstate_speed_vector(speed_per_pstate));
+  return add_host(name, Host::convert_pstate_speed_vector(speed_per_pstate));
 }
 
 s4u::Link* NetZone::create_link(const std::string& name, double bandwidth)

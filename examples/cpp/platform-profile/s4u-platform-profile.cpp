@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
   // Add a new host programmatically, and attach a simple speed profile to it (alternate between full and half speed
   // every two seconds
   e.get_netzone_root()
-      ->create_host("Lilibeth", 25e6)
+      ->add_host("Lilibeth", 25e6)
       ->set_speed_profile(simgrid::kernel::profile::ProfileBuilder::from_string("lilibeth_profile", R"(
 0 1.0
 2 0.5

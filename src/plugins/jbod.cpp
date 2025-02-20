@@ -22,7 +22,7 @@ JbodPtr Jbod::create_jbod(s4u::NetZone* zone, const std::string& name, double sp
   xbt_assert(not (raid_level == RAID::RAID6 && num_disks < 4), "RAID6 requires at least 4 disks");
 
   auto* jbod = new Jbod();
-  jbod->set_controller(zone->create_host(name, speed));
+  jbod->set_controller(zone->add_host(name, speed));
   jbod->set_num_disks(num_disks);
   jbod->set_parity_disk_idx(num_disks -1 );
   jbod->set_read_disk_idx(-1);

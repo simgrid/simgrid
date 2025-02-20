@@ -45,8 +45,8 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
 
   auto* rootzone = e.get_netzone_root();
-  auto* hostA    = rootzone->create_host("hostA", 1e9);
-  auto* hostB    = rootzone->create_host("hostB", 1e9);
+  auto* hostA    = rootzone->add_host("hostA", 1e9);
+  auto* hostB    = rootzone->add_host("hostB", 1e9);
   auto* backb    = rootzone->create_link("backbone", "1")->set_latency("1s")->seal();
   rootzone->add_route(hostA, hostB, {backb});
   rootzone->seal();

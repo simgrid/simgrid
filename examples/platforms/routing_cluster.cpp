@@ -27,7 +27,7 @@ static sg4::NetZone* create_cluster(sg4::NetZone* root, const std::string& clust
   /* create all hosts and connect them to outside world */
   for (const auto& hostname : hosts) {
     /* create host */
-    const sg4::Host* host = cluster->create_host(hostname, "1Gf");
+    const sg4::Host* host = cluster->add_host(hostname, "1Gf");
     /* create UP link */
     const sg4::Link* l_up = cluster->create_link(hostname + "_up", "1Gbps")->set_latency("100us");
     /* create DOWN link, if needed */

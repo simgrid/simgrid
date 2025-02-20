@@ -398,10 +398,10 @@ int main(int argc, char* argv[])
   mbox.rdv                    = e.mailbox_by_name_or_create("rdv");
   sg4::NetZone* zone          = e.get_netzone_root();
   pr::Profile* profile_sender = pr::ProfileBuilder::from_string("sender_profile", ctx.sender_profile.str(), 0);
-  sg4::Host* sender_host = zone->create_host("senderHost", HostComputePower)->set_state_profile(profile_sender)->seal();
+  sg4::Host* sender_host = zone->add_host("senderHost", HostComputePower)->set_state_profile(profile_sender)->seal();
   pr::Profile* profile_receiver = pr::ProfileBuilder::from_string("receiver_profile", ctx.receiver_profile.str(), 0);
   sg4::Host* receiver_host =
-      zone->create_host("receiverHost", HostComputePower)->set_state_profile(profile_receiver)->seal();
+      zone->add_host("receiverHost", HostComputePower)->set_state_profile(profile_receiver)->seal();
   sg4::ActorPtr sender = e.add_actor("sender", sender_host, SendAgent(0, receiver_host, mbox, ctx));
   sender->set_auto_restart(true);
   sg4::ActorPtr receiver = e.add_actor("receiver", receiver_host, ReceiveAgent(1, sender_host, mbox, ctx));

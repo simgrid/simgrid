@@ -352,17 +352,20 @@ PYBIND11_MODULE(simgrid, m)
                              const std::vector<const simgrid::s4u::Link*>&>(&simgrid::s4u::NetZone::add_route),
            "Add a route between 2 netzones. The gateway of each zone gets used.")
       .def("add_bypass_route", &simgrid::s4u::NetZone::add_bypass_route, "Add bypass route to NetZone.")
-      .def("create_host", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_host),
-           "Creates a host")
-      .def("create_host",
-           py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::create_host),
-           "Creates a host")
-      .def("create_host",
-           py::overload_cast<const std::string&, const std::vector<double>&>(&simgrid::s4u::NetZone::create_host),
-           "Creates a host")
-      .def("create_host",
-           py::overload_cast<const std::string&, const std::vector<std::string>&>(&simgrid::s4u::NetZone::create_host),
-           "Creates a host")
+      .def("add_host", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::add_host),
+           "Adds a host")
+      .def("add_host", py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::add_host),
+           "Adds a host")
+      .def("add_host", py::overload_cast<const std::string&, const std::vector<double>&>(&simgrid::s4u::NetZone::add_host),
+           "Adds a host")
+      .def("add_host", py::overload_cast<const std::string&, const std::vector<std::string>&>(&simgrid::s4u::NetZone::add_host),
+           "Adds a host")
+      .def("create_host", [](std::string const& name) {
+               PyErr_WarnEx(PyExc_DeprecationWarning,
+                            "create_host() is deprecated, use Netzone.add_host().", 2);
+               throw std::logic_error("Please call Netzone.add_host() instead");
+            },
+            "Creates a host") // XBT_ATTRIB_DEPRECATED_v339 
       .def("create_link", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_link),
            "Creates a network link")
       .def("create_link",

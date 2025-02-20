@@ -105,7 +105,7 @@ int main(int argc, char** argv)
   std::unordered_map<std::string, sg4::Link*> links;
   auto* zone = e.get_netzone_root();
   for (const auto& name : {"S1", "S2", "C1", "C2"}) {
-    hosts[name] = zone->create_host(name, 1e6)->seal();
+    hosts[name] = zone->add_host(name, 1e6)->seal();
   }
 
   for (const auto& name : {"L1", "L2", "L3", "L4"}) {

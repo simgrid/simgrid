@@ -31,7 +31,7 @@ public class exec_cpu_factors {
 
     /* create platform */
     NetZone zone     = e.get_netzone_root();
-    Host runner_host = zone.create_host("runner", 1e6);
+    Host runner_host = zone.add_host("runner", 1e6);
 
     runner_host.set_cpu_factor_cb(new CallbackDHostDouble() {
       /* Variability for CPU */

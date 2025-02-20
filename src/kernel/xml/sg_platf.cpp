@@ -158,7 +158,7 @@ sg_platf_cluster_create_host(const simgrid::kernel::routing::ClusterCreationArgs
 
   std::string host_id = cluster->prefix + std::to_string(cluster->radicals[id]) + cluster->suffix;
   XBT_DEBUG("Cluster: creating host=%s speed=%f", host_id.c_str(), cluster->speeds.front());
-  simgrid::s4u::Host* host = zone->create_host(host_id, cluster->speeds)
+  simgrid::s4u::Host* host = zone->add_host(host_id, cluster->speeds)
                                  ->set_core_count(cluster->core_amount)
                                  ->set_properties(cluster->properties);
   return host;
@@ -274,7 +274,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
     std::string host_id = cluster->prefix + std::to_string(i) + cluster->suffix;
 
     XBT_DEBUG("<host\tid=\"%s\"\tspeed=\"%f\">", host_id.c_str(), cluster->speeds.front());
-    const auto* host = zone->create_host(host_id, cluster->speeds)
+    const auto* host = zone->add_host(host_id, cluster->speeds)
                            ->set_core_count(cluster->core_amount)
                            ->set_properties(cluster->properties)
                            ->seal();

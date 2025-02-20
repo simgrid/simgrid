@@ -81,7 +81,7 @@ int main(int argc, char** argv)
   auto* zone = engine.get_netzone_root();
   std::vector<sg4::Host*> hosts;
   for (const auto* name : {"Host1", "Host2", "Host3"}) {
-    auto* host = zone->create_host(name, "1f");
+    auto* host = zone->add_host(name, "1f");
     hosts.push_back(host);
   }
   /* Attaching a state profile (ie a list of events changing the on/off state of the resource) to host3.

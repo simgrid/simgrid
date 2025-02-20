@@ -109,8 +109,8 @@ int main(int argc, char** argv)
 
   /* simple platform containing 2 hosts and 2 disks */
   auto* zone   = e.get_netzone_root();
-  auto* bob  = zone->create_host("bob", 1e6);
-  auto* alice  = zone->create_host("alice", 1e6);
+  auto* bob  = zone->add_host("bob", 1e6);
+  auto* alice  = zone->add_host("alice", 1e6);
 
   auto* link = zone->create_link("link", "2MBps")->set_latency("50us");
   zone->add_route(bob, alice, {link});

@@ -42,8 +42,8 @@ void load_platform(sg4::Engine& e)
   /* create a simple 2 host platform inspired from small_platform.xml */
   auto* root = e.get_netzone_root();
 
-  const sg4::Host* tremblay = root->create_host("Tremblay", "98.095Mf")->seal();
-  const sg4::Host* jupiter  = root->create_host("Jupiter", "76.296Mf")->seal();
+  const sg4::Host* tremblay = root->add_host("Tremblay", "98.095Mf")->seal();
+  const sg4::Host* jupiter  = root->add_host("Jupiter", "76.296Mf")->seal();
 
   const sg4::Link* link9 = root->create_split_duplex_link("9", "7.20975MBps")->set_latency("1.461517ms")->seal();
 

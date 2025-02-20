@@ -219,8 +219,8 @@ The following code illustrates how to create this Star Zone and add the appropri
 
     auto* zone = sg4::create_star_zone("star");
     /* create hosts */
-    const sg4::Host* hostA = zone->create_host("A", 1e9)->seal();
-    const sg4::Host* hostB = zone->create_host("B", 1e9)->seal();
+    const sg4::Host* hostA = zone->add_host("A", 1e9)->seal();
+    const sg4::Host* hostB = zone->add_host("B", 1e9)->seal();
 
     /* create links */
     sg4::Link* link1      = zone->create_link("link1", 1e6)->seal();

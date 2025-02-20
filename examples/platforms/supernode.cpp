@@ -33,7 +33,7 @@ static sg4::NetZone* create_node(sg4::NetZone* root, const std::string& node_nam
     const auto& cpuname  = node_name + "_cpu-" + int_string(i);
     const auto& linkname = "link_" + cpuname;
 
-    const sg4::Host* host = node->create_host(cpuname, 1e9);
+    const sg4::Host* host = node->add_host(cpuname, 1e9);
     const sg4::Link* l    = node->create_split_duplex_link(linkname, BW_CPU)->set_latency(LAT_CPU);
     node->add_route(host, nullptr, {{l, sg4::LinkInRoute::Direction::UP}}, true);
   }

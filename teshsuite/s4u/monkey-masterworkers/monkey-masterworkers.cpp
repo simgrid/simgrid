@@ -110,10 +110,10 @@ int main(int argc, char* argv[])
   // get it once for all, to reduce the amount of simcalls during actor reboot
   sg4::Mailbox* mailbox = sg4::Mailbox::by_name("mailbox");
 
-  sg4::Host* master_host = rootzone->create_host("lilibeth 0", 1e9); // Host where the master will stay
+  sg4::Host* master_host = rootzone->add_host("lilibeth 0", 1e9); // Host where the master will stay
   for (int i = 1; i < cfg_host_count; i++) {
     auto hostname = "lilibeth " + std::to_string(i);
-    auto* host    = rootzone->create_host(hostname, 1e9);
+    auto* host    = rootzone->add_host(hostname, 1e9);
     auto* link    = rootzone->create_link(hostname, "1MBps")->set_latency("24us")->seal();
     rootzone->add_route(master_host, host, {link});
     worker_hosts.push_back(host);

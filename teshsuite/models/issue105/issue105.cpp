@@ -56,8 +56,8 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
 
   sg4::NetZone* world = e.get_netzone_root();
-  sg4::Host* hostGl01 = world->create_host("host-gl01", "98Mf")->seal();
-  sg4::Host* hostSa01 = world->create_host("host-sa01", "98Mf")->seal();
+  sg4::Host* hostGl01 = world->add_host("host-gl01", "98Mf")->seal();
+  sg4::Host* hostSa01 = world->add_host("host-sa01", "98Mf")->seal();
 
   // create latency and bandwidth profiles
   auto* linkSaLatencyProfile   = simgrid::kernel::profile::ProfileBuilder::from_string("link-sa-latency-profile",

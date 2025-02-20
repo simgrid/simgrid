@@ -18,7 +18,7 @@ void load_dahu_platform(const simgrid::s4u::Engine& e, double bw, double lat)
   for (int i = 0; i < 32; i++) {
     /* create host */
     const auto hostname            = preffix + std::to_string(i) + suffix;
-    const simgrid::s4u::Host* host = root->create_host(hostname, 1)->seal();
+    const simgrid::s4u::Host* host = root->add_host(hostname, 1)->seal();
 
     root->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {backbone}, true);
   }

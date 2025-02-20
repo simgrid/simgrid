@@ -52,14 +52,14 @@ def load_platform(e: Engine):
     dijkstra = root.add_netzone_dijkstra("dijkstra", True)
     msg_base = "Creating zone: "
     this_actor.info(msg_base + dijkstra.name)
-    host1 = dijkstra.create_host("host1", [1e9, 1e8])
+    host1 = dijkstra.add_host("host1", [1e9, 1e8])
     host1.core_count = 2
     hosts.append(host1)
     host1.create_disk("disk1", 1e5, 1e4).seal()
     host1.create_disk("disk2", "1MBps", "1Mbps").seal()
     host1.seal()
     dijkstra.set_gateway(host1)
-    host2 = dijkstra.create_host("host2", ["1Gf", "1Mf"]).seal()
+    host2 = dijkstra.add_host("host2", ["1Gf", "1Mf"]).seal()
     hosts.append(host2)
     link1 = dijkstra.create_link("link1_up", [1e9]).set_latency(1e-3).set_concurrency_limit(10).seal()
     link2 = dijkstra.create_link("link1_down", ["1GBps"]).set_latency("1ms").seal()
@@ -70,16 +70,16 @@ def load_platform(e: Engine):
     # vivaldi
     vivaldi = root.add_netzone_vivaldi("vivaldi")
     this_actor.info(msg_base + vivaldi.name)
-    host3 = vivaldi.create_host("host3", 1e9).set_coordinates("1 1 1").seal()
+    host3 = vivaldi.add_host("host3", 1e9).set_coordinates("1 1 1").seal()
     vivaldi.set_gateway(host3)
-    host4 = vivaldi.create_host("host4", "1Gf").set_coordinates("2 2 2").seal()
+    host4 = vivaldi.add_host("host4", "1Gf").set_coordinates("2 2 2").seal()
     hosts.append(host3)
     hosts.append(host4)
 
     # empty
     empty = root.add_netzone_empty("empty")
     this_actor.info(msg_base + empty.name)
-    host5 = empty.create_host("host5", 1e9)
+    host5 = empty.add_host("host5", 1e9)
     empty.set_gateway(host5)
     hosts.append(host5)
     empty.seal()
@@ -90,7 +90,7 @@ def load_platform(e: Engine):
     router = wifi.create_router("wifi_router")
     wifi.set_gateway(router)
     wifi.set_property("access_point", "wifi_router")
-    host6 = wifi.create_host(
+    host6 = wifi.add_host(
         "host6", ["100.0Mf", "50.0Mf", "20.0Mf"]).seal()
     hosts.append(host6)
     wifi_link = wifi.create_link("AP1", ["54Mbps", "36Mbps", "24Mbps"]).seal()

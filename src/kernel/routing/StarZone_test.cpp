@@ -285,7 +285,7 @@ TEST_CASE("kernel::routing::StarZone: mix new routes and hosts", "")
   const simgrid::s4u::Link* link = zone->create_link("my_link", 1e6)->seal();
   for (int i = 0; i < 10; i++) {
     std::string cpu_name          = "CPU" + std::to_string(i);
-    const simgrid::s4u::Host* cpu = zone->create_host(cpu_name, 1e9)->seal();
+    const simgrid::s4u::Host* cpu = zone->add_host(cpu_name, 1e9)->seal();
     REQUIRE_NOTHROW(zone->add_route(cpu, nullptr, {link}));
   }
 }

@@ -78,9 +78,9 @@ int main(int argc, char** argv)
 {
   sg4::Engine e(&argc, argv);
   auto* zone        = e.get_netzone_root();
-  auto* host1 = zone->create_host("Host1", "1f");
-  auto* host2 = zone->create_host("Host2", "1f");
-  auto* host3 = zone->create_host("Host3", "1f");
+  auto* host1 = zone->add_host("Host1", "1f");
+  auto* host2 = zone->add_host("Host2", "1f");
+  auto* host3 = zone->add_host("Host3", "1f");
   const auto* link2 = zone->create_link("linkto2", "1bps")->seal();
   const auto* link3 = zone->create_link("linkto3", "1bps")->seal();
 

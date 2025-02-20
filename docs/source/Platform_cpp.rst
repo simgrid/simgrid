@@ -36,7 +36,7 @@ idiom: create()->set()->set()->seal().
 
     NetZone* zone      = s4u::create_star_zone("zone0");
     Link* l_up   = zone->create_link("link_up", "125MBps")->set_latency("24us")->seal();
-    Host* host   = zone->create_host("host0", "1Gf")->seal();
+    Host* host   = zone->add_host("host0", "1Gf")->seal();
     zone->seal();
 
 The first NetZone created will be the root zone of your platform. You're allowed to modified
@@ -165,10 +165,10 @@ Note that the leaves and loopback links are defined through callbacks, as follow
 
       /* creating CPU */
       std::string cpu_name  = hostname + "-cpu" + std::to_string(i);
-      const sg4::Host* cpu = host_zone->create_host(cpu_name, 1e9)->seal();
+      const sg4::Host* cpu = host_zone->add_host(cpu_name, 1e9)->seal();
       /* creating GPU */
       std::string gpu_name  = hostname + "-gpu" + std::to_string(i);
-      const sg4::Host* gpu = host_zone->create_host(gpu_name, 1e12)->seal();
+      const sg4::Host* gpu = host_zone->add_host(gpu_name, 1e12)->seal();
       /* connecting them */
       sg4::Link* link   = host_zone->create_link("link-" + cpu_name, 10e9)->set_latency(10e-9)->seal();
       host_zone->add_route(cpu->get_netpoint(), gpu->get_netpoint(), nullptr, nullptr, {sg4::LinkInRoute(link)});

@@ -92,11 +92,11 @@ int main(int argc, char* argv[])
 )";
   /* simple platform containing 1 host and 2 disk */
   auto* zone = e.get_netzone_root();
-  zone->create_host("erin", 1e6)
+  zone->add_host("erin", 1e6)
       ->set_core_count(2)
       ->set_state_profile(simgrid::kernel::profile::ProfileBuilder::from_string("erin_state", erin_state_file, 0))
       ->seal();
-  zone->create_host("carol", 1e6)
+  zone->add_host("carol", 1e6)
       ->set_core_count(2)
       ->set_speed_profile(simgrid::kernel::profile::ProfileBuilder::from_string("carol_speed", carol_speed_file, 1))
       ->seal();

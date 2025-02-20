@@ -86,12 +86,12 @@ if __name__ == '__main__':
   mailbox = Mailbox.by_name("mailbox")
 
   rootzone = e.netzone_root
-  main = rootzone.create_host("lilibeth 0", 1e9)
+  main = rootzone.add_host("lilibeth 0", 1e9)
   Actor.create("master", main, master).set_auto_restart(True)
 
   for i in range(1, host_count):
     link = rootzone.create_split_duplex_link(f"link {i}", "1MBps").set_latency("24us")
-    host = rootzone.create_host(f"lilibeth {i}", 1e9)
+    host = rootzone.add_host(f"lilibeth {i}", 1e9)
     rootzone.add_route(main, host, [link])
     Actor.create("worker", host, worker, i).set_auto_restart(True)
 

@@ -93,7 +93,7 @@ def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], ident: int) 
     # create CPUs
     for i in range(num_cpus):
         cpu_name = hostname + "-cpu" + str(i)
-        host = host_zone.create_host(cpu_name, speed).seal()
+        host = host_zone.add_host(cpu_name, speed).seal()
         # the first CPU is the gateway
         if i == 0:
             host_zone.set_gateway(host.netpoint)
