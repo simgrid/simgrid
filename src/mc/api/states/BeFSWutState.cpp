@@ -256,6 +256,7 @@ void BeFSWutState::signal_on_backtrack()
       parent->closed_.emplace_back(get_transition_in()->aid_);
 
       XBT_DEBUG("\t... The count of remaining intrusive_ptr on this node #%ld is %d", get_num(), get_ref_count());
+      parent->signal_on_backtrack();
     }
     reset_parent_state();
   }
