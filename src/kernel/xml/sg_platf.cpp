@@ -179,7 +179,7 @@ sg_platf_cluster_create_loopback(const simgrid::kernel::routing::ClusterCreation
   std::string link_id = cluster->id + "_link_" + std::to_string(cluster->radicals[id]) + "_loopback";
   XBT_DEBUG("Cluster: creating loopback link=%s bw=%f", link_id.c_str(), cluster->loopback_bw);
 
-  simgrid::s4u::Link* loopback = zone->create_link(link_id, cluster->loopback_bw)
+  simgrid::s4u::Link* loopback = zone->add_link(link_id, cluster->loopback_bw)
                                      ->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::FATPIPE)
                                      ->set_latency(cluster->loopback_lat)
                                      ->seal();
@@ -195,7 +195,7 @@ static simgrid::s4u::Link* sg_platf_cluster_create_limiter(const simgrid::kernel
   std::string link_id = cluster->id + "_link_" + std::to_string(id) + "_limiter";
   XBT_DEBUG("Cluster: creating limiter link=%s bw=%f", link_id.c_str(), cluster->limiter_link);
 
-  simgrid::s4u::Link* limiter = zone->create_link(link_id, cluster->limiter_link)->seal();
+  simgrid::s4u::Link* limiter = zone->add_link(link_id, cluster->limiter_link)->seal();
   return limiter;
 }
 
@@ -264,7 +264,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
     XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/> <!--backbone -->", bb_name.c_str(), cluster->bb_bw,
               cluster->bb_lat);
 
-    backbone = zone->create_link(bb_name, cluster->bb_bw)
+    backbone = zone->add_link(bb_name, cluster->bb_bw)
                    ->set_sharing_policy(cluster->bb_sharing_policy)
                    ->set_latency(cluster->bb_lat)
                    ->seal();
@@ -289,7 +289,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
       std::string loopback_name = link_id + "_loopback";
       XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", loopback_name.c_str(), cluster->loopback_bw);
 
-      const auto* loopback = zone->create_link(loopback_name, cluster->loopback_bw)
+      const auto* loopback = zone->add_link(loopback_name, cluster->loopback_bw)
                                  ->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::FATPIPE)
                                  ->set_latency(cluster->loopback_lat)
                                  ->seal();
@@ -303,15 +303,15 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
       std::string limiter_name = link_id + "_limiter";
       XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", limiter_name.c_str(), cluster->limiter_link);
 
-      limiter = zone->create_link(limiter_name, cluster->limiter_link)->seal();
+      limiter = zone->add_link(limiter_name, cluster->limiter_link)->seal();
     }
 
     // create link
     const simgrid::s4u::Link* link;
     if (cluster->sharing_policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
-      link = zone->create_split_duplex_link(link_id, cluster->bw, cluster->bw)->set_latency(cluster->lat)->seal();
+      link = zone->add_split_duplex_link(link_id, cluster->bw, cluster->bw)->set_latency(cluster->lat)->seal();
     } else {
-      link = zone->create_link(link_id, cluster->bw)->set_latency(cluster->lat)->seal();
+      link = zone->add_link(link_id, cluster->bw)->set_latency(cluster->lat)->seal();
     }
 
     /* adding routes */
@@ -330,7 +330,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id.c_str());
   if (cluster->router_id.empty())
     cluster->router_id = cluster->prefix + cluster->id + "_router" + cluster->suffix;
-  zone->create_router(cluster->router_id);
+  zone->add_router(cluster->router_id);
 
   simgrid::kernel::routing::on_cluster_creation(*cluster);
 }

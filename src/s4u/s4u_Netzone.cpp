@@ -270,22 +270,22 @@ s4u::Host* NetZone::add_host(const std::string& name, const std::vector<std::str
   return add_host(name, Host::convert_pstate_speed_vector(speed_per_pstate));
 }
 
-s4u::Link* NetZone::create_link(const std::string& name, double bandwidth)
+s4u::Link* NetZone::add_link(const std::string& name, double bandwidth)
 {
-  return create_link(name, std::vector<double>{bandwidth});
+  return add_link(name, std::vector<double>{bandwidth});
 }
 
-s4u::Link* NetZone::create_link(const std::string& name, const std::vector<double>& bandwidths)
+s4u::Link* NetZone::add_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   return kernel::actor::simcall_answered([this, &name, &bandwidths] { return pimpl_->create_link(name, bandwidths); });
 }
 
-s4u::Link* NetZone::create_link(const std::string& name, const std::string& bandwidth)
+s4u::Link* NetZone::add_link(const std::string& name, const std::string& bandwidth)
 {
-  return create_link(name, std::vector<std::string>{bandwidth});
+  return add_link(name, std::vector<std::string>{bandwidth});
 }
 
-s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name, const std::string& str_up,
+s4u::SplitDuplexLink* NetZone::add_split_duplex_link(const std::string& name, const std::string& str_up,
                                                         const std::string& str_down)
 {
   double bw_up, bw_down;
@@ -301,10 +301,10 @@ s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name,
     throw std::invalid_argument("Impossible to create split-duplex link: " + name +
                                 ". Invalid bandwidths: " + str_down);
   }
-  return create_split_duplex_link(name, bw_up, bw_down);
+  return add_split_duplex_link(name, bw_up, bw_down);
 }
 
-s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name, double bw_up, double bw_down)
+s4u::SplitDuplexLink* NetZone::add_split_duplex_link(const std::string& name, double bw_up, double bw_down)
 {
   if (bw_down < 0)
     bw_down = bw_up;
@@ -313,7 +313,7 @@ s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name,
   });
 }
 
-s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::string>& bandwidths)
+s4u::Link* NetZone::add_link(const std::string& name, const std::vector<std::string>& bandwidths)
 {
   std::vector<double> bw;
   bw.reserve(bandwidths.size());
@@ -325,10 +325,10 @@ s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::
       throw std::invalid_argument("Impossible to create link: " + name + ". Invalid bandwidth: " + speed_str);
     }
   }
-  return create_link(name, bw);
+  return add_link(name, bw);
 }
 
-kernel::routing::NetPoint* NetZone::create_router(const std::string& name)
+kernel::routing::NetPoint* NetZone::add_router(const std::string& name)
 {
   return kernel::actor::simcall_answered([this, &name] { return pimpl_->create_router(name); });
 }

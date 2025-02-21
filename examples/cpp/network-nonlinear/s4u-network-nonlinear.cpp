@@ -121,7 +121,7 @@ static void load_platform(simgrid::s4u::Engine& e)
   auto* sender   = zone->add_host("sender", 1)->seal();
   auto* receiver = zone->add_host("receiver", 1)->seal();
 
-  auto* link = zone->create_split_duplex_link("link1", 1e6);
+  auto* link = zone->add_split_duplex_link("link1", 1e6);
   /* setting same callbacks (could be different) for link UP/DOWN in split-duplex link */
   link->get_link_up()->set_sharing_policy(
       sg4::Link::SharingPolicy::NONLINEAR,

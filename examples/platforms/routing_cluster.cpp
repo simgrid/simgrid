@@ -22,18 +22,18 @@ static sg4::NetZone* create_cluster(sg4::NetZone* root, const std::string& clust
   auto* cluster = root->add_netzone_star("cluster" + cluster_suffix);
 
   /* create the backbone link */
-  const sg4::Link* l_bb = cluster->create_link("backbone" + cluster_suffix, "20Gbps")->set_latency("500us");
+  const sg4::Link* l_bb = cluster->add_link("backbone" + cluster_suffix, "20Gbps")->set_latency("500us");
 
   /* create all hosts and connect them to outside world */
   for (const auto& hostname : hosts) {
     /* create host */
     const sg4::Host* host = cluster->add_host(hostname, "1Gf");
     /* create UP link */
-    const sg4::Link* l_up = cluster->create_link(hostname + "_up", "1Gbps")->set_latency("100us");
+    const sg4::Link* l_up = cluster->add_link(hostname + "_up", "1Gbps")->set_latency("100us");
     /* create DOWN link, if needed */
     const sg4::Link* l_down = l_up;
     if (hostname != single_link_host) {
-      l_down = cluster->create_link(hostname + "_down", "1Gbps")->set_latency("100us");
+      l_down = cluster->add_link(hostname + "_down", "1Gbps")->set_latency("100us");
     }
     sg4::LinkInRoute backbone{l_bb};
     sg4::LinkInRoute link_up{l_up};
@@ -46,7 +46,7 @@ static sg4::NetZone* create_cluster(sg4::NetZone* root, const std::string& clust
   }
 
   /* create gateway*/
-  cluster->set_gateway(cluster->create_router("router" + cluster_suffix));
+  cluster->set_gateway(cluster->add_router("router" + cluster_suffix));
 
   cluster->seal();
   return cluster;
@@ -81,7 +81,7 @@ void load_platform(sg4::Engine& e)
   const auto* right_cluster = create_cluster(root, "2", {"host4", "host5", "host6"}, "host6");
 
   /* connect both clusters */
-  const sg4::Link* l = root->create_link("link1-2", "20Gbps")->set_latency("500us");
+  const sg4::Link* l = root->add_link("link1-2", "20Gbps")->set_latency("500us");
   sg4::LinkInRoute link{l};
   root->add_route(left_cluster, right_cluster, {link});
 

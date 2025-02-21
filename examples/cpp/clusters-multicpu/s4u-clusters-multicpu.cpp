@@ -107,7 +107,7 @@ static sg4::NetZone* create_hostzone(sg4::NetZone* zone, const std::vector<unsig
     if (i == 0)
       host_zone->set_gateway(host->get_netpoint());
     /* create split-duplex link */
-    auto* link = host_zone->create_split_duplex_link("link-" + cpu_name, link_bw)->set_latency(link_lat);
+    auto* link = host_zone->add_split_duplex_link("link-" + cpu_name, link_bw)->set_latency(link_lat);
     /* connecting CPU to outer world */
     host_zone->add_route(host, nullptr, {{link, sg4::LinkInRoute::Direction::UP}}, true);
   }
@@ -135,7 +135,7 @@ static sg4::NetZone* create_hostzone(sg4::NetZone* zone, const std::vector<unsig
  */
 static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
 {
-  return zone->create_link("limiter-" + std::to_string(id), 1e9)->seal();
+  return zone->add_link("limiter-" + std::to_string(id), 1e9)->seal();
 }
 
 /**

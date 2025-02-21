@@ -408,7 +408,7 @@ int main(int argc, char* argv[])
   receiver->set_auto_restart(true);
   pr::Profile* profile_link = pr::ProfileBuilder::from_string("link_profile", ctx.link_profile.str(), 0);
   sg4::Link const* link =
-      zone->create_link("link", LinkBandwidth)->set_latency(LinkLatency)->set_state_profile(profile_link)->seal();
+      zone->add_link("link", LinkBandwidth)->set_latency(LinkLatency)->set_state_profile(profile_link)->seal();
   zone->add_route(sender_host, receiver_host, {link});
   zone->seal();
 

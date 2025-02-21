@@ -61,12 +61,12 @@ static sg4::NetZone* create_zone(sg4::NetZone* root, const std::string& id)
   auto* zone           = root->add_netzone_star(id);
   constexpr int n_host = 2;
 
-  zone->set_gateway(zone->create_router("router" + id));
+  zone->set_gateway(zone->add_router("router" + id));
   for (int i = 0; i < n_host; i++) {
     std::string hostname = id + "-cpu-" + std::to_string(i);
     auto* host           = zone->add_host(hostname, 1e9);
     host->create_disk("disk-" + hostname, 1e9, 1e6);
-    const auto* link = zone->create_link("link-" + hostname, 1e9);
+    const auto* link = zone->add_link("link-" + hostname, 1e9);
     zone->add_route(host, nullptr, {link});
   }
   return zone;
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
   auto* root       = e.get_netzone_root();
   auto* zoneA = create_zone(root, "A");
   auto* zoneB = create_zone(root, "B");
-  const auto* link = root->create_link("root-link", 1e10);
+  const auto* link = root->add_link("root-link", 1e10);
   root->add_route(zoneA, zoneB, {sg4::LinkInRoute(link)}, true);
 
   std::vector<sg4::Host*> host_list = e.get_all_hosts();

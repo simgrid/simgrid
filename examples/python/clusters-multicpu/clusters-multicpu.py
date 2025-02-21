@@ -98,7 +98,7 @@ def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], ident: int) 
         if i == 0:
             host_zone.set_gateway(host.netpoint)
         # create split-duplex link
-        link = host_zone.create_split_duplex_link("link-" + cpu_name, link_bw)
+        link = host_zone.add_split_duplex_link("link-" + cpu_name, link_bw)
         link.set_latency(link_lat).seal()
         # connecting CPU to outer world
         host_zone.add_route(host, None, [simgrid.LinkInRoute(link, simgrid.LinkInRoute.Direction.UP)], True)
@@ -127,7 +127,7 @@ def create_limiter(zone: simgrid.NetZone, coord: typing.List[int], ident: int) -
     :param ident: Internal identifier in the torus (for information)
     :return: Limiter link
     """
-    return zone.create_link("limiter-" + str(ident), [1e9]).seal()
+    return zone.add_link("limiter-" + str(ident), [1e9]).seal()
 
 
 def create_torus_cluster(parent: simgrid.NetZone):

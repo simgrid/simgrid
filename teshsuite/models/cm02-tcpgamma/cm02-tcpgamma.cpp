@@ -85,7 +85,7 @@ int main(int argc, char** argv)
   auto* zone        = engine.get_netzone_root();
   auto const* host1 = zone->add_host("host1", 1e6)->seal();
   auto const* host2 = zone->add_host("host2", 1e6)->seal();
-  auto* testlink    = zone->create_link("L1", 1e10)->seal();
+  auto* testlink    = zone->add_link("L1", 1e10)->seal();
   zone->add_route(host1, host2, {testlink});
 
   engine.add_actor("dispatcher", engine.host_by_name("host1"), main_dispatcher, testlink);

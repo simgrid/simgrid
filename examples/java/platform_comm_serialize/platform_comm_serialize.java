@@ -97,7 +97,7 @@ public class platform_comm_serialize {
     var receiver = zone.add_host("receiver", 1);
 
     /* create split-duplex link1 (UP/DOWN), limiting the number of concurrent flows in it for 2 */
-    var link = zone.create_split_duplex_link("link1", 10e9).set_latency(10e-6).set_concurrency_limit(2);
+    var link = zone.add_split_duplex_link("link1", 10e9).set_latency(10e-6).set_concurrency_limit(2);
 
     /* create routes between nodes */
     zone.add_route(sender, receiver, new Link[] {link});

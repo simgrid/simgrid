@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 
   auto* host2 = root->add_host("host2", 1e9);
 
-  const auto* link = root->create_link("link", 1e9);
+  const auto* link = root->add_link("link", 1e9);
   root->add_route(host1, host2, {link});
   root->seal();
 

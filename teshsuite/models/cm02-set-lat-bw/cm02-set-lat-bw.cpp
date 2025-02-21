@@ -109,9 +109,9 @@ int main(int argc, char** argv)
   }
 
   for (const auto& name : {"L1", "L2", "L3", "L4"}) {
-    links[name] = zone->create_link(name, 1e9)->set_latency(1e-9)->seal();
+    links[name] = zone->add_link(name, 1e9)->set_latency(1e-9)->seal();
   }
-  links["L0"] = zone->create_link("L0", 1e3)->seal();
+  links["L0"] = zone->add_link("L0", 1e3)->seal();
   zone->add_route(hosts["S1"], hosts["C1"], {links["L1"], links["L0"], links["L2"]});
   zone->add_route(hosts["S2"], hosts["C2"], {links["L3"], links["L0"], links["L4"]});
   zone->seal();

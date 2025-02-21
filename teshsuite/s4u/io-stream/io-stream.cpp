@@ -112,7 +112,7 @@ int main(int argc, char** argv)
   auto* bob  = zone->add_host("bob", 1e6);
   auto* alice  = zone->add_host("alice", 1e6);
 
-  auto* link = zone->create_link("link", "2MBps")->set_latency("50us");
+  auto* link = zone->add_link("link", "2MBps")->set_latency("50us");
   zone->add_route(bob, alice, {link});
 
   bob->create_disk("bob_disk", "1MBps", "500kBps");

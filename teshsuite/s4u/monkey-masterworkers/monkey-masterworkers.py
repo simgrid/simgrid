@@ -90,7 +90,7 @@ if __name__ == '__main__':
   Actor.create("master", main, master).set_auto_restart(True)
 
   for i in range(1, host_count):
-    link = rootzone.create_split_duplex_link(f"link {i}", "1MBps").set_latency("24us")
+    link = rootzone.add_split_duplex_link(f"link {i}", "1MBps").set_latency("24us")
     host = rootzone.add_host(f"lilibeth {i}", 1e9)
     rootzone.add_route(main, host, [link])
     Actor.create("worker", host, worker, i).set_auto_restart(True)

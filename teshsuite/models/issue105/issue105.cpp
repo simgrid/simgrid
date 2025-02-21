@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
                                                                                        "1 200\n"
                                                                                        "100 42000000\n",
                                                                                        150);
-  const sg4::Link* linkSa      = world->create_link("link-front-sa", "42MBps")
+  const sg4::Link* linkSa      = world->add_link("link-front-sa", "42MBps")
                                 ->set_latency("20ms")
                                 ->set_latency_profile(linkSaLatencyProfile)
                                 ->set_bandwidth_profile(linkSaBandwidthProfile)
