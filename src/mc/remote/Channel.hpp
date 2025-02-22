@@ -23,9 +23,11 @@ namespace simgrid::mc {
 class Channel {
   int socket_ = -1;
   template <class M> static constexpr bool messageType() { return std::is_class_v<M> && std::is_trivial_v<M>; }
-  char buffer_[MC_MESSAGE_LENGTH];
-  size_t buffer_next_ = 0;
-  size_t buffer_size_ = 0;
+  char buffer_in_[MC_MESSAGE_LENGTH];
+  size_t buffer_in_next_ = 0;
+  size_t buffer_in_size_ = 0;
+  char buffer_out_[MC_MESSAGE_LENGTH];
+  size_t buffer_out_size_ = 0;
 
 public:
   Channel() = default;
@@ -49,6 +51,9 @@ public:
   {
     return this->send(&m, sizeof(M));
   }
+  // Pack (delayed send)
+  void pack(const void* message, size_t size); // queue something for later emission
+  int send();                                  // Send everything that was packed
 
   // Receive
   std::pair<bool, void*> receive(size_t size);
@@ -61,7 +66,7 @@ public:
   // closed by peer)
   std::pair<bool, MessageType> peek_message_type();
   void reinject(const char* data, size_t size);
-  bool has_pending_data() const { return buffer_size_ != 0; }
+  bool has_pending_data() const { return buffer_in_size_ != 0; }
 
   // Socket handling
   int get_socket() const { return socket_; }

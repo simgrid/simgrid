@@ -33,7 +33,7 @@ public:
 private:
   void handle_deadlock_check(const s_mc_message_int_t* msg) const;
   void handle_simcall_execute(const s_mc_message_simcall_execute_t* message) const;
-  void handle_replay(const s_mc_message_replay_t* msg) const;
+  void handle_replay(const s_mc_message_int_t* msg);
   void handle_one_way(const s_mc_message_one_way_t* msg);
   void handle_finalize(const s_mc_message_int_t* msg) const;
   void handle_fork(const s_mc_message_fork_t* msg);

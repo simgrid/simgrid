@@ -33,7 +33,6 @@ XBT_DECLARE_ENUM_CLASS(MessageType, NONE, FORK, FORK_REPLY, WAIT_CHILD, WAIT_CHI
 constexpr unsigned MC_MESSAGE_LENGTH                 = 48 * 1024 * 1024;
 constexpr unsigned MC_SOCKET_NAME_LEN                = sizeof(sockaddr_un::sun_path);
 constexpr unsigned SIMCALL_SERIALIZATION_BUFFER_SIZE = 2048;
-constexpr unsigned MC_MAX_REPLAY_SIZE                = 1024;
 
 /** Basic structure for a MC message
  *
@@ -73,13 +72,6 @@ struct s_mc_message_simcall_execute_answer_t {
   simgrid::mc::MessageType type;
   aid_t aid;
   std::array<char, SIMCALL_SERIALIZATION_BUFFER_SIZE> buffer;
-};
-
-struct s_mc_message_replay_t {
-  simgrid::mc::MessageType type;
-  unsigned count;
-  unsigned char aids[MC_MAX_REPLAY_SIZE];
-  unsigned char times[MC_MAX_REPLAY_SIZE];
 };
 
 struct s_mc_message_actors_status_t {

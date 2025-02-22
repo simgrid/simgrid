@@ -137,15 +137,22 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
   xbt_assert(channel_.send(answer) == 0, "Could not send response: %s", strerror(errno));
 }
 
-void AppSide::handle_replay(const s_mc_message_replay_t* msg) const
+void AppSide::handle_replay(const s_mc_message_int_t* msg)
 {
-  aid_t aid;
-  int times_considered;
-  int replay_size = msg->count;
-  XBT_DEBUG("Going to replay %d transitions", replay_size);
-  for (int i = 0; i < replay_size; i++) {
-    aid              = msg->aids[i];
-    times_considered = msg->times[i];
+  unsigned replay_size = msg->value;
+
+  auto [more_aid, aids] = channel_.receive(sizeof(unsigned char) * replay_size);
+  if (not more_aid)
+    ::_Exit(0); // Nobody's listening to that process anymore => exit as quickly as possible.
+
+  auto [more_times, times] = channel_.receive(sizeof(unsigned char) * replay_size);
+  if (not more_times)
+    ::_Exit(0); // Nobody's listening to that process anymore => exit as quickly as possible.
+
+  XBT_DEBUG("Going to replay %u transitions", replay_size);
+  for (unsigned i = 0; i < replay_size; i++) {
+    aid_t aid            = ((unsigned char*)aids)[i];
+    int times_considered = ((unsigned char*)times)[i];
 
     XBT_VERB("MC asked to replay %ld(nb_times=%d)", aid, times_considered);
     kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(aid);
@@ -476,8 +483,8 @@ void AppSide::handle_messages()
         break;
 
       case MessageType::REPLAY:
-        received = channel_.receive(sizeof(s_mc_message_replay_t));
-        handle_replay((s_mc_message_replay_t*)received.second);
+        received = channel_.receive(sizeof(s_mc_message_int_t));
+        handle_replay((s_mc_message_int_t*)received.second);
         break;
 
       case MessageType::GO_ONE_WAY:

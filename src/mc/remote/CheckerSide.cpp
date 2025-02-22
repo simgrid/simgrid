@@ -267,25 +267,27 @@ Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool ne
 
 void CheckerSide::handle_replay(std::deque<std::pair<aid_t, int>> to_replay)
 {
-
-  s_mc_message_replay_t replay_msg = {};
+  s_mc_message_int_t replay_msg = {};
   replay_msg.type  = MessageType::REPLAY;
-  replay_msg.count = to_replay.size();
+  replay_msg.value              = to_replay.size();
 
-  xbt_assert(to_replay.size() < MC_MAX_REPLAY_SIZE,
-             "Not enough space to replay the sequence (size:%d; max size: %u). Fix me!", (int)to_replay.size(),
-             MC_MAX_REPLAY_SIZE);
+  unsigned char* aids  = (unsigned char*)alloca(sizeof(unsigned char) * to_replay.size());
+  unsigned char* times = (unsigned char*)alloca(sizeof(unsigned char) * to_replay.size());
 
   XBT_DEBUG("send a replay of size %lu", to_replay.size());
   int i = 0;
   for (auto const& [aid, time] : to_replay) {
     xbt_assert(aid < 255, "Overflow on the aid value. %ld is too big to fit in an unsigned char", aid);
-    replay_msg.aids[i]  = aid;
-    replay_msg.times[i] = time;
+    xbt_assert(time < 255, "Overflow on the time_considered value. %d is too big to fit in an unsigned char", time);
+    aids[i]  = aid;
+    times[i] = time;
     i++;
   }
+  get_channel().pack(&replay_msg, sizeof(replay_msg));
+  get_channel().pack(aids, sizeof(unsigned char) * to_replay.size());
+  get_channel().pack(times, sizeof(unsigned char) * to_replay.size());
 
-  xbt_assert(get_channel().send(replay_msg) == 0, "Could not send message to the app: %s", strerror(errno));
+  xbt_assert(get_channel().send() == 0, "Could not send message to the app: %s", strerror(errno));
 
   // Wait for the application to signal that it is waiting
   sync_with_app();
