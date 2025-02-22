@@ -49,7 +49,6 @@ public:
   {
     return this->send(&m, sizeof(M));
   }
-  void debug();
 
   // Receive
   std::pair<bool, void*> receive(size_t size);

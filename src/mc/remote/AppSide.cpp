@@ -67,7 +67,6 @@ AppSide* AppSide::get()
   XBT_DEBUG("Model-checked application found socket FD %i", fd);
 
   instance_ = std::make_unique<simgrid::mc::AppSide>(fd);
-  instance_->get_channel().debug();
 
   // If we plan to fork, remove the SIGINT handler that would get messed up by all the forked childs
   if (not _sg_mc_nofork)

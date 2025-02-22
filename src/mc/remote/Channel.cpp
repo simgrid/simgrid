@@ -54,12 +54,6 @@ int Channel::send(const void* message, size_t size) const
   }
   return 0;
 }
-void Channel::debug()
-{
-  XBT_DEBUG("%d debugs the channel; buffer size:%lu; buffer next: %lu", getpid(), buffer_size_, buffer_next_);
-  if (XBT_LOG_ISENABLED(mc_channel, xbt_log_priority_debug))
-    xbt_backtrace_display_current();
-}
 
 std::pair<bool, void*> Channel::receive(size_t size)
 {
