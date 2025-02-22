@@ -25,7 +25,7 @@ $ $VALGRIND_NO_LEAK_CHECK ../../../smpi_script/bin/smpirun -quiet -wrapper "${bi
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
 > [0.000000] [mc_global/INFO]   Actor 1 in :0:() ==> simcall: iSend(mbox=2)
 > [0.000000] [mc_global/INFO]   Actor 2 in :0:() ==> simcall: iSend(mbox=3)
-> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;2'
+> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;2'
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 3 unique states visited; 0 explored traces (0 transition replays, 3 states visited overall)
 > [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
 > [0.000000] [mc_ct/INFO] *********************************

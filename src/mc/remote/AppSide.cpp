@@ -67,6 +67,7 @@ AppSide* AppSide::get()
   XBT_DEBUG("Model-checked application found socket FD %i", fd);
 
   instance_ = std::make_unique<simgrid::mc::AppSide>(fd);
+  instance_->get_channel().debug();
 
   // If we plan to fork, remove the SIGINT handler that would get messed up by all the forked childs
   if (not _sg_mc_nofork)
@@ -167,18 +168,19 @@ void AppSide::handle_replay(const s_mc_message_replay_t* msg) const
 void AppSide::handle_one_way(const s_mc_message_one_way_t* msg)
 {
   auto* engine = kernel::EngineImpl::get_instance();
+  bool is_random = msg->is_random;
 
   std::vector<aid_t> fireables;
   for (auto const& [aid, actor] : engine->get_actor_list())
     if (mc::actor_is_enabled(actor))
       fireables.emplace_back(aid);
-  if (not msg->is_random)
+  if (not is_random)
     std::sort(fireables.begin(), fireables.end());
   while (fireables.size() > 0) {
     XBT_DEBUG("App<%d> is now going one way! There are %lu actors to run here", getpid(), fireables.size());
 
-    unsigned long chosen = msg->is_random ? xbt::random::uniform_int(0, fireables.size() - 1)
-                                          : 0; // The first aid since fireables is sorted
+    unsigned long chosen =
+        is_random ? xbt::random::uniform_int(0, fireables.size() - 1) : 0; // The first aid since fireables is sorted
 
     XBT_DEBUG("Picked actor %ld to run", fireables[chosen]);
     aid_t chosen_aid = engine->get_actor_by_pid(fireables[chosen])->get_pid();
@@ -280,7 +282,7 @@ void AppSide::handle_one_way(const s_mc_message_one_way_t* msg)
     for (auto const& [aid, actor] : engine->get_actor_list())
       if (mc::actor_is_enabled(actor))
         fireables.emplace_back(aid);
-    if (!msg->is_random)
+    if (not is_random)
       std::sort(fireables.begin(), fireables.end());
   }
   XBT_DEBUG("I've finished guys! What do I do now ?");
@@ -397,6 +399,7 @@ void AppSide::handle_actors_status(const s_mc_message_actors_status_t* msg) cons
   struct s_mc_message_actors_status_answer_t answer = {};
   answer.type                                       = MessageType::ACTORS_STATUS_REPLY_COUNT;
   answer.count                                      = static_cast<int>(status.size());
+  XBT_DEBUG("Send ACTORS_STATUS_REPLY with count %d", answer.count);
 
   xbt_assert(channel_.send(answer) == 0, "Could not send ACTORS_STATUS_REPLY msg: %s", strerror(errno));
   if (answer.count > 0) {
@@ -449,79 +452,72 @@ void AppSide::handle_actors_maxpid() const
   xbt_assert(channel_.send(answer) == 0, "Could not send response: %s", strerror(errno));
 }
 
-#define assert_msg_size(_name_, _type_)                                                                                \
-  xbt_assert(received_size == sizeof(_type_), "Unexpected size for " _name_ " (%zd != %zu)", received_size,            \
-             sizeof(_type_))
-
 void AppSide::handle_messages()
 {
   while (true) { // Until we get a CONTINUE message
     XBT_DEBUG("Waiting messages from the model-checker");
 
-    std::array<char, MC_MESSAGE_LENGTH> message_buffer;
-    ssize_t received_size = channel_.receive(message_buffer.data(), message_buffer.size());
+    auto [more_data, msg_type] = channel_.peek_message_type();
 
-    if (received_size == 0) {
+    if (not more_data) {
       XBT_DEBUG("Socket closed on the Checker side, bailing out.");
       ::_Exit(0); // Nobody's listening to that process anymore => exit as quickly as possible.
     }
-    xbt_assert(received_size >= 0, "Could not receive commands from the model-checker: %s", strerror(errno));
-    xbt_assert(static_cast<size_t>(received_size) >= sizeof(s_mc_message_t), "Cannot handle short message (size=%zd)",
-               received_size);
+    XBT_DEBUG("Got a %s message from the model-checker", to_c_str(msg_type));
 
-    const s_mc_message_t* message = (s_mc_message_t*)message_buffer.data();
-    switch (message->type) {
+    std::pair<bool, void*> received;
+    switch (msg_type) {
       case MessageType::CONTINUE:
-        assert_msg_size("MESSAGE_CONTINUE", s_mc_message_t);
+        received = channel_.receive(sizeof(s_mc_message_t));
         return;
 
       case MessageType::DEADLOCK_CHECK:
-        assert_msg_size("DEADLOCK_CHECK", s_mc_message_int_t);
-        handle_deadlock_check((s_mc_message_int_t*)message);
+        received = channel_.receive(sizeof(s_mc_message_int_t));
+        handle_deadlock_check((s_mc_message_int_t*)received.second);
         break;
 
       case MessageType::SIMCALL_EXECUTE:
-        assert_msg_size("SIMCALL_EXECUTE", s_mc_message_simcall_execute_t);
-        handle_simcall_execute((s_mc_message_simcall_execute_t*)message_buffer.data());
+        received = channel_.receive(sizeof(s_mc_message_simcall_execute_t));
+        handle_simcall_execute((s_mc_message_simcall_execute_t*)received.second);
         break;
 
       case MessageType::REPLAY:
-        assert_msg_size("REPLAY", s_mc_message_replay_t);
-        handle_replay((s_mc_message_replay_t*)message_buffer.data());
+        received = channel_.receive(sizeof(s_mc_message_replay_t));
+        handle_replay((s_mc_message_replay_t*)received.second);
         break;
 
       case MessageType::GO_ONE_WAY:
-        assert_msg_size("GO_ONE_WAY", s_mc_message_one_way_t);
-        handle_one_way((s_mc_message_one_way_t*)message_buffer.data());
+        received = channel_.receive(sizeof(s_mc_message_one_way_t));
+        handle_one_way((s_mc_message_one_way_t*)received.second);
         break;
 
       case MessageType::FINALIZE:
-        assert_msg_size("FINALIZE", s_mc_message_int_t);
-        handle_finalize((s_mc_message_int_t*)message_buffer.data());
+        received = channel_.receive(sizeof(s_mc_message_int_t));
+        handle_finalize((s_mc_message_int_t*)received.second);
         break;
 
       case MessageType::FORK:
-        assert_msg_size("FORK", s_mc_message_fork_t);
-        handle_fork((s_mc_message_fork_t*)message_buffer.data());
+        received = channel_.receive(sizeof(s_mc_message_fork_t));
+        handle_fork((s_mc_message_fork_t*)received.second);
         break;
 
       case MessageType::WAIT_CHILD:
-        assert_msg_size("WAIT_CHILD", s_mc_message_int_t);
-        handle_wait_child((s_mc_message_int_t*)message_buffer.data());
+        received = channel_.receive(sizeof(s_mc_message_int_t));
+        handle_wait_child((s_mc_message_int_t*)received.second);
         break;
 
       case MessageType::ACTORS_STATUS:
-        assert_msg_size("ACTORS_STATUS", s_mc_message_actors_status_t);
-        handle_actors_status((s_mc_message_actors_status_t*)message_buffer.data());
+        received = channel_.receive(sizeof(s_mc_message_actors_status_t));
+        handle_actors_status((s_mc_message_actors_status_t*)received.second);
         break;
 
       case MessageType::ACTORS_MAXPID:
-        assert_msg_size("ACTORS_MAXPID", s_mc_message_t);
+        received = channel_.receive(sizeof(s_mc_message_t));
         handle_actors_maxpid();
         break;
 
       default:
-        xbt_die("Received unexpected message %s (%i)", to_c_str(message->type), static_cast<int>(message->type));
+        xbt_die("Received unexpected message %s (%i)", to_c_str(msg_type), static_cast<int>(msg_type));
         break;
     }
   }
@@ -534,6 +530,7 @@ void AppSide::main_loop()
   sthread_disable();
   coverage_checkpoint();
   sthread_enable();
+
   while (true) {
     simgrid::mc::execute_actors();
     xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send WAITING message to model-checker: %s",

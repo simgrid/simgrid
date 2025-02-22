@@ -8,12 +8,15 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
+#include "src/mc/remote/Channel.hpp"
 #include "src/mc/remote/mc_protocol.h"
 #include "xbt/asserts.h"
 #include "xbt/config.hpp"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
 #include <cerrno>
+#include <unistd.h>
+#include <utility>
 
 #ifdef __linux__
 #include <sys/prctl.h>
@@ -187,15 +190,11 @@ CheckerSide::CheckerSide(int socket, CheckerSide* child_checker)
 {
   count_++;
 
-  s_mc_message_int_t answer;
-  ssize_t s = get_channel().receive(answer);
-  xbt_assert(s != -1, "Could not receive answer to FORK_REPLY");
-  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
-  xbt_assert(answer.type == MessageType::FORK_REPLY,
-             "Received unexpected message %s (%i); expected MessageType::FORK_REPLY (%i)", to_c_str(answer.type),
-             (int)answer.type, (int)MessageType::FORK_REPLY);
-  xbt_assert(answer.value != 0, "Error while forking the application.");
-  pid_ = answer.value;
+  auto* answer = (s_mc_message_int_t*)(get_channel().expect_message(sizeof(s_mc_message_int_t), MessageType::FORK_REPLY,
+                                                                    "Could not receive answer to FORK_REPLY"));
+
+  xbt_assert(answer->value != 0, "Error while forking the application.");
+  pid_ = answer->value;
 
   wait_for_requests();
 }
@@ -253,23 +252,23 @@ Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool ne
     get_channel().send(execute);
 
     sync_with_app(); // The app may send messages while processing the transition
+  } else {
+    XBT_DEBUG("Not sending EXECUTE as we're one way");
   }
 
   peek_assertion_failure();
 
-  s_mc_message_simcall_execute_answer_t answer = {};
-  ssize_t s = get_channel().receive(answer);
-  xbt_assert(s != -1, "Could not receive message");
-  xbt_assert(s > 0 && answer.type == MessageType::SIMCALL_EXECUTE_REPLY,
-             "%d Received unexpected message %s (%i); expected MessageType::SIMCALL_EXECUTE_REPLY (%i)", getpid(),
-             to_c_str(answer.type), (int)answer.type, (int)MessageType::SIMCALL_EXECUTE_REPLY);
-  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
+  auto* answer = (s_mc_message_simcall_execute_answer_t*)(get_channel().expect_message(
+      sizeof(s_mc_message_simcall_execute_answer_t), MessageType::SIMCALL_EXECUTE_REPLY,
+      "Could not receive answer to SIMCALL_EXECUTE"));
 
   if (new_transition) {
-    std::stringstream stream(answer.buffer.data());
+    XBT_DEBUG("Got a transtion");
+    std::stringstream stream(answer->buffer.data());
     return deserialize_transition(aid, times_considered, stream);
-  } else
-    return nullptr;
+  }
+  XBT_DEBUG("No need for transitions today");
+  return nullptr;
 }
 
 void CheckerSide::handle_replay(std::deque<std::pair<aid_t, int>> to_replay)
@@ -306,13 +305,8 @@ void CheckerSide::finalize(bool terminate_asap)
   m.value              = terminate_asap;
   xbt_assert(get_channel().send(m) == 0, "Could not ask the app to finalize on need");
 
-  s_mc_message_t answer;
-  ssize_t s = get_channel().receive(answer);
-  xbt_assert(s != -1, "Could not receive answer to FINALIZE");
-  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
-  xbt_assert(answer.type == MessageType::FINALIZE_REPLY,
-             "Received unexpected message %s (%i); expected MessageType::FINALIZE_REPLY (%i)", to_c_str(answer.type),
-             (int)answer.type, (int)MessageType::FINALIZE_REPLY);
+  get_channel().expect_message(sizeof(s_mc_message_t), MessageType::FINALIZE_REPLY,
+                               "Could not receive answer to FINALIZE");
 }
 
 aid_t CheckerSide::get_aid_of_next_transition()
@@ -325,8 +319,8 @@ aid_t CheckerSide::get_aid_of_next_transition()
   }
 
   if (type == MessageType::WAITING) {
-    s_mc_message_t waiting_msg;
-    get_channel().receive(waiting_msg);
+    get_channel().expect_message(sizeof(s_mc_message_t), MessageType::WAITING,
+                                 "Could not receive MessageType::WAITING");
     is_one_way = false;
     return -1;
   } else {
@@ -355,9 +349,7 @@ void CheckerSide::sync_with_app()
     return;
 
   /* Stop waiting for eventual ASSERTION message when we get something else, that must be WAITING */
-  s_mc_message_t msg;
-  get_channel().receive(msg);
-  xbt_assert(msg.type == MessageType::WAITING, "Unexpected message");
+  get_channel().expect_message(sizeof(s_mc_message_t), MessageType::WAITING, "Could not receive MessageType::WAITING");
 }
 
 void CheckerSide::wait_for_requests()
@@ -431,14 +423,10 @@ void CheckerSide::handle_waitpid()
     xbt_assert(child_checker_->get_channel().send(request) == 0,
                "Could not ask my child to waitpid its child for me: %s", strerror(errno));
 
-    s_mc_message_int_t answer;
-    ssize_t answer_size = child_checker_->get_channel().receive(answer);
-    xbt_assert(answer_size != -1, "Could not receive message");
-    xbt_assert(answer.type == MessageType::WAIT_CHILD_REPLY,
-               "The received message is not the WAIT_CHILD_REPLY I was expecting but of type %s",
-               to_c_str(answer.type));
-    xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
-    handle_dead_child(answer.value);
+    auto answer = (s_mc_message_int_t*)child_checker_->get_channel().expect_message(
+        sizeof(s_mc_message_int_t), MessageType::WAIT_CHILD_REPLY, "Could not receive MessageType::WAIT_CHILD_REPLY");
+
+    handle_dead_child(answer->value);
   }
 }
 

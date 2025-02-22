@@ -15,6 +15,7 @@
 #include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
+#include <cstring>
 #include <limits>
 #include <signal.h>
 
@@ -33,7 +34,7 @@
 #include <sys/personality.h>
 #endif
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_session, mc, "Model-checker session");
 XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 namespace simgrid::mc {
@@ -115,15 +116,11 @@ unsigned long RemoteApp::get_maxpid() const
   // But counting correctly accross state checkpoint/restore would be annoying.
 
   checker_side_->get_channel().send(MessageType::ACTORS_MAXPID);
-  s_mc_message_int_t answer;
-  ssize_t answer_size = checker_side_->get_channel().receive(answer);
-  xbt_assert(answer_size != -1, "Could not receive message");
-  xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
-  xbt_assert(answer.type == MessageType::ACTORS_MAXPID_REPLY,
-             "Received unexpected message %s (%i); expected MessageType::ACTORS_MAXPID_REPLY (%i)",
-             to_c_str(answer.type), (int)answer.type, (int)MessageType::ACTORS_MAXPID_REPLY);
 
-  return answer.value;
+  auto* answer = (s_mc_message_int_t*)checker_side_->get_channel().expect_message(
+      sizeof(s_mc_message_int_t), MessageType::ACTORS_MAXPID_REPLY, "Could not receive message");
+
+  return answer->value;
 }
 
 void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
@@ -147,53 +144,50 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
 
   checker_side_->peek_assertion_failure();
 
-  s_mc_message_actors_status_answer_t answer;
-  ssize_t answer_size = checker_side_->get_channel().receive(answer);
-  xbt_assert(answer_size != -1, "Could not receive message");
-  xbt_assert(answer.type == MessageType::ACTORS_STATUS_REPLY_COUNT,
-             "%d Received unexpected message %s (%i); expected MessageType::ACTORS_STATUS_REPLY_COUNT (%i)", getpid(),
-             to_c_str(answer.type), (int)answer.type, (int)MessageType::ACTORS_STATUS_REPLY_COUNT);
-  xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
+  auto* answer = (s_mc_message_actors_status_answer_t*)checker_side_->get_channel().expect_message(
+      sizeof(s_mc_message_actors_status_answer_t), MessageType::ACTORS_STATUS_REPLY_COUNT, "Could not receive message");
+  const int actor_count = answer->count; // Not sure why its value isn't stable in the buffer
 
   // Message sanity checks
-  xbt_assert(answer.count >= 0, "Received an ACTORS_STATUS_REPLY_COUNT message with an actor count of '%d' < 0",
-             answer.count);
-  xbt_assert(answer.count < std::numeric_limits<short>::max(),
+  xbt_assert(actor_count >= 0, "Received an ACTORS_STATUS_REPLY_COUNT message with an actor count of '%d' < 0",
+             actor_count);
+  xbt_assert(actor_count < std::numeric_limits<short>::max(),
              "The applications has more than %d actors, but the model-checker saves aid_t on an "
              "short int to save memory. Such app is probably too big for MC anyway.",
              std::numeric_limits<short>::max());
 
-  std::vector<s_mc_message_actors_status_one_t> status(answer.count);
-  if (answer.count > 0) {
-    size_t size      = status.size() * sizeof(s_mc_message_actors_status_one_t);
-    ssize_t received = checker_side_->get_channel().receive(status.data(), size);
-    xbt_assert(static_cast<size_t>(received) == size);
-  }
-
   whereto.clear();
+  if (actor_count > 0) {
+    size_t size           = actor_count * sizeof(s_mc_message_actors_status_one_t);
+    auto [more_data, got] = checker_side_->get_channel().receive(size);
+    xbt_assert(more_data);
+    auto* status = (s_mc_message_actors_status_one_t*)alloca(actor_count * sizeof(s_mc_message_actors_status_one_t));
+    memcpy(status, got, actor_count * sizeof(s_mc_message_actors_status_one_t));
 
-  for (const auto& actor : status) {
-    std::vector<std::shared_ptr<Transition>> actor_transitions;
+    for (int i = 0; i < actor_count; i++) {
+      const auto& actor = status[i];
+      std::vector<std::shared_ptr<Transition>> actor_transitions;
 
-    if (Exploration::get_instance()->need_actor_status_transitions()) {
-      int n_transitions = actor.max_considered;
-      for (int times_considered = 0; times_considered < n_transitions; times_considered++) {
-        s_mc_message_simcall_probe_one_t probe;
-        ssize_t received = checker_side_->get_channel().receive(probe);
-        xbt_assert(received >= 0, "Could not receive response to ACTORS_PROBE message (%s)", strerror(errno));
-        xbt_assert(static_cast<size_t>(received) == sizeof probe,
-                   "Could not receive response to ACTORS_PROBE message (%zd bytes received != %zu bytes expected",
-                   received, sizeof probe);
+      if (Exploration::get_instance()->need_actor_status_transitions()) {
+        int n_transitions = actor.max_considered;
+        for (int times_considered = 0; times_considered < n_transitions; times_considered++) {
+          auto* probe = (s_mc_message_simcall_probe_one_t*)checker_side_->get_channel().expect_message(
+              sizeof(s_mc_message_simcall_probe_one_t), MessageType::ACTORS_STATUS_REPLY_SIMCALL,
+              "Could not receive an ACTORS_STATUS_REPLY_SIMCALL message");
 
-        std::stringstream stream(probe.buffer.data());
-        if (Exploration::get_instance()->need_actor_status_transitions())
-          actor_transitions.emplace_back(deserialize_transition(actor.aid, times_considered, stream));
+          if (Exploration::get_instance()->need_actor_status_transitions()) {
+            std::stringstream stream(probe->buffer.data());
+            actor_transitions.emplace_back(deserialize_transition(actor.aid, times_considered, stream));
+          }
+        }
+        XBT_DEBUG("Received %zu transitions for actor %ld. The first one is %s", actor_transitions.size(), actor.aid,
+                  (actor_transitions.size() > 0 ? actor_transitions[0]->to_string().c_str() : "null"));
+      } else {
+        XBT_DEBUG("No need for the actor transitions today");
       }
-      XBT_DEBUG("Received %zu transitions for actor %ld. The first one is %s", actor_transitions.size(), actor.aid,
-                (actor_transitions.size() > 0 ? actor_transitions[0]->to_string().c_str() : "null"));
-    }
 
-    whereto.try_emplace(actor.aid, actor.aid, actor.enabled, actor.max_considered, std::move(actor_transitions));
+      whereto.try_emplace(actor.aid, actor.aid, actor.enabled, actor.max_considered, std::move(actor_transitions));
+    }
   }
 }
 
@@ -211,15 +205,10 @@ bool RemoteApp::check_deadlock(bool verbose) const
   request.value = verbose;
   xbt_assert(checker_side_->get_channel().send(request) == 0, "Could not check deadlock state");
 
-  s_mc_message_int_t answer;
-  ssize_t received = checker_side_->get_channel().receive(answer);
-  xbt_assert(received != -1, "Could not receive message");
-  xbt_assert(received == sizeof answer, "Broken message (size=%zd; expected %zu)", received, sizeof answer);
-  xbt_assert(answer.type == MessageType::DEADLOCK_CHECK_REPLY,
-             "Received unexpected message %s (%i); expected MessageType::DEADLOCK_CHECK_REPLY (%i)",
-             to_c_str(answer.type), (int)answer.type, (int)MessageType::DEADLOCK_CHECK_REPLY);
+  auto answer = (s_mc_message_int_t*)checker_side_->get_channel().expect_message(
+      sizeof(s_mc_message_int_t), MessageType::DEADLOCK_CHECK_REPLY, "Could not receive message");
 
-  if (answer.value != 0) {
+  if (answer->value != 0) {
     if (verbose) {
       XBT_CINFO(mc_global, "Counter-example execution trace:");
       for (auto const& frame : explo->get_textual_trace())
@@ -241,8 +230,8 @@ void RemoteApp::wait_for_requests()
 
 Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_transition)
 {
-  XBT_DEBUG("Handle simcall of pid %d (time considered: %d; new? %s)", (int)aid, times_considered,
-            (new_transition ? "yes" : "no"));
+  XBT_DEBUG("Handle simcall of pid %d (time considered: %d; %s)", (int)aid, times_considered,
+            (new_transition ? "newly considered -- not replay" : "replay"));
 
   return checker_side_->handle_simcall(aid, times_considered, new_transition);
 }

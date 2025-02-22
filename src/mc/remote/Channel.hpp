@@ -8,7 +8,9 @@
 
 #include "src/mc/remote/mc_protocol.h"
 #include "xbt/backtrace.hpp"
+#include "xbt/log.h"
 
+#include <cstddef>
 #include <type_traits>
 
 namespace simgrid::mc {
@@ -22,6 +24,7 @@ class Channel {
   int socket_ = -1;
   template <class M> static constexpr bool messageType() { return std::is_class_v<M> && std::is_trivial_v<M>; }
   char buffer_[MC_MESSAGE_LENGTH];
+  size_t buffer_next_ = 0;
   size_t buffer_size_ = 0;
 
 public:
@@ -46,13 +49,12 @@ public:
   {
     return this->send(&m, sizeof(M));
   }
+  void debug();
 
   // Receive
-  ssize_t receive(void* message, size_t size);
-  template <class M> typename std::enable_if_t<messageType<M>(), ssize_t> receive(M& m)
-  {
-    return this->receive(&m, sizeof(M));
-  }
+  std::pair<bool, void*> receive(size_t size);
+  void* expect_message(size_t size, MessageType type, const char* error_msg);
+
   // Peek (receive without consuming)
   std::pair<bool, void*> peek(size_t size);
 
