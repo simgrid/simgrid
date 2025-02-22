@@ -335,13 +335,7 @@ void AppSide::handle_fork(const s_mc_message_fork_t* msg)
   xbt_assert(pid >= 0, "Could not fork application sub-process: %s.", strerror(errno));
 
   if (pid == 0) { // Child
-    int sock = socket(AF_UNIX,
-#ifdef __APPLE__
-                      SOCK_STREAM, /* Mac OSX does not have AF_UNIX + SOCK_SEQPACKET, even if that's faster*/
-#else
-                      SOCK_SEQPACKET,
-#endif
-                      0);
+    int sock = socket(AF_UNIX, SOCK_STREAM, 0);
 
     struct sockaddr_un addr = {};
     addr.sun_family         = AF_UNIX;

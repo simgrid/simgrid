@@ -135,13 +135,7 @@ CheckerSide::CheckerSide(const std::vector<char*>& args)
   // Create an AF_UNIX socketpair used for exchanging messages between the model-checker process (ancestor)
   // and the application process (child)
   int sockets[2];
-  xbt_assert(socketpair(AF_UNIX,
-#ifdef __APPLE__
-                        SOCK_STREAM, /* Mac OSX does not have AF_UNIX + SOCK_SEQPACKET, even if that's faster */
-#else
-                        SOCK_SEQPACKET,
-#endif
-                        0, sockets) != -1,
+  xbt_assert(socketpair(AF_UNIX, SOCK_STREAM, 0, sockets) != -1,
              "Could not create socketpair: %s.\nPlease increase the file limit with `ulimit -n 10000`.",
              strerror(errno));
 

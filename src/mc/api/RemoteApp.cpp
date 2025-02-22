@@ -43,13 +43,7 @@ static std::string master_socket_name;
 
 RemoteApp::RemoteApp(const std::vector<char*>& args) : app_args_(args)
 {
-  master_socket_ = socket(AF_UNIX,
-#ifdef __APPLE__
-                          SOCK_STREAM, /* Mac OSX does not have AF_UNIX + SOCK_SEQPACKET, even if that's faster */
-#else
-                          SOCK_SEQPACKET,
-#endif
-                          0);
+  master_socket_ = socket(AF_UNIX, SOCK_STREAM, 0);
   xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
 
   master_socket_name = "/tmp/simgrid-mc-" + std::to_string(getpid());
