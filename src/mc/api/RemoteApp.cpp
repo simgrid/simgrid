@@ -144,13 +144,16 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
                                   Exploration::get_instance()->need_actor_status_transitions()};
     checker_side_->get_channel().send(msg);
   }
+
+  checker_side_->peek_assertion_failure();
+
   s_mc_message_actors_status_answer_t answer;
   ssize_t answer_size = checker_side_->get_channel().receive(answer);
   xbt_assert(answer_size != -1, "Could not receive message");
-  xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
   xbt_assert(answer.type == MessageType::ACTORS_STATUS_REPLY_COUNT,
              "%d Received unexpected message %s (%i); expected MessageType::ACTORS_STATUS_REPLY_COUNT (%i)", getpid(),
              to_c_str(answer.type), (int)answer.type, (int)MessageType::ACTORS_STATUS_REPLY_COUNT);
+  xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
 
   // Message sanity checks
   xbt_assert(answer.count >= 0, "Received an ACTORS_STATUS_REPLY_COUNT message with an actor count of '%d' < 0",
