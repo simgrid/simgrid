@@ -183,35 +183,65 @@ public:
   /** \static Add a callback fired on each newly sealed NetZone */
   static void on_seal_cb(const std::function<void(NetZone const&)>& cb) { on_seal.connect(cb); }
 
-  /**
-   * @brief Create a host
+  #ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v339("Please use NetZone::add_host") 
+  s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate) { return add_host(name, speed_per_pstate); }
+  XBT_ATTRIB_DEPRECATED_v339("Please use NetZone::add_host") 
+  s4u::Host* create_host(const std::string& name, double speed) { return add_host(name, speed); }
+  XBT_ATTRIB_DEPRECATED_v339("Please use NetZone::add_host") 
+  s4u::Host* create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate) { return add_host(name, speed_per_pstate); }
+  XBT_ATTRIB_DEPRECATED_v339("Please use NetZone::add_host") 
+  s4u::Host* create_host(const std::string& name, const std::string& speed){ return add_host(name, speed); }
+  #endif
+
+  /*** @brief Add a host to a NetZone
    *
    * @param name Host name
    * @param speed_per_pstate Vector of CPU's speeds
    */
-  s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate);
-  s4u::Host* create_host(const std::string& name, double speed);
+  s4u::Host* add_host(const std::string& name, const std::vector<double>& speed_per_pstate);
+  s4u::Host* add_host(const std::string& name, double speed);
   /**
-   * @brief Create a Host (string version)
+   * @brief Add a host to a NetZone (string version)
    *
    * @throw std::invalid_argument if speed format is incorrect.
    */
-  s4u::Host* create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate);
-  s4u::Host* create_host(const std::string& name, const std::string& speed);
+  s4u::Host* add_host(const std::string& name, const std::vector<std::string>& speed_per_pstate);
+  s4u::Host* add_host(const std::string& name, const std::string& speed);
+
+  #ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v339("Please use NetZone::add_link") 
+  s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths) { return add_link(name, bandwidths); }
+  XBT_ATTRIB_DEPRECATED_v339("Please use NetZone::add_link") 
+  s4u::Link* create_link(const std::string& name, double bandwidth) { return add_link(name, bandwidth); }
+  XBT_ATTRIB_DEPRECATED_v339("Please use NetZone::add_link") 
+  s4u::Link* create_link(const std::string& name, const std::vector<std::string>& bandwidths)  { return add_link(name, bandwidths); }
+  XBT_ATTRIB_DEPRECATED_v339("Please use NetZone::add_link") 
+  s4u::Link* create_link(const std::string& name, const std::string& bandwidth) { return add_link(name, bandwidth); }
+  #endif
 
   /**
-   * @brief Create a link
+   * @brief Add a link to a NetZone
    *
    * @param name Link name
    * @param bandwidths Link's speed (vector for wifi links)
    * @throw std::invalid_argument if bandwidth format is incorrect.
    */
-  s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths);
-  s4u::Link* create_link(const std::string& name, double bandwidth);
+  s4u::Link* add_link(const std::string& name, const std::vector<double>& bandwidths);
+  s4u::Link* add_link(const std::string& name, double bandwidth);
 
-  /** @brief Create a link (string version) */
-  s4u::Link* create_link(const std::string& name, const std::vector<std::string>& bandwidths);
-  s4u::Link* create_link(const std::string& name, const std::string& bandwidth);
+  /** @brief Add a link to a NetZone (string version) */
+  s4u::Link* add_link(const std::string& name, const std::vector<std::string>& bandwidths);
+  s4u::Link* add_link(const std::string& name, const std::string& bandwidth);
+
+  #ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v339("Please use NetZone::add_split_duplex_link")
+  s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, const std::string& bw_up,
+    const std::string& bw_down = "") { return add_split_duplex_link(name, bw_up, bw_down); }
+  XBT_ATTRIB_DEPRECATED_v339("Please use NetZone::add_split_duplex_link")
+  s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, double bw_up, double bw_down = -1) 
+  { return add_split_duplex_link(name, bw_up, bw_down); }
+  #endif
 
   /**
    * @brief Create a split-duplex link
@@ -226,18 +256,22 @@ public:
    * @param name Name of the link
    * @param bandwidth Speed
    */
-  s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, const std::string& bw_up,
+  s4u::SplitDuplexLink* add_split_duplex_link(const std::string& name, const std::string& bw_up,
                                                  const std::string& bw_down = "");
-  s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, double bw_up, double bw_down = -1);
+  s4u::SplitDuplexLink* add_split_duplex_link(const std::string& name, double bw_up, double bw_down = -1);
 
   kernel::resource::NetworkModel* get_network_model() const;
 
-  /**
+   #ifndef DOXYGEN
+   XBT_ATTRIB_DEPRECATED_v339("Please use NetZone::add_router")
+   kernel::routing::NetPoint* create_router(const std::string& name) { return add_router(name); }
+   #endif
+   /**
    * @brief Make a router within that NetZone
    *
    * @param name Router name
    */
-  kernel::routing::NetPoint* create_router(const std::string& name);
+  kernel::routing::NetPoint* add_router(const std::string& name);
 
   /** @brief Seal this netzone configuration */
   NetZone* seal();

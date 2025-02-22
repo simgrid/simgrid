@@ -352,48 +352,67 @@ PYBIND11_MODULE(simgrid, m)
                              const std::vector<const simgrid::s4u::Link*>&>(&simgrid::s4u::NetZone::add_route),
            "Add a route between 2 netzones. The gateway of each zone gets used.")
       .def("add_bypass_route", &simgrid::s4u::NetZone::add_bypass_route, "Add bypass route to NetZone.")
-      .def("create_host", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_host),
-           "Creates a host")
-      .def("create_host",
-           py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::create_host),
-           "Creates a host")
-      .def("create_host",
-           py::overload_cast<const std::string&, const std::vector<double>&>(&simgrid::s4u::NetZone::create_host),
-           "Creates a host")
-      .def("create_host",
-           py::overload_cast<const std::string&, const std::vector<std::string>&>(&simgrid::s4u::NetZone::create_host),
-           "Creates a host")
-      .def("create_link", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_link),
-           "Creates a network link")
-      .def("create_link",
-           py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::create_link),
-           "Creates a network link")
-      .def("create_link",
-           py::overload_cast<const std::string&, const std::vector<double>&>(&simgrid::s4u::NetZone::create_link),
-           "Creates a network link")
-      .def("create_link",
-           py::overload_cast<const std::string&, const std::vector<std::string>&>(&simgrid::s4u::NetZone::create_link),
-           "Creates a network link")
-      .def("create_split_duplex_link",
-           py::overload_cast<const std::string&, double, double>(&simgrid::s4u::NetZone::create_split_duplex_link),
-           "Creates a split-duplex link")
-      .def("create_split_duplex_link",
+      .def("add_host", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::add_host),
+           "Adds a host")
+      .def("add_host", py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::add_host),
+           "Adds a host")
+      .def("add_host", py::overload_cast<const std::string&, const std::vector<double>&>(&simgrid::s4u::NetZone::add_host),
+           "Adds a host")
+      .def("add_host", py::overload_cast<const std::string&, const std::vector<std::string>&>(&simgrid::s4u::NetZone::add_host),
+           "Adds a host")
+      .def("create_host", [](std::string const& name) {
+               PyErr_WarnEx(PyExc_DeprecationWarning,
+                            "create_host() is deprecated, use Netzone.add_host().", 2);
+               throw std::logic_error("Please call Netzone.add_host() instead");
+            },
+            "Creates a host") // XBT_ATTRIB_DEPRECATED_v339 
+      .def("add_link", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::add_link),
+           "Adds a network link")
+      .def("add_link",
+           py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::add_link),
+           "Adds a network link")
+      .def("add_link",
+           py::overload_cast<const std::string&, const std::vector<double>&>(&simgrid::s4u::NetZone::add_link),
+           "Addss a network link")
+      .def("add_link",
+           py::overload_cast<const std::string&, const std::vector<std::string>&>(&simgrid::s4u::NetZone::add_link),
+           "Adds a network link")
+      .def("create_link", [](std::string const& name) {
+               PyErr_WarnEx(PyExc_DeprecationWarning,
+                            "create_link() is deprecated, use Netzone.add_link().", 2);
+               throw std::logic_error("Please call Netzone.add_link() instead");
+            },
+            "Creates a link") // XBT_ATTRIB_DEPRECATED_v339 
+      .def("add_split_duplex_link",
+           py::overload_cast<const std::string&, double, double>(&simgrid::s4u::NetZone::add_split_duplex_link),
+           "Adds a split-duplex link")
+      .def("add_split_duplex_link",
            py::overload_cast<const std::string&, const std::string&, const std::string&>(
-               &simgrid::s4u::NetZone::create_split_duplex_link),
-           "Creates a split-duplex link")
-      .def(
-          "create_split_duplex_link",
+               &simgrid::s4u::NetZone::add_split_duplex_link),
+           "Adds a split-duplex link")
+      .def("add_split_duplex_link",
           [](simgrid::s4u::NetZone& net, const std::string& name, double bw) {
-            return net.create_split_duplex_link(name, bw);
+            return net.add_split_duplex_link(name, bw);
           },
-          "Creates a split-duplex link")
-      .def(
-          "create_split_duplex_link",
+          "Adds a split-duplex link")
+      .def("add_split_duplex_link",
           [](simgrid::s4u::NetZone& net, const std::string& name, const std::string& bw) {
-            return net.create_split_duplex_link(name, bw);
+            return net.add_split_duplex_link(name, bw);
           },
-          "Creates a split-duplex link")
-      .def("create_router", &simgrid::s4u::NetZone::create_router, "Create a router")
+          "Adds a split-duplex link")
+      .def("create_split_duplex_link", [](std::string const& name) {
+             PyErr_WarnEx(PyExc_DeprecationWarning,
+                          "create_split_duplex_link() is deprecated, use Netzone.add_split_duplex_link().", 2);
+             throw std::logic_error("Please call Netzone.add_split_duplex_link() instead");
+          },
+          "Creates a split-duplex link") // XBT_ATTRIB_DEPRECATED_v339 
+      .def("add_router", &simgrid::s4u::NetZone::add_router, "Adds a router")
+      .def("create_router", [](std::string const& name) {
+          PyErr_WarnEx(PyExc_DeprecationWarning,
+                       "create_router() is deprecated, use Netzone.add_router().", 2);
+          throw std::logic_error("Please call Netzone.add_router() instead");
+          },
+          "Creates a router") // XBT_ATTRIB_DEPRECATED_v339 
       .def_property_readonly("parent", &simgrid::s4u::NetZone::get_parent, "NetZone parent (read-only property).")
       // Keep `set_parent` method for backward compatibility.
       .def("get_children", &simgrid::s4u::NetZone::get_children, "Get all children of this zone.")

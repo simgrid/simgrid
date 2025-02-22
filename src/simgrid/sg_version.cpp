@@ -64,7 +64,7 @@ void sg_version()
 
   XBT_HELP("\nTo cite SimGrid in a publication, please use:\n"
            "   Henri Casanova, Arnaud Giersch, Arnaud Legrand, Martin Quinson, Frédéric Suter. \n"
-           "   Versatile, Scalable, and Accurate Simulation of Distributed Applications and Platforms. \n"
-           "   Journal of Parallel and Distributed Computing, Elsevier, 2014, 74 (10), pp.2899-2917.\n"
-           "The pdf file and a BibTeX entry for LaTeX users can be found at http://hal.inria.fr/hal-01017319");
+           "   Lowering entry barriers to developing custom simulators of distributed applications and platforms with SimGrid. \n"
+           "   Parallel Computing, Elsevier, 2025, 123, pp. 103125.\n"
+           "The pdf file and a BibTeX entry for LaTeX users can be found at http://hal.science/hal-04909441");
 }

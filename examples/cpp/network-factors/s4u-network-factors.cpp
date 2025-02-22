@@ -71,14 +71,14 @@ static void load_platform(sg4::Engine& e)
   for (int id = 0; id < 32; id++) {
     std::string hostname = prefix + std::to_string(id) + suffix;
     /* create host */
-    const sg4::Host* host = root->create_host(hostname, 1)->set_core_count(32);
+    const sg4::Host* host = root->add_host(hostname, 1)->set_core_count(32);
     /* create UP/DOWN link */
-    const sg4::Link* l = root->create_split_duplex_link(hostname, BW_REMOTE)->set_latency(LATENCY);
+    const sg4::Link* l = root->add_split_duplex_link(hostname, BW_REMOTE)->set_latency(LATENCY);
 
     /* add link UP/DOWN for communications from the host */
     root->add_route(host, nullptr, {{l, sg4::LinkInRoute::Direction::UP}}, true);
 
-    const auto* loopback = root->create_link(hostname + "_loopback", BW_LOCAL)->set_latency(LATENCY);
+    const auto* loopback = root->add_link(hostname + "_loopback", BW_LOCAL)->set_latency(LATENCY);
     root->add_route(host, host, {loopback});
   }
 

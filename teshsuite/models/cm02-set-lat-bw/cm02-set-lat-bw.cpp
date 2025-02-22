@@ -105,13 +105,13 @@ int main(int argc, char** argv)
   std::unordered_map<std::string, sg4::Link*> links;
   auto* zone = e.get_netzone_root();
   for (const auto& name : {"S1", "S2", "C1", "C2"}) {
-    hosts[name] = zone->create_host(name, 1e6)->seal();
+    hosts[name] = zone->add_host(name, 1e6)->seal();
   }
 
   for (const auto& name : {"L1", "L2", "L3", "L4"}) {
-    links[name] = zone->create_link(name, 1e9)->set_latency(1e-9)->seal();
+    links[name] = zone->add_link(name, 1e9)->set_latency(1e-9)->seal();
   }
-  links["L0"] = zone->create_link("L0", 1e3)->seal();
+  links["L0"] = zone->add_link("L0", 1e3)->seal();
   zone->add_route(hosts["S1"], hosts["C1"], {links["L1"], links["L0"], links["L2"]});
   zone->add_route(hosts["S2"], hosts["C2"], {links["L3"], links["L0"], links["L4"]});
   zone->seal();

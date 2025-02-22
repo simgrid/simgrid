@@ -155,8 +155,8 @@ int main(int argc, char** argv)
   sg4::Engine e(&argc, argv);
   std::mt19937 gen(42);
   /* simple platform containing 1 host and 2 disk */
-  auto* zone = sg4::create_full_zone("bob_zone");
-  auto* bob  = zone->create_host("bob", 1e6);
+  auto* zone = e.get_netzone_root()->add_netzone_full("bob_zone");
+  auto* bob  = zone->add_host("bob", 1e6);
   std::ifstream jsonFile("IO_noise.json");
   boost::property_tree::ptree pt;
   boost::property_tree::read_json(jsonFile, pt);

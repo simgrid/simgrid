@@ -93,11 +93,11 @@ public class platform_comm_serialize {
      * |________|    Link1      |__________|
      */
     var zone     = e.get_netzone_root();
-    var sender   = zone.create_host("sender", 1);
-    var receiver = zone.create_host("receiver", 1);
+    var sender   = zone.add_host("sender", 1);
+    var receiver = zone.add_host("receiver", 1);
 
     /* create split-duplex link1 (UP/DOWN), limiting the number of concurrent flows in it for 2 */
-    var link = zone.create_split_duplex_link("link1", 10e9).set_latency(10e-6).set_concurrency_limit(2);
+    var link = zone.add_split_duplex_link("link1", 10e9).set_latency(10e-6).set_concurrency_limit(2);
 
     /* create routes between nodes */
     zone.add_route(sender, receiver, new Link[] {link});

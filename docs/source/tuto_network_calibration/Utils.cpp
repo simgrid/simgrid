@@ -7,9 +7,9 @@
 
 void load_dahu_platform(const simgrid::s4u::Engine& e, double bw, double lat)
 {
-  auto* root = simgrid::s4u::create_star_zone("dahu");
+  auto* root = e.get_netzone_root()->add_netzone_star("dahu");
   /* create the backbone link */
-  const simgrid::s4u::Link* l_bb = root->create_link("backbone", bw)->set_latency(lat)->seal();
+  const simgrid::s4u::Link* l_bb = root->add_link("backbone", bw)->set_latency(lat);
 
   const simgrid::s4u::LinkInRoute backbone{l_bb};
   /* create nodes */
@@ -18,9 +18,9 @@ void load_dahu_platform(const simgrid::s4u::Engine& e, double bw, double lat)
   for (int i = 0; i < 32; i++) {
     /* create host */
     const auto hostname            = preffix + std::to_string(i) + suffix;
-    const simgrid::s4u::Host* host = root->create_host(hostname, 1)->seal();
+    const simgrid::s4u::Host* host = root->add_host(hostname, 1);
 
-    root->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {backbone}, true);
+    root->add_route(host, nullptr, {simgrid::s4u::LinkInRoute(backbone)}, true);
   }
   root->seal();
 }

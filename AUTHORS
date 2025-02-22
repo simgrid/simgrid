@@ -4,16 +4,20 @@ _________________
 SimGrid is a joint project. Its main authors are (alphabetic order):
 
 Henri Casanova <casanova::cs.ucsd.edu>
-  Information and Computer Sciences Department, University of Hawaii at Manoa
+  Information and Computer Sciences Department, University of Hawaii at Manoa (Honolulu, USA)
+
+Arnaud Giersch <agiersch@femto-st.fr>
+  Université Marie et Louis Pasteur, CNRS, Institut FEMTO-ST (Belfort, France)
 
 Arnaud Legrand <arnaud.legrand::imag.fr>
-  CNRS, LIG Laboratory (Grenoble, France), INRIA POLARIS project
+  CNRS, LIG Laboratory, INRIA POLARIS project (Grenoble, France)
 
 Martin Quinson <martin.quinson::ens-rennes.fr>
-  École Normale Supérieure de Rennes, IRISA Laboratory, INRIA Myriads project
+  École Normale Supérieure de Rennes, IRISA Laboratory, INRIA MAGELLAN project (Rennes, France)
 
 Fred Suter <frederic.suter::cc.in2p3.fr>
-  CNRS, IN2P3 Computing Center
+  CNRS, IN2P3 Computing Center (Lyon, France)
+  Oak Ridge National Laboratory (Oak Ridge, USA)
 
 
 

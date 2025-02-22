@@ -114,9 +114,9 @@ int main(int argc, char** argv)
   sg4::Engine e(&argc, argv);
 
   auto* rootzone = e.get_netzone_root();
-  auto* paul     = rootzone->create_host("Paul", 1e9);
-  auto* carol    = rootzone->create_host("Carol", 1e9);
-  auto* link     = rootzone->create_link("link", "1MBps")->set_latency("24us")->seal();
+  auto* paul     = rootzone->add_host("Paul", 1e9);
+  auto* carol    = rootzone->add_host("Carol", 1e9);
+  auto* link     = rootzone->add_link("link", "1MBps")->set_latency("24us")->seal();
   rootzone->add_route(paul, carol, {link});
 
   SharedBuffer buffer;

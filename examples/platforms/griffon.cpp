@@ -25,23 +25,23 @@ static sg4::NetZone* create_cabinet(sg4::NetZone* root, const std::string& name,
   std::string suffix = ".nancy.grid5000.fr";
 
   /* create the backbone link */
-  const sg4::Link* l_bb = cluster->create_link("backbone-" + name, "1.25GBps");
+  const sg4::Link* l_bb = cluster->add_link("backbone-" + name, "1.25GBps");
   sg4::LinkInRoute backbone(l_bb);
 
   /* create all hosts and connect them to outside world */
   for (const auto& id : radicals) {
     std::string hostname = prefix + std::to_string(id) + suffix;
     /* create host */
-    const sg4::Host* host = cluster->create_host(hostname, "286.087kf");
+    const sg4::Host* host = cluster->add_host(hostname, "286.087kf");
     /* create UP/DOWN link */
-    const sg4::Link* link = cluster->create_split_duplex_link(hostname, "125MBps")->set_latency("24us");
+    const sg4::Link* link = cluster->add_split_duplex_link(hostname, "125MBps")->set_latency("24us");
 
     /* add link and backbone for communications from the host */
     cluster->add_route(host, nullptr, {{link, sg4::LinkInRoute::Direction::UP}, backbone}, true);
   }
 
   /* create gateway */
-  cluster->set_gateway(cluster->create_router(prefix + name + "-router" + suffix));
+  cluster->set_gateway(cluster->add_router(prefix + name + "-router" + suffix));
 
   cluster->seal();
   return cluster;
@@ -73,7 +73,7 @@ void load_platform(sg4::Engine& e)
   auto* root = e.get_netzone_root()->add_netzone_star("AS_griffon");
 
   /* create top link */
-  const sg4::Link* l_bb = root->create_link("backbone", "1.25GBps")->set_latency("24us")->seal();
+  const sg4::Link* l_bb = root->add_link("backbone", "1.25GBps")->set_latency("24us")->seal();
   sg4::LinkInRoute backbone{l_bb};
 
   /* create cabinet1 */

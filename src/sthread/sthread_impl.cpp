@@ -101,7 +101,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 
   sg4::Engine e(&argc, argv);
   auto* zone = e.get_netzone_root();
-  lilibeth   = zone->create_host("Lilibeth", 1e15);
+  lilibeth   = zone->add_host("Lilibeth", 1e15);
   zone->seal();
 
   /* Launch the user's main() on an actor */

@@ -16,14 +16,14 @@ TEST_CASE("kernel::routing::StarZone: Create links: exceptions", "")
 {
   simgrid::s4u::Engine e("test");
   auto* zone = e.get_netzone_root()->add_netzone_star("test");
-  SECTION("create_link: invalid bandwidth")
+  SECTION("add_link: invalid bandwidth")
   {
-    REQUIRE_THROWS_AS(zone->create_link("link", "speed"), std::invalid_argument);
+    REQUIRE_THROWS_AS(zone->add_link("link", "speed"), std::invalid_argument);
   }
 
-  SECTION("split-duplex create_link: invalid bandwidth")
+  SECTION("split-duplex add_link: invalid bandwidth")
   {
-    REQUIRE_THROWS_AS(zone->create_split_duplex_link("link", "speed"), std::invalid_argument);
+    REQUIRE_THROWS_AS(zone->add_split_duplex_link("link", "speed"), std::invalid_argument);
   }
 }
 
@@ -282,10 +282,10 @@ TEST_CASE("kernel::routing::StarZone: mix new routes and hosts", "")
   simgrid::s4u::Engine e("test");
   auto* zone = e.get_netzone_root()->add_netzone_star("test");
 
-  const simgrid::s4u::Link* link = zone->create_link("my_link", 1e6)->seal();
+  const simgrid::s4u::Link* link = zone->add_link("my_link", 1e6)->seal();
   for (int i = 0; i < 10; i++) {
     std::string cpu_name          = "CPU" + std::to_string(i);
-    const simgrid::s4u::Host* cpu = zone->create_host(cpu_name, 1e9)->seal();
+    const simgrid::s4u::Host* cpu = zone->add_host(cpu_name, 1e9)->seal();
     REQUIRE_NOTHROW(zone->add_route(cpu, nullptr, {link}));
   }
 }

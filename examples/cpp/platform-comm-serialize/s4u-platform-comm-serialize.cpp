@@ -101,12 +101,12 @@ int main(int argc, char* argv[])
    * |________|    Link1      |__________|
    */
   auto* zone     = e.get_netzone_root();
-  auto* sender   = zone->create_host("sender", 1)->seal();
-  auto* receiver = zone->create_host("receiver", 1)->seal();
+  auto* sender   = zone->add_host("sender", 1)->seal();
+  auto* receiver = zone->add_host("receiver", 1)->seal();
 
   /* create split-duplex link1 (UP/DOWN), limiting the number of concurrent flows in it for 2 */
   const auto* link =
-      zone->create_split_duplex_link("link1", 10e9)->set_latency(10e-6)->set_concurrency_limit(2)->seal();
+      zone->add_split_duplex_link("link1", 10e9)->set_latency(10e-6)->set_concurrency_limit(2)->seal();
 
   /* create routes between nodes */
   zone->add_route(sender, receiver, {link});

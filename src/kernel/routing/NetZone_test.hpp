@@ -15,7 +15,7 @@ struct CreateHost {
   simgrid::s4u::Host* operator()(simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& /*coord*/,
                                     unsigned long id) const
   {
-    return zone->create_host(std::to_string(id), "1Gf");
+    return zone->add_host(std::to_string(id), "1Gf");
   }
 };
 

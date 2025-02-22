@@ -41,7 +41,7 @@ static double cpu_variability(const sg4::Host& host, double flops)
 static void load_platform(sg4::Engine& e)
 {
   auto* zone        = e.get_netzone_root();
-  auto* runner_host = zone->create_host("runner", 1e6);
+  auto* runner_host = zone->add_host("runner", 1e6);
   runner_host->set_cpu_factor_cb(cpu_variability);
   zone->seal();
 

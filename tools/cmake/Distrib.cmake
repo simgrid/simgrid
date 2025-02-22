@@ -142,12 +142,14 @@ foreach(file ${source_to_pack})
     set(dirs_in_tarball "${dirs_in_tarball};${file_location};")
     add_custom_command(
       TARGET dist-dir
+      POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/${file_location}/)
   endif()
 
   # Actually copy the file
   add_custom_command(
     TARGET dist-dir
+    POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} ${PROJECT_NAME}-${release_version}/${file_location})
 endforeach(file ${source_to_pack})
 configure_file("${CMAKE_HOME_DIRECTORY}/MANIFEST.in.in" "${CMAKE_BINARY_DIR}/MANIFEST.in" @ONLY IMMEDIATE)
@@ -156,6 +158,7 @@ unset(PYTHON_SOURCES)
 
 add_custom_command(
   TARGET dist-dir
+  POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E echo "${GIT_VERSION}" > ${PROJECT_NAME}-${release_version}/.gitversion)
 
 ##########################################################
@@ -177,12 +180,14 @@ if (NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
       set(dirs_in_tarball "${dirs_in_bindir};${file_location};")
       add_custom_command(
         TARGET hardlinks
+	POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/${file_location}/)
     endif()
 
     # Actually copy the file
     add_custom_command(
       TARGET hardlinks
+      POST_BUILD
       COMMAND if test -f ${CMAKE_HOME_DIRECTORY}/${file} \; then rm -f ${CMAKE_BINARY_DIR}/${file}\; ln ${CMAKE_HOME_DIRECTORY}/${file} ${CMAKE_BINARY_DIR}/${file_location}\; fi
     )
   endforeach(file ${source_to_pack})

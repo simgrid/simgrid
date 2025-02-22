@@ -35,9 +35,9 @@ int main(int argc, char** argv)
 {
   sg4::Engine e(&argc, argv);
   auto* zone = e.get_netzone_root();
-  auto* host = zone->create_host("host", "1Gf");
+  auto* host = zone->add_host("host", "1Gf");
   // set up link so that data transfer from host to JBOD takes exactly 1 second (without crosstraffic)
-  const auto* link = zone->create_link("link", 1e7 / 0.97)->set_latency(0);
+  const auto* link = zone->add_link("link", 1e7 / 0.97)->set_latency(0);
 
   auto jbod_raid0 =
       simgrid::plugin::Jbod::create_jbod(zone, "jbod_raid0", 1e9, 4, simgrid::plugin::Jbod::RAID::RAID0, 1e7, 5e6);

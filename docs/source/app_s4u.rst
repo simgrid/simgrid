@@ -2110,14 +2110,14 @@ Hosts
 
   .. group-tab:: C++
 
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, double speed)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::string& speed)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_host(const std::string& name, const std::vector<double>& speed_per_pstate)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_host(const std::string& name, double speed)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_host(const std::string& name, const std::vector<std::string>& speed_per_pstate)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_host(const std::string& name, const std::string& speed)
 
   .. group-tab:: Python
 
-     .. automethod:: simgrid.NetZone.create_host
+     .. automethod:: simgrid.NetZone.add_host
 
 Links
 ^^^^^
@@ -2126,17 +2126,17 @@ Links
 
   .. group-tab:: C++
 
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string &name, const std::vector< double > &bandwidths)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string &name, double bandwidth)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string &name, const std::vector< std::string > &bandwidths)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string &name, const std::string &bandwidth)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_split_duplex_link(const std::string &name, const std::string &bandwidth)
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_split_duplex_link(const std::string &name, double bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_link(const std::string &name, const std::vector< double > &bandwidths)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_link(const std::string &name, double bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_link(const std::string &name, const std::vector< std::string > &bandwidths)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_link(const std::string &name, const std::string &bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_split_duplex_link(const std::string &name, const std::string &bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_split_duplex_link(const std::string &name, double bandwidth)
 
   .. group-tab:: Python
 
-     .. automethod:: simgrid.NetZone.create_link
-     .. automethod:: simgrid.NetZone.create_split_duplex_link
+     .. automethod:: simgrid.NetZone.add_link
+     .. automethod:: simgrid.NetZone.add_split_duplex_link
 
 Router
 ^^^^^^
@@ -2145,11 +2145,11 @@ Router
 
   .. group-tab:: C++
 
-     .. doxygenfunction:: simgrid::s4u::NetZone::create_router(const std::string& name)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_router(const std::string& name)
 
   .. group-tab:: Python
 
-     .. automethod:: simgrid.NetZone.create_router
+     .. automethod:: simgrid.NetZone.add_router
 
 .. _API_s4u_VirtualMachine:
 
