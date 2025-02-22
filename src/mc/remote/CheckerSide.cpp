@@ -232,6 +232,16 @@ std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket, const std::st
   return std::make_unique<CheckerSide>(sock, this);
 }
 
+void CheckerSide::peek_assertion_failure()
+{
+  /* Handle an ASSERTION message if any */
+  auto [more_data, type] = get_channel().peek_message_type();
+  if (not more_data) // The app closed the socket. It must be dead by now.
+    handle_waitpid();
+  if (type == MessageType::ASSERTION_FAILED)
+    Exploration::get_instance()->report_assertion_failure(); // This is a noreturn function
+}
+
 Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool new_transition)
 {
   if (not is_one_way) {
@@ -244,6 +254,8 @@ Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool ne
 
     sync_with_app(); // The app may send messages while processing the transition
   }
+
+  peek_assertion_failure();
 
   s_mc_message_simcall_execute_answer_t answer = {};
   ssize_t s = get_channel().receive(answer);
@@ -331,9 +343,6 @@ aid_t CheckerSide::get_aid_of_next_transition()
 
 void CheckerSide::sync_with_app()
 {
-  if (is_one_way)
-    return;
-
   /* Handle an ASSERTION message if any */
   auto [more_data, type] = get_channel().peek_message_type();
   if (not more_data) // The app closed the socket. It must be dead by now.
@@ -341,6 +350,9 @@ void CheckerSide::sync_with_app()
 
   if (type == MessageType::ASSERTION_FAILED)
     Exploration::get_instance()->report_assertion_failure(); // This is a noreturn function
+
+  if (is_one_way)
+    return;
 
   /* Stop waiting for eventual ASSERTION message when we get something else, that must be WAITING */
   s_mc_message_t msg;

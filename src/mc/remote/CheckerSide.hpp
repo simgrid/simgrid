@@ -56,6 +56,9 @@ public:
   /** Ask the application to run one step. A transition is built iff new_transition = true */
   Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
 
+  /** Check whether there is an assertion failure on the wire */
+  void peek_assertion_failure();
+
   /** Ask the application to run a full sequence of transition. The checker is not receiving any thing before the
    *  end */
   void handle_replay(std::deque<std::pair<aid_t, int>> to_replay);
