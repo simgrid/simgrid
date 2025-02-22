@@ -16,6 +16,7 @@
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/random.hpp"
+#include "xbt/sysdep.h"
 #include <algorithm>
 #include <cstddef>
 #include <sstream>
@@ -222,36 +223,36 @@ void AppSide::handle_one_way(const s_mc_message_one_way_t* msg)
     auto const& actor_list = kernel::EngineImpl::get_instance()->get_actor_list();
     XBT_DEBUG("Serialize the actors to answer ACTORS_STATUS from the checker. %zu actors to go.", actor_list.size());
 
-    std::vector<s_mc_message_actors_status_one_t> status;
+    auto* status =
+        (s_mc_message_actors_status_one_t*)xbt_malloc0(sizeof(s_mc_message_actors_status_one_t) * actor_list.size());
+    int i = 0;
     for (auto const& [aid, actor] : actor_list) {
       xbt_assert(actor);
       xbt_assert(actor->simcall_.observer_, "simcall %s in actor %s has no observer.", actor->simcall_.get_cname(),
                  actor->get_cname());
-      s_mc_message_actors_status_one_t one = {};
-      one.type                             = MessageType::ACTORS_STATUS_REPLY_TRANSITION;
-      one.aid                              = aid;
-      one.enabled                          = mc::actor_is_enabled(actor);
-      one.max_considered                   = actor->simcall_.observer_->get_max_consider();
-      status.push_back(one);
+      status[i].type           = MessageType::ACTORS_STATUS_REPLY_TRANSITION;
+      status[i].aid            = aid;
+      status[i].enabled        = mc::actor_is_enabled(actor);
+      status[i].max_considered = actor->simcall_.observer_->get_max_consider();
+      i++;
     }
 
     struct s_mc_message_actors_status_answer_t answer = {};
     answer.type                                       = MessageType::ACTORS_STATUS_REPLY_COUNT;
-    answer.count                                      = static_cast<int>(status.size());
+    answer.count                                      = static_cast<int>(actor_list.size());
 
     xbt_assert(channel_.send(answer) == 0, "Could not send ACTORS_STATUS_REPLY msg: %s", strerror(errno));
     if (answer.count > 0) {
-      size_t size = status.size() * sizeof(s_mc_message_actors_status_one_t);
-      xbt_assert(channel_.send(status.data(), size) == 0, "Could not send ACTORS_STATUS_REPLY data: %s",
-                 strerror(errno));
+      size_t size = actor_list.size() * sizeof(s_mc_message_actors_status_one_t);
+      xbt_assert(channel_.send(status, size) == 0, "Could not send ACTORS_STATUS_REPLY data: %s", strerror(errno));
     }
 
     if (msg->want_transitions) {
       // Serialize each transition to describe what each actor is doing
       XBT_DEBUG("Deliver ACTOR_TRANSITION_PROBE payload");
-      for (const auto& actor_status : status) {
-        const auto& actor        = actor_list.at(actor_status.aid);
-        const int max_considered = actor_status.max_considered;
+      for (unsigned i = 0; i < actor_list.size(); i++) {
+        const auto& actor        = actor_list.at(status[i].aid);
+        const int max_considered = status[i].max_considered;
 
         for (int times_considered = 0; times_considered < max_considered; times_considered++) {
           std::stringstream stream;

@@ -77,14 +77,9 @@ struct s_mc_message_simcall_execute_answer_t {
 
 struct s_mc_message_replay_t {
   simgrid::mc::MessageType type;
-  int count;
+  unsigned count;
   unsigned char aids[MC_MAX_REPLAY_SIZE];
   unsigned char times[MC_MAX_REPLAY_SIZE];
-};
-
-struct s_mc_message_restore_t {
-  simgrid::mc::MessageType type;
-  int index;
 };
 
 struct s_mc_message_actors_status_t {

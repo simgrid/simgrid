@@ -131,8 +131,8 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   // unlock actors.
 
   if (not checker_side_->get_one_way()) {
-    s_mc_message_restore_t msg = {MessageType::ACTORS_STATUS,
-                                  Exploration::get_instance()->need_actor_status_transitions()};
+    s_mc_message_actors_status_t msg = {MessageType::ACTORS_STATUS,
+                                        Exploration::get_instance()->need_actor_status_transitions()};
     checker_side_->get_channel().send(msg);
   }
 
