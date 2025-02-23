@@ -23,18 +23,42 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_channel, mc, "MC interprocess communication");
 
+// #define CHANNEL_TRACE_MSG_COUNT
+#ifdef CHANNEL_TRACE_MSG_COUNT
+int channel_count         = 0; // count the amount of open channels, to report only when the last one closes
+const int msg_type_count  = 1 + (int)simgrid::mc::MessageType::GO_ONE_WAY;
+int sends[msg_type_count] = {0};
+int recvs[msg_type_count] = {0};
+#endif
+
 namespace simgrid::mc {
 Channel::Channel(int sock, Channel const& other) : socket_(sock), buffer_in_size_(other.buffer_in_size_)
 {
   XBT_DEBUG("%d Adopt %zu bytes buffered by father channel.", getpid(), buffer_in_size_);
   if (buffer_in_size_ > 0)
     memcpy(buffer_in_, other.buffer_in_ + other.buffer_in_next_, buffer_in_size_);
+#ifdef CHANNEL_TRACE_MSG_COUNT
+  channel_count++;
+#endif
 }
 
 Channel::~Channel()
 {
   if (this->socket_ >= 0)
     close(this->socket_);
+#ifdef CHANNEL_TRACE_MSG_COUNT
+  channel_count--;
+  if (channel_count > 0)
+    return;
+  XBT_CRITICAL("-----------------------------------");
+  int total_sends = 0, total_recvs = 0;
+  for (int i = 0; i < msg_type_count; i++) {
+    XBT_CRITICAL("%s send:%d recv: %d", to_c_str((MessageType)i), sends[i], recvs[i]);
+    total_sends += sends[i];
+    total_recvs += recvs[i];
+  }
+  XBT_CRITICAL("Total send:%d recv: %d", total_sends, total_recvs);
+#endif
 }
 template <> void Channel::pack<std::string>(std::string str)
 {
@@ -80,6 +104,10 @@ int Channel::send(const void* message, size_t size)
   if (size >= sizeof(int) && is_valid_MessageType(*static_cast<const int*>(message))) {
     XBT_DEBUG("%d sends msg %s (%zu bytes from %p) buffsize: %lu next:%lu", getpid(),
               to_c_str(*static_cast<const MessageType*>(message)), size, message, buffer_in_size_, buffer_in_next_);
+#ifdef CHANNEL_TRACE_MSG_COUNT
+    if (message != buffer_out_)
+      sends[(int)*static_cast<const MessageType*>(message)]++;
+#endif
   } else {
     XBT_DEBUG("%d sends %zu bytes from %p (not a message) buffsize: %lu next:%lu", getpid(), size, message,
               buffer_in_size_, buffer_in_next_);
@@ -116,6 +144,10 @@ std::pair<bool, void*> Channel::receive(size_t size)
       return std::make_pair(more, nullptr);
     }
     answer = got;
+#ifdef CHANNEL_TRACE_MSG_COUNT
+    if (is_valid_MessageType(*static_cast<const int*>(answer)))
+      recvs[*static_cast<const int*>(answer)]++;
+#endif
   } else {
     answer = buffer_in_ + buffer_in_next_;
   }

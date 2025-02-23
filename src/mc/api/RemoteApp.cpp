@@ -243,7 +243,7 @@ void RemoteApp::replay_sequence(std::deque<std::pair<aid_t, int>> to_replay)
 
 void RemoteApp::finalize_app(bool terminate_asap)
 {
-  XBT_DEBUG("Finalise the application");
+  XBT_DEBUG("Finalize the application");
   checker_side_->finalize(terminate_asap);
 }
 
