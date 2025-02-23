@@ -1104,6 +1104,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/test_prog/prog_ns3.cpp
   tools/cmake/test_prog/prog_stackgrowth.c
   tools/cmake/test_prog/prog_stacksetup.c
+  tools/cmake/test_prog/prog_stdstacktrace.cpp
   tools/cmake/test_prog/prog_tsan.cpp
   tools/simgrid-monkey
   tools/smpi/generate_smpi_defines.pl

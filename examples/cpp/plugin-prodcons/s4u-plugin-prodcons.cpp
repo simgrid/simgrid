@@ -63,10 +63,10 @@ int main(int argc, char* argv[])
   for (int i = 0; i < 8; i++) {
     std::string hostname = "node-" + std::to_string(i) + ".simgrid.org";
 
-    const auto* host = cluster->create_host(hostname, "1Gf");
+    const auto* host = cluster->add_host(hostname, "1Gf");
 
     std::string linkname = "cluster_link_" + std::to_string(i);
-    const auto* link     = cluster->create_split_duplex_link(linkname, "1Gbps");
+    const auto* link     = cluster->add_split_duplex_link(linkname, "1Gbps");
 
     cluster->add_route(host, nullptr,  {{link, sg4::LinkInRoute::Direction::UP}}, true);
   }

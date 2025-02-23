@@ -61,11 +61,11 @@ def main():
     # |________|    Link1      |__________|
     #
     zone: NetZone = e.netzone_root
-    sender_host: Host = zone.create_host("sender", 1).seal()
-    receiver_host: Host = zone.create_host("receiver", 1).seal()
+    sender_host: Host = zone.add_host("sender", 1).seal()
+    receiver_host: Host = zone.add_host("receiver", 1).seal()
 
     # create split-duplex link1 (UP/DOWN), limiting the number of concurrent flows in it for 2
-    link = zone.create_split_duplex_link("link1", 10e9).set_latency(10e-6).set_concurrency_limit(2).seal()
+    link = zone.add_split_duplex_link("link1", 10e9).set_latency(10e-6).set_concurrency_limit(2).seal()
 
     # create routes between nodes
     zone.add_route(sender_host, receiver_host, [link])

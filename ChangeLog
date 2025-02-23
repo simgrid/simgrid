@@ -46,6 +46,9 @@ C API:
    - sg_actor_attach() now takes only 2 parameters (the props are removed)
  - Introduce sg_zone_get_property_names()
 
+Dependencies:
+ - If the compiler supports C++23, use the standard stacktraces instead of boost ones.
+
 ----------------------------------------------------------------------------
 
 

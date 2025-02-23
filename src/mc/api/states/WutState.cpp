@@ -75,8 +75,9 @@ void WutState::initialize_if_empty_wut(RemoteApp& remote_app)
       remote_app.go_one_way();
       aid_t aid = remote_app.get_aid_of_next_transition();
       add_arbitrary_todo(aid);
-    } else
+    } else {
       add_arbitrary_todo();
+    }
   }
 }
 

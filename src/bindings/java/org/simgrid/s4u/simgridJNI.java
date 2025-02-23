@@ -406,19 +406,19 @@ public class simgridJNI {
   public final static native String NetZone_get_property(long jarg1, NetZone jarg1_, String jarg2);
   public final static native void NetZone_set_property(long jarg1, NetZone jarg1_, String jarg2, String jarg3);
   public final static native void NetZone_on_seal_cb(CallbackNetzone cb);
-  public final static native long NetZone_create_host__SWIG_0(long jarg1, NetZone jarg1_, String jarg2, double[] jarg3);
-  public final static native long NetZone_create_host__SWIG_1(long jarg1, NetZone jarg1_, String jarg2, double jarg3);
-  public final static native long NetZone_create_host__SWIG_2(long jarg1, NetZone jarg1_, String jarg2, String[] jarg3);
-  public final static native long NetZone_create_host__SWIG_3(long jarg1, NetZone jarg1_, String jarg2, String jarg3);
-  public final static native long NetZone_create_link__SWIG_0(long jarg1, NetZone jarg1_, String jarg2, double[] jarg3);
-  public final static native long NetZone_create_link__SWIG_1(long jarg1, NetZone jarg1_, String jarg2, double jarg3);
-  public final static native long NetZone_create_link__SWIG_2(long jarg1, NetZone jarg1_, String jarg2, String[] jarg3);
-  public final static native long NetZone_create_link__SWIG_3(long jarg1, NetZone jarg1_, String jarg2, String jarg3);
-  public final static native long NetZone_create_splitlink_from_double(long jarg1, NetZone jarg1_, String jarg2,
+  public final static native long NetZone_add_host__SWIG_0(long jarg1, NetZone jarg1_, String jarg2, double[] jarg3);
+  public final static native long NetZone_add_host__SWIG_1(long jarg1, NetZone jarg1_, String jarg2, double jarg3);
+  public final static native long NetZone_add_host__SWIG_2(long jarg1, NetZone jarg1_, String jarg2, String[] jarg3);
+  public final static native long NetZone_add_host__SWIG_3(long jarg1, NetZone jarg1_, String jarg2, String jarg3);
+  public final static native long NetZone_add_link__SWIG_0(long jarg1, NetZone jarg1_, String jarg2, double[] jarg3);
+  public final static native long NetZone_add_link__SWIG_1(long jarg1, NetZone jarg1_, String jarg2, double jarg3);
+  public final static native long NetZone_add_link__SWIG_2(long jarg1, NetZone jarg1_, String jarg2, String[] jarg3);
+  public final static native long NetZone_add_link__SWIG_3(long jarg1, NetZone jarg1_, String jarg2, String jarg3);
+  public final static native long NetZone_add_splitlink_from_double(long jarg1, NetZone jarg1_, String jarg2,
                                                                        double jarg3, double jarg4);
-  public final static native long NetZone_create_splitlink_from_string(long jarg1, NetZone jarg1_, String jarg2,
+  public final static native long NetZone_add_splitlink_from_string(long jarg1, NetZone jarg1_, String jarg2,
                                                                        String jarg3, String jarg4);
-  public final static native long NetZone_create_splitlink_from_links(long jarg1, NetZone jarg1_, String jarg2,
+  public final static native long NetZone_add_splitlink_from_links(long jarg1, NetZone jarg1_, String jarg2,
                                                                       long jarg3, long jarg4);
   public final static native void NetZone_add_route_hosts(long jarg1, NetZone jarg1_, long src, long dst, long[] links);
   public final static native void NetZone_add_route_netzones(long jarg1, NetZone jarg1_, long src, long dst,

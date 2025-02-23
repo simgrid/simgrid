@@ -288,6 +288,13 @@ if(enable_smpi_papi)
 endif()
 mark_as_advanced(PAPI_PREFIX)
 
+try_compile(HAVE_STD_STACKTRACE ${CMAKE_BINARY_DIR}
+  SOURCES ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stdstacktrace.cpp
+  CXX_STANDARD 23
+  CXX_STANDARD_REQUIRED 23
+  LINK_LIBRARIES stdc++exp
+  OUTPUT_VARIABLE compile_stacktrace_output)
+
 # But we do need the core of Boost
 # cmake before 3.13.1 does not know about stacktrace components. Fix it.
 # Usable components: https://www.boost.org/doc/libs/1_65_1/doc/html/stacktrace/configuration_and_build.html
@@ -298,6 +305,8 @@ set(_Boost_STACKTRACE_ADDR2LINE_HEADERS "boost/stacktrace.hpp")
   if(minimal-bindings) # When we want a minimal python or Java library, don't even search for boost optional components
     message(STATUS "Don't even look for boost optional components, as we build minimal binding libraries.")
     find_package(Boost 1.48)
+  elseif(HAVE_STD_STACKTRACE)
+    find_package(Boost 1.59 OPTIONAL_COMPONENTS context)
   else()
     find_package(Boost 1.59 OPTIONAL_COMPONENTS context stacktrace_backtrace stacktrace_addr2line)
   endif()
@@ -307,7 +316,10 @@ set(_Boost_STACKTRACE_ADDR2LINE_HEADERS "boost/stacktrace.hpp")
     if (NOT minimal-bindings)
       message(STATUS "Looking for optional Boost components:")
       set(Boost_FOUND 1) # These components are optionals
-      if (Boost_STACKTRACE_BACKTRACE_FOUND)
+      if (HAVE_STD_STACKTRACE)
+        message (STATUS "  stacktrace: found the std implementation. Activating human-readable stack traces.")
+        set_source_files_properties(src/xbt/backtrace.cpp PROPERTIES COMPILE_FLAGS "-std=c++23")
+      elseif(Boost_STACKTRACE_BACKTRACE_FOUND)
         message (STATUS "  stacktrace: found the fast 'backtrace' implementation. Activating human-readable stack traces.")
         set(HAVE_BOOST_STACKTRACE_BACKTRACE 1)
       else()

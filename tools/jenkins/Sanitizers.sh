@@ -19,10 +19,12 @@ fi
 if [ "${SANITIZER}" = "address" ]
 then
     export ASAN_OPTIONS="suppressions=$WORKSPACE/tools/address_sanitizer.supp"
+    export SAN_LIBS="/usr/lib/x86_64-linux-gnu/libasan.so.8:/usr/lib/x86_64-linux-gnu/libstdc++.so.6"
     SANITIZER_OPTIONS="-Denable_address_sanitizer=ON -Denable_undefined_sanitizer=OFF -Denable_thread_sanitizer=OFF"
 elif [ "${SANITIZER}" = "thread" ]
 then
     export TSAN_OPTIONS="memory_limit_mb=1500 suppressions=$WORKSPACE/tools/thread_sanitizer.supp"
+    export SAN_LIBS="/lib/x86_64-linux-gnu/libtsan.so.2"
     SANITIZER_OPTIONS="-Denable_address_sanitizer=OFF -Denable_undefined_sanitizer=OFF -Denable_thread_sanitizer=ON"
 elif [ "${SANITIZER}" = "undefined" ]
 then

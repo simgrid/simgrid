@@ -15,6 +15,10 @@
 #include <cstdlib>
 #include <sstream>
 
+#if HAVE_STD_STACKTRACE
+#include <stacktrace>
+#endif
+
 #if HAVE_BOOST_STACKTRACE_BACKTRACE
 #define BOOST_STACKTRACE_USE_BACKTRACE
 #include <boost/stacktrace.hpp>
@@ -34,7 +38,41 @@ void xbt_backtrace_display_current()
 namespace simgrid::xbt {
 
 class BacktraceImpl {
-#if HAVE_BOOST_STACKTRACE_BACKTRACE || HAVE_BOOST_STACKTRACE_ADDR2LINE
+#if HAVE_STD_STACKTRACE
+  std::stacktrace st = std::stacktrace::current();
+
+public:
+  std::string resolve() const
+  {
+    std::stringstream ss;
+
+    int frame_count = 0;
+    bool print      = false;
+
+    for (const auto& frame : st) {
+      const std::string frame_name = frame.description();
+
+      if (print) {
+        if (frame_name.rfind("simgrid::xbt::MainFunction", 0) == 0 ||
+            frame_name.rfind("simgrid::kernel::context::Context::operator()()", 0) == 0 ||
+            frame_name.rfind("auto sthread_create::{lambda") == 0)
+          break;
+        ss << "  ->  #" << frame_count++ << " ";
+        if (xbt_log_no_loc) // Don't display file source and line if so
+          ss << (frame_name.empty() ? "(debug info not found and log:no_loc activated)" : frame_name) << "\n";
+        else
+          ss << frame << "\n";
+        if (frame_name == "main")
+          break;
+      } else if (frame_name ==
+                 "std::shared_ptr<simgrid::xbt::BacktraceImpl> std::make_shared<simgrid::xbt::BacktraceImpl>()") {
+        print = true;
+        XBT_CCRITICAL(root, "Boundary frame %s", frame_name.c_str());
+      }
+    }
+    return ss.str();
+  }
+#elif HAVE_BOOST_STACKTRACE_BACKTRACE || HAVE_BOOST_STACKTRACE_ADDR2LINE
   const boost::stacktrace::stacktrace st;
 
 public:

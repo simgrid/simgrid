@@ -4310,11 +4310,11 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1on_1seal_1cb(JN
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
-/*  NetZone_create_host__SWIG_0 (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;[D)J */
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1host_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis, jobject jthis,
-                                                                                          jstring jname,
-                                                                                          jdoubleArray jspeeds)
+/*  NetZone_add_host__SWIG_0 (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;[D)J */
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
+                                                                                       jlong cthis, jobject jthis,
+                                                                                       jstring jname,
+                                                                                       jdoubleArray jspeeds)
 {
   if (jname == nullptr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Host names shall not be null.");
@@ -4329,22 +4329,22 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1host_1
     cspeeds.push_back(cjspeeds[i]);
   jenv->ReleaseDoubleArrayElements(jspeeds, cjspeeds, JNI_ABORT);
 
-  return (jlong)((NetZone*)cthis)->create_host(name, cspeeds);
+  return (jlong)((NetZone*)cthis)->add_host(name, cspeeds);
 }
-/* NetZone_create_host__SWIG_1  (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;D)J */
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1host_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis, jobject jthis,
-                                                                                          jstring jname, jdouble speed)
+/* NetZone_add_host__SWIG_1  (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;D)J */
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
+                                                                                       jlong cthis, jobject jthis,
+                                                                                       jstring jname, jdouble speed)
 {
   if (jname == nullptr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Host names shall not be null.");
     return 0;
   }
   std::string name = java_string_to_std_string(jenv, jname);
-  return (jlong)((NetZone*)cthis)->create_host(name, speed);
+  return (jlong)((NetZone*)cthis)->add_host(name, speed);
 }
-/* NetZone_create_host__SWIG_2 (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;[Ljava/lang/String;)J */
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1host_1_1SWIG_12(JNIEnv* jenv, jclass jcls,
+/* NetZone_add_host__SWIG_2 (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;[Ljava/lang/String;)J */
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1SWIG_12(JNIEnv* jenv, jclass jcls,
                                                                                           jlong cthis, jobject jthis,
                                                                                           jstring jname,
                                                                                           jobjectArray jspeeds)
@@ -4359,10 +4359,10 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1host_1
   for (int i = 0; i < jenv->GetArrayLength(jspeeds); i++)
     speeds.push_back(java_string_to_std_string(jenv, (jstring)jenv->GetObjectArrayElement(jspeeds, i)));
 
-  return (jlong)((NetZone*)cthis)->create_host(name, speeds);
+  return (jlong)((NetZone*)cthis)->add_host(name, speeds);
 }
-/* NetZone_create_host__SWIG_3 (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;Ljava/lang/String;)J */
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1host_1_1SWIG_13(JNIEnv* jenv, jclass jcls,
+/* NetZone_add_host__SWIG_3 (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;Ljava/lang/String;)J */
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1SWIG_13(JNIEnv* jenv, jclass jcls,
                                                                                           jlong cthis, jobject jthis,
                                                                                           jstring jname, jstring jspeed)
 {
@@ -4370,14 +4370,14 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1host_1
   check_nullparam(jspeed, "Host speed shall not be the null string.");
   std::string name  = java_string_to_std_string(jenv, jname);
   std::string speed = java_string_to_std_string(jenv, jspeed);
-  return (jlong)((NetZone*)cthis)->create_host(name, speed);
+  return (jlong)((NetZone*)cthis)->add_host(name, speed);
 }
 
-/* NetZone_create_link__SWIG_0   (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;[D)J */
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1link_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis, jobject jthis,
-                                                                                          jstring jname,
-                                                                                          jdoubleArray jbandwidths)
+/* NetZone_add_link__SWIG_0   (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;[D)J */
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
+                                                                                       jlong cthis, jobject jthis,
+                                                                                       jstring jname,
+                                                                                       jdoubleArray jbandwidths)
 {
   check_nullparam(jname, "Link names shall not be null.");
   check_nullparam(jbandwidths, "Link bandwidth shall not be a null array.");
@@ -4385,53 +4385,53 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1link_1
   std::string name                = java_string_to_std_string(jenv, jname);
   std::vector<double> cbandwidths = java_doublearray_to_vector(jenv, jbandwidths);
 
-  return (jlong)((NetZone*)cthis)->create_link(name, cbandwidths);
+  return (jlong)((NetZone*)cthis)->add_link(name, cbandwidths);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1link_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis, jobject jthis,
-                                                                                          jstring jname, jdouble bw)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
+                                                                                       jlong cthis, jobject jthis,
+                                                                                       jstring jname, jdouble bw)
 {
   check_nullparam(jname, "Link names shall not be null.");
   std::string name = java_string_to_std_string(jenv, jname);
 
-  return (jlong)((NetZone*)cthis)->create_link(name, bw);
+  return (jlong)((NetZone*)cthis)->add_link(name, bw);
 }
-/* NetZone_create_link__SWIG_2   (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;[Ljava/lang/String;)J  */
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1link_1_1SWIG_12(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis, jobject jthis,
-                                                                                          jstring jname,
-                                                                                          jobjectArray jbws)
+/* NetZone_add_link__SWIG_2   (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;[Ljava/lang/String;)J  */
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1SWIG_12(JNIEnv* jenv, jclass jcls,
+                                                                                       jlong cthis, jobject jthis,
+                                                                                       jstring jname,
+                                                                                       jobjectArray jbws)
 {
   check_nullparam(jname, "Link names shall not be null.");
   check_nullparam(jname, "Link bandwidths shall not be a null array.");
   std::string name = java_string_to_std_string(jenv, jname);
   std::vector<std::string> bws = java_stringarray_to_vector(jenv, jbws);
 
-  return (jlong)((NetZone*)cthis)->create_host(name, bws);
+  return (jlong)((NetZone*)cthis)->add_link(name, bws);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1link_1_1SWIG_13(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis, jobject jthis,
-                                                                                          jstring jname, jstring jbw)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1SWIG_13(JNIEnv* jenv, jclass jcls,
+                                                                                       jlong cthis, jobject jthis,
+                                                                                       jstring jname, jstring jbw)
 {
   check_nullparam(jname, "Link names shall not be null.");
   check_nullparam(jbw, "Link bandwidth shall not be the null string.");
   std::string name = java_string_to_std_string(jenv, jname);
   std::string bw   = java_string_to_std_string(jenv, jbw);
-  return (jlong)((NetZone*)cthis)->create_link(name, bw);
+  return (jlong)((NetZone*)cthis)->add_link(name, bw);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1splitlink_1from_1double(
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1splitlink_1from_1double(
     JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jstring jname, jdouble bwup, jdouble bwdown)
 {
   check_nullparam(jname, "Link names shall not be null.");
   std::string name = java_string_to_std_string(jenv, jname);
 
-  return (jlong)((NetZone*)cthis)->create_split_duplex_link(name, bwup, bwdown);
+  return (jlong)((NetZone*)cthis)->add_split_duplex_link(name, bwup, bwdown);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1splitlink_1from_1string(
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1splitlink_1from_1string(
     JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jstring jname, jstring jbwup, jstring jbwdown)
 {
   check_nullparam(jname, "Link names shall not be null.");
@@ -4440,7 +4440,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1create_1splitl
   std::string name   = java_string_to_std_string(jenv, jname);
   std::string bwup   = java_string_to_std_string(jenv, jbwup);
   std::string bwdown = java_string_to_std_string(jenv, jbwdown);
-  return (jlong)((NetZone*)cthis)->create_split_duplex_link(name, bwup, bwdown);
+  return (jlong)((NetZone*)cthis)->add_split_duplex_link(name, bwup, bwdown);
 }
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1route_1hosts(JNIEnv* jenv, jclass jcls,
                                                                                    jlong cthis, jobject jthis,

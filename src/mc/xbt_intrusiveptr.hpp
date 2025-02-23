@@ -17,6 +17,7 @@
 #include <cstdio>
 #include <functional>
 #include <ostream>
+#include <unordered_map>
 
 namespace simgrid::xbt {
 
@@ -391,7 +392,7 @@ template <class T> struct reference_holder {
 
 // hash_value
 
-template <class T> struct hash;
+template <class T> class hash;
 
 template <class T> std::size_t hash_value(xbt::intrusive_ptr<T> const& p) noexcept
 {

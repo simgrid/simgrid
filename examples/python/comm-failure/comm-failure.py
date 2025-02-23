@@ -61,12 +61,12 @@ def link_killer(link_name: str) -> None:
 def main():
     e = Engine(sys.argv)
     zone: NetZone = e.netzone_root
-    host1 = zone.create_host("Host1", "1f")
-    host2 = zone.create_host("Host2", "1f")
-    host3 = zone.create_host("Host3", "1f")
+    host1 = zone.add_host("Host1", "1f")
+    host2 = zone.add_host("Host2", "1f")
+    host3 = zone.add_host("Host3", "1f")
 
-    link_to_2 = zone.create_link("link_to_2", "1bps").seal()
-    link_to_3 = zone.create_link("link_to_3", "1bps").seal()
+    link_to_2 = zone.add_link("link_to_2", "1bps").seal()
+    link_to_3 = zone.add_link("link_to_3", "1bps").seal()
 
     zone.add_route(host1, host2, [link_to_2])
     zone.add_route(host1, host3, [link_to_3])

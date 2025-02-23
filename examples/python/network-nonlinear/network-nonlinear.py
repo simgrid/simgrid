@@ -87,10 +87,10 @@ def load_platform(e: Engine):
 
     """
     zone:NetZone = e.netzone_root
-    sender:Host = zone.create_host("sender", 1).seal()
-    receiver:Host = zone.create_host("receiver", 1).seal()
+    sender:Host = zone.add_host("sender", 1).seal()
+    receiver:Host = zone.add_host("receiver", 1).seal()
 
-    link:Link = zone.create_split_duplex_link("link1", 1e6)
+    link:Link = zone.add_split_duplex_link("link1", 1e6)
     # setting same callbacks (could be different) for link UP/DOWN in split-duplex link
     link.link_up.set_sharing_policy(Link.SharingPolicy.NONLINEAR,
                                     functools.partial(link_nonlinear, link.link_up))

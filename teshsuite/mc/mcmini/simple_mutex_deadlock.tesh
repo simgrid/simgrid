@@ -17,7 +17,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 1 in simcall MUTEX_WAIT(mutex: 1, owner: 1)
 > [0.000000] [mc_global/INFO]   Actor 1 in simcall MUTEX_UNLOCK(mutex: 1, owner: -1)
 > [0.000000] [mc_global/INFO]   Actor 1 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 1)
-> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;1;1;1'
+> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;1;1;1'
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 7 unique states visited; 0 explored traces (0 transition replays, 7 states visited overall)
 > [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
 > [0.000000] [mc_ct/VERBOSE] Looking at depth 5

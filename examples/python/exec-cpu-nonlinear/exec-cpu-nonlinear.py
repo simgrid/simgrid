@@ -41,7 +41,7 @@ def cpu_nonlinear(host: Host, capacity: float, n: int) -> float:
 def load_platform(e:Engine):
     """ Create a simple 1-host platform """
     zone = e.netzone_root
-    runner_host = zone.create_host("runner", 1e6)
+    runner_host = zone.add_host("runner", 1e6)
     runner_host.set_sharing_policy(
         Host.SharingPolicy.NONLINEAR, functools.partial(cpu_nonlinear, runner_host))
     runner_host.seal()
