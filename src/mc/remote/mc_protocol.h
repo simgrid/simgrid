@@ -10,8 +10,6 @@
 
 #ifdef __cplusplus
 
-#include "src/kernel/actor/SimcallObserver.hpp"
-
 #include "simgrid/forward.h" // aid_t
 #include "src/mc/datatypes.h"
 #include <xbt/utility.hpp>
@@ -71,7 +69,6 @@ struct s_mc_message_simcall_execute_t {
 struct s_mc_message_simcall_execute_answer_t {
   simgrid::mc::MessageType type;
   aid_t aid;
-  std::array<char, SIMCALL_SERIALIZATION_BUFFER_SIZE> buffer;
 };
 
 struct s_mc_message_actors_status_t {
@@ -96,13 +93,6 @@ struct s_mc_message_actors_status_one_t { // an array of `s_mc_message_actors_st
   aid_t aid;
   bool enabled;
   int max_considered;
-};
-
-// Answer from an actor to the question "what are you about to run?"
-struct s_mc_message_simcall_probe_one_t { // a series of `s_mc_message_simcall_probe_one_t`
-                                          // is sent right after `s_mc_message_actors_status_one_t[]`
-  simgrid::mc::MessageType type;
-  std::array<char, SIMCALL_SERIALIZATION_BUFFER_SIZE> buffer;
 };
 
 #endif // __cplusplus

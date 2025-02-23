@@ -5,6 +5,7 @@
 
 #include "src/mc/api/RemoteApp.hpp"
 #include "simgrid/forward.h"
+#include "src/mc/api/ActorState.hpp"
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
@@ -140,7 +141,8 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
 
   auto* answer = (s_mc_message_actors_status_answer_t*)checker_side_->get_channel().expect_message(
       sizeof(s_mc_message_actors_status_answer_t), MessageType::ACTORS_STATUS_REPLY_COUNT, "Could not receive message");
-  const int actor_count = answer->count; // Not sure why its value isn't stable in the buffer
+  const int actor_count = answer->count; // The value is not stable in the buffer because if the buffer gets empty,
+                                         // buffer_in_next_ is set to 0 to avoid memcpy() when reaching the buffer end
 
   // Message sanity checks
   xbt_assert(actor_count >= 0, "Received an ACTORS_STATUS_REPLY_COUNT message with an actor count of '%d' < 0",
@@ -155,6 +157,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
     size_t size           = actor_count * sizeof(s_mc_message_actors_status_one_t);
     auto [more_data, got] = checker_side_->get_channel().receive(size);
     xbt_assert(more_data);
+    // Copy data away, just in case the buffer decides to move data
     auto* status = (s_mc_message_actors_status_one_t*)alloca(actor_count * sizeof(s_mc_message_actors_status_one_t));
     memcpy(status, got, actor_count * sizeof(s_mc_message_actors_status_one_t));
 
@@ -165,14 +168,8 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
       if (Exploration::get_instance()->need_actor_status_transitions()) {
         int n_transitions = actor.max_considered;
         for (int times_considered = 0; times_considered < n_transitions; times_considered++) {
-          auto* probe = (s_mc_message_simcall_probe_one_t*)checker_side_->get_channel().expect_message(
-              sizeof(s_mc_message_simcall_probe_one_t), MessageType::ACTORS_STATUS_REPLY_SIMCALL,
-              "Could not receive an ACTORS_STATUS_REPLY_SIMCALL message");
-
-          if (Exploration::get_instance()->need_actor_status_transitions()) {
-            std::stringstream stream(probe->buffer.data());
-            actor_transitions.emplace_back(deserialize_transition(actor.aid, times_considered, stream));
-          }
+          actor_transitions.emplace_back(
+              deserialize_transition(actor.aid, times_considered, checker_side_->get_channel()));
         }
         XBT_DEBUG("Received %zu transitions for actor %ld. The first one is %s", actor_transitions.size(), actor.aid,
                   (actor_transitions.size() > 0 ? actor_transitions[0]->to_string().c_str() : "null"));
@@ -182,6 +179,14 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
 
       whereto.try_emplace(actor.aid, actor.aid, actor.enabled, actor.max_considered, std::move(actor_transitions));
     }
+  }
+  XBT_DEBUG("Done receiving ACTORS_STATUS_REPLY");
+  for (auto kv : whereto) {
+    ActorState state = kv.second;
+    XBT_DEBUG("Actor %ld is %s, %s/%s/%s considered %u/%u with %lu transitions", kv.first,
+              state.is_enabled() ? "enabled" : "disabled", state.is_todo() ? "todo" : "-",
+              state.is_done() ? "done" : "-", state.is_unknown() ? "unknown" : "-", state.get_times_considered(),
+              state.get_max_considered(), state.get_enabled_transitions().size());
   }
 }
 

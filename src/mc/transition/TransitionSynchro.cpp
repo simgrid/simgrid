@@ -23,10 +23,10 @@ std::string BarrierTransition::to_string(bool verbose) const
 {
   return xbt::string_printf("%s(barrier: %u)", Transition::to_c_str(type_), bar_);
 }
-BarrierTransition::BarrierTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream)
+BarrierTransition::BarrierTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel)
     : Transition(type, issuer, times_considered)
 {
-  xbt_assert(stream >> bar_);
+  bar_ = channel.unpack<unsigned>();
 }
 bool BarrierTransition::depends(const Transition* o) const
 {
@@ -79,10 +79,11 @@ std::string MutexTransition::to_string(bool verbose) const
   return xbt::string_printf("%s(mutex: %" PRIxPTR ", owner: %ld)", Transition::to_c_str(type_), mutex_, owner_);
 }
 
-MutexTransition::MutexTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream)
+MutexTransition::MutexTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel)
     : Transition(type, issuer, times_considered)
 {
-  xbt_assert(stream >> mutex_ >> owner_);
+  mutex_ = channel.unpack<unsigned>();
+  owner_ = channel.unpack<aid_t>();
 }
 
 bool MutexTransition::depends(const Transition* o) const
@@ -217,10 +218,12 @@ std::string SemaphoreTransition::to_string(bool verbose) const
                               capacity_, granted_ ? "yes" : "no");
   THROW_IMPOSSIBLE;
 }
-SemaphoreTransition::SemaphoreTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream)
+SemaphoreTransition::SemaphoreTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel)
     : Transition(type, issuer, times_considered)
 {
-  xbt_assert(stream >> sem_ >> granted_ >> capacity_);
+  sem_      = channel.unpack<unsigned>();
+  granted_  = channel.unpack<bool>();
+  capacity_ = channel.unpack<unsigned>();
 }
 bool SemaphoreTransition::depends(const Transition* o) const
 {
@@ -286,16 +289,20 @@ bool MutexTransition::reversible_race(const Transition* other) const
   }
 }
 
-CondvarTransition::CondvarTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream)
+CondvarTransition::CondvarTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel)
     : Transition(type, issuer, times_considered)
 {
-  if (type == Type::CONDVAR_ASYNC_LOCK)
-    xbt_assert(stream >> condvar_ >> mutex_, "type: %d %s", (int)type, to_c_str(type));
-  else if (type == Type::CONDVAR_WAIT)
-    xbt_assert(stream >> condvar_ >> mutex_ >> granted_ >> timeout_, "type: %d %s", (int)type, to_c_str(type));
-  else if (type == Type::CONDVAR_SIGNAL || type == Type::CONDVAR_BROADCAST)
-    xbt_assert(stream >> condvar_, "type: %d %s", (int)type, to_c_str(type));
-  else
+  if (type == Type::CONDVAR_ASYNC_LOCK) {
+    condvar_ = channel.unpack<unsigned>();
+    mutex_   = channel.unpack<unsigned>();
+  } else if (type == Type::CONDVAR_WAIT) {
+    condvar_ = channel.unpack<unsigned>();
+    mutex_   = channel.unpack<unsigned>();
+    granted_ = channel.unpack<bool>();
+    timeout_ = channel.unpack<bool>();
+  } else if (type == Type::CONDVAR_SIGNAL || type == Type::CONDVAR_BROADCAST) {
+    condvar_ = channel.unpack<unsigned>();
+  } else
     xbt_die("type: %d %s", (int)type, to_c_str(type));
 }
 

@@ -4,14 +4,15 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/actor/WaitTestObserver.hpp"
+#include "simgrid/forward.h"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/BarrierImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
-#include "src/kernel/activity/MessageQueueImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/mc/remote/Channel.hpp"
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(obs_waittest, mc_observer,
@@ -43,17 +44,17 @@ void ActivityTestanySimcall::prepare(int times_considered)
     next_value_ = -1;
 }
 static void serialize_activity_test(const activity::ActivityImpl* act, std::string const& call_location,
-                                    std::stringstream& stream)
+                                    mc::Channel& channel)
 {
   if (const auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
-    stream << "  " << (short)mc::Transition::Type::COMM_TEST;
-    stream << ' ' << comm->get_id();
-    stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
-    stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
-    stream << ' ' << comm->get_mailbox_id();
-    stream << ' ' << call_location;
+    channel.pack(mc::Transition::Type::COMM_TEST);
+    channel.pack<unsigned>(comm->get_id());
+    channel.pack<aid_t>((comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1));
+    channel.pack<aid_t>((comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1));
+    channel.pack<unsigned>(comm->get_mailbox_id());
+    channel.pack<std::string>(call_location);
   } else {
-    stream << (short)mc::Transition::Type::UNKNOWN;
+    channel.pack(mc::Transition::Type::UNKNOWN);
     XBT_CRITICAL("Unknown transition in a test any. Bad things may happen");
   }
 }
@@ -68,16 +69,16 @@ static std::string to_string_activity_test(const activity::ActivityImpl* act)
     return "TestUnknownType()";
   }
 }
-void ActivityTestanySimcall::serialize(std::stringstream& stream) const
+void ActivityTestanySimcall::serialize(mc::Channel& channel) const
 {
   XBT_DEBUG("Serialize %s", to_string().c_str());
-  stream << (short)mc::Transition::Type::TESTANY << ' ' << activities_.size() << ' ';
+  channel.pack(mc::Transition::Type::TESTANY);
+  channel.pack<unsigned>(activities_.size());
   for (auto const* act : activities_) {
     // fun_call of each activity embedded in the TestAny is not known, so let's use the location of the TestAny itself
-    serialize_activity_test(act, fun_call_, stream);
-    stream << ' ';
+    serialize_activity_test(act, fun_call_, channel);
   }
-  stream << fun_call_;
+  channel.pack<std::string>(fun_call_);
 }
 std::string ActivityTestanySimcall::to_string() const
 {
@@ -94,27 +95,28 @@ std::string ActivityTestanySimcall::to_string() const
   return buffer.str();
 }
 
-void ActivityTestSimcall::serialize(std::stringstream& stream) const
+void ActivityTestSimcall::serialize(mc::Channel& channel) const
 {
-  serialize_activity_test(activity_, fun_call_, stream);
+  serialize_activity_test(activity_, fun_call_, channel);
 }
 std::string ActivityTestSimcall::to_string() const
 {
   return to_string_activity_test(activity_);
 }
 static void serialize_activity_wait(const activity::ActivityImpl* act, bool timeout, std::string const& call_location,
-                                    std::stringstream& stream)
+                                    mc::Channel& channel)
 {
   if (const auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
-    stream << (short)mc::Transition::Type::COMM_WAIT << ' ';
-    stream << timeout << ' ' << comm->get_id();
+    channel.pack(mc::Transition::Type::COMM_WAIT);
+    channel.pack<bool>(timeout);
+    channel.pack<unsigned>(comm->get_id());
 
-    stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
-    stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
-    stream << ' ' << comm->get_mailbox_id();
-    stream << ' ' << call_location;
+    channel.pack<aid_t>((comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1));
+    channel.pack<aid_t>((comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1));
+    channel.pack<unsigned>(comm->get_mailbox_id());
+    channel.pack<std::string>(call_location);
   } else {
-    stream << (short)mc::Transition::Type::UNKNOWN;
+    channel.pack(mc::Transition::Type::UNKNOWN);
   }
 }
 static std::string to_string_activity_wait(const activity::ActivityImpl* act)
@@ -142,20 +144,20 @@ static std::string to_string_activity_wait(const activity::ActivityImpl* act)
   }
 }
 
-void ActivityWaitSimcall::serialize(std::stringstream& stream) const
+void ActivityWaitSimcall::serialize(mc::Channel& channel) const
 {
-  serialize_activity_wait(activity_, timeout_ > 0, fun_call_, stream);
+  serialize_activity_wait(activity_, timeout_ > 0, fun_call_, channel);
 }
-void ActivityWaitanySimcall::serialize(std::stringstream& stream) const
+void ActivityWaitanySimcall::serialize(mc::Channel& channel) const
 {
   XBT_DEBUG("Serialize %s", to_string().c_str());
-  stream << (short)mc::Transition::Type::WAITANY << ' ' << activities_.size() << ' ';
+  channel.pack(mc::Transition::Type::WAITANY);
+  channel.pack<unsigned>(activities_.size());
   for (auto const* act : activities_) {
     // fun_call of each activity embedded in the WaitAny is not known, so let's use the location of the WaitAny itself
-    serialize_activity_wait(act, timeout_ > 0, fun_call_, stream);
-    stream << ' ';
+    serialize_activity_wait(act, timeout_ > 0, fun_call_, channel);
   }
-  stream << fun_call_;
+  channel.pack(fun_call_);
 }
 std::string ActivityWaitSimcall::to_string() const
 {

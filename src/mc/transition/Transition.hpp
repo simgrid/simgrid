@@ -127,7 +127,7 @@ public:
 };
 
 /** Make a new transition from serialized description */
-Transition* deserialize_transition(aid_t issuer, int times_considered, std::stringstream& stream);
+Transition* deserialize_transition(aid_t issuer, int times_considered, mc::Channel& channel);
 
 } // namespace simgrid::mc
 

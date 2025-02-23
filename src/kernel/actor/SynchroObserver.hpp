@@ -26,7 +26,7 @@ class MutexObserver final : public DelayedSimcallObserver<void> {
 public:
   MutexObserver(ActorImpl* actor, mc::Transition::Type type, activity::MutexImpl* mutex);
 
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   bool is_enabled() override;
 
@@ -41,7 +41,7 @@ class SemaphoreObserver final : public SimcallObserver {
 public:
   SemaphoreObserver(ActorImpl* actor, mc::Transition::Type type, activity::SemaphoreImpl* sem);
 
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
 
   activity::SemaphoreImpl* get_sem() const { return sem_; }
@@ -57,7 +57,7 @@ public:
   MutexAcquisitionObserver(ActorImpl* actor, mc::Transition::Type type, activity::MutexAcquisitionImpl* acqui,
                            double timeout = -1.0);
 
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   bool is_enabled() override;
 
@@ -74,7 +74,7 @@ public:
   SemaphoreAcquisitionObserver(ActorImpl* actor, mc::Transition::Type type, activity::SemAcquisitionImpl* acqui,
                                double timeout = -1.0);
 
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   bool is_enabled() override;
 
@@ -93,7 +93,7 @@ public:
   BarrierObserver(ActorImpl* actor, mc::Transition::Type type, activity::BarrierAcquisitionImpl* acqui,
                   double timeout = -1.0);
 
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   bool is_enabled() override;
 
@@ -132,7 +132,7 @@ public:
   {
     xbt_assert(type == mc::Transition::Type::CONDVAR_SIGNAL || type == mc::Transition::Type::CONDVAR_BROADCAST);
   }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   bool is_enabled() override;
   activity::ConditionVariableImpl* get_cond() const { return cond_.get(); }

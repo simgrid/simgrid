@@ -11,7 +11,6 @@
 #include "src/mc/transition/TransitionComm.hpp"
 
 #include <algorithm>
-#include <sstream>
 #include <string>
 
 namespace simgrid::mc {
@@ -20,7 +19,7 @@ class TestAnyTransition : public Transition {
   std::vector<Transition*> transitions_;
 
 public:
-  TestAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  TestAnyTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
   bool reversible_race(const Transition* other) const override;
@@ -39,7 +38,7 @@ class WaitAnyTransition : public Transition {
   std::vector<Transition*> transitions_;
 
 public:
-  WaitAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  WaitAnyTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
   bool reversible_race(const Transition* other) const override;

@@ -58,7 +58,7 @@ public:
       , fun_call_(fun_call)
   {
   }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   activity::MailboxImpl* get_mailbox() const { return mbox_; }
   double get_payload_size() const { return payload_size_; }
@@ -107,7 +107,7 @@ public:
       , fun_call_(fun_call)
   {
   }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   activity::MailboxImpl* get_mailbox() const { return mbox_; }
   double get_rate() const { return rate_; }
@@ -132,7 +132,7 @@ public:
   IprobeSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, s4u::Mailbox::IprobeKind kind,
                 const std::function<bool(void*, void*, activity::CommImpl*)>& match_fun, void* match_data);
 
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   auto const& get_match_fun() const { return match_fun_; }
   void* get_match_data() const { return match_data_; }
@@ -157,7 +157,7 @@ public:
       , clean_fun_(clean_fun)
   {
   }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   activity::MessageQueueImpl* get_queue() const { return queue_; }
   void* get_payload() const { return payload_; }
@@ -183,7 +183,7 @@ public:
       , payload_(payload)
   {
   }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   activity::MessageQueueImpl* get_queue() const { return queue_; }
   unsigned char* get_dst_buff() const { return dst_buff_; }

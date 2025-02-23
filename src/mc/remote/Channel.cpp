@@ -8,6 +8,9 @@
 #include "xbt/asserts.h"
 #include "xbt/asserts.hpp"
 #include "xbt/backtrace.hpp"
+#include "xbt/sysdep.h"
+#include <alloca.h>
+#include <string>
 #include <utility>
 #include <xbt/log.h>
 
@@ -32,6 +35,27 @@ Channel::~Channel()
 {
   if (this->socket_ >= 0)
     close(this->socket_);
+}
+template <> void Channel::pack<std::string>(std::string str)
+{
+  XBT_DEBUG("Pack string (size: %lu; ctn: '%s')", str.length(), str.c_str());
+  pack<unsigned short>((unsigned short)str.length());
+  pack(str.data(), str.length() + 1);
+}
+template <> std::string Channel::unpack<std::string>(std::function<void(void)> cb)
+{
+  unsigned short len = unpack<unsigned short>(cb);
+  auto [more, got]   = receive(len + 1);
+  if (not more) {
+    if (cb != nullptr)
+      cb();
+    else
+      xbt_die("Remote died and no error handling callback provided");
+    return std::string();
+  }
+  std::string res(xbt_strdup((char*)got));
+  XBT_DEBUG("Received std::string %s", res.c_str());
+  return res;
 }
 
 void Channel::pack(const void* message, size_t size)
@@ -61,7 +85,7 @@ int Channel::send()
 }
 
 /** @brief Send a message; returns 0 on success or errno on failure */
-int Channel::send(const void* message, size_t size) const
+int Channel::send(const void* message, size_t size)
 {
   xbt_assert(buffer_out_size_ == 0, "Cannot send directly data while some other data is packed for later emission");
   if (size >= sizeof(int) && is_valid_MessageType(*static_cast<const int*>(message))) {
@@ -99,7 +123,7 @@ std::pair<bool, void*> Channel::receive(size_t size)
   }
   /* Consume the data */
   XBT_DEBUG("%d consumes %s (data size:%lu, previous value of next: %lu, of bufsize: %lu)", getpid(),
-            to_c_str(*((const MessageType*)buffer_in_ + buffer_in_next_)), size, buffer_in_next_, buffer_in_size_);
+            to_c_str(*((const MessageType*)(buffer_in_ + buffer_in_next_))), size, buffer_in_next_, buffer_in_size_);
   buffer_in_next_ += size;
   buffer_in_size_ -= size;
   if (buffer_in_size_ == 0)
@@ -140,7 +164,7 @@ std::pair<bool, void*> Channel::peek(size_t size)
     XBT_DEBUG("%d receives %d bytes from the network (avail was %d). New size: %lu", getpid(), got, avail,
               buffer_in_size_);
   }
-  XBT_DEBUG("%d peeks msg/type %s", getpid(), to_c_str(*((const MessageType*)buffer_in_ + buffer_in_next_)));
+  XBT_DEBUG("%d peeks msg/type %s", getpid(), to_c_str(*((const MessageType*)(buffer_in_ + buffer_in_next_))));
 
   return std::make_pair(true, buffer_in_ + buffer_in_next_);
 }

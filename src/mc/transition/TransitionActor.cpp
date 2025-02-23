@@ -5,6 +5,7 @@
 
 #include "src/mc/transition/TransitionActor.hpp"
 #include "simgrid/config.h"
+#include "src/mc/remote/Channel.hpp"
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
 
@@ -15,10 +16,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_actorlifecycle, mc_transition,
 
 namespace simgrid::mc {
 
-ActorJoinTransition::ActorJoinTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+ActorJoinTransition::ActorJoinTransition(aid_t issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::ACTOR_JOIN, issuer, times_considered)
 {
-  xbt_assert(stream >> target_ >> timeout_);
+  target_  = channel.unpack<aid_t>();
+  timeout_ = channel.unpack<bool>();
   XBT_DEBUG("ActorJoinTransition target:%ld, %s ", target_, (timeout_ ? "timeout" : "no-timeout"));
 }
 std::string ActorJoinTransition::to_string(bool verbose) const
@@ -72,10 +74,10 @@ bool ActorJoinTransition::can_be_co_enabled(const Transition* other) const
   return false;
   }
 
-  ActorSleepTransition::ActorSleepTransition(aid_t issuer, int times_considered, std::stringstream&)
+  ActorSleepTransition::ActorSleepTransition(aid_t issuer, int times_considered, mc::Channel&)
       : Transition(Type::ACTOR_SLEEP, issuer, times_considered)
   {
-  XBT_DEBUG("ActorSleepTransition()");
+    XBT_DEBUG("ActorSleepTransition()");
   }
 std::string ActorSleepTransition::to_string(bool verbose) const
 {
@@ -98,10 +100,10 @@ bool ActorSleepTransition::reversible_race(const Transition* other) const
   return false; // The creation of the actor is the only way to be dependent with a sleep
 }
 
-ActorCreateTransition::ActorCreateTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+ActorCreateTransition::ActorCreateTransition(aid_t issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::ACTOR_CREATE, issuer, times_considered)
 {
-  xbt_assert(stream >> child_);
+  child_ = channel.unpack<aid_t>();
   XBT_DEBUG("ActorCreateTransition child:%ld", child_);
 }
 std::string ActorCreateTransition::to_string(bool verbose) const

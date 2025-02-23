@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_TRANSITION_SYNCHRO_HPP
 #define SIMGRID_MC_TRANSITION_SYNCHRO_HPP
 
+#include "src/mc/remote/Channel.hpp"
 #include "src/mc/transition/Transition.hpp"
 
 #include <cstdint>
@@ -17,7 +18,7 @@ class BarrierTransition : public Transition {
 
 public:
   std::string to_string(bool verbose) const override;
-  BarrierTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream);
+  BarrierTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel);
   bool depends(const Transition* other) const override;
   bool reversible_race(const Transition* other) const override;
 };
@@ -28,7 +29,7 @@ class MutexTransition : public Transition {
 
 public:
   std::string to_string(bool verbose) const override;
-  MutexTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream);
+  MutexTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel);
   bool depends(const Transition* other) const override;
   bool can_be_co_enabled(const Transition* other) const override;
   bool reversible_race(const Transition* other) const override;
@@ -44,7 +45,7 @@ class SemaphoreTransition : public Transition {
 
 public:
   std::string to_string(bool verbose) const override;
-  SemaphoreTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream);
+  SemaphoreTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel);
   bool depends(const Transition* other) const override;
   bool reversible_race(const Transition* other) const override;
 
@@ -60,7 +61,7 @@ class CondvarTransition : public Transition {
 
 public:
   std::string to_string(bool verbose) const override;
-  CondvarTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream);
+  CondvarTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel);
   bool depends(const Transition* other) const override;
   bool can_be_co_enabled(const Transition* other) const override;
   bool reversible_race(const Transition* other) const override;

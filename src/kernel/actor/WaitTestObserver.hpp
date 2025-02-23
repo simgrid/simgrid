@@ -21,7 +21,7 @@ public:
   {
   }
   activity::ActivityImpl* get_activity() const { return activity_; }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
 };
 
@@ -35,7 +35,7 @@ public:
   ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities,
                          std::string_view fun_call);
   bool is_enabled() override { return true; /* can return -1 if no activity is ready */ }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   int get_max_consider() const override;
   void prepare(int times_considered) override;
@@ -53,7 +53,7 @@ public:
       : DelayedSimcallObserver(actor, false), activity_(activity), timeout_(timeout), fun_call_(fun_call)
   {
   }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   bool is_enabled() override;
   activity::ActivityImpl* get_activity() const { return activity_; }
@@ -72,7 +72,7 @@ public:
   ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities, double timeout,
                          std::string_view fun_call);
   bool is_enabled() override;
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   void prepare(int times_considered) override;
   int get_max_consider() const override;

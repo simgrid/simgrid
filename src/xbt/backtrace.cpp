@@ -67,7 +67,6 @@ public:
       } else if (frame_name ==
                  "std::shared_ptr<simgrid::xbt::BacktraceImpl> std::make_shared<simgrid::xbt::BacktraceImpl>()") {
         print = true;
-        XBT_CCRITICAL(root, "Boundary frame %s", frame_name.c_str());
       }
     }
     return ss.str();

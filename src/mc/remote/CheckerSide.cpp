@@ -255,11 +255,13 @@ Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool ne
   auto* answer = (s_mc_message_simcall_execute_answer_t*)(get_channel().expect_message(
       sizeof(s_mc_message_simcall_execute_answer_t), MessageType::SIMCALL_EXECUTE_REPLY,
       "Could not receive answer to SIMCALL_EXECUTE"));
+  xbt_assert(answer->aid == aid, "The application did not execute the expected actor (expected %ld, ran %ld)", aid,
+             answer->aid);
 
   if (new_transition) {
-    XBT_DEBUG("Got a transtion");
-    std::stringstream stream(answer->buffer.data());
-    return deserialize_transition(aid, times_considered, stream);
+    auto* t = deserialize_transition(aid, times_considered, channel_);
+    XBT_DEBUG("Got a transtion: %s", t->to_string(true).c_str());
+    return t;
   }
   XBT_DEBUG("No need for transitions today");
   return nullptr;
