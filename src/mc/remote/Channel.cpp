@@ -66,10 +66,30 @@ void Channel::pack(const void* message, size_t size)
 int Channel::send()
 {
   xbt_assert(buffer_out_size_ > 0, "No data was packed for later emission");
-  int todo = buffer_out_size_;
-  int pos  = 0;
+  send(buffer_out_, buffer_out_size_);
+  buffer_out_size_ = 0;
+  return 0;
+}
+
+/** @brief Send a message; returns 0 on success or errno on failure */
+int Channel::send(const void* message, size_t size)
+{
+  xbt_assert(buffer_out_size_ == 0 || message == buffer_out_,
+             "Cannot send directly data while some other data is packed for later emission");
+
+  if (size >= sizeof(int) && is_valid_MessageType(*static_cast<const int*>(message))) {
+    XBT_DEBUG("%d sends msg %s (%zu bytes from %p) buffsize: %lu next:%lu", getpid(),
+              to_c_str(*static_cast<const MessageType*>(message)), size, message, buffer_in_size_, buffer_in_next_);
+  } else {
+    XBT_DEBUG("%d sends %zu bytes from %p (not a message) buffsize: %lu next:%lu", getpid(), size, message,
+              buffer_in_size_, buffer_in_next_);
+    xbt_assert(size > 0, "Request to send a 0-sized message! Please fix your code.");
+  }
+
+  int todo  = size;
+  char* pos = (char*)message;
   while (todo > 0) {
-    int done = ::send(this->socket_, buffer_out_ + pos, todo, 0);
+    int done = ::send(this->socket_, pos, todo, 0);
     if (done == -1) {
       if (errno != EINTR) {
         XBT_ERROR("Channel::send failure: %s", strerror(errno));
@@ -80,29 +100,7 @@ int Channel::send()
     todo -= done;
     pos += done;
   }
-  buffer_out_size_ = 0;
-  return 0;
-}
 
-/** @brief Send a message; returns 0 on success or errno on failure */
-int Channel::send(const void* message, size_t size)
-{
-  xbt_assert(buffer_out_size_ == 0, "Cannot send directly data while some other data is packed for later emission");
-  if (size >= sizeof(int) && is_valid_MessageType(*static_cast<const int*>(message))) {
-    XBT_DEBUG("%d sends msg %s (%zu bytes from %p) buffsize: %lu next:%lu", getpid(),
-              to_c_str(*static_cast<const MessageType*>(message)), size, message, buffer_in_size_, buffer_in_next_);
-  } else {
-    XBT_DEBUG("%d sends %zu bytes from %p (not a message) buffsize: %lu next:%lu", getpid(), size, message,
-              buffer_in_size_, buffer_in_next_);
-    xbt_assert(size > 0, "Request to send a 0-sized message! Please fix your code.");
-  }
-
-  while (::send(this->socket_, message, size, 0) == -1) {
-    if (errno != EINTR) {
-      XBT_ERROR("Channel::send failure: %s", strerror(errno));
-      return errno;
-    }
-  }
   return 0;
 }
 
