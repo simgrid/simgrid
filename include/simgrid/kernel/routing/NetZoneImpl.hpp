@@ -227,16 +227,16 @@ public:
    */
   std::vector<s4u::Host*> get_filtered_hosts(const std::function<bool(s4u::Host*)>& filter) const;
 
-  /** @brief Make a host within that NetZone */
-  s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate);
-  /** @brief Create a disk with the disk model from this NetZone */
-  s4u::Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
+  /** @brief Add a host within that NetZone */
+  s4u::Host* add_host(const std::string& name, const std::vector<double>& speed_per_pstate);
+  /** @brief Add a disk with the disk model from this NetZone */
+  s4u::Disk* add_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
   /** @brief Make a link within that NetZone */
-  s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths);
-  s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, const std::vector<double>& bw_up,
+  s4u::Link* add_link(const std::string& name, const std::vector<double>& bandwidths);
+  s4u::SplitDuplexLink* add_split_duplex_link(const std::string& name, const std::vector<double>& bw_up,
                                                  const std::vector<double>& bw_down);
   /** @brief Make a router within that NetZone */
-  NetPoint* create_router(const std::string& name);
+  NetPoint* add_router(const std::string& name);
   /** @brief Creates a new route in this NetZone */
   virtual void add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                                 const std::vector<s4u::LinkInRoute>& link_list);

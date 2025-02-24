@@ -68,7 +68,7 @@ void sg_platf_parser_finalize()
 /** @brief Add a host to the current NetZone */
 void sg_platf_new_host_begin(const simgrid::kernel::routing::HostCreationArgs* args)
 {
-  current_host = current_routing->create_host(args->id, args->speed_per_pstate)
+  current_host = current_routing->add_host(args->id, args->speed_per_pstate)
                      ->set_coordinates(args->coord)
                      ->set_core_count(args->core_amount)
                      ->set_state_profile(args->state_trace)
@@ -100,7 +100,7 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* args)
   auto* zone = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
   xbt_assert(zone, "<peer> tag can only be used in Vivaldi netzones.");
 
-  const auto* peer = zone->create_host(args->id, {args->speed})
+  const auto* peer = zone->add_host(args->id, {args->speed})
                          ->set_state_profile(args->state_trace)
                          ->set_speed_profile(args->speed_trace)
                          ->set_coordinates(args->coord)
@@ -112,7 +112,7 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* args)
 /** @brief Add a "router" to the network element list */
 simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name, const std::string& coords)
 {
-  auto* netpoint = current_routing->create_router(name)->set_coordinates(coords);
+  auto* netpoint = current_routing->add_router(name)->set_coordinates(coords);
   XBT_DEBUG("Router '%s' has the id %lu", netpoint->get_cname(), netpoint->id());
 
   return netpoint;
@@ -122,9 +122,9 @@ void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args)
 {
   simgrid::s4u::Link* link;
   if (args->policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    link = current_routing->create_split_duplex_link(args->id, args->bandwidths, args->bandwidths);
+    link = current_routing->add_split_duplex_link(args->id, args->bandwidths, args->bandwidths);
   } else {
-    link = current_routing->create_link(args->id, args->bandwidths);
+    link = current_routing->add_link(args->id, args->bandwidths);
     link->get_impl()->set_sharing_policy(args->policy, {});
   }
 
@@ -137,7 +137,7 @@ void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args)
 
 void sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
 {
-  const simgrid::s4u::Disk* new_disk = current_routing->create_disk(disk->id, disk->read_bw, disk->write_bw)
+  const simgrid::s4u::Disk* new_disk = current_routing->add_disk(disk->id, disk->read_bw, disk->write_bw)
                                            ->set_host(current_host)
                                            ->set_properties(disk->properties)
                                            ->seal();
@@ -392,10 +392,10 @@ static void sg_platf_build_cabinet(simgrid::kernel::routing::StarZone* zone,
 {
   for (int const& radical : args->radicals) {
     std::string id   = args->prefix + std::to_string(radical) + args->suffix;
-    auto const* host = zone->create_host(id, {args->speed})->seal();
+    auto const* host = zone->add_host(id, {args->speed})->seal();
 
-    const auto* link_up   = zone->create_link("link_" + id + "_UP", {args->bw})->set_latency(args->lat)->seal();
-    const auto* link_down = zone->create_link("link_" + id + "_DOWN", {args->bw})->set_latency(args->lat)->seal();
+    const auto* link_up   = zone->add_link("link_" + id + "_UP", {args->bw})->set_latency(args->lat)->seal();
+    const auto* link_down = zone->add_link("link_" + id + "_DOWN", {args->bw})->set_latency(args->lat)->seal();
 
     sg_platf_cluster_set_hostlink(zone, host->get_netpoint(), link_up, link_down, backbone);
   }

@@ -174,13 +174,13 @@ void DragonflyZone::generate_link(const std::string& id, int numlinks, resource:
   *linkdown = nullptr;
   if (get_link_sharing_policy() == s4u::Link::SharingPolicy::SPLITDUPLEX) {
     *linkup =
-        create_link(id + "_UP", {get_link_bandwidth() * numlinks})->set_latency(get_link_latency())->seal()->get_impl();
-    *linkdown = create_link(id + "_DOWN", {get_link_bandwidth() * numlinks})
+        add_link(id + "_UP", {get_link_bandwidth() * numlinks})->set_latency(get_link_latency())->seal()->get_impl();
+    *linkdown = add_link(id + "_DOWN", {get_link_bandwidth() * numlinks})
                     ->set_latency(get_link_latency())
                     ->seal()
                     ->get_impl();
   } else {
-    *linkup   = create_link(id, {get_link_bandwidth() * numlinks})->set_latency(get_link_latency())->seal()->get_impl();
+    *linkup   = add_link(id, {get_link_bandwidth() * numlinks})->set_latency(get_link_latency())->seal()->get_impl();
     *linkdown = *linkup;
   }
 }

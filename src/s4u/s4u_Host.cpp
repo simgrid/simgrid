@@ -363,7 +363,7 @@ Disk* Host::get_disk_by_name(const std::string& name) const
 Disk* Host::add_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
   return kernel::actor::simcall_answered([this, &name, read_bandwidth, write_bandwidth] {
-    auto* disk = pimpl_->create_disk(name, read_bandwidth, write_bandwidth);
+    auto* disk = pimpl_->add_disk(name, read_bandwidth, write_bandwidth);
     pimpl_->register_disk(disk);
     return disk;
   });

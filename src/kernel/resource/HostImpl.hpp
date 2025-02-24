@@ -66,7 +66,7 @@ public:
 
   std::vector<s4u::Disk*> get_disks() const;
   s4u::Disk* get_disk_by_name(const std::string& name);
-  s4u::Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
+  s4u::Disk* add_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
   void register_disk(const s4u::Disk* disk);
   void remove_disk(const std::string& name);
   /** @brief Moves VM from this host to destination. Only sets the vm_ accordingly */

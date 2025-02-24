@@ -120,7 +120,7 @@ class XBT_PRIVATE FatTreeZone : public ClusterBase {
   std::vector<std::shared_ptr<FatTreeLink>> links_;
   std::vector<unsigned int> nodes_by_level_;
 
-  void add_link(FatTreeNode* parent, unsigned int parent_port, FatTreeNode* child, unsigned int child_port);
+  void add_internal_link(FatTreeNode* parent, unsigned int parent_port, FatTreeNode* child, unsigned int child_port);
   int get_level_position(const unsigned int level);
   void generate_switches(const s4u::ClusterCallbacks& set_callbacks);
   void generate_labels();
