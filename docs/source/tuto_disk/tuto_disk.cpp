@@ -121,7 +121,7 @@ static void create_disk(sg4::Host* host, std::mt19937& gen, const std::string& d
 {
   double read_bw                = pt.get_child("read_bw").begin()->second.get_value<double>() * 1e6;
   double write_bw               = pt.get_child("write_bw").begin()->second.get_value<double>() * 1e6;
-  auto* disk                    = host->create_disk(disk_name, read_bw, write_bw);
+  auto* disk                    = host->add_disk(disk_name, read_bw, write_bw);
   std::vector<double> read_deg  = get_list_from_json(pt, "degradation.read");
   std::vector<double> write_deg = get_list_from_json(pt, "degradation.write");
 
@@ -161,7 +161,7 @@ int main(int argc, char** argv)
   boost::property_tree::ptree pt;
   boost::property_tree::read_json(jsonFile, pt);
   for (const auto& it : pt.get_child("")) {
-    create_disk(bob, gen, it.first, it.second);
+    add_disk(bob, gen, it.first, it.second);
   }
   zone->seal();
 

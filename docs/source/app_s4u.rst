@@ -1617,13 +1617,13 @@ using :cpp:func:`Comm::sendto() <simgrid::s4u::Comm::sendto()>`.
       .. doxygenfunction:: simgrid::s4u::Host::get_netpoint() const
       .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link * > &links, double *latency) const
       .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::StandardLinkImpl * > &links, double *latency) const
-      .. doxygenfunction:: simgrid::s4u::Host::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
-      .. doxygenfunction:: simgrid::s4u::Host::create_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth)
+      .. doxygenfunction:: simgrid::s4u::Host::add_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
+      .. doxygenfunction:: simgrid::s4u::Host::add_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth)
 
    .. group-tab:: Python
 
       .. autoattribute:: simgrid.Host.netpoint
-      .. automethod:: simgrid.Host.create_disk
+      .. automethod:: simgrid.Host.add_disk
 
       .. automethod:: simgrid.Host.route_to
 

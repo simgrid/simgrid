@@ -535,7 +535,7 @@
     return capacity; //useless callback
  }
 
- auto* disk = host->create_disk("dump", 1e6, 1e6);
+ auto* disk = host->add_disk("dump", 1e6, 1e6);
  disk->set_sharing_policy(sg4::Disk::Operation::READ, sg4::Disk::SharingPolicy::NONLINEAR, &disk_dynamic_sharing);
  #+end_src
 
@@ -558,7 +558,7 @@
     return 1.0; //useless callback
  }
 
- auto* disk = host->create_disk("dump", 1e6, 1e6);
+ auto* disk = host->add_disk("dump", 1e6, 1e6);
  disk->set_factor_cb(&disk_variability);
  #+end_src
 
