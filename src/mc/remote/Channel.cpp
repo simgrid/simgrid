@@ -9,17 +9,19 @@
 #include "xbt/asserts.hpp"
 #include "xbt/backtrace.hpp"
 #include "xbt/sysdep.h"
+
+#if __linux__
 #include <alloca.h>
-#include <string>
-#include <utility>
-#include <xbt/log.h>
+#endif
 
 #include <algorithm>
 #include <cerrno>
 #include <cstring>
+#include <string>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <utility>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_channel, mc, "MC interprocess communication");
 

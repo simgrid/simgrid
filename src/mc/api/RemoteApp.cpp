@@ -237,7 +237,6 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
 
 void RemoteApp::replay_sequence(std::deque<std::pair<aid_t, int>> to_replay)
 {
-
   checker_side_->handle_replay(to_replay);
 }
 

@@ -12,6 +12,7 @@
 #include "src/mc/remote/mc_protocol.h"
 
 #include <memory>
+#include <unordered_map>
 
 namespace simgrid::mc {
 
