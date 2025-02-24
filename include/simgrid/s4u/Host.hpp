@@ -255,10 +255,10 @@ public:
   Disk* get_disk_by_name(const std::string& name) const;
 
   #ifndef DOXYGEN
-   XBT_ATTRIB_DEPRECATED_v339("Please use NetZone::add_disk")
+   XBT_ATTRIB_DEPRECATED_v339("Please use Host::add_disk")
    Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
    { return add_disk(name, read_bandwidth, write_bandwidth); }
-   XBT_ATTRIB_DEPRECATED_v339("Please use NetZone::add_disk")
+   XBT_ATTRIB_DEPRECATED_v339("Please use Host::add_disk")
    Disk* create_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth)
    { return add_disk(name, read_bandwidth, write_bandwidth); }
   #endif 
