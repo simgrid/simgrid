@@ -20,6 +20,7 @@
 
 #ifdef __linux__
 #include <sys/prctl.h>
+#include <sys/sysinfo.h>
 #endif
 
 #include <boost/tokenizer.hpp>
@@ -153,8 +154,9 @@ CheckerSide::CheckerSide(const std::vector<char*>& args)
 
 #ifdef linux
     CPU_SET(1, &set);
-    xbt_assert(sched_setaffinity(getpid(), sizeof(set), &set) != -1, "Cannot pin the application to the core 1: %s",
-               strerror(errno));
+    if (get_nprocs() > 1)
+      xbt_assert(sched_setaffinity(getpid(), sizeof(set), &set) != -1, "Cannot pin the application to the core 1: %s",
+                 strerror(errno));
 #endif
 
     run_child_process(sockets[0], args);
