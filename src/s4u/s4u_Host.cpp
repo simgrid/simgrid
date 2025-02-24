@@ -359,16 +359,17 @@ Disk* Host::get_disk_by_name(const std::string& name) const
 {
   return this->pimpl_->get_disk_by_name(name);
 }
-Disk* Host::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
+
+Disk* Host::add_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
   return kernel::actor::simcall_answered([this, &name, read_bandwidth, write_bandwidth] {
     auto* disk = pimpl_->create_disk(name, read_bandwidth, write_bandwidth);
-    pimpl_->add_disk(disk);
+    pimpl_->register_disk(disk);
     return disk;
   });
 }
 
-Disk* Host::create_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth)
+Disk* Host::add_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth)
 {
   double d_read;
   try {
@@ -382,12 +383,11 @@ Disk* Host::create_disk(const std::string& name, const std::string& read_bandwid
   } catch (const simgrid::ParseError&) {
     throw std::invalid_argument("Impossible to create disk: " + name + ". Invalid write bandwidth: " + write_bandwidth);
   }
-  return create_disk(name, d_read, d_write);
+  return add_disk(name, d_read, d_write);
 }
-
-void Host::add_disk(const Disk* disk)
+void Host::register_disk(const Disk* disk)
 {
-  kernel::actor::simcall_answered([this, disk] { this->pimpl_->add_disk(disk); });
+  kernel::actor::simcall_answered([this, disk] { this->pimpl_->register_disk(disk); });
 }
 
 void Host::remove_disk(const std::string& disk_name)

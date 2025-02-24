@@ -65,7 +65,7 @@ static sg4::NetZone* create_zone(sg4::NetZone* root, const std::string& id)
   for (int i = 0; i < n_host; i++) {
     std::string hostname = id + "-cpu-" + std::to_string(i);
     auto* host           = zone->add_host(hostname, 1e9);
-    host->create_disk("disk-" + hostname, 1e9, 1e6);
+    host->add_disk("disk-" + hostname, 1e9, 1e6);
     const auto* link = zone->add_link("link-" + hostname, 1e9);
     zone->add_route(host, nullptr, {link});
   }

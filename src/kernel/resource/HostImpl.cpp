@@ -255,7 +255,7 @@ s4u::Disk* HostImpl::create_disk(const std::string& name, double read_bandwidth,
   return disk->set_host(&piface_)->get_iface();
 }
 
-void HostImpl::add_disk(const s4u::Disk* disk)
+void HostImpl::register_disk(const s4u::Disk* disk)
 {
   disks_.insert({disk->get_name(), kernel::resource::DiskImplPtr(disk->get_impl())});
 }

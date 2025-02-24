@@ -280,7 +280,7 @@ static void add_remote_disks()
       }
 
     xbt_assert(disk, "You're trying to mount a disk that does not exist. Please check your platform file");
-    host->add_disk(disk);
+    host->register_disk(disk);
 
     XBT_DEBUG("Host '%s' wants to access a remote disk: %s of %s", host->get_cname(), disk->get_cname(),
               remote_host->get_cname());

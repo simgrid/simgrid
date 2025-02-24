@@ -55,8 +55,8 @@ def load_platform(e: Engine):
     host1 = dijkstra.add_host("host1", [1e9, 1e8])
     host1.core_count = 2
     hosts.append(host1)
-    host1.create_disk("disk1", 1e5, 1e4).seal()
-    host1.create_disk("disk2", "1MBps", "1Mbps").seal()
+    host1.add_disk("disk1", 1e5, 1e4).seal()
+    host1.add_disk("disk2", "1MBps", "1Mbps").seal()
     host1.seal()
     dijkstra.set_gateway(host1)
     host2 = dijkstra.add_host("host2", ["1Gf", "1Mf"]).seal()

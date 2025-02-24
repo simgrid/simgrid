@@ -2327,12 +2327,13 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1notif
   }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1create_1disk(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                            jobject jthis, jstring jname,
-                                                                            jdouble read_bw, jdouble write_bw)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1add_1disk(JNIEnv* jenv, jclass jcls, jlong cthis,
+                                                                         jobject jthis, jstring jname,
+                                                                         jdouble read_bw, jdouble write_bw)
 {
-  return (jlong)((Host*)cthis)->create_disk(java_string_to_std_string(jenv, jname), read_bw, write_bw);
+  return (jlong)((Host*)cthis)->add_disk(java_string_to_std_string(jenv, jname), read_bw, write_bw);
 }
+
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1create_1vm(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                           jobject jthis, jstring jname,
                                                                           jint core_amount)

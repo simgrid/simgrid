@@ -13,7 +13,7 @@ namespace sg4 = simgrid::s4u;
 static void host()
 {
   /* -Add an extra disk in a programmatic way */
-  sg4::Host::current()->create_disk("Disk3", /*read bandwidth*/ 9.6e7, /*write bandwidth*/ 6.4e7)->seal();
+  sg4::Host::current()->add_disk("Disk3", /*read bandwidth*/ 9.6e7, /*write bandwidth*/ 6.4e7)->seal();
 
   /* - Display information on the disks mounted by the current host */
   XBT_INFO("*** Storage info on %s ***", sg4::Host::current()->get_cname());

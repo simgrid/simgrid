@@ -142,7 +142,7 @@ void sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
                                            ->set_properties(disk->properties)
                                            ->seal();
 
-  current_host->add_disk(new_disk);
+  current_host->register_disk(new_disk);
 }
 
 /*************************************************************************************************/

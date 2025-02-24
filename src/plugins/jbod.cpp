@@ -28,7 +28,7 @@ JbodPtr Jbod::create_jbod(s4u::NetZone* zone, const std::string& name, double sp
   jbod->set_read_disk_idx(-1);
   jbod->set_raid_level(raid_level);
   for (unsigned int i = 0; i < num_disks; i++)
-    jbod->get_controller()->create_disk(name + "_disk_" + std::to_string(i), read_bandwidth, write_bandwidth);
+    jbod->get_controller()->add_disk(name + "_disk_" + std::to_string(i), read_bandwidth, write_bandwidth);
 
   auto res = JbodPtr(jbod, false);
   all_jbods_.insert({name,res});
