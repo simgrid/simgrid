@@ -421,6 +421,7 @@ set(PLUGINS_SRC
   src/plugins/host_dvfs.cpp
   src/plugins/host_energy.cpp
   src/plugins/host_load.cpp
+  src/plugins/host_carbon_footprint.cpp
   src/plugins/jbod.cpp
   src/plugins/link_energy.cpp
   src/plugins/link_energy_wifi.cpp
@@ -627,6 +628,7 @@ set(headers_to_install
   include/simgrid/plugins/chiller.hpp
   include/simgrid/plugins/dvfs.h
   include/simgrid/plugins/energy.h
+  include/simgrid/plugins/carbon_footprint.h
   include/simgrid/plugins/file_system.h
   include/simgrid/plugins/jbod.hpp
   include/simgrid/plugins/live_migration.h
