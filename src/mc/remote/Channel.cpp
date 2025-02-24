@@ -144,10 +144,6 @@ std::pair<bool, void*> Channel::receive(size_t size)
       return std::make_pair(more, nullptr);
     }
     answer = got;
-#ifdef CHANNEL_TRACE_MSG_COUNT
-    if (is_valid_MessageType(*static_cast<const int*>(answer)))
-      recvs[*static_cast<const int*>(answer)]++;
-#endif
   } else {
     answer = buffer_in_ + buffer_in_next_;
   }
@@ -181,6 +177,11 @@ std::pair<bool, void*> Channel::peek(size_t size)
     memmove(buffer_in_, buffer_in_ + buffer_in_next_, buffer_in_size_);
     buffer_in_next_ = 0;
   }
+#ifdef CHANNEL_TRACE_MSG_COUNT
+  if (buffer_in_size_ < size && is_valid_MessageType(*(int*)(buffer_in_ + buffer_in_next_)))
+    recvs[*(int*)(buffer_in_ + buffer_in_next_)]++;
+#endif
+
   while (buffer_in_size_ < size) {
     /* Receive as much data as we can (filling MC_MESSAGE_LENGTH bytes in the buffer) to save some recv syscalls */
     int avail = MC_MESSAGE_LENGTH - (buffer_in_next_ + buffer_in_size_);
