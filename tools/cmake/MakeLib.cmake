@@ -3,7 +3,7 @@
 # On macOS, specify that rpath is useful to look for the dependencies
 # See https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/RPATH-handling and Java.cmake
 set(CMAKE_MACOSX_RPATH TRUE)
-if(APPLE)
+if(APPLE OR ("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD"))
   SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE) # When installed, use system path
   set(CMAKE_SKIP_BUILD_RPATH FALSE)         # When executing from build tree, take the lib from the build path if exists
   set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) # When executing from build tree, take the lib from the system path if exists

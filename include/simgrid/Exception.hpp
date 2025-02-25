@@ -76,7 +76,7 @@ public:
 } // namespace xbt
 
 /** Ancestor class of all SimGrid exception */
-class Exception : public std::runtime_error {
+class XBT_PUBLIC Exception : public std::runtime_error {
 public:
   Exception(simgrid::xbt::ThrowPoint&& throwpoint, const std::string& message)
       : std::runtime_error(message), throwpoint_(std::move(throwpoint))
@@ -107,7 +107,7 @@ private:
 };
 
 #define DECLARE_SIMGRID_EXCEPTION(AnyException, ...)                                                                   \
-  class AnyException : public Exception {                                                                              \
+  class XBT_PUBLIC AnyException : public Exception {                                                                   \
   public:                                                                                                              \
     using Exception::Exception;                                                                                        \
     __VA_ARGS__                                                                                                        \
