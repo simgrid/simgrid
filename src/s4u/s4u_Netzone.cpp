@@ -257,7 +257,7 @@ s4u::Host* NetZone::add_host(const std::string& name, double speed)
 s4u::Host* NetZone::add_host(const std::string& name, const std::vector<double>& speed_per_pstate)
 {
   return kernel::actor::simcall_answered(
-      [this, &name, &speed_per_pstate] { return pimpl_->create_host(name, speed_per_pstate); });
+      [this, &name, &speed_per_pstate] { return pimpl_->add_host(name, speed_per_pstate); });
 }
 
 s4u::Host* NetZone::add_host(const std::string& name, const std::string& speed)
@@ -277,7 +277,7 @@ s4u::Link* NetZone::add_link(const std::string& name, double bandwidth)
 
 s4u::Link* NetZone::add_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  return kernel::actor::simcall_answered([this, &name, &bandwidths] { return pimpl_->create_link(name, bandwidths); });
+  return kernel::actor::simcall_answered([this, &name, &bandwidths] { return pimpl_->add_link(name, bandwidths); });
 }
 
 s4u::Link* NetZone::add_link(const std::string& name, const std::string& bandwidth)
@@ -309,7 +309,7 @@ s4u::SplitDuplexLink* NetZone::add_split_duplex_link(const std::string& name, do
   if (bw_down < 0)
     bw_down = bw_up;
   return kernel::actor::simcall_answered([this, &name, &bw_up, &bw_down] {
-    return pimpl_->create_split_duplex_link(name, std::vector<double>{bw_up}, std::vector<double>{bw_down});
+    return pimpl_->add_split_duplex_link(name, std::vector<double>{bw_up}, std::vector<double>{bw_down});
   });
 }
 
@@ -330,7 +330,7 @@ s4u::Link* NetZone::add_link(const std::string& name, const std::vector<std::str
 
 kernel::routing::NetPoint* NetZone::add_router(const std::string& name)
 {
-  return kernel::actor::simcall_answered([this, &name] { return pimpl_->create_router(name); });
+  return kernel::actor::simcall_answered([this, &name] { return pimpl_->add_router(name); });
 }
 
 kernel::routing::NetPoint* NetZone::get_netpoint() const

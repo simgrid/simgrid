@@ -20,6 +20,7 @@
 
 #ifdef __linux__
 #include <sys/prctl.h>
+#include <sys/sysinfo.h>
 #endif
 
 #include <boost/tokenizer.hpp>
@@ -135,13 +136,7 @@ CheckerSide::CheckerSide(const std::vector<char*>& args)
   // Create an AF_UNIX socketpair used for exchanging messages between the model-checker process (ancestor)
   // and the application process (child)
   int sockets[2];
-  xbt_assert(socketpair(AF_UNIX,
-#ifdef __APPLE__
-                        SOCK_STREAM, /* Mac OSX does not have AF_UNIX + SOCK_SEQPACKET, even if that's faster */
-#else
-                        SOCK_SEQPACKET,
-#endif
-                        0, sockets) != -1,
+  xbt_assert(socketpair(AF_UNIX, SOCK_STREAM, 0, sockets) != -1,
              "Could not create socketpair: %s.\nPlease increase the file limit with `ulimit -n 10000`.",
              strerror(errno));
 
@@ -159,8 +154,9 @@ CheckerSide::CheckerSide(const std::vector<char*>& args)
 
 #ifdef linux
     CPU_SET(1, &set);
-    xbt_assert(sched_setaffinity(getpid(), sizeof(set), &set) != -1, "Cannot pin the application to the core 1: %s",
-               strerror(errno));
+    if (get_nprocs() > 1)
+      xbt_assert(sched_setaffinity(getpid(), sizeof(set), &set) != -1, "Cannot pin the application to the core 1: %s",
+                 strerror(errno));
 #endif
 
     run_child_process(sockets[0], args);
@@ -261,11 +257,13 @@ Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool ne
   auto* answer = (s_mc_message_simcall_execute_answer_t*)(get_channel().expect_message(
       sizeof(s_mc_message_simcall_execute_answer_t), MessageType::SIMCALL_EXECUTE_REPLY,
       "Could not receive answer to SIMCALL_EXECUTE"));
+  xbt_assert(answer->aid == aid, "The application did not execute the expected actor (expected %ld, ran %ld)", aid,
+             answer->aid);
 
   if (new_transition) {
-    XBT_DEBUG("Got a transtion");
-    std::stringstream stream(answer->buffer.data());
-    return deserialize_transition(aid, times_considered, stream);
+    auto* t = deserialize_transition(aid, times_considered, channel_);
+    XBT_DEBUG("Got a transtion: %s", t->to_string(true).c_str());
+    return t;
   }
   XBT_DEBUG("No need for transitions today");
   return nullptr;
@@ -273,25 +271,27 @@ Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool ne
 
 void CheckerSide::handle_replay(std::deque<std::pair<aid_t, int>> to_replay)
 {
-
-  s_mc_message_replay_t replay_msg = {};
+  s_mc_message_int_t replay_msg = {};
   replay_msg.type  = MessageType::REPLAY;
-  replay_msg.count = to_replay.size();
+  replay_msg.value              = to_replay.size();
 
-  xbt_assert(to_replay.size() < MC_MAX_REPLAY_SIZE,
-             "Not enough space to replay the sequence (size:%d; max size: %u). Fix me!", (int)to_replay.size(),
-             MC_MAX_REPLAY_SIZE);
+  unsigned char* aids  = (unsigned char*)alloca(sizeof(unsigned char) * to_replay.size());
+  unsigned char* times = (unsigned char*)alloca(sizeof(unsigned char) * to_replay.size());
 
   XBT_DEBUG("send a replay of size %lu", to_replay.size());
   int i = 0;
   for (auto const& [aid, time] : to_replay) {
     xbt_assert(aid < 255, "Overflow on the aid value. %ld is too big to fit in an unsigned char", aid);
-    replay_msg.aids[i]  = aid;
-    replay_msg.times[i] = time;
+    xbt_assert(time < 255, "Overflow on the time_considered value. %d is too big to fit in an unsigned char", time);
+    aids[i]  = aid;
+    times[i] = time;
     i++;
   }
+  get_channel().pack(&replay_msg, sizeof(replay_msg));
+  get_channel().pack(aids, sizeof(unsigned char) * to_replay.size());
+  get_channel().pack(times, sizeof(unsigned char) * to_replay.size());
 
-  xbt_assert(get_channel().send(replay_msg) == 0, "Could not send message to the app: %s", strerror(errno));
+  xbt_assert(get_channel().send() == 0, "Could not send message to the app: %s", strerror(errno));
 
   // Wait for the application to signal that it is waiting
   sync_with_app();

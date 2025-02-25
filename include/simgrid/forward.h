@@ -246,6 +246,7 @@ class Profile;
 } // namespace profile
 } // namespace kernel
 namespace mc {
+class Channel;
 class State;
 class RemoteApp;
 }

@@ -10,6 +10,7 @@
 #include "simgrid/simcall.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/mc/remote/Channel.hpp"
 #include "src/sthread/sthread.h"
 #include "xbt/string.hpp"
 
@@ -33,13 +34,17 @@ public:
       : SimcallObserver(actor), type_(type), objaddr_(objaddr), objname_(objname), file_(file), line_(line)
   {
   }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
 };
-void ObjectAccessObserver::serialize(std::stringstream& stream) const
+void ObjectAccessObserver::serialize(mc::Channel& channel) const
 {
-  stream << (short)mc::Transition::Type::OBJECT_ACCESS << ' ';
-  stream << (short)type_ << ' ' << objaddr_ << ' ' << objname_ << ' ' << file_ << ' ' << line_;
+  channel.pack(mc::Transition::Type::OBJECT_ACCESS);
+  channel.pack((short)type_);
+  channel.pack(objaddr_);
+  channel.pack(std::string(objname_));
+  channel.pack(std::string(file_));
+  channel.pack(line_);
 }
 std::string ObjectAccessObserver::to_string() const
 {

@@ -7,6 +7,7 @@
 #define SIMGRID_MC_SIMCALL_OBSERVER_HPP
 
 #include "simgrid/forward.h"
+#include "src/mc/remote/Channel.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/asserts.h"
 #include "xbt/ex.h"
@@ -55,7 +56,7 @@ public:
   }
 
   /** Serialize to the given string buffer, to send over the network */
-  virtual void serialize(std::stringstream& stream) const = 0;
+  virtual void serialize(simgrid::mc::Channel& channel) const = 0;
 
   /** Used to debug (to display the simcall on which each actor is blocked when displaying it */
   virtual std::string to_string() const = 0;
@@ -101,7 +102,7 @@ public:
   {
     xbt_assert(min <= max);
   }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   int get_max_consider() const override;
   void prepare(int times_considered) override;
@@ -114,7 +115,7 @@ class ActorJoinSimcall final : public DelayedSimcallObserver<void> {
 
 public:
   ActorJoinSimcall(ActorImpl* actor, ActorImpl* other, double timeout = -1.0);
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   bool is_enabled() override;
 
@@ -125,7 +126,7 @@ public:
 class ActorSuspendSimcall final : public DelayedSimcallObserver<void> {
 public:
   explicit ActorSuspendSimcall(ActorImpl* actor) : DelayedSimcallObserver<void>(actor) {}
-  void serialize(std::stringstream& stream) const override { THROW_UNIMPLEMENTED; }
+  void serialize(mc::Channel& channel) const override { THROW_UNIMPLEMENTED; }
   std::string to_string() const override { THROW_UNIMPLEMENTED; }
   bool is_visible() const override { return false; }
 };
@@ -134,7 +135,7 @@ class ActorSleepSimcall final : public DelayedSimcallObserver<void> {
 
 public:
   explicit ActorSleepSimcall(ActorImpl* actor) : DelayedSimcallObserver<void>(actor) {}
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
 };
 
@@ -143,7 +144,7 @@ class ActorCreateSimcall final : public SimcallObserver {
 
 public:
   explicit ActorCreateSimcall(ActorImpl* actor) : SimcallObserver(actor) {}
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
 
   void set_child(aid_t child) { child_ = child; }
@@ -157,7 +158,7 @@ public:
       : SimcallObserver(actor), object_(object)
   {
   }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   bool is_visible() const override;
   bool is_enabled() override { return true; }

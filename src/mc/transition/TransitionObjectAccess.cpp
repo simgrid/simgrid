@@ -4,18 +4,20 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/transition/TransitionObjectAccess.hpp"
+#include "src/mc/remote/Channel.hpp"
 #include "xbt/asserts.h"
-#include "xbt/log.h"
 #include <xbt/string.hpp>
 
 namespace simgrid::mc {
 
-ObjectAccessTransition::ObjectAccessTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+ObjectAccessTransition::ObjectAccessTransition(aid_t issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::OBJECT_ACCESS, issuer, times_considered)
 {
-  short s;
-  xbt_assert(stream >> s >> objaddr_ >> objname_ >> file_ >> line_);
-  access_type_ = static_cast<simgrid::mc::ObjectAccessType>(s);
+  access_type_ = static_cast<simgrid::mc::ObjectAccessType>(channel.unpack<short>());
+  objaddr_     = channel.unpack<void*>();
+  objname_     = channel.unpack<std::string>();
+  file_        = channel.unpack<std::string>();
+  line_        = channel.unpack<int>();
 }
 std::string ObjectAccessTransition::to_string(bool verbose) const
 {

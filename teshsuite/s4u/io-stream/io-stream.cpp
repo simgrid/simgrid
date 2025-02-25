@@ -115,8 +115,8 @@ int main(int argc, char** argv)
   auto* link = zone->add_link("link", "2MBps")->set_latency("50us");
   zone->add_route(bob, alice, {link});
 
-  bob->create_disk("bob_disk", "1MBps", "500kBps");
-  alice->create_disk("alice_disk", "4MBps", "4MBps");
+  bob->add_disk("bob_disk", "1MBps", "500kBps");
+  alice->add_disk("alice_disk", "4MBps", "4MBps");
 
   zone->seal();
 

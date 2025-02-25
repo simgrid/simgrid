@@ -517,11 +517,17 @@ PYBIND11_MODULE(simgrid, m)
            "Set the coordinates of this host")
       .def("set_sharing_policy", &simgrid::s4u::Host::set_sharing_policy, py::call_guard<py::gil_scoped_release>(),
            "Describe how the CPU is shared", py::arg("policy"), py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
-      .def("create_disk", py::overload_cast<const std::string&, double, double>(&Host::create_disk),
-           py::call_guard<py::gil_scoped_release>(), "Create a disk")
-      .def("create_disk",
-           py::overload_cast<const std::string&, const std::string&, const std::string&>(&Host::create_disk),
-           py::call_guard<py::gil_scoped_release>(), "Create a disk")
+      .def("add_disk", py::overload_cast<const std::string&, double, double>(&Host::add_disk),
+           py::call_guard<py::gil_scoped_release>(), "Add a disk")
+      .def("add_disk",
+           py::overload_cast<const std::string&, const std::string&, const std::string&>(&Host::add_disk),
+           py::call_guard<py::gil_scoped_release>(), "Add a disk")
+      .def("create_disk", [](std::string const& name) {
+           PyErr_WarnEx(PyExc_DeprecationWarning,
+                        "create_disk) is deprecated, use Host.add_disk().", 2);
+           throw std::logic_error("Please call Host.add_disk() instead");
+          },
+          "Creates a disk") // XBT_ATTRIB_DEPRECATED_v339 
       .def("get_property", &Host::get_property, "Get Host property")
       .def("get_properties", &Host::get_properties, "Get all Host properties")
       .def("set_property", &Host::set_property, "Set Host property")

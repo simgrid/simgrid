@@ -4,10 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/transition/TransitionRandom.hpp"
+#include "src/mc/remote/Channel.hpp"
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
-
-#include <sstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_rand, mc_transition, "Logging specific to MC Random transitions");
 
@@ -17,10 +16,11 @@ std::string RandomTransition::to_string(bool verbose) const
   return xbt::string_printf("Random([%d;%d] ~> %d)", min_, max_, times_considered_);
 }
 
-RandomTransition::RandomTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+RandomTransition::RandomTransition(aid_t issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::RANDOM, issuer, times_considered)
 {
-  xbt_assert(stream >> min_ >> max_);
+  min_ = channel.unpack<int>();
+  max_ = channel.unpack<int>();
 }
 
 bool RandomTransition::reversible_race(const Transition* other) const

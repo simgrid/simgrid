@@ -254,22 +254,33 @@ public:
   std::vector<Disk*> get_disks() const;
   Disk* get_disk_by_name(const std::string& name) const;
 
-  /**
-   * @brief Create and add disk in the host
+  #ifndef DOXYGEN
+   XBT_ATTRIB_DEPRECATED_v339("Please use Host::add_disk")
+   Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
+   { return add_disk(name, read_bandwidth, write_bandwidth); }
+   XBT_ATTRIB_DEPRECATED_v339("Please use Host::add_disk")
+   Disk* create_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth)
+   { return add_disk(name, read_bandwidth, write_bandwidth); }
+  #endif 
+
+   /**
+   * @brief Add a disk to a host
    *
    * @param name Disk name
    * @param read_bandwidth Reading speed of the disk
    * @param write_bandwidth Writing speed of the disk
    */
-  Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
+  Disk* add_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
   /**
-   * @brief Human-friendly version of create_disk function.
+   * @brief Human-friendly version of add_disk function.
    *
    * @throw std::invalid_argument if read/write speeds are incorrect
    */
-  Disk* create_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth);
-  void add_disk(const Disk* disk);
+  Disk* add_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth);
+  #ifndef DOXYGEN
+  void register_disk(const Disk* disk);
   void remove_disk(const std::string& disk_name);
+  #endif
 
   VirtualMachine* create_vm(const std::string& name, int core_amount);
   VirtualMachine* create_vm(const std::string& name, int core_amount, size_t ramsize);

@@ -14,16 +14,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_any, mc_transition, "Logging specific t
 
 namespace simgrid::mc {
 
-TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::TESTANY, issuer, times_considered)
 {
-  int size;
-  xbt_assert(stream >> size);
-  for (int i = 0; i < size; i++) {
-    Transition* t = deserialize_transition(issuer, 0, stream);
-    XBT_DEBUG("TestAny received transition %d/%d %s", (i + 1), size, t->to_string(true).c_str());
+  unsigned size = channel.unpack<unsigned>();
+  for (unsigned i = 0; i < size; i++) {
+    Transition* t = deserialize_transition(issuer, 0, channel);
+    XBT_DEBUG("TestAny received transition %u/%u %s", (i + 1), size, t->to_string(true).c_str());
     transitions_.push_back(t);
   }
+  call_location_ = channel.unpack<std::string>();
 }
 std::string TestAnyTransition::to_string(bool verbose) const
 {
@@ -52,16 +52,16 @@ bool TestAnyTransition::reversible_race(const Transition* other) const
   return true; // TestAny is always enabled
 }
 
-WaitAnyTransition::WaitAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+WaitAnyTransition::WaitAnyTransition(aid_t issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::WAITANY, issuer, times_considered)
 {
-  int size;
-  xbt_assert(stream >> size);
-  for (int i = 0; i < size; i++) {
-    Transition* t = deserialize_transition(issuer, 0, stream);
-    XBT_DEBUG("WaitAny received transition %d/%d %s", (i + 1), size, t->to_string(true).c_str());
+  unsigned size = channel.unpack<unsigned>();
+  for (unsigned i = 0; i < size; i++) {
+    Transition* t = deserialize_transition(issuer, 0, channel);
+    XBT_DEBUG("WaitAny received transition %u/%u %s", (i + 1), size, t->to_string(true).c_str());
     transitions_.push_back(t);
   }
+  call_location_ = channel.unpack<std::string>();
 }
 std::string WaitAnyTransition::to_string(bool verbose) const
 {

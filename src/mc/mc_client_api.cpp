@@ -5,6 +5,7 @@
 
 #include "simgrid/simcall.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"

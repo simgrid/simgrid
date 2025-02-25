@@ -180,7 +180,7 @@ int FatTreeZone::connect_node_to_parents(FatTreeNode* node)
                 node->id, node->level, node->position, (*currentParentNode)->id, (*currentParentNode)->level,
                 (*currentParentNode)->position, this->num_port_lower_level_[level]);
       for (unsigned int j = 0; j < this->num_port_lower_level_[level]; j++) {
-        this->add_link(currentParentNode->get(), node->label[level] + j * this->num_children_per_node_[level], node,
+        this->add_internal_link(currentParentNode->get(), node->label[level] + j * this->num_children_per_node_[level], node,
                        (*currentParentNode)->label[level] + j * this->num_parents_per_node_[level]);
       }
       connectionsNumber++;
@@ -348,7 +348,7 @@ void FatTreeZone::add_processing_node(int id, resource::StandardLinkImpl* limite
   this->nodes_.emplace_back(newNode);
 }
 
-void FatTreeZone::add_link(FatTreeNode* parent, unsigned int parentPort, FatTreeNode* child, unsigned int childPort)
+void FatTreeZone::add_internal_link(FatTreeNode* parent, unsigned int parentPort, FatTreeNode* child, unsigned int childPort)
 {
   static int uniqueId = 0;
   const s4u::Link* linkup;
@@ -357,10 +357,10 @@ void FatTreeZone::add_link(FatTreeNode* parent, unsigned int parentPort, FatTree
       "link_from_" + std::to_string(child->id) + "_" + std::to_string(parent->id) + "_" + std::to_string(uniqueId);
 
   if (get_link_sharing_policy() == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    linkup   = create_link(id + "_UP", {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
-    linkdown = create_link(id + "_DOWN", {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+    linkup   = add_link(id + "_UP", {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+    linkdown = add_link(id + "_DOWN", {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
   } else {
-    linkup   = create_link(id, {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+    linkup   = add_link(id, {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
     linkdown = linkup;
   }
   uniqueId++;
@@ -501,7 +501,7 @@ FatTreeParams::FatTreeParams(unsigned int n_levels, const std::vector<unsigned i
   kernel::routing::FatTreeZone::check_topology(levels, down, up, number);
 }
 
-NetZone* create_fatTree_zone(const std::string& name, const NetZone* parent, const FatTreeParams& params,
+NetZone*  create_fatTree_zone(const std::string& name, const NetZone* parent, const FatTreeParams& params,
                              const ClusterCallbacks& set_callbacks, double bandwidth, double latency,
                              Link::SharingPolicy sharing_policy)
 {

@@ -301,7 +301,7 @@ public class simgridJNI {
   public final static native double Exec_get_cost(long jarg1, Exec jarg1_);
   public final static native boolean Exec_is_parallel(long jarg1, Exec jarg1_);
   public final static native boolean Exec_is_assigned(long jarg1, Exec jarg1_);
-  public final static native long Host_create_disk(long jarg1, Host jarg1_, String name, double read_bandwidth,
+  public final static native long Host_add_disk(long jarg1, Host jarg1_, String name, double read_bandwidth,
                                                    double write_bandwidth);
   public final static native Disk[] Host_get_disks(long jarg1, Host jarg1_);
   public final static native long Host_create_vm(long jarg1, Host jarg1_, String name, int core_amount);

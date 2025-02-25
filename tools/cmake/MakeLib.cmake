@@ -69,7 +69,8 @@ if (HAVE_BOOST_STACKTRACE_BACKTRACE)
 endif()
 
 if (HAVE_STD_STACKTRACE)
-  target_link_libraries(simgrid stdc++exp)
+  # Listing specifically stdc++ is needed at least on MUSL when compiling C code against libsimgrid, as GCC does not provide stdc++ by default
+  target_link_libraries(simgrid stdc++exp stdc++)
 endif()
 
 

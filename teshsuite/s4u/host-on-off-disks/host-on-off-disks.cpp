@@ -37,8 +37,8 @@ int main(int argc, char* argv[])
 
   auto* root  = e.get_netzone_root();
   auto* host1 = root->add_host("host1", 1e9);
-  host1->create_disk("disk-1", 1e9, 1e6);
-  host1->create_disk("disk-2", 1e9, 1e6);
+  host1->add_disk("disk-1", 1e9, 1e6);
+  host1->add_disk("disk-2", 1e9, 1e6);
 
   auto* host2 = root->add_host("host2", 1e9);
 

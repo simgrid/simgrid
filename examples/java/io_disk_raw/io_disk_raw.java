@@ -10,7 +10,7 @@ class HostRunner extends Actor {
   {
 
     /* -Add an extra disk in a programmatic way */
-    Host.current().create_disk("Disk3", /*read bandwidth*/ 9.6e7, /*write bandwidth*/ 6.4e7).seal();
+    Host.current().add_disk("Disk3", /*read bandwidth*/ 9.6e7, /*write bandwidth*/ 6.4e7).seal();
 
     /* - Display information on the disks mounted by the current host */
     Engine.info("*** Storage info on %s ***", Host.current().get_name());

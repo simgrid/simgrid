@@ -45,9 +45,9 @@ public class Host {
     long cPtr = simgridJNI.Host_current();
     return (cPtr == 0) ? null : new Host(cPtr);
   }
-  public Disk create_disk(String name, double read_bandwidth, double write_bandwidth)
+  public Disk add_disk(String name, double read_bandwidth, double write_bandwidth)
   {
-    long cPtr = simgridJNI.Host_create_disk(swigCPtr, this, name, read_bandwidth, write_bandwidth);
+    long cPtr = simgridJNI.Host_add_disk(swigCPtr, this, name, read_bandwidth, write_bandwidth);
     return (cPtr == 0) ? null : new Disk(cPtr);
   }
   public String[] get_properties_names() { return simgridJNI.Host_get_properties_names(swigCPtr, this); }

@@ -200,12 +200,7 @@ StatePtr BeFSWutState::insert_into_final_wakeup_tree(odpor::PartialExecution& w)
 
 BeFSWutState::~BeFSWutState()
 {
-  auto parent_state = get_parent_state();
-  if (parent_state != nullptr) {
-    auto parent = static_cast<BeFSWutState*>(parent_state);
-    parent->closed_.emplace_back(get_transition_in()->aid_);
-    parent->signal_on_backtrack();
-  }
+  xbt_assert(get_parent_state() == nullptr);
 }
 
 void BeFSWutState::signal_on_backtrack()

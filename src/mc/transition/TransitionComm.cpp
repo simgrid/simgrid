@@ -7,6 +7,7 @@
 #include "simgrid/config.h"
 #include "src/mc/api/RemoteApp.hpp"
 #include "xbt/asserts.h"
+#include "xbt/log.h"
 #include "xbt/string.hpp"
 
 #include <inttypes.h>
@@ -27,10 +28,17 @@ CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, bool 
     , receiver_(receiver_)
 {
 }
-CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::COMM_WAIT, issuer, times_considered)
 {
-  xbt_assert(stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> call_location_);
+  timeout_ = channel.unpack<bool>();
+  comm_    = channel.unpack<unsigned>();
+
+  sender_        = channel.unpack<aid_t>();
+  receiver_      = channel.unpack<aid_t>();
+  mbox_          = channel.unpack<unsigned>();
+  call_location_ = channel.unpack<std::string>();
+
   XBT_DEBUG("CommWaitTransition %s comm:%u, sender:%ld receiver:%ld mbox:%u call_loc:%s",
             (timeout_ ? "timeout" : "no-timeout"), comm_, sender_, receiver_, mbox_, call_location_.c_str());
 }
@@ -79,10 +87,14 @@ CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, unsig
     , receiver_(receiver_)
 {
 }
-CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::COMM_TEST, issuer, times_considered)
 {
-  xbt_assert(stream >> comm_ >> sender_ >> receiver_ >> mbox_ >> call_location_);
+  comm_          = channel.unpack<unsigned>();
+  sender_        = channel.unpack<aid_t>();
+  receiver_      = channel.unpack<aid_t>();
+  mbox_          = channel.unpack<unsigned>();
+  call_location_ = channel.unpack<std::string>();
   XBT_DEBUG("CommTestTransition comm:%u, sender:%ld receiver:%ld mbox:%u call_loc:%s", comm_, sender_, receiver_, mbox_,
             call_location_.c_str());
 }
@@ -126,10 +138,14 @@ CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, unsig
     : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered), comm_(comm_), mbox_(mbox_), tag_(tag_)
 {
 }
-CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered)
 {
-  xbt_assert(stream >> comm_ >> mbox_ >> tag_ >> call_location_);
+  comm_          = channel.unpack<unsigned>();
+  mbox_          = channel.unpack<unsigned>();
+  tag_           = channel.unpack<int>();
+  call_location_ = channel.unpack<std::string>();
+
   XBT_DEBUG("CommRecvTransition comm:%u, mbox:%u tag:%d call_loc:%s", comm_, mbox_, tag_, call_location_.c_str());
 }
 std::string CommRecvTransition::to_string(bool verbose) const
@@ -208,10 +224,14 @@ CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, unsig
     : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered), comm_(comm_), mbox_(mbox_), tag_(tag_)
 {
 }
-CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered)
 {
-  xbt_assert(stream >> comm_ >> mbox_ >> tag_ >> call_location_);
+  comm_          = channel.unpack<unsigned>();
+  mbox_          = channel.unpack<unsigned>();
+  tag_           = channel.unpack<int>();
+  call_location_ = channel.unpack<std::string>();
+
   XBT_DEBUG("SendTransition comm:%u mbox:%u tag:%d call_loc:%s", comm_, mbox_, tag_, call_location_.c_str());
 }
 std::string CommSendTransition::to_string(bool verbose) const
@@ -291,10 +311,13 @@ CommIprobeTransition::CommIprobeTransition(aid_t issuer, int times_considered, b
     : Transition(Type::COMM_IPROBE, issuer, times_considered), is_sender_(is_sender), mbox_(mbox), tag_(tag)
 {
 }
-CommIprobeTransition::CommIprobeTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+CommIprobeTransition::CommIprobeTransition(aid_t issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::COMM_IPROBE, issuer, times_considered)
 {
-  xbt_assert(stream >> mbox_ >> is_sender_ >> tag_);
+  mbox_      = channel.unpack<unsigned>();
+  is_sender_ = channel.unpack<bool>();
+  tag_       = channel.unpack<int>();
+
   XBT_DEBUG("SendTransition mbox:%u %s tag:%d", mbox_, (is_sender_ ? "sender side" : "recv side"), tag_);
 }
 

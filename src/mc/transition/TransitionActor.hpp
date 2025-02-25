@@ -20,7 +20,7 @@ class ActorJoinTransition : public Transition {
   aid_t target_;
 
 public:
-  ActorJoinTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  ActorJoinTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
   bool can_be_co_enabled(const Transition* other) const override;
@@ -34,7 +34,7 @@ public:
 class ActorSleepTransition : public Transition {
 
 public:
-  ActorSleepTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  ActorSleepTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
   bool reversible_race(const Transition* other) const override;
@@ -44,7 +44,7 @@ class ActorCreateTransition : public Transition {
   aid_t child_;
 
 public:
-  ActorCreateTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  ActorCreateTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
   bool can_be_co_enabled(const Transition* other) const override;

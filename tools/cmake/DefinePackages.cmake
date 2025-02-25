@@ -499,7 +499,11 @@ set(MC_SRC_BASE
   src/mc/mc_record.cpp
   src/mc/mc_record.hpp
   src/mc/mc_replay.hpp
+
   src/mc/transition/Transition.cpp
+  src/mc/remote/Channel.cpp
+  src/mc/remote/Channel.hpp
+
   src/mc/xbt_intrusiveptr.hpp
   )
 
@@ -554,8 +558,6 @@ set(MC_SRC_STATELESS
 
   src/mc/remote/AppSide.cpp
   src/mc/remote/AppSide.hpp
-  src/mc/remote/Channel.cpp
-  src/mc/remote/Channel.hpp
   src/mc/remote/CheckerSide.cpp
   src/mc/remote/CheckerSide.hpp
   src/mc/remote/mc_protocol.h

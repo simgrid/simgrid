@@ -80,7 +80,7 @@ int main(int argc, char** argv)
   /* simple platform containing 1 host and 2 disk */
   auto* zone = e.get_netzone_root();
   auto* bob  = zone->add_host("bob", 1e6);
-  auto* disk = bob->create_disk("bob_disk", 1e3, 1e3);
+  auto* disk = bob->add_disk("bob_disk", 1e3, 1e3);
   /* manually setting before seal */
   disk->set_read_bandwidth(1e6);
   disk->set_write_bandwidth(1e6);

@@ -86,7 +86,7 @@ def sata_dynamic_sharing(disk: Disk, capacity: float, n: int) -> float:
 
 def create_ssd_disk(host: Host, disk_name: str):
     """ Creates an SSD disk, setting the appropriate callback for non-linear resource sharing """
-    disk = host.create_disk(disk_name, "240MBps", "170MBps")
+    disk = host.add_disk(disk_name, "240MBps", "170MBps")
     disk.set_sharing_policy(Disk.Operation.READ, Disk.SharingPolicy.NONLINEAR,
                             functools.partial(ssd_dynamic_sharing, disk, "read"))
     disk.set_sharing_policy(Disk.Operation.WRITE, Disk.SharingPolicy.NONLINEAR,
@@ -97,7 +97,7 @@ def create_ssd_disk(host: Host, disk_name: str):
 
 def create_sata_disk(host: Host, disk_name: str):
     """ Same for a SATA disk, only read operation follows a non-linear resource sharing """
-    disk = host.create_disk(disk_name, "68MBps", "50MBps")
+    disk = host.add_disk(disk_name, "68MBps", "50MBps")
     disk.set_sharing_policy(Disk.Operation.READ, Disk.SharingPolicy.NONLINEAR,
                             functools.partial(sata_dynamic_sharing, disk))
     # this is the default behavior, expliciting only to make it clearer

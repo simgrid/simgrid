@@ -246,7 +246,7 @@ s4u::Disk* HostImpl::get_disk_by_name(const std::string& name)
   return disks_[name]->get_iface();
 }
 
-s4u::Disk* HostImpl::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
+s4u::Disk* HostImpl::add_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
   auto* disk = piface_.get_netpoint()->get_englobing_zone()->get_disk_model()->create_disk(name, read_bandwidth,
                                                                                            write_bandwidth);
@@ -255,7 +255,7 @@ s4u::Disk* HostImpl::create_disk(const std::string& name, double read_bandwidth,
   return disk->set_host(&piface_)->get_iface();
 }
 
-void HostImpl::add_disk(const s4u::Disk* disk)
+void HostImpl::register_disk(const s4u::Disk* disk)
 {
   disks_.insert({disk->get_name(), kernel::resource::DiskImplPtr(disk->get_impl())});
 }

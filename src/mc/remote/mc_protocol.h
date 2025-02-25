@@ -10,8 +10,6 @@
 
 #ifdef __cplusplus
 
-#include "src/kernel/actor/SimcallObserver.hpp"
-
 #include "simgrid/forward.h" // aid_t
 #include "src/mc/datatypes.h"
 #include <xbt/utility.hpp>
@@ -33,7 +31,6 @@ XBT_DECLARE_ENUM_CLASS(MessageType, NONE, FORK, FORK_REPLY, WAIT_CHILD, WAIT_CHI
 constexpr unsigned MC_MESSAGE_LENGTH                 = 48 * 1024 * 1024;
 constexpr unsigned MC_SOCKET_NAME_LEN                = sizeof(sockaddr_un::sun_path);
 constexpr unsigned SIMCALL_SERIALIZATION_BUFFER_SIZE = 2048;
-constexpr unsigned MC_MAX_REPLAY_SIZE                = 1024;
 
 /** Basic structure for a MC message
  *
@@ -72,19 +69,6 @@ struct s_mc_message_simcall_execute_t {
 struct s_mc_message_simcall_execute_answer_t {
   simgrid::mc::MessageType type;
   aid_t aid;
-  std::array<char, SIMCALL_SERIALIZATION_BUFFER_SIZE> buffer;
-};
-
-struct s_mc_message_replay_t {
-  simgrid::mc::MessageType type;
-  int count;
-  unsigned char aids[MC_MAX_REPLAY_SIZE];
-  unsigned char times[MC_MAX_REPLAY_SIZE];
-};
-
-struct s_mc_message_restore_t {
-  simgrid::mc::MessageType type;
-  int index;
 };
 
 struct s_mc_message_actors_status_t {
@@ -110,13 +94,6 @@ struct s_mc_message_actors_status_one_t { // an array of `s_mc_message_actors_st
   aid_t aid;
   bool enabled;
   int max_considered;
-};
-
-// Answer from an actor to the question "what are you about to run?"
-struct s_mc_message_simcall_probe_one_t { // a series of `s_mc_message_simcall_probe_one_t`
-                                          // is sent right after `s_mc_message_actors_status_one_t[]`
-  simgrid::mc::MessageType type;
-  std::array<char, SIMCALL_SERIALIZATION_BUFFER_SIZE> buffer;
 };
 
 #endif // __cplusplus
