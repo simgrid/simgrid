@@ -46,7 +46,7 @@ get_dates() {
                 ;;
         esac
     done
-    git log --format=%ad "$file" | cut -d\  -f5 | uniq
+    git log --follow --format=%ad "$file" | cut -d\  -f5 | uniq
 }
 
 format_dates() {
