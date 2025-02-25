@@ -1,16 +1,18 @@
 # .mailmap file, used by git shortlog
+# try to keep it sorted by last name
 #
 Ehsan Azimi <eazimi@ehsan.irisa.fr> <azimi.ehsan@outlook.com>
 Khaled Baati <kbaati@realopt-Latitude-E6530>
+Paul Bédaride <paul.bedaride@gmail.com>
+Paul Bédaride <paul.bedaride@gmail.com> <bedaride@beowulf.loria.fr>
+Paul Bédaride <paul.bedaride@gmail.com> <paul.bedaride@ptitpoulpe.fr>
 Benoît Bimal <bimal@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Laurent Bobelin <lbobelin@mintcar.lip.ens-lyon.fr> <lbobelin@mintcar.imag.fr>
 Toufik Boubehziz <toufik.boubehziz@gmail.com>
 Toufik Boubehziz <toufik.boubehziz@gmail.com> <boubehtoufik@hotmail.fr>
 Toufik Boubehziz <toufik.boubehziz@gmail.com> <toufik.boubehziz@inria.fr>
 Jean-Edouard Boulanger <jean.edouard.boulanger@gmail.com>
-Paul Bédaride <paul.bedaride@gmail.com>
-Paul Bédaride <paul.bedaride@gmail.com> <bedaride@beowulf.loria.fr>
-Paul Bédaride <paul.bedaride@gmail.com> <paul.bedaride@ptitpoulpe.fr>
+Juan Pablo Briones <jpbrione@gmail.com>
 Benjamin Camus <benjamin.camus@inria.fr>
 Benjamin Camus <benjamin.camus@inria.fr> <bcamus@quetsche.irisa.fr>
 Benjamin Camus <benjamin.camus@inria.fr> <bcamus@quetsche.local>
@@ -37,6 +39,8 @@ Gabriel Corona <gabriel.corona@loria.fr> <coron00b@barbecue.loria.fr>
 Gabriel Corona <gabriel.corona@loria.fr> <gabriel.corona@enst-bretagne.fr>
 Clément Courageux-Sudan <clement.courageux-sudan@inria.fr> <clement.courageux-sudan@ens-rennes.fr>
 Clément Courageux-Sudan <clement.courageux-sudan@inria.fr> <clementcourageuxsudan@gmail.com>
+Jean-Emile Dartois <jean-emile.dartois@b-com.com>
+Jean-Emile Dartois <jean-emile.dartois@b-com.com> <jedartois@gmail.com>
 Augustin Degomme <adegomme@gmail.com>
 Augustin Degomme <adegomme@gmail.com> <13270544+adegomme@users.noreply.github.com>
 Augustin Degomme <adegomme@gmail.com> <26892-adegomme@users.noreply.framagit.org>
@@ -52,8 +56,6 @@ Augustin Degomme <adegomme@gmail.com> <degomme@localhost.localdomain>
 Augustin Degomme <adegomme@gmail.com> <degomme@pilipili2.imag.fr>
 Augustin Degomme <adegomme@gmail.com> <degomme@wasabi>
 Augustin Degomme <adegomme@gmail.com> <you@example.com>
-Jean-Emile Dartois <jean-emile.dartois@b-com.com>
-Jean-Emile Dartois <jean-emile.dartois@b-com.com> <jedartois@gmail.com>
 Darina Dimitrova <dimitrov@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Bruno Donassolo <bruno.donassolo@inria.fr> <donassbr@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Bruno Donassolo <bruno.donassolo@inria.fr> <donassolo@Brunos-MBP.home>
@@ -66,6 +68,8 @@ Lionel Eyraud-Dubois <lionel.eyraud-dubois@inria.fr>
 Lionel Eyraud-Dubois <lionel.eyraud-dubois@inria.fr> <eyraud@etincel.(none)>
 Lionel Eyraud-Dubois <lionel.eyraud-dubois@inria.fr> <eyraudl@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Adrien Faure <adrien.faure2@gmail.com>
+El Mehdi Fekari <mido.peace@gmail.com>
+El Mehdi Fekari <mido.peace@gmail.com> <coldpeace@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Marc Frincu <quasar@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Marc Fuentes <marc.fuentes@inria.fr>
 Kayo Fujiwara <kayof@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
@@ -100,11 +104,10 @@ Adrien Lèbre <adrien.lebre@inria.fr> <alebre@pc18.home>
 Adrien Lèbre <adrien.lebre@inria.fr> <alebre@portinfo61.info.emn.fr>
 Arnaud Legrand <arnaud.legrand@imag.fr> <alegrand@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Loris Marchal <lmarchal@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
-El Mehdi Fekari <mido.peace@gmail.com>
-El Mehdi Fekari <mido.peace@gmail.com> <coldpeace@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Michael Mercier <michael.mercier@inria.fr>
 Etienne Michon <EtienneM@users.noreply.github.com>
 Clément Mommessin <clement.mommessin@inria.fr>
+Clément Mommessin <clement.mommessin@inria.fr> <6922939+Mommessc@users.noreply.github.com>
 Pierre Navarro <pierre.navarro@imag.fr>
 Pierre Navarro <pierre.navarro@imag.fr> <Pierre.Navarro@imag.fr>
 Pierre Navarro <pierre.navarro@imag.fr> <navarro@caraja.(none)>
@@ -113,9 +116,11 @@ Pierre Navarro <pierre.navarro@imag.fr> <pierre@.(none)>
 Pierre Navarro <pierre.navarro@imag.fr> <pierre@chontal.imag.fr>
 Pierre Navarro <pierre.navarro@imag.fr> <pierre@erie.imag.fr>
 Pierre Navarro <pierre.navarro@imag.fr> <pierre@workhorse-2.local>
+Onesphore Ndayishimiye <ndayishimiye.o@husky.neu.edu>
 Lucas Nesi <lucas.nesi@inf.ufrgs.br> <lucas31nesi@hotmail.com>
 Lucas Nussbaum <lucas.nussbaum@loria.fr> <lucas@lucas-nussbaum.net>
 Tien-Dat Phan <tien-dat.phan@irisa.fr>
+Steven Quinito Masnada <stevenwhatelse@hotmail.fr>
 Martin Quinson <martin.quinson@ens-rennes.fr> <(no author)@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Martin Quinson <martin.quinson@ens-rennes.fr> <624847+mquinson@users.noreply.github.com>
 Martin Quinson <martin.quinson@ens-rennes.fr> <martin.quinson@irisa.fr>
@@ -123,15 +128,15 @@ Martin Quinson <martin.quinson@ens-rennes.fr> <martin.quinson@loria.fr>
 Martin Quinson <martin.quinson@ens-rennes.fr> <mquinson@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Martin Quinson <martin.quinson@ens-rennes.fr> <mquinson@debian.org>
 Martin Quinson <martin.quinson@ens-rennes.fr> <mquinson@frennes2.(none)>
-Onesphore Ndayishimiye <ndayishimiye.o@husky.neu.edu>
-Jean-Noël Quintin <quintinjean-noel@bibi.lan>
-Jean-Noël Quintin <quintinjean-noel@bibi.lan> <jnquintin@Jean-Noels-MacBook.local>
-Jean-Noël Quintin <quintinjean-noel@bibi.lan> <jnquintin@dhcp-892b9b4c.ucd.ie>
-Jean-Noël Quintin <quintinjean-noel@bibi.lan> <jnquintin@dhcp-892b9b64.ucd.ie>
-Jean-Noël Quintin <quintinjean-noel@bibi.lan> <jnquintin@dhcp-892b9bdf.ucd.ie>
-Jean-Noël Quintin <quintinjean-noel@bibi.lan> <quintin@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
-Jean-Noël Quintin <quintinjean-noel@bibi.lan> <quintinjean-noel@Bibi-2.local>
-Jean-Noël Quintin <quintinjean-noel@bibi.lan> <quintinjean-noel@visiteur79.visiteurs.inrialpes.fr>
+Jean-Noël Quintin <jean-noel.quintin@flex.ai>
+Jean-Noël Quintin <jean-noel.quintin@flex.ai> <quintinjean-noel@bibi.lan>
+Jean-Noël Quintin <jean-noel.quintin@flex.ai> <jnquintin@Jean-Noels-MacBook.local>
+Jean-Noël Quintin <jean-noel.quintin@flex.ai> <jnquintin@dhcp-892b9b4c.ucd.ie>
+Jean-Noël Quintin <jean-noel.quintin@flex.ai> <jnquintin@dhcp-892b9b64.ucd.ie>
+Jean-Noël Quintin <jean-noel.quintin@flex.ai> <jnquintin@dhcp-892b9bdf.ucd.ie>
+Jean-Noël Quintin <jean-noel.quintin@flex.ai> <quintin@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
+Jean-Noël Quintin <jean-noel.quintin@flex.ai> <quintinjean-noel@Bibi-2.local>
+Jean-Noël Quintin <jean-noel.quintin@flex.ai> <quintinjean-noel@visiteur79.visiteurs.inrialpes.fr>
 Cristian Rosa <cristian@rtfm.org.ar> <cristian@linuxcoe.corp.hp.com>
 Cristian Rosa <cristian@rtfm.org.ar> <cristianrosa@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Lucas M. Schnorr <schnorr@inf.ufrgs.br>
@@ -155,5 +160,5 @@ Pedro Velho <pedro.velho@gmail.com> <velho@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Pedro Velho <pedro.velho@gmail.com> <velho@mohave.(none)>
 Flavien Vernier <vernier@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Matthieu Volat <matthieu.volat@univ-lyon1.fr> <mazhe@alkumuna.eu>
-Steven Quinito Masnada <stevenwhatelse@hotmail.fr>
+Jeff Wong <jeff33wong@gmail.com>
 Chidambar Zinnoury <illogict@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
