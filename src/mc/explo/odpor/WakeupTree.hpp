@@ -103,6 +103,16 @@ public:
     return nullptr;
   }
 
+  long get_size() const
+  {
+    long res = 0;
+    for (auto const& child : children_) {
+      res += 1;
+      res += child->get_size();
+    }
+    return res;
+  }
+
   // Does the actual job of recursively inserting a sequence inside a WuT.
   // The second version needs to return the node in order for the calling method to obtain
   // the inserted sequence.
@@ -254,6 +264,16 @@ public:
    *
    */
   void force_insert(const PartialExecution& seq);
+
+  long get_size() const
+  {
+    long res = 1;
+    for (auto const& child : root_->children_) {
+      res += 1;
+      res += child->get_size();
+    }
+    return res;
+  }
 
   friend WakeupTreeNode;
 };

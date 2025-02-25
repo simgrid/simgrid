@@ -101,6 +101,7 @@ struct s_mc_message_one_way_t {
   simgrid::mc::MessageType type;
   bool want_transitions;
   bool is_random;
+  int random_seed;
 };
 
 struct s_mc_message_actors_status_one_t { // an array of `s_mc_message_actors_status_one_t[count]` is sent right after

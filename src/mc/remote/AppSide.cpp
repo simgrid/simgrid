@@ -168,6 +168,11 @@ void AppSide::handle_one_way(const s_mc_message_one_way_t* msg)
 {
   auto* engine = kernel::EngineImpl::get_instance();
   bool is_random = msg->is_random;
+  static bool initialized_random = false;
+  if (not initialized_random and is_random) {
+    xbt::random::set_mersenne_seed(msg->random_seed);
+    initialized_random = true;
+  }
 
   std::vector<aid_t> fireables;
   for (auto const& [aid, actor] : engine->get_actor_list())

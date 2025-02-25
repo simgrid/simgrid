@@ -7,6 +7,7 @@
 #include "simgrid/forward.h"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
+#include "src/mc/mc_config.hpp"
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
 
@@ -20,7 +21,7 @@ namespace simgrid::mc::odpor {
 void WakeupTreeNode::add_child(std::unique_ptr<WakeupTreeNode> node)
 {
   xbt_assert(node != nullptr, "Who gave me a nullptr??");
-  node->parent_ = this;
+  node->parent_   = this;
   node->sequence_ = this->sequence_;
   node->sequence_.emplace_back(node->action_);
   this->children_.push_back(std::move(node));
@@ -151,12 +152,14 @@ InsertionResult WakeupTreeNode::recursive_insert(WakeupTree& father, PartialExec
                                               "is claimed to be an initial after `w` but is "
                                               "not actually contained in `w`. This indicates that there "
                                               "is a bug computing initials");
-      const auto& w_action = *action_by_p_in_w;
-      xbt_assert(w_action->type_ == next_E_p->type_,
-                 "Invariant violated: `v` claims that actor `%ld` executes '%s' while "
-                 "`w` claims that it executes '%s'. These two partial executions both "
-                 "refer to `next_[E](p)`, which should be the same",
-                 p, next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
+      if (_sg_mc_debug) {
+        const auto& w_action = *action_by_p_in_w;
+        xbt_assert(w_action->type_ == next_E_p->type_,
+                   "Invariant violated: `v` claims that actor `%ld` executes '%s' while "
+                   "`w` claims that it executes '%s'. These two partial executions both "
+                   "refer to `next_[E](p)`, which should be the same",
+                   p, next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
+      }
       w.erase(action_by_p_in_w);
       return node->recursive_insert(father, w);
     }
