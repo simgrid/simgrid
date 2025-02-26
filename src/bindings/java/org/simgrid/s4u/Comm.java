@@ -8,7 +8,11 @@ package org.simgrid.s4u;
 public class Comm extends Activity {
   protected Comm(long cPtr, boolean cMemoryOwn) { super(cPtr, cMemoryOwn); }
 
-  public static void on_send_cb(CallbackComm cb) { simgridJNI.Comm_on_send_cb(cb); }
+  public static void on_send_cb(CallbackComm cb)
+  {
+    if (cb != null)
+      simgridJNI.Comm_on_send_cb(cb);
+  }
 
   public void on_this_send_cb(CallbackComm cb) { simgridJNI.Comm_on_this_send_cb(getCPtr(), this, cb); }
 

@@ -6,6 +6,8 @@
 package org.simgrid.s4u;
 
 public class simgridJNI {
+  public final static native void
+  try_loading_some_symbols(long arg); // Dummy function to check whether simgrid-java is merged in libsimgrid
   public final static native void Actor_sleep_for(long jarg1, Actor jarg1_, double jarg2);
   public final static native void Actor_sleep_until(long jarg1, Actor jarg1_, double jarg2);
   public final static native void Actor_execute__SWIG_0(long jarg1, Actor jarg1_, double jarg2);

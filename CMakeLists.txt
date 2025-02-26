@@ -359,6 +359,47 @@ mark_as_advanced(Boost_INCLUDE_DIR)
 mark_as_advanced(Boost_STACKTRACE_ADDR2LINE_LIB)
 mark_as_advanced(Boost_STACKTRACE_BACKTRACE_LIB)
 
+## Can we build the Java bindings?
+set(SIMGRID_HAVE_JAVA 0) # by default, nope
+set(merge_java_in_libsimgrid 0) # by default, nope
+if((NOT DEFINED enable_java) OR enable_java)
+  find_package(JNI)
+  if (NOT ${JNI_FOUND})
+    if(enable_java)
+      message(FATAL_ERROR "JNI not found. Please install it, or disable the 'enable_java' option.")
+    else()
+      message(status "JNI not found, thus disabling Java.")
+    endif()
+
+  else()
+   find_package(Java 1.8 COMPONENTS Runtime Development)
+   if (NOT ${Java_FOUND})
+     if(enable_java)
+       message(FATAL_ERROR "Java not found (need at least Java 8). Please install the JDK, or disable the 'enable_java' option.")
+     else()
+       message(status "Java not found (need at least Java 8) thus disabled.")
+     endif()
+    else() # We have both Java and JNI
+      message(STATUS "Java version: ${Java_VERSION_STRING}")
+      message(STATUS "Java compiler: ${Java_JAVAC_EXECUTABLE}; Runtime: ${Java_JAVA_EXECUTABLE}")
+      message(STATUS "Java: JNI include dirs: ${JNI_INCLUDE_DIRS}")
+      set(SIMGRID_HAVE_JAVA 1)
+      
+      # Determines whether the C++ code of the java library shall be merged in libsimgrid or not.
+      # This must be the case on FreeBSD as we often miss exceptions thrown from another library.
+      # Doing so on Apple alleviate some RPATH madness, in particular when the lib is included in the jar.
+      if(APPLE OR ("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD"))
+        set(merge_java_in_libsimgrid 1)
+      else()
+        set(merge_java_in_libsimgrid 0)
+      endif()
+
+    endif()
+  endif()
+else()
+  message(STATUS "Java disabled by user request (remove -Denable_java=${enable_java} if it's not what you want).")
+endif()
+
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 CHECK_LIBRARY_EXISTS(pthread pthread_setaffinity_np  "" HAVE_PTHREAD_SETAFFINITY)
@@ -754,35 +795,8 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MaintainerMode.cmake)
 ### Make Libs
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeLib.cmake)
 
-if((NOT DEFINED enable_java) OR enable_java)
-  find_package(JNI)
-  if (NOT ${JNI_FOUND})
-    if(enable_java)
-      message(FATAL_ERROR "JNI not found. Please install it, or disable the 'enable_java' option.")
-    else()
-      message(status "JNI not found, thus disabling Java.")
-    endif()
-
-  else()
-   find_package(Java 1.8 COMPONENTS Runtime Development)
-   if (NOT ${Java_FOUND})
-     if(enable_java)
-       message(FATAL_ERROR "Java not found (need at least Java 8). Please install the JDK, or disable the 'enable_java' option.")
-     else()
-       message(status "Java not found (need at least Java 8) thus disabled.")
-     endif()
-    else() # We have both Java and JNI
-      message(STATUS "Java version: ${Java_VERSION_STRING}")
-      message(STATUS "Java compiler: ${Java_JAVAC_EXECUTABLE}; Runtime: ${Java_JAVA_EXECUTABLE}")
-      message(STATUS "Java: JNI include dirs: ${JNI_INCLUDE_DIRS}")
-      set(SIMGRID_HAVE_JAVA 1)
-      
-      include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Java.cmake)
-    endif()
-    
-  endif()
-else()
-  message(STATUS "Java disabled by user request (remove -Denable_java=${enable_java} if it's not what you want).")
+if (SIMGRID_HAVE_JAVA)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Java.cmake)
 endif()
 
 # Python binding (with pybind11)

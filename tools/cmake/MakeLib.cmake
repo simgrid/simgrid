@@ -16,6 +16,10 @@ endif()
 ###############################
 # Declare the library content #
 ###############################
+if (${SIMGRID_HAVE_JAVA} AND ${merge_java_in_libsimgrid})
+  message(STATUS "Java: merge all code within the libsimgrid library.")
+  set(simgrid_sources ${simgrid_sources} ${CMAKE_CURRENT_BINARY_DIR}/include/org_simgrid_s4u_simgridJNI.h ${SIMGRID_JAVA_C_SOURCES})
+endif()
 
 # Declare the simgrid library
 add_library(simgrid SHARED ${simgrid_sources})

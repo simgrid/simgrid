@@ -484,6 +484,13 @@ extern "C" {
    and located somewhere under simgrid_jar.dir/native_headers/org_simgrid_s4u_simgridJNI.h */
 #include "org_simgrid_s4u_simgridJNI.h"
 
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_try_1loading_1some_1symbols(JNIEnv* jenv, jclass jcls,
+                                                                                    jlong arg)
+{
+  // Dummy function to check whether simgrid-java is merged in libsimgrid, nothing to do.
+  // We just need it to be defined
+}
+
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1sleep_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                           jobject jthis, jdouble duration)
 {
