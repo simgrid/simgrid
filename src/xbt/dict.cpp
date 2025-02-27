@@ -115,6 +115,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
   dict->table_size = newsize;
   dict->table      = newtable;
   XBT_DEBUG("REHASH (%u->%u)", oldsize, newsize);
+  asm volatile ("" : : : "memory");
 
   for (unsigned i = 0; i < oldsize; i++) {
     xbt_dictelm_t* currcell = &newtable[i];
