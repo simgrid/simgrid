@@ -969,6 +969,8 @@ include teshsuite/s4u/activity-lifecycle/testing_sleep.cpp
 include teshsuite/s4u/activity-lifecycle/testing_test-wait.cpp
 include teshsuite/s4u/actor-autorestart/actor-autorestart.cpp
 include teshsuite/s4u/actor-autorestart/actor-autorestart.tesh
+include teshsuite/s4u/actor-destroyed-with-mutex/actor-destroyed-with-mutex.cpp
+include teshsuite/s4u/actor-destroyed-with-mutex/actor-destroyed-with-mutex.tesh
 include teshsuite/s4u/actor-suspend/actor-suspend.cpp
 include teshsuite/s4u/actor-suspend/actor-suspend.tesh
 include teshsuite/s4u/actor/actor.cpp

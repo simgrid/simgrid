@@ -57,6 +57,8 @@ xbt::signal<void(double)> Engine::on_time_advance;
 xbt::signal<void(void)> Engine::on_deadlock;
 
 Engine* Engine::instance_ = nullptr; /* This singleton is awful, but I don't see no other solution right now. */
+bool Engine::shutdown_ongoing_ =
+    false; // set to true just before the final shutdown, to break dependency loops in that area
 
 void Engine::initialize(int* argc, char** argv)
 {
@@ -83,6 +85,7 @@ Engine::Engine(int* argc, char** argv) : pimpl_(new kernel::EngineImpl())
 
 Engine::~Engine()
 {
+  shutdown_ongoing_ = true;
   kernel::EngineImpl::shutdown();
   Engine::instance_ = nullptr;
 }

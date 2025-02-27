@@ -10,6 +10,7 @@
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Host.hpp>
 
+#include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/BarrierImpl.hpp"
@@ -278,6 +279,7 @@ void EngineImpl::shutdown()
 {
   if (EngineImpl::instance_ == nullptr)
     return;
+  s4u::Engine::shutdown_ongoing_ = true;
   XBT_DEBUG("EngineImpl::shutdown() called. Simulation's over.");
 #if HAVE_SMPI
   if (not instance_->actor_list_.empty()) {

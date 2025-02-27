@@ -56,7 +56,7 @@ public:
   /** @brief Retrieve the engine singleton */
   static s4u::Engine* get_instance();
   static s4u::Engine* get_instance(int* argc, char** argv);
-  static bool has_instance() { return instance_ != nullptr; }
+  static bool has_instance() { return instance_ != nullptr && not shutdown_ongoing_; }
   const std::vector<std::string>& get_cmdline() const;
   const char* get_context_factory_name() const;
 
@@ -298,6 +298,8 @@ private:
 
   kernel::EngineImpl* const pimpl_;
   static Engine* instance_;
+  static bool shutdown_ongoing_; // set to true just before the final shutdown, to break dependency loops in that area
+
   void initialize(int* argc, char** argv);
 };
 
