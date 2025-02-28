@@ -73,6 +73,15 @@ public:
     file->close(); // Unlinking the file on "disk" does not close the file and free the object
 
     show_info(disks);
+
+    // Open another file on disk without a "content" property
+    filename = "/lib/libc.so";
+    file     = sg4::File::open(filename, nullptr);
+    write    = file->write(4096); // Write 4 Kbytes
+    XBT_INFO("Create a %llu bytes file named '%s' on /", write, filename.c_str());
+    file->close();
+
+    show_info(disks);
   }
 };
 

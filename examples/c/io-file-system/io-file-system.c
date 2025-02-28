@@ -79,6 +79,15 @@ static void host(int argc, char* argv[])
   sg_file_unlink(file);
 
   show_info(disk_count, disks);
+
+  // Open another file on disk without a "content" property
+  filename = "/lib/libc.so";
+  file     = sg_file_open(filename, NULL);
+  write    = sg_file_write(file, 4096); // Write 4 Kbytes
+  XBT_INFO("Create a %llu bytes file named '%s' on /", write, filename);
+  sg_file_close(file);
+
+  show_info(disk_count, disks);
   xbt_free(disks);
 }
 
