@@ -352,6 +352,8 @@ FileSystemDiskExt::FileSystemDiskExt(const Disk* ptr)
 
   if (const char* content_str = ptr->get_property("content"))
     content_.reset(parse_content(content_str));
+  if (not content_)
+    content_.reset(new decltype(content_)::element_type());
 }
 
 std::map<std::string, sg_size_t, std::less<>>* FileSystemDiskExt::parse_content(const std::string& filename)
