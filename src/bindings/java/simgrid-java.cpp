@@ -2730,7 +2730,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jen
     return 0;
   }
 
-  cargs[0] = xbt_strdup("java"); // SimGrid expects argv[0] to be useless
+  cargs[0] = (char*)"java"; // SimGrid expects argv[0] to be useless
   for (jsize i = 0; i < len; i++) {
     jstring j_string     = (jstring)jenv->GetObjectArrayElement(jargs, i);
     const char* c_string = jenv->GetStringUTFChars(j_string, 0);
