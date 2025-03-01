@@ -16,9 +16,7 @@
 
 namespace simgrid {
 
-#ifndef SWIG
 extern template class XBT_PUBLIC xbt::Extendable<s4u::Host>;
-#endif
 
 namespace s4u {
 /** @ingroup s4u_api
@@ -37,11 +35,7 @@ namespace s4u {
  * :cpp:func:`simgrid::s4u::this_actor::get_host()`
  * @endrst
  */
-#ifdef SWIG 
-class XBT_PUBLIC Host { // Swig cannot cope with our extension mechanism, and don't need it anyway
-#else
 class XBT_PUBLIC Host : public xbt::Extendable<Host> {
-#endif
 
 #ifndef DOXYGEN
   friend kernel::resource::VMModel;            // Use the pimpl_cpu to compute the VM sharing
