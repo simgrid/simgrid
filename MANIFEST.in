@@ -2296,7 +2296,6 @@ include src/bindings/java/org/simgrid/s4u/Mutex.java
 include src/bindings/java/org/simgrid/s4u/NativeLib.java
 include src/bindings/java/org/simgrid/s4u/NetZone.java
 include src/bindings/java/org/simgrid/s4u/NetworkFailureException.java
-include src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_t.java
 include src/bindings/java/org/simgrid/s4u/Semaphore.java
 include src/bindings/java/org/simgrid/s4u/SimgridException.java
 include src/bindings/java/org/simgrid/s4u/TimeoutException.java

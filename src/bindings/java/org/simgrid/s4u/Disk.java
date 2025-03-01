@@ -105,11 +105,6 @@ public class Disk {
     return Disk.SharingPolicy.swigToEnum(simgridJNI.Disk_get_sharing_policy(swigCPtr, this, op.swigValue()));
   }
 
-  public Disk set_factor_cb(SWIGTYPE_p_std__functionT_double_t cb) {
-    simgridJNI.Disk_set_factor_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_double_t.getCPtr(cb));
-    return this;
-  }
-
   public Object get_data() { return simgridJNI.Disk_get_data(swigCPtr, this); }
   public void set_data(Object data) { simgridJNI.Disk_set_data(swigCPtr, this, data); }
 

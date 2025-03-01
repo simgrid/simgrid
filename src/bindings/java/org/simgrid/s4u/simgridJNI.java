@@ -217,7 +217,6 @@ public class simgridJNI {
   public final static native int Disk_Operation_WRITE_get();
   public final static native int Disk_Operation_READWRITE_get();
   public final static native int Disk_get_sharing_policy(long jarg1, Disk jarg1_, int jarg2);
-  public final static native void Disk_set_factor_cb(long jarg1, Disk jarg1_, long jarg2);
   public final static native Object Disk_get_data(long jarg1, Disk jarg1_);
   public final static native void Disk_set_data(long jarg1, Disk jarg1_, Object data);
   public final static native void Disk_seal(long jarg1, Disk jarg1_);

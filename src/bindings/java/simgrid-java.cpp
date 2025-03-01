@@ -2605,20 +2605,6 @@ XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1sharing_1poli
   return (jint)((Disk*)cthis)->get_sharing_policy((simgrid::s4u::Disk::Operation)jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1factor_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                              jobject jthis, jlong jarg2)
-{
-  std::function<simgrid::s4u::Disk::IoFactorCb>* arg2 = 0;
-
-  arg2 = *(std::function<simgrid::s4u::Disk::IoFactorCb>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< simgrid::s4u::Disk::IoFactorCb > const & is null");
-    return;
-  }
-  ((Disk*)cthis)->set_factor_cb((std::function<simgrid::s4u::Disk::IoFactorCb> const&)*arg2);
-}
-
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1seal(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                    jobject jthis)
 {

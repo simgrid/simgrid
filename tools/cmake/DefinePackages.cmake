@@ -815,7 +815,6 @@ set(SIMGRID_JAVA_JAVA_SOURCES
     src/bindings/java/org/simgrid/s4u/Semaphore.java
     src/bindings/java/org/simgrid/s4u/SimgridException.java
     src/bindings/java/org/simgrid/s4u/simgridJNI.java
-    src/bindings/java/org/simgrid/s4u/SWIGTYPE_p_std__functionT_double_t.java
     src/bindings/java/org/simgrid/s4u/TimeoutException.java
     src/bindings/java/org/simgrid/s4u/VirtualMachine.java
 )
