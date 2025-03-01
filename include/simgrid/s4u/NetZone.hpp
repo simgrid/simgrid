@@ -254,7 +254,8 @@ public:
    * Both up/down links have exactly the same bandwidth
    *
    * @param name Name of the link
-   * @param bandwidth Speed
+   * @param bw_up Speed of the up link
+   * @param bw_down Speed of the down link (same as up link by default)
    */
   s4u::SplitDuplexLink* add_split_duplex_link(const std::string& name, const std::string& bw_up,
                                                  const std::string& bw_down = "");

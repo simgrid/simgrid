@@ -277,10 +277,8 @@ public:
    * @throw std::invalid_argument if read/write speeds are incorrect
    */
   Disk* add_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth);
-  #ifndef DOXYGEN
   void register_disk(const Disk* disk);
   void remove_disk(const std::string& disk_name);
-  #endif
 
   VirtualMachine* create_vm(const std::string& name, int core_amount);
   VirtualMachine* create_vm(const std::string& name, int core_amount, size_t ramsize);

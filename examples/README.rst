@@ -66,9 +66,11 @@ also create them directly from your code.
       - Directly with :cpp:func:`sg_actor_create` followed by :cpp:func:`sg_actor_start`.
       - From XML with :cpp:func:`simgrid_register_function` and then :cpp:func:`simgrid_load_deployment`.
 
+   .. example-tab:: examples/java/actor_create/actor_create.java
+
    .. example-tab:: examples/python/actor-create/actor-create_d.xml
 
-      The following file is used in both C++ and Python.
+      This configuration file is all languages.
 
 Reacting to actors' end
 -----------------------
@@ -94,6 +96,8 @@ actors.
       This example shows how to attach a callback to the end of a specific actor with
       :cpp:func:`sg_actor_on_exit()`.
 
+   .. example-tab:: examples/java/actor_exiting/actor_exiting.java
+
 Killing actors
 --------------
 
@@ -114,6 +118,8 @@ Actors can forcefully stop other actors.
    .. example-tab:: examples/c/actor-kill/actor-kill.c
 
       See also :cpp:func:`sg_actor_kill`, :cpp:func:`sg_actor_kill_all`, :cpp:func:`sg_actor_exit`, :cpp:func:`sg_actor_on_exit`.
+
+   .. example-tab:: examples/java/actor_kill/actor_kill.java
 
 Actors' life cycle from XML_reference
 -------------------------------------
@@ -138,6 +144,10 @@ You can specify a start time and a kill time in the deployment file.
 
       This file is not really interesting: the important matter is in the XML file.
 
+   .. example-tab:: examples/java/actor_lifetime/actor_lifetime.java
+
+      This file is not really interesting: the important matter is in the XML file.
+
 Daemon actors
 -------------
 
@@ -158,6 +168,8 @@ actor into a daemon that will be automatically killed once the simulation is ove
    .. example-tab:: examples/c/actor-daemon/actor-daemon.c
 
       See also :cpp:func:`sg_actor_daemonize` and :cpp:func:`sg_actor_is_daemon`.
+
+   .. example-tab:: examples/java/actor_daemon/actor_daemon.java
 
 Specifying the stack size
 -------------------------
@@ -222,6 +234,8 @@ Actors can move or be moved from a host to another very easily. It amounts to se
 
       See also :cpp:func:`sg_actor_set_host()`.
 
+   .. example-tab:: examples/java/actor_migrate/actor_migrate.java
+
 Waiting for the termination of an actor (joining on it)
 -------------------------------------------------------
 
@@ -240,6 +254,8 @@ You can block the current actor until the end of another actor.
    .. example-tab:: examples/c/actor-join/actor-join.c
 
       See also :cpp:func:`sg_actor_join`.
+
+   .. example-tab:: examples/java/actor_join/actor_join.java
 
 Yielding to other actors
 ------------------------
@@ -261,6 +277,8 @@ at this timestamp.
    .. example-tab:: examples/c/actor-yield/actor-yield.c
 
       See also :cpp:func:`sg_actor_yield()`.
+
+   .. example-tab:: examples/java/actor_yield/actor_yield.java
 
 Traces Replay as a Workload
 ===========================
@@ -399,6 +417,8 @@ The ``suspend()`` and ``resume()`` functions block the progression of a given co
 
       See also :py:func:`simgrid.Comm.suspend()` and
       :py:func:`simgrid.Comm.resume()`.
+
+   .. example-tab:: examples/java/actor_suspend/actor_suspend.java
 
 .. _s4u_ex_comm_failure:
 
@@ -691,6 +711,8 @@ The ``wait_all()`` function is useful when you want to block until all activitie
 
       See also :cpp:func:`sg_activity_set_wait_all()`.
 
+   .. example-tab:: examples/java/activityset_awaitall/activityset_awaitall.java
+
 Waiting for all activities in a set (with timeout)
 --------------------------------------------------
 
@@ -709,6 +731,8 @@ The ``wait_all_for()`` function is very similar to ``wait_all()`` but allows to 
    .. example-tab:: examples/c/activityset-waitallfor/activityset-waitallfor.c
 
       See also :cpp:func:`sg_activity_set_wait_all_for()`.
+
+   .. example-tab:: examples/java/activityset_awaitallfor/activityset_awaitallfor.java
 
 Waiting for the first completed activity in a set
 -------------------------------------------------
@@ -729,6 +753,8 @@ The ``wait_any()`` blocks until one activity of the set completes, no matter whi
 
       See also :cpp:func:`sg_activity_set_wait_any`.
 
+   .. example-tab:: examples/java/activityset_awaitany/activityset_awaitany.java
+
 Testing whether at least one activity completed
 -----------------------------------------------
 
@@ -747,6 +773,8 @@ The ``test_any()`` returns whether at least one activity of the set has complete
    .. example-tab:: examples/c/activityset-testany/activityset-testany.c
 
       See also :cpp:func:`sg_activity_set_test_any`.
+
+   .. example-tab:: examples/java/activityset_testany/activityset_testany.java
 
 .. _s4u_ex_dag:
 

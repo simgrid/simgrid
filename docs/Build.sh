@@ -45,6 +45,7 @@ for ex in $( (cd .. ; \
               find examples/cpp/   -name '*.cpp'; \
               find examples/c/     -name '*.c'; \
               find examples/python -name '*.py'; \
+              find examples/java   -name '*.java'; \
              ) | sort )
 do
     if grep -q "example-tab:: $ex" ../examples/README.rst ; then :
