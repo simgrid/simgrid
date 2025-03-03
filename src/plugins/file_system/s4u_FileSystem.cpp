@@ -8,6 +8,7 @@
 #include <simgrid/s4u/Disk.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/VirtualMachine.hpp>
 #include <simgrid/simcall.hpp>
 #include <xbt/asserts.h>
 #include <xbt/config.hpp>
@@ -115,7 +116,10 @@ File* File::open(const std::string& fullpath, const_sg_host_t host, void* userda
 
 void File::close()
 {
-  std::vector<int>* desc_table = Host::current()->extension<FileDescriptorHostExt>()->file_descriptor_table.get();
+  auto* host = Host::current();
+  if (dynamic_cast<VirtualMachine*>(host)) //For VirtualMachine, have to work with the PM
+    host = static_cast<VirtualMachine*>(host)->get_pm();
+  std::vector<int>* desc_table = host->extension<FileDescriptorHostExt>()->file_descriptor_table.get();
   kernel::actor::simcall_answered([this, desc_table] { desc_table->push_back(this->desc_id); });
   delete this;
 }
