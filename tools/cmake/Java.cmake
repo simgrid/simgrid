@@ -127,7 +127,7 @@ if(enable_lib_in_jar)
 
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}
-    COMMAND ${CMAKE_STRIP} --strip-all ${JAVA_NATIVE_PATH}/*
+    COMMAND ${CMAKE_STRIP} -x ${JAVA_NATIVE_PATH}/*
     )
 endif()
 
