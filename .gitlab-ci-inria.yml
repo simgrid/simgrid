@@ -8,7 +8,7 @@ build-base:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y xsltproc ninja
+  - apt install -y xsltproc ninja-build
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -Denable_model-checking=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
