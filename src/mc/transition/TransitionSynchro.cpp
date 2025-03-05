@@ -203,7 +203,7 @@ bool SemaphoreTransition::reversible_race(const Transition* other) const
     case Type::SEM_WAIT:
       // Some times the race is not reversible: we decide to catch it during the exploration
       // instead of doing tedious computation here.
-      return true;
+      return this->capacity_ > 0;
     default:
       xbt_die("Unexpected transition type %s", to_c_str(type_));
   }
