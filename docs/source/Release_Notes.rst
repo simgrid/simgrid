@@ -792,73 +792,73 @@ bug. Still, we did not find any such bug yet, so the chase continues.
 Version 4.0 (unreleased)
 ------------------------
 
-After almost 10 years of development, we finally reached the point where we can release the first version of the 4.x serie. The
-S4U API is now consistent and rather intuitive. It is not perfect yet, and we still plan to improve SimGrid in the future, but we
-think that the recent publication of this `paper describing the evolutions since SimGrid v3 <https://hal.science/hal-04909441>`_
-is the perfect occasion to release the next major release of the framework.
+After almost 10 years of development, we have finally reached the point where we can release the first version of the 4.x serie. The
+S4U API is now more consistent and more intuitive. Although we still plan to improve SimGrid in the future, we
+feelt that the recent publication of this `paper describing the evolutions since SimGrid v3 <https://hal.science/hal-04909441>`_
+was the perfect opportunity for doing this major release of SimGrid.
 
-We have many plan for the future. On the short term, we plan to simplify the platform creation API and make it possible to
-dynamically change the platform (add nodes) and routing. The model checker is also under active development these days, with a
-parallel exploration algorithm coming soon. We have many ideas for medium- or long-term improvements. Allowing users to easily
-define sharing models would be nice, as would be the possibility to compute the models in parallel for efficiency. Finally,
-SimGrid will never be the ultimate tool. Instead, we'd like to foster a vivid ecosystem of user-provided plugins that are
-contributed by the community. We have many other ideas for the tool and/or its ecosystem. That being said, our days have only 24
-hours each, so if you need a feature the best is to implement it for yourself and then share it with the community. We believe
-that the current code makes it easy for newcomers to dive into the code and contribute. Please tell us if you see something we
-could improve here.
+We have many plans for the future. Short-term plans include further simplification of the platform creation API and
+making it possible to dynamically change the platform (e.g., add nodes and update the routing).  The model checker is
+currently under active development, including an upcoming parallel exploration algorithm. We also have many ideas for
+medium- and long-term developments. For instance, allowing users to easily define resource sharing models would be nice,
+as would be the possibility to compute these models in parallel for efficiency. Obviously, SimGrid will never be the
+ultimate tool that caters to every conceivable use case.  Instead, we would like to foster a vibrant ecosystem of
+user-provided plugins that are contributed by the community. While we have many ideas for augmenting SimGrid and its
+surounding ecosystem, our days only have 24 hours. Therefore, if you need a feature the best is to implement it for
+yourself and then share it with the SimGrid community.  We believe that the current code makes it easy for newcomers to
+dive in and contribute.  Please tell us if you see something we could improve to make this process even easier.
 
-Meanwhile, this version introduces several changes compared to v3.35:
+In this context, the 4.0 version introduces several changes with respect to v3.36, as described hereafter.
 
-We reworked **the platform generation API** to simplify it and make it more natural. Earlier, you had to specify the routing
-algorithm specified in the root netzone (the one englobing the whole platform), and you had to create this netzone yourself
+We reworked **the platform generation API** to simplify it and make it more natural. Earlier, users had to specify the routing
+algorithm used in the root netzone (the one that comprises the whole platform), and they had to create this netzone themselves
 before installing it in the Engine. This forced either a manual handling of the parent/child relationships between zones (as in
-v3.36 and earlier), or a duplication of the API between the Engine and the Netzone classes that can both contain Netzones. Now,
-the root netzone gets created automatically, with the Full routing. If you wanted your platform to have a Full root netzone,
-then it's already created for you. If you wanted your root netzone to have another routing algorithm, simply add a new netzone
-with the routing algorithm you want to the root netzone, and put your whole platform in this netzone.
+v3.36 and earlier), or a duplication of the API between the Engine and the Netzone classes that can both contain Netzones. The
+root netzone now gets created automatically, using the Full routing scheme. If the user wants a platform with a Full root netzone,
+then it's already there. If users want the root netzone to use another routing algorithm, they can simply add a new netzone
+with the desired routing algorithm under the root netzone, and create the whole platform in this new netzone.
+Consequently the ``create_*_zone()`` methods were replaced with ``NetZone::add_netzone_*()`` methods. The
+``NetZone::set_parent()`` method is no longer useful (and thus deprecated).  Overall, we feel that the entire platform
+creation process is much more natural.
 
-This allows to replace the ``create_*_zone()`` functions with the nice ``NetZone::add_netzone_*()`` methods. So
-``NetZone::set_parent()`` is now useless (and thus deprecated), and the whole platform creation feels much more natural (to me,
-at least).
-
-**On the bindings API**, we reintroduced the **Java bindings**. You can now use the S4U API from Java, as demonstrated in the
-many examples that got converted. It was the occasion to proofread the S4U API as we ported it to Java, explaining the changes
-to the platform API presented above. The main issue is that the Java bindings are not documented yet, because Java is not
-supported by `Sphinx <https://www.sphinx-doc.org>`_ and `breath <https://breathe.readthedocs.io/en/latest/>`_, the systems we
-use to generate the doc. This is very unfortunate, even if the Java API is very close to the C++ one. We could add the doc
-manually in Sphinx, but it's very time-consuming. Any helping patch would be very welcome here.
-
-Porting S4U to Java was a big commitment (requiring 5k lines of C++ and 3.5k lines of Java for the library, plus 5k lines of
-Java for the examples). We think that Java is a much better programming language for PhD students than C++. Java is rather easy
-and forgiving compared to C++, which should be reserved to seasoned programmers despite its power (or, *because* of its power).
-Python is also easy, but it's meant for small scripts. The medium-sized projects that are typically written during the course of
-a PhD are probably easier to write in Java instead. To be honnest, another motivation for this development was fun. Writing this
-code felt like a very large grid of Sudoku where you have to be careful, but it's not too difficult once you got it. I may
-consider some Rust bindings in the future, but I'm concerned of the maintenance burden if we add too many bindings.
+**Regarding the bindings API**, we reintroduced **Java bindings**. Users can now use the S4U API from Java, as
+demonstrated in the many examples. It was also an opportunity to proofread the S4U API during the port to Java, which
+included explaining the changes to the platform generated API discussed above. A remaining main issue is that the Java
+bindings are not documented yet, because Java is not supported by `Sphinx <https://www.sphinx-doc.org>`_ and `breath
+<https://breathe.readthedocs.io/en/latest/>`_, the systems we use to generate the SimGrid documentation. This is very
+unfortunate, and frustrating because the Java API is very close to the C++ API. An option would be to add the Java
+documentation manually in Sphinx, but it would be very time-consuming process. Any helping patch would be extremely
+welcome!  Porting the S4U API to Java was a big commitment (requiring 5k lines of C++ and 3.5k lines of Java for the
+library, plus 5k lines of Java for the examples). We think that Java is a much better programming language than C++ to
+use by students, as it is relatively easy and very forgiving, while C++ should be reserved to seasoned programmers who
+can then benefit of its added power.  Python is also an easy lanthage, but it is meant for small scripts. The
+medium-sized projects that are typically written during the course of a student's graduate-level projects are probably
+better written in Java than in Python. To be perfectly honnest, another motivation for the Java API development was fun.
+Writing this code felt like solving a very large grid of Sudoku, requiring care but not being too difficult once you
+figured it out. We may consider implementing Rust bindings in the future, but a concern is the added maintenance burden
+if we add too many bindings.
 
 The **Python bindings** were also extended, with two great contributions. Sergey Teryoshkin added many missing bindings, while
 Jean-Noël Quintin implemented most of the MPI standard in Python for SimGrid. Many thanks, guys!
 
-**On the software lifecycle side**, this release is one of the last of the 3.x serie. The current form of the S4U API is nice,
-so it's about time to release SimGrid 4.0. The only missing bits before the big jump seem to be some parts of the documentation
-which were not ported from Doxygen to Sphinx.
+**On the software lifecycle side**, given the current (improved) form of the S4U API, it was time to release SimGrid 4.0. 
+The only missing pieces before the big jump seem to be some portions of the documentation which were not ported from Doxygen to Sphinx.
 
-We are done deprecating the old xbt_dict and xbt_dynar data containers, which will be fully removed in a few releases (be it
+We are done deprecating the old xbt_dict and xbt_dynar data containers, which will be fully removed in future releases (be it
 3.39 as currently planned or one of the 4.x serie).
 
-**On the model-checking side**, we worked mostly on the performance of the verification process, and fixed some bugs. Our
+**On the model-checking side**, we worked mostly on improving the performance of the verification process, and fixed some bugs. Our
 prefered algorithm (ODPOR reduction + Best-first exploration to enable random walk) is now much faster and consumes much less
-memory. In some small scenarios, the new version is 5 times faster. But actually, since its performance is now linear with the
-amount of states while it used to be polynomial, 5x faster is the less you can get from that version. The amount of states to
-explore for a given scenario is still the same (ODPOR was not improved), but we explore these states much faster now.
+memory, being 5x faster on small scenarios. But since performance is now linear with the
+number of states, while it used to be polynomial, 5x faster is the lowest performance boost you can expect from the new version. The number of states to explore for a given scenario is still the same (ODPOR was not improved), but we now can explore these states much faster.
 
-**On the storage simulation side**, we finally allowed disks to be turned off and on as it was already possible for hosts and
-links. When a disk is turned off, all the I/O activities currently using that resource are canceled. When the disk is turned
+**On the storage simulation side**, we finally allowed disks to be turned off and on, just like it was already possible for hosts and
+links. When a disk is turned off, all the I/O activities currently using it are canceled. When the disk is turned
 back on, these activities have to be manually restarted. Moreover, if disks are attached to a host and this host is turned off
 (resp. on), the disks are also turned off (resp. on).
 
-**On the interface front**, we added a few signals for a better consistency across activities and resources. Additionally,
-the platform parsing now raises a ``on_platform_sealed()`` when the platform cannot be modified anymore and its routing has
+**On the interface front**, we added a few signals for better consistency across activities and resources. Additionally,
+the platform parsing now raises a ``on_platform_sealed()``  when the platform cannot be modified anymore and its routing has
 been set.
 
 .. |br| raw:: html
