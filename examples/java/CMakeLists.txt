@@ -1,10 +1,4 @@
 if(SIMGRID_HAVE_JAVA)
-  add_custom_target(java-all COMMENT "Building all Java examples...")
-  add_dependencies(tests java-all)
-  add_dependencies(java-all simgrid_jar)
-  add_dependencies(java-all simgrid-java) # useful when the libs are not included in the jar
-  add_dependencies(java-all simgrid)      # useful when the libs are not included in the jar
-
   if(${Java_VERSION} VERSION_GREATER_EQUAL "24.0.0")
     set(javac_args "--enable-native-access=ALL-UNNAMED")
   else()
@@ -53,8 +47,8 @@ foreach (example activityset_awaitall activityset_awaitallfor activityset_awaita
             ENTRY_POINT ${example}
             OUTPUT_NAME ${example}
             OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${example_dir})
-    add_dependencies(java-all java-${example})
-    ADD_TESH(java-${example} --setenv LD_PRELOAD=$ENV{SAN_LIBS} --setenv LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${CMAKE_BINARY_DIR}/lib --setenv LC_CTYPE=C --setenv javacmd="${Java_JAVA_EXECUTABLE} -Xcheck:jni ${javac_args}" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
+    add_dependencies(tests-java java-${example})
+    ADD_TESH(java-${example} --setenv LD_PRELOAD=$ENV{SAN_LIBS} --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH} --setenv LC_CTYPE=C --setenv javacmd="${Java_JAVA_EXECUTABLE} -Xcheck:jni ${javac_args}" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
   endif()
 
   set(examples_src  ${examples_src}  ${_${example}_sources})

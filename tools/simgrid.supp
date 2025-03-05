@@ -164,3 +164,298 @@
    ...
    obj:/usr/bin/python*
 }
+
+{
+   ignore Java cruft
+   Memcheck:Addr4
+   ...
+   fun:InitializeJVM
+   fun:JavaMain
+   fun:ThreadJavaMain
+   fun:start_thread
+   fun:clone
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr4
+   ...
+   fun:JNI_CreateJavaVM_inner
+   fun:JNI_CreateJavaVM
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   ...
+   fun:JNI_CreateJavaVM_inner
+   fun:JNI_CreateJavaVM
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr4
+   ...
+   fun:_ZN18InterpreterRuntime14resolve_invokeEP10JavaThreadN9Bytecodes4CodeE
+   fun:_ZN18InterpreterRuntime18resolve_from_cacheEP10JavaThreadN9Bytecodes4CodeE
+   obj:*
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr4
+   ...
+   fun:_ZN13InstanceKlass22call_class_initializerEP10JavaThread
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr4
+   ...
+   fun:JVM_GetClassDeclaredMethods
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr4
+   ...
+   fun:_ZN13ClassVerifier13verify_methodERK12methodHandleP10JavaThread
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr4
+   ...
+   fun:_ZNK16VerificationType28is_reference_assignable_fromERKS_P13ClassVerifierbP10JavaThread
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr4
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr4
+   ...
+   fun:_ZN11OptoRuntime18register_finalizerEP7oopDescP10JavaThread
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:InitializeJVM
+   fun:JavaMain
+   fun:ThreadJavaMain
+   fun:start_thread
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_ZN20SafepointSynchronize4initEP6Thread
+   fun:loop
+   fun:_ZN8VMThread3runEv
+   fun:_ZN6Thread8call_runEv
+   fun:_ZL19thread_native_entryP6Thread
+   fun:start_thread
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:_ZN11StatSampler6engageEv
+   fun:_ZN7Threads9create_vmEP14JavaVMInitArgsPb
+   fun:JNI_CreateJavaVM_inner
+   fun:JNI_CreateJavaVM
+   fun:InitializeJVM
+   fun:JavaMain
+   fun:ThreadJavaMain
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_ZN7Threads28initialize_java_lang_classesEP10JavaThreadS1_
+   fun:_ZN7Threads9create_vmEP14JavaVMInitArgsPb
+   fun:JNI_CreateJavaVM_inner
+   fun:JNI_CreateJavaVM
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:strdup
+   fun:JLI_StringDup
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_ZN8Universe7genesisEP10JavaThread
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_ZN13InstanceKlass22call_class_initializerEP10JavaThread
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_ZN9JavaCalls11call_helperEP9JavaValueRK12methodHandleP17JavaCallArgumentsP10JavaThread
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_ZN18InterpreterRuntime18resolve_from_cacheEP10JavaThreadN9Bytecodes4CodeE
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:InitializeEncoding
+   fun:Java_jdk_internal_util_SystemProps_00024Raw_platformProperties
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_ZN16SystemDictionary21define_instance_classEP13InstanceKlass6HandleP10JavaThread
+   fun:_ZN16SystemDictionary21find_or_define_helperEP6Symbol6HandleP13InstanceKlassP10JavaThread
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_ZN16SystemDictionary19load_instance_classEP6Symbol6HandleP10JavaThread
+   fun:_ZN16SystemDictionary30resolve_instance_class_or_nullEP6Symbol6HandleS2_P10JavaThread
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:JVM_InitClassName
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:_ZN18InterpreterRuntime26frequency_counter_overflowEP10JavaThreadPh
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_ZN18InterpreterRuntime26frequency_counter_overflowEP10JavaThreadPh
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:_ZN2os6mallocEm8MEMFLAGSRK15NativeCallStack
+   fun:AllocateHeap
+   fun:_Z12AllocateHeapm8MEMFLAGSN17AllocFailStrategy13AllocFailEnumE
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:create_compile_task
+   fun:_ZN13CompileBroker19compile_method_baseERK12methodHandleiiS2_iN11CompileTask13CompileReasonEbP6Thread.part.0
+   fun:_ZN13CompileBroker14compile_methodERK12methodHandleiiS2_iN11CompileTask13CompileReasonEP12DirectiveSetP10JavaThread
+   fun:_ZN13CompileBroker14compile_methodERK12methodHandleiiS2_iN11CompileTask13CompileReasonEP10JavaThread
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_ZN13CompileBroker20compiler_thread_loopEv
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:malloc
+   fun:malloc
+   fun:_ZN2os6strdupEPKc8MEMFLAGS
+   fun:_ZN5MutexC1ENS_4RankEPKcb
+   fun:Mutex
+   fun:MethodData
+   fun:_ZN10MethodData8allocateEP15ClassLoaderDataRK12methodHandleP10JavaThread
+   fun:_ZN6Method27build_profiling_method_dataERK12methodHandleP10JavaThread
+   fun:_ZN8ciMethod18ensure_method_dataERK12methodHandle
+   fun:_ZN8ciMethod18ensure_method_dataEv
+   fun:_ZN12GraphBuilder15try_inline_fullEP8ciMethodbbN9Bytecodes4CodeEP11Instruction
+   fun:_ZN12GraphBuilder10try_inlineEP8ciMethodbbN9Bytecodes4CodeEP11Instruction
+   fun:_ZN12GraphBuilder6invokeEN9Bytecodes4CodeE
+   fun:_ZN12GraphBuilder27iterate_bytecodes_for_blockEi
+   fun:_ZN12GraphBuilder18iterate_all_blocksEb
+   fun:_ZN12GraphBuilder15try_inline_fullEP8ciMethodbbN9Bytecodes4CodeEP11Instruction
+   fun:_ZN12GraphBuilder10try_inlineEP8ciMethodbbN9Bytecodes4CodeEP11Instruction
+   fun:_ZN12GraphBuilder6invokeEN9Bytecodes4CodeE
+   fun:_ZN12GraphBuilder27iterate_bytecodes_for_blockEi
+   fun:_ZN12GraphBuilder18iterate_all_blocksEb
+   fun:_ZN12GraphBuilder15try_inline_fullEP8ciMethodbbN9Bytecodes4CodeEP11Instruction
+   fun:_ZN12GraphBuilder10try_inlineEP8ciMethodbbN9Bytecodes4CodeEP11Instruction
+   fun:_ZN12GraphBuilder6invokeEN9Bytecodes4CodeE
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_ZN12GraphBuilder10try_inlineEP8ciMethodbbN9Bytecodes4CodeEP11Instruction
+   fun:_ZN12GraphBuilder6invokeEN9Bytecodes4CodeE
+}

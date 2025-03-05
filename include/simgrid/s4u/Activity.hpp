@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,9 +25,7 @@ XBT_LOG_EXTERNAL_CATEGORY(s4u_activity);
 
 namespace simgrid {
 
-#ifndef SWIG
 extern template class XBT_PUBLIC xbt::Extendable<s4u::Activity>;
-#endif
 
 namespace s4u {
 
@@ -36,11 +34,7 @@ namespace s4u {
  * This class is the ancestor of every activities that an actor can undertake.
  * That is, activities are all the things that do take time to the actor in the simulated world.
  */
-#ifdef SWIG 
-class XBT_PUBLIC Activity { // Swig cannot cope with our extension mechanism, and don't need it anyway
-#else
 class XBT_PUBLIC Activity : public xbt::Extendable<Activity> {
-#endif
 
 #ifndef DOXYGEN
   friend ActivitySet;
@@ -216,8 +210,8 @@ public:
   kernel::activity::ActivityImpl* get_impl() const { return pimpl_.get(); }
 
 #ifndef DOXYGEN
-  static ssize_t deprecated_wait_any_for(const std::vector<ActivityPtr>& activities, double timeout); // XBT_ATTRIB_DEPRECATED_v339
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t test_any(const std::vector<ActivityPtr>& activities);
+  static ssize_t deprecated_wait_any_for(const std::vector<ActivityPtr>& activities, double timeout); // XBT_ATTRIB_DEPRECATED_v401
+  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t test_any(const std::vector<ActivityPtr>& activities);
 
   friend void intrusive_ptr_release(Activity* a)
   {
@@ -301,8 +295,8 @@ public:
   void on_this_veto_cb(const std::function<void(AnyActivity&)>& cb) { on_this_veto.connect(cb); }
 
 #ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t wait_any(const std::vector<ActivityPtr>& activities) { return deprecated_wait_any_for(activities, -1); }
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t wait_any_for(const std::vector<ActivityPtr>& activities, double timeout) { return deprecated_wait_any_for(activities, timeout); }
+  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t wait_any(const std::vector<ActivityPtr>& activities) { return deprecated_wait_any_for(activities, -1); }
+  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t wait_any_for(const std::vector<ActivityPtr>& activities, double timeout) { return deprecated_wait_any_for(activities, timeout); }
 #endif
 
   AnyActivity* add_successor(ActivityPtr a)

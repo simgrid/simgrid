@@ -1,4 +1,4 @@
-/* Copyright (c) 2024-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2024-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -103,11 +103,6 @@ public class Disk {
 
   public Disk.SharingPolicy get_sharing_policy(Disk.Operation op) {
     return Disk.SharingPolicy.swigToEnum(simgridJNI.Disk_get_sharing_policy(swigCPtr, this, op.swigValue()));
-  }
-
-  public Disk set_factor_cb(SWIGTYPE_p_std__functionT_double_t cb) {
-    simgridJNI.Disk_set_factor_cb(swigCPtr, this, SWIGTYPE_p_std__functionT_double_t.getCPtr(cb));
-    return this;
   }
 
   public Object get_data() { return simgridJNI.Disk_get_data(swigCPtr, this); }

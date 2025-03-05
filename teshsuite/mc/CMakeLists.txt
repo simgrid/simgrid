@@ -83,13 +83,13 @@ foreach(x
 
     ADD_TESH(mc-mini-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
   endif()
-  if(${enable_testsuite_McMini} AND (NOT ("${CMAKE_SYSTEM}" MATCHES "Linux")))
-    message(STATUS "McMini tests cannot be executed on this system (${CMAKE_SYSTEM}) because it requires Linux.")
-  endif()
-  if(${enable_testsuite_McMini} AND (NOT SIMGRID_HAVE_MC))
-    message(STATUS "McMini tests cannot be executed when MC is disabled.")
-  endif()
 endforeach()
+if(${enable_testsuite_McMini} AND (NOT ("${CMAKE_SYSTEM}" MATCHES "Linux")))
+  message(STATUS "McMini tests cannot be executed on this system (${CMAKE_SYSTEM}) because it requires Linux.")
+endif()
+if(${enable_testsuite_McMini} AND (NOT SIMGRID_HAVE_MC))
+  message(STATUS "McMini tests cannot be executed when MC is disabled.")
+endif()
 
 # Borrowed from FindSimGrid with modification because we are in tree. TODO: this should be moved to a better location
 MACRO(smpi_c_target NAME)

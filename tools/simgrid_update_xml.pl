@@ -5,8 +5,7 @@ eval 'exec perl -S $0 ${1+"$@"}'
 # This script updates the SimGrid XML file passed as argument (modification in place)
 # It is built to do the conversion incrementally.
 
-# Copyright (c) 2006-2024. The SimGrid Team.
-# All rights reserved.
+# Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -160,7 +159,7 @@ In <host> and <peer>, rename the 'availability_file' attribute into 'speed_file'
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.
+Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.
 
 This program is free software; you may redistribute it and/or modify it
 under the terms of GNU LGPL (v2.1) license.

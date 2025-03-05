@@ -1,6 +1,6 @@
 # CMake find module to search for the SimGrid library.
 
-# Copyright (c) 2016-2024. The SimGrid Team.
+# Copyright (c) 2016-2025. The SimGrid Team. All rights reserved.
 #
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.

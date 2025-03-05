@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -82,8 +82,8 @@ ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<unsigne
   kernel::routing::NetPoint* netpoint = nullptr;
   kernel::routing::NetPoint* gw       = nullptr;
   auto dims                           = index_to_dims(position);
-  if (set_callbacks.is_by_netpoint()) { // XBT_ATTRIB_DEPRECATED_v339
-    std::tie(netpoint, gw) = set_callbacks.netpoint(get_iface(), dims, position); // XBT_ATTRIB_DEPRECATED_v339
+  if (set_callbacks.is_by_netpoint()) { // XBT_ATTRIB_DEPRECATED_v401
+    std::tie(netpoint, gw) = set_callbacks.netpoint(get_iface(), dims, position); // XBT_ATTRIB_DEPRECATED_v401
   } else if (set_callbacks.is_by_netzone()) {
     s4u::NetZone* netzone = set_callbacks.netzone(get_iface(), dims, position);
     netpoint              = netzone->get_netpoint();

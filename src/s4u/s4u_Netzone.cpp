@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -118,14 +118,14 @@ void NetZone::add_route(const NetZone* src, const NetZone* dst, const std::vecto
 
 void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                        const std::vector<LinkInRoute>& link_list, bool symmetrical) // XBT_ATTRIB_DEPRECATED_v339
+                        const std::vector<LinkInRoute>& link_list, bool symmetrical) // XBT_ATTRIB_DEPRECATED_v401
 {
   pimpl_->add_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
 }
 
 void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                        const std::vector<const Link*>& links) // XBT_ATTRIB_DEPRECATED_v339
+                        const std::vector<const Link*>& links) // XBT_ATTRIB_DEPRECATED_v401
 {
   std::vector<LinkInRoute> links_direct;
   std::vector<LinkInRoute> links_reverse;

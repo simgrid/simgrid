@@ -1,4 +1,4 @@
-/* Copyright (c) 2018-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2018-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -27,9 +27,9 @@ XBT_PUBLIC int sg_exec_test(sg_exec_t exec);
 XBT_PUBLIC sg_error_t sg_exec_wait(sg_exec_t exec);
 XBT_PUBLIC sg_error_t sg_exec_wait_for(sg_exec_t exec, double timeout);
 
-XBT_ATTRIB_DEPRECATED_v339("Please use sg_activity_set_t instead") XBT_PUBLIC ssize_t
+XBT_ATTRIB_DEPRECATED_v401("Please use sg_activity_set_t instead") XBT_PUBLIC ssize_t
     sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout);
-XBT_ATTRIB_DEPRECATED_v339("Please use sg_activity_set_t instead") XBT_PUBLIC ssize_t
+XBT_ATTRIB_DEPRECATED_v401("Please use sg_activity_set_t instead") XBT_PUBLIC ssize_t
     sg_exec_wait_any(sg_exec_t* execs, size_t count);
 
 SG_END_DECL

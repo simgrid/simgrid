@@ -789,8 +789,25 @@ is an application bug (and help us understand its root cause), or whether it is 
 Finally, **we fixed dozens of bugs and vastly optimized the verification code** to improve our chances to find a wild
 bug. Still, we did not find any such bug yet, so the chase continues.
 
-Version 3.37 (unreleased)
--------------------------
+Version 4.0 (unreleased)
+------------------------
+
+After almost 10 years of development, we finally reached the point where we can release the first version of the 4.x serie. The
+S4U API is now consistent and rather intuitive. It is not perfect yet, and we still plan to improve SimGrid in the future, but we
+think that the recent publication of this `paper describing the evolutions since SimGrid v3 <https://hal.science/hal-04909441>`_
+is the perfect occasion to release the next major release of the framework.
+
+We have many plan for the future. On the short term, we plan to simplify the platform creation API and make it possible to
+dynamically change the platform (add nodes) and routing. The model checker is also under active development these days, with a
+parallel exploration algorithm coming soon. We have many ideas for medium- or long-term improvements. Allowing users to easily
+define sharing models would be nice, as would be the possibility to compute the models in parallel for efficiency. Finally,
+SimGrid will never be the ultimate tool. Instead, we'd like to foster a vivid ecosystem of user-provided plugins that are
+contributed by the community. We have many other ideas for the tool and/or its ecosystem. That being said, our days have only 24
+hours each, so if you need a feature the best is to implement it for yourself and then share it with the community. We believe
+that the current code makes it easy for newcomers to dive into the code and contribute. Please tell us if you see something we
+could improve here.
+
+Meanwhile, this version introduces several changes compared to v3.35:
 
 We reworked **the platform generation API** to simplify it and make it more natural. Earlier, you had to specify the routing
 algorithm specified in the root netzone (the one englobing the whole platform), and you had to create this netzone yourself
@@ -808,8 +825,8 @@ at least).
 many examples that got converted. It was the occasion to proofread the S4U API as we ported it to Java, explaining the changes
 to the platform API presented above. The main issue is that the Java bindings are not documented yet, because Java is not
 supported by `Sphinx <https://www.sphinx-doc.org>`_ and `breath <https://breathe.readthedocs.io/en/latest/>`_, the systems we
-use to generate the doc. This is very unfortunate, even if the Java API is very very close to the C++ one. We could add the doc
-manually in Sphinx, but it's very time consuming. Any helping patch would be very welcome here.
+use to generate the doc. This is very unfortunate, even if the Java API is very close to the C++ one. We could add the doc
+manually in Sphinx, but it's very time-consuming. Any helping patch would be very welcome here.
 
 Porting S4U to Java was a big commitment (requiring 5k lines of C++ and 3.5k lines of Java for the library, plus 5k lines of
 Java for the examples). We think that Java is a much better programming language for PhD students than C++. Java is rather easy
@@ -836,13 +853,13 @@ amount of states while it used to be polynomial, 5x faster is the less you can g
 explore for a given scenario is still the same (ODPOR was not improved), but we explore these states much faster now.
 
 **On the storage simulation side**, we finally allowed disks to be turned off and on as it was already possible for hosts and
-links. When a disk is turned off, all the I/O activities currently using that resource are canceled. When the disk is turned 
+links. When a disk is turned off, all the I/O activities currently using that resource are canceled. When the disk is turned
 back on, these activities have to be manually restarted. Moreover, if disks are attached to a host and this host is turned off
 (resp. on), the disks are also turned off (resp. on).
 
-**On the interface front**, we added a few signals for a better consistency across activities and resources. Additionally, 
+**On the interface front**, we added a few signals for a better consistency across activities and resources. Additionally,
 the platform parsing now raises a ``on_platform_sealed()`` when the platform cannot be modified anymore and its routing has
-been set. 
+been set.
 
 .. |br| raw:: html
 

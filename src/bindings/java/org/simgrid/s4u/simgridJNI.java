@@ -1,4 +1,4 @@
-/* Copyright (c) 2024-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2024-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,6 +6,8 @@
 package org.simgrid.s4u;
 
 public class simgridJNI {
+  public final static native void
+  try_loading_some_symbols(long arg); // Dummy function to check whether simgrid-java is merged in libsimgrid
   public final static native void Actor_sleep_for(long jarg1, Actor jarg1_, double jarg2);
   public final static native void Actor_sleep_until(long jarg1, Actor jarg1_, double jarg2);
   public final static native void Actor_execute__SWIG_0(long jarg1, Actor jarg1_, double jarg2);
@@ -215,7 +217,6 @@ public class simgridJNI {
   public final static native int Disk_Operation_WRITE_get();
   public final static native int Disk_Operation_READWRITE_get();
   public final static native int Disk_get_sharing_policy(long jarg1, Disk jarg1_, int jarg2);
-  public final static native void Disk_set_factor_cb(long jarg1, Disk jarg1_, long jarg2);
   public final static native Object Disk_get_data(long jarg1, Disk jarg1_);
   public final static native void Disk_set_data(long jarg1, Disk jarg1_, Object data);
   public final static native void Disk_seal(long jarg1, Disk jarg1_);

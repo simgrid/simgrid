@@ -1,6 +1,6 @@
 /* s4u::Engine Simulation Engine and global functions. */
 
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -57,6 +57,8 @@ xbt::signal<void(double)> Engine::on_time_advance;
 xbt::signal<void(void)> Engine::on_deadlock;
 
 Engine* Engine::instance_ = nullptr; /* This singleton is awful, but I don't see no other solution right now. */
+bool Engine::shutdown_ongoing_ =
+    false; // set to true just before the final shutdown, to break dependency loops in that area
 
 void Engine::initialize(int* argc, char** argv)
 {
@@ -83,6 +85,7 @@ Engine::Engine(int* argc, char** argv) : pimpl_(new kernel::EngineImpl())
 
 Engine::~Engine()
 {
+  shutdown_ongoing_ = true;
   kernel::EngineImpl::shutdown();
   Engine::instance_ = nullptr;
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,9 +16,7 @@
 
 namespace simgrid {
 
-#ifndef SWIG
 extern template class XBT_PUBLIC xbt::Extendable<s4u::Host>;
-#endif
 
 namespace s4u {
 /** @ingroup s4u_api
@@ -37,11 +35,7 @@ namespace s4u {
  * :cpp:func:`simgrid::s4u::this_actor::get_host()`
  * @endrst
  */
-#ifdef SWIG 
-class XBT_PUBLIC Host { // Swig cannot cope with our extension mechanism, and don't need it anyway
-#else
 class XBT_PUBLIC Host : public xbt::Extendable<Host> {
-#endif
 
 #ifndef DOXYGEN
   friend kernel::resource::VMModel;            // Use the pimpl_cpu to compute the VM sharing
@@ -138,7 +132,7 @@ public:
 
 #ifndef DOXYGEN
   using CpuFactorCb = double(double flops);
-  XBT_ATTRIB_DEPRECATED_v339("Please use set_cpu_factor_cb() instead") Host* set_factor_cb(
+  XBT_ATTRIB_DEPRECATED_v401("Please use set_cpu_factor_cb() instead") Host* set_factor_cb(
       const std::function<CpuFactorCb>& cb);
 #endif
 
@@ -255,10 +249,10 @@ public:
   Disk* get_disk_by_name(const std::string& name) const;
 
   #ifndef DOXYGEN
-   XBT_ATTRIB_DEPRECATED_v339("Please use Host::add_disk")
+   XBT_ATTRIB_DEPRECATED_v401("Please use Host::add_disk")
    Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
    { return add_disk(name, read_bandwidth, write_bandwidth); }
-   XBT_ATTRIB_DEPRECATED_v339("Please use Host::add_disk")
+   XBT_ATTRIB_DEPRECATED_v401("Please use Host::add_disk")
    Disk* create_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth)
    { return add_disk(name, read_bandwidth, write_bandwidth); }
   #endif 
@@ -277,10 +271,8 @@ public:
    * @throw std::invalid_argument if read/write speeds are incorrect
    */
   Disk* add_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth);
-  #ifndef DOXYGEN
   void register_disk(const Disk* disk);
   void remove_disk(const std::string& disk_name);
-  #endif
 
   VirtualMachine* create_vm(const std::string& name, int core_amount);
   VirtualMachine* create_vm(const std::string& name, int core_amount, size_t ramsize);

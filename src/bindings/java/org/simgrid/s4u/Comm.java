@@ -1,4 +1,4 @@
-/* Copyright (c) 2024-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2024-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,7 +8,11 @@ package org.simgrid.s4u;
 public class Comm extends Activity {
   protected Comm(long cPtr, boolean cMemoryOwn) { super(cPtr, cMemoryOwn); }
 
-  public static void on_send_cb(CallbackComm cb) { simgridJNI.Comm_on_send_cb(cb); }
+  public static void on_send_cb(CallbackComm cb)
+  {
+    if (cb != null)
+      simgridJNI.Comm_on_send_cb(cb);
+  }
 
   public void on_this_send_cb(CallbackComm cb) { simgridJNI.Comm_on_this_send_cb(getCPtr(), this, cb); }
 

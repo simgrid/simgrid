@@ -1,0 +1,6 @@
+$ ./actor-destroyed-with-mutex ${platfdir}/small_platform.xml
+> [Boivin:MutexHoldingActor:(1) 5.000000] [mwe/INFO] Locking mutex
+> [Boivin:MutexHoldingActor:(1) 5.000000] [mwe/INFO] Sleeping for ever
+> [Boivin:NonDaemonizedActor:(2) 10.000000] [mwe/INFO] Terminating
+> [10.000000] [mwe/INFO] Returned from engine->run()
+> Actor MutexHoldingActor is dying, but it still has a locked mutex. That's OK as no other actor waits for this mutex.

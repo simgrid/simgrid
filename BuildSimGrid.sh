@@ -3,7 +3,7 @@
 # This little script rebuilds and runs the SimGrid archive in parallel, extracting a log
 # This is almost a personal script, but others may find this useful
 #
-# Copyright (c) 2017-2024 The SimGrid Team. Licence: LGPL of WDFPL, as you want.
+# Copyright (c) 2017-2025 The SimGrid Team. Licence: LGPL of WDFPL, as you want.
 
 if [ ! -e Makefile ] && [ ! -e build.ninja ]; then
   if [ -e build/default/Makefile ] ; then

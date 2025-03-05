@@ -479,10 +479,10 @@ See also :ref:`the relevant example <s4u_ex_actors_create>`.
       .. doxygenfunction:: sg_actor_start_voidp
       .. doxygenfunction:: sg_actor_set_stacksize
 
-      .. doxygenfunction:: sg_actor_attach(const char *name, void *data, sg_host_t host)
+      .. doxygenfunction:: sg_actor_attach_pthread(const char *name, void *data, sg_host_t host)
       .. doxygenfunction:: sg_actor_detach()
 
-      See also :ref:`s4u_ex_actor_attach` for an example of use of ``sg_actor_attach()`` and ``sg_actor_detach()``.
+      See also :ref:`s4u_ex_actor_attach` for an example of use of ``sg_actor_attach_pthread()`` and ``sg_actor_detach()``.
 
 Retrieving actors
 -----------------
@@ -1508,12 +1508,10 @@ Retrieving components
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::Host::add_disk(const Disk *disk)
       .. doxygenfunction:: simgrid::s4u::Host::get_actor_count() const
       .. doxygenfunction:: simgrid::s4u::Host::get_all_actors() const
       .. doxygenfunction:: simgrid::s4u::Host::get_disks() const
       .. doxygenfunction:: simgrid::s4u::Host::get_disk_by_name(const std::string& name) const
-      .. doxygenfunction:: simgrid::s4u::Host::remove_disk(const std::string &disk_name)
 
    .. group-tab:: Python
 
@@ -1524,7 +1522,7 @@ Retrieving components
 
    .. group-tab:: C
 
-      .. doxygenfunction:: sg_host_get_all_actors(const_sg_host_t host, int* size)
+      .. doxygenfunction:: sg_host_get_actors(const_sg_host_t host, int* size)
 
 On/Off
 ------
@@ -1603,6 +1601,21 @@ Execution
       .. doxygenfunction:: simgrid::s4u::Host::execute(double flops) const
       .. doxygenfunction:: simgrid::s4u::Host::execute(double flops, double priority) const
 
+Disks
+-----
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Host::add_disk(const std::string &name, const std::string &read_bandwidth, const std::string &write_bandwidth)
+      .. doxygenfunction:: simgrid::s4u::Host::add_disk(const std::string &name, double read_bandwidth, double write_bandwidth)
+      .. doxygenfunction:: simgrid::s4u::Host::remove_disk(const std::string &disk_name)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Host.add_disk
+
 Platform and routing
 --------------------
 
@@ -1617,13 +1630,10 @@ using :cpp:func:`Comm::sendto() <simgrid::s4u::Comm::sendto()>`.
       .. doxygenfunction:: simgrid::s4u::Host::get_netpoint() const
       .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link * > &links, double *latency) const
       .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::StandardLinkImpl * > &links, double *latency) const
-      .. doxygenfunction:: simgrid::s4u::Host::add_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
-      .. doxygenfunction:: simgrid::s4u::Host::add_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth)
 
    .. group-tab:: Python
 
       .. autoattribute:: simgrid.Host.netpoint
-      .. automethod:: simgrid.Host.add_disk
 
       .. automethod:: simgrid.Host.route_to
 
@@ -2024,7 +2034,7 @@ Retrieving components
 
    .. group-tab:: C
 
-      .. doxygenfunction:: sg_zone_get_hosts(const_sg_netzone_t zone, xbt_dynar_t whereto)
+      .. doxygenfunction:: sg_zone_get_all_hosts(const_sg_netzone_t zone, int *size)
 
 Routing data
 ------------
@@ -2058,7 +2068,7 @@ Routing data
 
    .. group-tab:: C
 
-      .. doxygenfunction:: sg_zone_get_children(const_sg_netzone_t zone)
+      .. doxygenfunction:: sg_zone_get_childs(const_sg_netzone_t zone, int *size)
 
 Signals
 -------
@@ -2130,8 +2140,8 @@ Links
      .. doxygenfunction:: simgrid::s4u::NetZone::add_link(const std::string &name, double bandwidth)
      .. doxygenfunction:: simgrid::s4u::NetZone::add_link(const std::string &name, const std::vector< std::string > &bandwidths)
      .. doxygenfunction:: simgrid::s4u::NetZone::add_link(const std::string &name, const std::string &bandwidth)
-     .. doxygenfunction:: simgrid::s4u::NetZone::add_split_duplex_link(const std::string &name, const std::string &bandwidth)
-     .. doxygenfunction:: simgrid::s4u::NetZone::add_split_duplex_link(const std::string &name, double bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_split_duplex_link(const std::string &name, const std::string &bw_up, const std::string &bw_down = "")
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_split_duplex_link(const std::string &name, double bw_up, double bw_down = -1)
 
   .. group-tab:: Python
 
@@ -2348,23 +2358,6 @@ Suspending and resuming an activity
       .. doxygenfunction:: simgrid::s4u::Activity::resume
       .. doxygenfunction:: simgrid::s4u::Activity::is_suspended
 
-Signals
--------
-
-.. tabs::
-
-   .. group-tab:: C++
-      .. doxygenfunction:: simgrid::s4u::Activity::on_veto_cb
-      .. doxygenfunction:: simgrid::s4u::Activity::on_start_cb
-      .. doxygenfunction:: simgrid::s4u::Activity::on_suspend_cb
-      .. doxygenfunction:: simgrid::s4u::Activity::on_resume_cb
-      .. doxygenfunction:: simgrid::s4u::Activity::on_completion_cb
-      .. doxygenfunction:: simgrid::s4u::Activity::on_this_veto_cb
-      .. doxygenfunction:: simgrid::s4u::Activity::on_this_start_cb
-      .. doxygenfunction:: simgrid::s4u::Activity::on_this_suspend_cb
-      .. doxygenfunction:: simgrid::s4u::Activity::on_this_resume_cb
-      .. doxygenfunction:: simgrid::s4u::Activity::on_this_completion_cb
-
 
 .. _API_s4u_Comm:
 
@@ -2513,6 +2506,17 @@ Signals
 
    .. group-tab:: C++
 
+      .. doxygenfunction:: simgrid::s4u::Comm::on_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_start_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_resume_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_start_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_resume_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_this_completion_cb
+
       .. doxygenfunction:: simgrid::s4u::Comm::on_recv_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_send_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_this_recv_cb
@@ -2640,6 +2644,24 @@ Suspending and resuming an execution
       .. automethod:: simgrid.Exec.resume
       .. autoattribute:: simgrid.Exec.is_suspended
 
+Signals
+-------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Exec::on_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_start_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_resume_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_this_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_this_start_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_this_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_this_resume_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_this_completion_cb
+
 .. _API_s4u_Io:
 
 ===========
@@ -2696,6 +2718,24 @@ Life cycle
       .. automethod:: simgrid.Io.test
       .. automethod:: simgrid.Io.wait
 
+
+Signals
+-------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Io::on_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_start_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_resume_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_this_veto_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_this_start_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_this_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_this_resume_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_this_completion_cb
 
 .. _API_s4u_ActivitySet:
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2018-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2018-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -23,11 +23,11 @@ XBT_PUBLIC sg_error_t sg_comm_wait_for(sg_comm_t comm, double timeout);
 XBT_PUBLIC void sg_comm_unref(sg_comm_t comm);
 
 #ifndef DOXYGEN
-XBT_ATTRIB_DEPRECATED_v339("Please use sg_activity_set_t instead") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v401("Please use sg_activity_set_t instead") XBT_PUBLIC
     void sg_comm_wait_all(sg_comm_t* comms, size_t count);
-XBT_ATTRIB_DEPRECATED_v339("Please use sg_activity_set_t instead") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v401("Please use sg_activity_set_t instead") XBT_PUBLIC
     ssize_t sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout);
-XBT_ATTRIB_DEPRECATED_v339("Please use sg_activity_set_t instead") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v401("Please use sg_activity_set_t instead") XBT_PUBLIC
     ssize_t sg_comm_wait_any(sg_comm_t* comms, size_t count);
 #endif
 

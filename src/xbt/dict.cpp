@@ -1,6 +1,6 @@
 /* dict - a generic dictionary, variation over hash table                   */
 
-/* Copyright (c) 2004-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -115,6 +115,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
   dict->table_size = newsize;
   dict->table      = newtable;
   XBT_DEBUG("REHASH (%u->%u)", oldsize, newsize);
+  asm volatile ("" : : : "memory");
 
   for (unsigned i = 0; i < oldsize; i++) {
     xbt_dictelm_t* currcell = &newtable[i];

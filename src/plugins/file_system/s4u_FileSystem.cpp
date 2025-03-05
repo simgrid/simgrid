@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,6 +8,7 @@
 #include <simgrid/s4u/Disk.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/VirtualMachine.hpp>
 #include <simgrid/simcall.hpp>
 #include <xbt/asserts.h>
 #include <xbt/config.hpp>
@@ -39,31 +40,29 @@ int FileDescriptorHostExt::max_file_descriptors;
 
 const Disk* File::find_local_disk_on(const Host* host)
 {
-  const Disk* d                = nullptr;
-  size_t longest_prefix_length = 0;
+  const Disk* local_disk = nullptr;
   for (auto const& disk : host->get_disks()) {
     std::string current_mount;
     if (disk->get_host() != host)
       current_mount = disk->extension<FileSystemDiskExt>()->get_mount_point(disk->get_host());
     else
       current_mount = disk->extension<FileSystemDiskExt>()->get_mount_point();
-    mount_point_ = fullpath_.substr(0, current_mount.length());
-    if (mount_point_ == current_mount && current_mount.length() > longest_prefix_length) {
+
+    if (fullpath_.rfind(current_mount, 0) == 0 && current_mount.length() > mount_point_.length()) {
       /* The current mount name is found in the full path and is bigger than the previous*/
-      longest_prefix_length = current_mount.length();
-      d                     = disk;
+      local_disk = disk;
+
+      /* Mount point found, split fullpath_ into mount_name and path+filename*/
+      mount_point_ = std::move(current_mount);
+      if (mount_point_ == "/")
+        path_ = fullpath_;
+      else
+        path_ = fullpath_.substr(mount_point_.length(), fullpath_.length());
+      XBT_DEBUG("%s + %s", mount_point_.c_str(), path_.c_str());
     }
-    xbt_assert(longest_prefix_length > 0, "Can't find mount point for '%s' on '%s'", fullpath_.c_str(),
-               host->get_cname());
-    /* Mount point found, split fullpath_ into mount_name and path+filename*/
-    mount_point_ = fullpath_.substr(0, longest_prefix_length);
-    if (mount_point_ == "/")
-      path_ = fullpath_;
-    else
-      path_ = fullpath_.substr(longest_prefix_length, fullpath_.length());
-    XBT_DEBUG("%s + %s", mount_point_.c_str(), path_.c_str());
   }
-  return d;
+  xbt_assert(local_disk != nullptr, "Can't find mount point for '%s' on '%s'", fullpath_.c_str(), host->get_cname());
+  return local_disk;
 }
 
 File::File(const std::string& fullpath, void* userdata) : File(fullpath, Host::current(), userdata) {}
@@ -117,7 +116,10 @@ File* File::open(const std::string& fullpath, const_sg_host_t host, void* userda
 
 void File::close()
 {
-  std::vector<int>* desc_table = Host::current()->extension<FileDescriptorHostExt>()->file_descriptor_table.get();
+  auto* host = Host::current();
+  if (dynamic_cast<VirtualMachine*>(host)) //For VirtualMachine, have to work with the PM
+    host = static_cast<VirtualMachine*>(host)->get_pm();
+  std::vector<int>* desc_table = host->extension<FileDescriptorHostExt>()->file_descriptor_table.get();
   kernel::actor::simcall_answered([this, desc_table] { desc_table->push_back(this->desc_id); });
   delete this;
 }
@@ -352,6 +354,8 @@ FileSystemDiskExt::FileSystemDiskExt(const Disk* ptr)
 
   if (const char* content_str = ptr->get_property("content"))
     content_.reset(parse_content(content_str));
+  if (not content_)
+    content_.reset(new decltype(content_)::element_type());
 }
 
 std::map<std::string, sg_size_t, std::less<>>* FileSystemDiskExt::parse_content(const std::string& filename)

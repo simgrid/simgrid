@@ -1,6 +1,6 @@
 /* xbt.h - Public interface to the xbt (SimGrid's toolbox)                  */
 
-/* Copyright (c) 2004-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -42,12 +42,12 @@
 #define XBT_ATTRIB_DEPRECATED(mesg) __attribute__((deprecated(mesg)))
 #endif
 
-#define XBT_ATTRIB_DEPRECATED_v339(mesg)                                                                               \
-  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v3.38)")
-#define XBT_ATTRIB_DEPRECATED_v340(mesg)                                                                               \
-  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v3.39)")
-#define XBT_ATTRIB_DEPRECATED_v341(mesg)                                                                               \
-  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v3.40)")
+#define XBT_ATTRIB_DEPRECATED_v401(mesg)                                                                               \
+  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v4.0)")
+#define XBT_ATTRIB_DEPRECATED_v402(mesg)                                                                               \
+  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v4.1)")
+#define XBT_ATTRIB_DEPRECATED_v403(mesg)                                                                               \
+  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v4.2)")
 
 /* Work around https://github.com/microsoft/vscode-cpptools/issues/4503 */
 #ifdef __INTELLISENSE__

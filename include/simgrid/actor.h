@@ -1,4 +1,4 @@
-/* Copyright (c) 2018-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2018-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -55,7 +55,7 @@ XBT_PUBLIC sg_host_t sg_actor_get_host(const_sg_actor_t actor);
 XBT_PUBLIC const char* sg_actor_get_property_value(const_sg_actor_t actor, const char* name);
 
 #ifndef DOXYGEN
-XBT_ATTRIB_DEPRECATED_v339("Please use sg_actor_get_property_names instead: we want to kill xbt_dict at some point")
+XBT_ATTRIB_DEPRECATED_v401("Please use sg_actor_get_property_names instead: we want to kill xbt_dict at some point")
     XBT_PUBLIC xbt_dict_t sg_actor_get_properties(const_sg_actor_t actor);
 #endif
 /** @brief Returns a NULL-terminated list of the existing properties' names.
@@ -83,7 +83,7 @@ XBT_PUBLIC void sg_actor_sleep_for(double duration);
 XBT_PUBLIC void sg_actor_sleep_until(double wakeup_time);
 XBT_PUBLIC sg_actor_t sg_actor_attach_pthread(const char* name, void* data, sg_host_t host);
 #ifndef DOXYGEN
-XBT_ATTRIB_DEPRECATED_v339("Please use sg_actor_attach_pthread() instead") XBT_PUBLIC sg_actor_t
+XBT_ATTRIB_DEPRECATED_v401("Please use sg_actor_attach_pthread() instead") XBT_PUBLIC sg_actor_t
     sg_actor_attach(const char* name, void* data, sg_host_t host, xbt_dict_t properties);
 #endif
 XBT_PUBLIC void sg_actor_detach();

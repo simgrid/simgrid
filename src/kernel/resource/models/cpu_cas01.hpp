@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -36,7 +36,7 @@ public:
  ************/
 
 class CpuCas01 : public CpuImpl {
-  std::function<s4u::Host::CpuFactorCb> factor_cb_         = {}; // XBT_ATTRIB_DEPRECATED_v339
+  std::function<s4u::Host::CpuFactorCb> factor_cb_         = {}; // XBT_ATTRIB_DEPRECATED_v401
   std::function<double(s4u::Host&, double)> factor_cpu_cb_ = {};
 
 public:

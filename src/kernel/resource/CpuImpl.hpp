@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -129,7 +129,7 @@ public:
   virtual void set_factor_cb(const std::function<s4u::Host::CpuFactorCb>& cb)
   {
     THROW_UNIMPLEMENTED;
-  } // XBT_ATTRIB_DEPRECATED_v339
+  } // XBT_ATTRIB_DEPRECATED_v401
 
   /**
    * @brief Execute some quantity of computation

@@ -1,6 +1,6 @@
 /* simgrid-java.cpp - Native code of the Java bindings                      */
 
-/* Copyright (c) 2024-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2024-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -255,49 +255,44 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved)
   simgrid_cached_jvm = jvm;
   setlocale(LC_NUMERIC, "C");
   do_install_signal_handlers = false;
+
+  simgrid::kernel::context::ContextFactory::initializer = []() {
+    XBT_INFO("Using regular java threads.");
+
+    xbt_assert(simgrid_cached_jvm->AttachCurrentThread((void**)&maestro_jenv, NULL) == JNI_OK,
+               "The maestro thread could not be attached to the JVM");
+
+    // Initialize the upcall mechanism
+    CallbackActor_methodId     = init_methodId(maestro_jenv, "CallbackActor", "run", "(Lorg/simgrid/s4u/Actor;)V");
+    CallbackActorHost_methodId = init_methodId(maestro_jenv, "CallbackActorHost", "run", "(Lorg/simgrid/s4u/Actor;J)V");
+    CallbackBoolean_methodId   = init_methodId(maestro_jenv, "CallbackBoolean", "run", "(Z)V");
+    CallbackComm_methodId      = init_methodId(maestro_jenv, "CallbackComm", "run", "(J)V");
+    CallbackDisk_methodId      = init_methodId(maestro_jenv, "CallbackDisk", "run", "(J)V");
+    CallbackDouble_methodId    = init_methodId(maestro_jenv, "CallbackDouble", "run", "(D)V");
+    CallbackDHostDouble_methodId = init_methodId(maestro_jenv, "CallbackDHostDouble", "run", "(JD)D");
+    CallbackExec_methodId        = init_methodId(maestro_jenv, "CallbackExec", "run", "(J)V");
+    CallbackIo_methodId          = init_methodId(maestro_jenv, "CallbackIo", "run", "(J)V");
+    CallbackLink_methodId        = init_methodId(maestro_jenv, "CallbackLink", "run", "(J)V");
+    CallbackNetzone_methodId     = init_methodId(maestro_jenv, "CallbackNetzone", "run", "(J)V");
+    CallbackVoid_methodId        = init_methodId(maestro_jenv, "CallbackVoid", "run", "()V");
+
+    Actor_methodId = init_methodId(maestro_jenv, "Actor", "do_run", "(J)V");
+
+    string_class = (jclass)maestro_jenv->NewGlobalRef(maestro_jenv->FindClass("java/lang/String"));
+    xbt_assert(string_class);
+    actor_class = (jclass)maestro_jenv->NewGlobalRef(maestro_jenv->FindClass("org/simgrid/s4u/Actor"));
+    xbt_assert(actor_class);
+
+    // Initialize extensions
+    ActorJavaExt::EXTENSION_ID    = simgrid::s4u::Actor::extension_create<ActorJavaExt>();
+    ActivityJavaExt::EXTENSION_ID = simgrid::s4u::Activity::extension_create<ActivityJavaExt>();
+
+    // Initialize the factory mechanism
+    return new simgrid::kernel::context::JavaContextFactory();
+  };
+
   return JNI_VERSION_1_2;
 }
-
-static struct SimGridJavaInit {
-  SimGridJavaInit()
-  {
-    simgrid::kernel::context::ContextFactory::initializer = []() {
-      XBT_INFO("Using regular java threads.");
-
-      xbt_assert(simgrid_cached_jvm->AttachCurrentThread((void**)&maestro_jenv, NULL) == JNI_OK,
-                 "The maestro thread could not be attached to the JVM");
-
-      // Initialize the upcall mechanism
-      CallbackActor_methodId = init_methodId(maestro_jenv, "CallbackActor", "run", "(Lorg/simgrid/s4u/Actor;)V");
-      CallbackActorHost_methodId =
-          init_methodId(maestro_jenv, "CallbackActorHost", "run", "(Lorg/simgrid/s4u/Actor;J)V");
-      CallbackBoolean_methodId   = init_methodId(maestro_jenv, "CallbackBoolean", "run", "(Z)V");
-      CallbackComm_methodId      = init_methodId(maestro_jenv, "CallbackComm", "run", "(J)V");
-      CallbackDisk_methodId      = init_methodId(maestro_jenv, "CallbackDisk", "run", "(J)V");
-      CallbackDouble_methodId    = init_methodId(maestro_jenv, "CallbackDouble", "run", "(D)V");
-      CallbackDHostDouble_methodId = init_methodId(maestro_jenv, "CallbackDHostDouble", "run", "(JD)D");
-      CallbackExec_methodId      = init_methodId(maestro_jenv, "CallbackExec", "run", "(J)V");
-      CallbackIo_methodId        = init_methodId(maestro_jenv, "CallbackIo", "run", "(J)V");
-      CallbackLink_methodId      = init_methodId(maestro_jenv, "CallbackLink", "run", "(J)V");
-      CallbackNetzone_methodId   = init_methodId(maestro_jenv, "CallbackNetzone", "run", "(J)V");
-      CallbackVoid_methodId      = init_methodId(maestro_jenv, "CallbackVoid", "run", "()V");
-
-      Actor_methodId = init_methodId(maestro_jenv, "Actor", "do_run", "(J)V");
-
-      string_class = (jclass)maestro_jenv->NewGlobalRef(maestro_jenv->FindClass("java/lang/String"));
-      xbt_assert(string_class);
-      actor_class = (jclass)maestro_jenv->NewGlobalRef(maestro_jenv->FindClass("org/simgrid/s4u/Actor"));
-      xbt_assert(actor_class);
-
-      // Initialize extensions
-      ActorJavaExt::EXTENSION_ID = simgrid::s4u::Actor::extension_create<ActorJavaExt>();
-      ActivityJavaExt::EXTENSION_ID = simgrid::s4u::Activity::extension_create<ActivityJavaExt>();
-
-      // Initialize the factory mechanism
-      return new simgrid::kernel::context::JavaContextFactory();
-    };
-  }
-} sgJavaInit;
 
 static void inline init_exception_class(JNIEnv* jenv, jclass& klass, const char* name)
 {
@@ -483,6 +478,13 @@ extern "C" {
 /* The following header file contains the prototypes of all JNI calls, generated with `javac -h` by cmake
    and located somewhere under simgrid_jar.dir/native_headers/org_simgrid_s4u_simgridJNI.h */
 #include "org_simgrid_s4u_simgridJNI.h"
+
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_try_1loading_1some_1symbols(JNIEnv* jenv, jclass jcls,
+                                                                                    jlong arg)
+{
+  // Dummy function to check whether simgrid-java is merged in libsimgrid, nothing to do.
+  // We just need it to be defined
+}
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1sleep_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                           jobject jthis, jdouble duration)
@@ -2603,20 +2605,6 @@ XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1sharing_1poli
   return (jint)((Disk*)cthis)->get_sharing_policy((simgrid::s4u::Disk::Operation)jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1factor_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                              jobject jthis, jlong jarg2)
-{
-  std::function<simgrid::s4u::Disk::IoFactorCb>* arg2 = 0;
-
-  arg2 = *(std::function<simgrid::s4u::Disk::IoFactorCb>**)&jarg2;
-  if (!arg2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException,
-                            "std::function< simgrid::s4u::Disk::IoFactorCb > const & is null");
-    return;
-  }
-  ((Disk*)cthis)->set_factor_cb((std::function<simgrid::s4u::Disk::IoFactorCb> const&)*arg2);
-}
-
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1seal(JNIEnv* jenv, jclass jcls, jlong cthis,
                                                                    jobject jthis)
 {
@@ -2742,7 +2730,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jen
     return 0;
   }
 
-  cargs[0] = xbt_strdup("java"); // SimGrid expects argv[0] to be useless
+  cargs[0] = (char*)"java"; // SimGrid expects argv[0] to be useless
   for (jsize i = 0; i < len; i++) {
     jstring j_string     = (jstring)jenv->GetObjectArrayElement(jargs, i);
     const char* c_string = jenv->GetStringUTFChars(j_string, 0);

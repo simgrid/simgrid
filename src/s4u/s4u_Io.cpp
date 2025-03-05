@@ -1,4 +1,4 @@
-/* Copyright (c) 2018-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2018-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -148,7 +148,7 @@ Io* Io::do_start()
   return this;
 }
 
-ssize_t Io::deprecated_wait_any_for(const std::vector<IoPtr>& ios, double timeout) // XBT_ATTRIB_DEPRECATED_v339
+ssize_t Io::deprecated_wait_any_for(const std::vector<IoPtr>& ios, double timeout) // XBT_ATTRIB_DEPRECATED_v401
 {
   ActivitySet set;
   for (const auto& io : ios)

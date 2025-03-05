@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -71,6 +71,15 @@ public:
     XBT_INFO("Unlink file: '%s'", file->get_path());
     file->unlink();
     file->close(); // Unlinking the file on "disk" does not close the file and free the object
+
+    show_info(disks);
+
+    // Open another file on disk without a "content" property
+    filename = "/lib/libc.so";
+    file     = sg4::File::open(filename, nullptr);
+    write    = file->write(4096); // Write 4 Kbytes
+    XBT_INFO("Create a %llu bytes file named '%s' on /", write, filename.c_str());
+    file->close();
 
     show_info(disks);
   }

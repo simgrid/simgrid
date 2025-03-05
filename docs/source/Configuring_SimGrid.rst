@@ -667,27 +667,6 @@ Our current DPOR implementation could be improved in may ways. We are
 currently improving its efficiency (both in term of reduction ability
 and computational speed).
 
-.. _cfg=model-check/strategy:
-
-Guiding strategy
-................
-
-**Option** model-check/strategy **Default:** "none"
-
-Even after the DPOR's reduction, the state space that we have to explore remains huge. SimGrid provides several guiding
-strategies aiming at converging faster toward bugs. By default, none of these strategy is enabled, and SimGrid does a regular
-DFS exploration.
-
- - **max_match_comm**: Try to minimize the number of in-fly communication by appairing matching send and receive. This tend to
-   produce nicer backtraces, in particular when a user-level ``send`` is broken down internally into a ``send_async`` + ``wait``.
-   This strategy will ensure that the ``wait`` occures as soon as possible, easing the understanding of the user who do not
-   expect her ``send`` to be split.
- - **min_match_comm**: Try to maximize the number of in-fly communication by not appairing matching send and receive. This is
-   the exact opposite strategy, but it is still useful as it tend to explore first the branches where the risk of deadlock is
-   higher.
- - **uniform**: this is a boring random strategy where choices are based on a uniform sampling of possible choices.
-   Surprisingly, it gives really really good results.
-
 .. _cfg=model-check/dot-output:
 
 Dot Output
@@ -768,7 +747,7 @@ Exploration strategies
 By default, the model checker follows a depth-first exploration, but several other strategies exist. The following list may be
 incomplete, so you'd better look at the code or speak with us for more information.
 
- - **uniform**: Randomly pick the next branch to explore each time that the exploration reaches an end.
+ - **uniform**: Randomly pick the next branch to explore each time that the exploration reaches an end (i.e., on backtrack).
  - **none**: default value instructing SimGrid to follow a depth-first exploration.
 
 .. _cfg=model-check/cached-states-interval:

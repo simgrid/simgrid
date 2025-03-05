@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -66,7 +66,7 @@ public:
 class XBT_PUBLIC MutexImpl {
   std::atomic_int_fast32_t refcount_{1};
   s4u::Mutex piface_;
-  actor::ActorImpl* owner_ = nullptr;
+  actor::ActorImplPtr owner_ = nullptr;
   std::deque<MutexAcquisitionImplPtr> ongoing_acquisitions_;
   static unsigned next_id_;
   unsigned id_ = next_id_++;
@@ -85,7 +85,7 @@ public:
   void unlock(actor::ActorImpl* issuer);
   unsigned get_id() const { return id_; }
 
-  actor::ActorImpl* get_owner() const { return owner_; }
+  actor::ActorImpl* get_owner() const { return owner_.get(); }
 
   // boost::intrusive_ptr<Mutex> support:
   friend void intrusive_ptr_add_ref(MutexImpl* mutex)
@@ -98,8 +98,19 @@ public:
   {
     if (mutex->refcount_.fetch_sub(1) == 1) {
       xbt_assert(mutex->ongoing_acquisitions_.empty(), "The destroyed mutex still had ongoing acquisitions");
-      xbt_assert(mutex->owner_ == nullptr, "The destroyed mutex %u is still owned by actor %s", mutex->id_,
-                 mutex->owner_->get_cname());
+      // Sanity check, when the simulation is ending, only issue a small warning, not a big fat xbt_assert
+      if (mutex->owner_ != nullptr) {
+        if ((not s4u::Engine::has_instance()) || mutex->owner_->wannadie()) {
+          static bool shown = false;
+          if (not shown)
+            ::fprintf(stderr,
+                      "Actor %s is dying, but it still has a locked mutex. That's OK as no other actor waits for this "
+                      "mutex.\n",
+                      mutex->owner_->get_cname());
+          shown = true;
+        } else
+          xbt_die("The destroyed mutex %u is still owned by actor %s", mutex->id_, mutex->owner_->get_cname());
+      }
       delete mutex;
     }
   }

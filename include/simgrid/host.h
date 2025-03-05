@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -86,11 +86,11 @@ XBT_PUBLIC void sg_host_turn_off(sg_host_t host);
 XBT_PUBLIC int sg_host_is_on(const_sg_host_t host);
 
 #ifndef DOXYGEN
-XBT_ATTRIB_DEPRECATED_v339("Please use sg_host_get_property_names instead: we want to kill xbt_dict at some point")
+XBT_ATTRIB_DEPRECATED_v401("Please use sg_host_get_property_names instead: we want to kill xbt_dict at some point")
     XBT_PUBLIC xbt_dict_t sg_host_get_properties(const_sg_host_t host); // deprecated v3.39
-XBT_ATTRIB_DEPRECATED_v339("Please use sg_host_get_route_links instead: we want to kill xbt_dynar at some point")
+XBT_ATTRIB_DEPRECATED_v401("Please use sg_host_get_route_links instead: we want to kill xbt_dynar at some point")
     XBT_PUBLIC void sg_host_get_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links);
-XBT_ATTRIB_DEPRECATED_v339("Please use sg_host_get_actors instead: we want to kill xbt_dynar at some point") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v401("Please use sg_host_get_actors instead: we want to kill xbt_dynar at some point") XBT_PUBLIC
     void sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto);
 #endif
 

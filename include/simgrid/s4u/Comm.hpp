@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -169,15 +169,15 @@ public:
   Comm* wait_for(double timeout) override;
 
 #ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t wait_any(const std::vector<CommPtr>& comms) { return deprecated_wait_any_for(comms, -1); }
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t wait_any_for(const std::vector<CommPtr>& comms, double timeout) { return deprecated_wait_any_for(comms, timeout); }
+  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t wait_any(const std::vector<CommPtr>& comms) { return deprecated_wait_any_for(comms, -1); }
+  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t wait_any_for(const std::vector<CommPtr>& comms, double timeout) { return deprecated_wait_any_for(comms, timeout); }
 
   static ssize_t deprecated_wait_any_for(const std::vector<CommPtr>& comms,
-                                         double timeout); // XBT_ATTRIB_DEPRECATED_v339
+                                         double timeout); // XBT_ATTRIB_DEPRECATED_v401
 
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t test_any(const std::vector<CommPtr>& comms);
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static void wait_all(const std::vector<CommPtr>& comms);
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static size_t
+  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t test_any(const std::vector<CommPtr>& comms);
+  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static void wait_all(const std::vector<CommPtr>& comms);
+  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static size_t
       wait_all_for(const std::vector<CommPtr>& comms, double timeout);
 #endif
 };

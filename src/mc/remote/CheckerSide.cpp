@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -140,24 +140,11 @@ CheckerSide::CheckerSide(const std::vector<char*>& args)
              "Could not create socketpair: %s.\nPlease increase the file limit with `ulimit -n 10000`.",
              strerror(errno));
 
-  // Pin the checker to the core 0
-#ifdef linux
-  cpu_set_t set;
-  CPU_ZERO(&set);
-#endif
-
   pid_ = fork();
   xbt_assert(pid_ >= 0, "Could not fork application process");
 
   if (pid_ == 0) { // Child
     ::close(sockets[1]);
-
-#ifdef linux
-    CPU_SET(1, &set);
-    if (get_nprocs() > 1)
-      xbt_assert(sched_setaffinity(getpid(), sizeof(set), &set) != -1, "Cannot pin the application to the core 1: %s",
-                 strerror(errno));
-#endif
 
     run_child_process(sockets[0], args);
     DIE_IMPOSSIBLE;
@@ -165,11 +152,6 @@ CheckerSide::CheckerSide(const std::vector<char*>& args)
 
   // Parent (model-checker):
   ::close(sockets[0]);
-#ifdef linux
-  CPU_SET(0, &set);
-  xbt_assert(sched_setaffinity(getpid(), sizeof(set), &set) != -1, "Cannot pin the checker to the core 0: %s",
-             strerror(errno));
-#endif
   channel_.reset_socket(sockets[1]);
 
   wait_for_requests();

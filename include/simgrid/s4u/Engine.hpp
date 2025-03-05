@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -56,7 +56,7 @@ public:
   /** @brief Retrieve the engine singleton */
   static s4u::Engine* get_instance();
   static s4u::Engine* get_instance(int* argc, char** argv);
-  static bool has_instance() { return instance_ != nullptr; }
+  static bool has_instance() { return instance_ != nullptr && not shutdown_ongoing_; }
   const std::vector<std::string>& get_cmdline() const;
   const char* get_context_factory_name() const;
 
@@ -133,7 +133,7 @@ protected:
   friend kernel::resource::StandardLinkImpl;
   void netpoint_register(simgrid::kernel::routing::NetPoint* card);
   void netpoint_unregister(simgrid::kernel::routing::NetPoint* card);
-  XBT_ATTRIB_DEPRECATED_v339("The root netzone was already created for you. Please use one of the "
+  XBT_ATTRIB_DEPRECATED_v401("The root netzone was already created for you. Please use one of the "
                              "Netzone::add_netzone_*() method instead") void set_netzone_root(const NetZone* netzone);
 #endif /*DOXYGEN*/
 
@@ -298,6 +298,8 @@ private:
 
   kernel::EngineImpl* const pimpl_;
   static Engine* instance_;
+  static bool shutdown_ongoing_; // set to true just before the final shutdown, to break dependency loops in that area
+
   void initialize(int* argc, char** argv);
 };
 
