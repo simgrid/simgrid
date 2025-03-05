@@ -427,7 +427,7 @@ Comm* Comm::do_start()
   return this;
 }
 
-ssize_t Comm::test_any(const std::vector<CommPtr>& comms) // XBT_ATTRIB_DEPRECATED_v339
+ssize_t Comm::test_any(const std::vector<CommPtr>& comms) // XBT_ATTRIB_DEPRECATED_v401
 {
   std::vector<kernel::activity::ActivityImpl*> ractivities(comms.size());
   std::transform(begin(comms), end(comms), begin(ractivities), [](const CommPtr& act) { return act->pimpl_.get(); });
@@ -502,7 +502,7 @@ Comm* Comm::wait_for(double timeout)
   return this;
 }
 
-ssize_t Comm::deprecated_wait_any_for(const std::vector<CommPtr>& comms, double timeout) // XBT_ATTRIB_DEPRECATED_v339
+ssize_t Comm::deprecated_wait_any_for(const std::vector<CommPtr>& comms, double timeout) // XBT_ATTRIB_DEPRECATED_v401
 {
   if (comms.empty())
     return -1;
@@ -527,14 +527,14 @@ ssize_t Comm::deprecated_wait_any_for(const std::vector<CommPtr>& comms, double 
   return -1;
 }
 
-void Comm::wait_all(const std::vector<CommPtr>& comms) // XBT_ATTRIB_DEPRECATED_v339
+void Comm::wait_all(const std::vector<CommPtr>& comms) // XBT_ATTRIB_DEPRECATED_v401
 {
   // TODO: this should be a simcall or something
   for (const auto& comm : comms)
     comm->wait();
 }
 
-size_t Comm::wait_all_for(const std::vector<CommPtr>& comms, double timeout) // XBT_ATTRIB_DEPRECATED_v339
+size_t Comm::wait_all_for(const std::vector<CommPtr>& comms, double timeout) // XBT_ATTRIB_DEPRECATED_v401
 {
   if (timeout < 0.0) {
     for (const auto& comm : comms)
@@ -595,7 +595,7 @@ sg_error_t sg_comm_wait_for(sg_comm_t comm, double timeout)
   return status;
 }
 
-void sg_comm_wait_all(sg_comm_t* comms, size_t count) // XBT_ATTRIB_DEPRECATED_v339
+void sg_comm_wait_all(sg_comm_t* comms, size_t count) // XBT_ATTRIB_DEPRECATED_v401
 {
   simgrid::s4u::ActivitySet as;
   for (size_t i = 0; i < count; i++)
@@ -604,7 +604,7 @@ void sg_comm_wait_all(sg_comm_t* comms, size_t count) // XBT_ATTRIB_DEPRECATED_v
   as.wait_all();
 }
 
-ssize_t sg_comm_wait_any(sg_comm_t* comms, size_t count) // XBT_ATTRIB_DEPRECATED_v339
+ssize_t sg_comm_wait_any(sg_comm_t* comms, size_t count) // XBT_ATTRIB_DEPRECATED_v401
 {
   std::vector<simgrid::s4u::CommPtr> s4u_comms;
   for (size_t i = 0; i < count; i++)
@@ -618,7 +618,7 @@ ssize_t sg_comm_wait_any(sg_comm_t* comms, size_t count) // XBT_ATTRIB_DEPRECATE
   return pos;
 }
 
-ssize_t sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout) // XBT_ATTRIB_DEPRECATED_v339
+ssize_t sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout) // XBT_ATTRIB_DEPRECATED_v401
 {
   std::vector<simgrid::s4u::CommPtr> s4u_comms;
   for (size_t i = 0; i < count; i++)

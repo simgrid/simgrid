@@ -272,7 +272,7 @@ PYBIND11_MODULE(simgrid, m)
                          2);
             throw std::logic_error("Please call Netzone.add_netzone_full() instead");
           },
-          "Creates a zone of type FullZone") // XBT_ATTRIB_DEPRECATED_v339
+          "Creates a zone of type FullZone") // XBT_ATTRIB_DEPRECATED_v401
       .def_static("create_torus_zone", &simgrid::s4u::create_torus_zone, "Creates a cluster of type Torus")
       .def_static("create_fatTree_zone", &simgrid::s4u::create_fatTree_zone, "Creates a cluster of type Fat-Tree")
       .def_static("create_dragonfly_zone", &simgrid::s4u::create_dragonfly_zone, "Creates a cluster of type Dragonfly")
@@ -283,7 +283,7 @@ PYBIND11_MODULE(simgrid, m)
                          2);
             throw std::logic_error("Please call Netzone.add_netzone_star() instead");
           },
-          "Creates a zone of type Star") // XBT_ATTRIB_DEPRECATED_v339
+          "Creates a zone of type Star") // XBT_ATTRIB_DEPRECATED_v401
       .def_static(
           "create_floyd_zone",
           [](std::string const& name) {
@@ -291,7 +291,7 @@ PYBIND11_MODULE(simgrid, m)
                          "create_floyd_zone() is deprecated, use Netzone.add_netzone_floyd().", 2);
             throw std::logic_error("Please call Netzone.add_netzone_floyd() instead");
           },
-          "Creates a zone of type Floyd") // XBT_ATTRIB_DEPRECATED_v339
+          "Creates a zone of type Floyd") // XBT_ATTRIB_DEPRECATED_v401
       .def_static(
           "create_dijkstra_zone",
           [](std::string const& name) {
@@ -299,7 +299,7 @@ PYBIND11_MODULE(simgrid, m)
                          "create_dijkstra_zone() is deprecated, use Netzone.add_netzone_dijkstra().", 2);
             throw std::logic_error("Please call Netzone.add_netzone_dijkstra() instead");
           },
-          "Creates a zone of type Dijkstra") // XBT_ATTRIB_DEPRECATED_v339
+          "Creates a zone of type Dijkstra") // XBT_ATTRIB_DEPRECATED_v401
       .def_static(
           "create_vivaldi_zone",
           [](std::string const& name) {
@@ -307,7 +307,7 @@ PYBIND11_MODULE(simgrid, m)
                          "create_vivaldi_zone() is deprecated, use Netzone.add_netzone_vivaldi().", 2);
             throw std::logic_error("Please call Netzone.add_netzone_vivaldi() instead");
           },
-          "Creates a zone of type Vivaldi") // XBT_ATTRIB_DEPRECATED_v339
+          "Creates a zone of type Vivaldi") // XBT_ATTRIB_DEPRECATED_v401
       .def_static(
           "create_empty_zone",
           [](std::string const& name) {
@@ -315,7 +315,7 @@ PYBIND11_MODULE(simgrid, m)
                          "create_empty_zone() is deprecated, use Netzone.add_netzone_empty().", 2);
             throw std::logic_error("Please call Netzone.add_netzone_empty() instead");
           },
-          "Creates a zone of type Empty") // XBT_ATTRIB_DEPRECATED_v339
+          "Creates a zone of type Empty") // XBT_ATTRIB_DEPRECATED_v401
       .def_static(
           "create_wifi_zone",
           [](std::string const& name) {
@@ -323,7 +323,7 @@ PYBIND11_MODULE(simgrid, m)
                          2);
             throw std::logic_error("Please call Netzone.add_netzone_wifi() instead");
           },
-          "Creates a zone of type Wi-Fi") // XBT_ATTRIB_DEPRECATED_v339
+          "Creates a zone of type Wi-Fi") // XBT_ATTRIB_DEPRECATED_v401
       .def("add_netzone_full", &simgrid::s4u::NetZone::add_netzone_full, "Creates a zone of type FullZone")
       .def("add_netzone_torus", &simgrid::s4u::create_torus_zone, "Creates a cluster of type Torus")
       .def("add_netzone_fatTree", &simgrid::s4u::create_fatTree_zone, "Creates a cluster of type Fat-Tree")
@@ -365,7 +365,7 @@ PYBIND11_MODULE(simgrid, m)
                             "create_host() is deprecated, use Netzone.add_host().", 2);
                throw std::logic_error("Please call Netzone.add_host() instead");
             },
-            "Creates a host") // XBT_ATTRIB_DEPRECATED_v339 
+            "Creates a host") // XBT_ATTRIB_DEPRECATED_v401 
       .def("add_link", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::add_link),
            "Adds a network link")
       .def("add_link",
@@ -382,7 +382,7 @@ PYBIND11_MODULE(simgrid, m)
                             "create_link() is deprecated, use Netzone.add_link().", 2);
                throw std::logic_error("Please call Netzone.add_link() instead");
             },
-            "Creates a link") // XBT_ATTRIB_DEPRECATED_v339 
+            "Creates a link") // XBT_ATTRIB_DEPRECATED_v401 
       .def("add_split_duplex_link",
            py::overload_cast<const std::string&, double, double>(&simgrid::s4u::NetZone::add_split_duplex_link),
            "Adds a split-duplex link")
@@ -405,14 +405,14 @@ PYBIND11_MODULE(simgrid, m)
                           "create_split_duplex_link() is deprecated, use Netzone.add_split_duplex_link().", 2);
              throw std::logic_error("Please call Netzone.add_split_duplex_link() instead");
           },
-          "Creates a split-duplex link") // XBT_ATTRIB_DEPRECATED_v339 
+          "Creates a split-duplex link") // XBT_ATTRIB_DEPRECATED_v401 
       .def("add_router", &simgrid::s4u::NetZone::add_router, "Adds a router")
       .def("create_router", [](std::string const& name) {
           PyErr_WarnEx(PyExc_DeprecationWarning,
                        "create_router() is deprecated, use Netzone.add_router().", 2);
           throw std::logic_error("Please call Netzone.add_router() instead");
           },
-          "Creates a router") // XBT_ATTRIB_DEPRECATED_v339 
+          "Creates a router") // XBT_ATTRIB_DEPRECATED_v401 
       .def_property_readonly("parent", &simgrid::s4u::NetZone::get_parent, "NetZone parent (read-only property).")
       // Keep `set_parent` method for backward compatibility.
       .def("get_children", &simgrid::s4u::NetZone::get_children, "Get all children of this zone.")
@@ -527,7 +527,7 @@ PYBIND11_MODULE(simgrid, m)
                         "create_disk) is deprecated, use Host.add_disk().", 2);
            throw std::logic_error("Please call Host.add_disk() instead");
           },
-          "Creates a disk") // XBT_ATTRIB_DEPRECATED_v339 
+          "Creates a disk") // XBT_ATTRIB_DEPRECATED_v401 
       .def("get_property", &Host::get_property, "Get Host property")
       .def("get_properties", &Host::get_properties, "Get all Host properties")
       .def("set_property", &Host::set_property, "Set Host property")
@@ -972,7 +972,7 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",
                                             "An actor is an independent stream of execution in your distributed "
                                             "application. See the C++ documentation for details.")
-      .def( // XBT_ATTRIB_DEPRECATED_v339
+      .def( // XBT_ATTRIB_DEPRECATED_v401
           "create",
           [](const std::string& name, Host* h, py::object fun, py::args args) {
             PyErr_WarnEx(PyExc_DeprecationWarning, "Actor.create() is deprecated, use Engine.add_actor().", 2);

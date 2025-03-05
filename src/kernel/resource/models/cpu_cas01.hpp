@@ -36,7 +36,7 @@ public:
  ************/
 
 class CpuCas01 : public CpuImpl {
-  std::function<s4u::Host::CpuFactorCb> factor_cb_         = {}; // XBT_ATTRIB_DEPRECATED_v339
+  std::function<s4u::Host::CpuFactorCb> factor_cb_         = {}; // XBT_ATTRIB_DEPRECATED_v401
   std::function<double(s4u::Host&, double)> factor_cpu_cb_ = {};
 
 public:

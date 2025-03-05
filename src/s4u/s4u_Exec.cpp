@@ -99,7 +99,7 @@ Exec* Exec::do_start()
   return this;
 }
 
-ssize_t Exec::deprecated_wait_any_for(const std::vector<ExecPtr>& execs, double timeout) // XBT_ATTRIB_DEPRECATED_v339
+ssize_t Exec::deprecated_wait_any_for(const std::vector<ExecPtr>& execs, double timeout) // XBT_ATTRIB_DEPRECATED_v401
 {
   if (execs.empty())
     return -1;
@@ -363,7 +363,7 @@ sg_error_t sg_exec_wait_for(sg_exec_t exec, double timeout)
   return status;
 }
 
-ssize_t sg_exec_wait_any(sg_exec_t* execs, size_t count) // XBT_ATTRIB_DEPRECATED_v339
+ssize_t sg_exec_wait_any(sg_exec_t* execs, size_t count) // XBT_ATTRIB_DEPRECATED_v401
 {
   std::vector<simgrid::s4u::ExecPtr> s4u_execs;
   for (size_t i = 0; i < count; i++)
@@ -377,7 +377,7 @@ ssize_t sg_exec_wait_any(sg_exec_t* execs, size_t count) // XBT_ATTRIB_DEPRECATE
   return pos;
 }
 
-ssize_t sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout) // XBT_ATTRIB_DEPRECATED_v339
+ssize_t sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout) // XBT_ATTRIB_DEPRECATED_v401
 {
   std::vector<simgrid::s4u::ExecPtr> s4u_execs;
   for (size_t i = 0; i < count; i++)

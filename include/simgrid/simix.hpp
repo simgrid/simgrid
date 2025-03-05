@@ -6,7 +6,7 @@
 #ifndef SIMGRID_SIMIX_HPP
 #define SIMGRID_SIMIX_HPP
 
-// XBT_ATTRIB_DEPRECATED_v339
+// XBT_ATTRIB_DEPRECATED_v401
 #warning The file "simgrid/simix.hpp" is deprecated and will be removed in v3.39. Please include "simgrid/simcall.hpp" instead.
 #include <simgrid/simcall.hpp>
 #endif

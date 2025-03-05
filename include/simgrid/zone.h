@@ -19,9 +19,9 @@ XBT_PUBLIC sg_netzone_t sg_zone_get_root();
 XBT_PUBLIC const char* sg_zone_get_name(const_sg_netzone_t zone);
 XBT_PUBLIC sg_netzone_t sg_zone_get_by_name(const char* name);
 #ifndef DOXYGEN
-XBT_ATTRIB_DEPRECATED_v339("Please use sg_zone_get_childs instead: we want to kill xbt_dict at some point") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v401("Please use sg_zone_get_childs instead: we want to kill xbt_dict at some point") XBT_PUBLIC
     void sg_zone_get_sons(const_sg_netzone_t zone, xbt_dict_t whereto);
-XBT_ATTRIB_DEPRECATED_v339("Please use sg_zone_get_all_hosts instead: we want to kill xbt_dynar at some point")
+XBT_ATTRIB_DEPRECATED_v401("Please use sg_zone_get_all_hosts instead: we want to kill xbt_dynar at some point")
     XBT_PUBLIC void sg_zone_get_hosts(const_sg_netzone_t zone, xbt_dynar_t whereto);
 #endif
 /** Returns a NULL-terminated list childs.

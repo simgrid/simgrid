@@ -28,7 +28,7 @@ protected:
   explicit Io(kernel::activity::IoImplPtr pimpl);
   Io* do_start() override;
 
-  static ssize_t deprecated_wait_any_for(const std::vector<IoPtr>& ios, double timeout); // XBT_ATTRIB_DEPRECATED_v339
+  static ssize_t deprecated_wait_any_for(const std::vector<IoPtr>& ios, double timeout); // XBT_ATTRIB_DEPRECATED_v401
 
 public:
   enum class OpType { READ, WRITE };
@@ -36,9 +36,9 @@ public:
    /*! \static Initiate the creation of an I/O. Setters have to be called afterwards */
   static IoPtr init();
 #ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") 
+  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") 
   static ssize_t wait_any(const std::vector<IoPtr>& ios) { return deprecated_wait_any_for(ios, -1); }
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") 
+  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") 
   static ssize_t wait_any_for(const std::vector<IoPtr>& ios, double timeout) { return deprecated_wait_any_for(ios, timeout); }
 #endif
 

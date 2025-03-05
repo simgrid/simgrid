@@ -94,11 +94,11 @@ public:
   bool is_assigned() const override;
 
 #ifndef DOXYGEN
-  static ssize_t deprecated_wait_any_for(const std::vector<ExecPtr>& execs, double timeout); // XBT_ATTRIB_DEPRECATED_v339
+  static ssize_t deprecated_wait_any_for(const std::vector<ExecPtr>& execs, double timeout); // XBT_ATTRIB_DEPRECATED_v401
 
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t
+  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t
       wait_any(const std::vector<ExecPtr>& execs) { return deprecated_wait_any_for(execs, -1); }
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t
+  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t
       wait_any_for(const std::vector<ExecPtr>& execs, double timeout) { return deprecated_wait_any_for(execs, timeout); }
 #endif
 };

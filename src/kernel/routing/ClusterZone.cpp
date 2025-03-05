@@ -82,8 +82,8 @@ ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<unsigne
   kernel::routing::NetPoint* netpoint = nullptr;
   kernel::routing::NetPoint* gw       = nullptr;
   auto dims                           = index_to_dims(position);
-  if (set_callbacks.is_by_netpoint()) { // XBT_ATTRIB_DEPRECATED_v339
-    std::tie(netpoint, gw) = set_callbacks.netpoint(get_iface(), dims, position); // XBT_ATTRIB_DEPRECATED_v339
+  if (set_callbacks.is_by_netpoint()) { // XBT_ATTRIB_DEPRECATED_v401
+    std::tie(netpoint, gw) = set_callbacks.netpoint(get_iface(), dims, position); // XBT_ATTRIB_DEPRECATED_v401
   } else if (set_callbacks.is_by_netzone()) {
     s4u::NetZone* netzone = set_callbacks.netzone(get_iface(), dims, position);
     netpoint              = netzone->get_netpoint();

@@ -129,7 +129,7 @@ public:
   virtual void set_factor_cb(const std::function<s4u::Host::CpuFactorCb>& cb)
   {
     THROW_UNIMPLEMENTED;
-  } // XBT_ATTRIB_DEPRECATED_v339
+  } // XBT_ATTRIB_DEPRECATED_v401
 
   /**
    * @brief Execute some quantity of computation
