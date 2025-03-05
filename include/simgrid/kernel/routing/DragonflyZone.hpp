@@ -71,13 +71,7 @@ public:
 
   explicit DragonflyZone(const std::string& name);
   void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) override;
-  /**
-   * @brief Parse topology parameters from string format
-   *
-   * @param topo_parameters Topology parameters, e.g. "3,4 ; 3,2 ; 3,1 ; 2"
-   */
-  static s4u::DragonflyParams parse_topo_parameters(const std::string& topo_parameters);
-
+  
   /** @brief Checks topology parameters */
   static void check_topology(unsigned int n_groups, unsigned int groups_links, unsigned int n_chassis,
                              unsigned int chassis_links, unsigned int n_routers, unsigned int routers_links,
@@ -86,16 +80,17 @@ public:
   void set_topology(unsigned int n_groups, unsigned int groups_links, unsigned int n_chassis,
                     unsigned int chassis_links, unsigned int n_routers, unsigned int routers_links, unsigned int nodes);
   /** @brief Build upper levels (routers) in Dragonfly */
-  void build_upper_levels(const s4u::ClusterCallbacks& set_callbacks);
+  void build_upper_levels();
   /** @brief Set the characteristics of links inside the Dragonfly zone */
   void set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy) override;
   Coords rankId_to_coords(unsigned long rank_id) const;
 
 private:
-  void generate_routers(const s4u::ClusterCallbacks& set_callbacks);
+  void generate_routers();
   void generate_links();
   void generate_link(const std::string& id, int numlinks, resource::StandardLinkImpl** linkup,
                      resource::StandardLinkImpl** linkdown);
+  void do_seal() override;
 
   unsigned int num_nodes_per_blade_    = 0;
   unsigned int num_blades_per_chassis_ = 0;

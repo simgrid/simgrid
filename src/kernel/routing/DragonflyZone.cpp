@@ -6,9 +6,8 @@
 #include "simgrid/kernel/routing/DragonflyZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
+#include "xbt/parse_units.hpp"
 
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
 #include <numeric>
 #include <string>
 
@@ -39,6 +38,7 @@ void DragonflyZone::set_link_characteristics(double bw, double lat, s4u::Link::S
     num_links_per_link_ = 2;
 }
 
+
 void DragonflyZone::set_topology(unsigned int n_groups, unsigned int groups_links, unsigned int n_chassis,
                                  unsigned int chassis_links, unsigned int n_routers, unsigned int routers_links,
                                  unsigned int nodes)
@@ -53,102 +53,31 @@ void DragonflyZone::set_topology(unsigned int n_groups, unsigned int groups_link
   num_links_green_        = routers_links;
 
   num_nodes_per_blade_ = nodes;
-}
 
-s4u::DragonflyParams DragonflyZone::parse_topo_parameters(const std::string& topo_parameters)
-{
-  std::vector<std::string> parameters;
-  std::vector<std::string> tmp;
-  boost::split(parameters, topo_parameters, boost::is_any_of(";"));
-
-  if (parameters.size() != 4)
-    xbt_die("Dragonfly are defined by the number of groups, chassis per groups, blades per chassis, nodes per blade");
-
-  // Blue network : number of groups, number of links between each group
-  boost::split(tmp, parameters[0], boost::is_any_of(","));
-  if (tmp.size() != 2)
-    xbt_die("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
-
-  unsigned int n_groups;
-  try {
-    n_groups = std::stoi(tmp[0]);
-  } catch (const std::invalid_argument&) {
-    throw std::invalid_argument("Invalid number of groups:" + tmp[0]);
-  }
-
-  unsigned int n_blue;
-  try {
-    n_blue = std::stoi(tmp[1]);
-  } catch (const std::invalid_argument&) {
-    throw std::invalid_argument("Invalid number of links for the blue level:" + tmp[1]);
-  }
-
-  // Black network : number of chassis/group, number of links between each router on the black network
-  boost::split(tmp, parameters[1], boost::is_any_of(","));
-  if (tmp.size() != 2)
-    xbt_die("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
-
-  unsigned int n_chassis;
-  try {
-    n_chassis = std::stoi(tmp[0]);
-  } catch (const std::invalid_argument&) {
-    throw std::invalid_argument("Invalid number of chassis:" + tmp[0]);
-  }
-
-  unsigned int n_black;
-  try {
-    n_black = std::stoi(tmp[1]);
-  } catch (const std::invalid_argument&) {
-    throw std::invalid_argument("Invalid number of links for the black level:" + tmp[1]);
-  }
-
-  // Green network : number of blades/chassis, number of links between each router on the green network
-  boost::split(tmp, parameters[2], boost::is_any_of(","));
-  if (tmp.size() != 2)
-    xbt_die("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
-
-  unsigned int n_routers;
-  try {
-    n_routers = std::stoi(tmp[0]);
-  } catch (const std::invalid_argument&) {
-    throw std::invalid_argument("Invalid number of routers:" + tmp[0]);
-  }
-
-  unsigned int n_green;
-  try {
-    n_green = std::stoi(tmp[1]);
-  } catch (const std::invalid_argument&) {
-    throw std::invalid_argument("Invalid number of links for the green level:" + tmp[1]);
-  }
-
-  // The last part of topo_parameters should be the number of nodes per blade
-  unsigned int n_nodes;
-  try {
-    n_nodes = std::stoi(parameters[3]);
-  } catch (const std::invalid_argument&) {
-    throw std::invalid_argument("Last parameter is not the amount of nodes per blade:" + parameters[3]);
-  }
-  return s4u::DragonflyParams({n_groups, n_blue}, {n_chassis, n_black}, {n_routers, n_green}, n_nodes);
+  std::vector<unsigned long> dimensions = {n_groups, n_chassis, n_routers, nodes};
+  int tot_elements                     = std::accumulate(dimensions.begin(), dimensions.end(), 1, std::multiplies<>());
+  set_tot_elements(tot_elements); 
+  set_cluster_dimensions(dimensions);
 }
 
 /* Generate the cluster once every node is created */
-void DragonflyZone::build_upper_levels(const s4u::ClusterCallbacks& set_callbacks)
+void DragonflyZone::build_upper_levels()
 {
-  generate_routers(set_callbacks);
+  generate_routers();
   generate_links();
 }
 
-void DragonflyZone::generate_routers(const s4u::ClusterCallbacks& set_callbacks)
+void DragonflyZone::generate_routers()
 {
   unsigned long id = 2UL * num_groups_ * num_chassis_per_group_ * num_blades_per_chassis_ * num_nodes_per_blade_;
   /* get limiter for this router */
-  auto get_limiter = [this, &id, &set_callbacks](unsigned int i, unsigned int j,
+  auto get_limiter = [this, &id](unsigned int i, unsigned int j,
                                                  unsigned int k) -> resource::StandardLinkImpl* {
     kernel::resource::StandardLinkImpl* limiter = nullptr;
-    if (set_callbacks.limiter) {
+    if (has_limiter()) {
       id--;
       const auto* s4u_link =
-          set_callbacks.limiter(get_iface(), {i, j, k, std::numeric_limits<unsigned int>::max()}, id);
+          get_limiter_cb()(get_iface(), {i, j, k, std::numeric_limits<unsigned int>::max()}, id);
       if (s4u_link) {
         limiter = s4u_link->get_impl();
       }
@@ -365,14 +294,59 @@ void DragonflyZone::get_local_route(const NetPoint* src, const NetPoint* dst, Ro
   route->gw_src_ = get_gateway(src->id());
   route->gw_dst_ = get_gateway(dst->id());
 }
+
+void DragonflyZone::do_seal()
+{
+  /* populating it */
+  for (int i = 0; i < get_tot_elements(); i++)
+    fill_leaf_from_cb(i);
+
+  build_upper_levels();
+}
+
 } // namespace kernel::routing
 
 namespace s4u {
-DragonflyParams::DragonflyParams(const std::pair<unsigned int, unsigned int>& groups,
-                                 const std::pair<unsigned int, unsigned int>& chassis,
-                                 const std::pair<unsigned int, unsigned int>& routers, unsigned int nodes)
-    : groups(groups), chassis(chassis), routers(routers), nodes(nodes)
+
+NetZone* create_dragonfly_zone(const std::string& name, NetZone* parent, const DragonflyParams& params,
+  const ClusterCallbacks& set_callbacks, double bandwidth, double latency,
+  Link::SharingPolicy sharing_policy)
 {
+  auto* zone = parent->add_netzone_dragonfly(name, params.groups, params.chassis, params.routers, params.nodes, bandwidth,
+                                             latency, sharing_policy);
+  if (set_callbacks.is_by_netzone())
+    zone->set_netzone_cb(set_callbacks.netzone);
+  else
+    zone->set_host_cb(set_callbacks.host);
+  zone->set_loopback_cb(set_callbacks.loopback);
+  zone->set_limiter_cb(set_callbacks.limiter);
+
+  return zone; 
+}
+
+NetZone* NetZone::add_netzone_dragonfly(const std::string& name, const std::pair<unsigned int, unsigned int>& groups,
+                                        const std::pair<unsigned int, unsigned int>& chassis,
+                                        const std::pair<unsigned int, unsigned int>& routers,
+                                        unsigned int nodes, const std::string& bandwidth, const std::string& latency,
+                                        Link::SharingPolicy sharing_policy)
+{
+  return add_netzone_dragonfly(name, groups, chassis, routers, nodes, xbt_parse_get_bandwidth("", 0, bandwidth, ""), 
+                               xbt_parse_get_time("", 0, latency, ""), sharing_policy);
+}
+NetZone* NetZone::add_netzone_dragonfly(const std::string& name, const std::pair<unsigned int, unsigned int>& groups,
+                                        const std::pair<unsigned int, unsigned int>& chassis,
+                                        const std::pair<unsigned int, unsigned int>& routers,
+                                        unsigned int nodes, double bandwidth, double latency,
+                                        Link::SharingPolicy sharing_policy)
+{
+/* initial checks */
+  if (bandwidth <= 0)
+    throw std::invalid_argument("DragonflyZone: incorrect bandwidth for internode communication, bw=" +
+                                std::to_string(bandwidth));
+  if (latency < 0)
+    throw std::invalid_argument("DragonflyZone: incorrect latency for internode communication, lat=" +
+                                std::to_string(latency));
+
   if (groups.first == 0)
     throw std::invalid_argument("Dragonfly: Invalid number of groups, must be > 0");
   if (groups.second == 0)
@@ -387,35 +361,13 @@ DragonflyParams::DragonflyParams(const std::pair<unsigned int, unsigned int>& gr
     throw std::invalid_argument("Dragonfly: Invalid number of green (routers) links, must be > 0");
   if (nodes == 0)
     throw std::invalid_argument("Dragonfly: Invalid number of nodes, must be > 0");
-}
-
-NetZone* create_dragonfly_zone(const std::string& name, const NetZone* parent, const DragonflyParams& params,
-                               const ClusterCallbacks& set_callbacks, double bandwidth, double latency,
-                               Link::SharingPolicy sharing_policy)
-{
-  /* initial checks */
-  if (bandwidth <= 0)
-    throw std::invalid_argument("DragonflyZone: incorrect bandwidth for internode communication, bw=" +
-                                std::to_string(bandwidth));
-  if (latency < 0)
-    throw std::invalid_argument("DragonflyZone: incorrect latency for internode communication, lat=" +
-                                std::to_string(latency));
-
-  /* creating zone */
+  
+    /* creating zone */
   auto* zone = new kernel::routing::DragonflyZone(name);
-  zone->set_topology(params.groups.first, params.groups.second, params.chassis.first, params.chassis.second,
-                     params.routers.first, params.routers.second, params.nodes);
-  zone->set_parent(parent->get_impl());
+  zone->set_topology(groups.first, groups.second, chassis.first, chassis.second, routers.first, routers.second, nodes);
+  zone->set_parent(get_impl());
   zone->set_link_characteristics(bandwidth, latency, sharing_policy);
 
-  /* populating it */
-  std::vector<unsigned long> dimensions = {params.groups.first, params.chassis.first, params.routers.first,
-                                           params.nodes};
-  int tot_elements                     = std::accumulate(dimensions.begin(), dimensions.end(), 1, std::multiplies<>());
-  for (int i = 0; i < tot_elements; i++)
-    zone->fill_leaf_from_cb(i, dimensions, set_callbacks);
-
-  zone->build_upper_levels(set_callbacks);
   return zone->get_iface();
 }
 } // namespace s4u

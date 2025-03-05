@@ -25,9 +25,7 @@ public:
   void create_torus_links(unsigned long id, int rank, unsigned long position);
   void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) override;
   void set_topology(const std::vector<unsigned long>& dimensions);
-
-  /** @brief Convert topology parameters from string to vector of uint */
-  static std::vector<unsigned long> parse_topo_parameters(const std::string& topo_parameters);
+  void do_seal() override;
 };
 
 } // namespace simgrid::kernel::routing
