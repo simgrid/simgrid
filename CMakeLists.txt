@@ -48,14 +48,6 @@ include(CheckCXXCompilerFlag)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
 
-if (CMAKE_COMPILER_IS_GNUCC)
-  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "7.0")
-    message(FATAL_ERROR
-            "SimGrid needs at least g++ version 7.0 to compile but you have ${CMAKE_CXX_COMPILER_VERSION}."
-            "You need a sufficient support of c++17 to compile SimGrid.")
-  endif()
-endif()
-
 ## We need a decent support of the C++17 and C11 standards
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -206,6 +198,17 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   else()
     message(STATUS "GNU libc detected.")
   endif()
+endif()
+
+if(SIMGRID_HAVE_MUSL)
+  # std::to_string fails as in https://github.com/aws/aws-sdk-cpp/issues/3299 with FORTIFY_SOURCE=2 on MUSL
+  # TEMP_HACK Please remove this hack at some point
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3 -U_FORTIFY_SOURCE")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -U_FORTIFY_SOURCE")
+else()
+  # But when not using MUSL, let's fortify our code
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3 -D_FORTIFY_SOURCE=2")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -D_FORTIFY_SOURCE=2")
 endif()
 
 include(CheckFunctionExists)
