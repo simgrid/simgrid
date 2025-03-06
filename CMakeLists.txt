@@ -367,12 +367,18 @@ mark_as_advanced(Boost_STACKTRACE_BACKTRACE_LIB)
 set(SIMGRID_HAVE_JAVA 0) # by default, nope
 set(merge_java_in_libsimgrid 0) # by default, nope
 if((NOT DEFINED enable_java) OR enable_java)
+  # We are only interested in finding jni.h, no need extended JVM functionality or the AWT library. So let's trick FindJNI
+  # https://stackoverflow.com/a/51764145/1756334
+  set(JAVA_AWT_LIBRARY NotNeeded)
+  set(JAVA_JVM_LIBRARY NotNeeded)
+  set(JAVA_AWT_INCLUDE_PATH "/usr/include")
+
   find_package(JNI)
   if (NOT ${JNI_FOUND})
     if(enable_java)
       message(FATAL_ERROR "JNI not found. Please install it, or disable the 'enable_java' option.")
     else()
-      message(status "JNI not found, thus disabling Java.")
+      message(STATUS "JNI not found, thus disabling Java.")
     endif()
 
   else()
