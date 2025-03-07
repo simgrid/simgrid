@@ -28,8 +28,8 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
     add_dependencies(tests ${test})
     target_link_libraries(${test} simgrid mtest_c)
   endforeach()
-
-  set_target_properties(allred PROPERTIES COMPILE_FLAGS "-O0" LINK_FLAGS "-O0")
+  
+  set_target_properties(allred PROPERTIES COMPILE_FLAGS "-O0 -Wno-error=cpp" LINK_FLAGS "-O0 -Wno-error=cpp")
 
   foreach(test bcast_full bcast_min_datatypes bcast_comm_world)
     add_executable(${test} EXCLUDE_FROM_ALL bcast.c)
