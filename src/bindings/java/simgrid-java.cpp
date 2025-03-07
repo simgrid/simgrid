@@ -79,6 +79,7 @@
 
 #include <boost/core/demangle.hpp>
 #include <jni.h>
+#include <locale.h>
 #include <stdexcept>
 #include <stdlib.h>
 #include <string.h>
