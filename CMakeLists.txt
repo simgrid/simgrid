@@ -205,7 +205,7 @@ if(SIMGRID_HAVE_MUSL)
   # TEMP_HACK Please remove this hack at some point
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -U_FORTIFY_SOURCE")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -U_FORTIFY_SOURCE")
-elseif(enable_compile_optimizations)
+elseif(enable_compile_optimizations AND (NOT (CMAKE_C_COMPILER_ID STREQUAL "Intel")))
   # But when not using MUSL, let's fortify our code if we plan to compile with -O
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_FORTIFY_SOURCE=2")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=2")
