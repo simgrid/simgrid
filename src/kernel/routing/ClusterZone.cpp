@@ -32,7 +32,7 @@ void ClusterBase::set_limiter()
     has_limiter_ = true;
   }
 }
-
+ 
 void ClusterBase::set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy)
 {
   link_sharing_policy_ = sharing_policy;
@@ -59,22 +59,21 @@ NetPoint* ClusterBase::get_gateway(unsigned long position)
   return it == gateways_.end() ? nullptr : it->second;
 }
 
-std::tuple<NetPoint*, s4u::Link*, s4u::Link*>
-ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<unsigned long>& dimensions,
-                               const s4u::ClusterCallbacks& set_callbacks)
+
+std::tuple<NetPoint*, s4u::Link*, s4u::Link*> ClusterBase::fill_leaf_from_cb(unsigned long position)
 {
   s4u::Link* loopback_res = nullptr;
   s4u::Link* limiter_res  = nullptr;
 
   // auxiliary function to get dims from index
-  auto index_to_dims = [&dimensions](unsigned long index) {
-    std::vector<unsigned long> dims_array(dimensions.size());
-    for (auto i = static_cast<int>(dimensions.size() - 1); i >= 0; --i) {
+  auto index_to_dims = [this](unsigned long index) {
+    std::vector<unsigned long> dims_array(dims_.size());
+    for (auto i = static_cast<int>(dims_.size() - 1); i >= 0; --i) {
       if (index == 0)
         break;
-      unsigned long value = index % dimensions[i];
+      unsigned long value = index % dims_[i];
       dims_array[i]      = value;
-      index              = (index / dimensions[i]);
+      index              = (index / dims_[i]);
     }
     return dims_array;
   };
@@ -82,14 +81,12 @@ ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<unsigne
   kernel::routing::NetPoint* netpoint = nullptr;
   kernel::routing::NetPoint* gw       = nullptr;
   auto dims                           = index_to_dims(position);
-  if (set_callbacks.is_by_netpoint()) { // XBT_ATTRIB_DEPRECATED_v401
-    std::tie(netpoint, gw) = set_callbacks.netpoint(get_iface(), dims, position); // XBT_ATTRIB_DEPRECATED_v401
-  } else if (set_callbacks.is_by_netzone()) {
-    s4u::NetZone* netzone = set_callbacks.netzone(get_iface(), dims, position);
+  if (netzone_cb_) {
+    s4u::NetZone* netzone = netzone_cb_(get_iface(), dims, position);
     netpoint              = netzone->get_netpoint();
     gw                    = netzone->get_gateway();
   } else {
-    s4u::Host* host = set_callbacks.host(get_iface(), dims, position);
+    s4u::Host* host = host_cb_(get_iface(), dims, position);
     netpoint        = host->get_netpoint();
   }
 
@@ -104,16 +101,16 @@ ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<unsigne
   // setting gateway
   set_gateway(position, gw);
 
-  if (set_callbacks.loopback) {
-    s4u::Link* loopback = set_callbacks.loopback(get_iface(), dims, position);
+  if (loopback_cb_) {
+    s4u::Link* loopback = loopback_cb_(get_iface(), dims, position);
     xbt_assert(loopback, "set_loopback: Invalid loopback link (nullptr) for element %lu", position);
     set_loopback();
     add_private_link_at(node_pos(netpoint->id()), {loopback->get_impl(), loopback->get_impl()});
     loopback_res = loopback;
   }
 
-  if (set_callbacks.limiter) {
-    s4u::Link* limiter = set_callbacks.limiter(get_iface(), dims, position);
+  if (limiter_cb_) {
+    s4u::Link* limiter = limiter_cb_(get_iface(), dims, position);
     xbt_assert(limiter, "set_limiter: Invalid limiter link (nullptr) for element %lu", position);
     set_limiter();
     add_private_link_at(node_pos_with_loopback(netpoint->id()), {limiter->get_impl(), limiter->get_impl()});

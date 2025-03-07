@@ -1,7 +1,7 @@
-# Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.
+# Copyright(c) 2006 - 2025. The SimGrid Team. All rights reserved.
 #
-# This program is free software; you can redistribute it and/or modify it
-# under the terms of the license (GNU LGPL) which comes with this package.
+# This program is free software; you can redistribute it and / or modify it
+# under the terms of the license(GNU LGPL) which comes with this package.
 
 """
 This example shows how to build a torus cluster with multi-core hosts.
@@ -25,8 +25,8 @@ class Sender:
         self.hosts = hosts
         self.msg_size = msg_size
 
-    # Actors that are created as object will execute their __call__ method.
-    # So, the following constitutes the main function of the Sender actor.
+# Actors that are created as object will execute their __call__ method.
+# So, the following constitutes the main function of the Sender actor.
     def __call__(self):
         pending_comms = simgrid.ActivitySet()
         mboxes = []
@@ -39,7 +39,7 @@ class Sender:
 
         simgrid.this_actor.info("Done dispatching all messages")
 
-        # Now that all message exchanges were initiated, wait for their completion in one single call
+# Now that all message exchanges were initiated, wait for their completion in one single call
         pending_comms.wait_all()
 
         simgrid.this_actor.info("Goodbye now!")
@@ -90,20 +90,20 @@ def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], ident: int) 
     hostname = "host" + str(ident)
     host_zone = zone.add_netzone_star(hostname)
 
-    # create CPUs
+# create CPUs
     for i in range(num_cpus):
         cpu_name = hostname + "-cpu" + str(i)
         host = host_zone.add_host(cpu_name, speed).seal()
-        # the first CPU is the gateway
+# the first CPU is the gateway
         if i == 0:
             host_zone.set_gateway(host.netpoint)
-        # create split-duplex link
+# create split - duplex link
         link = host_zone.add_split_duplex_link("link-" + cpu_name, link_bw)
         link.set_latency(link_lat).seal()
-        # connecting CPU to outer world
+# connecting CPU to outer world
         host_zone.add_route(host, None, [simgrid.LinkInRoute(link, simgrid.LinkInRoute.Direction.UP)], True)
 
-    # seal newly created netzone
+# seal newly created netzone
     host_zone.seal()
     return host_zone
 
@@ -165,10 +165,9 @@ def create_torus_cluster(parent: simgrid.NetZone):
     More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html?highlight=torus#torus-cluster">Torus
     Cluster</a>
     """
-    # create the torus cluster, 10Gbs link between elements in the cluster
-    simgrid.NetZone.create_torus_zone("cluster", parent, [2, 2, 2],
-                                      simgrid.ClusterCallbacks(create_hostzone, None, create_limiter), 10e9, 10e-6,
-                                      simgrid.Link.SharingPolicy.SPLITDUPLEX).seal()
+# create the torus cluster, 10Gbs link between elements in the cluster
+    parent.add_netzone_torus("cluster", [2, 2, 2], 10e9, 10e-6,
+                             simgrid.Link.SharingPolicy.SPLITDUPLEX).set_netzone_cb(create_hostzone).set_limiter_cb(create_limiter).seal()
 
 #####################################################################################################
 
@@ -221,10 +220,9 @@ def create_fat_tree_cluster(parent: simgrid.NetZone):
     More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html#fat-tree-cluster">Fat-Tree
     Cluster</a>
     """
-    # create the fat tree cluster, 10Gbs link between elements in the cluster
-    simgrid.NetZone.create_fatTree_zone("cluster", parent, simgrid.FatTreeParams(2, [2, 3], [1, 2], [1, 1]),
-                                        simgrid.ClusterCallbacks(create_hostzone, None, create_limiter), 10e9, 10e-6,
-                                        simgrid.Link.SharingPolicy.SPLITDUPLEX).seal()
+# create the fat tree cluster, 10Gbs link between elements in the cluster
+    parent.add_netzone_fatTree("cluster", 2, [2, 3], [1, 2], [1, 1], 10e9, 10e-6,
+                               simgrid.Link.SharingPolicy.SPLITDUPLEX).set_netzone_cb(create_hostzone).set_limiter_cb(create_limiter).seal()
 
 #####################################################################################################
 
@@ -267,10 +265,9 @@ def create_dragonfly_cluster(parent: simgrid.NetZone):
     More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html#dragonfly-cluster">Dragonfly
     Cluster</a>
     """
-    # create the dragonfly cluster, 10Gbs link between elements in the cluster
-    simgrid.NetZone.create_dragonfly_zone("cluster", parent, simgrid.DragonflyParams([2, 2], [2, 1], [2, 2], 2),
-                                          simgrid.ClusterCallbacks(create_hostzone, None, create_limiter), 10e9, 10e-6,
-                                          simgrid.Link.SharingPolicy.SPLITDUPLEX).seal()
+# create the dragonfly cluster, 10Gbs link between elements in the cluster
+    parent.add_netzone_dragonfly("cluster", [2, 2], [2, 1], [2, 2], 2, 10e9, 10e-6,
+                                 simgrid.Link.SharingPolicy.SPLITDUPLEX).set_netzone_cb(create_hostzone).set_limiter_cb(create_limiter).seal()
 
 ###################################################################################################
 
@@ -279,7 +276,7 @@ def main():
     e = simgrid.Engine(sys.argv)
     platform = sys.argv[1]
 
-    # create platform
+# create platform
     if platform == "torus":
         create_torus_cluster(e.netzone_root)
     elif platform == "fatTree":
@@ -290,13 +287,13 @@ def main():
         sys.exit("invalid param")
 
     host_list = e.all_hosts
-    # create the sender actor running on first host
+# create the sender actor running on first host
     e.add_actor("sender", host_list[0], Sender(host_list))
-    # create receiver in every host
+# create receiver in every host
     for host in host_list:
         e.add_actor("receiver-" + host.name, host, Receiver())
 
-    # runs the simulation
+# runs the simulation
     e.run()
 
 if __name__ == '__main__':

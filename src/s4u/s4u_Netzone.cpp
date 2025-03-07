@@ -18,6 +18,7 @@
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/simcall.hpp>
 #include <simgrid/zone.h>
+#include <xbt/asserts.hpp>
 #include <xbt/parse_units.hpp>
 
 #include "src/kernel/resource/NetworkModel.hpp"
@@ -212,6 +213,39 @@ void NetZone::set_bandwidth_factor_cb(
 {
   kernel::actor::simcall_answered([this, &cb]() { pimpl_->get_network_model()->set_bw_factor_cb(cb); });
 }
+
+NetZone* NetZone::set_host_cb(const std::function<Host*(NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id)>& cb)
+{
+  xbt_assert(dynamic_cast<kernel::routing::ClusterBase*>(get_impl()) != nullptr, 
+             "set_loopback_cb can only be called for ClusterZones");
+  kernel::actor::simcall_answered([this, &cb]() { static_cast<kernel::routing::ClusterBase*>(pimpl_)->set_host_cb(cb); });           
+  return this;
+}
+
+NetZone* NetZone::set_netzone_cb(const std::function<NetZone*(NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id)>& cb)
+{
+  xbt_assert(dynamic_cast<kernel::routing::ClusterBase*>(get_impl()) != nullptr, 
+             "set_loopback_cb can only be called for ClusterZones");
+  kernel::actor::simcall_answered([this, &cb]() { static_cast<kernel::routing::ClusterBase*>(pimpl_)->set_netzone_cb(cb); });           
+  return this;
+}
+
+NetZone* NetZone::set_loopback_cb(const std::function<Link*(NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id)>& cb)
+{
+  xbt_assert(dynamic_cast<kernel::routing::ClusterBase*>(get_impl()) != nullptr, 
+             "set_loopback_cb can only be called for ClusterZones");
+  kernel::actor::simcall_answered([this, &cb]() { static_cast<kernel::routing::ClusterBase*>(pimpl_)->set_loopback_cb(cb); });           
+  return this;
+}
+NetZone* NetZone::set_limiter_cb(const std::function<Link*(NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id)>& cb)
+{
+  xbt_assert(dynamic_cast<kernel::routing::ClusterBase*>(get_impl()) != nullptr, 
+             "set_loopback_cb can only be called for ClusterZones");
+  kernel::actor::simcall_answered([this, &cb]() { static_cast<kernel::routing::ClusterBase*>(pimpl_)->set_limiter_cb(cb); });           
+  return this;
+}
+  
+
 
 NetZone* NetZone::add_netzone_full(const std::string& name)
 {

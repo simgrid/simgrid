@@ -29,6 +29,8 @@
 #include "src/kernel/xml/platf_private.hpp"
 #include "src/simgrid/sg_config.hpp"
 
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <algorithm>
 #include <string>
 
@@ -207,10 +209,10 @@ static void sg_platf_new_cluster_hierarchical(const simgrid::kernel::routing::Cl
   using simgrid::kernel::routing::FatTreeZone;
   using simgrid::kernel::routing::TorusZone;
 
-  std::function<simgrid::s4u::ClusterCallbacks::ClusterHostCb> set_host =
+  std::function<simgrid::s4u::Host*(simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id)> set_host =
     std::bind(sg_platf_cluster_create_host, cluster, _1, _2, _3);
-  std::function<simgrid::s4u::ClusterCallbacks::ClusterLinkCb> set_loopback{};
-  std::function<simgrid::s4u::ClusterCallbacks::ClusterLinkCb> set_limiter{};
+  std::function<simgrid::s4u::Link*(simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id)> set_loopback{};
+  std::function<simgrid::s4u::Link*(simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id)> set_limiter{};
 
   if (cluster->loopback_bw > 0 || cluster->loopback_lat > 0) {
     set_loopback = std::bind(sg_platf_cluster_create_loopback, cluster, _1, _2, _3);
@@ -220,26 +222,167 @@ static void sg_platf_new_cluster_hierarchical(const simgrid::kernel::routing::Cl
     set_limiter = std::bind(sg_platf_cluster_create_limiter, cluster, _1, _2, _3);
   }
 
-  simgrid::s4u::NetZone const* parent = current_routing ? current_routing->get_iface() : nullptr;
-  switch (cluster->topology) {
-    case simgrid::kernel::routing::ClusterTopology::TORUS:
-      simgrid::s4u::create_torus_zone(cluster->id, parent, TorusZone::parse_topo_parameters(cluster->topo_parameters),
-                                      {set_host, set_loopback, set_limiter}, cluster->bw, cluster->lat,
-                                      cluster->sharing_policy);
-      break;
-    case simgrid::kernel::routing::ClusterTopology::DRAGONFLY:
-      simgrid::s4u::create_dragonfly_zone(
-          cluster->id, parent, DragonflyZone::parse_topo_parameters(cluster->topo_parameters),
-          {set_host, set_loopback, set_limiter}, cluster->bw, cluster->lat, cluster->sharing_policy);
-      break;
-    case simgrid::kernel::routing::ClusterTopology::FAT_TREE:
-      simgrid::s4u::create_fatTree_zone(
-          cluster->id, parent, FatTreeZone::parse_topo_parameters(cluster->topo_parameters),
-          {set_host, set_loopback, set_limiter}, cluster->bw, cluster->lat, cluster->sharing_policy);
-      break;
-    default:
-      THROW_IMPOSSIBLE;
-  }
+  simgrid::s4u::NetZone* parent = current_routing ? current_routing->get_iface() : nullptr;
+  if (cluster->topology == simgrid::kernel::routing::ClusterTopology::TORUS) {
+    std::vector<std::string> dimensions_str;
+    std::vector<unsigned long> dimensions;
+    
+    // Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and save them into a vector.
+    boost::split(dimensions_str, cluster->topo_parameters, boost::is_any_of(","));
+    std::transform(begin(dimensions_str), end(dimensions_str), std::back_inserter(dimensions),
+                   [](const std::string& s) { return std::stoi(s); });
+
+    parent->add_netzone_torus(cluster->id, dimensions, cluster->bw, cluster->lat, cluster->sharing_policy)
+          ->set_host_cb(set_host)
+          ->set_loopback_cb(set_loopback)
+          ->set_limiter_cb(set_limiter)
+          ->seal();
+  } else if (cluster->topology == simgrid::kernel::routing::ClusterTopology::FAT_TREE) {
+    std::vector<std::string> parameters;
+    std::vector<std::string> tmp;
+    unsigned int n_lev = 0;
+    std::vector<unsigned int> down;
+    std::vector<unsigned int> up;
+    std::vector<unsigned int> count;
+    boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
+
+    simgrid_parse_assert(parameters.size() == 4,
+      "Fat trees are defined by the levels number and 3 vectors, see the documentation for more information.");
+
+    // The first parts of topo_parameters should be the levels number
+    try {
+      n_lev = std::stoi(parameters[0]);
+    } catch (const std::invalid_argument&) {
+      simgrid_parse_error("First parameter is not the amount of levels: " + parameters[0]);
+    }
+
+    // Then, a l-sized vector standing for the children number by level
+    boost::split(tmp, parameters[1], boost::is_any_of(","));
+    simgrid_parse_assert(tmp.size() == n_lev, "You specified " + std::to_string(n_lev) +
+                                              " levels but the child count vector (the first one) contains " +
+                                              std::to_string(tmp.size()) + " levels.");
+
+    for (std::string const& level : tmp) {
+      try {
+        down.push_back(std::stoi(level));
+      } catch (const std::invalid_argument&) {
+        simgrid_parse_error("Invalid child count: " + level);
+      }
+    }
+
+    // Then, a l-sized vector standing for the parents number by level
+    boost::split(tmp, parameters[2], boost::is_any_of(","));
+    simgrid_parse_assert(tmp.size() == n_lev, "You specified " + std::to_string(n_lev) +
+                                              " levels but the parent count vector (the second one) contains " +
+                                              std::to_string(tmp.size()) + " levels.");
+    for (std::string const& parent : tmp) {
+      try {
+        up.push_back(std::stoi(parent));
+      } catch (const std::invalid_argument&) {
+        simgrid_parse_error("Invalid parent count: " + parent);
+      }
+    }
+
+    // Finally, a l-sized vector standing for the ports number with the lower level
+    boost::split(tmp, parameters[3], boost::is_any_of(","));
+    simgrid_parse_assert(tmp.size() == n_lev, "You specified " + std::to_string(n_lev) +
+                                              " levels but the port count vector (the third one) contains " +
+                                              std::to_string(tmp.size()) + " levels.");
+    for (std::string const& port : tmp) {
+      try {
+        count.push_back(std::stoi(port));
+      } catch (const std::invalid_argument&) {
+        throw std::invalid_argument("Invalid lower level port number:" + port);
+      }
+    }
+
+    parent->add_netzone_fatTree(cluster->id, n_lev, down, up, count,
+                                cluster->bw, cluster->lat, cluster->sharing_policy)
+          ->set_host_cb(set_host)
+          ->set_loopback_cb(set_loopback)
+          ->set_limiter_cb(set_limiter)
+          ->seal();
+  } else if (cluster->topology == simgrid::kernel::routing::ClusterTopology::DRAGONFLY) {
+    std::vector<std::string> parameters;
+    std::vector<std::string> tmp;
+    boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
+  
+    if (parameters.size() != 4)
+      xbt_die("Dragonfly are defined by the number of groups, chassis per groups, blades per chassis, nodes per blade");
+  
+    // Blue network : number of groups, number of links between each group
+    boost::split(tmp, parameters[0], boost::is_any_of(","));
+    if (tmp.size() != 2)
+      xbt_die("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
+  
+    unsigned int n_groups;
+    try {
+      n_groups = std::stoi(tmp[0]);
+    } catch (const std::invalid_argument&) {
+      throw std::invalid_argument("Invalid number of groups:" + tmp[0]);
+    }
+  
+    unsigned int n_blue;
+    try {
+      n_blue = std::stoi(tmp[1]);
+    } catch (const std::invalid_argument&) {
+      throw std::invalid_argument("Invalid number of links for the blue level:" + tmp[1]);
+    }
+  
+    // Black network : number of chassis/group, number of links between each router on the black network
+    boost::split(tmp, parameters[1], boost::is_any_of(","));
+    if (tmp.size() != 2)
+      xbt_die("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
+  
+    unsigned int n_chassis;
+    try {
+      n_chassis = std::stoi(tmp[0]);
+    } catch (const std::invalid_argument&) {
+      throw std::invalid_argument("Invalid number of chassis:" + tmp[0]);
+    }
+  
+    unsigned int n_black;
+    try {
+      n_black = std::stoi(tmp[1]);
+    } catch (const std::invalid_argument&) {
+      throw std::invalid_argument("Invalid number of links for the black level:" + tmp[1]);
+    }
+  
+    // Green network : number of blades/chassis, number of links between each router on the green network
+    boost::split(tmp, parameters[2], boost::is_any_of(","));
+    if (tmp.size() != 2)
+      xbt_die("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
+  
+    unsigned int n_routers;
+    try {
+      n_routers = std::stoi(tmp[0]);
+    } catch (const std::invalid_argument&) {
+      throw std::invalid_argument("Invalid number of routers:" + tmp[0]);
+    }
+  
+    unsigned int n_green;
+    try {
+      n_green = std::stoi(tmp[1]);
+    } catch (const std::invalid_argument&) {
+      throw std::invalid_argument("Invalid number of links for the green level:" + tmp[1]);
+    }
+  
+    // The last part of topo_parameters should be the number of nodes per blade
+    unsigned int n_nodes;
+    try {
+      n_nodes = std::stoi(parameters[3]);
+    } catch (const std::invalid_argument&) {
+      throw std::invalid_argument("Last parameter is not the amount of nodes per blade:" + parameters[3]);
+    }
+
+    parent->add_netzone_dragonfly(cluster->id, {n_groups, n_blue}, {n_chassis, n_black}, {n_routers, n_green}, n_nodes, 
+                                  cluster->bw, cluster->lat, cluster->sharing_policy)
+          ->set_host_cb(set_host)
+          ->set_loopback_cb(set_loopback)
+          ->set_limiter_cb(set_limiter)
+          ->seal();
+  } else 
+    THROW_IMPOSSIBLE;
 }
 
 /*************************************************************************************************/

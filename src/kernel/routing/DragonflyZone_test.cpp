@@ -12,75 +12,73 @@
 TEST_CASE("kernel::routing::DragonflyZone: Creating Zone", "")
 {
   simgrid::s4u::Engine e("test");
-  simgrid::s4u::ClusterCallbacks callbacks(CreateHost{});
-  REQUIRE(create_dragonfly_zone("test", e.get_netzone_root(), {{3, 4}, {4, 3}, {5, 1}, 2}, callbacks, 1e9, 10,
-                                simgrid::s4u::Link::SharingPolicy::SHARED));
+  REQUIRE(e.get_netzone_root()->add_netzone_dragonfly("test", {3, 4}, {4, 3}, {5, 1}, 2, 1e9, 10,
+                                simgrid::s4u::Link::SharingPolicy::SHARED)->set_host_cb(CreateHost{}));
 }
 
 TEST_CASE("kernel::routing::DragonflyZone: Invalid params", "")
 {
   simgrid::s4u::Engine e("test");
-  simgrid::s4u::ClusterCallbacks callbacks(CreateHost{});
-
+  
   SECTION("0 nodes")
   {
-    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.get_netzone_root(), {{3, 4}, {4, 3}, {5, 1}, 0}, callbacks, 1e9,
-                                            10, simgrid::s4u::Link::SharingPolicy::SHARED),
+    REQUIRE_THROWS_AS(e.get_netzone_root()->add_netzone_dragonfly("test", {3, 4}, {4, 3}, {5, 1}, 0, 1e9,
+                                            10, simgrid::s4u::Link::SharingPolicy::SHARED)->set_host_cb(CreateHost{}),
                       std::invalid_argument);
   }
 
   SECTION("0 groups")
   {
-    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.get_netzone_root(), {{0, 4}, {4, 3}, {5, 1}, 2}, callbacks, 1e9,
-                                            10, simgrid::s4u::Link::SharingPolicy::SHARED),
+    REQUIRE_THROWS_AS(e.get_netzone_root()->add_netzone_dragonfly("test", {0, 4}, {4, 3}, {5, 1}, 2,  1e9,
+                                            10, simgrid::s4u::Link::SharingPolicy::SHARED)->set_host_cb(CreateHost{}),
                       std::invalid_argument);
   }
   SECTION("0 groups links")
   {
-    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.get_netzone_root(), {{3, 0}, {4, 3}, {5, 1}, 2}, callbacks, 1e9,
-                                            10, simgrid::s4u::Link::SharingPolicy::SHARED),
+    REQUIRE_THROWS_AS(e.get_netzone_root()->add_netzone_dragonfly("test", {3, 0}, {4, 3}, {5, 1}, 2, 1e9,
+                                            10, simgrid::s4u::Link::SharingPolicy::SHARED)->set_host_cb(CreateHost{}),
                       std::invalid_argument);
   }
 
   SECTION("0 chassis")
   {
-    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.get_netzone_root(), {{3, 4}, {0, 3}, {5, 1}, 2}, callbacks, 1e9,
-                                            10, simgrid::s4u::Link::SharingPolicy::SHARED),
+    REQUIRE_THROWS_AS(e.get_netzone_root()->add_netzone_dragonfly("test", {3, 4}, {0, 3}, {5, 1}, 2, 1e9,
+                                            10, simgrid::s4u::Link::SharingPolicy::SHARED)->set_host_cb(CreateHost{}),
                       std::invalid_argument);
   }
 
   SECTION("0 chassis links")
   {
-    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.get_netzone_root(), {{3, 4}, {4, 0}, {5, 1}, 2}, callbacks, 1e9,
-                                            10, simgrid::s4u::Link::SharingPolicy::SHARED),
+    REQUIRE_THROWS_AS(e.get_netzone_root()->add_netzone_dragonfly("test", {3, 4}, {4, 0}, {5, 1}, 2, 1e9,
+                                            10, simgrid::s4u::Link::SharingPolicy::SHARED)->set_host_cb(CreateHost{}),
                       std::invalid_argument);
   }
 
   SECTION("0 routers")
   {
-    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.get_netzone_root(), {{3, 4}, {4, 3}, {0, 1}, 2}, callbacks, 1e9,
-                                            10, simgrid::s4u::Link::SharingPolicy::SHARED),
+    REQUIRE_THROWS_AS(e.get_netzone_root()->add_netzone_dragonfly("test", {3, 4}, {4, 3}, {0, 1}, 2, 1e9,
+                                            10, simgrid::s4u::Link::SharingPolicy::SHARED)->set_host_cb(CreateHost{}),
                       std::invalid_argument);
   }
 
   SECTION("0 routers links")
   {
-    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.get_netzone_root(), {{3, 4}, {4, 3}, {5, 0}, 2}, callbacks, 1e9,
-                                            10, simgrid::s4u::Link::SharingPolicy::SHARED),
+    REQUIRE_THROWS_AS(e.get_netzone_root()->add_netzone_dragonfly("test", {3, 4}, {4, 3}, {5, 0}, 2, 1e9,
+                                            10, simgrid::s4u::Link::SharingPolicy::SHARED)->set_host_cb(CreateHost{}),
                       std::invalid_argument);
   }
 
   SECTION("0 bandwidth")
   {
-    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.get_netzone_root(), {{3, 4}, {4, 3}, {5, 1}, 2}, callbacks, 0, 10,
-                                            simgrid::s4u::Link::SharingPolicy::SHARED),
+    REQUIRE_THROWS_AS(e.get_netzone_root()->add_netzone_dragonfly("test", {3, 4}, {4, 3}, {5, 1}, 2,  0, 10,
+                                            simgrid::s4u::Link::SharingPolicy::SHARED)->set_host_cb(CreateHost{}),
                       std::invalid_argument);
   }
 
   SECTION("Negative latency")
   {
-    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.get_netzone_root(), {{3, 4}, {4, 3}, {5, 1}, 2}, callbacks, 1e9,
-                                            -10, simgrid::s4u::Link::SharingPolicy::SHARED),
+    REQUIRE_THROWS_AS(e.get_netzone_root()->add_netzone_dragonfly("test", {3, 4}, {4, 3}, {5, 1}, 2, 1e9,
+                                            -10, simgrid::s4u::Link::SharingPolicy::SHARED)->set_host_cb(CreateHost{}),
                       std::invalid_argument);
   }
 }

@@ -267,6 +267,7 @@ examples/cpp/trace-masterworkers/s4u-trace-masterworkers
 examples/cpp/trace-platform/s4u-trace-platform
 examples/cpp/trace-process-migration/s4u-trace-process-migration
 examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables
+examples/java/*.jar
 examples/smpi/ampi_test/smpi_ampi_test
 examples/smpi/energy/smpi_energy
 examples/smpi/gemm/smpi_gemm
