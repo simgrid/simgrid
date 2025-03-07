@@ -339,10 +339,62 @@ PYBIND11_MODULE(simgrid, m)
             throw std::logic_error("Please call Netzone.add_netzone_wifi() instead");
           },
           "Creates a zone of type Wi-Fi") // XBT_ATTRIB_DEPRECATED_v401
-      .def("set_host_cb", &simgrid::s4u::NetZone::set_host_cb, "Set a host callback to a cluster zone")
-      .def("set_netzone_cb", &simgrid::s4u::NetZone::set_netzone_cb, "Set a netzone callback to a cluster zone")
-      .def("set_loopback_cb", &simgrid::s4u::NetZone::set_loopback_cb, "Set a loopback callback to a cluster zone")
-      .def("set_limiter_cb", &simgrid::s4u::NetZone::set_limiter_cb, "Set a limiter callback to a cluster zone")
+      .def("set_host_cb", [](simgrid::s4u::NetZone* zone, py::object cb) -> simgrid::s4u::NetZone* {
+          cb.inc_ref(); // keep alive after return
+          const py::gil_scoped_release gil_release;
+          return zone->set_host_cb([cb_p = cb.ptr()](simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& coord,
+               unsigned long id) ->simgrid::s4u::Host* {
+            const py::gil_scoped_acquire py_context; // need a new context for callback
+            try {
+              const auto fun = py::reinterpret_borrow<py::function>(cb_p);
+              return py::cast<simgrid::s4u::Host*>(fun(zone, coord, id));
+            } catch (const py::error_already_set& e) {
+              xbt_die("Error while executing the set_host_cb lambda : %s", e.what());
+            }
+          });
+        }, "Set a host callback to a cluster zone")
+      .def("set_netzone_cb", [](simgrid::s4u::NetZone* zone, py::object cb) -> simgrid::s4u::NetZone* {
+          cb.inc_ref(); // keep alive after return
+          const py::gil_scoped_release gil_release;
+          return zone->set_netzone_cb([cb_p = cb.ptr()](simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& coord,
+               unsigned long id) ->simgrid::s4u::NetZone* {
+            const py::gil_scoped_acquire py_context; // need a new context for callback
+            try {
+              const auto fun = py::reinterpret_borrow<py::function>(cb_p);
+              return py::cast<simgrid::s4u::NetZone*>(fun(zone, coord, id));
+            } catch (const py::error_already_set& e) {
+              xbt_die("Error while executing the set_netzone_cb lambda : %s", e.what());
+            }
+          });
+        }, "Set a netzone callback to a cluster zone")
+      .def("set_loopback_cb", [](simgrid::s4u::NetZone* zone, py::object cb) -> simgrid::s4u::NetZone* {
+          cb.inc_ref(); // keep alive after return
+          const py::gil_scoped_release gil_release;
+          return zone->set_loopback_cb([cb_p = cb.ptr()](simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& coord,
+               unsigned long id) ->simgrid::s4u::Link* {
+            const py::gil_scoped_acquire py_context; // need a new context for callback
+            try {
+              const auto fun = py::reinterpret_borrow<py::function>(cb_p);
+              return py::cast<simgrid::s4u::Link*>(fun(zone, coord, id));
+            } catch (const py::error_already_set& e) {
+              xbt_die("Error while executing the set_loopback_cb lambda : %s", e.what());
+            }
+          });
+        }, "Set a loopback callback to a cluster zone")
+      .def("set_limiter_cb", [](simgrid::s4u::NetZone* zone, py::object cb) -> simgrid::s4u::NetZone* {
+          cb.inc_ref(); // keep alive after return
+          const py::gil_scoped_release gil_release;
+          return zone->set_limiter_cb([cb_p = cb.ptr()](simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& coord,
+               unsigned long id) ->simgrid::s4u::Link* {
+            const py::gil_scoped_acquire py_context; // need a new context for callback
+            try {
+              const auto fun = py::reinterpret_borrow<py::function>(cb_p);
+              return py::cast<simgrid::s4u::Link*>(fun(zone, coord, id));
+            } catch (const py::error_already_set& e) {
+              xbt_die("Error while executing the set_limiter_cb lambda : %s", e.what());
+            }
+          });
+        }, "Set a limiter callback to a cluster zone")
       .def("add_netzone_torus", 
                py::overload_cast<const std::string&, const std::vector<unsigned long>&,
                const std::string&, const std::string&, 
