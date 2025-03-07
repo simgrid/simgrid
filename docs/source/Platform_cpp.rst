@@ -30,13 +30,13 @@ Describing Resources
 
 A platform in SimGrid is composed of several resources organized in different
 Netzones. The different resources, such as hosts, disks and links, follow the same
-idiom: create()->set()->set()->seal().
+idiom: add()->set()->set()->seal().
 
 .. code-block:: c++
 
-    NetZone* zone      = s4u::create_star_zone("zone0");
-    Link* l_up   = zone->add_link("link_up", "125MBps")->set_latency("24us")->seal();
-    Host* host   = zone->add_host("host0", "1Gf")->seal();
+    NetZone* zone = sg4::Engine::get_instance()->get_netzone_root()->add_netzone_star("zone0");
+    Link* l_up    = zone->add_link("link_up", "125MBps")->set_latency("24us")->seal();
+    Host* host    = zone->add_host("host0", "1Gf")->seal();
     zone->seal();
 
 The first NetZone created will be the root zone of your platform. You're allowed to modified
@@ -139,8 +139,11 @@ Consequently, you can describe the desired platform as follows:
 .. code-block:: c++
 
     sg4::Engine e(&argc, argv);
-    sg4::create_fatTree_zone("bob", e.get_netzone_root(), {2, {4, 4}, {1, 2}, {1, 2}}, {create_hostzone, create_loopback, {}}, 125e6,
-                           50e-6, sg4::Link::SharingPolicy::SPLITDUPLEX)->seal();
+    e.get_netzone_root()->add_netzone_fatTree("bob", e.get_netzone_root(), 2, {4, 4}, {1, 2}, {1, 2}, "100Mbps",
+                           "50us", sg4::Link::SharingPolicy::SPLITDUPLEX)
+                        ->set_netzone_cb(create_hostzone)
+                        ->set_loopback_cb(create_loopback)
+                        ->seal();
 
 Note that the leaves and loopback links are defined through callbacks, as follows:
 
