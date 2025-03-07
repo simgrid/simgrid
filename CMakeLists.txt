@@ -203,12 +203,12 @@ endif()
 if(SIMGRID_HAVE_MUSL)
   # std::to_string fails as in https://github.com/aws/aws-sdk-cpp/issues/3299 with FORTIFY_SOURCE=2 on MUSL
   # TEMP_HACK Please remove this hack at some point
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3 -U_FORTIFY_SOURCE")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -U_FORTIFY_SOURCE")
-else()
-  # But when not using MUSL, let's fortify our code
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3 -D_FORTIFY_SOURCE=2")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -D_FORTIFY_SOURCE=2")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -U_FORTIFY_SOURCE")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -U_FORTIFY_SOURCE")
+elseif(enable_compile_optimizations)
+  # But when not using MUSL, let's fortify our code if we plan to compile with -O
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_FORTIFY_SOURCE=2")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=2")
 endif()
 
 include(CheckFunctionExists)
