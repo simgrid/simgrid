@@ -5,7 +5,7 @@ __   _____ _ __ ___(_) ___  _ __   | || |  / _ \
   \_/ \___|_|  |___/_|\___/|_| |_|    |_|(_)___/
                March 12. 2025
 
-At least, the "this one is 4 you" release.
+At last, the "this one is 4 you" release.
 
  * https://hal.science/hal-04909441 summarizes the 10 years leading to this release.
  * New: Java bindings for the S4U interface (see the examples; the doc is still TBD).
