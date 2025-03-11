@@ -177,6 +177,12 @@ Copyright:
 Comment: The MBI.py script was written for SimGrid while the other files are kept in sync with the MBI source tree.
 License: GPL-3
 
+Files: teshsuite/mc/mcmini/*
+Copyright:
+  Copyright (C) 2022, Maxwell Pirtle, Luka Jovanovic, Gene Cooperman
+  (pirtle.m@northeastern.edu, jovanovic.l@northeastern.edu, gene@ccs.neu.edu)
+License: GPL-3+
+
 License: BSL-1.0
  Permission is hereby granted, free of charge, to any person or organization
  obtaining a copy of the software and accompanying documentation covered by
