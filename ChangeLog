@@ -6,7 +6,7 @@ This is an important milestone in the SimGrid lifespan, concluding almost ten ye
 
 At the same time, this is also an incremental improvement over 3.36 as shown in the following changelog. We still have many
 improvement ideas for the future and plan to keep the same release pace and plan: about 2 releases per year, and upgrade paths
-ensuring that your code can still compie, with warnings, for at least 3 releases. Please refer to the Release Notes in the
+ensuring that your code can still compile, with warnings, for at least 3 releases. Please refer to the Release Notes in the
 documentation for some of the envisioned future improvements.
 
 SMPI:

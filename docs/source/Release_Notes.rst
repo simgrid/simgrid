@@ -789,8 +789,8 @@ is an application bug (and help us understand its root cause), or whether it is 
 Finally, **we fixed dozens of bugs and vastly optimized the verification code** to improve our chances to find a wild
 bug. Still, we did not find any such bug yet, so the chase continues.
 
-Version 4.0 (unreleased)
-------------------------
+Version 4.0 (March 12. 2025)
+----------------------------
 
 After almost 10 years of development, we have finally reached the point where we can release the first version of the 4.x serie. The
 S4U API is now more consistent and more intuitive. Although we still plan to improve SimGrid in the future, we
