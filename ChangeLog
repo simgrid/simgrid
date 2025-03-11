@@ -33,7 +33,7 @@ Platform API:
    The ability to change the root zone does not increase the expressivity in any way, but it greatly complicates our code.
  - Deprecate the create_*_zone() functions, add NetZone::add_netzone_*()
    Methods are better than functions.
- - Deprecate NetZone::set_parent(): it's useless with the new API.
+ - Deprecate NetZone::set_parent(): it's now useless with the new API.
  - Revamp the creation of Cluster NetZones (Fat-Tree, Torus, and Dragonfly) to explicitely pass all the parameters defining a network topology as arguments and to define leafs, loopbacks, and limiter links with callbacks.
 
 Python:
@@ -48,7 +48,8 @@ Plugins:
  - Chaos Monkey: Allow to restart disks.
 
 C API:
- - Deprecate some functions (we want to kill xbt_dict and xbt_dynar at some point)
+ - Deprecate some functions (we want to kill xbt_dict and xbt_dynar in the
+ future)
    - sg_actor_get_properties() -> sg_actor_get_property_names()
    - sg_host_get_properties() -> sg_host_get_property_names()
    - sg_zone_get_properties() -> sg_zone_get_property_names()
