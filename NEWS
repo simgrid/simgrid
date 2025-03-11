@@ -7,9 +7,9 @@ __   _____ _ __ ___(_) ___  _ __   | || |  / _ \
 
 At last, the "this one is 4 you" release.
 
- * https://hal.science/hal-04909441 summarizes the 10 years leading to this release.
+ * https://hal.science/hal-04909441 summarizes 10 years of development leading to this release.
  * New: Java bindings for the S4U interface (see the examples; the doc is still TBD).
- * The platform API was cleaned and simplified; XBT dict and dynars phased out.
+ * The platform API was cleaned up and simplified; XBT dict and dynars were phased out.
  * MC: performance improvement and bug fixes.
                     _               _____  _____  __
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ / / /_
