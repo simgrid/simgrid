@@ -2,11 +2,12 @@ SimGrid (4.0) March 12. 2025
 
 The "This one is 4 you" release. At last, this is the 4.0 release of SimGrid.
 
-This is an important milestone in the SimGrid lifespan, concluding almost ten years of efforts described in this article: https://hal.science/hal-04909441
+This is an important milestone for the SimGrid project, the culmination of
+almost ten years of efforts, as described in this article: https://hal.science/hal-04909441
 
 At the same time, this is also an incremental improvement over 3.36 as shown in the following changelog. We still have many
 improvement ideas for the future and plan to keep the same release pace and plan: about 2 releases per year, and upgrade paths
-ensuring that your code can still compile, with warnings, for at least 3 releases. Please refer to the Release Notes in the
+that ensure your code will still compile, with warnings, for at least 3 releases. Please refer to the Release Notes in the
 documentation for some of the envisioned future improvements.
 
 SMPI:
@@ -22,7 +23,7 @@ S4U:
 
 sthread:
  - Implement pthread_exit() and pthread_cond_timedwait()
- - Further restrict its portability: Linux only, and now also GLIBC only.
+ - Further restrict portability: Linux only, and now also GLIBC only.
 
 Model-checker:
  - Dependency on libevent was removed.
