@@ -1,3 +1,9 @@
+SimGrid (4.1) unreleased. Target: summer or fall 2025
+
+
+
+----------------------------------------------------------------------------
+
 SimGrid (4.0) March 12. 2025
 
 The "This one is 4 you" release. At last, this is the 4.0 release of SimGrid.
@@ -63,7 +69,6 @@ Dependencies:
  - If the compiler supports C++23, use the standard stacktraces instead of boost ones.
 
 ----------------------------------------------------------------------------
-
 
 SimGrid (3.36) September 9. 2024
 

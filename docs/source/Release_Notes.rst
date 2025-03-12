@@ -1,7 +1,7 @@
 .. release_notes:
 
-SimGrid 4 Release Notes
-=======================
+SimGrid 4.x Release Notes
+=========================
 
 This page gathers some release notes, to shed light on the recent and current development of SimGrid.
 Version 3.12 was the last pure release of SimGrid 3 while all versions starting with v3.13 can be seen as usable pre-versions of SimGrid 4.
@@ -860,6 +860,10 @@ back on, these activities have to be manually restarted. Moreover, if disks are 
 **On the interface front**, we added a few signals for better consistency across activities and resources. Additionally,
 the platform parsing now raises a ``on_platform_sealed()``  when the platform cannot be modified anymore and its routing has
 been set.
+
+Version 4.1 (unreleased)
+------------------------
+
 
 .. |br| raw:: html
 
