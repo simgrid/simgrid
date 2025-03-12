@@ -27,11 +27,6 @@ XBT_PUBLIC int sg_exec_test(sg_exec_t exec);
 XBT_PUBLIC sg_error_t sg_exec_wait(sg_exec_t exec);
 XBT_PUBLIC sg_error_t sg_exec_wait_for(sg_exec_t exec, double timeout);
 
-XBT_ATTRIB_DEPRECATED_v401("Please use sg_activity_set_t instead") XBT_PUBLIC ssize_t
-    sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout);
-XBT_ATTRIB_DEPRECATED_v401("Please use sg_activity_set_t instead") XBT_PUBLIC ssize_t
-    sg_exec_wait_any(sg_exec_t* execs, size_t count);
-
 SG_END_DECL
 
 #endif /* INCLUDE_SIMGRID_EXEC_H_ */

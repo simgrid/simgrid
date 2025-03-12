@@ -102,43 +102,6 @@ bool Activity::test()
   return false;
 }
 
-ssize_t Activity::test_any(const std::vector<ActivityPtr>& activities) // XBT_ATTRIB_DEPRECATED_v401
-{
-  std::vector<kernel::activity::ActivityImpl*> ractivities(activities.size());
-  std::transform(begin(activities), end(activities), begin(ractivities),
-                 [](const ActivityPtr& act) { return act->pimpl_.get(); });
-
-  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ActivityTestanySimcall observer{issuer, ractivities, "test_any"};
-  ssize_t changed_pos = kernel::actor::simcall_answered(
-      [&observer] {
-        return kernel::activity::ActivityImpl::test_any(observer.get_issuer(), observer.get_activities());
-      },
-      &observer);
-  if (changed_pos != -1)
-    activities.at(changed_pos)->complete(State::FINISHED);
-  return changed_pos;
-}
-
-ssize_t Activity::deprecated_wait_any_for(const std::vector<ActivityPtr>& activities, double timeout) // XBT_ATTRIB_DEPRECATED_v401
-{
-  std::vector<kernel::activity::ActivityImpl*> ractivities(activities.size());
-  std::transform(begin(activities), end(activities), begin(ractivities),
-                 [](const ActivityPtr& activity) { return activity->pimpl_.get(); });
-
-  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ActivityWaitanySimcall observer{issuer, ractivities, timeout, "wait_any_for"};
-  ssize_t changed_pos = kernel::actor::simcall_blocking<ssize_t>(
-      [&observer] {
-        kernel::activity::ActivityImpl::wait_any_for(observer.get_issuer(), observer.get_activities(),
-                                                     observer.get_timeout());
-      },
-      &observer);
-  if (changed_pos != -1)
-    activities.at(changed_pos)->complete(State::FINISHED);
-  return changed_pos;
-}
-
 Activity* Activity::cancel()
 {
   kernel::actor::simcall_answered([this] {

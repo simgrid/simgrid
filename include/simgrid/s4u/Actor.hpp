@@ -289,7 +289,7 @@ public:
   /** Add a callback fired when this specific actor is about to disappear (its destructor was called). */
   void on_this_destruction_cb(const std::function<void(Actor const&)>& cb) { on_this_destruction.connect(cb); }
 
-  XBT_ATTRIB_DEPRECATED_v401("Please use Engine::add_actor() instead") static ActorPtr
+  XBT_ATTRIB_DEPRECATED_v403("Please use Engine::add_actor() instead") static ActorPtr
       create(const std::string& name, s4u::Host* host, const std::function<void()>& code);
   /** \static
    *  Create an actor, but don't start it yet.
@@ -317,7 +317,7 @@ public:
   ActorPtr start(const std::function<void()>& code, std::vector<std::string> args);
 
   template <class F>
-  XBT_ATTRIB_DEPRECATED_v401("Please use Engine::add_actor() instead") static ActorPtr
+  XBT_ATTRIB_DEPRECATED_v403("Please use Engine::add_actor() instead") static ActorPtr
       create(const std::string& name, s4u::Host* host, F code)
   {
     return s4u::Engine::get_instance()->add_actor(name, host, std::function<void()>(std::move(code)));
@@ -328,13 +328,13 @@ public:
             typename = typename std::invoke_result_t<F, Args...>
 #endif
             >
-  XBT_ATTRIB_DEPRECATED_v401("Please use Engine::add_actor() instead") static ActorPtr
+  XBT_ATTRIB_DEPRECATED_v403("Please use Engine::add_actor() instead") static ActorPtr
       create(const std::string& name, s4u::Host* host, F code, Args... args)
   {
     return create(name, host, std::bind(std::move(code), std::move(args)...));
   }
 
-  XBT_ATTRIB_DEPRECATED_v401("Please use Engine::add_actor() instead") static ActorPtr
+  XBT_ATTRIB_DEPRECATED_v403("Please use Engine::add_actor() instead") static ActorPtr
       create(const std::string& name, s4u::Host* host, const std::string& function, std::vector<std::string> args);
 
   // ***** Methods *****

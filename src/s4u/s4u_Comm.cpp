@@ -427,23 +427,6 @@ Comm* Comm::do_start()
   return this;
 }
 
-ssize_t Comm::test_any(const std::vector<CommPtr>& comms) // XBT_ATTRIB_DEPRECATED_v401
-{
-  std::vector<kernel::activity::ActivityImpl*> ractivities(comms.size());
-  std::transform(begin(comms), end(comms), begin(ractivities), [](const CommPtr& act) { return act->pimpl_.get(); });
-
-  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ActivityTestanySimcall observer{issuer, ractivities, "test_any"};
-  ssize_t changed_pos = kernel::actor::simcall_answered(
-      [&observer] {
-        return kernel::activity::ActivityImpl::test_any(observer.get_issuer(), observer.get_activities());
-      },
-      &observer);
-  if (changed_pos != -1)
-    comms.at(changed_pos)->complete(State::FINISHED);
-  return changed_pos;
-}
-
 /** @brief Block the calling actor until the communication is finished, or until timeout
  *
  * On timeout, an exception is thrown and the communication is invalidated.
@@ -501,54 +484,6 @@ Comm* Comm::wait_for(double timeout)
   complete(State::FINISHED);
   return this;
 }
-
-ssize_t Comm::deprecated_wait_any_for(const std::vector<CommPtr>& comms, double timeout) // XBT_ATTRIB_DEPRECATED_v401
-{
-  if (comms.empty())
-    return -1;
-  ActivitySet set;
-  for (const auto& comm : comms)
-    set.push(comm);
-  try {
-    auto* ret = set.wait_any_for(timeout).get();
-    for (size_t i = 0; i < comms.size(); i++)
-      if (comms[i].get() == ret)
-        return i;
-
-  } catch (TimeoutException& e) {
-    return -1;
-  } catch (const NetworkFailureException& e) {
-    for (auto c : comms)
-      if (c->pimpl_->get_state() == kernel::activity::State::FAILED)
-        c->complete(State::FAILED);
-
-    e.rethrow_nested(XBT_THROW_POINT, boost::core::demangle(typeid(e).name()) + " raised in kernel mode.");
-  }
-  return -1;
-}
-
-void Comm::wait_all(const std::vector<CommPtr>& comms) // XBT_ATTRIB_DEPRECATED_v401
-{
-  // TODO: this should be a simcall or something
-  for (const auto& comm : comms)
-    comm->wait();
-}
-
-size_t Comm::wait_all_for(const std::vector<CommPtr>& comms, double timeout) // XBT_ATTRIB_DEPRECATED_v401
-{
-  if (timeout < 0.0) {
-    for (const auto& comm : comms)
-      comm->wait();
-    return comms.size();
-  }
-
-  ActivitySet set;
-  for (auto comm : comms)
-    set.push(comm);
-  set.wait_all_for(timeout);
-
-  return set.size();
-}
 } // namespace simgrid::s4u
 /* **************************** Public C interface *************************** */
 int sg_comm_isinstance(sg_activity_t acti)
@@ -593,41 +528,4 @@ sg_error_t sg_comm_wait_for(sg_comm_t comm, double timeout)
     status = SG_ERROR_NETWORK;
   }
   return status;
-}
-
-void sg_comm_wait_all(sg_comm_t* comms, size_t count) // XBT_ATTRIB_DEPRECATED_v401
-{
-  simgrid::s4u::ActivitySet as;
-  for (size_t i = 0; i < count; i++)
-    as.push(comms[i]);
-
-  as.wait_all();
-}
-
-ssize_t sg_comm_wait_any(sg_comm_t* comms, size_t count) // XBT_ATTRIB_DEPRECATED_v401
-{
-  std::vector<simgrid::s4u::CommPtr> s4u_comms;
-  for (size_t i = 0; i < count; i++)
-    s4u_comms.emplace_back(comms[i], false);
-
-  ssize_t pos = simgrid::s4u::Comm::deprecated_wait_any_for(s4u_comms, -1);
-  for (size_t i = 0; i < count; i++) {
-    if (pos != -1 && static_cast<size_t>(pos) != i)
-      s4u_comms[i]->add_ref();
-  }
-  return pos;
-}
-
-ssize_t sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout) // XBT_ATTRIB_DEPRECATED_v401
-{
-  std::vector<simgrid::s4u::CommPtr> s4u_comms;
-  for (size_t i = 0; i < count; i++)
-    s4u_comms.emplace_back(comms[i], false);
-
-  ssize_t pos = simgrid::s4u::Comm::deprecated_wait_any_for(s4u_comms, timeout);
-  for (size_t i = 0; i < count; i++) {
-    if (pos != -1 && static_cast<size_t>(pos) != i)
-      s4u_comms[i]->add_ref();
-  }
-  return pos;
 }

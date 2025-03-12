@@ -210,9 +210,6 @@ public:
   kernel::activity::ActivityImpl* get_impl() const { return pimpl_.get(); }
 
 #ifndef DOXYGEN
-  static ssize_t deprecated_wait_any_for(const std::vector<ActivityPtr>& activities, double timeout); // XBT_ATTRIB_DEPRECATED_v401
-  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t test_any(const std::vector<ActivityPtr>& activities);
-
   friend void intrusive_ptr_release(Activity* a)
   {
     if (a->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
@@ -293,11 +290,6 @@ public:
   /*! Add a callback fired each time that this specific activity fails to start because of a veto (e.g., unsolved
    *  dependency or no resource assigned) */
   void on_this_veto_cb(const std::function<void(AnyActivity&)>& cb) { on_this_veto.connect(cb); }
-
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t wait_any(const std::vector<ActivityPtr>& activities) { return deprecated_wait_any_for(activities, -1); }
-  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t wait_any_for(const std::vector<ActivityPtr>& activities, double timeout) { return deprecated_wait_any_for(activities, timeout); }
-#endif
 
   AnyActivity* add_successor(ActivityPtr a)
   {

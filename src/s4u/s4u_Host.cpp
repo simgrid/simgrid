@@ -333,11 +333,6 @@ unsigned long Host::get_pstate() const
   return this->pimpl_cpu_->get_pstate();
 }
 
-Host* Host::set_factor_cb(const std::function<CpuFactorCb>& cb)
-{
-  kernel::actor::simcall_object_access(pimpl_, [this, &cb] { pimpl_cpu_->set_factor_cb(cb); });
-  return this;
-}
 Host* Host::set_cpu_factor_cb(const std::function<double(Host&, double)>& cb)
 {
   kernel::actor::simcall_object_access(pimpl_, [this, &cb] { pimpl_cpu_->set_cpu_factor_cb(cb); });

@@ -133,7 +133,7 @@ protected:
   friend kernel::resource::StandardLinkImpl;
   void netpoint_register(simgrid::kernel::routing::NetPoint* card);
   void netpoint_unregister(simgrid::kernel::routing::NetPoint* card);
-  XBT_ATTRIB_DEPRECATED_v401("The root netzone was already created for you. Please use one of the "
+  XBT_ATTRIB_DEPRECATED_v403("The root netzone was already created for you. Please use one of the "
                              "Netzone::add_netzone_*() method instead") void set_netzone_root(const NetZone* netzone);
 #endif /*DOXYGEN*/
 

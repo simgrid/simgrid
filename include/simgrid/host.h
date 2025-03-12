@@ -86,11 +86,11 @@ XBT_PUBLIC void sg_host_turn_off(sg_host_t host);
 XBT_PUBLIC int sg_host_is_on(const_sg_host_t host);
 
 #ifndef DOXYGEN
-XBT_ATTRIB_DEPRECATED_v401("Please use sg_host_get_property_names instead: we want to kill xbt_dict at some point")
+XBT_ATTRIB_DEPRECATED_v403("Please use sg_host_get_property_names instead: we want to kill xbt_dict at some point")
     XBT_PUBLIC xbt_dict_t sg_host_get_properties(const_sg_host_t host); // deprecated v3.39
-XBT_ATTRIB_DEPRECATED_v401("Please use sg_host_get_route_links instead: we want to kill xbt_dynar at some point")
+XBT_ATTRIB_DEPRECATED_v403("Please use sg_host_get_route_links instead: we want to kill xbt_dynar at some point")
     XBT_PUBLIC void sg_host_get_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links);
-XBT_ATTRIB_DEPRECATED_v401("Please use sg_host_get_actors instead: we want to kill xbt_dynar at some point") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v403("Please use sg_host_get_actors instead: we want to kill xbt_dynar at some point") XBT_PUBLIC
     void sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto);
 #endif
 
