@@ -42,6 +42,7 @@ build-pip:
   artifacts:
     paths:
     - dist/
+    expire_in: 2 weeks
 
 # The alpine node
 alpine-release:
