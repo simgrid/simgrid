@@ -175,8 +175,10 @@ static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned 
 static void create_torus_cluster(simgrid::s4u::NetZone* parent)
 {
   /* create the torus cluster, 10Gbs link between elements in the cluster */
-  sg4::create_torus_zone("cluster", parent, {2, 2, 2}, {create_hostzone, {}, create_limiter}, 10e9, 10e-6,
-                         sg4::Link::SharingPolicy::SPLITDUPLEX)
+  parent
+      ->add_netzone_torus("cluster", {2, 2, 2}, "10Gbps", "10us", sg4::Link::SharingPolicy::SPLITDUPLEX)
+      ->set_netzone_cb(create_hostzone)
+      ->set_limiter_cb(create_limiter)
       ->seal();
 }
 
@@ -231,8 +233,11 @@ static void create_torus_cluster(simgrid::s4u::NetZone* parent)
 static void create_fatTree_cluster(simgrid::s4u::NetZone* parent)
 {
   /* create the fat tree cluster, 10Gbs link between elements in the cluster */
-  sg4::create_fatTree_zone("cluster", parent, {2, {2, 3}, {1, 2}, {1, 1}}, {create_hostzone, {}, create_limiter}, 10e9,
-                           10e-6, sg4::Link::SharingPolicy::SPLITDUPLEX)
+  parent
+      ->add_netzone_fatTree("cluster", 2, {2, 3}, {1, 2}, {1, 1}, "10Gbps", "10us",
+                            sg4::Link::SharingPolicy::SPLITDUPLEX)
+      ->set_netzone_cb(create_hostzone)
+      ->set_limiter_cb(create_limiter)
       ->seal();
 }
 
@@ -277,9 +282,11 @@ static void create_fatTree_cluster(simgrid::s4u::NetZone* parent)
 static void create_dragonfly_cluster(simgrid::s4u::NetZone* parent)
 {
   /* create the dragonfly cluster, 10Gbs link between elements in the cluster */
-  sg4::create_dragonfly_zone("cluster", parent, {{2, 2}, {2, 1}, {2, 2}, 2}, {create_hostzone, {}, create_limiter},
-                             10e9, 10e-6, sg4::Link::SharingPolicy::SPLITDUPLEX)
-      ->seal();
+  parent->add_netzone_dragonfly("cluster", {2, 2}, {2, 1}, {2, 2}, 2, "10Gbps", "10us", 
+                                sg4::Link::SharingPolicy::SPLITDUPLEX)
+        ->set_netzone_cb(create_hostzone)
+        ->set_limiter_cb(create_limiter)
+        ->seal();
 }
 
 /*************************************************************************************************/

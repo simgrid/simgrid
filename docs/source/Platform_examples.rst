@@ -217,7 +217,7 @@ The following code illustrates how to create this Star Zone and add the appropri
 
 .. code-block:: cpp
 
-    auto* zone = sg4::create_star_zone("star");
+    auto* zone = sg4::Engine::get_instance()->get_netzone_root()->add_netzone_star("star");
     /* create hosts */
     const sg4::Host* hostA = zone->add_host("A", 1e9)->seal();
     const sg4::Host* hostB = zone->add_host("B", 1e9)->seal();

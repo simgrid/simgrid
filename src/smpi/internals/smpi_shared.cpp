@@ -140,8 +140,8 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 #define ALIGN_UP(n, align) (((int64_t)(n) + (int64_t)(align) - 1) & -(int64_t)(align))
 #define ALIGN_DOWN(n, align) ((int64_t)(n) & -(int64_t)(align))
 
-constexpr unsigned PAGE_SIZE      = 0x1000;
-constexpr unsigned HUGE_PAGE_SIZE = 1U << 21;
+constexpr unsigned SMPI_PAGE_SIZE      = 0x1000;
+constexpr unsigned SMPI_HUGE_PAGE_SIZE = 1U << 21;
 
 /* Similar to smpi_shared_malloc, but only sharing the blocks described by shared_block_offsets.
  * This array contains the offsets (in bytes) of the block to share.
@@ -163,11 +163,13 @@ void* smpi_shared_malloc_partial(size_t size, const size_t* shared_block_offsets
   void* mem;
   size_t allocated_size;
   if(use_huge_page) {
-    xbt_assert(smpi_shared_malloc_blocksize == HUGE_PAGE_SIZE, "the block size of shared malloc should be equal to the size of a huge page.");
+    xbt_assert(smpi_shared_malloc_blocksize == SMPI_HUGE_PAGE_SIZE,
+               "the block size of shared malloc should be equal to the size of a huge page.");
     allocated_size = size + 2*smpi_shared_malloc_blocksize;
   }
   else {
-    xbt_assert(smpi_shared_malloc_blocksize % PAGE_SIZE == 0, "the block size of shared malloc should be a multiple of the page size.");
+    xbt_assert(smpi_shared_malloc_blocksize % SMPI_PAGE_SIZE == 0,
+               "the block size of shared malloc should be a multiple of the page size.");
     allocated_size = size;
   }
 
@@ -179,7 +181,7 @@ void* smpi_shared_malloc_partial(size_t size, const size_t* shared_block_offsets
                                 "to allow big allocations.\n",
              size >> 20);
   if(use_huge_page)
-    mem = (void*)ALIGN_UP(allocated_ptr, HUGE_PAGE_SIZE);
+    mem = (void*)ALIGN_UP(allocated_ptr, SMPI_HUGE_PAGE_SIZE);
   else
     mem = allocated_ptr;
 
@@ -240,22 +242,27 @@ void* smpi_shared_malloc_partial(size_t size, const size_t* shared_block_offsets
                              "and that the directory you are passing is mounted correctly (mount /path/to/huge -t hugetlbfs -o rw,mode=0777).",
                  strerror(errno));
     }
-    size_t low_page_start_offset = ALIGN_UP(start_offset, PAGE_SIZE);
-    size_t low_page_stop_offset = (int64_t)start_block_offset < ALIGN_DOWN(stop_offset, PAGE_SIZE) ? start_block_offset : ALIGN_DOWN(stop_offset, PAGE_SIZE);
+    size_t low_page_start_offset = ALIGN_UP(start_offset, SMPI_PAGE_SIZE);
+    size_t low_page_stop_offset  = (int64_t)start_block_offset < ALIGN_DOWN(stop_offset, SMPI_PAGE_SIZE)
+                                       ? start_block_offset
+                                       : ALIGN_DOWN(stop_offset, SMPI_PAGE_SIZE);
     if(low_page_start_offset < low_page_stop_offset) {
       XBT_DEBUG("\t\tglobal shared allocation, mmap block start");
       void* pos       = static_cast<char*>(mem) + low_page_start_offset;
       const void* res = mmap(pos, low_page_stop_offset - low_page_start_offset, PROT_READ | PROT_WRITE,
                              mmap_base_flag, // not a full huge page
                              smpi_shared_malloc_bogusfile, 0);
-      xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
-                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize:newvalue (default 1048576) ?"
-                             "You can also try using  the sysctl vm.max_map_count",
-                 strerror(errno));
+      xbt_assert(res == pos,
+                 "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
+                 "size of the mapped file using --cfg=smpi/shared-malloc-blocksize:newvalue (default 1048576) ?"
+                 "You can also try using the sysctl vm.max_map_count.\n"
+                 "Failing params: add:%p, len:%zu, prot:%d(=PROT_READ | PROT_WRITE), flags:%d, fd:%d, offset:0. ",
+                 strerror(errno), pos, low_page_stop_offset - low_page_start_offset, PROT_READ | PROT_WRITE,
+                 mmap_base_flag, smpi_shared_malloc_bogusfile);
     }
     if(low_page_stop_offset <= stop_block_offset) {
       XBT_DEBUG("\t\tglobal shared allocation, mmap block stop");
-      size_t high_page_stop_offset = stop_offset == size ? size : ALIGN_DOWN(stop_offset, PAGE_SIZE);
+      size_t high_page_stop_offset = stop_offset == size ? size : ALIGN_DOWN(stop_offset, SMPI_PAGE_SIZE);
       if(high_page_stop_offset > stop_block_offset) {
         void* pos       = static_cast<char*>(mem) + stop_block_offset;
         const void* res = mmap(pos, high_page_stop_offset - stop_block_offset, PROT_READ | PROT_WRITE,

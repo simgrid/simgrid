@@ -1,8 +1,8 @@
 # Build the version number
 
-set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "36")
-set(SIMGRID_VERSION_PATCH "1") # odd => git branch; even => stable release or released snapshot
+set(SIMGRID_VERSION_MAJOR "4")
+set(SIMGRID_VERSION_MINOR "0")
+set(SIMGRID_VERSION_PATCH "0") # odd => git branch; even => stable release or released snapshot
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
@@ -47,14 +47,6 @@ include(CheckCXXCompilerFlag)
 ## Request full debugging flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
-
-if (CMAKE_COMPILER_IS_GNUCC)
-  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "7.0")
-    message(FATAL_ERROR
-            "SimGrid needs at least g++ version 7.0 to compile but you have ${CMAKE_CXX_COMPILER_VERSION}."
-            "You need a sufficient support of c++17 to compile SimGrid.")
-  endif()
-endif()
 
 ## We need a decent support of the C++17 and C11 standards
 set(CMAKE_CXX_STANDARD 17)
@@ -206,6 +198,17 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   else()
     message(STATUS "GNU libc detected.")
   endif()
+endif()
+
+if(SIMGRID_HAVE_MUSL)
+  # std::to_string fails as in https://github.com/aws/aws-sdk-cpp/issues/3299 with FORTIFY_SOURCE=2 on MUSL
+  # TEMP_HACK Please remove this hack at some point
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -U_FORTIFY_SOURCE")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -U_FORTIFY_SOURCE")
+elseif(enable_compile_optimizations AND (NOT (CMAKE_C_COMPILER_ID STREQUAL "Intel")))
+  # But when not using MUSL, let's fortify our code if we plan to compile with -O
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_FORTIFY_SOURCE=2")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=2")
 endif()
 
 include(CheckFunctionExists)
@@ -367,12 +370,18 @@ mark_as_advanced(Boost_STACKTRACE_BACKTRACE_LIB)
 set(SIMGRID_HAVE_JAVA 0) # by default, nope
 set(merge_java_in_libsimgrid 0) # by default, nope
 if((NOT DEFINED enable_java) OR enable_java)
+  # We are only interested in finding jni.h, no need extended JVM functionality or the AWT library. So let's trick FindJNI
+  # https://stackoverflow.com/a/51764145/1756334
+  set(JAVA_AWT_LIBRARY NotNeeded)
+  set(JAVA_JVM_LIBRARY NotNeeded)
+  set(JAVA_AWT_INCLUDE_PATH "/usr/include")
+
   find_package(JNI)
   if (NOT ${JNI_FOUND})
     if(enable_java)
       message(FATAL_ERROR "JNI not found. Please install it, or disable the 'enable_java' option.")
     else()
-      message(status "JNI not found, thus disabling Java.")
+      message(STATUS "JNI not found, thus disabling Java.")
     endif()
 
   else()

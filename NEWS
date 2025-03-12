@@ -1,11 +1,16 @@
-                    _               _____  __________
-__   _____ _ __ ___(_) ___  _ __   |___ / |___ /___  |
-\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \  / /
- \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) |/ /
-  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____//_/
-               (unreleased)
+                    _               _  _    ___
+__   _____ _ __ ___(_) ___  _ __   | || |  / _ \
+\ \ / / _ \ '__/ __| |/ _ \| '_ \  | || |_| | | |
+ \ V /  __/ |  \__ \ | (_) | | | | |__   _| |_| |
+  \_/ \___|_|  |___/_|\___/|_| |_|    |_|(_)___/
+               March 12. 2025
 
+At last, the "this one is 4 you" release.
 
+ * https://hal.science/hal-04909441 summarizes 10 years of development leading to this release.
+ * New: Java bindings for the S4U interface (see the examples; the doc is still TBD).
+ * The platform API was cleaned up and simplified; XBT dict and dynars were phased out.
+ * MC: performance improvement and bug fixes.
                     _               _____  _____  __
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ / / /_
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \| '_ \

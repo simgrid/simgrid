@@ -206,7 +206,13 @@ Unsorted hints
 
    $ LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libasan.so.8:/usr/lib/x86_64-linux-gnu/libstdc++.so.6 LD_LIBRARY_PATH=../../lib/ /usr/bin/java -cp ../../simgrid.jar:actor_kill.jar actor_kill ../platforms/small_platform.xml
 
-* https://gitlab.com/cunity/gitlab-emulator is very helpful to test a gitlab-ci pipeline locally, before pushing your commits.
+* https://github.com/firecow/gitlab-ci-local is very helpful to test a gitlab-ci pipeline locally, before pushing your commits.
+  You need to have docker configured properly on your machine, and then you simply start the build as follows.
+  
+  .. code-block:: console
+
+   $ gitlab-ci-local --file .gitlab-ci-inria.yml --list    # to retrieve the existing jobs
+   $ gitlab-ci-local --file .gitlab-ci-inria.yml <jobname> # to build a given job
 
 .. |br| raw:: html
 
