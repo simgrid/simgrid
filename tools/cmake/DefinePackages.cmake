@@ -1100,7 +1100,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/test_prog/prog_asan.cpp
   tools/cmake/test_prog/prog_makecontext.c
   tools/cmake/test_prog/prog_musl.c
-  tools/cmake/test_prog/prog_ns3.cpp
   tools/cmake/test_prog/prog_stackgrowth.c
   tools/cmake/test_prog/prog_stacksetup.c
   tools/cmake/test_prog/prog_stdstacktrace.cpp

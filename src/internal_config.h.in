@@ -96,5 +96,3 @@
 #cmakedefine01 HAVE_STD_STACKTRACE /* from C++23, preferred */
 #cmakedefine01 HAVE_BOOST_STACKTRACE_BACKTRACE /* preferred in older C++ */
 #cmakedefine01 HAVE_BOOST_STACKTRACE_ADDR2LINE /* fallback */
-/* Whether the ns-3 library has GetNextEventTime */
-#cmakedefine01 SIMGRID_HAVE_NS3_GetNextEventTime
