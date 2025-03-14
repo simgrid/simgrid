@@ -116,7 +116,6 @@ public:
 };
 
 XBT_PRIVATE ContextFactory* thread_factory();
-XBT_PRIVATE ContextFactory* sysv_factory();
 XBT_PRIVATE ContextFactory* raw_factory();
 XBT_PRIVATE ContextFactory* boost_factory();
 

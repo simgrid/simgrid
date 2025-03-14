@@ -26,7 +26,6 @@ set(EXTRA_DIST
   src/kernel/resource/models/ns3/ns3_simulator.hpp
   src/kernel/resource/models/ptask_L07.hpp
 
-  src/mc/datatypes.h
   src/mc/mc.h
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
@@ -731,15 +730,6 @@ set(source_of_generated_headers
   src/internal_config.h.in
   include/smpi/mpif.h.in)
 
-### depend of some variables set upper
-if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
-  set(KERNEL_SRC  ${KERNEL_SRC} src/kernel/context/ContextUnix.hpp
-                                src/kernel/context/ContextUnix.cpp)
-else() # NOT ucontext
-  set(EXTRA_DIST  ${EXTRA_DIST} src/kernel/context/ContextUnix.hpp
-                                src/kernel/context/ContextUnix.cpp)
-endif()
-
 ### SimGrid Lib sources
 set(simgrid_sources
   ${S4U_SRC}
@@ -1097,10 +1087,8 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/scripts/my_valgrind.pl
   tools/cmake/scripts/update_tesh.pl
   tools/cmake/test_prog/prog_asan.cpp
-  tools/cmake/test_prog/prog_makecontext.c
   tools/cmake/test_prog/prog_musl.c
   tools/cmake/test_prog/prog_stackgrowth.c
-  tools/cmake/test_prog/prog_stacksetup.c
   tools/cmake/test_prog/prog_stdstacktrace.cpp
   tools/cmake/test_prog/prog_tsan.cpp
   tools/simgrid-monkey

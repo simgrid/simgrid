@@ -11,7 +11,6 @@
 #ifdef __cplusplus
 
 #include "simgrid/forward.h" // aid_t
-#include "src/mc/datatypes.h"
 #include <xbt/utility.hpp>
 
 #include <array>

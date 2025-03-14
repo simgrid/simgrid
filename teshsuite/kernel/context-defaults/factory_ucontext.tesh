@@ -1,3 +1,0 @@
-$ ${bindir:=.}/context-defaults
-> [ker_context/VERBOSE] Activating SYSV context factory
-> [ker_context/VERBOSE] Creating a context of stack 8Mb

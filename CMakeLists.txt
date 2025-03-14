@@ -471,43 +471,7 @@ endif()
 #--------------------------------------------------------------------------------------------------
 ### Check what context backends are available
 
-set(HAVE_UCONTEXT_CONTEXTS 0)
-CHECK_INCLUDE_FILE("ucontext.h" HAVE_UCONTEXT_H)
-if(NOT HAVE_UCONTEXT_H)
-  message(STATUS "No ucontext factory: <ucontext.h> not found.")
-elseif(APPLE)
-  message(STATUS "No ucontext factory: Apple don't want us to use them.")
-  set(HAVE_UCONTEXT_H 0)
-else()
-  try_compile(compile_makecontext ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_makecontext.c
-    OUTPUT_VARIABLE compile_makecontext_output)
-
-  #If can have both context
-  if(NOT compile_makecontext)
-    message(STATUS "Error: <ucontext.h> exists, but makecontext is not compilable. Compilation output:\n ${compile_makecontext_output}")
-    message(STATUS "No ucontext factory: makecontext() is not compilable.")
-  else()
-    message(STATUS "Support for ucontext factory ok.")
-    set(HAVE_UCONTEXT_CONTEXTS 1)
-
-    # Stack setup (size and address)
-    try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
-      ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stacksetup.c
-      RUN_OUTPUT_VARIABLE stack_setup)
-
-    LIST(LENGTH stack_setup stack_setup_len)
-    if("${stack_setup_len}" STREQUAL "2")
-      LIST(GET stack_setup 0 makecontext_addr)
-      LIST(GET stack_setup 1 makecontext_size)
-      set(sg_makecontext_stack_addr "#define sg_makecontext_stack_addr(skaddr) (${makecontext_addr})")
-      set(sg_makecontext_stack_size "#define sg_makecontext_stack_size(sksize) (${makecontext_size})")
-    else()
-      message(FATAL_ERROR "Could not figure out the stack setup. Compil: ${RUN_makecontext_VAR}. Exec: ${COMPILE_makecontext_VAR}. Output: ${stack_setup}")
-    endif()
-  endif()
-endif()
-
-# Stack growth direction (upward or downward). Used for the following contexts: SysV, raw, Boost
+# Stack growth direction (upward or downward). Used for the following contexts: raw, Boost
 try_run(RUN_stackgrowth_VAR COMPILE_stackgrowth_VAR
   ${CMAKE_BINARY_DIR}
   ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stackgrowth.c

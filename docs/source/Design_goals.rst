@@ -94,9 +94,7 @@ implementations fall into two categories: Preemptive contexts are
 based on standard system threads from the libstdc library.
 They are usually better supported by external
 debuggers and profiling tools, but less efficient. The most efficient
-factories use non-preemptive mechanisms, such as SysV's ucontexts,
-boost's context, or our own hand-tuned implementation, that is written
-in assembly language. This is possible because a given actor is never
+factory use a non-preemptive mechanism that is written in assembly language and hand-tuned. This is possible because a given actor is never
 interrupted between consecutive simcalls in SimGrid.
 
 .. image:: img/design-scheduling-wallclock.svg

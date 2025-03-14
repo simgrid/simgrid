@@ -72,8 +72,8 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   # Test MPICH selector: boost factory, dlopen privatization
   ADD_MPICH3_COLL(mpich "boost" "dlopen")
 
-  # Test MVAPICH2 selector: ucontext factory, mmap privatization
-  ADD_MPICH3_COLL(mvapich2 "ucontext" "mmap")
+  # Test MVAPICH2 selector: raw factory, dlopen privatization
+  ADD_MPICH3_COLL(mvapich2 "raw" "dlopen")
 
   # Test IMPI selector: raw factory, mmap privatization
   ADD_MPICH3_COLL(impi "raw" "mmap")

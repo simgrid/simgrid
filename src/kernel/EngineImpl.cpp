@@ -52,9 +52,6 @@ constexpr std::initializer_list<std::pair<const char*, context::ContextFactory* 
 #if HAVE_RAW_CONTEXTS
     {"raw", &context::raw_factory},
 #endif
-#if HAVE_UCONTEXT_CONTEXTS
-    {"ucontext", &context::sysv_factory},
-#endif
 #if HAVE_BOOST_CONTEXTS
     {"boost", &context::boost_factory},
 #endif
@@ -258,11 +255,6 @@ void EngineImpl::context_mod_init() const
     XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");
 #else
     XBT_ERROR("  (raw contexts were disabled at compilation time on this machine -- check configure logs for details)");
-#endif
-#if HAVE_UCONTEXT_CONTEXTS
-    XBT_ERROR("  ucontext: classical system V contexts (implemented with makecontext, swapcontext and friends)");
-#else
-    XBT_ERROR("  (ucontext was disabled at compilation time on this machine -- check configure logs for details)");
 #endif
 #if HAVE_BOOST_CONTEXTS
     XBT_ERROR("  boost: this uses the boost libraries context implementation");

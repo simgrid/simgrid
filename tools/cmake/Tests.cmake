@@ -55,7 +55,7 @@ ENDMACRO()
 #
 # Used by ADD_TESH_FACTORIES, and SET_TESH_PROPERTIES
 MACRO(SETUP_FACTORIES_LIST)
-  set(ALL_KNOWN_FACTORIES "thread;boost;raw;ucontext")
+  set(ALL_KNOWN_FACTORIES "thread;boost;raw")
 
   if("${ARGV}" STREQUAL "*")    # take all known factories
     SET(FACTORIES_LIST ${ALL_KNOWN_FACTORIES})
@@ -73,9 +73,6 @@ MACRO(SETUP_FACTORIES_LIST)
   endif()
   if(NOT HAVE_RAW_CONTEXTS)
     LIST(REMOVE_ITEM FACTORIES_LIST "raw")
-  endif()
-  if(NOT HAVE_UCONTEXT_CONTEXTS)
-    LIST(REMOVE_ITEM FACTORIES_LIST "ucontext")
   endif()
 
   # Check that there is no unknown factory

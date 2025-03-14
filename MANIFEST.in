@@ -817,7 +817,6 @@ include teshsuite/kernel/context-defaults/context-defaults.cpp
 include teshsuite/kernel/context-defaults/factory_boost.tesh
 include teshsuite/kernel/context-defaults/factory_raw.tesh
 include teshsuite/kernel/context-defaults/factory_thread.tesh
-include teshsuite/kernel/context-defaults/factory_ucontext.tesh
 include teshsuite/kernel/stack-overflow/stack-overflow.cpp
 include teshsuite/kernel/stack-overflow/stack-overflow.tesh
 include teshsuite/mc/mcmini/barber_shop_deadlock.c
@@ -2374,8 +2373,6 @@ include src/kernel/context/ContextSwapped.cpp
 include src/kernel/context/ContextSwapped.hpp
 include src/kernel/context/ContextThread.cpp
 include src/kernel/context/ContextThread.hpp
-include src/kernel/context/ContextUnix.cpp
-include src/kernel/context/ContextUnix.hpp
 include src/kernel/lmm/System.cpp
 include src/kernel/lmm/System.hpp
 include src/kernel/lmm/bmf.cpp
@@ -2487,7 +2484,6 @@ include src/mc/api/states/State.cpp
 include src/mc/api/states/State.hpp
 include src/mc/api/states/WutState.cpp
 include src/mc/api/states/WutState.hpp
-include src/mc/datatypes.h
 include src/mc/explo/BeFSExplorer.cpp
 include src/mc/explo/BeFSExplorer.hpp
 include src/mc/explo/CommunicationDeterminismChecker.cpp
@@ -2923,10 +2919,8 @@ include tools/cmake/scripts/fixup_simgrid_dtd_l.pl
 include tools/cmake/scripts/my_valgrind.pl
 include tools/cmake/scripts/update_tesh.pl
 include tools/cmake/test_prog/prog_asan.cpp
-include tools/cmake/test_prog/prog_makecontext.c
 include tools/cmake/test_prog/prog_musl.c
 include tools/cmake/test_prog/prog_stackgrowth.c
-include tools/cmake/test_prog/prog_stacksetup.c
 include tools/cmake/test_prog/prog_stdstacktrace.cpp
 include tools/cmake/test_prog/prog_tsan.cpp
 include tools/doxygen/list_routing_models_examples.sh
