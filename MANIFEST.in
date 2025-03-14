@@ -2912,7 +2912,6 @@ include tools/cmake/Java.cmake
 include tools/cmake/MaintainerMode.cmake
 include tools/cmake/MakeLib.cmake
 include tools/cmake/Modules/FindGraphviz.cmake
-include tools/cmake/Modules/FindLibevent.cmake
 include tools/cmake/Modules/FindNS3.cmake
 include tools/cmake/Modules/FindPAPI.cmake
 include tools/cmake/Modules/FindValgrind.cmake

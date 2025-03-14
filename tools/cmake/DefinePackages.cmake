@@ -1086,7 +1086,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/MaintainerMode.cmake
   tools/cmake/MakeLib.cmake
   tools/cmake/Modules/FindGraphviz.cmake
-  tools/cmake/Modules/FindLibevent.cmake
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindPAPI.cmake
   tools/cmake/Modules/FindValgrind.cmake
