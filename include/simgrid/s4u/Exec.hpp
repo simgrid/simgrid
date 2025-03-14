@@ -92,15 +92,6 @@ public:
   double get_cost() const;
   bool is_parallel() const { return parallel_; }
   bool is_assigned() const override;
-
-#ifndef DOXYGEN
-  static ssize_t deprecated_wait_any_for(const std::vector<ExecPtr>& execs, double timeout); // XBT_ATTRIB_DEPRECATED_v401
-
-  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t
-      wait_any(const std::vector<ExecPtr>& execs) { return deprecated_wait_any_for(execs, -1); }
-  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t
-      wait_any_for(const std::vector<ExecPtr>& execs, double timeout) { return deprecated_wait_any_for(execs, timeout); }
-#endif
 };
 
 } // namespace simgrid::s4u

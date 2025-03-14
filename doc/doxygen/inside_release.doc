@@ -97,9 +97,9 @@ Please apply the following checklist before releasing.
 
 @subsection inside_release_c_postrelease Post-release cleanups
 
-- Create the template for the next release in ChangeLog, NEWS and Release_Notes.rst files
+- Create the template for the next release in ChangeLog NEWS Release_Notes.rst files
   Release Target date: https://en.wikipedia.org/wiki/Equinox
-- Bump release number to 3.X.1 in CMakeLists.txt sonar-project.properties docs/source/conf.py setup.py
+- Bump release number to 4.X.1 in CMakeLists.txt sonar-project.properties docs/source/conf.py setup.py
 - Deal with deprecations:
   - jed include/xbt/base.h: Introduce the next XBT_ATTRIB_DEPRECATED_v??? macro
   - Kill the one for the current release and remove all code that were

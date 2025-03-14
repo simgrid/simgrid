@@ -137,8 +137,6 @@ CpuAction* CpuCas01::execution_start(double size, int requested_cores, double us
   if (user_bound > 0 && user_bound < action->get_bound()) {
     get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), user_bound);
   }
-  if (factor_cb_)
-    action->set_rate_factor(factor_cb_(size));
   if (factor_cpu_cb_)
     action->set_rate_factor(factor_cpu_cb_(*action->cpu0()->get_iface(), size));
 
@@ -171,11 +169,6 @@ CpuAction* CpuCas01::sleep(double duration)
   return action;
 }
 
-void CpuCas01::set_factor_cb(const std::function<s4u::Host::CpuFactorCb>& cb)
-{
-  xbt_assert(not is_sealed(), "Cannot set CPU factor callback in an already sealed CPU(%s)", get_cname());
-  factor_cb_ = cb;
-}
 void CpuCas01::set_cpu_factor_cb(const std::function<double(s4u::Host&, double)>& cb)
 {
   xbt_assert(not is_sealed(), "Cannot set CPU factor callback in an already sealed CPU(%s)", get_cname());

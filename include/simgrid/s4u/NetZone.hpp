@@ -24,7 +24,7 @@ namespace simgrid::s4u {
 // Extra data structure for complex constructors
 
 #ifndef DOXYGEN
-struct ClusterCallbacks { // XBT_ATTRIB_DEPRECATED_v401
+struct ClusterCallbacks { // XBT_ATTRIB_DEPRECATED_v403
   using ClusterNetPointCb = std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*>(
       NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id);
 
@@ -34,9 +34,9 @@ struct ClusterCallbacks { // XBT_ATTRIB_DEPRECATED_v401
 
   bool by_netzone_ = false;
   bool is_by_netzone() const { return by_netzone_; }
-  bool by_netpoint_ = false;                           // XBT_ATTRIB_DEPRECATED_v401
-  bool is_by_netpoint() const { return by_netpoint_; } // XBT_ATTRIB_DEPRECATED_v401
-  std::function<ClusterNetPointCb> netpoint;           // XBT_ATTRIB_DEPRECATED_v401
+  bool by_netpoint_ = false;                           // XBT_ATTRIB_DEPRECATED_v403
+  bool is_by_netpoint() const { return by_netpoint_; } // XBT_ATTRIB_DEPRECATED_v403
+  std::function<ClusterNetPointCb> netpoint;           // XBT_ATTRIB_DEPRECATED_v403
   std::function<ClusterHostCb> host;
   std::function<ClusterNetZoneCb> netzone;
   std::function<ClusterLinkCb> loopback = {};
@@ -55,11 +55,11 @@ struct ClusterCallbacks { // XBT_ATTRIB_DEPRECATED_v401
       : host(set_host), loopback(set_loopback), limiter(set_limiter) { /* nothing to do */ };
 
 #ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v401(
+  XBT_ATTRIB_DEPRECATED_v403(
       "Please use callback with either a Host/NetZone creation function as first "
       "parameter") explicit ClusterCallbacks(const std::function<ClusterNetPointCb>& set_netpoint)
       : by_netpoint_(true), netpoint(set_netpoint) { /* nothing to do */ };
-  XBT_ATTRIB_DEPRECATED_v401("Please use callback with either a Host/NetZone creation function as first parameter")
+  XBT_ATTRIB_DEPRECATED_v403("Please use callback with either a Host/NetZone creation function as first parameter")
       ClusterCallbacks(const std::function<ClusterNetPointCb>& set_netpoint,
                        const std::function<ClusterLinkCb>& set_loopback,
                        const std::function<ClusterLinkCb>& set_limiter)
@@ -70,7 +70,7 @@ struct ClusterCallbacks { // XBT_ATTRIB_DEPRECATED_v401
 #endif
 };
 
-struct XBT_PUBLIC FatTreeParams { // XBT_ATTRIB_DEPRECATED_v401
+struct XBT_PUBLIC FatTreeParams { // XBT_ATTRIB_DEPRECATED_v403
   unsigned int levels;
   std::vector<unsigned int> down;
   std::vector<unsigned int> up;
@@ -82,7 +82,7 @@ struct XBT_PUBLIC FatTreeParams { // XBT_ATTRIB_DEPRECATED_v401
   }
 };
 
-struct XBT_PUBLIC DragonflyParams { // XBT_ATTRIB_DEPRECATED_v401
+struct XBT_PUBLIC DragonflyParams { // XBT_ATTRIB_DEPRECATED_v403
   std::pair<unsigned int, unsigned int> groups;
   std::pair<unsigned int, unsigned int> chassis;
   std::pair<unsigned int, unsigned int> routers;
@@ -119,7 +119,7 @@ public:
   kernel::routing::NetZoneImpl* get_pimpl() { return pimpl_; }
   NetZone* get_parent() const;
 #ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v401("Please stop using NetZone::set_parent(). It is useless with the new platform API.")
+  XBT_ATTRIB_DEPRECATED_v403("Please stop using NetZone::set_parent(). It is useless with the new platform API.")
       NetZone* set_parent(const NetZone* parent);
 #endif
   std::vector<NetZone*> get_children() const;
@@ -182,7 +182,7 @@ public:
    * @param link_list List of links and their direction used in this communication
    * @param symmetrical Bi-directional communication
    */
-  XBT_ATTRIB_DEPRECATED_v401("Please call add_route either from Host to Host or NetZone to NetZone") void add_route(
+  XBT_ATTRIB_DEPRECATED_v403("Please call add_route either from Host to Host or NetZone to NetZone") void add_route(
       kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
       kernel::routing::NetPoint* gw_dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
   /**
@@ -198,7 +198,7 @@ public:
    * @param gw_dst Netpoint of the gateway in the destination netzone
    * @param link_list List of links
    */
-  XBT_ATTRIB_DEPRECATED_v401("Please call add_route either from Host to Host or NetZone to NetZone") void add_route(
+  XBT_ATTRIB_DEPRECATED_v403("Please call add_route either from Host to Host or NetZone to NetZone") void add_route(
       kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
       kernel::routing::NetPoint* gw_dst, const std::vector<const Link*>& links);
 #endif
@@ -257,22 +257,22 @@ public:
   static void on_seal_cb(const std::function<void(NetZone const&)>& cb) { on_seal.connect(cb); }
 
 #ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v401("Please use NetZone::add_host") s4u::Host* create_host(
+  XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_host") s4u::Host* create_host(
       const std::string& name, const std::vector<double>& speed_per_pstate)
   {
     return add_host(name, speed_per_pstate);
   }
-  XBT_ATTRIB_DEPRECATED_v401("Please use NetZone::add_host") s4u::Host* create_host(const std::string& name,
+  XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_host") s4u::Host* create_host(const std::string& name,
                                                                                     double speed)
   {
     return add_host(name, speed);
   }
-  XBT_ATTRIB_DEPRECATED_v401("Please use NetZone::add_host") s4u::Host* create_host(
+  XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_host") s4u::Host* create_host(
       const std::string& name, const std::vector<std::string>& speed_per_pstate)
   {
     return add_host(name, speed_per_pstate);
   }
-  XBT_ATTRIB_DEPRECATED_v401("Please use NetZone::add_host") s4u::Host* create_host(const std::string& name,
+  XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_host") s4u::Host* create_host(const std::string& name,
                                                                                     const std::string& speed)
   {
     return add_host(name, speed);
@@ -295,22 +295,22 @@ public:
   s4u::Host* add_host(const std::string& name, const std::string& speed);
 
 #ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v401("Please use NetZone::add_link") s4u::Link* create_link(
+  XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_link") s4u::Link* create_link(
       const std::string& name, const std::vector<double>& bandwidths)
   {
     return add_link(name, bandwidths);
   }
-  XBT_ATTRIB_DEPRECATED_v401("Please use NetZone::add_link") s4u::Link* create_link(const std::string& name,
+  XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_link") s4u::Link* create_link(const std::string& name,
                                                                                     double bandwidth)
   {
     return add_link(name, bandwidth);
   }
-  XBT_ATTRIB_DEPRECATED_v401("Please use NetZone::add_link") s4u::Link* create_link(
+  XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_link") s4u::Link* create_link(
       const std::string& name, const std::vector<std::string>& bandwidths)
   {
     return add_link(name, bandwidths);
   }
-  XBT_ATTRIB_DEPRECATED_v401("Please use NetZone::add_link") s4u::Link* create_link(const std::string& name,
+  XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_link") s4u::Link* create_link(const std::string& name,
                                                                                     const std::string& bandwidth)
   {
     return add_link(name, bandwidth);
@@ -332,13 +332,13 @@ public:
   s4u::Link* add_link(const std::string& name, const std::string& bandwidth);
 
 #ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v401("Please use NetZone::add_split_duplex_link")
+  XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_split_duplex_link")
       s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, const std::string& bw_up,
                                                      const std::string& bw_down = "")
   {
     return add_split_duplex_link(name, bw_up, bw_down);
   }
-  XBT_ATTRIB_DEPRECATED_v401("Please use NetZone::add_split_duplex_link")
+  XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_split_duplex_link")
       s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, double bw_up, double bw_down = -1)
   {
     return add_split_duplex_link(name, bw_up, bw_down);
@@ -366,7 +366,7 @@ public:
   kernel::resource::NetworkModel* get_network_model() const;
 
 #ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v401("Please use NetZone::add_router") kernel::routing::NetPoint* create_router(
+  XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_router") kernel::routing::NetPoint* create_router(
       const std::string& name)
   {
     return add_router(name);
@@ -499,27 +499,27 @@ public:
 };
 
 #ifndef DOXYGEN
-XBT_ATTRIB_DEPRECATED_v401("Please use Engine::set_rootnetzone_full or NetZone::add_netzone_full")
+XBT_ATTRIB_DEPRECATED_v403("Please use Engine::set_rootnetzone_full or NetZone::add_netzone_full")
     XBT_PUBLIC NetZone* create_full_zone(const std::string& name);
-XBT_ATTRIB_DEPRECATED_v401("Please use Engine::set_rootnetzone_star or NetZone::add_netzone_star")
+XBT_ATTRIB_DEPRECATED_v403("Please use Engine::set_rootnetzone_star or NetZone::add_netzone_star")
     XBT_PUBLIC NetZone* create_star_zone(const std::string& name);
-XBT_ATTRIB_DEPRECATED_v401("Please use Engine::set_rootnetzone_dijkstra or NetZone::add_netzone_dijkstra")
+XBT_ATTRIB_DEPRECATED_v403("Please use Engine::set_rootnetzone_dijkstra or NetZone::add_netzone_dijkstra")
     XBT_PUBLIC NetZone* create_dijkstra_zone(const std::string& name, bool cache);
-XBT_ATTRIB_DEPRECATED_v401("Please use Engine::set_rootnetzone_empty or NetZone::add_netzone_empty")
+XBT_ATTRIB_DEPRECATED_v403("Please use Engine::set_rootnetzone_empty or NetZone::add_netzone_empty")
     XBT_PUBLIC NetZone* create_empty_zone(const std::string& name);
-XBT_ATTRIB_DEPRECATED_v401("Please use Engine::set_rootnetzone_floyd or NetZone::add_netzone_floyd")
+XBT_ATTRIB_DEPRECATED_v403("Please use Engine::set_rootnetzone_floyd or NetZone::add_netzone_floyd")
     XBT_PUBLIC NetZone* create_floyd_zone(const std::string& name);
-XBT_ATTRIB_DEPRECATED_v401("Please use Engine::set_rootnetzone_vivaldi or NetZone::add_netzone_vivaldi")
+XBT_ATTRIB_DEPRECATED_v403("Please use Engine::set_rootnetzone_vivaldi or NetZone::add_netzone_vivaldi")
     XBT_PUBLIC NetZone* create_vivaldi_zone(const std::string& name);
-XBT_ATTRIB_DEPRECATED_v401("Please use Engine::set_rootnetzone_wifi or NetZone::add_netzone_wifi")
+XBT_ATTRIB_DEPRECATED_v403("Please use Engine::set_rootnetzone_wifi or NetZone::add_netzone_wifi")
     XBT_PUBLIC NetZone* create_wifi_zone(const std::string& name);
-XBT_ATTRIB_DEPRECATED_v401("Please use NetZone::add_netzone_fatTree") XBT_PUBLIC NetZone* create_fatTree_zone(
+XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_netzone_fatTree") XBT_PUBLIC NetZone* create_fatTree_zone(
     const std::string& name, NetZone* parent, const FatTreeParams& parameters, const ClusterCallbacks& set_callbacks,
     double bandwidth, double latency, Link::SharingPolicy sharing_policy);
-XBT_ATTRIB_DEPRECATED_v401("Please use NetZone::add_netzone_fatTree") XBT_PUBLIC NetZone* create_torus_zone(
+XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_netzone_fatTree") XBT_PUBLIC NetZone* create_torus_zone(
     const std::string& name, NetZone* parent, const std::vector<unsigned long>& dimensions,
     const ClusterCallbacks& set_callbacks, double bandwidth, double latency, Link::SharingPolicy sharing_policy);
-XBT_ATTRIB_DEPRECATED_v401("Please use NetZone::add_netzone_dragonfly")
+XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_netzone_dragonfly")
 XBT_PUBLIC NetZone* create_dragonfly_zone(const std::string& name, NetZone* parent,
     const DragonflyParams& parameters, const ClusterCallbacks& set_callbacks,
     double bandwidth, double latency, Link::SharingPolicy sharing_policy);

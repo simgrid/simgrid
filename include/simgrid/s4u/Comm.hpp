@@ -167,19 +167,6 @@ public:
 
   /* Comm life cycle */
   Comm* wait_for(double timeout) override;
-
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t wait_any(const std::vector<CommPtr>& comms) { return deprecated_wait_any_for(comms, -1); }
-  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t wait_any_for(const std::vector<CommPtr>& comms, double timeout) { return deprecated_wait_any_for(comms, timeout); }
-
-  static ssize_t deprecated_wait_any_for(const std::vector<CommPtr>& comms,
-                                         double timeout); // XBT_ATTRIB_DEPRECATED_v401
-
-  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static ssize_t test_any(const std::vector<CommPtr>& comms);
-  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static void wait_all(const std::vector<CommPtr>& comms);
-  XBT_ATTRIB_DEPRECATED_v401("Please use ActivitySet instead") static size_t
-      wait_all_for(const std::vector<CommPtr>& comms, double timeout);
-#endif
 };
 } // namespace simgrid::s4u
 

@@ -130,12 +130,6 @@ public:
    */
   Host* set_cpu_factor_cb(const std::function<double(Host&, double)>& cb);
 
-#ifndef DOXYGEN
-  using CpuFactorCb = double(double flops);
-  XBT_ATTRIB_DEPRECATED_v401("Please use set_cpu_factor_cb() instead") Host* set_factor_cb(
-      const std::function<CpuFactorCb>& cb);
-#endif
-
   size_t get_actor_count() const;
   std::vector<ActorPtr> get_all_actors() const;
 
@@ -249,10 +243,10 @@ public:
   Disk* get_disk_by_name(const std::string& name) const;
 
   #ifndef DOXYGEN
-   XBT_ATTRIB_DEPRECATED_v401("Please use Host::add_disk")
+   XBT_ATTRIB_DEPRECATED_v403("Please use Host::add_disk")
    Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
    { return add_disk(name, read_bandwidth, write_bandwidth); }
-   XBT_ATTRIB_DEPRECATED_v401("Please use Host::add_disk")
+   XBT_ATTRIB_DEPRECATED_v403("Please use Host::add_disk")
    Disk* create_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth)
    { return add_disk(name, read_bandwidth, write_bandwidth); }
   #endif 
