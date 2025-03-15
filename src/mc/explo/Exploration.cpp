@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <signal.h>
 #include <sys/wait.h>
 #include <utility>
 
