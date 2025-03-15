@@ -10,7 +10,7 @@ build-base:
   - apt-get --allow-releaseinfo-change update
   - apt install -y xsltproc ninja-build
   - rm -rf CMakeFiles CMakeCache.txt
-  - cmake -GNinja -Denable_model-checking=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - cmake -GNinja -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test -j$(nproc) --output-on-failure
   - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml  
@@ -57,7 +57,27 @@ alpine-release:
   - cmake -Denable_documentation=OFF -Denable_compile_optimizations=ON -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - make VERBOSE=1 -j$(nproc) all tests
   - ctest -T Test -j$(nproc) --output-on-failure
-#  - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml
+  - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml
+  artifacts:
+    reports:
+      junit:
+      - CTestResults.xml
+    expire_in: 1 week
+    when: always
+
+fedora-rawhide-release:
+  image: fedora:rawhide
+  except:
+  - stable
+  tags:
+    - large  # Inria infra
+  script:
+  - dnf install -y @development-tools ninja-build cmake g++ git cmake python3-devel pybind11-devel perl graphviz-devel eigen3-devel boost-devel java-latest-openjdk-devel valgrind-devel json-devel
+  - rm -rf CMakeFiles CMakeCache.txt
+  - cmake -GNinja -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - ninja --verbose all tests
+  - ctest -T Test -j$(nproc) --output-on-failure
+  - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml
   artifacts:
     reports:
       junit:
