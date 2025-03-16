@@ -810,8 +810,6 @@ include examples/sthread/pthread-producer-consumer.c
 include examples/sthread/pthread-producer-consumer.tesh
 include examples/sthread/stdobject/stdobject.cpp
 include examples/sthread/stdobject/stdobject.tesh
-include examples/sthread/sthread-mutex-simple.c
-include examples/sthread/sthread-mutex-simple.tesh
 include teshsuite/catch_simgrid.hpp
 include teshsuite/kernel/context-defaults/context-defaults.cpp
 include teshsuite/kernel/context-defaults/factory_boost.tesh
