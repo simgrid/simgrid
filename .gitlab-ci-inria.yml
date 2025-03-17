@@ -120,6 +120,25 @@ opensuse-release:
     reports:
       junit: result.xml
 
+opensuse-intelCC:
+  image: opensuse/tumbleweed # tumbleweed is the rolling release with recent software
+  except:
+  - stable
+  tags:
+    - large  # Inria infra
+  script:
+  - zypper addrepo https://yum.repos.intel.com/oneapi oneAPI
+  - zypper --no-gpg-checks install -y ninja cmake intel-oneapi-compiler-dpcpp-cpp intel-oneapi-compiler-fortran gawk git cmake python313-pybind11-devel python313-numpy-devel perl graphviz-devel eigen3-devel boost-devel libboost_context-devel java-21-openjdk-devel valgrind-devel diffutils nlohmann_json-devel
+  - rm -rf CMakeFiles CMakeCache.txt
+  - source /opt/intel/oneapi/setvars.sh; cmake -GNinja -DCMAKE_CXX_COMPILER=icpx -DCMAKE_C_COMPILER=icx -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - ninja --verbose all tests
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+  artifacts:
+    when: always
+    expire_in: 1 year
+    reports:
+      junit: result.xml
+
 arch-release:
   image: archlinux:latest
   except:
