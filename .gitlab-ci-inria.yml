@@ -10,7 +10,7 @@ build-base:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y ninja-build
+  - apt install -y ninja-build libgcc-12-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
@@ -44,7 +44,10 @@ build-pip:
     - dist/
     expire_in: 2 weeks
 
-# The alpine node
+# ###################################################################################################
+# ###################################################################################################
+# ###################################################################################################
+
 alpine-release:
   image: alpine:latest
   except:
@@ -56,6 +59,25 @@ alpine-release:
   - export JAVA_HOME=/usr/lib/jvm/default-jvm
   - cmake -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_compile_optimizations=ON -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - make VERBOSE=1 -j$(nproc) all tests
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+  artifacts:
+    when: always
+    expire_in: 1 year
+    reports:
+      junit: result.xml
+
+debian-clang:
+  image: debian:testing
+  except:
+  - stable
+  tags:
+    - large  # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y build-essential ninja-build clang libgcc-14-dev cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all
+  - rm -rf CMakeFiles CMakeCache.txt
+  - cmake -GNinja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang  -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
     when: always
