@@ -12,7 +12,7 @@ build-base:
   - apt-get --allow-releaseinfo-change update
   - apt install -y ninja-build
   - rm -rf CMakeFiles CMakeCache.txt
-  - cmake -GNinja -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
@@ -54,7 +54,7 @@ alpine-release:
   script: 
   - apk add --no-cache build-base git cmake python3 py3-pybind11-dev perl graphviz-dev eigen-dev boost-dev openjdk21-jdk valgrind-dev nlohmann-json fortify-headers
   - export JAVA_HOME=/usr/lib/jvm/default-jvm
-  - cmake -Denable_documentation=OFF -Denable_compile_optimizations=ON -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - cmake -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_compile_optimizations=ON -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - make VERBOSE=1 -j$(nproc) all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
@@ -72,7 +72,7 @@ fedora-rawhide-release:
   script:
   - dnf install -y @development-tools ninja-build cmake g++ git cmake python3-devel pybind11-devel perl graphviz-devel eigen3-devel boost-devel java-latest-openjdk-devel valgrind-devel json-devel
   - rm -rf CMakeFiles CMakeCache.txt
-  - cmake -GNinja -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
@@ -93,7 +93,7 @@ rocky-release:
   # Still missing on Rocky Linux: pybind11 and nlohmann-json
   - dnf install -y ninja-build cmake g++ gcc-c++ git cmake python3-devel perl graphviz-devel eigen3-devel boost-devel java-21-openjdk-devel valgrind-devel diffutils
   - rm -rf CMakeFiles CMakeCache.txt
-  - cmake -GNinja -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
@@ -129,7 +129,7 @@ arch-release:
   script:
   - pacman --noconfirm -Sy ninja cmake gcc git cmake python-build perl graphviz eigen boost jdk21-openjdk valgrind pybind11 python-numpy nlohmann-json diffutils
   - rm -rf CMakeFiles CMakeCache.txt
-  - cmake -GNinja -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
