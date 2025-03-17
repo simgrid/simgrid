@@ -109,7 +109,7 @@ arch-release:
   tags:
     - large  # Inria infra
   script:
-  - pacman --noconfirm -Sy ninja cmake gcc git cmake python-build perl graphviz eigen boost jdk21-openjdk valgrind pybind11 python-numpy nlohmann-json 
+  - pacman --noconfirm -Sy ninja cmake gcc git cmake python-build perl graphviz eigen boost jdk21-openjdk valgrind pybind11 python-numpy nlohmann-json diffutils
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
