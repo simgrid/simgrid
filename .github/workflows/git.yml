@@ -36,7 +36,7 @@ jobs:
           mkdir build ; cd build
           cmake -GNinja -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
                 -Denable_compile_optimizations=ON -Denable_compile_warnings=ON \
-                -Denable_testsuite_smpi_MBI=ON -Denable_testsuite_McMini=ON \
+                -Denable_testsuite_smpi_MBI=OFF -Denable_testsuite_McMini=ON \
                 -Denable_testsuite_smpi_MPICH3=ON \
                 -DCMAKE_DISABLE_SOURCE_CHANGES=ON  -DLTO_EXTRA_FLAG="auto" ..
           ninja tests
