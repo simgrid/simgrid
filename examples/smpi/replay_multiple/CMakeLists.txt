@@ -7,7 +7,7 @@ if(enable_smpi)
   add_dependencies(tests replay_multiple)
 endif()
 
-set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/generate_multiple_deployment.sh
+set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/generate_multiple_deployment.py
                                    ${CMAKE_CURRENT_SOURCE_DIR}/description_file
                                    ${CMAKE_CURRENT_SOURCE_DIR}/README
                                    ${CMAKE_CURRENT_SOURCE_DIR}/smpi_replay.txt
