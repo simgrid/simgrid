@@ -13,17 +13,15 @@ build-MR:
   - stable
   script:
   #- apt-get --allow-releaseinfo-change update
-  #- apt install -y binutils xsltproc
+  #- apt install -y binutils
   - cmake -Denable_model-checking=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - make -j$(nproc) VERBOSE=1 all tests distcheck-configure
-  - ctest -T Test -j$(nproc) --output-on-failure
-  - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml  
+  - ctest -T Test -j$(nproc) --output-junit result.xml --output-on-failure
   artifacts:
-    reports:
-      junit:
-      - CTestResults.xml
-    expire_in: 1 week
     when: always
+    expire_in: 6 months
+    reports:
+      junit: result.xml
 
 # Build the doc and the webpage 
 pages:

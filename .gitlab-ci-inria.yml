@@ -10,18 +10,16 @@ build-base:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y xsltproc ninja-build
+  - apt install -y ninja-build
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
-  - ctest -T Test -j$(nproc) --output-on-failure
-  - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml  
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
-    reports:
-      junit:
-      - CTestResults.xml
-    expire_in: 1 week
     when: always
+    expire_in: 1 year
+    reports:
+      junit: result.xml
   
 # Ensure that the produced tarball is OK
 distcheck:
@@ -58,14 +56,12 @@ alpine-release:
   - export JAVA_HOME=/usr/lib/jvm/default-jvm
   - cmake -Denable_documentation=OFF -Denable_compile_optimizations=ON -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - make VERBOSE=1 -j$(nproc) all tests
-  - ctest -T Test -j$(nproc) --output-on-failure
-  - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
-    reports:
-      junit:
-      - CTestResults.xml
-    expire_in: 1 week
     when: always
+    expire_in: 1 year
+    reports:
+      junit: result.xml
 
 fedora-rawhide-release:
   image: fedora:rawhide
@@ -78,14 +74,12 @@ fedora-rawhide-release:
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
-  - ulimit -n 1024 ; ctest -T Test -j$(nproc) --output-on-failure
-  - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
-    reports:
-      junit:
-      - CTestResults.xml
-    expire_in: 1 week
     when: always
+    expire_in: 1 year
+    reports:
+      junit: result.xml
 
 rocky-release:
   image: rockylinux:9
@@ -101,11 +95,9 @@ rocky-release:
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
-  - ctest -T Test -j$(nproc) --output-on-failure
-  - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
-    reports:
-      junit:
-      - CTestResults.xml
-    expire_in: 1 week
     when: always
+    expire_in: 1 year
+    reports:
+      junit: result.xml
