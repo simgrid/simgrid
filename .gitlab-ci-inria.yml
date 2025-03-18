@@ -142,8 +142,8 @@ rocky-release:
   script:
   - yum install -y dnf-plugins-core # get the 'dnf config-manage' tool
   - dnf config-manager --set-enabled crb # enable the repository for ninja package
-  # Still missing on Rocky Linux: pybind11 and nlohmann-json
-  - dnf install -y ninja-build cmake g++ gcc-c++ git cmake python3-devel perl graphviz-devel eigen3-devel boost-devel java-21-openjdk-devel valgrind-devel diffutils
+  # Still missing on Rocky Linux: nlohmann-json
+  - dnf install -y ninja-build cmake g++ gcc-c++ git cmake pybind11-devel python3-devel perl graphviz-devel eigen3-devel boost-devel java-21-openjdk-devel valgrind-devel diffutils
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
