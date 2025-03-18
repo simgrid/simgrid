@@ -10,7 +10,7 @@ build-base:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y ninja-build libgcc-12-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless
+  - apt install -y ninja-build libgcc-12-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless libns3-dev
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
@@ -21,6 +21,36 @@ build-base:
     reports:
       junit: result.xml
   
+build-gcov:
+  except:
+  - stable
+  tags:
+    - large  # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y ninja-build python3-coverage gcovr libgraphviz-dev nlohmann-json3-dev default-jdk-headless libns3-dev
+  - mkdir build ; cd build
+  - cmake -GNinja  -Denable_python=ON -Denable_ns3=ON -Denable_java=ON  -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" 
+      -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_coverage=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
+  - ninja --verbose all tests
+  - export PYTHON_TOOL_OPTIONS="/usr/bin/python3-coverage run --parallel-mode --branch"
+  - ctest --no-compress-output -D ExperimentalTest --output-junit result.xml -j$(nproc) --output-on-failure || true
+  - ctest -D ExperimentalCoverage || true
+  # convert python coverage reports in xml ones
+  - find .. -size +1c -name ".coverage*" -exec mv {} . \;
+  - /usr/bin/python3-coverage combine
+  - /usr/bin/python3-coverage xml -i -o ../python_coverage.xml
+  # convert all gcov reports to xml cobertura reports
+  - gcovr -r .. --xml-pretty -e ../teshsuite -e MBI -e ../examples/smpi/NAS -e ../examples/smpi/mc -u -o ../xml_coverage.xml 
+  coverage: '/^TOTAL.*\s+(\d+\%)$/'
+  artifacts:
+    expire_in: 1 year
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: xml_coverage.xml
+      junit: result.xml
+
 # Ensure that the produced tarball is OK
 distcheck:
   tags:
@@ -74,7 +104,7 @@ debian-clang:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y build-essential ninja-build clang libgcc-14-dev cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all
+  - apt install -y build-essential ninja-build clang libgcc-14-dev cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang  -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
