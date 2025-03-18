@@ -35,7 +35,7 @@ build-gcovr:
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_coverage=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
   - ninja --verbose all tests
   - export PYTHON_TOOL_OPTIONS="/usr/bin/python3-coverage run --parallel-mode --branch"
-  - ctest --no-compress-output -D ExperimentalTest --output-junit result.xml -j$(nproc) --output-on-failure || true
+  - ctest --no-compress-output -D ExperimentalTest --output-junit ../result.xml -j$(nproc) --output-on-failure || true
   - ctest -D ExperimentalCoverage || true
   # convert python coverage reports in xml ones
   - find .. -size +1c -name ".coverage*" -exec mv {} . \;
