@@ -49,7 +49,8 @@ build-gcovr:
     reports:
       coverage_report:
         coverage_format: cobertura
-        path: *_coverage.xml # Captures several files
+        # Captures several files
+        path: ./*_coverage.xml
       junit: result.xml
 
 # Ensure that the produced tarball is OK
