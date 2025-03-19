@@ -17,7 +17,7 @@ build-base:
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
     when: always
-    expire_in: 1 year
+    expire_in: 6 months
     reports:
       junit: result.xml
   
@@ -40,12 +40,15 @@ build-gcovr:
   # convert python coverage reports in xml ones
   - find .. -size +1c -name ".coverage*" -exec mv {} . \;
   - /usr/bin/python3-coverage combine
-  - /usr/bin/python3-coverage xml -i -o ../python_coverage.xml
+  - /usr/bin/python3-coverage xml --ignore-errors -o ../python_coverage.xml
   # convert all gcov reports to xml cobertura reports
-  - gcovr -r .. --xml-pretty -e ../teshsuite -e MBI -e ../examples/smpi/NAS -e ../examples/smpi/mc -u -o ../xml_coverage.xml  --gcov-ignore-parse-errors all --gcov-ignore-errors all
+  - gcovr --root .. --xml-pretty -e ../teshsuite -e MBI -e ../examples/smpi/NAS -e ../examples/smpi/mc -u -o ../xml_coverage.xml  --gcov-ignore-parse-errors all --gcov-ignore-errors all
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
   artifacts:
-    expire_in: 1 year
+    expire_in: 6 months
+    paths:
+    -  ./*_coverage.xml
+    - result.xml
     reports:
       coverage_report:
         coverage_format: cobertura
@@ -94,7 +97,7 @@ alpine-release:
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
     when: always
-    expire_in: 1 year
+    expire_in: 6 months
     reports:
       junit: result.xml
 
@@ -113,7 +116,7 @@ debian-clang:
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
     when: always
-    expire_in: 1 year
+    expire_in: 6 months
     reports:
       junit: result.xml
 
@@ -131,7 +134,7 @@ fedora-rawhide-release:
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
     when: always
-    expire_in: 1 year
+    expire_in: 6 months
     reports:
       junit: result.xml
 
@@ -152,7 +155,7 @@ rocky-release:
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
     when: always
-    expire_in: 1 year
+    expire_in: 6 months
     reports:
       junit: result.xml
 
@@ -170,7 +173,7 @@ opensuse-release:
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
     when: always
-    expire_in: 1 year
+    expire_in: 6 months
     reports:
       junit: result.xml
 
@@ -189,7 +192,7 @@ opensuse-intelCC:
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
     when: always
-    expire_in: 1 year
+    expire_in: 6 months
     reports:
       junit: result.xml
 
@@ -207,7 +210,7 @@ arch-release:
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
     when: always
-    expire_in: 1 year
+    expire_in: 6 months
     reports:
       junit: result.xml
 
