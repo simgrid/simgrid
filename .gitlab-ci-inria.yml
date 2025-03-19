@@ -42,7 +42,7 @@ build-gcovr:
   - /usr/bin/python3-coverage combine
   - /usr/bin/python3-coverage xml -i -o ../python_coverage.xml
   # convert all gcov reports to xml cobertura reports
-  - gcovr -r .. --xml-pretty -e ../teshsuite -e MBI -e ../examples/smpi/NAS -e ../examples/smpi/mc --sort-key uncovered-number -o ../xml_coverage.xml  --gcov-ignore-parse-errors all --gcov-ignore-errors all
+  - gcovr -r .. --xml-pretty -e ../teshsuite -e MBI -e ../examples/smpi/NAS -e ../examples/smpi/mc -u -o ../xml_coverage.xml  --gcov-ignore-parse-errors all --gcov-ignore-errors all
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
   artifacts:
     expire_in: 1 year
