@@ -8,11 +8,11 @@ $ mkdir temp_testdir-bg-set-signal
 
 $ cd temp_testdir-bg-set-signal
 
-< kill 'SEGV', $$;
-$ mkfile segfault.pl
+< kill -SEGV $$
+$ mkfile segfault.sh
 
 ! expect signal SIGSEGV
-$ perl segfault.pl
+$ sh segfault.sh
 
 $ cd ..
 

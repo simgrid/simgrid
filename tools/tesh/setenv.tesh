@@ -8,11 +8,11 @@ $ cmake -E remove_directory temp_testdir_setenv
 $ mkdir temp_testdir_setenv
 $ cd temp_testdir_setenv
 
-< print "tesh_test_toto=$ENV{tesh_test_toto}";
-$ mkfile testenv.pl
+< echo "tesh_test_toto=$tesh_test_toto"
+$ mkfile testenv.sh
 
 ! setenv tesh_test_toto=blah
-$ perl testenv.pl
+$ sh testenv.sh
 > tesh_test_toto=blah
 
 $ cd ..
