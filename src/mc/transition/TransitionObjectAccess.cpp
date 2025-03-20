@@ -48,7 +48,8 @@ bool ObjectAccessTransition::depends(const Transition* o) const
   return false;
 }
 
-bool ObjectAccessTransition::reversible_race(const Transition* other) const
+bool ObjectAccessTransition::reversible_race(const Transition* other, const odpor::Execution* exec,
+                                             EventHandle this_handle, EventHandle other_handle) const
 {
   xbt_assert(type_ == Type::OBJECT_ACCESS, "Unexpected transition type %s", to_c_str(type_));
 

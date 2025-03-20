@@ -35,7 +35,8 @@ public:
   CommWaitTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
-  bool reversible_race(const Transition* other) const override;
+  bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                       EventHandle other_handle) const override;
 
   bool get_timeout() const { return timeout_; }
   /** ID of the corresponding Communication object in the application, or 0 if unknown */
@@ -61,7 +62,8 @@ public:
   CommTestTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
-  bool reversible_race(const Transition* other) const override;
+  bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                       EventHandle other_handle) const override;
 
   /** ID of the corresponding Communication object in the application, or 0 if unknown */
   unsigned get_comm() const { return comm_; }
@@ -83,7 +85,8 @@ public:
   CommRecvTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
-  bool reversible_race(const Transition* other) const override;
+  bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                       EventHandle other_handle) const override;
 
   /** ID of the corresponding Communication object in the application (or 0 if unknown)*/
   unsigned get_comm() const { return comm_; }
@@ -103,7 +106,8 @@ public:
   CommSendTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
-  bool reversible_race(const Transition* other) const override;
+  bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                       EventHandle other_handle) const override;
 
   /** ID of the corresponding Communication object in the application, or 0 if unknown */
   unsigned get_comm() const { return comm_; }
@@ -123,7 +127,8 @@ public:
   CommIprobeTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
-  bool reversible_race(const Transition* other) const override;
+  bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                       EventHandle other_handle) const override;
   bool can_be_co_enabled(const Transition* o) const override;
 
   bool is_sender_side() const { return is_sender_; }

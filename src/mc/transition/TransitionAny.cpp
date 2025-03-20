@@ -45,7 +45,8 @@ bool TestAnyTransition::depends(const Transition* other) const
       return true;
   return false;
 }
-bool TestAnyTransition::reversible_race(const Transition* other) const
+bool TestAnyTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                                        EventHandle other_handle) const
 {
   xbt_assert(type_ == Type::TESTANY, "Unexpected transition type %s", to_c_str(type_));
 
@@ -81,12 +82,13 @@ bool WaitAnyTransition::depends(const Transition* other) const
       return true;
   return false;
 }
-bool WaitAnyTransition::reversible_race(const Transition* other) const
+bool WaitAnyTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                                        EventHandle other_handle) const
 {
   xbt_assert(type_ == Type::WAITANY, "Unexpected transition type %s", to_c_str(type_));
 
   for (auto const& transition : transitions_)
-    if (transition->reversible_race(other))
+    if (transition->reversible_race(other, exec, this_handle, other_handle))
       return true; // Let's overapproximate to not miss branches, if we can reverse any transition, let's go for it
 
   return false;

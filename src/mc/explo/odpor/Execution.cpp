@@ -9,6 +9,7 @@
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/transition/Transition.hpp"
+#include "src/mc/transition/TransitionSynchro.hpp"
 #include "xbt/asserts.h"
 #include "xbt/backtrace.hpp"
 #include "xbt/log.h"
@@ -156,16 +157,15 @@ std::list<Execution::EventHandle> Execution::get_racing_events_of(Execution::Eve
   return racing_events;
 }
 
-std::list<Execution::EventHandle> Execution::get_reversible_races_of(EventHandle handle) const
+std::list<Execution::EventHandle> Execution::get_reversible_races_of(EventHandle handle, stack_t* S) const
 {
   std::list<EventHandle> reversible_races;
   const auto* this_transition = get_transition_for_handle(handle);
   for (EventHandle race : get_racing_events_of(handle)) {
     const auto* other_transition = get_transition_for_handle(race);
-
-    if (this_transition->reversible_race(other_transition)) {
+    xbt_assert(race < handle); // other_transition --> this_transition
+    if (other_transition->reversible_race(this_transition, this, race, handle))
       reversible_races.push_back(race);
-    }
   }
   return reversible_races;
 }
@@ -548,13 +548,15 @@ void MazurkiewiczTraces::record_new_execution(const Execution& exec)
     XBT_DEBUG("Newly added trace:\n%s\nPreviously known one:\n%s", one_string_textual_trace(seq).c_str(),
               one_string_textual_trace(can_be_equivalent).c_str());
     if (are_equivalent(seq, can_be_equivalent)) {
-      XBT_CRITICAL("Inserted a sequence that is equivalent with an already explored one! Be carefull!");
-      XBT_CRITICAL("Previous sequence was:\n%s", one_string_textual_trace(can_be_equivalent).c_str());
-      XBT_CRITICAL("New one is:\n%s", one_string_textual_trace(seq).c_str());
-      xbt_die("Fix me!");
+      //   XBT_CRITICAL("Inserted a sequence that is equivalent with an already explored one! Be carefull!");
+      //   XBT_CRITICAL("Previous sequence was:\n%s", one_string_textual_trace(can_be_equivalent).c_str());
+      //   XBT_CRITICAL("New one is:\n%s", one_string_textual_trace(seq).c_str());
+      //   xbt_die("Fix me!");
+      return;
     }
   }
   classes_.insert(seq);
+  XBT_INFO("Currently recorded %ld traces", classes_.size());
 }
 
 void MazurkiewiczTraces::log_data()

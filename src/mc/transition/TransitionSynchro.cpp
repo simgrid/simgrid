@@ -10,6 +10,7 @@
 #include "src/mc/transition/TransitionObjectAccess.hpp"
 #include "xbt/asserts.h"
 #include "xbt/ex.h"
+#include "xbt/log.h"
 #include "xbt/string.hpp"
 
 #include <inttypes.h>
@@ -54,21 +55,22 @@ bool BarrierTransition::depends(const Transition* o) const
 
   return false; // barriers are INDEP with non-barrier transitions
 }
-bool BarrierTransition::reversible_race(const Transition* other) const
+bool BarrierTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                                        EventHandle other_handle) const
 {
-  if (other->type_ == Type::ACTOR_CREATE) {
-    const ActorCreateTransition* ctransition = static_cast<const ActorCreateTransition*>(other);
-    xbt_assert(aid_ == ctransition->get_child());
+  if (other->type_ == Type::ACTOR_JOIN) {
+    const ActorJoinTransition* ctransition = static_cast<const ActorJoinTransition*>(other);
+    xbt_assert(aid_ == ctransition->get_target());
     return false;
   }
 
-  switch (type_) {
+  switch (other->type_) {
     case Type::BARRIER_ASYNC_LOCK:
       return true; // BarrierAsyncLock is always enabled
     case Type::BARRIER_WAIT:
       // If the other event is a barrier lock event, then we are not reversible;
       // otherwise we are reversible.
-      return other->type_ != Transition::Type::BARRIER_ASYNC_LOCK;
+      return type_ != Transition::Type::BARRIER_ASYNC_LOCK;
     default:
       xbt_die("Unexpected transition type %s", to_c_str(type_));
   }
@@ -181,29 +183,69 @@ bool MutexTransition::can_be_co_enabled(const Transition* o) const
   return true; // mutexes are INDEP with non-mutex transitions
 }
 
-bool SemaphoreTransition::reversible_race(const Transition* other) const
+bool is_sem_wait_fireable_without_unlock(const odpor::Execution* exec, EventHandle unlock_handle,
+                                         EventHandle wait_handle)
 {
-  if (other->type_ == Type::ACTOR_CREATE) {
-    const ActorCreateTransition* ctransition = static_cast<const ActorCreateTransition*>(other);
-    xbt_assert(aid_ == ctransition->get_child());
-    return false;
+
+  unsigned sem_id  = static_cast<const SemaphoreTransition*>(exec->get_transition_for_handle(unlock_handle))->get_sem();
+  int max_capacity = -1;
+  int nb_lock      = 0;
+  int nb_unlock    = 0;
+
+  bool has_lock_been_found = false;
+
+  for (EventHandle e = wait_handle; e <= wait_handle; e--) {
+
+    if (exec->get_transition_for_handle(e)->type_ != Transition::Type::SEM_ASYNC_LOCK and
+        exec->get_transition_for_handle(e)->type_ != Transition::Type::SEM_UNLOCK)
+      continue;
+
+    // We ignore lock that have occured after the lock corresponding to the considered wait
+    if (not has_lock_been_found and exec->get_transition_for_handle(e)->type_ == Transition::Type::SEM_ASYNC_LOCK) {
+      if (exec->get_actor_with_handle(e) != exec->get_actor_with_handle(wait_handle))
+        continue;
+      else
+        has_lock_been_found = true;
+    }
+
+    auto sem_transition = static_cast<const SemaphoreTransition*>(exec->get_transition_for_handle(e));
+
+    if (sem_transition->get_sem() != sem_id)
+      continue;
+
+    max_capacity = sem_transition->get_capacity();
+    max_capacity += sem_transition->type_ == Transition::Type::SEM_ASYNC_LOCK ? 1 : -1;
+
+    if (e == unlock_handle)
+      continue;
+
+    if (sem_transition->type_ == Transition::Type::SEM_ASYNC_LOCK)
+      nb_lock++;
+    if (sem_transition->type_ == Transition::Type::SEM_UNLOCK)
+      nb_unlock++;
   }
 
+  return max_capacity - nb_lock + nb_unlock >= 0;
+}
+
+bool SemaphoreTransition::reversible_race(const Transition* other, const odpor::Execution* exec,
+                                          EventHandle this_handle, EventHandle other_handle) const
+{
   if (other->type_ == Type::ACTOR_JOIN) {
     const ActorJoinTransition* jtransition = static_cast<const ActorJoinTransition*>(other);
     xbt_assert(aid_ == jtransition->get_target());
     return false;
   }
 
-  switch (type_) {
+  switch (other->type_) {
     case Type::SEM_ASYNC_LOCK:
       return true; // SemAsyncLock is always enabled
     case Type::SEM_UNLOCK:
       return true; // SemUnlock is always enabled
     case Type::SEM_WAIT:
-      // Some times the race is not reversible: we decide to catch it during the exploration
-      // instead of doing tedious computation here.
-      return this->capacity_ > 0;
+      xbt_assert(this->type_ == Type::SEM_UNLOCK);
+      // Some times the race is not reversible
+      return is_sem_wait_fireable_without_unlock(exec, this_handle, other_handle);
     default:
       xbt_die("Unexpected transition type %s", to_c_str(type_));
   }
@@ -212,9 +254,9 @@ bool SemaphoreTransition::reversible_race(const Transition* other) const
 std::string SemaphoreTransition::to_string(bool verbose) const
 {
   if (type_ == Type::SEM_ASYNC_LOCK || type_ == Type::SEM_UNLOCK)
-    return xbt::string_printf("%s(semaphore: %u, capacity: %u)", Transition::to_c_str(type_), sem_, capacity_);
+    return xbt::string_printf("%s(semaphore: %u, capacity: %d)", Transition::to_c_str(type_), sem_, capacity_);
   if (type_ == Type::SEM_WAIT)
-    return xbt::string_printf("%s(semaphore: %u, capacity: %u, granted: %s)", Transition::to_c_str(type_), sem_,
+    return xbt::string_printf("%s(semaphore: %u, capacity: %d, granted: %s)", Transition::to_c_str(type_), sem_,
                               capacity_, granted_ ? "yes" : "no");
   THROW_IMPOSSIBLE;
 }
@@ -223,7 +265,7 @@ SemaphoreTransition::SemaphoreTransition(aid_t issuer, int times_considered, Typ
 {
   sem_      = channel.unpack<unsigned>();
   granted_  = channel.unpack<bool>();
-  capacity_ = channel.unpack<unsigned>();
+  capacity_ = channel.unpack<int>();
 }
 bool SemaphoreTransition::depends(const Transition* o) const
 {
@@ -261,15 +303,16 @@ bool SemaphoreTransition::depends(const Transition* o) const
   return false; // semaphores are INDEP with non-semaphore transitions
 }
 
-bool MutexTransition::reversible_race(const Transition* other) const
+bool MutexTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                                      EventHandle other_handle) const
 {
-  if (other->type_ == Type::ACTOR_CREATE) {
-    const ActorCreateTransition* ctransition = static_cast<const ActorCreateTransition*>(other);
-    xbt_assert(aid_ == ctransition->get_child());
+  if (other->type_ == Type::ACTOR_JOIN) {
+    const ActorJoinTransition* jtransition = static_cast<const ActorJoinTransition*>(other);
+    xbt_assert(aid_ == jtransition->get_target());
     return false;
   }
 
-  switch (type_) {
+  switch (other->type_) {
     case Type::MUTEX_ASYNC_LOCK:
       return true; // MutexAsyncLock is always enabled
     case Type::MUTEX_TEST:
@@ -339,11 +382,12 @@ bool CondvarTransition::depends(const Transition* o) const
   // Independent with transitions that are neither Condvar nor Mutex related
   return false;
 }
-bool CondvarTransition::reversible_race(const Transition* other) const
+bool CondvarTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                                        EventHandle other_handle) const
 {
-  if (other->type_ == Type::ACTOR_CREATE) {
-    const ActorCreateTransition* ctransition = static_cast<const ActorCreateTransition*>(other);
-    xbt_assert(aid_ == ctransition->get_child());
+  if (other->type_ == Type::ACTOR_JOIN) {
+    const ActorJoinTransition* jtransition = static_cast<const ActorJoinTransition*>(other);
+    xbt_assert(aid_ == jtransition->get_target());
     return false;
   }
 

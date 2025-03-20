@@ -319,10 +319,12 @@ public:
    *
    * @param handle the event with respect to which
    * reversible races are computed
+   * @param S the stack of states. This is used to help determine wether a
+   * race is truly reversible
    * @returns a set of event handles, each element of which is an event
    * in this execution which is in a *reversible race* with event `handle`
    */
-  std::list<EventHandle> get_reversible_races_of(EventHandle handle) const;
+  std::list<EventHandle> get_reversible_races_of(EventHandle handle, stack_t* S) const;
 
   /**
    * @brief Computes `pre(e, E)` as described in ODPOR [1]
@@ -400,6 +402,12 @@ public:
    *
    */
   static bool is_in_weak_initial_of(Transition*, const PartialExecution&);
+
+  /**
+   * @brief Computes wether the sequence without the unlock can fire the wait
+   *
+   */
+  bool is_sem_wait_fireable_without_unlock(EventHandle unlock_handle, EventHandle wait_handle) const;
 };
 
 class MazurkiewiczTraces {

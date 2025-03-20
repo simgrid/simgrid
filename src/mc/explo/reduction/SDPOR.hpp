@@ -49,7 +49,7 @@ public:
          ++e_prime) {
 
       auto E_prime = E.get_prefix_before(e_prime + 1);
-      for (const auto e_race : E_prime.get_reversible_races_of(e_prime)) {
+      for (const auto e_race : E_prime.get_reversible_races_of(e_prime, S)) {
 
         State* prev_state  = (*S)[e_race].get();
         const auto choices = E_prime.get_missing_source_set_actors_from(e_race, prev_state->get_backtrack_set());

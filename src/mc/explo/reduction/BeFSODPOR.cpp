@@ -49,7 +49,7 @@ std::unique_ptr<Reduction::RaceUpdate> BeFSODPOR::races_computation(odpor::Execu
     if (E.get_event_with_handle(e_prime).has_race_been_computed())
       continue;
     XBT_VERB("Computing reversible races of Event `%u`", e_prime);
-    for (const auto e : E.get_reversible_races_of(e_prime)) {
+    for (const auto e : E.get_reversible_races_of(e_prime, S)) {
       XBT_DEBUG("... racing event `%u`", e);
       XBT_DEBUG("... race between event `%u`:%s and event `%u`:%s", e_prime,
                 E.get_transition_for_handle(e_prime)->to_string().c_str(), e,
@@ -106,13 +106,7 @@ aid_t BeFSODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 
   XBT_DEBUG("Picking actor %ld among this WuT: %s", next, s->string_of_wut().c_str());
 
-  if (not s->is_actor_enabled(next)) {
-    XBT_DEBUG("BeFS ODPOR wants to execute a disabled transition %s.",
-              s->get_actors_list().at(next).get_transition()->to_string(true).c_str());
-    s->remove_subtree_at_aid(next);
-    s->add_sleep_set(std::make_shared<Transition>(Transition::Type::UNKNOWN, next, 0));
-    return next_to_explore(E, S);
-  }
+  xbt_assert(s->is_actor_enabled(next), "BeFS ODPOR wants to execute a disabled transition. Fix Me!");
 
   return next;
 }

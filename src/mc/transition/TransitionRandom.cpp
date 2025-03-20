@@ -23,7 +23,8 @@ RandomTransition::RandomTransition(aid_t issuer, int times_considered, mc::Chann
   max_ = channel.unpack<int>();
 }
 
-bool RandomTransition::reversible_race(const Transition* other) const
+bool RandomTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                                       EventHandle other_handle) const
 {
   xbt_assert(type_ == Type::RANDOM, "Unexpected transition type %s", to_c_str(type_));
 

@@ -10,10 +10,13 @@
 #include "xbt/ex.h"
 #include "xbt/utility.hpp"   // XBT_DECLARE_ENUM_CLASS
 
+#include <cstdint>
 #include <sstream>
 #include <string>
 
 namespace simgrid::mc {
+
+using EventHandle = uint32_t;
 
 /** An element in the recorded path
  *
@@ -114,8 +117,13 @@ public:
      @note: Be carefull when implementing new transition, this method is NOT symmetrical (meaning that
      this.reversible_race(other) may be different from other.reversible_race(this)). Be sure to implement
      both way or the reduction might fail.
+
+     @note: parameters exec, this_handle and other_handle are only used for some semaphore and condvar for now.
+     In particular, there contains the sequence in which the transitions are found, as well as the id of the
+     transitions in that sequence.
   */
-  virtual bool reversible_race(const Transition* other) const
+  virtual bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                               EventHandle other_handle) const
   {
     xbt_die("%s unimplemented for %s", __func__, to_c_str(type_));
   }

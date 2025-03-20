@@ -24,7 +24,8 @@ public:
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
   bool can_be_co_enabled(const Transition* other) const override;
-  bool reversible_race(const Transition* other) const override;
+  bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                       EventHandle other_handle) const override;
 
   bool get_timeout() const { return timeout_; }
   /** Target ID */
@@ -37,7 +38,8 @@ public:
   ActorSleepTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
-  bool reversible_race(const Transition* other) const override;
+  bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                       EventHandle other_handle) const override;
 };
 
 class ActorCreateTransition : public Transition {
@@ -48,7 +50,8 @@ public:
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
   bool can_be_co_enabled(const Transition* other) const override;
-  bool reversible_race(const Transition* other) const override;
+  bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                       EventHandle other_handle) const override;
 
   /** ID of the created actor */
   aid_t get_child() const { return child_; }

@@ -249,6 +249,9 @@ namespace mc {
 class Channel;
 class State;
 class RemoteApp;
+namespace odpor {
+class Execution;
+}
 }
 } // namespace simgrid
 

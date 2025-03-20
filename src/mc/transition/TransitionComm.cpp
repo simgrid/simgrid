@@ -70,7 +70,8 @@ bool CommWaitTransition::depends(const Transition* other) const
   return false; // Comm transitions are INDEP with non-comm transitions
 }
 
-bool CommWaitTransition::reversible_race(const Transition* other) const
+bool CommWaitTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                                         EventHandle other_handle) const
 {
   xbt_assert(type_ == Type::COMM_WAIT, "Unexpected transition type %s", to_c_str(type_));
 
@@ -128,7 +129,8 @@ bool CommTestTransition::depends(const Transition* other) const
   return false; // Comm transitions are INDEP with non-comm transitions
 }
 
-bool CommTestTransition::reversible_race(const Transition* other) const
+bool CommTestTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                                         EventHandle other_handle) const
 {
   xbt_assert(type_ == Type::COMM_TEST, "Unexpected transition type %s", to_c_str(type_));
   return true; // CommTest is always enabled
@@ -213,7 +215,8 @@ bool CommRecvTransition::depends(const Transition* other) const
   return false; // Comm transitions are INDEP with non-comm transitions
 }
 
-bool CommRecvTransition::reversible_race(const Transition* other) const
+bool CommRecvTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                                         EventHandle other_handle) const
 {
   xbt_assert(type_ == Type::COMM_ASYNC_RECV, "Unexpected transition type %s", to_c_str(type_));
 
@@ -300,7 +303,8 @@ bool CommSendTransition::depends(const Transition* other) const
   return false; // Comm transitions are INDEP with non-comm transitions
 }
 
-bool CommSendTransition::reversible_race(const Transition* other) const
+bool CommSendTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                                         EventHandle other_handle) const
 {
   xbt_assert(type_ == Type::COMM_ASYNC_SEND, "Unexpected transition type %s", to_c_str(type_));
 
@@ -343,7 +347,8 @@ bool CommIprobeTransition::depends(const Transition* other) const
   // Iprobe can't enable a wait and is independent with every non Recv nor Send transition
   return false;
 }
-bool CommIprobeTransition::reversible_race(const Transition* other) const
+bool CommIprobeTransition::reversible_race(const Transition* other, const odpor::Execution* exec,
+                                           EventHandle this_handle, EventHandle other_handle) const
 {
   // In every cases, we can execute Iprobe before someone else
   return true;

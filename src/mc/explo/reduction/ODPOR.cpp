@@ -42,7 +42,7 @@ std::unique_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution
       continue;
 
     XBT_VERB("Computing reversible races of Event `%u`", e_prime);
-    for (const auto e : E.get_reversible_races_of(e_prime)) {
+    for (const auto e : E.get_reversible_races_of(e_prime, S)) {
       XBT_DEBUG("... racing event `%u``", e);
       WutState* prev_state = static_cast<WutState*>((*S)[e].get());
       xbt_assert(prev_state != nullptr, "ODPOR should use WutState. Fix me");
@@ -65,6 +65,8 @@ unsigned long ODPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> up
   auto odpor_updates = static_cast<RaceUpdate*>(updates.get());
 
   for (auto& [state, seq] : odpor_updates->get_value()) {
+    XBT_DEBUG("Going to insert sequence\n%s", odpor::one_string_textual_trace(seq).c_str());
+    XBT_DEBUG("... at state #%ld", state->get_num());
     static_cast<WutState*>(state.get())->insert_into_wakeup_tree(seq);
     nb_updates++;
   }
@@ -83,13 +85,8 @@ aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
   if (next == -1)
     return -1;
 
-  if (not s->is_actor_enabled(next)) {
-    XBT_DEBUG("ODPOR wants to execute a disabled transition %s.",
-              s->get_actors_list().at(next).get_transition()->to_string(true).c_str());
-    s->remove_subtree_at_aid(next);
-    s->add_sleep_set(std::make_shared<Transition>(Transition::Type::UNKNOWN, next, 0));
-    return next_to_explore(E, S);
-  }
+  xbt_assert(s->is_actor_enabled(next), "ODPOR wants to execute a disabled transition. Fix Me!");
+
   return next;
 }
 StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)

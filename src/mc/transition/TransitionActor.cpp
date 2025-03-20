@@ -65,14 +65,15 @@ bool ActorJoinTransition::can_be_co_enabled(const Transition* other) const
   return true;
 }
 
-  bool ActorJoinTransition::reversible_race(const Transition* other) const
-  {
+bool ActorJoinTransition::reversible_race(const Transition* other, const odpor::Execution* exec,
+                                          EventHandle this_handle, EventHandle other_handle) const
+{
   xbt_assert(type_ == Type::ACTOR_JOIN, "Unexpected transition type %s", to_c_str(type_));
 
   // ActorJoin races with another event iff its target `T` is the same as  the actor executing the other transition.
   // Clearly, then, we could not join on that actor `T` and then run a transition by `T`, so no race is reversible
   return false;
-  }
+}
 
   ActorSleepTransition::ActorSleepTransition(aid_t issuer, int times_considered, mc::Channel&)
       : Transition(Type::ACTOR_SLEEP, issuer, times_considered)
@@ -93,7 +94,8 @@ bool ActorSleepTransition::depends(const Transition* other) const
   return false;
 }
 
-bool ActorSleepTransition::reversible_race(const Transition* other) const
+bool ActorSleepTransition::reversible_race(const Transition* other, const odpor::Execution* exec,
+                                           EventHandle this_handle, EventHandle other_handle) const
 {
   xbt_assert(other->type_ == Type::ACTOR_CREATE, "Unexpected transition type %s", to_c_str(type_));
 
@@ -145,7 +147,8 @@ bool ActorCreateTransition::can_be_co_enabled(const Transition* other) const
   return true;
 }
 
-bool ActorCreateTransition::reversible_race(const Transition* other) const
+bool ActorCreateTransition::reversible_race(const Transition* other, const odpor::Execution* exec,
+                                            EventHandle this_handle, EventHandle other_handle) const
 {
   // FIXME: Please review this code, MLaurent :)
   xbt_assert(type_ == Type::ACTOR_CREATE, "Unexpected transition type %s", to_c_str(type_));
