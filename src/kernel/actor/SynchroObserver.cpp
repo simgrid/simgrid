@@ -55,7 +55,7 @@ void SemaphoreObserver::serialize(mc::Channel& channel) const
   channel.pack(type_);
   channel.pack<unsigned>(get_sem()->get_id());
   channel.pack<bool>(false); /* Granted is ignored for LOCK/UNLOCK */
-  channel.pack<unsigned>(get_sem()->get_capacity());
+  channel.pack<int>(get_sem()->get_capacity() - get_sem()->ongoing_acquisitions_.size());
 }
 std::string SemaphoreObserver::to_string() const
 {
