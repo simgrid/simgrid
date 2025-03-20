@@ -20,7 +20,7 @@ class Payload {
   public Host tx_host;
   public String tx_actor_name;
   public double clock_sta;
-};
+}
 
 class CommunicationTX extends Actor {
   String mbox_name;

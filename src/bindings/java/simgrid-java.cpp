@@ -1337,6 +1337,7 @@ XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1size(JNIEnv
     return 0; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return 0;
   }
 }
 XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1empty(JNIEnv* jenv, jclass, jlong cthis,
@@ -1348,6 +1349,7 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1empty(J
     return false; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return false;
   }
 }
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1clear(JNIEnv* jenv, jclass, jlong cthis,

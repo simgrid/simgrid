@@ -49,7 +49,7 @@ class sender extends Actor {
     Engine.info("Done dispatching all messages");
 
     /* Now that all message exchanges were initiated, wait for their completion, in order of creation. */
-    while (pending_comms.size() > 0) {
+    while (!pending_comms.isEmpty()) {
       Comm comm = pending_comms.remove(0);
       comm.await_for(1);
     }
