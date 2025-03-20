@@ -54,7 +54,7 @@ class Sender extends Actor {
     Engine.info("Wait for remaining comm, just to be nice");
     pending_comms.await_all();
   }
-};
+}
 
 class Receiver extends Actor {
   Mailbox mailbox;

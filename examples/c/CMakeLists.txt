@@ -123,21 +123,13 @@ ADD_TESH_FACTORIES(app-masterworker-vivaldi     "*"
                                                 --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                                 ${CMAKE_HOME_DIRECTORY}/examples/c/app-masterworker/app-masterworker-vivaldi.tesh)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "SunOS" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "i386" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-    # Thread-local storage (TLS) is needed for parallel execution, but it doesn't
-    # play well with Ucontexts on 64bit SunOS (at least on x86_64).
-    set(parallel-factories "^ucontext")
-else()
-    set(parallel-factories "*")
-endif()
-
 ADD_TESH_FACTORIES(c-app-bittorrent-parallel "raw" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
                                              --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/app-bittorrent
                                              --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                              --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                              --cd ${CMAKE_HOME_DIRECTORY}/examples/c/app-bittorrent app-bittorrent.tesh)
 
-ADD_TESH_FACTORIES(c-dht-kademlia-parallel "${parallel-factories}" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
+ADD_TESH_FACTORIES(c-dht-kademlia-parallel "*" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
                                            --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/dht-kademlia
                                            --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/c/dht-kademlia
                                            --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms

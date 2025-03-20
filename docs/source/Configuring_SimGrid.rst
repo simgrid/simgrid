@@ -961,7 +961,6 @@ the slowest to the most efficient:
 
  - **thread:** very slow factory using full featured, standard threads.
    They are slow but very standard. Some debuggers or profilers only work with this factory.
- - **ucontext:** fast factory using System V contexts (Linux and FreeBSD only)
  - **boost:** This uses the `context
    implementation <http://www.boost.org/doc/libs/1_59_0/libs/context/doc/html/index.html>`_
    of the boost library for a performance that is comparable to our
@@ -979,7 +978,7 @@ debugging-friendly contexts, as they allow one to set breakpoints
 anywhere with gdb and visualize backtraces for all processes, in order
 to debug concurrency issues. Valgrind is also more comfortable with
 threads, but it should be usable with all factories (Exception: the
-callgrind tool really dislikes raw and ucontext factories).
+callgrind tool really dislikes the raw factory).
 
 .. _cfg=contexts/stack-size:
 
@@ -1048,7 +1047,7 @@ simulations may well fail in parallel mode. It is described in
 
 Note that this feature is only tested on Linux. It may or may not work on other systems.
 
-If you are using the **ucontext** or **raw** context factories, you can
+If you are using the **raw** context factory, you can
 request to execute the user code in parallel. Several threads are
 launched, each of them handling the same number of user contexts at each
 run. To activate this, set the ``contexts/nthreads`` item to the amount

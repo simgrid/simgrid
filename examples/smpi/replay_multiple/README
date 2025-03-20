@@ -16,9 +16,9 @@ This launches an instance "2" that will replay file smpi_replay.txt with 32 proc
 will sleep for 125000000000 flops before the run.
 
 In order to be replayed, a deployment file must be generatedfrom this description file, and from the intended platform
-file and hostfiles. The script generate_multiple_deployment.sh can be used as such :
+file and hostfiles. The script generate_multiple_deployment.py can be used as such :
 
-./generate_multiple_deployment.sh -platform platform_file.xml -hostfile hostfile  description_file deployment.xml
+./generate_multiple_deployment.py -platform platform_file.xml -hostfile hostfile  description_file deployment.xml
 
 The output deployment file will be written in deployment.xml
 

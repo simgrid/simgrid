@@ -91,23 +91,23 @@ JNIEnv* maestro_jenv       = nullptr;
 extern bool do_install_signal_handlers;
 
 /* For upcalls, from the C++ to the JVM */
-static jmethodID CallbackActor_methodId     = 0;
-static jmethodID CallbackActorHost_methodId = 0;
-static jmethodID CallbackBoolean_methodId   = 0;
-static jmethodID CallbackComm_methodId      = 0;
-static jmethodID CallbackDisk_methodId      = 0;
-static jmethodID CallbackDouble_methodId    = 0;
-static jmethodID CallbackDHostDouble_methodId = 0;
-static jmethodID CallbackExec_methodId      = 0;
-static jmethodID CallbackIo_methodId        = 0;
-static jmethodID CallbackLink_methodId      = 0;
-static jmethodID CallbackNetzone_methodId   = 0;
-static jmethodID CallbackVoid_methodId      = 0;
-static jmethodID Actor_methodId             = 0;
+static jmethodID CallbackActor_methodId       = nullptr;
+static jmethodID CallbackActorHost_methodId   = nullptr;
+static jmethodID CallbackBoolean_methodId     = nullptr;
+static jmethodID CallbackComm_methodId        = nullptr;
+static jmethodID CallbackDisk_methodId        = nullptr;
+static jmethodID CallbackDouble_methodId      = nullptr;
+static jmethodID CallbackDHostDouble_methodId = nullptr;
+static jmethodID CallbackExec_methodId        = nullptr;
+static jmethodID CallbackIo_methodId          = nullptr;
+static jmethodID CallbackLink_methodId        = nullptr;
+static jmethodID CallbackNetzone_methodId     = nullptr;
+static jmethodID CallbackVoid_methodId        = nullptr;
+static jmethodID Actor_methodId               = nullptr;
 
 /* Various cached classIds */
-static jclass string_class = 0;
-static jclass actor_class  = 0;
+static jclass string_class = nullptr;
+static jclass actor_class  = nullptr;
 
 /* Various extensions */
 struct ActorJavaExt {
@@ -127,7 +127,7 @@ simgrid::xbt::Extension<simgrid::s4u::Activity, ActivityJavaExt> ActivityJavaExt
 
 static void exception_check_after_upcall(JNIEnv* jenv)
 {
-  jthrowable e = jenv->ExceptionOccurred();
+  const jthrowable e = jenv->ExceptionOccurred();
   if (e) {
     jenv->ExceptionDescribe();
     jenv->ExceptionClear();
@@ -175,72 +175,72 @@ static void get_classctor(JNIEnv* jenv, const char* klassname, const char* ctors
 /* Retrive the jclass and ctor of the Java Disk object */
 static std::pair<jclass, jmethodID> get_classctor_disk(JNIEnv* jenv)
 {
-  static jclass disk_class   = 0;
-  static jmethodID disk_ctor = 0;
-  if (disk_class == 0)
+  static jclass disk_class   = nullptr;
+  static jmethodID disk_ctor = nullptr;
+  if (disk_class == nullptr)
     get_classctor(jenv, "org/simgrid/s4u/Disk", "(J)V", disk_class, disk_ctor);
 
   return std::make_pair(disk_class, disk_ctor);
 }
 static std::pair<jclass, jmethodID> get_classctor_host(JNIEnv* jenv)
 {
-  static jclass host_class   = 0;
-  static jmethodID host_ctor = 0;
-  if (host_class == 0)
+  static jclass host_class   = nullptr;
+  static jmethodID host_ctor = nullptr;
+  if (host_class == nullptr)
     get_classctor(jenv, "org/simgrid/s4u/Host", "(J)V", host_class, host_ctor);
 
   return std::make_pair(host_class, host_ctor);
 }
 static std::pair<jclass, jmethodID> get_classctor_link(JNIEnv* jenv)
 {
-  static jclass link_class   = 0;
-  static jmethodID link_ctor = 0;
-  if (link_class == 0)
+  static jclass link_class   = nullptr;
+  static jmethodID link_ctor = nullptr;
+  if (link_class == nullptr)
     get_classctor(jenv, "org/simgrid/s4u/Link", "(J)V", link_class, link_ctor);
 
   return std::make_pair(link_class, link_ctor);
 }
 static std::pair<jclass, jmethodID> get_classctor_netzone(JNIEnv* jenv)
 {
-  static jclass netzone_class   = 0;
-  static jmethodID netzone_ctor = 0;
-  if (netzone_class == 0)
+  static jclass netzone_class   = nullptr;
+  static jmethodID netzone_ctor = nullptr;
+  if (netzone_class == nullptr)
     get_classctor(jenv, "org/simgrid/s4u/NetZone", "(J)V", netzone_class, netzone_ctor);
 
   return std::make_pair(netzone_class, netzone_ctor);
 }
 static std::pair<jclass, jmethodID> get_classctor_activity(JNIEnv* jenv)
 {
-  static jclass da_class   = 0;
-  static jmethodID da_ctor = 0;
-  if (da_class == 0)
+  static jclass da_class   = nullptr;
+  static jmethodID da_ctor = nullptr;
+  if (da_class == nullptr)
     get_classctor(jenv, "org/simgrid/s4u/Activity", "(JZ)V", da_class, da_ctor);
 
   return std::make_pair(da_class, da_ctor);
 }
 static std::pair<jclass, jmethodID> get_classctor_comm(JNIEnv* jenv)
 {
-  static jclass da_class   = 0;
-  static jmethodID da_ctor = 0;
-  if (da_class == 0)
+  static jclass da_class   = nullptr;
+  static jmethodID da_ctor = nullptr;
+  if (da_class == nullptr)
     get_classctor(jenv, "org/simgrid/s4u/Comm", "(JZ)V", da_class, da_ctor);
 
   return std::make_pair(da_class, da_ctor);
 }
 static std::pair<jclass, jmethodID> get_classctor_exec(JNIEnv* jenv)
 {
-  static jclass da_class   = 0;
-  static jmethodID da_ctor = 0;
-  if (da_class == 0)
+  static jclass da_class   = nullptr;
+  static jmethodID da_ctor = nullptr;
+  if (da_class == nullptr)
     get_classctor(jenv, "org/simgrid/s4u/Exec", "(JZ)V", da_class, da_ctor);
 
   return std::make_pair(da_class, da_ctor);
 }
 static std::pair<jclass, jmethodID> get_classctor_io(JNIEnv* jenv)
 {
-  static jclass da_class   = 0;
-  static jmethodID da_ctor = 0;
-  if (da_class == 0)
+  static jclass da_class   = nullptr;
+  static jmethodID da_ctor = nullptr;
+  if (da_class == nullptr)
     get_classctor(jenv, "org/simgrid/s4u/Io", "(JZ)V", da_class, da_ctor);
 
   return std::make_pair(da_class, da_ctor);
@@ -251,7 +251,7 @@ static std::pair<jclass, jmethodID> get_classctor_io(JNIEnv* jenv)
 /* *********************************************************************************** */
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved)
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void*)
 {
   simgrid_cached_jvm = jvm;
   setlocale(LC_NUMERIC, "C");
@@ -297,7 +297,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved)
 
 static void inline init_exception_class(JNIEnv* jenv, jclass& klass, const char* name)
 {
-  if (klass == 0) {
+  if (klass == nullptr) {
     klass = jenv->FindClass(name);
     xbt_assert(klass, "Class %s not found", name);
     klass = (jclass)jenv->NewGlobalRef(klass);
@@ -305,11 +305,11 @@ static void inline init_exception_class(JNIEnv* jenv, jclass& klass, const char*
 }
 static void rethrow_simgrid_exception(JNIEnv* jenv, std::exception const& e)
 {
-  static jclass assert_ex      = 0; // org/simgrid/s4u/AssertionError
-  static jclass timeout_ex     = 0; // org/simgrid/s4u/TimeoutException
-  static jclass networkfail_ex = 0; // org/simgrid/s4u/NetworkFailureException
-  static jclass hostfail_ex    = 0; // org/simgrid/s4u/HostFailureException
-  static jclass illegal_ex     = 0; // std::invalid_argument <-> java/lang/IllegalArgumentException
+  static jclass assert_ex      = nullptr; // org/simgrid/s4u/AssertionError
+  static jclass timeout_ex     = nullptr; // org/simgrid/s4u/TimeoutException
+  static jclass networkfail_ex = nullptr; // org/simgrid/s4u/NetworkFailureException
+  static jclass hostfail_ex    = nullptr; // org/simgrid/s4u/HostFailureException
+  static jclass illegal_ex     = nullptr; // std::invalid_argument <-> java/lang/IllegalArgumentException
 
   jenv->ExceptionClear();
 
@@ -480,64 +480,66 @@ extern "C" {
    and located somewhere under simgrid_jar.dir/native_headers/org_simgrid_s4u_simgridJNI.h */
 #include "org_simgrid_s4u_simgridJNI.h"
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_try_1loading_1some_1symbols(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong arg)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_try_1loading_1some_1symbols(JNIEnv*, jclass, jlong)
 {
   // Dummy function to check whether simgrid-java is merged in libsimgrid, nothing to do.
   // We just need it to be defined
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1sleep_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                          jobject jthis, jdouble duration)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1sleep_1for(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                          jdouble duration)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
              "You cannot call sleep_for() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::sleep_for(duration);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1sleep_1until(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                            jobject jthis, jdouble wakeup_time)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1sleep_1until(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                            jdouble wakeup_time)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
              "You cannot call sleep_until() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::sleep_until(wakeup_time);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1execute_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis,
-                                                                                  jdouble flop)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1execute_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
+                                                                                  jobject jthis, jdouble flop)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
              "You cannot call execute() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::execute(flop);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1execute_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis,
-                                                                                  jdouble flop, jdouble priority)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1execute_1_1SWIG_11(JNIEnv*, jclass, jlong cthis,
+                                                                                  jobject jthis, jdouble flop,
+                                                                                  jdouble priority)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
              "You cannot call execute() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::execute(flop, priority);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1thread_1execute(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1thread_1execute(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis, jlong chost,
                                                                                jobject jhost, jdouble flop_amounts,
                                                                                jint thread_count)
@@ -547,10 +549,11 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1thread_1execute(J
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::thread_execute((Host*)chost, flop_amounts, thread_count);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
-JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1parallel_1execute(JNIEnv* jenv, jclass jcls, jlong cthis,
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1parallel_1execute(JNIEnv* jenv, jclass, jlong cthis,
                                                                                 jobject jthis, jlongArray jhosts,
                                                                                 jdoubleArray jcompute_amounts,
                                                                                 jdoubleArray jcomm_amounts)
@@ -588,13 +591,14 @@ JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1parallel_1execute(
 
   try {
     simgrid::s4u::this_actor::parallel_execute(chosts, ccompute_amounts, ccomm_amounts);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (Exception const& ex) {
     rethrow_simgrid_exception(jenv, ex);
   }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1seq_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1seq_1init(JNIEnv*, jclass, jlong cthis,
                                                                                 jobject jthis, jdouble flops_amounts)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
@@ -604,7 +608,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1seq_1init(
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1par_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1par_1init(JNIEnv* jenv, jclass, jlong cthis,
                                                                                 jobject jthis, jlongArray jhosts,
                                                                                 jdoubleArray jcompute_amounts,
                                                                                 jdoubleArray jcomm_amounts)
@@ -639,8 +643,8 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1par_1init(
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1async(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                            jobject jthis, jdouble flops_amounts)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1async(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                            jdouble flops_amounts)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
              "You cannot call exec_async() on a remote actor %ld:%s, only on the currently executing actor.",
@@ -650,33 +654,32 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exec_1async(JNIE
   return (jlong)result.get();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis, jlong chost, jobject jhost)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1host(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                         jlong chost, jobject jhost)
 {
   ((Actor*)cthis)->set_host((Host*)chost);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1yield(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                     jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1yield(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   xbt_assert((Actor*)cthis == simgrid::s4u::Actor::self(),
              "You cannot call yield() on a remote actor %ld:%s, only on the currently executing actor.",
              cthis ? ((Actor*)cthis)->get_pid() : -1, cthis ? ((Actor*)cthis)->get_cname() : "null pointer");
   try {
     simgrid::s4u::this_actor::yield();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exit(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                    jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exit(JNIEnv* jenv, jclass, jlong cthis, jobject jthis)
 {
   auto self = (Actor*)cthis;
   try {
     if (Actor::self() == self) {
       // Calling self->kill() makes the JVM to segfault, so let's kill the java actor in Java instead
-      static jclass klass = 0;
-      if (klass == 0) {
+      static jclass klass = nullptr;
+      if (klass == nullptr) {
         klass = jenv->FindClass("org/simgrid/s4u/ForcefulKillException");
         xbt_assert(klass, "Class ForcefulKillException not found");
       }
@@ -684,12 +687,12 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exit(JNIEnv* jenv
       jenv->ThrowNew(klass, "Actor committed a suicide :( It should have talked to someone instead.");
     } else
       self->kill();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1termination_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                   jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1termination_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -701,8 +704,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1termination_1
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1destruction_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                   jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1destruction_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -714,8 +716,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1destruction_1
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1exit(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1exit(JNIEnv* jenv, jclass, jlong cthis, jobject cb)
 {
   if (cb) {
     try {
@@ -725,21 +726,21 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1exit(JNIEnv* 
         exception_check_after_upcall(get_jenv());
       });
     } catch (ForcefulKillException const&) {
+      return;
     }
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1self(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1self(JNIEnv*, jclass jcls)
 {
   Actor* self    = simgrid::s4u::Actor::self();
   jobject result = self ? self->extension<ActorJavaExt>()->jactor_ : nullptr;
   return result;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis,
-                                                                                     jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                     jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -751,9 +752,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1suspend
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1resume_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis,
-                                                                                    jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1resume_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                    jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -765,9 +765,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1resume_
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1sleep_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis,
-                                                                                   jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1sleep_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                   jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -779,9 +778,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1sleep_1
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1wake_1up_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis,
-                                                                                      jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1wake_1up_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                      jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -793,7 +791,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1wake_1u
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1host_1change_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1host_1change_1cb(JNIEnv* jenv, jclass,
                                                                                           jlong cthis, jobject jthis,
                                                                                           jobject cb)
 {
@@ -807,7 +805,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1host_1c
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1termination_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1termination_1cb(JNIEnv* jenv, jclass,
                                                                                          jlong cthis, jobject jthis,
                                                                                          jobject cb)
 {
@@ -821,7 +819,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1termina
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1destruction_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1destruction_1cb(JNIEnv* jenv, jclass,
                                                                                          jlong cthis, jobject jthis,
                                                                                          jobject cb)
 {
@@ -835,134 +833,127 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1destruc
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1daemonize(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1daemonize(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   try {
     ((Actor*)cthis)->daemonize();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1is_1daemon(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1is_1daemon(JNIEnv*, jclass, jlong cthis,
                                                                               jobject jthis)
 {
-  bool res = false;
   try {
-    res = ((Actor*)cthis)->is_daemon();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+    return ((Actor*)cthis)->is_daemon();
+  } catch (ForcefulKillException const&) {
+    return false; /* Actor killed, this is fine. */
   }
-  return res;
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1name(JNIEnv* jenv, jclass, jlong cthis,
                                                                             jobject jthis)
 {
   const char* result = ((Actor*)cthis)->get_cname();
-  if (result)
-    return jenv->NewStringUTF(result);
-  return 0;
+  return result ? jenv->NewStringUTF(result) : nullptr;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                          jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1host(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   return (jlong)((Actor*)cthis)->get_host();
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1pid(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1pid(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   return ((Actor*)cthis)->get_pid();
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1ppid(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1ppid(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   return ((Actor*)cthis)->get_ppid();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1suspend(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                       jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1suspend(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   try {
     ((Actor*)cthis)->suspend();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1resume(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                      jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1resume(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   ((Actor*)cthis)->resume();
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1is_1suspended(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1is_1suspended(JNIEnv*, jclass, jlong cthis,
                                                                                  jobject jthis)
 {
   return ((Actor*)cthis)->is_suspended();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1auto_1restart(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis,
-                                                                                  jboolean jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1auto_1restart(JNIEnv*, jclass, jlong cthis,
+                                                                                  jobject jthis, jboolean jarg2)
 {
   ((Actor*)cthis)->set_auto_restart(jarg2);
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1restart_1count(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1restart_1count(JNIEnv*, jclass, jlong cthis,
+                                                                                   jobject jthis)
 {
   return ((Actor*)cthis)->get_restart_count();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1kill_1time(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1kill_1time(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis, jdouble jarg2)
 {
   ((Actor*)cthis)->set_kill_time(jarg2);
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1kill_1time(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1kill_1time(JNIEnv*, jclass, jlong cthis,
+                                                                                  jobject jthis)
 {
   return ((Actor*)cthis)->get_kill_time();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1kill(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                    jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1kill(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   try {
     ((Actor*)cthis)->kill();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1by_1pid(JNIEnv* jenv, jclass jcls, jint pid)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1by_1pid(JNIEnv*, jclass, jint pid)
 {
   ActorPtr result = simgrid::s4u::Actor::by_pid(pid);
   return result.get() != nullptr ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1join_1_1SWIG_10(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1join_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis)
 {
   try {
     ((Actor*)cthis)->join();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1join_1_1SWIG_11(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1join_1_1SWIG_11(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis, jdouble jarg2)
 {
   try {
     ((Actor*)cthis)->join(jarg2);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1restart(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1restart(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   ActorPtr result = ((Actor*)cthis)->restart();
   result->extension_set<ActorJavaExt>(new ActorJavaExt(jthis));
@@ -970,15 +961,16 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1restart(JNIEnv* 
   return (jlong)result.get();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1kill_1all(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1kill_1all(JNIEnv*, jclass jcls)
 {
   try {
     simgrid::s4u::Actor::kill_all();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1property(JNIEnv* jenv, jclass, jlong cthis,
                                                                                 jobject jthis, jstring jprop)
 {
   std::string cprop  = java_string_to_std_string(jenv, jprop);
@@ -988,7 +980,7 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1property(
   return 0;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1property(JNIEnv* jenv, jclass, jlong cthis,
                                                                              jobject jthis, jstring jprop, jstring jval)
 {
   if (jprop != nullptr && jval != nullptr) {
@@ -1002,8 +994,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1set_1property(JNI
   }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1create(JNIEnv* jenv, jclass jcls, jstring jname,
-                                                                       jlong chost, jobject jhost, jobject jactor)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1create(JNIEnv* jenv, jclass, jstring jname, jlong chost,
+                                                                       jobject jhost, jobject jactor)
 {
   std::string name = java_string_to_std_string(jenv, jname);
   Host* host       = (Host*)chost;
@@ -1021,12 +1013,12 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1create(JNIEnv* j
   return (jlong)result.get();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Actor(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Actor(JNIEnv*, jclass, jlong cthis)
 {
   intrusive_ptr_release((Actor*)cthis);
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1to_1c_1str(JNIEnv* jenv, jclass jcls, jint cthis)
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1to_1c_1str(JNIEnv* jenv, jclass, jint cthis)
 {
   auto arg1          = (simgrid::s4u::Activity::State)cthis;
   const char* result = Activity::to_c_str(arg1);
@@ -1035,25 +1027,25 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1to_1c_1str(
   return 0;
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1assigned(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis)
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1assigned(JNIEnv*, jclass, jlong cthis,
+                                                                                   jobject jthis)
 {
   return ((Activity*)cthis)->is_assigned();
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1dependencies_1solved(JNIEnv* jenv, jclass jcls,
-                                                                                           jlong cthis, jobject jthis)
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1dependencies_1solved(JNIEnv*, jclass, jlong cthis,
+                                                                                           jobject jthis)
 {
   return ((Activity*)cthis)->dependencies_solved();
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1has_1no_1successor(JNIEnv* jenv, jclass jcls,
-                                                                                         jlong cthis, jobject jthis)
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1has_1no_1successor(JNIEnv*, jclass, jlong cthis,
+                                                                                         jobject jthis)
 {
   return ((Activity*)cthis)->has_no_successor();
 }
 
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1dependencies(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1dependencies(JNIEnv* jenv, jclass,
                                                                                             jlong cthis, jobject jthis)
 {
   auto [activity_class, activity_ctor] = get_classctor_activity(jenv);
@@ -1084,7 +1076,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1d
   return jres;
 }
 
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1successors(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1successors(JNIEnv* jenv, jclass,
                                                                                           jlong cthis, jobject jthis)
 {
   auto [activity_class, activity_ctor] = get_classctor_activity(jenv);
@@ -1114,74 +1106,75 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1s
   return jres;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Activity(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Activity(JNIEnv*, jclass, jlong cthis)
 {
   intrusive_ptr_release((Activity*)cthis);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1start(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1start(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   try {
     ((Activity*)cthis)->start();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1test(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis)
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1test(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   return ((Activity*)cthis)->test();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1await_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1await_1for(JNIEnv* jenv, jclass, jlong cthis,
                                                                              jobject jthis, jdouble jarg2)
 {
   try {
     ((Activity*)cthis)->wait_for(jarg2);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1await_1for_1or_1cancel(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1await_1for_1or_1cancel(JNIEnv* jenv, jclass,
                                                                                          jlong cthis, jobject jthis,
                                                                                          jdouble jarg2)
 {
   try {
     ((Activity*)cthis)->wait_for(jarg2);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1await_1until(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1await_1until(JNIEnv* jenv, jclass, jlong cthis,
                                                                                jobject jthis, jdouble jarg2)
 {
   try {
     ((Activity*)cthis)->wait_until(jarg2);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1cancel(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1cancel(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   ((Activity*)cthis)->cancel();
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1state(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1state(JNIEnv*, jclass, jlong cthis,
                                                                              jobject jthis)
 {
   return (jint)((Activity*)cthis)->get_state();
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1state_1str(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis)
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1state_1str(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                     jobject jthis)
 {
   const char* result = ((Activity const*)cthis)->get_state_str();
   if (result)
@@ -1189,55 +1182,55 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1state_
   return 0;
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1canceled(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis)
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1canceled(JNIEnv*, jclass, jlong cthis,
+                                                                                   jobject jthis)
 {
   return ((Activity*)cthis)->is_canceled();
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1failed(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1failed(JNIEnv*, jclass, jlong cthis,
                                                                                  jobject jthis)
 {
   return ((Activity*)cthis)->is_failed();
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1done(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1done(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis)
 {
   return ((Activity*)cthis)->is_done();
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1detached(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis)
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1detached(JNIEnv*, jclass, jlong cthis,
+                                                                                   jobject jthis)
 {
   return ((Activity*)cthis)->is_detached();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1suspend(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                          jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1suspend(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   try {
     ((Activity*)cthis)->suspend();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1resume(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1resume(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   try {
     ((Activity*)cthis)->resume();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1suspended(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis)
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1suspended(JNIEnv*, jclass, jlong cthis,
+                                                                                    jobject jthis)
 {
   return ((Activity*)cthis)->is_suspended();
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1name(JNIEnv* jenv, jclass, jlong cthis,
                                                                                jobject jthis)
 {
   const char* cname = ((Activity*)cthis)->get_cname();
@@ -1246,43 +1239,42 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1name(J
   return 0;
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1remaining(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1remaining(JNIEnv*, jclass, jlong cthis,
+                                                                                    jobject jthis)
 {
   return ((Activity*)cthis)->get_remaining();
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1start_1time(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1start_1time(JNIEnv*, jclass, jlong cthis,
+                                                                                      jobject jthis)
 {
   return ((Activity*)cthis)->get_start_time();
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1finish_1time(JNIEnv* jenv, jclass jcls,
-                                                                                       jlong cthis, jobject jthis)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1finish_1time(JNIEnv*, jclass, jlong cthis,
+                                                                                       jobject jthis)
 {
   return ((Activity*)cthis)->get_finish_time();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1mark(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                       jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1mark(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   ((Activity*)cthis)->mark();
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1marked(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1is_1marked(JNIEnv*, jclass, jlong cthis,
                                                                                  jobject jthis)
 {
   return ((Activity*)cthis)->is_marked();
 }
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1data(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1get_1data(JNIEnv* jenv, jclass, jlong cthis)
 {
   jobject cdata = ((Activity*)cthis)->get_data<_jobject>();
   if (cdata != nullptr)
     cdata = jenv->NewLocalRef(cdata);
   return cdata;
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1set_1data(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1set_1data(JNIEnv* jenv, jclass, jlong cthis,
                                                                             jobject obj)
 {
   // Clean any object already stored
@@ -1298,17 +1290,17 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1set_1data(JNIE
   ((Activity*)cthis)->set_data(glob);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1ActivitySet(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1ActivitySet(JNIEnv*, jclass jcls)
 {
   ActivitySetPtr result(new ActivitySet());
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1ActivitySet(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1ActivitySet(JNIEnv*, jclass, jlong cthis)
 {
   intrusive_ptr_release(((ActivitySet*)cthis));
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1push(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1push(JNIEnv* jenv, jclass, jlong cthis,
                                                                           jobject jthis, jlong cactivity,
                                                                           jobject jactivity)
 {
@@ -1317,89 +1309,96 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1push(JNIEnv
     jobject glob = jenv->NewGlobalRef(jactivity);
     act->extension_set<ActivityJavaExt>(new ActivityJavaExt(glob));
     ((ActivitySet*)cthis)->push(act);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1erase(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1erase(JNIEnv* jenv, jclass, jlong cthis,
                                                                            jobject jthis, jlong cactivity,
                                                                            jobject jactivity)
 {
   try {
     ActivityPtr act((Activity*)cactivity);
     ((ActivitySet*)cthis)->erase(act);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1size(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1size(JNIEnv* jenv, jclass, jlong cthis,
                                                                           jobject jthis)
 {
   try {
     return ((ActivitySet*)cthis)->size();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return 0;
   }
-  return 0;
 }
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1empty(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1empty(JNIEnv* jenv, jclass, jlong cthis,
                                                                                jobject jthis)
 {
   try {
     return ((ActivitySet*)cthis)->empty();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return false; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return false;
   }
-  return false;
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1clear(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1clear(JNIEnv* jenv, jclass, jlong cthis,
                                                                            jobject jthis)
 {
   try {
     ((ActivitySet*)cthis)->clear();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1at(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1at(JNIEnv* jenv, jclass, jlong cthis,
                                                                            jobject jthis, jint index)
 {
   try {
     return jenv->NewLocalRef(((ActivitySet*)cthis)->at(index)->extension<ActivityJavaExt>()->jactivity_);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return nullptr; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return nullptr;
   }
-  return nullptr;
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1all_1for(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis,
-                                                                                     jdouble timeout)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1all_1for(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                     jobject jthis, jdouble timeout)
 {
   try {
     ((ActivitySet*)cthis)->wait_all_for(timeout);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1all(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1all(JNIEnv* jenv, jclass, jlong cthis,
                                                                                 jobject jthis)
 {
   try {
     ((ActivitySet*)cthis)->wait_all();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1test_1any(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1test_1any(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                  jobject jthis)
 {
   try {
     ActivityPtr act = ((ActivitySet*)cthis)->test_any();
@@ -1410,13 +1409,14 @@ XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1test_1an
     auto local                                    = jenv->NewLocalRef(glob);
     jenv->DeleteGlobalRef(glob);
     return local;
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return nullptr; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return nullptr;
   }
-  return nullptr;
 }
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1any_1for(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1any_1for(JNIEnv* jenv, jclass,
                                                                                         jlong cthis, jobject jthis,
                                                                                         jdouble timeout)
 {
@@ -1429,14 +1429,15 @@ XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1a
     auto local                                    = jenv->NewLocalRef(glob);
     jenv->DeleteGlobalRef(glob);
     return local;
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return nullptr; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return nullptr;
   }
-  return nullptr;
 }
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1any(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1any(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                   jobject jthis)
 {
   try {
     ActivityPtr act = ((ActivitySet*)cthis)->wait_any();
@@ -1447,13 +1448,14 @@ XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1await_1a
     auto local                                    = jenv->NewLocalRef(glob);
     jenv->DeleteGlobalRef(glob);
     return local;
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return nullptr; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return nullptr;
   }
-  return nullptr;
 }
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1get_1failed_1activity(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1get_1failed_1activity(JNIEnv* jenv, jclass,
                                                                                               jlong cthis,
                                                                                               jobject jthis)
 {
@@ -1466,25 +1468,27 @@ XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1get_1fai
     auto local                                    = jenv->NewLocalRef(glob);
     jenv->DeleteGlobalRef(glob);
     return local;
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return nullptr; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return nullptr;
   }
-  return nullptr;
 }
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1has_1failed_1activity(JNIEnv* jenv,
-                                                                                               jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_ActivitySet_1has_1failed_1activity(JNIEnv* jenv, jclass,
+                                                                                               jlong cthis,
                                                                                                jobject jthis)
 {
   try {
     return ((ActivitySet*)cthis)->has_failed_activities();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return false; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return false;
   }
-  return false;
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1start_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1start_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -1496,9 +1500,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1start_1cb(JNIE
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1start_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis,
-                                                                                  jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1start_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                  jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -1510,7 +1513,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1start_1c
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1completion_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1completion_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -1522,7 +1525,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1completion_1cb
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1completion_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1completion_1cb(JNIEnv* jenv, jclass,
                                                                                        jlong cthis, jobject jthis,
                                                                                        jobject cb)
 {
@@ -1536,9 +1539,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1completi
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis,
-                                                                                    jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                    jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -1550,9 +1552,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1suspend_
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1resume_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis,
-                                                                                   jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1resume_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                   jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -1564,7 +1565,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1resume_1
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1veto_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1veto_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -1576,7 +1577,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1veto_1cb(JNIEn
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1veto_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1veto_1cb(JNIEnv* jenv, jclass, jlong cthis,
                                                                                  jobject jthis, jobject cb)
 {
   if (cb) {
@@ -1589,7 +1590,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1on_1this_1veto_1cb
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1add_1successor(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1add_1successor(JNIEnv*, jclass, jlong cthis,
                                                                              jobject jthis, jlong cother,
                                                                              jobject jother)
 {
@@ -1598,7 +1599,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1add_1successor(JNI
   self->add_successor(other);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1remove_1successor(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1remove_1successor(JNIEnv*, jclass, jlong cthis,
                                                                                 jobject jthis, jlong cother,
                                                                                 jobject jother)
 {
@@ -1607,14 +1608,14 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1remove_1successor(
   self->remove_successor(other);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1name(JNIEnv* jenv, jclass, jlong cthis,
                                                                         jobject jthis, jstring jarg2)
 {
   auto* self = (Exec*)cthis;
   self->set_name(java_string_to_std_string(jenv, jarg2));
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1name(JNIEnv* jenv, jclass, jlong cthis,
                                                                            jobject jthis)
 {
   const char* result = ((Exec*)cthis)->get_cname();
@@ -1624,28 +1625,27 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1name(JNIEn
   return 0;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1tracing_1category(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis,
-                                                                                     jstring jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1tracing_1category(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                     jobject jthis, jstring jarg2)
 {
   auto self = (Exec*)cthis;
   self->set_tracing_category(java_string_to_std_string(jenv, jarg2));
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1tracing_1category(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1tracing_1category(JNIEnv* jenv, jclass,
                                                                                         jlong cthis, jobject jthis)
 {
   std::string result = ((Exec*)cthis)->get_tracing_category();
   return jenv->NewStringUTF(result.c_str());
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1detach_1_1SWIG_10(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1detach_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
                                                                                 jobject jthis)
 {
   ((Exec*)cthis)->detach();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1detach_1_1SWIG_11(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1detach_1_1SWIG_11(JNIEnv* jenv, jclass, jlong cthis,
                                                                                 jobject jthis, jobject cb)
 {
   if (cb) {
@@ -1658,26 +1658,26 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1detach_1_1SWIG_11(
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1cancel(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                     jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1cancel(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   auto* self = (Exec*)cthis;
   self->cancel();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1await_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1await_1for(JNIEnv* jenv, jclass, jlong cthis,
                                                                          jobject jthis, jdouble jarg2)
 {
   auto* self = (Exec*)cthis;
   try {
     self->wait_for(jarg2);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1start_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1start_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -1689,7 +1689,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1start_1cb(JNIEnv
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1start_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1start_1cb(JNIEnv* jenv, jclass, jlong cthis,
                                                                                 jobject jthis, jobject cb)
 {
   if (cb) {
@@ -1702,7 +1702,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1start_1cb(
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1completion_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1completion_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -1714,9 +1714,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1completion_1cb(J
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1completion_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis,
-                                                                                     jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1completion_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                     jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -1728,9 +1727,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1completion
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis,
-                                                                                  jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                  jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -1742,7 +1740,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1suspend_1c
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1resume_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1resume_1cb(JNIEnv* jenv, jclass, jlong cthis,
                                                                                  jobject jthis, jobject cb)
 {
   if (cb) {
@@ -1755,7 +1753,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1resume_1cb
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1veto_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1veto_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -1767,7 +1765,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1veto_1cb(JNIEnv*
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1veto_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1veto_1cb(JNIEnv* jenv, jclass, jlong cthis,
                                                                                jobject jthis, jobject cb)
 {
   if (cb) {
@@ -1780,14 +1778,14 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1on_1this_1veto_1cb(J
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1add_1successor(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis, jlong jarg2, jobject jarg2_)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1add_1successor(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                           jlong jarg2, jobject jarg2_)
 {
   auto* self = (Io*)cthis;
   self->add_successor((Activity*)jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1remove_1successor(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1remove_1successor(JNIEnv*, jclass, jlong cthis,
                                                                               jobject jthis, jlong jarg2,
                                                                               jobject jarg2_)
 {
@@ -1795,14 +1793,14 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1remove_1successor(JN
   self->remove_successor((Activity*)jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                      jobject jthis, jstring jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1name(JNIEnv* jenv, jclass, jlong cthis, jobject jthis,
+                                                                      jstring jarg2)
 {
   auto* self = (Io*)cthis;
   self->set_name(java_string_to_std_string(jenv, jarg2));
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1get_1name(JNIEnv* jenv, jclass, jlong cthis,
                                                                          jobject jthis)
 {
   const char* result = ((Io*)cthis)->get_cname();
@@ -1811,28 +1809,27 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1get_1name(JNIEnv*
   return 0;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1tracing_1category(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis,
-                                                                                   jstring jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1tracing_1category(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                   jobject jthis, jstring jarg2)
 {
   auto* self = (Io*)cthis;
   self->set_tracing_category(java_string_to_std_string(jenv, jarg2));
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1get_1tracing_1category(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis)
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1get_1tracing_1category(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                      jobject jthis)
 {
   std::string result = ((Io*)cthis)->get_tracing_category();
   return jenv->NewStringUTF(result.c_str());
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1detach_1_1SWIG_10(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1detach_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
                                                                               jobject jthis)
 {
   ((Io*)cthis)->detach();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1detach_1_1SWIG_11(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1detach_1_1SWIG_11(JNIEnv* jenv, jclass, jlong cthis,
                                                                               jobject jthis, jobject cb)
 {
   if (cb) {
@@ -1845,58 +1842,58 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1detach_1_1SWIG_11(JN
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1cancel(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                   jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1cancel(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   auto* self = (Io*)cthis;
   self->cancel();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1await_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                       jobject jthis, jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1await_1for(JNIEnv* jenv, jclass, jlong cthis, jobject jthis,
+                                                                       jdouble jarg2)
 {
   auto* self = (Io*)cthis;
   try {
     self->wait_for(jarg2);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Barrier_1create(JNIEnv* jenv, jclass jcls, jlong size)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Barrier_1create(JNIEnv*, jclass, jlong size)
 {
   BarrierPtr result = simgrid::s4u::Barrier::create(size);
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Barrier_1to_1string(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Barrier_1to_1string(JNIEnv* jenv, jclass, jlong cthis,
                                                                                jobject jthis)
 {
   std::string result = ((Barrier*)cthis)->to_string();
   return jenv->NewStringUTF(result.c_str());
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Barrier_1await(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Barrier_1await(JNIEnv* jenv, jclass, jlong cthis,
                                                                            jobject jthis)
 {
-  bool res = false;
   try {
-    res = ((Barrier*)cthis)->wait();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+    return ((Barrier*)cthis)->wait();
+  } catch (ForcefulKillException const&) {
+    return false; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return false;
   }
-  return res;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Barrier(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Barrier(JNIEnv*, jclass, jlong cthis)
 {
   intrusive_ptr_release((Barrier*)cthis);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1send_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1send_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -1908,7 +1905,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1send_1cb(JNIEn
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1send_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1send_1cb(JNIEnv* jenv, jclass, jlong cthis,
                                                                                  jobject jthis, jobject cb)
 {
   if (cb) {
@@ -1921,7 +1918,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1send_1cb
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1recv_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1recv_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -1933,7 +1930,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1recv_1cb(JNIEn
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1recv_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1recv_1cb(JNIEnv* jenv, jclass, jlong cthis,
                                                                                  jobject jthis, jobject cb)
 {
   if (cb) {
@@ -1946,23 +1943,23 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1recv_1cb
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1sendto_1init_1_1SWIG_10(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1sendto_1init_1_1SWIG_10(JNIEnv*, jclass jcls)
 {
   CommPtr result = simgrid::s4u::Comm::sendto_init();
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1sendto_1init_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
-                                                                                       jlong cfrom, jobject jfrom,
-                                                                                       jlong cto, jobject jto)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1sendto_1init_1_1SWIG_11(JNIEnv*, jclass, jlong cfrom,
+                                                                                       jobject jfrom, jlong cto,
+                                                                                       jobject jto)
 {
   CommPtr result = simgrid::s4u::Comm::sendto_init((Host*)cfrom, (Host*)cto);
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1sendto_1async(JNIEnv* jenv, jclass jcls, jlong cfrom,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1sendto_1async(JNIEnv*, jclass, jlong cfrom,
                                                                              jobject jfrom, jlong cto, jobject jto,
                                                                              jlong jarg3)
 {
@@ -1971,53 +1968,52 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1sendto_1async(JNI
   return (jlong)result.get();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1sendto(JNIEnv* jenv, jclass jcls, jlong cfrom,
-                                                                     jobject jfrom, jlong cto, jobject jto, jlong jarg3)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1sendto(JNIEnv*, jclass, jlong cfrom, jobject jfrom,
+                                                                     jlong cto, jobject jto, jlong jarg3)
 {
   try {
     simgrid::s4u::Comm::sendto((Host*)cfrom, (Host*)cto, jarg3);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1source(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                          jobject jthis, jlong chost, jobject jhost)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1source(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                          jlong chost, jobject jhost)
 {
   ((Comm*)cthis)->set_source((Host*)chost);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1source(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1source(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   return (jlong)((Comm*)cthis)->get_source();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1destination(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1destination(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis, jlong chost,
                                                                                jobject jhost)
 {
   ((Comm*)cthis)->set_destination((Host*)chost);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1destination(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1destination(JNIEnv*, jclass, jlong cthis,
                                                                                 jobject jthis)
 {
   return (jlong)((Comm*)cthis)->get_destination();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1mailbox(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis, jlong jarg2, jobject jarg2_)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1mailbox(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                           jlong jarg2, jobject jarg2_)
 {
   ((Comm*)cthis)->set_mailbox((Mailbox*)jarg2);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1mailbox(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                            jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1mailbox(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   return (jlong)((Comm*)cthis)->get_mailbox();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1src_1data(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1src_1data(JNIEnv* jenv, jclass, jlong cthis,
                                                                              jobject jthis, jobject payload)
 {
   auto self = (Comm*)cthis;
@@ -2026,7 +2022,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1src_1data(JNI
   self->set_src_data(glob);
 }
 
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1payload(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1payload(JNIEnv* jenv, jclass, jlong cthis,
                                                                               jobject jthis)
 {
   auto self    = (Comm*)cthis;
@@ -2037,52 +2033,53 @@ XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1payload(JN
   return local;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1payload_1size(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1payload_1size(JNIEnv*, jclass, jlong cthis,
                                                                                  jobject jthis, jlong jarg2)
 {
   auto self = (Comm*)cthis;
   self->set_payload_size(jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1rate(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis, jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1rate(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                        jdouble jarg2)
 {
   auto self = (Comm*)cthis;
   self->set_rate(jarg2);
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1is_1assigned(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1is_1assigned(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis)
 {
   auto self = (Comm*)cthis;
   return self->is_assigned();
 }
 
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1sender(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1sender(JNIEnv*, jclass, jlong cthis,
                                                                              jobject jthis)
 {
   ActorPtr result = ((Comm*)cthis)->get_sender();
   return result.get() != nullptr ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
 }
 
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1receiver(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1receiver(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis)
 {
   ActorPtr result = ((Comm*)cthis)->get_receiver();
   return result.get() != nullptr ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1await_1for(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1await_1for(JNIEnv* jenv, jclass, jlong cthis,
                                                                          jobject jthis, jdouble jarg2)
 {
   try {
     ((Comm*)cthis)->wait_for(jarg2);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1start_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1start_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -2094,9 +2091,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1start_1cb(JNIE
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1start_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis,
-                                                                                  jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1start_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                  jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -2108,7 +2104,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1start_1c
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1completion_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1completion_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -2120,7 +2116,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1completion_1cb
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1completion_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1completion_1cb(JNIEnv* jenv, jclass,
                                                                                        jlong cthis, jobject jthis,
                                                                                        jobject cb)
 {
@@ -2134,9 +2130,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1completi
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis,
-                                                                                    jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                    jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -2148,9 +2143,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1suspend_
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1resume_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis,
-                                                                                   jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1resume_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                   jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -2162,7 +2156,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1resume_1
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1veto_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1veto_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -2174,7 +2168,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1veto_1cb(JNIEn
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1veto_1cb(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1veto_1cb(JNIEnv* jenv, jclass, jlong cthis,
                                                                                  jobject jthis, jobject cb)
 {
   if (cb) {
@@ -2187,14 +2181,14 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1on_1this_1veto_1cb
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1add_1successor(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1add_1successor(JNIEnv*, jclass, jlong cthis,
                                                                              jobject jthis, jlong jarg2, jobject jarg2_)
 {
   auto self = (Comm*)cthis;
   self->add_successor((Activity*)jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1remove_1successor(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1remove_1successor(JNIEnv*, jclass, jlong cthis,
                                                                                 jobject jthis, jlong jarg2,
                                                                                 jobject jarg2_)
 {
@@ -2202,14 +2196,14 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1remove_1successor(
   self->remove_successor((Activity*)jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1name(JNIEnv* jenv, jclass, jlong cthis,
                                                                         jobject jthis, jstring jarg2)
 {
   auto self = (Comm*)cthis;
   self->set_name(java_string_to_std_string(jenv, jarg2));
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1name(JNIEnv* jenv, jclass, jlong cthis,
                                                                            jobject jthis)
 {
   const char* result = ((Comm*)cthis)->get_cname();
@@ -2218,29 +2212,28 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1name(JNIEn
   return 0;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1tracing_1category(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis,
-                                                                                     jstring jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1set_1tracing_1category(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                     jobject jthis, jstring jarg2)
 {
   auto self = (Comm*)cthis;
   self->set_tracing_category(java_string_to_std_string(jenv, jarg2));
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1tracing_1category(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1get_1tracing_1category(JNIEnv* jenv, jclass,
                                                                                         jlong cthis, jobject jthis)
 {
   std::string result = ((Comm*)cthis)->get_tracing_category();
   return jenv->NewStringUTF(result.c_str());
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1detach_1_1SWIG_10(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1detach_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
                                                                                 jobject jthis)
 {
   auto* self = (Comm*)cthis;
   self->detach();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1detach_1_1SWIG_11(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1detach_1_1SWIG_11(JNIEnv* jenv, jclass, jlong cthis,
                                                                                 jobject jthis, jobject cb)
 {
   if (cb) {
@@ -2253,26 +2246,24 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1detach_1_1SWIG_11(
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1cancel(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                     jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1cancel(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   ((Comm*)cthis)->cancel();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1ConditionVariable(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1ConditionVariable(JNIEnv*, jclass, jlong cthis)
 {
   intrusive_ptr_release((ConditionVariable*)cthis);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1create(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1create(JNIEnv*, jclass jcls)
 {
   ConditionVariablePtr result = simgrid::s4u::ConditionVariable::create();
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await_1until(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await_1until(JNIEnv* jenv, jclass,
                                                                                         jlong cthis, jobject jthis,
                                                                                         jlong cmutex, jobject jmutex,
                                                                                         jdouble jarg3)
@@ -2284,16 +2275,16 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await
   try {
     if (std::cv_status::timeout == ((ConditionVariable*)cthis)->wait_until(((Mutex*)cmutex), jarg3))
       throw TimeoutException(XBT_THROW_POINT, "timeouted!");
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await_1for(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis,
-                                                                                      jlong cmutex, jobject jmutex,
-                                                                                      jdouble jarg3)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await_1for(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                      jobject jthis, jlong cmutex,
+                                                                                      jobject jmutex, jdouble jarg3)
 {
   if (!cmutex) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "the mutex associated to this CV is null");
@@ -2302,49 +2293,52 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1await
   try {
     if (std::cv_status::timeout == ((ConditionVariable*)cthis)->wait_for(((Mutex*)cmutex), jarg3))
       throw TimeoutException(XBT_THROW_POINT, "timeouted!");
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1notify_1one(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1notify_1one(JNIEnv* jenv, jclass,
                                                                                        jlong cthis, jobject jthis)
 {
   try {
     ((ConditionVariable*)cthis)->notify_one();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1notify_1all(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_ConditionVariable_1notify_1all(JNIEnv* jenv, jclass,
                                                                                        jlong cthis, jobject jthis)
 {
   try {
     ((ConditionVariable*)cthis)->notify_all();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1add_1disk(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis, jstring jname,
-                                                                         jdouble read_bw, jdouble write_bw)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1add_1disk(JNIEnv* jenv, jclass, jlong cthis,
+                                                                         jobject jthis, jstring jname, jdouble read_bw,
+                                                                         jdouble write_bw)
 {
   return (jlong)((Host*)cthis)->add_disk(java_string_to_std_string(jenv, jname), read_bw, write_bw);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1create_1vm(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1create_1vm(JNIEnv* jenv, jclass, jlong cthis,
                                                                           jobject jthis, jstring jname,
                                                                           jint core_amount)
 {
   return (jlong)((Host*)cthis)->create_vm(java_string_to_std_string(jenv, jname), core_amount);
 }
 
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1disks(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1disks(JNIEnv* jenv, jclass, jlong cthis,
                                                                                  jobject jthis)
 {
   auto [disk_class, disk_ctor] = get_classctor_disk(jenv);
@@ -2359,7 +2353,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1disks
 
   return jres;
 }
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1properties_1names(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1properties_1names(JNIEnv* jenv, jclass,
                                                                                              jlong cthis, jobject jthis)
 {
   const std::unordered_map<std::string, std::string>* cproperties = ((Host*)cthis)->get_properties();
@@ -2372,7 +2366,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1prope
   }
   return jres;
 }
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1property(JNIEnv* jenv, jclass, jlong cthis,
                                                                                jobject jthis, jstring jprop)
 {
   std::string cprop  = java_string_to_std_string(jenv, jprop);
@@ -2381,7 +2375,7 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1property(J
     return jenv->NewStringUTF(result);
   return 0;
 }
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1name(JNIEnv* jenv, jclass, jlong cthis,
                                                                            jobject jthis)
 {
   const char* result = ((Disk*)cthis)->get_cname();
@@ -2390,7 +2384,7 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1name(JNIEn
   return nullptr;
 }
 
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1data(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1data(JNIEnv* jenv, jclass, jlong cthis,
                                                                            jobject jthis)
 {
   jobject cdata = ((Host*)cthis)->get_data<_jobject>();
@@ -2399,7 +2393,7 @@ XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1data(JNIEn
   return cdata;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1data(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1data(JNIEnv* jenv, jclass, jlong cthis,
                                                                         jobject jthis, jobject jdata)
 {
   // Clean any object already stored
@@ -2415,40 +2409,37 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1data(JNIEnv* 
   ((Disk*)cthis)->set_data(glob);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1read_1bandwidth(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis,
-                                                                                   jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1read_1bandwidth(JNIEnv*, jclass, jlong cthis,
+                                                                                   jobject jthis, jdouble jarg2)
 {
   ((Disk*)cthis)->set_read_bandwidth(jarg2);
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1read_1bandwidth(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1read_1bandwidth(JNIEnv*, jclass, jlong cthis,
+                                                                                      jobject jthis)
 {
   return ((Disk*)cthis)->get_read_bandwidth();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1write_1bandwidth(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis,
-                                                                                    jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1write_1bandwidth(JNIEnv*, jclass, jlong cthis,
+                                                                                    jobject jthis, jdouble jarg2)
 {
   ((Disk*)cthis)->set_write_bandwidth(jarg2);
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1write_1bandwidth(JNIEnv* jenv, jclass jcls,
-                                                                                       jlong cthis, jobject jthis)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1write_1bandwidth(JNIEnv*, jclass, jlong cthis,
+                                                                                       jobject jthis)
 {
   return ((Disk*)cthis)->get_write_bandwidth();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1readwrite_1bandwidth(JNIEnv* jenv, jclass jcls,
-                                                                                        jlong cthis, jobject jthis,
-                                                                                        jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1readwrite_1bandwidth(JNIEnv*, jclass, jlong cthis,
+                                                                                        jobject jthis, jdouble jarg2)
 {
   ((Disk*)cthis)->set_readwrite_bandwidth(jarg2);
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1property(JNIEnv* jenv, jclass, jlong cthis,
                                                                                jobject jthis, jstring jprop)
 {
   std::string cprop  = java_string_to_std_string(jenv, jprop);
@@ -2458,7 +2449,7 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1property(J
   return 0;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1property(JNIEnv* jenv, jclass, jlong cthis,
                                                                             jobject jthis, jstring jprop, jstring jval)
 {
   if (jprop != nullptr && jval != nullptr) {
@@ -2472,33 +2463,31 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1property(JNIE
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis, jlong chost, jobject jhost)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1host(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                        jlong chost, jobject jhost)
 {
   ((Disk*)cthis)->set_host((Host*)chost);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1host(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   return (jlong)((Disk*)cthis)->get_host();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1concurrency_1limit(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis,
-                                                                                      jint jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1concurrency_1limit(JNIEnv*, jclass, jlong cthis,
+                                                                                      jobject jthis, jint jarg2)
 {
   ((Disk*)cthis)->set_concurrency_limit(jarg2);
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1concurrency_1limit(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1concurrency_1limit(JNIEnv*, jclass, jlong cthis,
+                                                                                      jobject jthis)
 {
   return ((Disk*)cthis)->get_concurrency_limit();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1io_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis, jint jarg2, jint jarg3)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1io_1init(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                        jint jarg2, jint jarg3)
 {
   auto self = (Disk*)cthis;
 
@@ -2508,8 +2497,8 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1io_1init(JNIEnv* 
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1async(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis, jint jarg2)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1async(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                           jint jarg2)
 {
   auto self = (Disk*)cthis;
 
@@ -2519,30 +2508,28 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1async(JNIEn
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1_1SWIG_10(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
                                                                               jobject jthis, jint jarg2)
 {
-  int result = 0;
   try {
-    result = ((Disk*)cthis)->read(jarg2);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+    return ((Disk*)cthis)->read(jarg2);
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   }
-  return result;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1_1SWIG_11(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1_1SWIG_11(JNIEnv*, jclass, jlong cthis,
                                                                               jobject jthis, jint jarg2, jdouble jarg3)
 {
-  int result = 0;
   try {
-    result = ((Disk*)cthis)->read(jarg2, jarg3);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+    return ((Disk*)cthis)->read(jarg2, jarg3);
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   }
-  return result;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1async(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                            jobject jthis, jint jarg2)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1async(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                            jint jarg2)
 {
   auto self = (Disk*)cthis;
 
@@ -2552,67 +2539,63 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1async(JNIE
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1_1SWIG_10(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis, jint jarg2)
 {
-  int result = 0;
   try {
-    result = ((Disk*)cthis)->write(jarg2);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+    return ((Disk*)cthis)->write(jarg2);
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   }
-  return result;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1_1SWIG_11(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1_1SWIG_11(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis, jint jarg2, jdouble jarg3)
 {
-  int result = 0;
   try {
-    result = ((Disk*)cthis)->write(jarg2, jarg3);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+    return ((Disk*)cthis)->write(jarg2, jarg3);
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   }
-  return result;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1SharingPolicy_1NONLINEAR_1get(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1SharingPolicy_1NONLINEAR_1get(JNIEnv*, jclass jcls)
 {
   return (jint)Disk::SharingPolicy::NONLINEAR;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1SharingPolicy_1LINEAR_1get(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1SharingPolicy_1LINEAR_1get(JNIEnv*, jclass jcls)
 {
   return (jint)Disk::SharingPolicy::LINEAR;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1Operation_1READ_1get(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1Operation_1READ_1get(JNIEnv*, jclass jcls)
 {
   return (jint)simgrid::s4u::Disk::Operation::READ;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1Operation_1WRITE_1get(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1Operation_1WRITE_1get(JNIEnv*, jclass jcls)
 {
   return (jint)simgrid::s4u::Disk::Operation::WRITE;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1Operation_1READWRITE_1get(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1Operation_1READWRITE_1get(JNIEnv*, jclass jcls)
 {
   return (jint)simgrid::s4u::Disk::Operation::READWRITE;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1sharing_1policy(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis,
-                                                                                   jint jarg2)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1sharing_1policy(JNIEnv*, jclass, jlong cthis,
+                                                                                   jobject jthis, jint jarg2)
 {
   return (jint)((Disk*)cthis)->get_sharing_policy((simgrid::s4u::Disk::Operation)jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1seal(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                   jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1seal(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   ((Disk*)cthis)->seal();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1onoff_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1onoff_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -2624,9 +2607,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1onoff_1cb(JNIE
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1onoff_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis,
-                                                                                  jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1onoff_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                  jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -2638,7 +2620,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1onoff_1c
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1read_1bandwidth_1change_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1read_1bandwidth_1change_1cb(JNIEnv* jenv, jclass,
                                                                                               jobject cb)
 {
   if (cb) {
@@ -2651,8 +2633,10 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1read_1bandwidt
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1read_1bandwidth_1change_1cb(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1read_1bandwidth_1change_1cb(JNIEnv* jenv,
+                                                                                                    jclass, jlong cthis,
+                                                                                                    jobject jthis,
+                                                                                                    jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -2664,8 +2648,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1read_1ba
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1write_1bandwidth_1change_1cb(JNIEnv* jenv,
-                                                                                               jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1write_1bandwidth_1change_1cb(JNIEnv* jenv, jclass,
+                                                                                               jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -2678,7 +2662,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1write_1bandwid
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1write_1bandwidth_1change_1cb(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jobject cb)
+    JNIEnv* jenv, jclass, jlong cthis, jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -2690,7 +2674,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1write_1b
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1destruction_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1destruction_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -2702,7 +2686,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1destruction_1c
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1destruction_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1destruction_1cb(JNIEnv* jenv, jclass,
                                                                                         jlong cthis, jobject jthis,
                                                                                         jobject cb)
 {
@@ -2717,7 +2701,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1destruct
 }
 
 jobjectArray cleaned_args;
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jenv, jclass jcls, jobjectArray jargs)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jenv, jclass, jobjectArray jargs)
 {
   check_nullparam(jargs, "The engine arguments shall not be null");
   int len = (int)jenv->GetArrayLength(jargs);
@@ -2753,35 +2737,33 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jen
   free(cargs);
   return (jlong)result;
 }
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1args(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis)
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1args(JNIEnv*, jclass, jlong cthis)
 {
   return cleaned_args;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1run(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                    jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1run(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   ((Engine*)cthis)->run();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1run_1until(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis, jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1run_1until(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                           jdouble jarg2)
 {
   ((Engine*)cthis)->run_until(jarg2);
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1clock(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1clock(JNIEnv*, jclass jcls)
 {
   return Engine::get_clock();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1instance(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1instance(JNIEnv*, jclass jcls)
 {
   return (jlong)simgrid::s4u::Engine::get_instance();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1load_1platform(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1load_1platform(JNIEnv* jenv, jclass, jlong cthis,
                                                                                jobject jthis, jstring jfilename)
 {
   if (jfilename) {
@@ -2791,32 +2773,30 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1load_1platform(J
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "The platform file name shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1seal_1platform(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1seal_1platform(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis)
 {
   ((Engine*)cthis)->seal_platform();
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1flatify_1platform(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis)
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1flatify_1platform(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                     jobject jthis)
 {
   std::string result = ((Engine*)cthis)->flatify_platform();
   return jenv->NewStringUTF(result.c_str());
 }
 
 std::set<simgrid::s4u::Activity*> vetoed_activities;
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1track_1vetoed_1activities(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1track_1vetoed_1activities(JNIEnv*, jclass, jlong cthis)
 {
   ((Engine*)cthis)->track_vetoed_activities(&vetoed_activities);
 }
-JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1clear_1vetoed_1activities(JNIEnv* jenv, jclass jcls,
-                                                                                         jlong cthis)
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1clear_1vetoed_1activities(JNIEnv*, jclass, jlong cthis)
 {
   vetoed_activities.clear();
 }
-JNIEXPORT jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1vetoed_1activities(JNIEnv* jenv,
-                                                                                               jclass jcls, jlong cthis)
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1vetoed_1activities(JNIEnv* jenv, jclass,
+                                                                                               jlong cthis)
 {
   auto [activity_class, activity_ctor] = get_classctor_activity(jenv);
   auto [comm_class, comm_ctor]         = get_classctor_comm(jenv);
@@ -2885,7 +2865,7 @@ static void java_main(int argc, char* argv[])
   xbt_assert((jactor != nullptr), "Actor creation failed.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1load_1deployment(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1load_1deployment(JNIEnv* jenv, jclass, jlong cthis,
                                                                                  jstring jfilename)
 {
   if (jfilename) {
@@ -2896,13 +2876,13 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1load_1deployment
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "The deployment file name shall not be null.");
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1host_1count(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1host_1count(JNIEnv*, jclass, jlong cthis,
+                                                                                  jobject jthis)
 {
   return (jlong)((Engine*)cthis)->get_host_count();
 }
 
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1hosts(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1hosts(JNIEnv* jenv, jclass,
                                                                                         jlong cthis, jobject jthis)
 {
   auto [host_class, host_ctor] = get_classctor_host(jenv);
@@ -2919,7 +2899,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all
 }
 
 XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1hosts_1from_1MPI_1hostfile(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jstring jhostfile)
+    JNIEnv* jenv, jclass, jlong cthis, jobject jthis, jstring jhostfile)
 {
   if (!jhostfile) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "The hostfile shall not be null");
@@ -2940,7 +2920,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1hos
   return result;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1host_1by_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1host_1by_1name(JNIEnv* jenv, jclass, jlong cthis,
                                                                                 jobject jthis, jstring jname)
 {
   try {
@@ -2949,20 +2929,21 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1host_1by_1name(
       return (jlong)((Engine*)cthis)->host_by_name(name);
     }
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Host names shall not be null.");
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
   return 0;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1link_1count(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1link_1count(JNIEnv*, jclass, jlong cthis,
+                                                                                  jobject jthis)
 {
   return (jlong)((Engine*)cthis)->get_link_count();
 }
 
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1links(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1links(JNIEnv* jenv, jclass,
                                                                                         jlong cthis, jobject jthis)
 {
   auto [link_class, link_ctor] = get_classctor_link(jenv);
@@ -2978,7 +2959,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all
   return result;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1link_1by_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1link_1by_1name(JNIEnv* jenv, jclass, jlong cthis,
                                                                                 jobject jthis, jstring jname)
 {
   try {
@@ -2987,15 +2968,16 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1link_1by_1name(
       return (jlong)((Engine*)cthis)->link_by_name(name);
     }
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Link names shall not be null.");
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
   return 0;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1mailbox_1by_1name_1or_1create(JNIEnv* jenv,
-                                                                                               jclass jcls, jlong cthis,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1mailbox_1by_1name_1or_1create(JNIEnv* jenv, jclass,
+                                                                                               jlong cthis,
                                                                                                jobject jthis,
                                                                                                jstring jname)
 {
@@ -3008,7 +2990,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1mailbox_1by_1na
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1message_1queue_1by_1name_1or_1create(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jstring jname)
+    JNIEnv* jenv, jclass, jlong cthis, jobject jthis, jstring jname)
 {
   if (jname) {
     std::string name = java_string_to_std_string(jenv, jname);
@@ -3018,19 +3000,19 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1message_1queue_
   return 0;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1actor_1count(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1actor_1count(JNIEnv*, jclass, jlong cthis,
+                                                                                   jobject jthis)
 {
   return ((Engine*)cthis)->get_actor_count();
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1actor_1max_1pid(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1actor_1max_1pid(JNIEnv*, jclass, jlong cthis,
+                                                                                     jobject jthis)
 {
   return (jint)((Engine*)cthis)->get_actor_max_pid();
 }
 
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1actors(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1actors(JNIEnv* jenv, jclass,
                                                                                          jlong cthis, jobject jthis)
 {
   auto cactors = ((Engine*)cthis)->get_all_actors();
@@ -3044,13 +3026,13 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all
   return result;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1netzone_1root(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1netzone_1root(JNIEnv*, jclass, jlong cthis,
+                                                                                    jobject jthis)
 {
   return (jlong)((Engine*)cthis)->get_netzone_root();
 }
 
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1netzones(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all_1netzones(JNIEnv* jenv, jclass,
                                                                                            jlong cthis, jobject jthis)
 {
   auto [netzone_class, netzone_ctor] = get_classctor_netzone(jenv);
@@ -3066,7 +3048,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1all
   return result;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1netzone_1by_1name_1or_1null(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1netzone_1by_1name_1or_1null(JNIEnv* jenv, jclass,
                                                                                              jlong cthis, jobject jthis,
                                                                                              jstring jname)
 {
@@ -3076,14 +3058,15 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1netzone_1by_1na
       return (jlong)((Engine*)cthis)->netzone_by_name_or_null(name);
     }
       SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Link names shall not be null.");
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
   return 0;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_10(JNIEnv* jenv, jclass,
                                                                                        jstring jstr)
 {
   if (!jstr) {
@@ -3094,7 +3077,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1S
   simgrid::s4u::Engine::set_config(str.c_str());
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_11(JNIEnv* jenv, jclass,
                                                                                        jstring jname, jint jarg2)
 {
   if (!jname) {
@@ -3105,7 +3088,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1S
   simgrid::s4u::Engine::set_config(str.c_str(), (int)jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_12(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_12(JNIEnv* jenv, jclass,
                                                                                        jstring jname, jboolean jarg2)
 {
   if (!jname) {
@@ -3116,7 +3099,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1S
   simgrid::s4u::Engine::set_config(str.c_str(), (bool)jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_13(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_13(JNIEnv* jenv, jclass,
                                                                                        jstring jname, jdouble jarg2)
 {
   if (!jname) {
@@ -3127,7 +3110,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1S
   simgrid::s4u::Engine::set_config(str.c_str(), (double)jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_14(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1SWIG_14(JNIEnv* jenv, jclass,
                                                                                        jstring jname, jstring jval)
 {
   if (!jname || !jval) {
@@ -3138,30 +3121,26 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1set_1config_1_1S
   std::string val  = java_string_to_std_string(jenv, jval);
   simgrid::s4u::Engine::set_config(name, val);
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1vm_1live_1migration_1init(JNIEnv* jenv,
-                                                                                                  jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1vm_1live_1migration_1init(JNIEnv*, jclass,
                                                                                                   jlong cthis)
 {
   sg_vm_live_migration_plugin_init();
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1host_1energy_1init(JNIEnv* jenv, jclass jcls,
-                                                                                           jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1host_1energy_1init(JNIEnv*, jclass, jlong cthis)
 {
   sg_host_energy_plugin_init();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1link_1energy_1init(JNIEnv* jenv, jclass jcls,
-                                                                                           jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1link_1energy_1init(JNIEnv*, jclass, jlong cthis)
 {
   sg_link_energy_plugin_init();
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1wifi_1energy_1init(JNIEnv* jenv, jclass jcls,
-                                                                                           jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1wifi_1energy_1init(JNIEnv*, jclass, jlong cthis)
 {
   sg_wifi_energy_plugin_init();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1platform_1created_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1platform_1created_1cb(JNIEnv* jenv, jclass,
                                                                                           jobject cb)
 {
   if (cb) {
@@ -3174,7 +3153,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1platform_1cr
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1platform_1creation_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1platform_1creation_1cb(JNIEnv* jenv, jclass,
                                                                                            jobject cb)
 {
   if (cb) {
@@ -3187,7 +3166,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1platform_1cr
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1simulation_1start_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1simulation_1start_1cb(JNIEnv* jenv, jclass,
                                                                                           jobject cb)
 {
   if (cb) {
@@ -3200,7 +3179,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1simulation_1
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1simulation_1end_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1simulation_1end_1cb(JNIEnv* jenv, jclass,
                                                                                         jobject cb)
 {
   if (cb) {
@@ -3213,8 +3192,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1simulation_1
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1time_1advance_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                      jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1time_1advance_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -3226,7 +3204,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1time_1advanc
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1deadlock_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1deadlock_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -3238,54 +3216,54 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1deadlock_1cb
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1die(JNIEnv* jenv, jclass jcls, jstring jstr)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1die(JNIEnv* jenv, jclass, jstring jstr)
 {
   std::string str = java_string_to_std_string(jenv, jstr);
   xbt_die("%s", str.c_str());
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1critical(JNIEnv* jenv, jclass jcls, jstring jstr)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1critical(JNIEnv* jenv, jclass, jstring jstr)
 {
   std::string str = java_string_to_std_string(jenv, jstr);
   XBT_CRITICAL("%s", str.c_str());
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1error(JNIEnv* jenv, jclass jcls, jstring jstr)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1error(JNIEnv* jenv, jclass, jstring jstr)
 {
   std::string str = java_string_to_std_string(jenv, jstr);
   XBT_ERROR("%s", str.c_str());
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1warn(JNIEnv* jenv, jclass jcls, jstring jstr)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1warn(JNIEnv* jenv, jclass, jstring jstr)
 {
   std::string str = java_string_to_std_string(jenv, jstr);
   XBT_WARN("%s", str.c_str());
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1info(JNIEnv* jenv, jclass jcls, jstring jstr)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1info(JNIEnv* jenv, jclass, jstring jstr)
 {
   std::string str = java_string_to_std_string(jenv, jstr);
   XBT_INFO("%s", str.c_str());
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1verbose(JNIEnv* jenv, jclass jcls, jstring jstr)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1verbose(JNIEnv* jenv, jclass, jstring jstr)
 {
   std::string str = java_string_to_std_string(jenv, jstr);
   XBT_VERB("%s", str.c_str());
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1debug(JNIEnv* jenv, jclass jcls, jstring jstr)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1debug(JNIEnv* jenv, jclass, jstring jstr)
 {
   std::string str = java_string_to_std_string(jenv, jstr);
   XBT_DEBUG("%s", str.c_str());
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Engine(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Engine(JNIEnv*, jclass, jlong cthis)
 {
   delete ((Engine*)cthis);
 }
 
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1from_1dot(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1from_1dot(JNIEnv* jenv, jclass,
                                                                                        jstring jstr)
 {
   auto [activity_class, activity_ctor] = get_classctor_activity(jenv);
@@ -3321,7 +3299,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1fro
   return jres;
 }
 
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1from_1DAX(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1from_1DAX(JNIEnv* jenv, jclass,
                                                                                        jstring jstr)
 {
   auto [activity_class, activity_ctor] = get_classctor_activity(jenv);
@@ -3357,7 +3335,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1fro
   return jres;
 }
 
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1from_1json(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1from_1json(JNIEnv* jenv, jclass,
                                                                                         jstring jstr)
 {
   auto [activity_class, activity_ctor] = get_classctor_activity(jenv);
@@ -3393,32 +3371,32 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_create_1DAG_1fro
   return jres;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1init(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1init(JNIEnv*, jclass jcls)
 {
   ExecPtr result = simgrid::s4u::Exec::init();
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1remaining(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1remaining(JNIEnv*, jclass, jlong cthis,
                                                                                 jobject jthis)
 {
   return ((Exec*)cthis)->get_remaining();
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1remaining_1ratio(JNIEnv* jenv, jclass jcls,
-                                                                                       jlong cthis, jobject jthis)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1remaining_1ratio(JNIEnv*, jclass, jlong cthis,
+                                                                                       jobject jthis)
 {
   return ((Exec*)cthis)->get_remaining_ratio();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis, jlong chost, jobject jhost)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1host(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                        jlong chost, jobject jhost)
 {
   ((Exec*)cthis)->set_host((Host*)chost);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1hosts(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1hosts(JNIEnv* jenv, jclass, jlong cthis,
                                                                          jobject jthis, jlongArray jhosts)
 {
   std::vector<Host*> chosts;
@@ -3431,27 +3409,24 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1hosts(JNIEnv*
   ((Exec*)cthis)->set_hosts(chosts);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1unset_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                          jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1unset_1host(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   ((Exec*)cthis)->unset_host();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1unset_1hosts(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1unset_1hosts(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   ((Exec*)cthis)->unset_hosts();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1flops_1amount(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1flops_1amount(JNIEnv*, jclass, jlong cthis,
                                                                                  jobject jthis, jdouble jarg2)
 {
   ((Exec*)cthis)->set_flops_amount(jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1flops_1amounts(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis,
-                                                                                  jdoubleArray jamounts)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1flops_1amounts(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                  jobject jthis, jdoubleArray jamounts)
 {
   if (!jamounts) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Array of amounts shall not be null");
@@ -3468,9 +3443,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1flops_1amount
   ((Exec*)cthis)->set_flops_amounts(camounts);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1bytes_1amounts(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis,
-                                                                                  jdoubleArray jamounts)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1bytes_1amounts(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                  jobject jthis, jdoubleArray jamounts)
 {
   if (!jamounts) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Array of amounts shall not be null");
@@ -3487,72 +3461,70 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1bytes_1amount
   ((Exec*)cthis)->set_bytes_amounts(camounts);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1thread_1count(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1thread_1count(JNIEnv*, jclass, jlong cthis,
                                                                                  jobject jthis, jint jarg2)
 {
   ((Exec*)cthis)->set_thread_count(jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1bound(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis, jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1bound(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                         jdouble jarg2)
 {
   ((Exec*)cthis)->set_bound(jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1priority(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                            jobject jthis, jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1set_1priority(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                            jdouble jarg2)
 {
   ((Exec*)cthis)->set_priority(jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1update_1priority(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1update_1priority(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis, jdouble jarg2)
 {
   ((Exec*)cthis)->update_priority(jarg2);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1host(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1host(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   return (jlong)((Exec*)cthis)->get_host();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1host_1number(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1host_1number(JNIEnv*, jclass, jlong cthis,
                                                                                  jobject jthis)
 {
   return ((Exec*)cthis)->get_host_number();
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1thread_1count(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1thread_1count(JNIEnv*, jclass, jlong cthis,
                                                                                  jobject jthis)
 {
   return ((Exec*)cthis)->get_thread_count();
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1cost(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1cost(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   return ((Exec*)cthis)->get_cost();
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1is_1parallel(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1is_1parallel(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis)
 {
   return ((Exec*)cthis)->is_parallel();
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1is_1assigned(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1is_1assigned(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis)
 {
   return ((Exec*)cthis)->is_assigned();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1current(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1current(JNIEnv*, jclass jcls)
 {
   return (jlong)Host::current();
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1name(JNIEnv* jenv, jclass, jlong cthis,
                                                                            jobject jthis)
 {
   const char* result = ((Host*)cthis)->get_cname();
@@ -3561,59 +3533,53 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1name(JNIEn
   return nullptr;
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1speed(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                            jobject jthis)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1speed(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   return (jdouble)((Host*)cthis)->get_speed();
 }
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1pstate_1count(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1pstate_1count(JNIEnv*, jclass, jlong cthis,
                                                                                  jobject jthis)
 {
   return (jint)((Host*)cthis)->get_pstate_count();
 }
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1pstate_1speed(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis,
-                                                                                    jint pstate)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1pstate_1speed(JNIEnv*, jclass, jlong cthis,
+                                                                                    jobject jthis, jint pstate)
 {
   return (jdouble)((Host*)cthis)->get_pstate_speed(pstate);
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1load(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1load(JNIEnv*, jclass, jlong cthis)
 {
   return (jdouble)((Host*)cthis)->get_load();
 }
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1is_1on(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis)
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1is_1on(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   return ((simgrid::s4u::Host*)cthis)->is_on();
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1turn_1on(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1turn_1on(JNIEnv*, jclass, jlong cthis)
 {
   return ((simgrid::s4u::Host*)cthis)->turn_on();
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1turn_1off(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1turn_1off(JNIEnv*, jclass, jlong cthis)
 {
   return ((simgrid::s4u::Host*)cthis)->turn_off();
 }
-JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1pstate(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jint pstate)
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1pstate(JNIEnv*, jclass, jlong cthis, jint pstate)
 {
   ((simgrid::s4u::Host*)cthis)->set_pstate(pstate);
 }
-JNIEXPORT jint JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1pstate(JNIEnv* jenv, jclass jcls, jlong cthis)
+JNIEXPORT jint JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1pstate(JNIEnv*, jclass, jlong cthis)
 {
   return ((simgrid::s4u::Host*)cthis)->get_pstate();
 }
-JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1exec_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jdouble flops)
+JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1exec_1init(JNIEnv*, jclass, jlong cthis, jdouble flops)
 {
   ExecPtr result = ((simgrid::s4u::Host*)cthis)->exec_init(flops);
   intrusive_ptr_add_ref(result.get());
 
   return (jlong)result.get();
 }
-JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1exec_1async(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                          jdouble flops)
+JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1exec_1async(JNIEnv*, jclass, jlong cthis, jdouble flops)
 {
   ExecPtr result = ((simgrid::s4u::Host*)cthis)->exec_async(flops);
   intrusive_ptr_add_ref(result.get());
@@ -3621,15 +3587,14 @@ JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1exec_1async(JNIEnv
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1data(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1data(JNIEnv* jenv, jclass, jlong cthis)
 {
   jobject cdata = ((Host*)cthis)->get_data<_jobject>();
   if (cdata != nullptr)
     cdata = jenv->NewLocalRef(cdata);
   return cdata;
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1data(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject obj)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1data(JNIEnv* jenv, jclass, jlong cthis, jobject obj)
 {
   // Clean any object already stored
   jobject cdata = ((Host*)cthis)->get_data<_jobject>();
@@ -3644,13 +3609,13 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1data(JNIEnv* 
   ((Host*)cthis)->set_data(glob);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1concurrency_1limit(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jint limit)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1concurrency_1limit(JNIEnv*, jclass, jlong cthis,
+                                                                                      jint limit)
 {
   ((Host*)cthis)->set_concurrency_limit(limit);
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1cpu_1factor_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1cpu_1factor_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                   jobject cb)
 {
   if (cb) {
     cb                                                = jenv->NewGlobalRef(cb);
@@ -3664,18 +3629,17 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1set_1cpu_1factor_1
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1consumed_1energy(JNIEnv* jenv, jclass jcls,
-                                                                                       jlong cthis)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1consumed_1energy(JNIEnv*, jclass, jlong cthis)
 {
   return sg_host_get_consumed_energy((Host*)cthis);
 }
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1wattmax_1at(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jint pstate)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1wattmax_1at(JNIEnv*, jclass, jlong cthis,
+                                                                                  jint pstate)
 {
   return sg_host_get_wattmax_at((Host*)cthis, pstate);
 }
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1wattmin_1at(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jint pstate)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1wattmin_1at(JNIEnv*, jclass, jlong cthis,
+                                                                                  jint pstate)
 {
   return sg_host_get_wattmin_at((Host*)cthis, pstate);
 }
@@ -3686,50 +3650,51 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1init(JNIEnv* jenv, 
     IoPtr result = simgrid::s4u::Io::init();
     intrusive_ptr_add_ref(result.get());
     return (jlong)result.get();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return 0;
   }
-  return 0;
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1get_1remaining(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1get_1remaining(JNIEnv*, jclass, jlong cthis,
                                                                               jobject jthis)
 {
   return ((Io*)cthis)->get_remaining();
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1get_1performed_1ioops(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1get_1performed_1ioops(JNIEnv*, jclass, jlong cthis,
+                                                                                  jobject jthis)
 {
   return ((Io*)cthis)->get_performed_ioops();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1disk(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                      jobject jthis, jlong cdisk, jobject jdisk)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1disk(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                      jlong cdisk, jobject jdisk)
 {
   ((Io*)cthis)->set_disk((Disk*)cdisk);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1priority(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                          jobject jthis, jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1priority(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                          jdouble jarg2)
 {
   ((Io*)cthis)->set_priority(jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1size(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                      jobject jthis, jint jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1size(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                      jint jarg2)
 {
   ((Io*)cthis)->set_size(jarg2);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1op_1type(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                          jobject jthis, jint jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1op_1type(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                          jint jarg2)
 {
   ((Io*)cthis)->set_op_type((simgrid::s4u::Io::OpType)jarg2);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1streamto_1init(JNIEnv* jenv, jclass jcls, jlong chost_from,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1streamto_1init(JNIEnv* jenv, jclass, jlong chost_from,
                                                                             jobject jthis, jlong cdisk_from,
                                                                             jobject jarg2_, jlong chost_to,
                                                                             jobject jarg3_, jlong cdisk_to,
@@ -3740,30 +3705,32 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1streamto_1init(JNIE
         simgrid::s4u::Io::streamto_init((Host*)chost_from, (Disk*)cdisk_from, (Host*)chost_to, (Disk*)cdisk_to);
     intrusive_ptr_add_ref(result.get());
     return (jlong)result.get();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return 0;
   }
-  return 0;
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1streamto_1async(
-    JNIEnv* jenv, jclass jcls, jlong chost_from, jobject jhost_from, jlong cdisk_from, jobject jdisk_from,
-    jlong chost_to, jobject jhost_to, jlong cdisk_to, jobject jdisk_to, jlong simulated_size_in_bytes)
+    JNIEnv* jenv, jclass, jlong chost_from, jobject jhost_from, jlong cdisk_from, jobject jdisk_from, jlong chost_to,
+    jobject jhost_to, jlong cdisk_to, jobject jdisk_to, jlong simulated_size_in_bytes)
 {
   try {
     IoPtr result = simgrid::s4u::Io::streamto_async((Host*)chost_from, (Disk*)cdisk_from, (Host*)chost_to,
                                                     (Disk*)cdisk_to, simulated_size_in_bytes);
     intrusive_ptr_add_ref(result.get());
     return (jlong)result.get();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return 0;
   }
-  return 0;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1streamto(JNIEnv* jenv, jclass jcls, jlong chost_from,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1streamto(JNIEnv* jenv, jclass, jlong chost_from,
                                                                      jobject jhost_from, jlong cdisk_from,
                                                                      jobject jdisk_from, jlong chost_to,
                                                                      jobject jhost_to, jlong cdisk_to, jobject jdisk_to,
@@ -3772,77 +3739,77 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1streamto(JNIEnv* jen
   try {
     simgrid::s4u::Io::streamto((Host*)chost_from, (Disk*)cdisk_from, (Host*)chost_to, (Disk*)cdisk_to,
                                simulated_size_in_bytes);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1source(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis, jlong chost, jobject jarg2_,
-                                                                        jlong cdisk, jobject jarg3_)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1source(JNIEnv*, jclass, jlong cthis, jobject jthis,
+                                                                        jlong chost, jobject jarg2_, jlong cdisk,
+                                                                        jobject jarg3_)
 {
   ((Io*)cthis)->set_source((Host*)chost, (Disk*)cdisk);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1destination(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1set_1destination(JNIEnv*, jclass, jlong cthis,
                                                                              jobject jthis, jlong chost, jobject jarg2_,
                                                                              jlong cdisk, jobject jarg3_)
 {
   ((Io*)cthis)->set_destination((Host*)chost, (Disk*)cdisk);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1update_1priority(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1update_1priority(JNIEnv*, jclass, jlong cthis,
                                                                              jobject jthis, jdouble jarg2)
 {
   ((Io*)cthis)->update_priority(jarg2);
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1is_1assigned(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1is_1assigned(JNIEnv*, jclass, jlong cthis,
                                                                              jobject jthis)
 {
   return ((Io*)cthis)->is_assigned();
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1NONLINEAR_1get(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1NONLINEAR_1get(JNIEnv*, jclass jcls)
 {
   return (jint)simgrid::s4u::Link::SharingPolicy::NONLINEAR;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1WIFI_1get(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1WIFI_1get(JNIEnv*, jclass jcls)
 {
   return (jint)simgrid::s4u::Link::SharingPolicy::WIFI;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1SPLITDUPLEX_1get(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1SPLITDUPLEX_1get(JNIEnv*, jclass jcls)
 {
   return (jint)simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1SHARED_1get(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1SHARED_1get(JNIEnv*, jclass jcls)
 {
   return (jint)simgrid::s4u::Link::SharingPolicy::SHARED;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1FATPIPE_1get(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1SharingPolicy_1FATPIPE_1get(JNIEnv*, jclass jcls)
 {
   return (jint)simgrid::s4u::Link::SharingPolicy::FATPIPE;
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1name(JNIEnv* jenv, jclass, jlong cthis,
                                                                            jobject jthis)
 {
   try {
     simgrid::s4u::Link* arg1 = (simgrid::s4u::Link*)cthis;
     const char* result       = (arg1)->get_cname();
-    if (result)
-      return jenv->NewStringUTF(result);
-  } catch (ForcefulKillException const&) { /* Actor killed */
+    return result ? jenv->NewStringUTF(result) : nullptr;
+  } catch (ForcefulKillException const&) {
+    return nullptr; /* Actor killed */
   }
-  return nullptr;
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1bandwidth(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1bandwidth(JNIEnv*, jclass, jlong cthis,
                                                                                 jobject jthis)
 {
   try {
@@ -3852,7 +3819,7 @@ XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1bandwidth(
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1bandwidth(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1bandwidth(JNIEnv*, jclass, jlong cthis,
                                                                              jobject jthis, jdouble jarg2)
 {
   try {
@@ -3861,7 +3828,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1bandwidth(JNI
   }
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1latency(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1latency(JNIEnv*, jclass, jlong cthis,
                                                                               jobject jthis)
 {
   try {
@@ -3871,32 +3838,32 @@ XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1latency(JN
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1latency_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis,
-                                                                                      jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1latency_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
+                                                                                      jobject jthis, jdouble jarg2)
 {
   try {
     ((Link*)cthis)->set_latency(jarg2);
   } catch (ForcefulKillException const&) { /* Actor killed */
+    return;
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1latency_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis,
-                                                                                      jstring jstr)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1latency_1_1SWIG_11(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                      jobject jthis, jstring jstr)
 {
   if (jstr) {
     std::string str = java_string_to_std_string(jenv, jstr);
     try {
       ((Link*)cthis)->set_latency(str.c_str());
     } catch (ForcefulKillException const&) { /* Actor killed */
+      return;
     }
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Latency value shall not be null.");
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1sharing_1policy(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1sharing_1policy(JNIEnv*, jclass, jlong cthis,
+                                                                                   jobject jthis)
 {
   try {
     return (jint)((Link*)cthis)->get_sharing_policy();
@@ -3905,20 +3872,19 @@ XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1sharing_1poli
   }
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1property(JNIEnv* jenv, jclass, jlong cthis,
                                                                                jobject jthis, jstring jprop)
 {
   std::string cprop  = java_string_to_std_string(jenv, jprop);
   try {
     const char* result = ((Link*)cthis)->get_property(cprop);
-    if (result)
-      return jenv->NewStringUTF(result);
-  } catch (ForcefulKillException const&) { /* Actor killed */
+    return result ? jenv->NewStringUTF(result) : nullptr;
+  } catch (ForcefulKillException const&) {
+    return nullptr; /* Actor killed */
   }
-  return 0;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1property(JNIEnv* jenv, jclass, jlong cthis,
                                                                             jobject jthis, jstring jprop, jstring jval)
 {
   if (jprop != nullptr && jval != nullptr) {
@@ -3926,7 +3892,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1property(JNIE
     std::string cval  = java_string_to_std_string(jenv, jval);
     try {
       ((Link*)cthis)->set_property(cprop, cval);
-    } catch (ForcefulKillException const&) { /* Actor killed */
+    } catch (ForcefulKillException const&) {
+      return; /* Actor killed */
     }
   } else if (jprop == nullptr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Property name shall not be null.");
@@ -3935,9 +3902,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1property(JNIE
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1concurrency_1limit(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis,
-                                                                                      jint jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1concurrency_1limit(JNIEnv*, jclass, jlong cthis,
+                                                                                      jobject jthis, jint jarg2)
 {
   try {
     ((Link*)cthis)->set_concurrency_limit(jarg2);
@@ -3945,8 +3911,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1concurrency_1
   }
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1concurrency_1limit(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1concurrency_1limit(JNIEnv*, jclass, jlong cthis,
+                                                                                      jobject jthis)
 {
   try {
     return (jint)((Link*)cthis)->get_concurrency_limit();
@@ -3955,10 +3921,9 @@ XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1concurrency_1
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1host_1wifi_1rate(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis,
-                                                                                    jlong chost, jobject jhost,
-                                                                                    jint jarg3)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1host_1wifi_1rate(JNIEnv*, jclass, jlong cthis,
+                                                                                    jobject jthis, jlong chost,
+                                                                                    jobject jhost, jint jarg3)
 {
   try {
     ((Link*)cthis)->set_host_wifi_rate((Host*)chost, jarg3);
@@ -3966,8 +3931,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1set_1host_1wifi_1r
   }
 }
 
-XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1load(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis)
+XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1load(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   try {
     return ((Link*)cthis)->get_load();
@@ -3976,8 +3940,7 @@ XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1load(JNIEn
   }
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1is_1used(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis)
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1is_1used(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   try {
     return ((Link*)cthis)->is_used();
@@ -3986,7 +3949,7 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1is_1used(JNIEn
   }
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1is_1shared(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1is_1shared(JNIEnv*, jclass, jlong cthis,
                                                                              jobject jthis)
 {
   try {
@@ -3996,8 +3959,7 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1is_1shared(JNI
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1turn_1on(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                       jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1turn_1on(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   try {
     ((Link*)cthis)->turn_on();
@@ -4005,8 +3967,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1turn_1on(JNIEnv* j
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1turn_1off(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                        jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1turn_1off(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   try {
     ((Link*)cthis)->turn_off();
@@ -4014,8 +3975,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1turn_1off(JNIEnv* 
   }
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1is_1on(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                         jobject jthis)
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1is_1on(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   try {
     return ((Link*)cthis)->is_on();
@@ -4024,16 +3984,16 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1is_1on(JNIEnv*
   return false;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1seal(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                   jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1seal(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   try {
     ((Link*)cthis)->seal();
-  } catch (ForcefulKillException const&) { /* Actor killed. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1onoff_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1onoff_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -4045,9 +4005,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1onoff_1cb(JNIE
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1this_1onoff_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis,
-                                                                                  jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1this_1onoff_1cb(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                  jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -4059,7 +4018,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1this_1onoff_1c
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1bandwidth_1change_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1bandwidth_1change_1cb(JNIEnv* jenv, jclass,
                                                                                         jobject cb)
 {
   if (cb) {
@@ -4072,7 +4031,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1bandwidth_1cha
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1this_1bandwidth_1change_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1this_1bandwidth_1change_1cb(JNIEnv* jenv, jclass,
                                                                                               jlong cthis,
                                                                                               jobject jthis, jobject cb)
 {
@@ -4086,7 +4045,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1this_1bandwidt
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1destruction_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1destruction_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -4098,7 +4057,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1destruction_1c
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1this_1destruction_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1this_1destruction_1cb(JNIEnv* jenv, jclass,
                                                                                         jlong cthis, jobject jthis,
                                                                                         jobject cb)
 {
@@ -4112,94 +4071,52 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1on_1this_1destruct
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_LinkInRoute_1Direction_1UP_1get(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_LinkInRoute_1Direction_1UP_1get(JNIEnv*, jclass jcls)
 {
   return (jint)simgrid::s4u::LinkInRoute::Direction::UP;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_LinkInRoute_1Direction_1DOWN_1get(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_LinkInRoute_1Direction_1DOWN_1get(JNIEnv*, jclass jcls)
 {
   return (jint)simgrid::s4u::LinkInRoute::Direction::DOWN;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_LinkInRoute_1Direction_1NONE_1get(JNIEnv* jenv, jclass jcls)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_LinkInRoute_1Direction_1NONE_1get(JNIEnv*, jclass jcls)
 {
   return (jint)simgrid::s4u::LinkInRoute::Direction::NONE;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1LinkInRoute_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1LinkInRoute_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
+                                                                                     jobject jthis)
 {
-  jlong jresult                     = 0;
-  simgrid::s4u::Link* arg1          = (simgrid::s4u::Link*)0;
-  simgrid::s4u::LinkInRoute* result = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1   = *(simgrid::s4u::Link**)&cthis;
-  result = (simgrid::s4u::LinkInRoute*)new simgrid::s4u::LinkInRoute((simgrid::s4u::Link const*)arg1);
-  *(simgrid::s4u::LinkInRoute**)&jresult = result;
-  return jresult;
+  return (jlong) new simgrid::s4u::LinkInRoute((simgrid::s4u::Link const*)cthis);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1LinkInRoute_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis,
-                                                                                     jint jarg2)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1LinkInRoute_1_1SWIG_11(JNIEnv*, jclass, jlong cthis,
+                                                                                     jobject jthis, jint jarg2)
 {
-  jlong jresult            = 0;
-  simgrid::s4u::Link* arg1 = (simgrid::s4u::Link*)0;
-  simgrid::s4u::LinkInRoute::Direction arg2;
-  simgrid::s4u::LinkInRoute* result = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1   = *(simgrid::s4u::Link**)&cthis;
-  arg2   = (simgrid::s4u::LinkInRoute::Direction)jarg2;
-  result = (simgrid::s4u::LinkInRoute*)new simgrid::s4u::LinkInRoute((simgrid::s4u::Link const*)arg1, arg2);
-  *(simgrid::s4u::LinkInRoute**)&jresult = result;
-  return jresult;
+  return (jlong) new simgrid::s4u::LinkInRoute((simgrid::s4u::Link const*)cthis,
+                                               (simgrid::s4u::LinkInRoute::Direction)jarg2);
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_LinkInRoute_1get_1direction(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_LinkInRoute_1get_1direction(JNIEnv*, jclass, jlong cthis,
+                                                                                    jobject jthis)
 {
-  jint jresult                    = 0;
-  simgrid::s4u::LinkInRoute* arg1 = (simgrid::s4u::LinkInRoute*)0;
-  simgrid::s4u::LinkInRoute::Direction result;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1    = *(simgrid::s4u::LinkInRoute**)&cthis;
-  result  = (simgrid::s4u::LinkInRoute::Direction)((simgrid::s4u::LinkInRoute const*)arg1)->get_direction();
-  jresult = (jint)result;
-  return jresult;
+  return (jint)(simgrid::s4u::LinkInRoute::Direction)((simgrid::s4u::LinkInRoute*)cthis)->get_direction();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_LinkInRoute_1get_1link(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_LinkInRoute_1get_1link(JNIEnv*, jclass, jlong cthis,
                                                                                 jobject jthis)
 {
-  jlong jresult                   = 0;
-  simgrid::s4u::LinkInRoute* arg1 = (simgrid::s4u::LinkInRoute*)0;
-  simgrid::s4u::Link* result      = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1                            = *(simgrid::s4u::LinkInRoute**)&cthis;
-  result                          = (simgrid::s4u::Link*)((simgrid::s4u::LinkInRoute const*)arg1)->get_link();
-  *(simgrid::s4u::Link**)&jresult = result;
-  return jresult;
+  return (jlong)((simgrid::s4u::LinkInRoute*)cthis)->get_link();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1LinkInRoute(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1LinkInRoute(JNIEnv*, jclass, jlong cthis)
 {
   delete (simgrid::s4u::LinkInRoute*)cthis;
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1name(JNIEnv* jenv, jclass, jlong cthis,
                                                                               jobject jthis)
 {
   const char* result = ((NetZone*)cthis)->get_cname();
@@ -4209,23 +4126,13 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1name(JN
   return 0;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1parent(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1parent(JNIEnv*, jclass, jlong cthis,
                                                                               jobject jthis)
 {
-  jlong jresult                 = 0;
-  simgrid::s4u::NetZone* arg1   = (simgrid::s4u::NetZone*)0;
-  simgrid::s4u::NetZone* result = 0;
-
-  (void)jenv;
-  (void)jcls;
-  (void)jthis;
-  arg1                               = *(simgrid::s4u::NetZone**)&cthis;
-  result                             = (simgrid::s4u::NetZone*)((simgrid::s4u::NetZone const*)arg1)->get_parent();
-  *(simgrid::s4u::NetZone**)&jresult = result;
-  return jresult;
+  return (jlong)((simgrid::s4u::NetZone*)cthis)->get_parent();
 }
 
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1children(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1children(JNIEnv* jenv, jclass,
                                                                                        jlong cthis, jobject jthis)
 {
   auto [netzone_class, netzone_ctor] = get_classctor_netzone(jenv);
@@ -4241,7 +4148,7 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1ch
   return result;
 }
 
-XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1all_1hosts(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1all_1hosts(JNIEnv* jenv, jclass,
                                                                                          jlong cthis, jobject jthis)
 {
   auto [host_class, host_ctor] = get_classctor_host(jenv);
@@ -4257,15 +4164,14 @@ XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1al
   return result;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1host_1count(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1host_1count(JNIEnv*, jclass, jlong cthis,
+                                                                                   jobject jthis)
 {
   return ((NetZone*)cthis)->get_host_count();
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1property(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis,
-                                                                                  jstring jprop)
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1property(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                  jobject jthis, jstring jprop)
 {
   std::string cprop  = java_string_to_std_string(jenv, jprop);
   const char* result = ((NetZone*)cthis)->get_property(cprop);
@@ -4274,7 +4180,7 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1get_1propert
   return 0;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1set_1property(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1set_1property(JNIEnv* jenv, jclass, jlong cthis,
                                                                                jobject jthis, jstring jprop,
                                                                                jstring jval)
 {
@@ -4289,7 +4195,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1set_1property(J
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1on_1seal_1cb(JNIEnv* jenv, jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1on_1seal_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -4301,7 +4207,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1on_1seal_1cb(JN
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 /*  NetZone_add_host__SWIG_0 (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;[D)J */
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1SWIG_10(JNIEnv* jenv, jclass,
                                                                                        jlong cthis, jobject jthis,
                                                                                        jstring jname,
                                                                                        jdoubleArray jspeeds)
@@ -4322,7 +4228,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1S
   return (jlong)((NetZone*)cthis)->add_host(name, cspeeds);
 }
 /* NetZone_add_host__SWIG_1  (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;D)J */
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1SWIG_11(JNIEnv* jenv, jclass,
                                                                                        jlong cthis, jobject jthis,
                                                                                        jstring jname, jdouble speed)
 {
@@ -4334,10 +4240,10 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1S
   return (jlong)((NetZone*)cthis)->add_host(name, speed);
 }
 /* NetZone_add_host__SWIG_2 (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;[Ljava/lang/String;)J */
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1SWIG_12(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis, jobject jthis,
-                                                                                          jstring jname,
-                                                                                          jobjectArray jspeeds)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1SWIG_12(JNIEnv* jenv, jclass,
+                                                                                       jlong cthis, jobject jthis,
+                                                                                       jstring jname,
+                                                                                       jobjectArray jspeeds)
 {
   if (jname == nullptr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Host names shall not be null.");
@@ -4352,9 +4258,9 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1S
   return (jlong)((NetZone*)cthis)->add_host(name, speeds);
 }
 /* NetZone_add_host__SWIG_3 (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;Ljava/lang/String;)J */
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1SWIG_13(JNIEnv* jenv, jclass jcls,
-                                                                                          jlong cthis, jobject jthis,
-                                                                                          jstring jname, jstring jspeed)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1SWIG_13(JNIEnv* jenv, jclass,
+                                                                                       jlong cthis, jobject jthis,
+                                                                                       jstring jname, jstring jspeed)
 {
   check_nullparam(jname, "Host names shall not be null.");
   check_nullparam(jspeed, "Host speed shall not be the null string.");
@@ -4364,7 +4270,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1S
 }
 
 /* NetZone_add_link__SWIG_0   (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;[D)J */
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1SWIG_10(JNIEnv* jenv, jclass,
                                                                                        jlong cthis, jobject jthis,
                                                                                        jstring jname,
                                                                                        jdoubleArray jbandwidths)
@@ -4378,7 +4284,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1S
   return (jlong)((NetZone*)cthis)->add_link(name, cbandwidths);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1SWIG_11(JNIEnv* jenv, jclass,
                                                                                        jlong cthis, jobject jthis,
                                                                                        jstring jname, jdouble bw)
 {
@@ -4388,10 +4294,9 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1S
   return (jlong)((NetZone*)cthis)->add_link(name, bw);
 }
 /* NetZone_add_link__SWIG_2   (JLorg/simgrid/s4u/NetZone;Ljava/lang/String;[Ljava/lang/String;)J  */
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1SWIG_12(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1SWIG_12(JNIEnv* jenv, jclass,
                                                                                        jlong cthis, jobject jthis,
-                                                                                       jstring jname,
-                                                                                       jobjectArray jbws)
+                                                                                       jstring jname, jobjectArray jbws)
 {
   check_nullparam(jname, "Link names shall not be null.");
   check_nullparam(jname, "Link bandwidths shall not be a null array.");
@@ -4401,7 +4306,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1S
   return (jlong)((NetZone*)cthis)->add_link(name, bws);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1SWIG_13(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1SWIG_13(JNIEnv* jenv, jclass,
                                                                                        jlong cthis, jobject jthis,
                                                                                        jstring jname, jstring jbw)
 {
@@ -4413,7 +4318,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1link_1_1S
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1splitlink_1from_1double(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jstring jname, jdouble bwup, jdouble bwdown)
+    JNIEnv* jenv, jclass, jlong cthis, jobject jthis, jstring jname, jdouble bwup, jdouble bwdown)
 {
   check_nullparam(jname, "Link names shall not be null.");
   std::string name = java_string_to_std_string(jenv, jname);
@@ -4422,7 +4327,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1splitlink
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1splitlink_1from_1string(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jstring jname, jstring jbwup, jstring jbwdown)
+    JNIEnv* jenv, jclass, jlong cthis, jobject jthis, jstring jname, jstring jbwup, jstring jbwdown)
 {
   check_nullparam(jname, "Link names shall not be null.");
   check_nullparam(jbwup, "Link up bandwidth shall not be the null string.");
@@ -4432,10 +4337,9 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1splitlink
   std::string bwdown = java_string_to_std_string(jenv, jbwdown);
   return (jlong)((NetZone*)cthis)->add_split_duplex_link(name, bwup, bwdown);
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1route_1hosts(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis,
-                                                                                   jlong chost1, jlong chost2,
-                                                                                   jlongArray jlinks)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1route_1hosts(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                   jobject jthis, jlong chost1,
+                                                                                   jlong chost2, jlongArray jlinks)
 {
   std::vector<const Link*> clinks;
   int len       = jenv->GetArrayLength(jlinks);
@@ -4447,10 +4351,9 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1route_1hos
   ((NetZone*)cthis)->add_route((Host*)chost1, (Host*)chost2, clinks);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1route_1netzones(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis,
-                                                                                      jlong cnz1, jlong cnz2,
-                                                                                      jlongArray jlinks)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1route_1netzones(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                      jobject jthis, jlong cnz1,
+                                                                                      jlong cnz2, jlongArray jlinks)
 {
   std::vector<const Link*> clinks;
   int len       = jenv->GetArrayLength(jlinks);
@@ -4462,94 +4365,91 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1route_1net
   ((NetZone*)cthis)->add_route((NetZone*)cnz1, (NetZone*)cnz2, clinks);
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1seal(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                      jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1seal(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   ((NetZone*)cthis)->seal();
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1name(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1name(JNIEnv* jenv, jclass, jlong cthis,
                                                                               jobject jthis)
 {
   try {
     const char* result = ((Mailbox*)cthis)->get_cname();
     if (result)
       return jenv->NewStringUTF(result);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
   return 0;
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1empty(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1empty(JNIEnv* jenv, jclass, jlong cthis,
                                                                            jobject jthis)
 {
   try {
     return ((Mailbox*)cthis)->empty();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return false; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return false;
   }
-  return false;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1size(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                       jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1size(JNIEnv* jenv, jclass, jlong cthis, jobject jthis)
 {
   try {
     return ((Mailbox*)cthis)->empty();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return 0;
   }
-  return 0;
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1listen(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                            jobject jthis)
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1listen(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
-  bool res = false;
   try {
-    res = ((Mailbox*)cthis)->listen();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+    return ((Mailbox*)cthis)->listen();
+  } catch (ForcefulKillException const&) {
+    return false; /* Actor killed, this is fine. */
   }
-  return res;
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1listen_1from(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1listen_1from(JNIEnv*, jclass, jlong cthis,
                                                                               jobject jthis)
 {
-  int res = 0;
   try {
-    res = ((Mailbox*)cthis)->listen_from();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+    return ((Mailbox*)cthis)->listen_from();
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   }
-  return res;
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1ready(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis)
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1ready(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   return ((Mailbox*)cthis)->ready();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1set_1receiver(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1set_1receiver(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis, jlong cactor,
                                                                                jobject jactor)
 {
   return ((Mailbox*)cthis)->set_receiver((Actor*)cactor);
 }
 
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1receiver(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1receiver(JNIEnv*, jclass, jlong cthis,
+                                                                                  jobject jthis)
 {
   auto result = ((Mailbox*)cthis)->get_receiver();
   return result.get() != nullptr ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1init_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
-                                                                                       jlong cthis, jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1init_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
+                                                                                       jobject jthis)
 {
   CommPtr result = ((Mailbox*)cthis)->put_init();
   intrusive_ptr_add_ref(result.get());
@@ -4557,7 +4457,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1init_1_1S
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1init_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1init_1_1SWIG_11(JNIEnv* jenv, jclass,
                                                                                        jlong cthis, jobject jthis,
                                                                                        jobject payload,
                                                                                        jlong simulated_size_in_bytes)
@@ -4570,7 +4470,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1init_1_1S
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1async(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1async(JNIEnv* jenv, jclass, jlong cthis,
                                                                              jobject jthis, jobject payload,
                                                                              jlong simulated_size_in_bytes)
 {
@@ -4581,7 +4481,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1async(JNI
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1to_1c_1str(JNIEnv* jenv, jclass jcls, jint cthis)
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1to_1c_1str(JNIEnv* jenv, jclass, jint cthis)
 {
   auto arg1          = (simgrid::s4u::Mailbox::IprobeKind)cthis;
   const char* result = simgrid::s4u::Mailbox::to_c_str(arg1);
@@ -4590,8 +4490,7 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1to_1c_1str(J
   return 0;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                            jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1init(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   auto self = (Mailbox*)cthis;
 
@@ -4600,7 +4499,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1init(JNIE
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1async(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1async(JNIEnv*, jclass, jlong cthis,
                                                                              jobject jthis)
 {
   auto self = (Mailbox*)cthis;
@@ -4610,25 +4509,25 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get_1async(JNI
   return (jlong)result.get();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1clear(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                       jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1clear(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   ((Mailbox*)cthis)->clear();
 }
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1_1SWIG_10(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1_1SWIG_10(JNIEnv* jenv, jclass, jlong cthis,
                                                                                 jobject jthis, jobject payload,
                                                                                 jlong simulated_size_in_bytes)
 {
   auto self = (Mailbox*)cthis;
   try {
     self->put(jenv->NewGlobalRef(payload), (uint64_t)simulated_size_in_bytes);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1_1SWIG_11(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1_1SWIG_11(JNIEnv* jenv, jclass, jlong cthis,
                                                                                 jobject jthis, jobject payload,
                                                                                 jlong simulated_size_in_bytes,
                                                                                 jdouble timeout)
@@ -4636,13 +4535,14 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1put_1_1SWIG_11(
   auto self = (Mailbox*)cthis;
   try {
     self->put(jenv->NewGlobalRef(payload), simulated_size_in_bytes, timeout);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get(JNIEnv* jenv, jclass, jlong cthis,
                                                                         jobject jthis)
 {
   try {
@@ -4653,20 +4553,21 @@ XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1get(JNIEnv* 
 
     return local;
 
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return nullptr; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return nullptr;
   }
-  return 0;
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1set_1queue(JNIEnv* jenv, jclass klass, jlong cthis,
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1set_1queue(JNIEnv*, jclass klass, jlong cthis,
                                                                         jobject jthis, jlong cqueue, jobject jqueue)
 {
   ((Mess*)cthis)->set_queue((MessageQueue*)cqueue);
 }
 
-JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1queue(JNIEnv* jenv, jclass klass, jlong cthis,
+JNIEXPORT jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1queue(JNIEnv*, jclass klass, jlong cthis,
                                                                          jobject jthis)
 {
   return (jlong)((Mess*)cthis)->get_queue();
@@ -4692,34 +4593,34 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1payload(JNI
   return local;
 }
 
-JNIEXPORT jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1sender(JNIEnv* jenv, jclass klass, jlong cthis,
+JNIEXPORT jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1sender(JNIEnv*, jclass klass, jlong cthis,
                                                                             jobject jthis)
 {
   ActorPtr result = ((Mess*)cthis)->get_sender();
   return result.get() != nullptr ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1is_1assigned(JNIEnv* jenv, jclass klass, jlong cthis,
+JNIEXPORT jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1is_1assigned(JNIEnv*, jclass klass, jlong cthis,
                                                                               jobject jthis)
 {
   return ((Mess*)cthis)->is_assigned();
 }
 
-JNIEXPORT jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1receiver(JNIEnv* jenv, jclass klass, jlong cthis,
+JNIEXPORT jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1receiver(JNIEnv*, jclass klass, jlong cthis,
                                                                               jobject jthis)
 {
   ActorPtr result = ((Mess*)cthis)->get_receiver();
   return result.get() != nullptr ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1add_1successor(JNIEnv* jenv, jclass klass, jlong cthis,
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1add_1successor(JNIEnv*, jclass klass, jlong cthis,
                                                                             jobject jthis, jlong cact, jobject jact)
 {
   auto self = (Mess*)cthis;
   self->add_successor((Activity*)cact);
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1remove_1successor(JNIEnv* jenv, jclass klass, jlong cthis,
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1remove_1successor(JNIEnv*, jclass klass, jlong cthis,
                                                                                jobject jthis, jlong cact, jobject jact)
 {
   auto self = (Mess*)cthis;
@@ -4757,8 +4658,7 @@ JNIEXPORT jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1get_1tracing_1ca
   return jenv->NewStringUTF(result.c_str());
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1cancel(JNIEnv* jenv, jclass klass, jlong cthis,
-                                                                    jobject jthis)
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1cancel(JNIEnv*, jclass klass, jlong cthis, jobject jthis)
 {
   ((Mess*)cthis)->cancel();
 }
@@ -4769,14 +4669,15 @@ XBT_PUBLIC JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Mess_1await_1f
 {
   try {
     ((Mess*)cthis)->wait_for(jarg2);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1name(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis)
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1name(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                   jobject jthis)
 {
   const char* result = ((MessageQueue*)cthis)->get_cname();
 
@@ -4785,19 +4686,18 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1na
   return 0;
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1empty(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1empty(JNIEnv*, jclass, jlong cthis,
                                                                                 jobject jthis)
 {
   return ((MessageQueue*)cthis)->empty();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1size(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                            jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1size(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   return ((MessageQueue*)cthis)->size();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1init_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1init_1_1SWIG_10(JNIEnv*, jclass,
                                                                                             jlong cthis, jobject jthis)
 {
   auto self = (MessageQueue*)cthis;
@@ -4808,7 +4708,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1init
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1init_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1init_1_1SWIG_11(JNIEnv* jenv, jclass,
                                                                                             jlong cthis, jobject jthis,
                                                                                             jobject payload)
 {
@@ -4819,9 +4719,8 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1init
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1async(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis,
-                                                                                  jobject payload)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1async(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                  jobject jthis, jobject payload)
 {
   auto self = (MessageQueue*)cthis;
 
@@ -4830,32 +4729,33 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1asyn
   return (jlong)result.get();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1_1SWIG_10(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis,
-                                                                                     jobject payload)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1_1SWIG_10(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                     jobject jthis, jobject payload)
 {
   auto self = (MessageQueue*)cthis;
   try {
     self->put(jenv->NewGlobalRef(payload));
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1_1SWIG_11(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis,
-                                                                                     jobject payload, jdouble jarg3)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1put_1_1SWIG_11(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                     jobject jthis, jobject payload,
+                                                                                     jdouble jarg3)
 {
   try {
     ((simgrid::s4u::MessageQueue*)cthis)->put(jenv->NewGlobalRef(payload), jarg3);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
   }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1init(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1init(JNIEnv* jenv, jclass, jlong cthis,
                                                                                  jobject jthis)
 {
   try {
@@ -4864,15 +4764,16 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1init
     MessPtr result = self->get_init();
     intrusive_ptr_add_ref(result.get());
     return (jlong)result.get();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return 0;
   }
-  return 0;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1async(JNIEnv* jenv, jclass jcls,
-                                                                                  jlong cthis, jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1async(JNIEnv* jenv, jclass, jlong cthis,
+                                                                                  jobject jthis)
 {
   try {
     auto self = (MessageQueue*)cthis;
@@ -4880,106 +4781,102 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_MessageQueue_1get_1asyn
     MessPtr result = self->get_async();
     intrusive_ptr_add_ref(result.get());
     return (jlong)result.get();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
     rethrow_simgrid_exception(jenv, e);
+    return 0;
   }
-  return 0;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Mutex(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Mutex(JNIEnv*, jclass, jlong cthis)
 {
   intrusive_ptr_release((Mutex*)cthis);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mutex_1create(JNIEnv* jenv, jclass jcls, jboolean recursive)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mutex_1create(JNIEnv*, jclass, jboolean recursive)
 {
   MutexPtr result = simgrid::s4u::Mutex::create(recursive);
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mutex_1lock(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                    jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mutex_1lock(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   try {
     ((Mutex*)cthis)->lock();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mutex_1unlock(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                      jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Mutex_1unlock(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   ((Mutex*)cthis)->unlock();
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mutex_1try_1lock(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mutex_1try_1lock(JNIEnv*, jclass, jlong cthis,
                                                                              jobject jthis)
 {
   return ((Mutex*)cthis)->try_lock();
 }
 
-XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mutex_1get_1owner(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Mutex_1get_1owner(JNIEnv*, jclass, jlong cthis,
                                                                              jobject jthis)
 {
   ActorPtr result = ((Mutex*)cthis)->get_owner();
   return result.get() != nullptr ? result->extension<ActorJavaExt>()->jactor_ : nullptr;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Semaphore(JNIEnv* jenv, jclass jcls, jlong cthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_delete_1Semaphore(JNIEnv*, jclass, jlong cthis)
 {
   intrusive_ptr_release((Semaphore*)cthis);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Semaphore_1create(JNIEnv* jenv, jclass jcls, jlong capa)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Semaphore_1create(JNIEnv*, jclass, jlong capa)
 {
   SemaphorePtr result = simgrid::s4u::Semaphore::create(capa);
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Semaphore_1acquire(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Semaphore_1acquire(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   try {
     ((Semaphore*)cthis)->acquire();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Semaphore_1acquire_1timeout(JNIEnv* jenv, jclass jcls,
-                                                                                        jlong cthis, jobject jthis,
-                                                                                        jdouble jarg2)
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Semaphore_1acquire_1timeout(JNIEnv*, jclass, jlong cthis,
+                                                                                        jobject jthis, jdouble jarg2)
 {
-  bool res = false;
   try {
-    res = ((Semaphore*)cthis)->acquire_timeout(jarg2);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+    return ((Semaphore*)cthis)->acquire_timeout(jarg2);
+  } catch (ForcefulKillException const&) {
+    return false; /* Actor killed, this is fine. */
   }
-  return res;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Semaphore_1release(JNIEnv* jenv, jclass jcls, jlong cthis,
-                                                                           jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Semaphore_1release(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   ((Semaphore*)cthis)->release();
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Semaphore_1get_1capacity(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Semaphore_1get_1capacity(JNIEnv*, jclass, jlong cthis,
                                                                                  jobject jthis)
 {
   return ((Semaphore*)cthis)->get_capacity();
 }
 
-XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Semaphore_1would_1block(JNIEnv* jenv, jclass jcls,
-                                                                                    jlong cthis, jobject jthis)
+XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Semaphore_1would_1block(JNIEnv*, jclass, jlong cthis,
+                                                                                    jobject jthis)
 {
   return ((Semaphore*)cthis)->would_block();
 }
 
-XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1to_1c_1str(JNIEnv* jenv, jclass jcls,
-                                                                                      jint cthis)
+XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1to_1c_1str(JNIEnv* jenv, jclass, jint cthis)
 {
   auto arg1          = (simgrid::s4u::VirtualMachine::State)cthis;
   const char* result = VirtualMachine::to_c_str(arg1);
@@ -4988,140 +4885,148 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1to_1c
   return 0;
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1start(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1start(JNIEnv*, jclass, jlong cthis,
                                                                               jobject jthis)
 {
   try {
     ((VirtualMachine*)cthis)->start();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1suspend(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1suspend(JNIEnv*, jclass, jlong cthis,
                                                                                 jobject jthis)
 {
   try {
     ((VirtualMachine*)cthis)->suspend();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1resume(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1resume(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis)
 {
   try {
     ((VirtualMachine*)cthis)->resume();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1shutdown(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1shutdown(JNIEnv*, jclass, jlong cthis,
                                                                                  jobject jthis)
 {
   try {
     ((VirtualMachine*)cthis)->start();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1destroy(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1destroy(JNIEnv*, jclass, jlong cthis,
                                                                                 jobject jthis)
 {
   try {
     ((VirtualMachine*)cthis)->destroy();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1get_1pm(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1get_1pm(JNIEnv*, jclass, jlong cthis,
                                                                                  jobject jthis)
 {
   try {
     return (jlong)((VirtualMachine*)cthis)->get_pm();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
-    return 0;
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1set_1pm(JNIEnv* jenv, jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1set_1pm(JNIEnv*, jclass, jlong cthis,
                                                                                 jobject jthis, jlong chost,
                                                                                 jobject jarg2_)
 {
   try {
     ((VirtualMachine*)cthis)->set_pm((Host*)chost);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1get_1ramsize(JNIEnv* jenv, jclass jcls,
-                                                                                      jlong cthis, jobject jthis)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1get_1ramsize(JNIEnv*, jclass, jlong cthis,
+                                                                                      jobject jthis)
 {
   try {
     return ((VirtualMachine*)cthis)->get_ramsize();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
-    return 0;
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1set_1ramsize(JNIEnv* jenv, jclass jcls,
-                                                                                     jlong cthis, jobject jthis,
-                                                                                     jlong jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1set_1ramsize(JNIEnv*, jclass, jlong cthis,
+                                                                                     jobject jthis, jlong jarg2)
 {
   try {
     ((VirtualMachine*)cthis)->set_ramsize(jarg2);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1set_1bound(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis,
-                                                                                   jdouble jarg2)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1set_1bound(JNIEnv*, jclass, jlong cthis,
+                                                                                   jobject jthis, jdouble jarg2)
 {
   try {
     ((VirtualMachine*)cthis)->set_bound(jarg2);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
-JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1migrate(JNIEnv* jenv, jclass jcls, jlong cthis,
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1migrate(JNIEnv*, jclass, jlong cthis,
                                                                                jobject jthis, jlong chost,
                                                                                jobject jhost)
 {
   try {
     sg_vm_migrate((VirtualMachine*)cthis, (Host*)chost);
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1start_1migration(JNIEnv* jenv, jclass jcls,
-                                                                                         jlong cthis, jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1start_1migration(JNIEnv*, jclass, jlong cthis,
+                                                                                         jobject jthis)
 {
   try {
     ((VirtualMachine*)cthis)->start_migration();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1end_1migration(JNIEnv* jenv, jclass jcls,
-                                                                                       jlong cthis, jobject jthis)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1end_1migration(JNIEnv*, jclass, jlong cthis,
+                                                                                       jobject jthis)
 {
   try {
     ((VirtualMachine*)cthis)->end_migration();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
+  } catch (ForcefulKillException const&) {
+    return; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1get_1state(JNIEnv* jenv, jclass jcls,
-                                                                                   jlong cthis, jobject jthis)
+XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1get_1state(JNIEnv*, jclass, jlong cthis,
+                                                                                   jobject jthis)
 {
   try {
     return (jint)((VirtualMachine*)cthis)->get_state();
-  } catch (ForcefulKillException const&) { /* Actor killed, this is fine. */
-    return 0;
+  } catch (ForcefulKillException const&) {
+    return 0; /* Actor killed, this is fine. */
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1start_1cb(JNIEnv* jenv, jclass jcls,
-                                                                                      jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1start_1cb(JNIEnv* jenv, jclass, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -5133,7 +5038,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1star
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this_1start_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this_1start_1cb(JNIEnv* jenv, jclass,
                                                                                             jlong cthis, jobject jthis,
                                                                                             jobject cb)
 {
@@ -5147,7 +5052,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1started_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1started_1cb(JNIEnv* jenv, jclass,
                                                                                         jobject cb)
 {
   if (cb) {
@@ -5160,7 +5065,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1star
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this_1started_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this_1started_1cb(JNIEnv* jenv, jclass,
                                                                                               jlong cthis,
                                                                                               jobject jthis, jobject cb)
 {
@@ -5174,7 +5079,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1shutdown_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1shutdown_1cb(JNIEnv* jenv, jclass,
                                                                                          jobject cb)
 {
   if (cb) {
@@ -5185,8 +5090,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1shut
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this_1shutdown_1cb(JNIEnv* jenv,
-                                                                                               jclass jcls, jlong cthis,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this_1shutdown_1cb(JNIEnv* jenv, jclass,
+                                                                                               jlong cthis,
                                                                                                jobject jthis,
                                                                                                jobject cb)
 {
@@ -5200,7 +5105,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this_1suspend_1cb(JNIEnv* jenv, jclass,
                                                                                               jlong cthis,
                                                                                               jobject jthis, jobject cb)
 {
@@ -5214,7 +5119,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this_1resume_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this_1resume_1cb(JNIEnv* jenv, jclass,
                                                                                              jlong cthis, jobject jthis,
                                                                                              jobject cb)
 {
@@ -5228,7 +5133,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1destruction_1cb(JNIEnv* jenv, jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1destruction_1cb(JNIEnv* jenv, jclass,
                                                                                             jobject cb)
 {
   if (cb) {
@@ -5241,8 +5146,10 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1dest
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this_1destruction_1cb(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this_1destruction_1cb(JNIEnv* jenv, jclass,
+                                                                                                  jlong cthis,
+                                                                                                  jobject jthis,
+                                                                                                  jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -5254,8 +5161,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1migration_1start_1cb(JNIEnv* jenv,
-                                                                                                 jclass jcls,
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1migration_1start_1cb(JNIEnv* jenv, jclass,
                                                                                                  jobject cb)
 {
   if (cb) {
@@ -5269,7 +5175,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1migr
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this_1migration_1start_1cb(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jobject cb)
+    JNIEnv* jenv, jclass, jlong cthis, jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -5281,8 +5187,8 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1migration_1end_1cb(JNIEnv* jenv,
-                                                                                               jclass jcls, jobject cb)
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1migration_1end_1cb(JNIEnv* jenv, jclass,
+                                                                                               jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);
@@ -5295,7 +5201,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1migr
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this_1migration_1end_1cb(
-    JNIEnv* jenv, jclass jcls, jlong cthis, jobject jthis, jobject cb)
+    JNIEnv* jenv, jclass, jlong cthis, jobject jthis, jobject cb)
 {
   if (cb) {
     cb = jenv->NewGlobalRef(cb);

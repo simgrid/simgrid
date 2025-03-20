@@ -15,21 +15,19 @@ if (NOT enable_memcheck AND NOT enable_address_sanitizer AND NOT enable_thread_s
 endif()
 
 ## Add the tests for context-default
-foreach (factory raw thread boost ucontext)
+foreach (factory raw thread boost)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/context-defaults/factory_${factory}.tesh)
 endforeach()
 # Ensure that we have the right default setting for the context factory
 IF(HAVE_RAW_CONTEXTS)
   ADD_TESH(tesh-kernel-context-default --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/kernel/context-defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/context-defaults factory_raw.tesh)
-ELSEIF(HAVE_UCONTEXT_CONTEXTS)
-  ADD_TESH(tesh-kernel-context-default --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/kernel/context-defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/context-defaults factory_ucontext.tesh)
 ELSEIF(HAVE_BOOST_CONTEXTS)
   ADD_TESH(tesh-kernel-context-default --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/kernel/context-defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/context-defaults factory_boost.tesh)
 ELSE()
   ADD_TESH(tesh-kernel-context-default --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/kernel/context-defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/context-defaults factory_thread.tesh)
 ENDIF()
 # Ensure that we get what we want when specifying the context factory on the command line
-foreach (factory raw thread boost ucontext)
+foreach (factory raw thread boost)
   string (TOUPPER have_${factory}_contexts VARNAME)
   if (${factory} STREQUAL "thread" OR ${VARNAME})
     # Cannot use ADD_TESH() here since ${factory} is part of the tesh filename

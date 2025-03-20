@@ -12,12 +12,14 @@ RUN apt-get --allow-releaseinfo-change update && \
        git \
        valgrind \
        libboost-dev libboost-all-dev \
-       libeigen3-dev \
+       libgraphviz-dev nlohmann-json3-dev libeigen3-dev \
        cmake \
        python3-pip \
        doxygen fig2dev \
        chrpath \
-       python3-sphinx python3-breathe python3-sphinx-rtd-theme && \
+       python3-sphinx python3-breathe python3-sphinx-rtd-theme \
+       default-jdk-headless \
+       && \
     apt clean && apt autoclean
 
 #        linkchecker \

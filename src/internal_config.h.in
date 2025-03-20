@@ -15,8 +15,6 @@
 #cmakedefine01 HAVE_FUTEX_H
 /* <unistd.h> */
 #cmakedefine01 HAVE_UNISTD_H
-/* <ucontext.h> */
-#cmakedefine01 HAVE_UCONTEXT_H
 /* <valgrind/valgrind.h> */
 #cmakedefine01 HAVE_VALGRIND_H
 
@@ -37,7 +35,6 @@
 /* The usable context factories */
 #cmakedefine01 HAVE_BOOST_CONTEXTS
 #cmakedefine01 HAVE_RAW_CONTEXTS
-#cmakedefine01 HAVE_UCONTEXT_CONTEXTS
 
 /* Variables for the thread contexts (and parallel mode of raw contexts) */
 /* pthread_setaffinity_np() is Linux and FreeBSD but not on Mac nor Windows */
@@ -96,5 +93,3 @@
 #cmakedefine01 HAVE_STD_STACKTRACE /* from C++23, preferred */
 #cmakedefine01 HAVE_BOOST_STACKTRACE_BACKTRACE /* preferred in older C++ */
 #cmakedefine01 HAVE_BOOST_STACKTRACE_ADDR2LINE /* fallback */
-/* Whether the ns-3 library has GetNextEventTime */
-#cmakedefine01 SIMGRID_HAVE_NS3_GetNextEventTime

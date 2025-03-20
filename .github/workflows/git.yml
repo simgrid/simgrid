@@ -4,13 +4,15 @@ name: Git builds
 on: workflow_dispatch
 
 jobs:
-  simgrid-regular-ubuntu:
-    runs-on: ${{ matrix.config.os }}-latest
+  multi:
+    runs-on: ${{ matrix.config.os }}
     strategy:
         matrix:
           config:
-          - { name: "Ubuntu gcc", os: ubuntu, cc: "gcc", cxx: "g++", generator: "Unix Makefiles", cmake_extra_options: "-DLTO_EXTRA_FLAG=auto" }
-          - { name: "MacOS clang", os: macos, cc: "clang", cxx: "clang++", generator: "Unix Makefiles", cmake_extra_options: "-DLTO_EXTRA_FLAG=auto" }
+          - { name: "Ubuntu gcc", os: ubuntu-latest, cc: "gcc",   cxx: "g++" }
+          - { name: "MacOS 13",   os: macos-13,      cc: "clang", cxx: "clang++"}
+          - { name: "MacOS ARM",  os: macos-latest,  cc: "clang", cxx: "clang++"}
+        fail-fast: false
     permissions:
       contents: read
       packages: write
@@ -23,19 +25,19 @@ jobs:
           echo "CC=${{ matrix.config.cc }}"   >> $GITHUB_ENV
           echo "CXX=${{ matrix.config.cxx }}" >> $GITHUB_ENV
       - name: prepare for ubuntu
-        if: matrix.config.os == 'ubuntu'
+        if: matrix.config.os == 'ubuntu-latest'
         run: |
           sudo apt-get update && sudo apt-get install ninja-build libboost-dev libboost-context-dev pybind11-dev
-      - name: prepare for macos
-        if: matrix.config.os == 'macos'
+      - name: prepare for MacOS
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest'
         run: brew install boost eigen pybind11 ninja
       - name: build
         run: |
           mkdir build ; cd build
           cmake -GNinja -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
                 -Denable_compile_optimizations=ON -Denable_compile_warnings=ON \
-                -Denable_model-checking=OFF -Denable_testsuite_smpi_MBI=OFF \
-                -Denable_smpi=ON -Denable_testsuite_smpi_MPICH3=ON \
+                -Denable_testsuite_smpi_MBI=OFF -Denable_testsuite_McMini=ON \
+                -Denable_testsuite_smpi_MPICH3=ON \
                 -DCMAKE_DISABLE_SOURCE_CHANGES=ON  -DLTO_EXTRA_FLAG="auto" ..
           ninja tests
           ctest --output-on-failure -j$(nproc)
@@ -65,55 +67,4 @@ jobs:
              "attachments": [{
                "color": "#00FF00",
                "text": "SimGrid built successfully on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            }]}
-
-  simgrid-modelcheck-ubuntu:
-
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: build
-        run: |
-          sudo apt-get update && sudo apt-get install ninja-build libboost-dev libboost-context-dev pybind11-dev
-          mkdir build ; cd build
-          cmake -GNinja -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
-                -Denable_compile_optimizations=ON -Denable_compile_warnings=ON \
-                -Denable_model-checking=ON -Denable_testsuite_smpi_MBI=OFF \
-                -Denable_smpi=ON -Denable_testsuite_smpi_MPICH3=OFF \
-                -Denable_ns3=OFF \
-                -DCMAKE_DISABLE_SOURCE_CHANGES=ON  -DLTO_EXTRA_FLAG="auto" ..
-          ninja tests
-          ctest --output-on-failure -j$(nproc)
-      - name: Send the failure message
-        if: ${{ failure() }}
-        uses: mattermost/action-mattermost-notify@master
-        with:
-          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
-          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
-          PAYLOAD: |-
-            {
-             "channel": "bot-office",
-             "attachments": [{
-               "color": "#FF0000",
-               "text": "Failure when building Modelchecker on ubuntu-stable! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-               "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
-            }]}
-      - name: Send the success message
-        if: ${{ success() }}
-        uses: mattermost/action-mattermost-notify@master
-        with:
-          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
-          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
-          PAYLOAD: |-
-            {
-             "channel": "bot-office",
-             "attachments": [{
-               "color": "#00FF00",
-               "text": "Modelchecker built successfully on ubuntu-stable! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }]}
