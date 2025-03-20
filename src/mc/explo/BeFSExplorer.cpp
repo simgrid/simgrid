@@ -151,7 +151,7 @@ void BeFSExplorer::run()
 
         explored_traces_++;
         // Costly verification used to check against algorithm optimality
-        if (_sg_mc_debug_soundness)
+        if (_sg_mc_debug_optimality)
           odpor::MazurkiewiczTraces::record_new_execution(execution_seq_);
         get_remote_app().finalize_app();
         XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());

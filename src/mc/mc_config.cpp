@@ -109,8 +109,8 @@ simgrid::config::Flag<bool> _sg_mc_debug{
     "Whether to enable advance runtime verification. Those may be costly and therefore are desactivated by default.",
     false, [](bool) { _mc_cfg_cb_check("value to enable/disable advance runtime verification"); }};
 
-simgrid::config::Flag<bool> _sg_mc_debug_soundness{
-    "model-check/debug-soundness",
+simgrid::config::Flag<bool> _sg_mc_debug_optimality{
+    "model-check/debug-optimality",
     "Whether to enable advance runtime verification. Those may be costly and therefore are desactivated by default.",
     false, [](bool) { _mc_cfg_cb_check("value to enable/disable advance runtime verification"); }};
 

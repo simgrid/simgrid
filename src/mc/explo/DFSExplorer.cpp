@@ -206,7 +206,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
     XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
     XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", s->get_num(), state_stack.size(), backtrack_count_ + 1);
     report_correct_execution(s);
-    if (_sg_mc_debug_soundness)
+    if (_sg_mc_debug_optimality)
       odpor::MazurkiewiczTraces::record_new_execution(S);
   }
 

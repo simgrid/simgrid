@@ -98,7 +98,7 @@ void Exploration::log_state()
     if (ret != 0)
       XBT_WARN("Call to system(free) did not return 0, but %d", ret);
   }
-  if (_sg_mc_debug_soundness)
+  if (_sg_mc_debug_optimality)
     odpor::MazurkiewiczTraces::log_data();
 }
 // Make our tests fully reproducible despite the subtle differences of strsignal() across archs
