@@ -21,10 +21,10 @@ build-base:
     reports:
       junit: result.xml
   
-build-gcovr:
+coverage:
   image: debian:testing
-  except:
-  - stable
+  only:
+  - merge-request
   tags:
     - large  # Inria infra
   script:
