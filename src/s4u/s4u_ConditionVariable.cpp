@@ -124,7 +124,9 @@ void ConditionVariable::notify_one()
 
 void ConditionVariable::notify_all()
 {
-  simgrid::kernel::actor::simcall_answered([this]() { pimpl_->broadcast(); });
+  kernel::actor::ConditionVariableObserver observer{kernel::actor::ActorImpl::self(),
+                                                    mc::Transition::Type::CONDVAR_BROADCAST, pimpl_};
+  simgrid::kernel::actor::simcall_answered([this]() { pimpl_->broadcast(); }, &observer);
 }
 
 void intrusive_ptr_add_ref(const ConditionVariable* cond)
