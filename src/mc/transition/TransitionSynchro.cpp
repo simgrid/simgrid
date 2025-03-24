@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/transition/TransitionSynchro.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/transition/TransitionActor.hpp"
@@ -13,6 +14,7 @@
 #include "xbt/log.h"
 #include "xbt/string.hpp"
 
+#include <algorithm>
 #include <inttypes.h>
 #include <sstream>
 
@@ -168,7 +170,7 @@ bool MutexTransition::can_be_co_enabled(const Transition* o) const
 
   } // mutex transition
 
-    // If someone can unlock, that someon has the mutex. Hence, nobody can wait on it
+  // If someone can unlock, that someon has the mutex. Hence, nobody can wait on it
   if (type_ == Type::MUTEX_UNLOCK && o->type_ == Type::MUTEX_WAIT)
     return false;
 
@@ -382,6 +384,91 @@ bool CondvarTransition::depends(const Transition* o) const
   // Independent with transitions that are neither Condvar nor Mutex related
   return false;
 }
+
+bool is_cv_wait_fireable_without_transition(const odpor::Execution* exec, EventHandle cv_wait_handle,
+                                            EventHandle other_handle)
+{
+  unsigned cv_id =
+      static_cast<const CondvarTransition*>(exec->get_transition_for_handle(cv_wait_handle))->get_condvar();
+  int signal_after_lock = 0;
+
+  bool has_lock_been_found = false;
+  EventHandle lock_handle  = 0;
+
+  for (EventHandle e = cv_wait_handle - 1; e <= cv_wait_handle; e--) {
+
+    if (e == other_handle)
+      continue;
+
+    if (exec->get_transition_for_handle(e)->type_ != Transition::Type::CONDVAR_ASYNC_LOCK and
+        exec->get_transition_for_handle(e)->type_ != Transition::Type::CONDVAR_BROADCAST and
+        exec->get_transition_for_handle(e)->type_ != Transition::Type::CONDVAR_SIGNAL)
+      continue;
+
+    auto cv_transition = static_cast<const CondvarTransition*>(exec->get_transition_for_handle(e));
+
+    if (cv_transition->get_condvar() != cv_id)
+      continue;
+
+    if (cv_transition->aid_ == exec->get_actor_with_handle(cv_wait_handle)) {
+      xbt_assert(cv_transition->type_ == Transition::Type::CONDVAR_ASYNC_LOCK,
+                 "A condvar wait is always preceeded by an async_lock right?");
+      lock_handle = e;
+      break;
+    }
+
+    switch (cv_transition->type_) {
+      case Transition::Type::CONDVAR_ASYNC_LOCK:
+        break; // The other lock happening after the concerned one don't matter
+      case Transition::Type::CONDVAR_BROADCAST:
+        return true; // If there's still a broadcast after the asynclock and before the wait, the wait is fireable
+      case Transition::Type::CONDVAR_SIGNAL:
+        signal_after_lock++;
+        break;
+      default:
+        xbt_die("What? What is this kind of transition? (%s) Fix Me!", Transition::to_c_str(cv_transition->type_));
+    }
+  }
+
+  if (signal_after_lock == 0)
+    return false; // If no signal happened after the lock, the wait can't be enabled
+
+  // For the remaining cases, we have to find how many people are waiting on the cv before the lock is issued
+
+  xbt_assert(lock_handle > 0);
+  int currently_waiting_on_cv = 0;
+  for (EventHandle e = 0; e < lock_handle; e++) {
+
+    if (e == other_handle)
+      continue;
+
+    if (exec->get_transition_for_handle(e)->type_ != Transition::Type::CONDVAR_ASYNC_LOCK and
+        exec->get_transition_for_handle(e)->type_ != Transition::Type::CONDVAR_BROADCAST and
+        exec->get_transition_for_handle(e)->type_ != Transition::Type::CONDVAR_SIGNAL)
+      continue;
+
+    auto cv_transition = static_cast<const CondvarTransition*>(exec->get_transition_for_handle(e));
+
+    if (cv_transition->get_condvar() != cv_id)
+      continue;
+
+    switch (cv_transition->type_) {
+      case Transition::Type::CONDVAR_ASYNC_LOCK:
+        currently_waiting_on_cv++;
+      case Transition::Type::CONDVAR_BROADCAST:
+        currently_waiting_on_cv = 0;
+      case Transition::Type::CONDVAR_SIGNAL:
+        // If no one is currently waiting, the signal is lost
+        currently_waiting_on_cv = std::max(0, currently_waiting_on_cv - 1);
+      default:
+        xbt_die("What? What is this kind of transition? (%s) Fix Me!", Transition::to_c_str(cv_transition->type_));
+    }
+  }
+
+  // For the wait to be enabled, we need to signal each actor currently waiting + the one we just put there
+  return signal_after_lock > currently_waiting_on_cv;
+}
+
 bool CondvarTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                                         EventHandle other_handle) const
 {
@@ -404,14 +491,14 @@ bool CondvarTransition::reversible_race(const Transition* other, const odpor::Ex
                   to_c_str(other->type_));
       }
 
-      // if wait can be executed in the first place, then broadcast and signal don't impact him
+      // broadcast and signal can enable the wait, hence this race is not always reversible
     case Type::CONDVAR_BROADCAST:
     case Type::CONDVAR_SIGNAL:
       xbt_assert(other->type_ == Transition::Type::CONDVAR_ASYNC_LOCK or
                  other->type_ == Transition::Type::CONDVAR_WAIT);
-      return true;
+      return is_cv_wait_fireable_without_transition(exec, this_handle, other_handle);
 
-      // broadcast and signal can enable the wait, hence this race is not always reversible
+      // if wait can be executed in the first place, then broadcast and signal don't impact him
     case Type::CONDVAR_WAIT:
       xbt_assert(other->type_ == Transition::Type::CONDVAR_BROADCAST or
                  other->type_ == Transition::Type::CONDVAR_SIGNAL);

@@ -19,6 +19,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 4)
 > [0.000000] [mc_global/INFO]   Actor 1 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 1)
 > [0.000000] [mc_global/INFO]   Actor 1 in simcall MUTEX_WAIT(mutex: 0, owner: 1)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall CONDVAR_BROADCAST(cond: 0)
 > [0.000000] [mc_global/INFO]   Actor 1 in simcall MUTEX_UNLOCK(mutex: 0, owner: -1)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
@@ -29,27 +30,28 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 4)
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_WAIT(mutex: 0, owner: 4)
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall CONDVAR_ASYNC_LOCK(cond: 0, mutex: 0)
-> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;1;1;1;2;2;2;3;3;3;4;4;4'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 16 unique states visited; 0 explored traces (0 transition replays, 16 states visited overall)
+> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;1;1;1;1;2;2;2;3;3;3;4;4;4'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 17 unique states visited; 0 explored traces (0 transition replays, 17 states visited overall)
 > [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in  ==> simcall: ActorCreate(child 2)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in  ==> simcall: ActorCreate(child 3)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in  ==> simcall: ActorCreate(child 4)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 1)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 1)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in  ==> simcall: MUTEX_UNLOCK(mutex: 0, owner: -1)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 2)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in  ==> simcall: CONDVAR_ASYNC_LOCK(cond: 0, mutex: 0)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 3)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 3)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: CONDVAR_ASYNC_LOCK(cond: 0, mutex: 0)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 4)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 4)
-> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: CONDVAR_ASYNC_LOCK(cond: 0, mutex: 0)
-> [0.000000] [mc_ct/INFO] The critical transition explorer reached the beginning of the stack without finding a correct execution. The program may have no correct behavior.
-> [0.000000] [mc_ct/INFO] Found the critical transition: Actor 1 ==> simcall: ActorCreate(child 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 4)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 1)
+> [0.000000] [mc_ct/INFO]   (  UNKNOWN) Actor 1 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 1)
+> [0.000000] [mc_ct/INFO]   (  UNKNOWN) Actor 1 in  ==> simcall: CONDVAR_BROADCAST(cond: 0)
+> [0.000000] [mc_ct/INFO]   (  UNKNOWN) Actor 1 in  ==> simcall: MUTEX_UNLOCK(mutex: 0, owner: -1)
+> [0.000000] [mc_ct/INFO]   (  UNKNOWN) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO]   (  UNKNOWN) Actor 2 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO]   (  UNKNOWN) Actor 2 in  ==> simcall: CONDVAR_ASYNC_LOCK(cond: 0, mutex: 0)
+> [0.000000] [mc_ct/INFO]   (  UNKNOWN) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 3)
+> [0.000000] [mc_ct/INFO]   (  UNKNOWN) Actor 3 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 3)
+> [0.000000] [mc_ct/INFO]   (  UNKNOWN) Actor 3 in  ==> simcall: CONDVAR_ASYNC_LOCK(cond: 0, mutex: 0)
+> [0.000000] [mc_ct/INFO]   (  UNKNOWN) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 4)
+> [0.000000] [mc_ct/INFO]   (  UNKNOWN) Actor 4 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 4)
+> [0.000000] [mc_ct/INFO]   (  UNKNOWN) Actor 4 in  ==> simcall: CONDVAR_ASYNC_LOCK(cond: 0, mutex: 0)
+> [0.000000] [mc_ct/INFO] Found a correct execution of the programm!
+> [0.000000] [mc_ct/INFO] Found the critical transition: Actor 1 ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 1)
