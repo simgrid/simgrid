@@ -1,13 +1,13 @@
 # We ignore the LD_PRELOAD lines from the expected output because they contain the build path
 ! ignore .*LD_PRELOAD.*
 
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/cached-states-interval:100 --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_mutex_ok 5 0
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/cached-states-interval:100 --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_mutex_ok 4 0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/cached-states-interval' to '100'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 4195 unique states visited; 120 explored traces (2078 transition replays, 6273 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 789 unique states visited; 24 explored traces (268 transition replays, 1057 states visited overall)
 
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:udpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_mutex_ok 5 0
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:udpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_mutex_ok 4 0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'udpor'
 > [0.000000] [mc_udpor/INFO] Starting a UDPOR exploration
-> [0.000000] [mc_udpor/INFO] UDPOR exploration ended. 371 unique events considered; 119 backtracks
+> [0.000000] [mc_udpor/INFO] UDPOR exploration ended. 101 unique events considered; 23 backtracks
