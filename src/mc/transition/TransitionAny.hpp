@@ -45,7 +45,7 @@ public:
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                        EventHandle other_handle) const override;
 
-  Transition* get_current_transition() const { return transitions_.at(times_considered_); }
+  Transition* get_current_transition() const;
 };
 
 } // namespace simgrid::mc

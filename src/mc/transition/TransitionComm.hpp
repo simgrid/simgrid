@@ -38,6 +38,7 @@ public:
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                        EventHandle other_handle) const override;
 
+  bool is_enabled() const { return sender_ != -1 and receiver_ != -1; }
   bool get_timeout() const { return timeout_; }
   /** ID of the corresponding Communication object in the application, or 0 if unknown */
   unsigned get_comm() const { return comm_; }

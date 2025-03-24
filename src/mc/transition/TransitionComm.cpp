@@ -6,6 +6,7 @@
 #include "src/mc/transition/TransitionComm.hpp"
 #include "simgrid/config.h"
 #include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/transition/TransitionAny.hpp"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/string.hpp"
@@ -75,8 +76,8 @@ bool CommWaitTransition::reversible_race(const Transition* other, const odpor::E
 {
   xbt_assert(type_ == Type::COMM_WAIT, "Unexpected transition type %s", to_c_str(type_));
 
-  // If the other event is a communication event, then we are not reversible; otherwise we are reversible.
-  return other->type_ != Transition::Type::COMM_ASYNC_SEND && other->type_ != Transition::Type::COMM_ASYNC_RECV;
+  // The only case that could be blocking is an other wait transition
+  return other->type_ != Type::COMM_WAIT;
 }
 
 CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, unsigned comm_, aid_t sender_,
@@ -220,7 +221,21 @@ bool CommRecvTransition::reversible_race(const Transition* other, const odpor::E
 {
   xbt_assert(type_ == Type::COMM_ASYNC_RECV, "Unexpected transition type %s", to_c_str(type_));
 
-  return true; // CommRecv is always enabled
+  // If this recv enabled the comm_wait, then it's not reversible
+  if (other->type_ == Type::COMM_WAIT) {
+    const auto* wait = static_cast<const CommWaitTransition*>(other);
+    if (wait->comm_ == this->comm_)
+      return false;
+  }
+
+  if (other->type_ == Type::WAITANY) {
+    const auto* wait =
+        static_cast<const CommWaitTransition*>(static_cast<const WaitAnyTransition*>(other)->get_current_transition());
+    if (wait->comm_ == this->comm_)
+      return false;
+  }
+
+  return true;
 }
 
 CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_)
@@ -308,7 +323,21 @@ bool CommSendTransition::reversible_race(const Transition* other, const odpor::E
 {
   xbt_assert(type_ == Type::COMM_ASYNC_SEND, "Unexpected transition type %s", to_c_str(type_));
 
-  return true; // CommSend is always enabled
+  // If this send enabled the comm_wait, then it's not reversible
+  if (other->type_ == Type::COMM_WAIT) {
+    const auto* wait = static_cast<const CommWaitTransition*>(other);
+    if (wait->comm_ == this->comm_)
+      return false;
+  }
+
+  if (other->type_ == Type::WAITANY) {
+    const auto* wait =
+        static_cast<const CommWaitTransition*>(static_cast<const WaitAnyTransition*>(other)->get_current_transition());
+    if (wait->comm_ == this->comm_)
+      return false;
+  }
+
+  return true;
 }
 
 CommIprobeTransition::CommIprobeTransition(aid_t issuer, int times_considered, bool is_sender, unsigned mbox, int tag)
