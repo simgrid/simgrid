@@ -118,10 +118,6 @@ string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
 ### Find programs and paths
 FIND_PROGRAM(GCOV_PATH gcov)
-include(FindPerl)
-if(NOT PERL_FOUND)
-  message(FATAL_ERROR "Please install Perl to compile SimGrid.")
-endif()
 
 # tesh.py needs python 3
 find_package(Python3 COMPONENTS Interpreter)
