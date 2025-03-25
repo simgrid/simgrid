@@ -25,7 +25,7 @@ NetPoint::NetPoint(const std::string& name, NetPoint::Type componentType) : name
   simgrid::kernel::routing::NetPoint::on_creation(*this);
 }
 
-std::vector<NetZoneImpl*> NetPoint::get_englobing_zones() const
+std::vector<NetZoneImpl*> NetPoint::get_all_englobing_zones() const
 {
   std::vector<NetZoneImpl*> path;
   NetZoneImpl* current = this->englobing_zone_;

@@ -595,8 +595,8 @@ void NetZoneImpl::get_global_route_with_netzones(const NetPoint* src, const NetP
   NetZoneImpl* common_ancestor;
   NetZoneImpl* src_ancestor;
   NetZoneImpl* dst_ancestor;
-  std::vector<NetZoneImpl*> src_path = src->get_englobing_zones();
-  std::vector<NetZoneImpl*> dst_path = dst->get_englobing_zones();
+  std::vector<NetZoneImpl*> src_path = src->get_all_englobing_zones();
+  std::vector<NetZoneImpl*> dst_path = dst->get_all_englobing_zones();
 
   XBT_DEBUG("\tfind_common_ancestors: src '%s' dst '%s' :", src->get_cname(), dst->get_cname());
   find_common_ancestors(src, dst, &common_ancestor, &src_ancestor, &dst_ancestor, &src_path, &dst_path);
