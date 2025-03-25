@@ -718,7 +718,7 @@ NetPoint* NetZoneImpl::get_gateway() const
 {
   xbt_enforce(not gateways_.empty(), "No default gateway has been defined for NetZone '%s'. Try to seal it first",
               get_cname());
-  xbt_enforce(gateways_.size() < 2, "NetZone '%s' has more than one gateway, please provide a gateway name",
+  xbt_enforce(gateways_.size() < 2, "NetZone '%s' has more than one gateway, please provide a unique gateway name",
               get_cname());
   auto gateway_it = gateways_.find("default");
   xbt_enforce(gateway_it != gateways_.end(), "NetZone '%s' hasno default gateway, please define one", get_cname());
