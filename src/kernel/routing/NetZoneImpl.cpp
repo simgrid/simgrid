@@ -468,8 +468,8 @@ void NetZoneImpl::get_global_route(const NetPoint* src, const NetPoint* dst,
 
 static void find_common_ancestors(const NetPoint* src, const NetPoint* dst,
                                   /* OUT */ NetZoneImpl** common_ancestor, NetZoneImpl** src_ancestor,
-                                  NetZoneImpl** dst_ancestor, std::vector<NetZoneImpl*>* path_src,
-                                  std::vector<NetZoneImpl*>* path_dst)
+                                  NetZoneImpl** dst_ancestor, std::vector<NetZoneImpl*>* src_path,
+                                  std::vector<NetZoneImpl*>* dst_path)
 {
   /* Deal with the easy base case */
   if (src->get_englobing_zone() == dst->get_englobing_zone()) {
@@ -485,53 +485,53 @@ static void find_common_ancestors(const NetPoint* src, const NetPoint* dst,
   xbt_enforce(src_as, "Host %s must be in a netzone", src->get_cname());
   xbt_enforce(dst_as, "Host %s must be in a netzone", dst->get_cname());
 
-  /* (1) find the common parent.
-   * Before that, index_src and index_dst may be different, they both point to nullptr in path_src/path_dst
-   * So we move them down simultaneously as long as they point to the same content.
-   *
-   * This works because all SimGrid platform have a unique root element (that is the last element of both paths).
+  *src_ancestor    = nullptr;
+  *dst_ancestor    = nullptr;
+  *common_ancestor = nullptr;
+
+  size_t common_ancestor_index = 0;
+
+  size_t min_size = std::min(src_path->size(), dst_path->size());
+
+  xbt_assert(min_size > 0 && (src_path->at(0) == dst_path->at(0)),
+             "No common ancestor found for '%s' and '%s'. Please check your platform file.", src->get_cname(),
+             dst->get_cname());
+
+  /* (1) find the common ancestor.
+   * We iterate over the paths until we find the first difference. The last common element is the first common ancestor
+   * (starting from endpoints).
+   * This works because all SimGrid platforms have a unique root element (that is the first element of both paths).
    */
-  *src_ancestor       = nullptr;
-  *dst_ancestor       = nullptr;
-  *common_ancestor    = nullptr;
-  NetZoneImpl* parent = nullptr; // the netzone we dropped on the previous loop iteration
-  for (auto src_it = path_src->begin(), dst_it = path_dst->begin();
-       src_it != path_src->end() && dst_it != path_dst->end(); ++src_it, ++dst_it) {
-    if (*src_it != *dst_it) /* (2) we found the difference at least. Finalize the returned values */
-    {
-      *src_ancestor = *src_it; /* the first different parent of src */
-      *dst_ancestor = *dst_it; /* the first different parent of dst */
-      path_src->erase(path_src->begin(), src_it + 1);
-      path_dst->erase(path_dst->begin(), dst_it + 1);
+  for (size_t i = 0; i < min_size; i++) {
+    if (src_path->at(i) != dst_path->at(i))
       break;
-    }
-
-    parent = *src_it;
-    // if we reach the end of one of the path (but not both), the corresponding NetPoint is in the netzone of the
-    // ancestor
-    if (src_it + 1 == path_src->end() && dst_it + 1 != path_dst->end()) {
-      *src_ancestor = *src_it;
-      *dst_ancestor = *(dst_it + 1);
-      path_dst->erase(path_dst->begin(), dst_it + 2);
-      break;
-    } else if (dst_it + 1 == path_dst->end() && src_it + 1 != path_src->end()) {
-      *src_ancestor = *(src_it + 1);
-      *dst_ancestor = *dst_it;
-      path_src->erase(path_src->begin(), src_it + 2);
-      break;
-    }
+    common_ancestor_index = i;
   }
 
-  /* (2) check whether src and dst are in the same netzone */
-  if (*src_ancestor == *dst_ancestor) {
-    *common_ancestor = *src_ancestor;
-  } else {
-    xbt_enforce(parent != nullptr);
-    *common_ancestor = parent;
-  }
+  *common_ancestor = src_path->at(common_ancestor_index);
 
-  // maybe we should remove this check for performance reasons
-  xbt_enforce(parent != nullptr, "No common ancestor found for '%s' and '%s'", src->get_cname(), dst->get_cname());
+  /* (2) remove the common part from the paths (including the common ancestor)
+   *  'erase' does not include the last position, so we add 1 to last position index
+   */
+  src_path->erase(src_path->begin(), src_path->begin() + common_ancestor_index + 1);
+  dst_path->erase(dst_path->begin(), dst_path->begin() + common_ancestor_index + 1);
+
+  /* (3) set the src and dst ancestors
+   * If xxx_path is empty, this means that the NetPoint of xxx is in the netzone of the ancestor.
+   * Otherwise, the NetPoint is in a sub-netzone of the ancestor (the first element of xxx_path).
+   */
+  if (!src_path->empty())
+    *src_ancestor = src_path->front();
+  else
+    *src_ancestor = *common_ancestor;
+
+  if (!dst_path->empty())
+    *dst_ancestor = dst_path->front();
+  else
+    *dst_ancestor = *common_ancestor;
+
+  xbt_enforce(*common_ancestor != nullptr, "No common ancestor found for '%s' and '%s'", src->get_cname(),
+              dst->get_cname());
   xbt_enforce(*src_ancestor != nullptr, "No src ancestor found for '%s' and '%s'", src->get_cname(), dst->get_cname());
   xbt_enforce(*dst_ancestor != nullptr, "No dst ancestor found for '%s' and '%s'", src->get_cname(), dst->get_cname());
 }
@@ -547,9 +547,13 @@ void NetZoneImpl::get_interzone_route(const NetPoint* netpoint, NetPoint* gatewa
   Route route = Route();
   NetPoint* current;
   std::vector<simgrid::kernel::resource::StandardLinkImpl*>::iterator link_insert_pos;
+  auto it = zones_path->begin();
+
   // Starting from the parent zone, we go down to the zone containing the NetPoint,
   // adding the routes between the zones to links in the order specified by gateway_to_netpoint
-  for (auto it = zones_path->begin(); it != zones_path->end(); it++) {
+  while (netpoint->get_englobing_zone() != gateway->get_englobing_zone()) {
+    xbt_assert(it != zones_path->end(), "The NetPoint '%s' has no route to the gateway '%s'", netpoint->get_cname(),
+               gateway->get_cname());
     current = (*it)->netpoint_;
 
     if (gateway_to_netpoint) {
@@ -564,7 +568,8 @@ void NetZoneImpl::get_interzone_route(const NetPoint* netpoint, NetPoint* gatewa
       links.insert(links.begin(), route.link_list_.rbegin(), route.link_list_.rend());
     }
     route = Route();
-  }
+    it++;
+  };
 
   xbt_enforce(netpoint->get_englobing_zone() == gateway->get_englobing_zone(),
               "The final gateway '%s' and src '%s' are not in the same netzone, please report that bug.",
@@ -594,6 +599,8 @@ void NetZoneImpl::get_global_route_with_netzones(const NetPoint* src, const NetP
   NetZoneImpl* common_ancestor;
   NetZoneImpl* src_ancestor;
   NetZoneImpl* dst_ancestor;
+
+  /* For src and dst : get the path from the root-zone to the NetPoint */
   std::vector<NetZoneImpl*> src_path = src->get_all_englobing_zones();
   std::vector<NetZoneImpl*> dst_path = dst->get_all_englobing_zones();
 
@@ -630,8 +637,12 @@ void NetZoneImpl::get_global_route_with_netzones(const NetPoint* src, const NetP
                  "No Gateway (gw_src) for zone %s found in route, please check your platform. If this error remains, "
                  "please report it.",
                  src_ancestor->get_cname());
-      get_interzone_route(src, route.gw_src_, false, src_to_src_ancestor, latency, &src_path);
+
+      /* Since we got the source ancestor gateway, we have to remove the source ancestor from the path */
+      src_path.erase(src_path.begin());
+
       /* Insert the route from the source to the source ancestor into the global route */
+      get_interzone_route(src, route.gw_src_, false, src_to_src_ancestor, latency, &src_path);
       std::move(src_to_src_ancestor.begin(), src_to_src_ancestor.end(), std::back_inserter(links));
     }
     /* Insert the route from the source ancestor to the destination ancestor into the global route */
@@ -646,8 +657,12 @@ void NetZoneImpl::get_global_route_with_netzones(const NetPoint* src, const NetP
                  "No Gateway (gw_dst) for zone %s found in route, please check your platform. If this error remains, "
                  "please report it.",
                  dst_ancestor->get_cname());
-      get_interzone_route(dst, route.gw_dst_, true, dst_ancestor_to_dst, latency, &dst_path);
+
+      /* Since we got the destination ancestor gateway, we have to remove the destination ancestor from the path */
+      dst_path.erase(dst_path.begin());
+
       /* Insert the route from the destination ancestor to the destination into the global route */
+      get_interzone_route(dst, route.gw_dst_, true, dst_ancestor_to_dst, latency, &dst_path);
       std::move(begin(dst_ancestor_to_dst), end(dst_ancestor_to_dst), std::back_inserter(links));
     }
   }
