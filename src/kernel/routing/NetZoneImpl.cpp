@@ -541,25 +541,24 @@ void NetZoneImpl::get_interzone_route(const NetPoint* netpoint, NetPoint* gatewa
                                       std::vector<kernel::resource::StandardLinkImpl*>& links, double* latency,
                                       std::vector<NetZoneImpl*>* zones_path)
 {
-  // get_up_to_down_route(down, up, links, latency, path_src);
   XBT_DEBUG("get_interzone_route netpoint='%s' (in '%s') gw='%s' gateway_to_netpoint=%d", netpoint->get_cname(),
             netpoint->get_englobing_zone()->get_cname(), gateway->get_cname(), gateway_to_netpoint);
 
   Route route = Route();
   NetPoint* current;
   std::vector<simgrid::kernel::resource::StandardLinkImpl*>::iterator link_insert_pos;
-  // Starting from the upper zone, we go down to the zone containing the NetPoint,
+  // Starting from the parent zone, we go down to the zone containing the NetPoint,
   // adding the routes between the zones to links in the order specified by gateway_to_netpoint
   for (auto it = zones_path->begin(); it != zones_path->end(); it++) {
     current = (*it)->netpoint_;
 
     if (gateway_to_netpoint) {
-      // get the route from the upper zone to the lower zone, and insert it at the end of the list
+      // get the route from the parent zone to the child zone, and insert it at the end of the list
       gateway->get_englobing_zone()->get_local_route(gateway, current, &route, latency);
       gateway = route.gw_dst_;
       links.insert(links.end(), route.link_list_.begin(), route.link_list_.end());
     } else {
-      // get the route from the lower zone to the upper zone, and insert it at the beginning of the list
+      // get the route from the child zone to the parent zone, and insert it at the beginning of the list
       gateway->get_englobing_zone()->get_local_route(current, gateway, &route, latency);
       gateway = route.gw_src_;
       links.insert(links.begin(), route.link_list_.rbegin(), route.link_list_.rend());
