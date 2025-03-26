@@ -392,7 +392,6 @@ bool is_cv_wait_fireable_without_transition(const odpor::Execution* exec, EventH
       static_cast<const CondvarTransition*>(exec->get_transition_for_handle(cv_wait_handle))->get_condvar();
   int signal_after_lock = 0;
 
-  bool has_lock_been_found = false;
   EventHandle lock_handle  = 0;
 
   for (EventHandle e = cv_wait_handle - 1; e <= cv_wait_handle; e--) {

@@ -556,7 +556,7 @@ void MazurkiewiczTraces::record_new_execution(const Execution& exec)
     }
   }
   classes_.insert(seq);
-  XBT_INFO("Currently recorded %ld traces", classes_.size());
+  XBT_INFO("Currently recorded %zu traces", classes_.size());
 }
 
 void MazurkiewiczTraces::log_data()
