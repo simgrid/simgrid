@@ -185,7 +185,7 @@ bool MutexTransition::can_be_co_enabled(const Transition* o) const
   return true; // mutexes are INDEP with non-mutex transitions
 }
 
-bool is_sem_wait_fireable_without_unlock(const odpor::Execution* exec, EventHandle unlock_handle,
+static bool is_sem_wait_fireable_without_unlock(const odpor::Execution* exec, EventHandle unlock_handle,
                                          EventHandle wait_handle)
 {
 
@@ -385,7 +385,7 @@ bool CondvarTransition::depends(const Transition* o) const
   return false;
 }
 
-bool is_cv_wait_fireable_without_transition(const odpor::Execution* exec, EventHandle cv_wait_handle,
+static bool is_cv_wait_fireable_without_transition(const odpor::Execution* exec, EventHandle cv_wait_handle,
                                             EventHandle other_handle)
 {
   unsigned cv_id =
@@ -454,11 +454,14 @@ bool is_cv_wait_fireable_without_transition(const odpor::Execution* exec, EventH
     switch (cv_transition->type_) {
       case Transition::Type::CONDVAR_ASYNC_LOCK:
         currently_waiting_on_cv++;
+        break;
       case Transition::Type::CONDVAR_BROADCAST:
         currently_waiting_on_cv = 0;
+	break;
       case Transition::Type::CONDVAR_SIGNAL:
         // If no one is currently waiting, the signal is lost
         currently_waiting_on_cv = std::max(0, currently_waiting_on_cv - 1);
+	break;
       default:
         xbt_die("What? What is this kind of transition? (%s) Fix Me!", Transition::to_c_str(cv_transition->type_));
     }
