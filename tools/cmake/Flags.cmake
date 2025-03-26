@@ -182,7 +182,7 @@ endif()
 if (CMAKE_C_COMPILER_ID MATCHES "Intel")
   # honor parentheses when determining the order of expression evaluation.
   # disallow optimizations for floating-point arithmetic with Nans or +-Infs (breaks Eigen3)
-  set(optCFLAGS "${optCFLAGS} -fprotect-parens -fno-finite-math-only")
+  set(optCFLAGS "${optCFLAGS} -fprotect-parens -Wno-unused-command-line-argument -fno-finite-math-only")
 endif()
 
 if(NOT enable_debug)
