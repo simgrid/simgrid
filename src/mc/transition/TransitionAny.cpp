@@ -93,7 +93,7 @@ Transition* WaitAnyTransition::get_current_transition() const
       times_considered--;
   }
 
-  xbt_die("There is no enabmed corresponding transition. Fix me!");
+  xbt_die("There is no enabled corresponding transition. Fix me!");
 }
 
 bool WaitAnyTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
