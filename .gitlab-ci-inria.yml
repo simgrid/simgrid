@@ -301,5 +301,5 @@ flags:
   - ninja --verbose all tests
   # Run the test in one config with GLIBCXX_DEBUG
   - if [ "${BUILD_MC}/${BUILD_SMPI}/${BUILD_DEBUG}" = "ON/ON/ON" ]; then
-     ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+     ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure ;
     fi
