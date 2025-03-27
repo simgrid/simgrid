@@ -5,8 +5,9 @@ image: simgrid/build-deps
 # On Inria, we run the base build all the time 
 build-base:
   rules:
-    - if: '$BUILD_KIND == ""'
-    - if: '$CI_COMMIT_BRANCH != "stable"'
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
   tags:
     - large  # Inria infra
   script:
@@ -68,8 +69,9 @@ distcheck:
 # Test the Python build
 build-pip:
   rules:
-    - if: '$BUILD_KIND == ""'
-    - if: '$CI_COMMIT_BRANCH != "stable"'
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
   tags: # Select a runner
     - small # Inria infra
   script:
@@ -88,8 +90,9 @@ build-pip:
 alpine-release:
   image: alpine:latest
   rules:
-    - if: '$BUILD_KIND == ""'
-    - if: '$CI_COMMIT_BRANCH != "stable"'
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
   tags:
     - large  # Inria infra
   script: 
@@ -107,8 +110,9 @@ alpine-release:
 debian-clang:
   image: debian:testing
   rules:
-    - if: '$BUILD_KIND == ""'
-    - if: '$CI_COMMIT_BRANCH != "stable"'
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
   tags:
     - large  # Inria infra
   script:
@@ -127,8 +131,9 @@ debian-clang:
 fedora-rawhide-release:
   image: fedora:rawhide
   rules:
-    - if: '$BUILD_KIND == ""'
-    - if: '$CI_COMMIT_BRANCH != "stable"'
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
   tags:
     - large  # Inria infra
   script:
@@ -146,8 +151,9 @@ fedora-rawhide-release:
 rocky-release:
   image: rockylinux:9
   rules:
-    - if: '$BUILD_KIND == ""'
-    - if: '$CI_COMMIT_BRANCH != "stable"'
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
   tags:
     - large  # Inria infra
   script:
@@ -168,8 +174,9 @@ rocky-release:
 opensuse-release:
   image: opensuse/tumbleweed # tumbleweed is the rolling release with recent software
   rules:
-    - if: '$BUILD_KIND == ""'
-    - if: '$CI_COMMIT_BRANCH != "stable"'
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
   tags:
     - large  # Inria infra
   script:
@@ -187,8 +194,9 @@ opensuse-release:
 opensuse-intelCC:
   image: opensuse/tumbleweed # tumbleweed is the rolling release with recent software
   rules:
-    - if: '$BUILD_KIND == ""'
-    - if: '$CI_COMMIT_BRANCH != "stable"'
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
   tags:
     - large  # Inria infra
   script:
@@ -207,8 +215,9 @@ opensuse-intelCC:
 arch-release:
   image: archlinux:latest
   rules:
-    - if: '$BUILD_KIND == ""'
-    - if: '$CI_COMMIT_BRANCH != "stable"'
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
   tags:
     - large  # Inria infra
   script:
@@ -230,20 +239,25 @@ arch-release:
 
 flags:
   rules:
-    - if: '$BUILD_KIND == "daily"'
-    - if: '$CI_COMMIT_BRANCH != "stable"'
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
   tags:
     - large  # Inria infra
   parallel:
     matrix:
-      - BUILD_MC: ["ON", "OFF"]
-        BUILD_SMPI: ["ON", "OFF"]
-        BUILD_DEBUG: ["ON", "OFF"]
+      - MC: ["MC", "NO_MC"]
+        SMPI: ["SMPI", "NO_SMPI"]
+        DEBUG: ["DEBUG", "NO_DEBUG"]
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y ninja-build libgcc-12-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless libns3-dev
   - rm -rf CMakeFiles CMakeCache.txt
   - export CXXFLAGS=-D_GLIBCXX_DEBUG
+  # We cannot put ON/OFF as values directly, or the job name is not instructive
+  - if [ ${MC} == "MC" ]       ; then BUILD_MC="ON"    ; else BUILD_MC="OFF"    ; fi
+  - if [ ${SMPI} == "SMPI" ]   ; then BUILD_SMPI="ON"  ; else BUILD_SMPI="OFF"  ; fi
+  - if [ ${DEBUG} == "DEBUG" ] ; then BUILD_DEBUG="ON" ; else BUILD_DEBUG="OFF" ; fi
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_SMPI=${BUILD_SMPI} -Denable_testsuite_smpi_MPICH3=${BUILD_SMPI} -Denable_model-checking=${BUILD_MC} -Denable_testsuite_McMini=${BUILD_MC} -Denable_debug=${BUILD_DEBUG} -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   # Run the test in one config with GLIBCXX_DEBUG
