@@ -44,6 +44,10 @@ stages:
  - test
 # Smoke tests are fast jobs. If they fail, no need to run the other tests 
 
+cache:
+  paths:
+    - ccache
+
 .cached-build:
   artifacts:
     when: on_failure
