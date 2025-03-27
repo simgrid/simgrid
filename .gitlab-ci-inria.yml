@@ -4,8 +4,9 @@ image: simgrid/build-deps
 
 # On Inria, we run the base build all the time 
 build-base:
-  except:
-  - stable
+  rules:
+    - if: '$BUILD_KIND == ""'
+    - if: '$CI_COMMIT_BRANCH != "stable"'
   tags:
     - large  # Inria infra
   script:
@@ -20,11 +21,11 @@ build-base:
     expire_in: 6 months
     reports:
       junit: result.xml
-  
+
 coverage:
   image: debian:testing
-  only:
-  - merge-request
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   tags:
     - large  # Inria infra
   script:
@@ -66,8 +67,9 @@ distcheck:
 
 # Test the Python build
 build-pip:
-  except:
-  - stable
+  rules:
+    - if: '$BUILD_KIND == ""'
+    - if: '$CI_COMMIT_BRANCH != "stable"'
   tags: # Select a runner
     - small # Inria infra
   script:
@@ -85,8 +87,9 @@ build-pip:
 
 alpine-release:
   image: alpine:latest
-  except:
-  - stable
+  rules:
+    - if: '$BUILD_KIND == ""'
+    - if: '$CI_COMMIT_BRANCH != "stable"'
   tags:
     - large  # Inria infra
   script: 
@@ -103,8 +106,9 @@ alpine-release:
 
 debian-clang:
   image: debian:testing
-  except:
-  - stable
+  rules:
+    - if: '$BUILD_KIND == ""'
+    - if: '$CI_COMMIT_BRANCH != "stable"'
   tags:
     - large  # Inria infra
   script:
@@ -122,8 +126,9 @@ debian-clang:
 
 fedora-rawhide-release:
   image: fedora:rawhide
-  except:
-  - stable
+  rules:
+    - if: '$BUILD_KIND == ""'
+    - if: '$CI_COMMIT_BRANCH != "stable"'
   tags:
     - large  # Inria infra
   script:
@@ -140,8 +145,9 @@ fedora-rawhide-release:
 
 rocky-release:
   image: rockylinux:9
-  except:
-  - stable
+  rules:
+    - if: '$BUILD_KIND == ""'
+    - if: '$CI_COMMIT_BRANCH != "stable"'
   tags:
     - large  # Inria infra
   script:
@@ -161,8 +167,9 @@ rocky-release:
 
 opensuse-release:
   image: opensuse/tumbleweed # tumbleweed is the rolling release with recent software
-  except:
-  - stable
+  rules:
+    - if: '$BUILD_KIND == ""'
+    - if: '$CI_COMMIT_BRANCH != "stable"'
   tags:
     - large  # Inria infra
   script:
@@ -179,8 +186,9 @@ opensuse-release:
 
 opensuse-intelCC:
   image: opensuse/tumbleweed # tumbleweed is the rolling release with recent software
-  except:
-  - stable
+  rules:
+    - if: '$BUILD_KIND == ""'
+    - if: '$CI_COMMIT_BRANCH != "stable"'
   tags:
     - large  # Inria infra
   script:
@@ -198,8 +206,9 @@ opensuse-intelCC:
 
 arch-release:
   image: archlinux:latest
-  except:
-  - stable
+  rules:
+    - if: '$BUILD_KIND == ""'
+    - if: '$CI_COMMIT_BRANCH != "stable"'
   tags:
     - large  # Inria infra
   script:
@@ -218,4 +227,27 @@ arch-release:
 # ###################################################################################################
 # ###################################################################################################
 # ###################################################################################################
+
+flags:
+  rules:
+    - if: '$BUILD_KIND == "daily"'
+    - if: '$CI_COMMIT_BRANCH != "stable"'
+  tags:
+    - large  # Inria infra
+  parallel:
+    matrix:
+      - BUILD_MC: ["ON", "OFF"]
+        BUILD_SMPI: ["ON", "OFF"]
+        BUILD_DEBUG: ["ON", "OFF"]
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y ninja-build libgcc-12-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless libns3-dev
+  - rm -rf CMakeFiles CMakeCache.txt
+  - export CXXFLAGS=-D_GLIBCXX_DEBUG
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_SMPI=${BUILD_SMPI} -Denable_testsuite_smpi_MPICH3=${BUILD_SMPI} -Denable_model-checking=${BUILD_MC} -Denable_testsuite_McMini=${BUILD_MC} -Denable_debug=${BUILD_DEBUG} -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - ninja --verbose all tests
+  # Run the test in one config with GLIBCXX_DEBUG
+  - if [ "${BUILD_MC}/${BUILD_SMPI}/${BUILD_DEBUG}" = "ON/ON/ON" ]; then
+     ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+    fi
 
