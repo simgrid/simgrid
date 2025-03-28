@@ -1499,7 +1499,7 @@ $ ${bindir:=.}/flatifier ${libdir:=.}/libasymetric_nested_zones.so "--log=root.f
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4.1">
-> <zone id="rootzone" routing="Full">
+> <zone id="_world_" routing="Full">
 >   <host id="A1_h1" speed="1e+09"/>
 >   <host id="A1_h2" speed="1e+09"/>
 >   <host id="A2_h1" speed="1e+09"/>
