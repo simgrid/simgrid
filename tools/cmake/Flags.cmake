@@ -42,8 +42,9 @@ if(enable_compile_warnings)
       set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-error=unused-variable")
     endif()
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "13.2.0")
-      # workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=101361
-      set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-error=stringop-overread -Wno-error=stringop-overflow")
+      # workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=101361 which symptom is:
+      #   error: ‘__builtin_memcpy’ specified bound between 9223372036854775811 and 18446744073709551615 exceeds maximum object size
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=stringop-overread -Wno-error=stringop-overflow")
     endif()
   endif()
 
@@ -182,7 +183,7 @@ endif()
 if (CMAKE_C_COMPILER_ID MATCHES "Intel")
   # honor parentheses when determining the order of expression evaluation.
   # disallow optimizations for floating-point arithmetic with Nans or +-Infs (breaks Eigen3)
-  set(optCFLAGS "${optCFLAGS} -fprotect-parens -fno-finite-math-only")
+  set(optCFLAGS "${optCFLAGS} -fprotect-parens -Wno-unused-command-line-argument -fno-finite-math-only")
 endif()
 
 if(NOT enable_debug)

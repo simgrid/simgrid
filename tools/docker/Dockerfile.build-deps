@@ -8,7 +8,7 @@ RUN apt-get --allow-releaseinfo-change update && \
     apt install -y \
        bibclean emacs-nox org-mode elpa-ess elpa-htmlize wget unzip r-cran-ggplot2 r-cran-tidyr r-cran-dplyr libtext-bibtex-perl && \
     apt install -y \
-       g++ gcc gfortran pybind11-dev \
+       g++ gcc gfortran pybind11-dev ccache \
        git \
        valgrind \
        libboost-dev libboost-all-dev \
@@ -19,7 +19,6 @@ RUN apt-get --allow-releaseinfo-change update && \
        chrpath \
        python3-sphinx python3-breathe python3-sphinx-rtd-theme \
        default-jdk-headless \
+       ninja-build libns3-dev \
        && \
     apt clean && apt autoclean
-
-#        linkchecker \
