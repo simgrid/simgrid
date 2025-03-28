@@ -8,7 +8,9 @@ add_library(asymetric_nested_zones SHARED asymetric_nested_zones.cpp)
 target_link_libraries(asymetric_nested_zones simgrid)
 add_dependencies(tests asymetric_nested_zones)
 
-set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.cpp PARENT_SCOPE)
+set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.cpp
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/asymetric_nested_zones.cpp
+                                    PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/bogus_two_hosts_asymetric.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/bogus_missing_gateway.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.tesh
