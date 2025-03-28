@@ -40,9 +40,27 @@ coverage:
 # ###################################################################################################
 
 stages:
+ - docker
  - smoke_test
  - test
 # Smoke tests are fast jobs. If they fail, no need to run the other tests 
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+docker_image:
+  image: docker:latest
+  stage: docker
+  tags:
+    - linux  # any runner will do
+  rules:
+    - if: $CI_COMMIT_MESSAGE =~ /rebuild/
+    - changes:
+      - tools/docker/Dockerfile.build-deps
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -f tools/docker/Dockerfile.build-deps -t $CI_REGISTRY_IMAGE/build-deps:latest .
+    - docker push $CI_REGISTRY_IMAGE/build-deps:latest
 
 .cached-build:
   cache:
@@ -62,12 +80,13 @@ stages:
     - export CCACHE_DIR="$PWD/ccache"
     - ccache --show-stats
 
-image: simgrid/build-deps
-
-# On Inria, we run the base build all the time 
+# Fast job with a docker image preinstalled and a ccache setup, to fail fast on trivial errors
 build-base:
   extends: .cached-build
   stage: smoke_test
+  image: $CI_REGISTRY_IMAGE/build-deps:latest
+  # interruptible means "Abort the pipeline if another commit comes when we're in this job"
+  interruptible: true
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
@@ -89,6 +108,7 @@ build-base:
 # Ensure that the produced tarball is OK
 distcheck:
   stage: smoke_test
+  image: $CI_REGISTRY_IMAGE/build-deps:latest
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
@@ -102,6 +122,7 @@ distcheck:
 # Test the Python build
 build-pip:
   stage: test
+  image: $CI_REGISTRY_IMAGE/build-deps:latest
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
@@ -280,6 +301,7 @@ arch-release:
 
 flags:
   extends: .cached-build
+  image: $CI_REGISTRY_IMAGE/build-deps:latest
   stage: test
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
