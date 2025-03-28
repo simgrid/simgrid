@@ -42,8 +42,9 @@ if(enable_compile_warnings)
       set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-error=unused-variable")
     endif()
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "13.2.0")
-      # workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=101361
-      set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-error=stringop-overread -Wno-error=stringop-overflow")
+      # workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=101361 which symptom is:
+      #   error: ‘__builtin_memcpy’ specified bound between 9223372036854775811 and 18446744073709551615 exceeds maximum object size
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=stringop-overread -Wno-error=stringop-overflow")
     endif()
   endif()
 

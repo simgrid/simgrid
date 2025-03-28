@@ -74,7 +74,6 @@ build-base:
   tags:
     - large  # Inria infra
   script:
-  - apt-get --allow-releaseinfo-change update
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
