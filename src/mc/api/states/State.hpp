@@ -32,6 +32,9 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
   /** @brief The incoming transition is what led to this state, coming from its parent  */
   std::shared_ptr<Transition> incoming_transition_ = nullptr;
 
+  /** @brief The outgoing transition is the last transition that we took to leave this state.  */
+  std::shared_ptr<Transition> outgoing_transition_ = nullptr;
+
   /** Sequential state ID (used for debugging) */
   long num_ = 0;
 
@@ -48,9 +51,6 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
 protected:
   /** State's exploration status by actor. All actors should be present, eventually disabled for now. */
   std::map<aid_t, ActorState> actors_to_run_;
-
-  /** @brief The outgoing transition is the last transition that we took to leave this state.  */
-  std::shared_ptr<Transition> outgoing_transition_ = nullptr;
 
   ActorState get_actor_at(aid_t aid) { return actors_to_run_.at(aid); }
 

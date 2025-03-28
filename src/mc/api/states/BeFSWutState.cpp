@@ -61,7 +61,7 @@ BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state,
 
 void BeFSWutState::record_child_state(StatePtr child)
 {
-  aid_t child_aid = outgoing_transition_->aid_;
+  aid_t child_aid = child->get_transition_in()->aid_;
   if (children_states_.size() < static_cast<long unsigned>(child_aid + 1))
     children_states_.resize(child_aid + 1);
   children_states_[child_aid] = std::move(child);
