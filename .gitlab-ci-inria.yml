@@ -253,8 +253,24 @@ opensuse-release:
     reports:
       junit: result.xml
 
+docker-intelCC:
+  image: docker:latest
+  stage: test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - small  # Inria infra
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull -t $CI_REGISTRY_IMAGE/intelCC:latest || true
+    - docker build -f tools/docker/Dockerfile.intelCC -t $CI_REGISTRY_IMAGE/intelCC:latest .
+    - docker push $CI_REGISTRY_IMAGE/intelCC:latest
+
 opensuse-intelCC:
-  image: opensuse/tumbleweed # tumbleweed is the rolling release with recent software
+  needs: [docker-intelCC]
+  image: $CI_REGISTRY_IMAGE/intelCC:latest
   stage: test
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
