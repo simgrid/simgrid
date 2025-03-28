@@ -49,9 +49,6 @@ cache:
     - ccache
 
 .cached-build:
-  artifacts:
-    when: on_failure
-    untracked: true
   # Use ccache transparently, and print stats before/after
   before_script:
     - export PATH="/usr/lib/ccache:$PATH"
