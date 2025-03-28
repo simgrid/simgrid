@@ -46,6 +46,7 @@ stages:
 
 .cached-build:
   cache:
+    key: ccache-$CI_JOB_NAME
     paths:
       - ccache
     when: 'always'
