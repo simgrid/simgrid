@@ -58,12 +58,9 @@ docker_build:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
   tags:
     - small  # Inria infra
-  rules:
-    - if: $CI_COMMIT_MESSAGE =~ /rebuild/
-    - changes:
-      - tools/docker/Dockerfile.build-deps
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull -t $CI_REGISTRY_IMAGE/build-deps:latest || true
     - docker build -f tools/docker/Dockerfile.build-deps -t $CI_REGISTRY_IMAGE/build-deps:latest .
     - docker push $CI_REGISTRY_IMAGE/build-deps:latest
 
