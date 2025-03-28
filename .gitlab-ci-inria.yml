@@ -48,9 +48,14 @@ stages:
 variables:
   DOCKER_DRIVER: overlay2
 
-docker_image:
+docker_build:
   image: docker:latest
   stage: docker
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
   tags:
     - linux  # any runner will do
   rules:
