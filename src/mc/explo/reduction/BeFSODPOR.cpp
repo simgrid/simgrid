@@ -123,6 +123,7 @@ StatePtr BeFSODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
       return existing_state;
     }
     StatePtr new_state = StatePtr(new BeFSWutState(remote_app, befswut_state, incoming_transition), true);
+    static_cast<BeFSWutState*>(new_state.get())->initialize_with_arbitrary(remote_app);
     befswut_state->record_child_state(new_state);
     return new_state;
   }

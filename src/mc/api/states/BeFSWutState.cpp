@@ -44,7 +44,10 @@ BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state,
 
   is_leftmost_ = parent->is_leftmost_ and parent->done_.size() == parent->closed_.size();
   parent->done_.push_back(get_transition_in());
+}
 
+void BeFSWutState::initialize_with_arbitrary(RemoteApp& remote_app)
+{
   if (wakeup_tree_.empty()) {
     if (sleep_set_.empty())
       initialize_if_empty_wut(remote_app);
@@ -196,6 +199,7 @@ StatePtr BeFSWutState::insert_into_final_wakeup_tree(odpor::PartialExecution& w)
 
   if (w.size() == 0)
     return nullptr;
+
   insert_into_wakeup_tree(w);
   return this;
 }

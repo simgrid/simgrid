@@ -42,6 +42,8 @@ public:
   explicit BeFSWutState(RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr<Transition> incoming_transition);
   ~BeFSWutState();
 
+  void initialize_with_arbitrary(RemoteApp& remote_app);
+
   void record_child_state(StatePtr child);
 
   aid_t next_transition() const;
