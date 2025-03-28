@@ -44,11 +44,11 @@ stages:
  - test
 # Smoke tests are fast jobs. If they fail, no need to run the other tests 
 
-cache:
-  paths:
-    - ccache
-
 .cached-build:
+  cache:
+    paths:
+      - ccache
+    when: 'always'
   # Use ccache transparently, and print stats before/after
   before_script:
     - export PATH="/usr/lib/ccache:$PATH"
