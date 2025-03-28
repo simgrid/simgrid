@@ -57,7 +57,7 @@ docker_build:
     - if: '$CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
   tags:
-    - linux  # any runner will do
+    - small  # Inria infra
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /rebuild/
     - changes:
