@@ -32,7 +32,9 @@ BeFSWutState::BeFSWutState(RemoteApp& remote_app) : WutState(remote_app)
   is_leftmost_ = true; // The first state is the only one at that depth, so the leftmost one.
 }
 
-BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state) : WutState(remote_app, parent_state, false)
+BeFSWutState::BeFSWutState(RemoteApp& remote_app, StatePtr parent_state,
+                           std::shared_ptr<Transition> incoming_transition)
+    : WutState(remote_app, parent_state, incoming_transition, false)
 {
   auto parent = static_cast<BeFSWutState*>(parent_state.get());
   for (const auto& transition : parent->done_) {

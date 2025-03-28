@@ -13,7 +13,9 @@ namespace simgrid::mc {
 
 SleepSetState::SleepSetState(RemoteApp& remote_app) : State(remote_app) {}
 
-SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state) : State(remote_app, parent_state)
+SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state,
+                             std::shared_ptr<Transition> incoming_transition)
+    : State(remote_app, parent_state, incoming_transition)
 {
   /* Copy the sleep set and eventually removes things from it: */
   /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.

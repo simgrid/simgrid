@@ -29,7 +29,8 @@ protected:
 
 public:
   explicit WutState(RemoteApp& remote_app);
-  explicit WutState(RemoteApp& remote_app, StatePtr parent_state, bool initialize_wut_if_empty = true);
+  explicit WutState(RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr<Transition> incoming_transition,
+                    bool initialize_wut_if_empty = true);
 
   /**
    * Same as next_transition(), but the choice is based off the ODPOR

@@ -111,7 +111,8 @@ aid_t BeFSODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
   return next;
 }
 
-StatePtr BeFSODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
+StatePtr BeFSODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
+                                 std::shared_ptr<Transition> incoming_transition)
 {
   if (parent_state == nullptr)
     return StatePtr(new BeFSWutState(remote_app), true);
@@ -121,7 +122,7 @@ StatePtr BeFSODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
         existing_state != nullptr) {
       return existing_state;
     }
-    StatePtr new_state = StatePtr(new BeFSWutState(remote_app, befswut_state), true);
+    StatePtr new_state = StatePtr(new BeFSWutState(remote_app, befswut_state, incoming_transition), true);
     befswut_state->record_child_state(new_state);
     return new_state;
   }

@@ -7,6 +7,7 @@
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
+#include "xbt/asserts.h"
 #include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 
@@ -32,10 +33,12 @@ State::State(const RemoteApp& remote_app) : num_(++expended_states_)
   remote_app.get_actors_status(actors_to_run_);
 }
 
-State::State(const RemoteApp& remote_app, StatePtr parent_state) : State(remote_app)
+State::State(const RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr<Transition> incoming_transition)
+    : State(remote_app)
 {
+  xbt_assert(incoming_transition != nullptr);
   parent_state_        = std::move(parent_state);
-  incoming_transition_ = parent_state_->get_transition_out();
+  incoming_transition_ = std::move(incoming_transition);
   depth_               = parent_state_->depth_ + 1;
 
   XBT_DEBUG("Creating %ld, son of %ld", get_num(), parent_state_->get_num());

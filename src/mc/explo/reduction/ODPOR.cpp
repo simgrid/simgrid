@@ -89,12 +89,13 @@ aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 
   return next;
 }
-StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
+StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
+                             std::shared_ptr<Transition> incoming_transition)
 {
   if (parent_state == nullptr)
     return StatePtr(new WutState(remote_app), true);
   else
-    return StatePtr(new WutState(remote_app, parent_state), true);
+    return StatePtr(new WutState(remote_app, parent_state, incoming_transition), true);
 }
 
 void ODPOR::on_backtrack(State* s)

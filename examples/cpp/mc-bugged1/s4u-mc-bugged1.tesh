@@ -31,7 +31,6 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/
 > [  0.000000] (0:maestro@) Start the critical transition detection phase.
 > [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (2:client@HostB) Sent!
-> [  0.000000] (4:client@HostD) Sent!
 > [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (0:maestro@) *********************************

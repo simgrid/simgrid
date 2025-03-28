@@ -23,8 +23,9 @@ WutState::WutState(RemoteApp& remote_app) : SleepSetState(remote_app)
   initialize_if_empty_wut(remote_app);
 }
 
-WutState::WutState(RemoteApp& remote_app, StatePtr parent_state, bool initialize_wut_if_empty)
-    : SleepSetState(remote_app, parent_state)
+WutState::WutState(RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr<Transition> incoming_transition,
+                   bool initialize_wut_if_empty)
+    : SleepSetState(remote_app, parent_state, incoming_transition)
 {
 
   auto parent = static_cast<WutState*>(parent_state.get());

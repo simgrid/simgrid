@@ -10,6 +10,7 @@
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/xbt_intrusiveptr.hpp"
+#include <memory>
 
 namespace simgrid::mc {
 
@@ -55,7 +56,7 @@ protected:
 
 public:
   explicit State(const RemoteApp& remote_app);
-  explicit State(const RemoteApp& remote_app, StatePtr parent_state);
+  explicit State(const RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr<Transition> incoming_transition);
   virtual ~State();
 
   int get_ref_count() { return refcount_; }

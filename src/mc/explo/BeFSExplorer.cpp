@@ -207,7 +207,7 @@ void BeFSExplorer::run()
              state->get_num(), state->count_todo(), opened_states_.size());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    auto next_state = reduction_algo_->state_create(get_remote_app(), state);
+    auto next_state = reduction_algo_->state_create(get_remote_app(), state, executed_transition);
 
     if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
       static unsigned max_files = sysconf(_SC_OPEN_MAX);

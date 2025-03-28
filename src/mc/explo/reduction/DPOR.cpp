@@ -105,9 +105,10 @@ unsigned long DPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> upd
   return nb_updates;
 }
 
-StatePtr DPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
+StatePtr DPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
+                            std::shared_ptr<Transition> incoming_transition)
 {
-  auto res             = Reduction::state_create(remote_app, parent_state);
+  auto res             = Reduction::state_create(remote_app, parent_state, incoming_transition);
   auto sleep_set_state = static_cast<SleepSetState*>(res.get());
 
   if (not sleep_set_state->get_enabled_minus_sleep().empty()) {

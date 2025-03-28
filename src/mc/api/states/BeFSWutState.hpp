@@ -39,7 +39,7 @@ class XBT_PRIVATE BeFSWutState : public WutState {
 
 public:
   explicit BeFSWutState(RemoteApp& remote_app);
-  explicit BeFSWutState(RemoteApp& remote_app, StatePtr parent_state);
+  explicit BeFSWutState(RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr<Transition> incoming_transition);
   ~BeFSWutState();
 
   void record_child_state(StatePtr child);
