@@ -62,7 +62,8 @@ docker_build:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $CI_REGISTRY_IMAGE/build-deps:latest || true
     - git_time=`git log -n1 --format=%at tools/docker/Dockerfile.build-deps`
-    - docker_time=`docker inspect -f '{{.Created}}' $(docker images -q $CI_REGISTRY_IMAGE/build-deps:latest) | xargs -I {} date -d {} +%s`
+    # busybox's date needs '-D' where date(1) uses -d. https://unix.stackexchange.com/questions/206540/date-d-command-fails-on-docker-alpine-linux-container
+    - docker_time=`docker inspect -f '{{.Created}}' $(docker images -q $CI_REGISTRY_IMAGE/build-deps:latest) | xargs -I {} date -D {} +%s`
     - if [ -z "$docker_time" ] || [ $docker_time -lt $git_time ] ; then
         docker build -f tools/docker/Dockerfile.build-deps -t $CI_REGISTRY_IMAGE/build-deps:latest . ;
         docker push $CI_REGISTRY_IMAGE/build-deps:latest ; 
