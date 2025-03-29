@@ -59,7 +59,7 @@ docker_build:
   tags:
     - small  # Inria infra
   script:
-    - login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $CI_REGISTRY_IMAGE/build-deps:latest || true
     - git_time=`git log -n1 --format=%at tools/docker/Dockerfile.build-deps`
     - docker_time=`docker inspect -f '{{.Created}}' $(docker images -q $CI_REGISTRY_IMAGE/build-deps:latest) | xargs -I {} date -d {} +%s`
