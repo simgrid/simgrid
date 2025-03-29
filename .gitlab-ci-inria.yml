@@ -60,7 +60,7 @@ docker_build:
     - small  # Inria infra
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull -t $CI_REGISTRY_IMAGE/build-deps:latest || true
+    - docker pull $CI_REGISTRY_IMAGE/build-deps:latest || true
     - docker build -f tools/docker/Dockerfile.build-deps -t $CI_REGISTRY_IMAGE/build-deps:latest .
     - docker push $CI_REGISTRY_IMAGE/build-deps:latest
 
