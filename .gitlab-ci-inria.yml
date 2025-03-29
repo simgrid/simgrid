@@ -83,44 +83,30 @@ docker_build:
     - export CCACHE_DIR="$PWD/ccache"
     - ccache --show-stats
 
-# Fast job with a docker image preinstalled and a ccache setup, to fail fast on trivial errors
-build-base:
+# Fast job running on a manually managed openstack node, thus out of docker, and with ccache setup. Fail fail fast on trivial errors.
+make-distcheck:
   extends: .cached-build
   stage: smoke_test
-  image: $CI_REGISTRY_IMAGE/build-deps:latest
-  # interruptible means "Abort the pipeline if another commit comes when we're in this job"
-  interruptible: true
+  # Run ASAP without waiting the docker images
+  needs: []
+  # interruptible means "Abort the pipeline if another commit comes when we're in this job". Would not play well here, as we are not in docker.
+  interruptible: false
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
     - if: '$CI_PIPELINE_SOURCE == "push"'
   tags:
-    - large  # Inria infra
+    - debian-testing  # Private runner on the inria infra, not docker but openstack node
   script:
-  - rm -rf CMakeFiles CMakeCache.txt
-  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
-  - ninja --verbose all tests
-  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+  - mkdir -p build && cd build
+  - cmake -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON ..
+  - make distcheck
   artifacts:
     when: always
     expire_in: 6 months
     reports:
       junit: result.xml
 
-
-# Ensure that the produced tarball is OK
-distcheck:
-  stage: smoke_test
-  image: $CI_REGISTRY_IMAGE/build-deps:latest
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "stable"'
-      when: never
-    - if: '$CI_PIPELINE_SOURCE == "push"'
-  tags:
-    - linux  # any runner will do
-  script:
-  - cmake .
-  - make distcheck-configure
 
 # Test the Python build
 build-pip:
