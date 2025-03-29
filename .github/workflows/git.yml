@@ -1,7 +1,7 @@
 name: Git builds
 
-# Only trigger manually
-on: workflow_dispatch
+# Trigger on every git push
+on: push
 
 jobs:
   multi:
@@ -9,7 +9,6 @@ jobs:
     strategy:
         matrix:
           config:
-          - { name: "Ubuntu gcc", os: ubuntu-latest, cc: "gcc",   cxx: "g++" }
           - { name: "MacOS 13",   os: macos-13,      cc: "clang", cxx: "clang++"}
           - { name: "MacOS ARM",  os: macos-latest,  cc: "clang", cxx: "clang++"}
         fail-fast: false
