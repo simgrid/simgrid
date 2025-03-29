@@ -330,9 +330,9 @@ freebsd:
   tags:
     - freebsd
   variables:
-    - FF_ENABLE_JOB_CLEANUP: "true"
-    - LD_LIBRARY_PATH=/usr/local/lib/gcc13:/usr/local/flang/lib
-    - LIBRARY_PATH=/usr/local/lib/gcc13:/usr/local/flang/lib
+    FF_ENABLE_JOB_CLEANUP: "true"
+    LD_LIBRARY_PATH: "/usr/local/lib/gcc13:/usr/local/flang/lib"
+    LIBRARY_PATH: "/usr/local/lib/gcc13:/usr/local/flang/lib"
   script:
     - rm -rf CMakeFiles CMakeCache.txt
     - cmake -GNinja -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
