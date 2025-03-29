@@ -366,7 +366,7 @@ freebsd:
       junit: result.xml
 
 # ###################################################################################################
-# ###################################################################################################
+# ############# Daily jobs ##########################################################################
 # ###################################################################################################
 
 flags:
@@ -396,3 +396,54 @@ flags:
   - if [ "${BUILD_MC}/${BUILD_SMPI}/${BUILD_DEBUG}" = "ON/ON/ON" ]; then
      ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure ;
     fi
+
+sonarqube:
+  #image: $CI_REGISTRY_IMAGE/build-deps:latest
+  image: simgrid/build-deps
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y unzip curl python3-coverage wget
+  # Install sonar wrapper and sonar scanner
+  - export SONAR_SCANNER_VERSION=7.0.2.4839
+  - export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux-x64
+  - curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux-x64.zip
+  - unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
+  - export PATH=$SONAR_SCANNER_HOME/bin:$PATH
+  - export SONAR_SCANNER_OPTS="-server"
+  - curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+  - unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
+  - export PATH=$HOME/.sonar/build-wrapper-linux-x86:$PATH
+  # configure and build simgrid
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_coverage=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+  - build-wrapper-linux-x86-64 --out-dir bw-output ninja all tests
+  # Install Jacoco
+  - wget https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.12/jacoco-0.8.12.zip -O /tmp/jacoco.zip
+  - (cd /tmp ; unzip jacoco.zip)
+  - export JACOCO_PATH=/tmp/lib
+  - export JAVA_TOOL_OPTIONS="-javaagent:${JACOCO_PATH}/jacocoagent.jar"
+  # run the tests
+  - export PYTHON_TOOL_OPTIONS="/usr/bin/python3-coverage run --parallel-mode --branch"
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure || true
+  - ctest -D ExperimentalCoverage || true
+  # convert python coverage reports in xml ones
+  - find .. -size +1c -name ".coverage*" -exec mv {} . \;
+  - /usr/bin/python3-coverage combine
+  - /usr/bin/python3-coverage xml --ignore-errors -o ../python_coverage.xml
+  # Run the analysis
+  - unset JAVA_TOOL_OPTIONS
+  - sonar-scanner -Dsonar.organization=simgrid -Dsonar.projectKey=simgrid_simgrid -Dsonar.sources=. -Dsonar.cfamily.compile-commands=bw-output/compile_commands.json -Dsonar.host.url=https://sonarcloud.io
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  allow_failure: true
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  tags:
+    - large  # Inria infra
