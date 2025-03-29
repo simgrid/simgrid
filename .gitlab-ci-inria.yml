@@ -65,6 +65,9 @@ docker_build:
     - docker push $CI_REGISTRY_IMAGE/build-deps:latest
 
 .cached-build:
+  variables:
+    FF_USE_FASTZIP: "true"
+    CACHE_COMPRESSION_LEVEL: "fast"
   cache:
     key: ccache-$CI_JOB_NAME
     paths:
@@ -264,13 +267,13 @@ docker-intelCC:
     - small  # Inria infra
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull -t $CI_REGISTRY_IMAGE/intelCC:latest || true
-    - docker build -f tools/docker/Dockerfile.intelCC -t $CI_REGISTRY_IMAGE/intelCC:latest .
+    - docker pull $CI_REGISTRY_IMAGE/intelcc:latest || true
+    - docker build -f tools/docker/Dockerfile.intelCC -t $CI_REGISTRY_IMAGE/intelcc:latest .
     - docker push $CI_REGISTRY_IMAGE/intelCC:latest
 
 opensuse-intelCC:
   needs: [docker-intelCC]
-  image: $CI_REGISTRY_IMAGE/intelCC:latest
+  image: $CI_REGISTRY_IMAGE/intelcc:latest
   stage: test
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
@@ -279,9 +282,6 @@ opensuse-intelCC:
   tags:
     - large  # Inria infra
   script:
-  - zypper addrepo https://yum.repos.intel.com/oneapi oneAPI
-  - zypper --no-gpg-checks install -y ninja cmake intel-oneapi-compiler-dpcpp-cpp intel-oneapi-compiler-fortran gawk git cmake python313-pybind11-devel python313-numpy-devel graphviz-devel eigen3-devel boost-devel libboost_context-devel java-21-openjdk-devel valgrind-devel diffutils nlohmann_json-devel
-  - rm -rf CMakeFiles CMakeCache.txt
   - source /opt/intel/oneapi/setvars.sh; cmake -GNinja -DCMAKE_CXX_COMPILER=icpx -DCMAKE_C_COMPILER=icx -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
