@@ -52,7 +52,6 @@ private:
   void log_state() override;
 
   Configuration current_configuration_;
-  unsigned long backtrack_count_ = 0; // for statistics
 
   /**
    * @brief Explores the unfolding of the concurrent system
