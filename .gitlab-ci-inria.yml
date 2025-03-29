@@ -40,10 +40,13 @@ coverage:
 # ###################################################################################################
 
 stages:
- - docker
- - smoke_test
+ - pre-test
  - test
-# Smoke tests are fast jobs. If they fail, no need to run the other tests 
+
+# pre-test contains:
+#  - Smoke tests that are fast jobs. If they fail, no need to run the other tests
+#  - Docker image refresh
+# test contains the regular build+test on a large set of distros
 
 variables:
   DOCKER_DRIVER: overlay2
@@ -286,7 +289,9 @@ opensuse-release:
 
 docker-intelCC:
   image: docker:latest
-  stage: test
+  stage: docker
+  # It's OK if we cannot refresh the image for a while
+  allow_failure: true
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
