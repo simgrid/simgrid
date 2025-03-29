@@ -188,6 +188,50 @@ debian-clang:
     reports:
       junit: result.xml
 
+# We keep 2 LTS releases here, as that's about their lifetime
+# https://wiki.ubuntu.com/Releases
+ubuntu22-release:
+  image: ubuntu:22.04
+  stage: test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - large  # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - ninja --verbose all tests
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+  artifacts:
+    when: always
+    expire_in: 6 months
+    reports:
+      junit: result.xml
+
+ubuntu24-release:
+  image: ubuntu:24.04
+  stage: test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - large  # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - ninja --verbose all tests
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+  artifacts:
+    when: always
+    expire_in: 6 months
+    reports:
+      junit: result.xml
+
 fedora-rawhide-release:
   image: fedora:rawhide
   stage: test
