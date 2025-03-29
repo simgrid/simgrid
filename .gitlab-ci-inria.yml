@@ -53,7 +53,7 @@ variables:
 
 docker_build:
   image: docker:latest
-  stage: docker
+  stage: pre-test
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
@@ -89,9 +89,7 @@ docker_build:
 # Fast job running on a manually managed openstack node, thus out of docker, and with ccache setup. Fail fail fast on trivial errors.
 make-distcheck:
   extends: .cached-build
-  stage: smoke_test
-  # Run ASAP without waiting the docker images
-  needs: []
+  stage: pre-test
   # interruptible means "Abort the pipeline if another commit comes when we're in this job". Would not play well here, as we are not in docker.
   interruptible: false
   rules:
@@ -289,8 +287,8 @@ opensuse-release:
 
 docker-intelCC:
   image: docker:latest
-  stage: docker
-  # It's OK if we cannot refresh the image for a while
+  stage: pre-test
+  # It's OK if we cannot refresh the image for a while. Intel engineers sometimes need time.
   allow_failure: true
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
