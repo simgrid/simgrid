@@ -47,7 +47,7 @@ set(txt_files     ${txt_files}      ${CMAKE_CURRENT_SOURCE_DIR}/carol.fail
                                     ${CMAKE_CURRENT_SOURCE_DIR}/link.lat
                                     PARENT_SCOPE)
 
-ADD_TESH(tesh-platform-flatifier --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY} --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/platforms flatifier.tesh)
+ADD_TESH(tesh-platform-flatifier --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv CMAKE_SHARED_LIBRARY_SUFFIX=${CMAKE_SHARED_LIBRARY_SUFFIX} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/platforms flatifier.tesh)
 
 if(enable_debug)
   # these tests need assertions
