@@ -356,7 +356,7 @@ freebsd:
     LIBRARY_PATH: "/usr/local/lib/gcc13:/usr/local/flang/lib"
   script:
     - rm -rf CMakeFiles CMakeCache.txt
-    - cmake -GNinja -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+    - cmake -GNinja -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" -DCMAKE_CXX_COMPILER_LAUNCHER=ccache .
     - ninja --verbose all tests
     - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
@@ -377,7 +377,7 @@ arm:
     - module use /opt/arm/modulefiles/:/opt/arm/moduledeps/
     - module load acfl armpl
     - rm -rf CMakeFiles CMakeCache.txt
-    - CC=armclang CXX=armclang++ FC=armflang cmake -GNinja -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+    - CC=armclang CXX=armclang++ FC=armflang cmake -GNinja -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" -DCMAKE_CXX_COMPILER_LAUNCHER=ccache .
     - ninja --verbose all tests
     - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
