@@ -414,7 +414,6 @@ else()
 endif()
 
 CHECK_INCLUDE_FILE("valgrind/valgrind.h" HAVE_VALGRIND_H)
-CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
 CHECK_INCLUDE_FILE("linux/futex.h" HAVE_FUTEX_H)
 
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
@@ -503,9 +502,7 @@ message(STATUS "Git version: ${GIT_VERSION}")
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/DefinePackages.cmake)
 
 ### Setup gcc & clang flags (include after DefinePackage.cmake, and before generating header files)
-if (NOT MSVC)
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Flags.cmake)
-endif()
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Flags.cmake)
 
 ### Generate the required scripts
 #################################

@@ -13,8 +13,6 @@
 /* Non-standard header files */
 /* <linux/futex.h> */
 #cmakedefine01 HAVE_FUTEX_H
-/* <unistd.h> */
-#cmakedefine01 HAVE_UNISTD_H
 /* <valgrind/valgrind.h> */
 #cmakedefine01 HAVE_VALGRIND_H
 

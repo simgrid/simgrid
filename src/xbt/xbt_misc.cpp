@@ -15,9 +15,7 @@
 #include "xbt/sysdep.h"
 
 #include <cmath>
-#if HAVE_UNISTD_H
 #include <unistd.h>
-#endif
 
 XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories"); /* lives here even if that's a bit odd to solve linking issues: this
                                                       is used in xbt_log_file_appender to detect whether SMPI is used
