@@ -106,13 +106,6 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
 
 endif()
 
-### SET THE LIBRARY EXTENSION
-if(APPLE)
-  set(LIB_EXE "dylib")
-else()
-  set(LIB_EXE "so")
-endif()
-
 execute_process(COMMAND ${CMAKE_LINKER} -v OUTPUT_VARIABLE LINKER_VERSION ERROR_VARIABLE LINKER_VERSION)
 string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
@@ -315,7 +308,7 @@ set(_Boost_STACKTRACE_ADDR2LINE_HEADERS "boost/stacktrace.hpp")
   endif()
   if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
-    message(STATUS "Mandatory components found. SimGrid is compilable.")
+    message(STATUS "Mandatory Boost components found. SimGrid is compilable.")
     if (NOT minimal-bindings)
       message(STATUS "Looking for optional Boost components:")
       set(Boost_FOUND 1) # These components are optionals
@@ -424,15 +417,8 @@ CHECK_INCLUDE_FILE("valgrind/valgrind.h" HAVE_VALGRIND_H)
 CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
 CHECK_INCLUDE_FILE("linux/futex.h" HAVE_FUTEX_H)
 
-CHECK_FUNCTION_EXISTS(dlfunc HAVE_DLFUNC)
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
 CHECK_FUNCTION_EXISTS(nanosleep HAVE_NANOSLEEP)
-CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
-if(NOT HAVE_SYSCONF)
-  message(FATAL_ERROR "Cannot build without sysconf.")
-endif()
-CHECK_FUNCTION_EXISTS(process_vm_readv HAVE_PROCESS_VM_READV)
-CHECK_FUNCTION_EXISTS(mremap HAVE_MREMAP)
 
 CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
 

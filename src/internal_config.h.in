@@ -56,8 +56,6 @@
 #define PTH_STACKGROWTH @PTH_STACKGROWTH@
 
 /* MC variables */
-/* process_vm_readv: transfer data between process address spaces */
-#cmakedefine01 HAVE_PROCESS_VM_READV
 /* Path to sthread library */
 #cmakedefine STHREAD_PATH "@STHREAD_PATH@"
 
@@ -79,10 +77,6 @@
 #cmakedefine01 SG_HAVE_SENDFILE
 
 /* Other function checks */
-/* Function dlfunc */
-#cmakedefine01 HAVE_DLFUNC
-/* Function mremap */
-#cmakedefine01 HAVE_MREMAP
 /* Function vasprintf */
 #cmakedefine01 HAVE_VASPRINTF
 
