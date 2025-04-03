@@ -398,6 +398,8 @@ flags:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      changes:
+        - "**/*"
   tags:
     - large  # Inria infra
   parallel:
@@ -466,5 +468,7 @@ sonarqube:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      changes:
+        - "**/*"
   tags:
     - large  # Inria infra
