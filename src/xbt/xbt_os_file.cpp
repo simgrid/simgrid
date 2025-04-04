@@ -9,6 +9,7 @@
 #include "xbt/asserts.h"
 #include "xbt/file.hpp" /* this module */
 
+#include <array>
 #include <boost/algorithm/string.hpp>
 #include <cerrno>
 #include <cstring>
