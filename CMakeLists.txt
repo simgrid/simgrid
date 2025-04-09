@@ -284,12 +284,16 @@ if(enable_smpi_papi)
 endif()
 mark_as_advanced(PAPI_PREFIX)
 
-try_compile(HAVE_STD_STACKTRACE ${CMAKE_BINARY_DIR}
-  SOURCES ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stdstacktrace.cpp
-  CXX_STANDARD 23
-  CXX_STANDARD_REQUIRED 23
-  LINK_LIBRARIES stdc++exp
-  OUTPUT_VARIABLE compile_stacktrace_output)
+if(CMAKE_VERSION VERSION_LESS 3.20)
+  set(HAVE_STD_STACKTRACE 0) # CMake does not know about C++23, we cannot test it on the compiler
+else()
+  try_compile(HAVE_STD_STACKTRACE ${CMAKE_BINARY_DIR}
+    SOURCES ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stdstacktrace.cpp
+    CXX_STANDARD 23
+    CXX_STANDARD_REQUIRED 23
+    LINK_LIBRARIES stdc++exp
+    OUTPUT_VARIABLE compile_stacktrace_output)
+endif()
 
 # But we do need the core of Boost
 # cmake before 3.13.1 does not know about stacktrace components. Fix it.
