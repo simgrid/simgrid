@@ -400,6 +400,8 @@ flags:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       changes:
         - "**/*"
+      when: on_success
+    - when: never  # By default, do not execute this job (so it's executed only daily iff a file was changed)
   tags:
     - large  # Inria infra
   parallel:
@@ -408,7 +410,8 @@ flags:
         SMPI: ["SMPI", "NO_SMPI"]
         DEBUG: ["DEBUG", "NO_DEBUG"]
   script:
-  - export CXXFLAGS=-D_GLIBCXX_DEBUG
+  # Use the debugging features of the GLIBC
+  - export CXXFLAGS="-D_GLIBCXX_DEBUG"
   # We cannot put ON/OFF as values directly, or the job name is not instructive
   - if [ ${MC} == "MC" ]       ; then BUILD_MC="ON"    ; else BUILD_MC="OFF"    ; fi
   - if [ ${SMPI} == "SMPI" ]   ; then BUILD_SMPI="ON"  ; else BUILD_SMPI="OFF"  ; fi
@@ -470,5 +473,7 @@ sonarqube:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       changes:
         - "**/*"
+      when: on_success
+    - when: never  # By default, do not execute this job (so it's executed only daily iff a file was changed)
   tags:
     - large  # Inria infra
