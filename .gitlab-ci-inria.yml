@@ -443,7 +443,9 @@ flags:
       when: never
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       changes:
-        - "**/*"
+        paths:
+          - "**/*"
+        compare_to: "$CI_DEFAULT_BRANCH"
       when: on_success
     - when: never  # By default, do not execute this job (so it's executed only daily iff a file was changed)
   tags:
@@ -516,7 +518,9 @@ sonarqube:
       when: never
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
       changes:
-        - "**/*"
+        paths:
+          - "**/*"
+        compare_to: "$CI_DEFAULT_BRANCH"
       when: on_success
     - when: never  # By default, do not execute this job (so it's executed only daily iff a file was changed)
   tags:
