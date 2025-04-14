@@ -442,12 +442,8 @@ flags:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      changes:
-        paths:
-          - "**/*"
-        compare_to: "$CI_DEFAULT_BRANCH"
       when: on_success
-    - when: never  # By default, do not execute this job (so it's executed only daily iff a file was changed)
+    - when: never  # By default, do not execute this job (so it's executed only daily)
   tags:
     - large  # Inria infra
   parallel:
@@ -456,6 +452,14 @@ flags:
         SMPI: ["SMPI", "NO_SMPI"]
         DEBUG: ["DEBUG", "NO_DEBUG"]
   script:
+  - if [ $(expr $(date +%s) - $(git log -1 --format=%ct)) -gt 86400 ] ;  then
+      echo "No change in 24h. Canceling current pipeline..." ;
+      curl --request POST --form token=$GITLAB_API_TOKEN
+        --form ref=$CI_COMMIT_REF_NAME
+        "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipeline/$CI_PIPELINE_ID/cancel"
+    else
+      echo "Something was commited since yesterday. Proceed with the build." ;
+    fi
   # Use the debugging features of the GLIBC
   - export CXXFLAGS="-D_GLIBCXX_DEBUG"
   # We cannot put ON/OFF as values directly, or the job name is not instructive
@@ -477,6 +481,15 @@ sonarqube:
     GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
 
   script:
+  - if [ $(expr $(date +%s) - $(git log -1 --format=%ct)) -gt 86400 ] ;  then
+      echo "No change in 24h. Canceling current pipeline..." ;
+      curl --request POST --form token=$GITLAB_API_TOKEN
+        --form ref=$CI_COMMIT_REF_NAME
+        "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/pipeline/$CI_PIPELINE_ID/cancel"
+    else
+      echo "Something was commited since yesterday. Proceed with the build." ;
+    fi
+  # Install dependencies
   - apt-get --allow-releaseinfo-change update
   - apt install -y unzip curl python3-coverage wget
   # Install sonar wrapper and sonar scanner
@@ -517,11 +530,7 @@ sonarqube:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      changes:
-        paths:
-          - "**/*"
-        compare_to: "$CI_DEFAULT_BRANCH"
       when: on_success
-    - when: never  # By default, do not execute this job (so it's executed only daily iff a file was changed)
+    - when: never  # By default, do not execute this job (so it's executed only daily)
   tags:
     - large  # Inria infra
