@@ -447,7 +447,7 @@ check_changes:
       echo "No change in 24h. Canceling current pipeline..." ;
       curl --request POST --form token=$GITLAB_API_TOKEN
         --form ref=$CI_COMMIT_REF_NAME
-        "https://gitlab.inria.fr/api/v4/projects/$CI_PROJECT_ID/pipeline/$CI_PIPELINE_ID/cancel"
+        "https://gitlab.inria.fr/api/v4/projects/$CI_PROJECT_ID/pipeline/$CI_PIPELINE_ID/cancel" ;
     else
       echo "Something was commited since yesterday. Proceed with the build." ;
     fi
