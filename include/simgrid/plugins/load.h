@@ -20,6 +20,14 @@ XBT_PUBLIC double sg_host_get_total_idle_time(const_sg_host_t host);
 XBT_PUBLIC double sg_host_get_computed_flops(const_sg_host_t host);
 XBT_PUBLIC void sg_host_load_reset(const_sg_host_t host);
 
+XBT_PUBLIC void sg_vm_load_plugin_init();
+XBT_PUBLIC double sg_vm_get_current_load(const_sg_host_t host);
+XBT_PUBLIC double sg_vm_get_avg_load(const_sg_host_t host);
+XBT_PUBLIC double sg_vm_get_idle_time(const_sg_host_t host);
+XBT_PUBLIC double sg_vm_get_total_idle_time(const_sg_host_t host);
+XBT_PUBLIC double sg_vm_get_computed_flops(const_sg_host_t host);
+XBT_PUBLIC void sg_vm_load_reset(const_sg_host_t host);
+
 XBT_PUBLIC void sg_link_load_plugin_init();
 XBT_PUBLIC void sg_link_load_track(const_sg_link_t link);
 XBT_PUBLIC void sg_link_load_untrack(const_sg_link_t link);
