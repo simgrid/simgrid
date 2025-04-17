@@ -357,6 +357,8 @@ include examples/cpp/platform-properties/s4u-platform-properties.cpp
 include examples/cpp/platform-properties/s4u-platform-properties.tesh
 include examples/cpp/plugin-host-load/s4u-plugin-host-load.cpp
 include examples/cpp/plugin-host-load/s4u-plugin-host-load.tesh
+include examples/cpp/plugin-vm-load/s4u-plugin-vm-load.cpp
+include examples/cpp/plugin-vm-load/s4u-plugin-vm-load.tesh
 include examples/cpp/plugin-jbod/s4u-plugin-jbod.cpp
 include examples/cpp/plugin-jbod/s4u-plugin-jbod.tesh
 include examples/cpp/plugin-link-load/s4u-plugin-link-load.cpp
