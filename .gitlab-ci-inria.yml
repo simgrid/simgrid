@@ -433,6 +433,24 @@ arm:
 # ###################################################################################################
 # ############# Daily jobs ##########################################################################
 # ###################################################################################################
+check_changes:
+  image: $CI_REGISTRY_IMAGE/build-deps:latest
+  stage: pre-test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  tags:
+    - small  # Inria infra
+  script:
+  - if [ $(expr $(date +%s) - $(git log -1 --format=%ct)) -gt 86400 ] ;  then
+      echo "No change in 24h. Canceling current pipeline..." ;
+      curl --request POST --form token=$GITLAB_API_TOKEN
+        --form ref=$CI_COMMIT_REF_NAME
+        "https://gitlab.inria.fr/api/v4/projects/$CI_PROJECT_ID/pipeline/$CI_PIPELINE_ID/cancel" ;
+    else
+      echo "Something was commited since yesterday. Proceed with the build." ;
+    fi
 
 flags:
   extends: .cached-build
@@ -442,10 +460,8 @@ flags:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      changes:
-        - "**/*"
       when: on_success
-    - when: never  # By default, do not execute this job (so it's executed only daily iff a file was changed)
+    - when: never  # By default, do not execute this job (so it's executed only daily)
   tags:
     - large  # Inria infra
   parallel:
@@ -468,8 +484,8 @@ flags:
     fi
 
 sonarqube:
-  #image: $CI_REGISTRY_IMAGE/build-deps:latest
-  image: simgrid/build-deps
+  image: $CI_REGISTRY_IMAGE/build-deps:latest
+  stage: test
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
     GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
@@ -515,9 +531,7 @@ sonarqube:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      changes:
-        - "**/*"
       when: on_success
-    - when: never  # By default, do not execute this job (so it's executed only daily iff a file was changed)
+    - when: never  # By default, do not execute this job (so it's executed only daily)
   tags:
     - large  # Inria infra
