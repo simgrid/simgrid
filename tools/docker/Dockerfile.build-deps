@@ -7,7 +7,7 @@ FROM debian:bookworm
 RUN apt-get --allow-releaseinfo-change update && \
     apt install -y \
        g++ gcc gfortran pybind11-dev ccache \
-       git \
+       git curl \
        valgrind \
        libboost-dev libboost-all-dev \
        libgraphviz-dev nlohmann-json3-dev libeigen3-dev \
