@@ -446,7 +446,7 @@ check_changes:
   - |
     if [ $(expr $(date +%s) - $(git log -1 --format=%ct)) -gt 86400 ] ;  then
       echo "No change in 24h. Canceling current pipeline..." ;
-      apt install -y curl ; set -x;
+      apt update; apt install -y curl ; set -x;
       curl --request POST  --header "PRIVATE-TOKEN: $GITLAB_API_TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel" ;
       sleep 10;
       echo "Canceling the job failed; fail it instead" ;
