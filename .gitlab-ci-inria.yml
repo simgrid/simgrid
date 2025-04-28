@@ -103,12 +103,6 @@ make-distcheck:
   - export JAVA_HOME=/usr/lib/jvm/java-22-openjdk-amd64
   - cmake -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON ..
   - make distcheck
-  artifacts:
-    when: always
-    expire_in: 6 months
-    reports:
-      junit: result.xml
-
 
 # Test the Python build
 build-pip:
