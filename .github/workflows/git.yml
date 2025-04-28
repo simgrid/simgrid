@@ -10,7 +10,7 @@ jobs:
         matrix:
           config:
           - { name: "MacOS 13",   os: macos-13,      cc: "clang", cxx: "clang++"}
-          - { name: "MacOS ARM",  os: macos-latest,  cc: "clang", cxx: "clang++"}
+          - { name: "MacOS ARM",  os: macos-15,  cc: "clang", cxx: "clang++"}
         fail-fast: false
     permissions:
       contents: read
@@ -28,8 +28,11 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install ninja-build libboost-dev libboost-context-dev pybind11-dev
       - name: prepare for MacOS
-        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-15'
         run: brew install boost eigen pybind11 ninja
+      - name: Select Xcode 16.3
+        if: matrix.config.os == 'macos-15'
+        run: sudo xcode-select -s /Applications/Xcode_16.3.app
       - name: build
         run: |
           mkdir build ; cd build
