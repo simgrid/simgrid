@@ -10,7 +10,7 @@
 #include <cstddef>
 #include <memory>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc, "Dynamic partial order reduction algorithm");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc_reduction, "Dynamic partial order reduction algorithm");
 
 namespace simgrid::mc {
 
