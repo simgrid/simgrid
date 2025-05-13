@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/ParallelizedExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/explo/reduction/ODPOR.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_forward.hpp"
@@ -13,7 +14,6 @@
 #include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"
 
-#include "src/mc/explo/reduction/BeFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
@@ -300,7 +300,7 @@ ParallelizedExplorer::ParallelizedExplorer(const std::vector<char*>& args, Reduc
   else if (reduction_mode_ == ReductionMode::sdpor)
     reduction_algo_ = std::make_unique<SDPOR>();
   else if (reduction_mode_ == ReductionMode::odpor)
-    reduction_algo_ = std::make_unique<BeFSODPOR>();
+    reduction_algo_ = std::make_unique<ODPOR>();
   else {
     xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by BeFS explorer",
                to_c_str(reduction_mode_));

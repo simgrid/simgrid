@@ -8,7 +8,6 @@
 #include "src/mc/api/states/SoftLockedState.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
-#include "src/mc/explo/reduction/BeFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
 #include "src/mc/explo/reduction/ODPOR.hpp"
@@ -243,10 +242,8 @@ DFSExplorer::DFSExplorer(std::unique_ptr<RemoteApp> remote_app, ReductionMode mo
     reduction_algo_ = std::make_unique<DPOR>();
   else if (reduction_mode_ == ReductionMode::sdpor)
     reduction_algo_ = std::make_unique<SDPOR>();
-  else if (reduction_mode_ == ReductionMode::odpor and _sg_mc_explore_algo == "DFS")
+  else if (reduction_mode_ == ReductionMode::odpor)
     reduction_algo_ = std::make_unique<ODPOR>();
-  else if (reduction_mode_ == ReductionMode::odpor and _sg_mc_explore_algo == "BeFS")
-    reduction_algo_ = std::make_unique<BeFSODPOR>();
   else {
     xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
                to_c_str(reduction_mode_));

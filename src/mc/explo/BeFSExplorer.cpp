@@ -16,7 +16,6 @@
 #include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"
 
-#include "src/mc/explo/reduction/BeFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
