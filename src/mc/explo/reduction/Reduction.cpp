@@ -7,6 +7,7 @@
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_forward.hpp"
+#include "xbt/asserts.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_reduction, mc, "Logging specific to the reduction algorithms");
 
@@ -17,18 +18,19 @@ StatePtr Reduction::state_create(RemoteApp& remote_app, StatePtr parent_state,
 {
   if (parent_state == nullptr)
     return StatePtr(new SleepSetState(remote_app), true);
-  else
-    return StatePtr(new SleepSetState(remote_app, parent_state, incoming_transition), true);
+  else {
+    auto new_state = StatePtr(new SleepSetState(remote_app, parent_state, incoming_transition), true);
+    parent_state->record_child_state(new_state);
+
+    SleepSetState* sleep_parent = static_cast<SleepSetState*>(parent_state.get());
+
+    return new_state;
+  }
 }
 
 void Reduction::on_backtrack(State* s)
 {
-  StatePtr parent = s->get_parent_state();
-  if (parent == nullptr) // this is the root
-    return;              // Backtracking from the root means we end exploration, nothing to do
-
-  SleepSetState* sleep_parent = static_cast<SleepSetState*>(parent.get());
-  sleep_parent->add_sleep_set(s->get_transition_in());
+  
 }
 
 void Reduction::consider_best(StatePtr state)

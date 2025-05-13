@@ -17,8 +17,6 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Executed 2: BARRIER_WAIT(barrier: 0) (stack depth: 5, state: 5, 0 interleaves)
 > [Checker] Execution came to an end at 1;1;2;1;2
 > [Checker] (state: 6, depth: 6, 1 explored traces)
-> [Checker] Sleep set actually containing:
-> [Checker]   <1,BARRIER_ASYNC_LOCK(barrier: 0)>
 > [Checker] Executed 2: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
 > [Checker] DFS exploration ended. 7 unique states visited; 1 explored traces (1 transition replays, 8 states visited overall)
 
@@ -34,8 +32,6 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Executed 3: BARRIER_WAIT(barrier: 0) (stack depth: 8, state: 8, 0 interleaves)
 > [Checker] Execution came to an end at 1;1;1;2;3;1;2;3
 > [Checker] (state: 9, depth: 9, 1 explored traces)
-> [Checker] Sleep set actually containing:
-> [Checker]   <2,BARRIER_ASYNC_LOCK(barrier: 0)>
 > [Checker] Executed 3: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 4, state: 4, 0 interleaves)
 > [Checker] DFS exploration ended. 10 unique states visited; 1 explored traces (3 transition replays, 13 states visited overall)
 
@@ -54,8 +50,6 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [Checker] Execution came to an end at 1;1;1;2;3;1;2;3
 > [Checker] (state: 9, depth: 9, 1 explored traces)
 > [Checker] Backtracking from 1;1;1;2;3;1;2;3
-> [Checker] Sleep set actually containing:
-> [Checker]   <2,BARRIER_ASYNC_LOCK(barrier: 0)>
 > [Checker] Executed 3: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 4, state: 4, 0 interleaves, 0 opened states)
 > [Checker] 3 actors remain, but none of them need to be interleaved (depth 6).
 > [Checker] Backtracking from 1;1;1;3

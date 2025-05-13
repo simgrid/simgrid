@@ -4,7 +4,7 @@
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-barber_shop_ok 4 2 0 0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 44258 unique states visited; 1152 explored traces (34958 transition replays, 79216 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 43579 unique states visited; 1152 explored traces (35826 transition replays, 79405 states visited overall)
 
 # This test needs some extra time, in particular when running under coverage analysis
 ! timeout 500
@@ -13,4 +13,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BeFS'
 > [0.000000] [mc_befs/INFO] Start a BeFS exploration. Reduction is: odpor.
-> [0.000000] [mc_befs/INFO] BeFS exploration ended. 44258 unique states visited; 1152 explored traces (34958 transition replays, 79216 states visited overall)
+> [0.000000] [mc_befs/INFO] BeFS exploration ended. 43579 unique states visited; 1152 explored traces (35826 transition replays, 79405 states visited overall)

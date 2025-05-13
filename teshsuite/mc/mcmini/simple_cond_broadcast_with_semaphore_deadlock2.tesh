@@ -46,7 +46,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall SEM_UNLOCK(semaphore: 0, capacity: 1)
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall CONDVAR_ASYNC_LOCK(cond: 0, mutex: 0)
 > [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;1;2;2;2;1;1;2;3;3;3;1;1;3;1;1;1;2;2;2;2;1;3;3;3;3;1;4;4;4;4'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 34 unique states visited; 0 explored traces (0 transition replays, 34 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 42 unique states visited; 0 explored traces (0 transition replays, 34 states visited overall)
 > [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***

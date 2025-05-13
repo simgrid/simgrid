@@ -172,7 +172,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
   XBT_DEBUG("Backtracking from the exploration by one step");
 
   reduction_algo_->on_backtrack(state_stack.back().get());
-
+  state_stack.back()->signal_on_backtrack();
   is_execution_descending = false;
 
   state_stack.pop_back();

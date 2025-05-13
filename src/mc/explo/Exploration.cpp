@@ -6,6 +6,7 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "simgrid/forward.h"
 #include "src/mc/api/Strategy.hpp"
+#include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/CriticalTransitionExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
@@ -265,15 +266,24 @@ bool Exploration::soft_timouted() const
 void Exploration::backtrack_to_state(State* target_state, bool finalize_app)
 {
   on_backtracking_signal(get_remote_app());
+  XBT_DEBUG("Backtracking to state #%ld", target_state->get_num());
 
   std::deque<Transition*> replay_recipe;
   std::deque<std::pair<aid_t, int>> recipe;
+  std::deque<std::pair<aid_t, int>> recipe_needing_actor_status;
+  std::deque<StatePtr> state_needing_actor_status;
   auto* state       = target_state;
   State* root_state = nullptr;
   for (; state != nullptr && not state->has_state_factory(); state = state->get_parent_state()) {
     if (state->get_transition_in() != nullptr) { // The root has no transition_in
-      replay_recipe.push_front(state->get_transition_in().get());
-      recipe.push_front({state->get_transition_in()->aid_, state->get_transition_in()->times_considered_});
+      if (not state->has_been_initialized()) {
+        recipe_needing_actor_status.push_front(
+            {state->get_transition_in()->aid_, state->get_transition_in()->times_considered_});
+        state_needing_actor_status.push_front(state);
+      } else {
+        replay_recipe.push_front(state->get_transition_in().get());
+        recipe.push_front({state->get_transition_in()->aid_, state->get_transition_in()->times_considered_});
+      }
     } else
       root_state = state;
   }
@@ -286,12 +296,29 @@ void Exploration::backtrack_to_state(State* target_state, bool finalize_app)
     on_restore_state_signal(*state, get_remote_app());
   }
 
-  XBT_DEBUG("Sending sequence for a replay: %s",
+  XBT_DEBUG("Sending sequence for a replay (without actor_status): %s",
             std::accumulate(recipe.begin(), recipe.end(), std::string(), [](std::string a, auto b) {
               return std::move(a) + ';' + '<' + std::to_string(b.first) + '/' + std::to_string(b.second) + '>';
             }).c_str());
+  XBT_DEBUG("... (with actor_status): %s",
+            std::accumulate(recipe_needing_actor_status.begin(), recipe_needing_actor_status.end(), std::string(),
+                            [](std::string a, auto b) {
+                              return std::move(a) + ';' + '<' + std::to_string(b.first) + '/' +
+                                     std::to_string(b.second) + '>';
+                            })
+                .c_str());
 
-  get_remote_app().replay_sequence(recipe);
+  get_remote_app().replay_sequence(recipe, recipe_needing_actor_status);
+
+  XBT_DEBUG("Need to initialize %lu states (%lu in the replay actor_status side)", state_needing_actor_status.size(),
+            recipe_needing_actor_status.size());
+
+  // The semantic of the set_one_way are:
+  //  Please model checker, just listen to the app for now, we already sent the request for you
+  remote_app_->set_one_way(true);
+  for (const auto& state : state_needing_actor_status)
+    state->initialize(*remote_app_);
+  remote_app_->set_one_way(false);
 
   visited_states_count_ += recipe.size();
   backtrack_count_++;
@@ -299,6 +326,9 @@ void Exploration::backtrack_to_state(State* target_state, bool finalize_app)
 
   for (auto& transition : replay_recipe)
     on_transition_replay_signal(transition, get_remote_app());
+
+  if (state_needing_actor_status.size() != 0)
+    static_cast<SleepSetState*>(target_state)->add_arbitrary_transition(*remote_app_);
 
   return;
 }

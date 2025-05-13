@@ -72,6 +72,8 @@ class ActorState {
     todo,
     /** The checker algorithm decided that this should be done, but it was done in the meanwhile */
     done,
+    /** The checker algorithm has done this transition, and the corresponding subtree has been fully explored */
+    closed,
   };
 
   /** Exploration control information */
@@ -113,6 +115,7 @@ public:
   bool is_unknown() const { return this->state_ == InterleavingType::unknown; }
   bool is_done() const { return this->state_ == InterleavingType::done; }
   bool is_todo() const { return this->state_ == InterleavingType::todo; }
+  bool is_closed() const { return this->state_ == InterleavingType::closed; }
   /** Mark that we should try executing this process at some point in the future of the checker algorithm */
   void mark_todo()
   {
@@ -120,6 +123,8 @@ public:
     this->times_considered_ = 0;
   }
   void mark_done() { this->state_ = InterleavingType::done; }
+
+  void mark_closed() { this->state_ = InterleavingType::closed; }
 
   /**
    * @brief Retrieves the transition that we should consider for execution by

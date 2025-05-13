@@ -59,9 +59,10 @@ public:
   /** Check whether there is an assertion failure on the wire */
   void peek_assertion_failure();
 
-  /** Ask the application to run a full sequence of transition. The checker is not receiving any thing before the
-   *  end */
-  void handle_replay(std::deque<std::pair<aid_t, int>> to_replay);
+  /** Ask the application to run a full sequence of transition. The checker will receive |to_replay_and_actor_status|
+   *  answers of type actor_status. */
+  void handle_replay(std::deque<std::pair<aid_t, int>> to_replay,
+                     std::deque<std::pair<aid_t, int>> to_replay_and_actor_status);
 
   /** Read the aid in the SIMCALL_EXECUTE message that is expected to be next on the wire */
   aid_t get_aid_of_next_transition();
@@ -75,6 +76,7 @@ public:
   void go_one_way();
 
   bool get_one_way() const { return is_one_way; }
+  void set_one_way(bool b) { is_one_way = b; }
 };
 
 } // namespace simgrid::mc

@@ -16,10 +16,27 @@ ExplorationStrategy::ExplorationStrategy() {}
 
 std::pair<aid_t, int> ExplorationStrategy::best_transition_in(const State* state, bool must_be_todo) const
 {
+  // If the state has not been initialized with the actor states
+  if (not state->has_been_initialized()) {
+    const auto& opened_transitions = state->get_opened_transitions();
+    // Those are states created by the reduction that HAVE to be explored, but
+    // do not yet contain informations about the application, so impossible to
+    // add any form of TODO
+    if (opened_transitions.size() == 0)
+      return std::make_pair(0, state->get_depth()); // we return an arbitrary actor != -1
+    if (_sg_mc_strategy == "none") {
+      return std::make_pair(opened_transitions[0]->aid_, state->get_depth());
+    } else {
+      int chosen = xbt::random::uniform_int(0, opened_transitions.size() - 1);
+      return std::make_pair(chosen, 0);
+    }
+  }
+
   // For now, we only have to way of considering local actors
   //   + either arbitrary in aid ordre
   //   + uniform over the activated
   auto actors = state->get_actors_list();
+
   if (_sg_mc_strategy == "none") {
 
     for (auto const& [aid, actor] : actors) {

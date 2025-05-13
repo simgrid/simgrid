@@ -37,6 +37,7 @@ std::unique_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution
    * by the wakeup tree at the appropriate reversal point, either as `C` directly or an as equivalent to `C`
    * ("eventually looks like C", viz. the `~_E` relation)
    */
+  XBT_DEBUG("Going to compute all the reversible races on sequence \n%s", E.get_one_string_textual_trace().c_str());
   for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
     if (E.get_event_with_handle(e_prime).has_race_been_computed())
       continue;
@@ -44,10 +45,15 @@ std::unique_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution
     XBT_VERB("Computing reversible races of Event `%u`", e_prime);
     for (const auto e : E.get_reversible_races_of(e_prime, S)) {
       XBT_DEBUG("... racing event `%u``", e);
-      WutState* prev_state = static_cast<WutState*>((*S)[e].get());
-      xbt_assert(prev_state != nullptr, "ODPOR should use WutState. Fix me");
+      XBT_DEBUG("... race between event `%u`:%s and event `%u`:%s", e_prime,
+                E.get_transition_for_handle(e_prime)->to_string().c_str(), e,
+                E.get_transition_for_handle(e)->to_string().c_str());
 
-      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state); v.has_value())
+      WutState* prev_state = static_cast<WutState*>((*S)[e].get());
+
+      auto actor_after_e = ((*S)[e + 1].get())->get_transition_in()->aid_;
+
+      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state, actor_after_e); v.has_value())
         updates->add_element(prev_state, v.value());
     }
     E.get_event_with_handle(e_prime).consider_races();
@@ -59,15 +65,19 @@ unsigned long ODPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> up
                                        std::vector<StatePtr>* opened_states)
 {
 
-  xbt_assert(opened_states == nullptr, "Why is the non BeFS version of ODPOR called with the BeFS variation?");
-
   unsigned long nb_updates = 0;
   auto odpor_updates = static_cast<RaceUpdate*>(updates.get());
 
   for (auto& [state, seq] : odpor_updates->get_value()) {
     XBT_DEBUG("Going to insert sequence\n%s", odpor::one_string_textual_trace(seq).c_str());
     XBT_DEBUG("... at state #%ld", state->get_num());
-    static_cast<WutState*>(state.get())->insert_into_wakeup_tree(seq);
+    const auto inserted_state = static_cast<WutState*>(state.get())->insert_into_tree(seq);
+    if (inserted_state != nullptr) {
+      XBT_DEBUG("... ended up adding work to do at state #%ld", inserted_state->get_num());
+
+      if (opened_states != nullptr)
+        opened_states->push_back(inserted_state);
+    }
     nb_updates++;
   }
   return nb_updates;
@@ -75,42 +85,48 @@ unsigned long ODPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> up
 
 aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 {
-  auto s = static_cast<WutState*>(S->back().get());
-  xbt_assert(s != nullptr, "ODPOR should use WutState. Fix me");
-  const aid_t next = s->next_odpor_transition();
-
-  XBT_DEBUG("Asking for the next actor in state #%ld that has the following WuT\n%s", s->get_num(),
-            s->string_of_wut().c_str());
+  auto s           = S->back().get();
+  const aid_t next = s->next_transition();
 
   if (next == -1)
     return -1;
 
-  xbt_assert(s->is_actor_enabled(next), "ODPOR wants to execute a disabled transition. Fix Me!");
+  // xbt_assert(s->is_actor_enabled(next), "ODPOR wants to execute a disabled transition. Fix Me!");
 
   return next;
 }
 StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
                              std::shared_ptr<Transition> incoming_transition)
 {
+  StatePtr new_state;
   if (parent_state == nullptr)
-    return StatePtr(new WutState(remote_app), true);
-  else
-    return StatePtr(new WutState(remote_app, parent_state, incoming_transition), true);
+    new_state = StatePtr(new WutState(remote_app), true);
+  else {
+    if (auto existing_state =
+            parent_state->get_children_state_of_aid(incoming_transition->aid_, incoming_transition->times_considered_);
+        existing_state != nullptr) {
+      if (not existing_state->has_been_initialized()) {
+        existing_state->initialize(remote_app);
+        if (existing_state->next_transition() == -1)
+          static_cast<SleepSetState*>(existing_state.get())->add_arbitrary_transition(remote_app);
+      }
+      return existing_state;
+    }
+    new_state = StatePtr(new WutState(remote_app, parent_state, incoming_transition), true);
+    parent_state->record_child_state(new_state);
+  }
+  static_cast<SleepSetState*>(new_state.get())->add_arbitrary_transition(remote_app);
+  return new_state;
 }
 
 void ODPOR::on_backtrack(State* s)
 {
-  StatePtr parent = s->get_parent_state();
-  if (parent == nullptr) // this is the root
-    return;              // Backtracking from the root means we end exploration, nothing to do
-
-  auto wut_state = static_cast<WutState*>(s);
-  wut_state->do_odpor_unwind();
+  // static_cast<SleepSetState*>(s->get_parent_state())->add_sleep_set(s->get_transition_in());
 }
 
 void ODPOR::consider_best(StatePtr state)
 {
-  static_cast<WutState*>(state.get())->add_arbitrary_todo();
+  Exploration::get_strategy()->consider_best_in(state.get());
 }
 
 } // namespace simgrid::mc

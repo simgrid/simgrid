@@ -83,12 +83,10 @@ unsigned long BeFSODPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate
     XBT_DEBUG("Going to insert sequence\n%s", odpor::one_string_textual_trace(v).c_str());
     XBT_DEBUG("... at state #%ld", raw_state->get_num());
     auto state         = static_cast<BeFSWutState*>(raw_state.get());
-    const auto inserted_state = state->insert_into_final_wakeup_tree(v);
+    const auto inserted_state = state->insert_into_tree(v);
     if (opened_states != nullptr and inserted_state != nullptr) {
       opened_states->push_back(inserted_state);
       XBT_DEBUG("... ended up adding work to do at state #%ld", inserted_state->get_num());
-      XBT_DEBUG("... WuT at that state after insertion\n%s",
-                static_cast<WutState*>(inserted_state.get())->string_of_wut().c_str());
     }
     nb_updates++;
   }
@@ -104,8 +102,6 @@ aid_t BeFSODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
   if (next == -1)
     return -1;
 
-  XBT_DEBUG("Picking actor %ld among this WuT: %s", next, s->string_of_wut().c_str());
-
   xbt_assert(s->is_actor_enabled(next), "BeFS ODPOR wants to execute a disabled transition. Fix Me!");
 
   return next;
@@ -114,19 +110,21 @@ aid_t BeFSODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 StatePtr BeFSODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
                                  std::shared_ptr<Transition> incoming_transition)
 {
+  StatePtr new_state;
   if (parent_state == nullptr)
-    return StatePtr(new BeFSWutState(remote_app), true);
+    new_state = StatePtr(new WutState(remote_app), true);
   else {
     BeFSWutState* befswut_state = static_cast<BeFSWutState*>(parent_state.get());
-    if (auto existing_state = befswut_state->get_children_state_of_aid(parent_state->get_transition_out()->aid_);
+    if (auto existing_state = befswut_state->get_children_state_of_aid(
+            parent_state->get_transition_out()->aid_, parent_state->get_transition_out()->times_considered_);
         existing_state != nullptr) {
+      xbt_die("For sure we never want to revisit something right?");
       return existing_state;
     }
-    StatePtr new_state = StatePtr(new BeFSWutState(remote_app, befswut_state, incoming_transition), true);
-    static_cast<BeFSWutState*>(new_state.get())->initialize_with_arbitrary(remote_app);
-    befswut_state->record_child_state(new_state);
-    return new_state;
+    new_state = StatePtr(new BeFSWutState(remote_app, befswut_state, incoming_transition), true);
   }
+  static_cast<SleepSetState*>(new_state.get())->add_arbitrary_transition(remote_app);
+  return new_state;
 }
 
 } // namespace simgrid::mc
