@@ -1,24 +1,24 @@
 # Base image: bookworm is Debian 12
 FROM debian:bookworm
 
-# Install the dependencies:
+# Install the dependencies of simgrid itself
 #  - of the website
 #  - of SimGrid itself
 RUN apt-get --allow-releaseinfo-change update && \
     apt install -y \
-       bibclean emacs-nox org-mode elpa-ess elpa-htmlize wget unzip r-cran-ggplot2 r-cran-tidyr r-cran-dplyr libtext-bibtex-perl && \
-    apt install -y \
        g++ gcc gfortran pybind11-dev ccache \
-       git \
+       git curl \
        valgrind \
        libboost-dev libboost-all-dev \
        libgraphviz-dev nlohmann-json3-dev libeigen3-dev \
        cmake \
-       python3-pip \
-       doxygen fig2dev \
-       chrpath \
-       python3-sphinx python3-breathe python3-sphinx-rtd-theme \
        default-jdk-headless \
        ninja-build libns3-dev \
        && \
     apt clean && apt autoclean
+
+# The doc needs this:
+# RUN apt install -y python3-pip doxygen fig2dev chrpath python3-sphinx python3-breathe python3-sphinx-rtd-theme \
+
+# The website needs this:
+# RUN apt install -y bibclean emacs-nox org-mode elpa-ess elpa-htmlize wget unzip r-cran-ggplot2 r-cran-tidyr r-cran-dplyr libtext-bibtex-perl

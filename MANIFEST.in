@@ -915,6 +915,7 @@ include teshsuite/models/wifi_usage/wifi_usage.tesh
 include teshsuite/models/wifi_usage_decay/wifi_usage_decay.cpp
 include teshsuite/models/wifi_usage_decay/wifi_usage_decay.tesh
 include teshsuite/platforms/Dijkstra.xml
+include teshsuite/platforms/asymetric_nested_zones.cpp
 include teshsuite/platforms/bob.trace
 include teshsuite/platforms/bogus_missing_dst_gateway.xml
 include teshsuite/platforms/bogus_missing_gateway.tesh

@@ -9,16 +9,13 @@
 #include "xbt/asserts.h"
 #include "xbt/file.hpp" /* this module */
 
-#if HAVE_UNISTD_H
 #include <array>
-#include <cerrno>
-#include <unistd.h>
-#endif
-
 #include <boost/algorithm/string.hpp>
+#include <cerrno>
 #include <cstring>
 #include <fstream>
 #include <libgen.h> /* POSIX dirname */
+#include <unistd.h>
 
 static std::vector<std::string> file_path;
 
@@ -72,14 +69,10 @@ std::ifstream* simgrid::xbt::path_ifsopen(const std::string& name)
 
 simgrid::xbt::Path::Path()
 {
-#if HAVE_UNISTD_H
   std::array<char, 2048> buffer;
   const char* cwd = getcwd(buffer.data(), 2048);
   xbt_assert(cwd != nullptr, "Error during getcwd: %s", strerror(errno));
   path_ = cwd;
-#else
-  path_ = ".";
-#endif
 }
 
 std::string simgrid::xbt::Path::get_dir_name() const

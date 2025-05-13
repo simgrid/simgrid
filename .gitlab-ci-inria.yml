@@ -40,15 +40,40 @@ coverage:
 # ###################################################################################################
 
 stages:
- - smoke_test
+ - pre-test
  - test
-# Smoke tests are fast jobs. If they fail, no need to run the other tests 
 
-cache:
-  paths:
-    - ccache
+# pre-test contains:
+#  - Smoke tests that are fast jobs. If they fail, no need to run the other tests
+#  - Docker image refresh
+# test contains the regular build+test on a large set of distros
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+docker_build:
+  image: docker:latest
+  stage: pre-test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  tags:
+    - small  # Inria infra
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - tools/docker/build_on_need.sh $CI_REGISTRY_IMAGE/build-deps:latest tools/docker/Dockerfile.build-deps
 
 .cached-build:
+  variables:
+    FF_USE_FASTZIP: "true"
+    CACHE_COMPRESSION_LEVEL: "fast"
+  cache:
+    key: ccache-$CI_JOB_NAME
+    paths:
+      - ccache
+    when: 'always'
   # Use ccache transparently, and print stats before/after
   before_script:
     - export PATH="/usr/lib/ccache:$PATH"
@@ -61,46 +86,28 @@ cache:
     - export CCACHE_DIR="$PWD/ccache"
     - ccache --show-stats
 
-image: simgrid/build-deps
-
-# On Inria, we run the base build all the time 
-build-base:
+# Fast job running on a manually managed openstack node, thus out of docker, and with ccache setup. Fail fail fast on trivial errors.
+make-distcheck:
   extends: .cached-build
-  stage: smoke_test
+  stage: pre-test
+  # interruptible means "Abort the pipeline if another commit comes when we're in this job". Would not play well here, as we are not in docker.
+  interruptible: false
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
     - if: '$CI_PIPELINE_SOURCE == "push"'
   tags:
-    - large  # Inria infra
+    - debian-testing  # Private runner on the inria infra, not docker but openstack node
   script:
-  - rm -rf CMakeFiles CMakeCache.txt
-  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
-  - ninja --verbose all tests
-  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
-  artifacts:
-    when: always
-    expire_in: 6 months
-    reports:
-      junit: result.xml
-
-
-# Ensure that the produced tarball is OK
-distcheck:
-  stage: smoke_test
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "stable"'
-      when: never
-    - if: '$CI_PIPELINE_SOURCE == "push"'
-  tags:
-    - linux  # any runner will do
-  script:
-  - cmake .
-  - make distcheck-configure
+  - mkdir -p build && cd build
+  - export JAVA_HOME=/usr/lib/jvm/java-22-openjdk-amd64
+  - cmake -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON ..
+  - make distcheck
 
 # Test the Python build
 build-pip:
   stage: test
+  image: $CI_REGISTRY_IMAGE/build-deps:latest
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
@@ -155,6 +162,94 @@ debian-clang:
   - apt install -y build-essential ninja-build clang libgcc-14-dev cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang  -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - ninja --verbose all tests
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+  artifacts:
+    when: always
+    expire_in: 6 months
+    reports:
+      junit: result.xml
+
+# We keep stable and oldstable versions of Debian
+# https://www.debian.org/releases/
+debian-stable:
+  image: debian:stable
+  stage: test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - large  # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - ninja --verbose all tests
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+  artifacts:
+    when: always
+    expire_in: 1 months
+    reports:
+      junit: result.xml
+
+debian-oldstable:
+  image: debian:oldstable
+  stage: test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - large  # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - ninja --verbose all tests
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+  artifacts:
+    when: always
+    expire_in: 1 months
+    reports:
+      junit: result.xml
+
+# We keep 2 LTS releases here, as that's about their lifetime
+# https://wiki.ubuntu.com/Releases
+ubuntu22-release:
+  image: ubuntu:22.04
+  stage: test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - large  # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - ninja --verbose all tests
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+  artifacts:
+    when: always
+    expire_in: 6 months
+    reports:
+      junit: result.xml
+
+ubuntu24-release:
+  image: ubuntu:24.04
+  stage: test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - large  # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
@@ -229,8 +324,24 @@ opensuse-release:
     reports:
       junit: result.xml
 
+docker-intelCC:
+  image: docker:latest
+  stage: pre-test
+  # It's OK if we cannot refresh the image for a while. Intel engineers sometimes need time.
+  allow_failure: true
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - small  # Inria infra
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - tools/docker/build_on_need.sh $CI_REGISTRY_IMAGE/intelcc:latest tools/docker/Dockerfile.intelCC
+
 opensuse-intelCC:
-  image: opensuse/tumbleweed # tumbleweed is the rolling release with recent software
+  needs: [docker-intelCC]
+  image: $CI_REGISTRY_IMAGE/intelcc:latest
   stage: test
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
@@ -239,9 +350,6 @@ opensuse-intelCC:
   tags:
     - large  # Inria infra
   script:
-  - zypper addrepo https://yum.repos.intel.com/oneapi oneAPI
-  - zypper --no-gpg-checks install -y ninja cmake intel-oneapi-compiler-dpcpp-cpp intel-oneapi-compiler-fortran gawk git cmake python313-pybind11-devel python313-numpy-devel graphviz-devel eigen3-devel boost-devel libboost_context-devel java-21-openjdk-devel valgrind-devel diffutils nlohmann_json-devel
-  - rm -rf CMakeFiles CMakeCache.txt
   - source /opt/intel/oneapi/setvars.sh; cmake -GNinja -DCMAKE_CXX_COMPILER=icpx -DCMAKE_C_COMPILER=icx -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
@@ -272,18 +380,85 @@ arch-release:
     reports:
       junit: result.xml
 
+freebsd:
+  stage: test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - freebsd
+  variables:
+    FF_ENABLE_JOB_CLEANUP: "true"
+    LD_LIBRARY_PATH: "/usr/local/lib/gcc13:/usr/local/flang/lib"
+    LIBRARY_PATH: "/usr/local/lib/gcc13:/usr/local/flang/lib"
+  script:
+    - rm -rf CMakeFiles CMakeCache.txt
+    - cmake -GNinja -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" -DCMAKE_CXX_COMPILER_LAUNCHER=ccache .
+    - ninja --verbose all tests
+    - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+  artifacts:
+    when: always
+    expire_in: 6 months
+    reports:
+      junit: result.xml
+
+arm:
+  stage: test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - armv8
+  script:
+    - module use /opt/arm/modulefiles/:/opt/arm/moduledeps/
+    - module load acfl armpl
+    - rm -rf CMakeFiles CMakeCache.txt
+    - CC=armclang CXX=armclang++ FC=armflang cmake -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" -DCMAKE_CXX_COMPILER_LAUNCHER=ccache .
+    - make VERBOSE=1 tests -j$(nproc)
+    - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+  artifacts:
+    when: always
+    expire_in: 6 months
+    reports:
+      junit: result.xml
 
 # ###################################################################################################
+# ############# Daily jobs ##########################################################################
 # ###################################################################################################
-# ###################################################################################################
+check_changes:
+  image: $CI_REGISTRY_IMAGE/build-deps:latest
+  stage: pre-test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  tags:
+    - small
+  script:
+  - |
+    if [ $(expr $(date +%s) - $(git log -1 --format=%ct)) -gt 86400 ] ;  then
+      echo "No change in 24h. Canceling current pipeline..." ;
+      apt update; apt install -y curl ; set -x;
+      curl --request POST  --header "PRIVATE-TOKEN: $GITLAB_API_TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel" ;
+      sleep 10;
+      echo "Canceling the job failed; fail it instead" ;
+      exit 1;
+    else
+      echo "Something was commited since yesterday. Proceed with the build." ;
+    fi
 
 flags:
   extends: .cached-build
+  image: $CI_REGISTRY_IMAGE/build-deps:latest
   stage: test
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: on_success
+    - when: never  # By default, do not execute this job (so it's executed only daily)
   tags:
     - large  # Inria infra
   parallel:
@@ -292,14 +467,68 @@ flags:
         SMPI: ["SMPI", "NO_SMPI"]
         DEBUG: ["DEBUG", "NO_DEBUG"]
   script:
-  - export CXXFLAGS=-D_GLIBCXX_DEBUG
+  # Use the debugging features of the GLIBC
+  - export CXXFLAGS="-D_GLIBCXX_DEBUG"
   # We cannot put ON/OFF as values directly, or the job name is not instructive
   - if [ ${MC} == "MC" ]       ; then BUILD_MC="ON"    ; else BUILD_MC="OFF"    ; fi
   - if [ ${SMPI} == "SMPI" ]   ; then BUILD_SMPI="ON"  ; else BUILD_SMPI="OFF"  ; fi
   - if [ ${DEBUG} == "DEBUG" ] ; then BUILD_DEBUG="ON" ; else BUILD_DEBUG="OFF" ; fi
-  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_SMPI=${BUILD_SMPI} -Denable_testsuite_smpi_MPICH3=${BUILD_SMPI} -Denable_model-checking=${BUILD_MC} -Denable_testsuite_McMini=${BUILD_MC} -Denable_debug=${BUILD_DEBUG} -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_smpi=${BUILD_SMPI} -Denable_testsuite_smpi_MPICH3=${BUILD_SMPI} -Denable_model-checking=${BUILD_MC} -Denable_testsuite_McMini=${BUILD_MC} -Denable_debug=${BUILD_DEBUG} -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   # Run the test in one config with GLIBCXX_DEBUG
   - if [ "${BUILD_MC}/${BUILD_SMPI}/${BUILD_DEBUG}" = "ON/ON/ON" ]; then
      ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure ;
     fi
+
+sonarqube:
+  image: $CI_REGISTRY_IMAGE/build-deps:latest
+  stage: test
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y unzip curl python3-coverage wget
+  # Install sonar wrapper and sonar scanner
+  - export SONAR_SCANNER_VERSION=7.0.2.4839
+  - export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux-x64
+  - curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux-x64.zip
+  - unzip -q -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
+  - export PATH=$SONAR_SCANNER_HOME/bin:$PATH
+  - export SONAR_SCANNER_OPTS="-server"
+  - curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+  - unzip -q -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
+  - export PATH=$HOME/.sonar/build-wrapper-linux-x86:$PATH
+  # configure and build simgrid
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_coverage=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+  - build-wrapper-linux-x86-64 --out-dir bw-output ninja all tests
+  # Install Jacoco
+  - wget https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.12/jacoco-0.8.12.zip -O /tmp/jacoco.zip
+  - (cd /tmp ; unzip -q jacoco.zip)
+  - export JACOCO_PATH=/tmp/lib
+  - export JAVA_TOOL_OPTIONS="-javaagent:${JACOCO_PATH}/jacocoagent.jar"
+  # run the tests
+  - export PYTHON_TOOL_OPTIONS="/usr/bin/python3-coverage run --parallel-mode --branch"
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure || true
+  - ctest -D ExperimentalCoverage || true
+  # convert python coverage reports in xml ones
+  - find .. -size +1c -name ".coverage*" -exec mv {} . \;
+  - /usr/bin/python3-coverage combine
+  - /usr/bin/python3-coverage xml --ignore-errors -o ../python_coverage.xml
+  # Run the analysis
+  - unset JAVA_TOOL_OPTIONS
+  - sonar-scanner -Dsonar.organization=simgrid -Dsonar.projectKey=simgrid_simgrid -Dsonar.sources=. -Dsonar.cfamily.compile-commands=bw-output/compile_commands.json -Dsonar.host.url=https://sonarcloud.io
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  allow_failure: true
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: on_success
+    - when: never  # By default, do not execute this job (so it's executed only daily)
+  tags:
+    - large  # Inria infra

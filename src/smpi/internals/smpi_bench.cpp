@@ -513,7 +513,8 @@ double smpi_autobench()
     sum += C[i];
 
   double elapsed     = xbt_os_timer_elapsed(timer);
-  double number_flop = (3.0 * SIZE * SIZE * SIZE + SIZE * SIZE);
+  // flop count is one add and one mul per element, the final reduction is left out of the bench
+  double number_flop = (2.0 * SIZE * SIZE * SIZE);
 
   free(A);
   free(B);

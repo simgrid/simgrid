@@ -106,13 +106,6 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
 
 endif()
 
-### SET THE LIBRARY EXTENSION
-if(APPLE)
-  set(LIB_EXE "dylib")
-else()
-  set(LIB_EXE "so")
-endif()
-
 execute_process(COMMAND ${CMAKE_LINKER} -v OUTPUT_VARIABLE LINKER_VERSION ERROR_VARIABLE LINKER_VERSION)
 string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
@@ -291,12 +284,16 @@ if(enable_smpi_papi)
 endif()
 mark_as_advanced(PAPI_PREFIX)
 
-try_compile(HAVE_STD_STACKTRACE ${CMAKE_BINARY_DIR}
-  SOURCES ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stdstacktrace.cpp
-  CXX_STANDARD 23
-  CXX_STANDARD_REQUIRED 23
-  LINK_LIBRARIES stdc++exp
-  OUTPUT_VARIABLE compile_stacktrace_output)
+if(CMAKE_VERSION VERSION_LESS 3.20)
+  set(HAVE_STD_STACKTRACE 0) # CMake does not know about C++23, we cannot test it on the compiler
+else()
+  try_compile(HAVE_STD_STACKTRACE ${CMAKE_BINARY_DIR}
+    SOURCES ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stdstacktrace.cpp
+    CXX_STANDARD 23
+    CXX_STANDARD_REQUIRED 23
+    LINK_LIBRARIES stdc++exp
+    OUTPUT_VARIABLE compile_stacktrace_output)
+endif()
 
 # But we do need the core of Boost
 # cmake before 3.13.1 does not know about stacktrace components. Fix it.
@@ -315,7 +312,7 @@ set(_Boost_STACKTRACE_ADDR2LINE_HEADERS "boost/stacktrace.hpp")
   endif()
   if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
-    message(STATUS "Mandatory components found. SimGrid is compilable.")
+    message(STATUS "Mandatory Boost components found. SimGrid is compilable.")
     if (NOT minimal-bindings)
       message(STATUS "Looking for optional Boost components:")
       set(Boost_FOUND 1) # These components are optionals
@@ -421,18 +418,10 @@ else()
 endif()
 
 CHECK_INCLUDE_FILE("valgrind/valgrind.h" HAVE_VALGRIND_H)
-CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
 CHECK_INCLUDE_FILE("linux/futex.h" HAVE_FUTEX_H)
 
-CHECK_FUNCTION_EXISTS(dlfunc HAVE_DLFUNC)
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
 CHECK_FUNCTION_EXISTS(nanosleep HAVE_NANOSLEEP)
-CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
-if(NOT HAVE_SYSCONF)
-  message(FATAL_ERROR "Cannot build without sysconf.")
-endif()
-CHECK_FUNCTION_EXISTS(process_vm_readv HAVE_PROCESS_VM_READV)
-CHECK_FUNCTION_EXISTS(mremap HAVE_MREMAP)
 
 CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
 
@@ -517,9 +506,7 @@ message(STATUS "Git version: ${GIT_VERSION}")
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/DefinePackages.cmake)
 
 ### Setup gcc & clang flags (include after DefinePackage.cmake, and before generating header files)
-if (NOT MSVC)
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Flags.cmake)
-endif()
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Flags.cmake)
 
 ### Generate the required scripts
 #################################

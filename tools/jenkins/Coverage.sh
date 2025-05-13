@@ -70,8 +70,8 @@ cmake -Denable_documentation=OFF \
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_testsuite_smpi_MBI=ON -Denable_testsuite_McMini=ON \
       -Denable_coverage=ON -DLTO_EXTRA_FLAG="auto" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON "$WORKSPACE"
 
-#build with sonarqube scanner wrapper
-/home/ci/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-outputs make -j$NUMPROC tests
+# Sonar is not there anymore, but on a daily job on Inria CI 
+make -j$NUMPROC tests
 
 export PYTHON_TOOL_OPTIONS="/usr/bin/python3-coverage run --parallel-mode --branch"
 

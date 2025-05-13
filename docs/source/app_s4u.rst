@@ -82,7 +82,7 @@ provides many helper functions to simplify the code of actors.
       - :ref:`class Comm <API_s4u_Comm>`: Communication activity, started on Mailboxes and consuming links.
       - :ref:`class Exec <API_s4u_Exec>`: Computation activity, started on Host and consuming CPU resources.
       - :ref:`class Io <API_s4u_Io>`: I/O activity, started on and consuming disks.
-      - :ref:`class ActivtySet <API_s4u_ActivitySet>`: Bag of activities, to wait for any of the set, or all of them.
+      - :ref:`class ActivitySet <API_s4u_ActivitySet>`: Bag of activities, to wait for any of the set, or all of them.
 
    - **Synchronization Objects**: Classical IPC that actors can use
 

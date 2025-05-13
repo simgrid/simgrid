@@ -1,7 +1,7 @@
 name: Git builds
 
-# Only trigger manually
-on: workflow_dispatch
+# Trigger on every git push
+on: push
 
 jobs:
   multi:
@@ -9,9 +9,8 @@ jobs:
     strategy:
         matrix:
           config:
-          - { name: "Ubuntu gcc", os: ubuntu-latest, cc: "gcc",   cxx: "g++" }
           - { name: "MacOS 13",   os: macos-13,      cc: "clang", cxx: "clang++"}
-          - { name: "MacOS ARM",  os: macos-latest,  cc: "clang", cxx: "clang++"}
+          - { name: "MacOS ARM",  os: macos-15,  cc: "clang", cxx: "clang++"}
         fail-fast: false
     permissions:
       contents: read
@@ -29,8 +28,11 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install ninja-build libboost-dev libboost-context-dev pybind11-dev
       - name: prepare for MacOS
-        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-latest'
+        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-15'
         run: brew install boost eigen pybind11 ninja
+      - name: Select Xcode 16.3
+        if: matrix.config.os == 'macos-15'
+        run: sudo xcode-select -s /Applications/Xcode_16.3.app
       - name: build
         run: |
           mkdir build ; cd build
@@ -55,16 +57,16 @@ jobs:
                "text": "Failure when building simgrid on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
                "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
             }]}
-      - name: Send the success message
-        if: ${{ success() }}
-        uses: mattermost/action-mattermost-notify@master
-        with:
-          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
-          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
-          PAYLOAD: |-
-            {
-             "channel": "bot-office",
-             "attachments": [{
-               "color": "#00FF00",
-               "text": "SimGrid built successfully on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            }]}
+#      - name: Send the success message
+#        if: ${{ success() }}
+#        uses: mattermost/action-mattermost-notify@master
+#        with:
+#          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+#          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
+#          PAYLOAD: |-
+#            {
+#             "channel": "bot-office",
+#             "attachments": [{
+#               "color": "#00FF00",
+#               "text": "SimGrid built successfully on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+#            }]}
