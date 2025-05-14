@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include <cstddef>
@@ -91,13 +92,30 @@ unsigned long DPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> upd
 
   auto dpor_updates        = static_cast<RaceUpdate*>(updates.get());
   unsigned long nb_updates = 0;
-  XBT_DEBUG("%ld updates to be considered", dpor_updates->get_value().size());
+  XBT_DEBUG("%lu updates to be considered", dpor_updates->get_value().size());
   for (auto& [state, ancestors] : dpor_updates->get_value()) {
     if (not ancestors.empty()) {
-      Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), ancestors);
+      aid_t considered = Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), ancestors);
+      XBT_DEBUG("Enabling the considered actor %ld in state #%ld", considered, state->get_num());
+      if (considered == -1)
+        continue; // Do not create a new state if the actor was already created before
+      StatePtr(new SleepSetState(
+                   Exploration::get_instance()->get_remote_app(), state,
+                   std::make_shared<Transition>(Transition::Type::UNKNOWN, considered,
+                                                state->get_actors_list().at(considered).get_times_considered()),
+                   false),
+               true);
     } else {
       state->consider_all();
+      for (auto const& [_, actor] : state->get_actors_list())
+        if (state->get_children_state_of_aid(actor.get_aid(), actor.get_times_considered()) == nullptr)
+          StatePtr(new SleepSetState(Exploration::get_instance()->get_remote_app(), state,
+                                     std::make_shared<Transition>(Transition::Type::UNKNOWN, actor.get_aid(),
+                                                                  actor.get_times_considered()),
+                                     false),
+                   true);
     }
+
     if (opened_states != nullptr) {
       opened_states->emplace_back(state);
       nb_updates++;

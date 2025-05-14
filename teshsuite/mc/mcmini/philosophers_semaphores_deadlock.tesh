@@ -32,7 +32,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_WAIT(mutex: 2, owner: 4)
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;2;2;2;2;3;3;3;2;3;4;4;4;3;4;4'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 520 unique states visited; 30 explored traces (489 transition replays, 1009 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 556 unique states visited; 30 explored traces (489 transition replays, 1009 states visited overall)
 > [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
@@ -90,7 +90,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_WAIT(mutex: 2, owner: 4)
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;2;2;2;2;3;3;3;2;3;4;4;4;3;4;4'
-> [0.000000] [mc_befs/INFO] BeFS exploration ended. 520 unique states visited; 30 explored traces (489 transition replays, 1009 states visited overall)
+> [0.000000] [mc_befs/INFO] BeFS exploration ended. 556 unique states visited; 30 explored traces (489 transition replays, 1009 states visited overall)
 > [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***

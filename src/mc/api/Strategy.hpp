@@ -49,21 +49,12 @@ public:
 
   /** Ensure at least one transition is marked as todo among the enabled ones not done in E.
    *  If required, it marks as todo the best transition according to the StratLocalInfo. */
-  void consider_best_among_set_in(State* state, std::unordered_set<aid_t> E);
+  aid_t consider_best_among_set_in(State* state, std::unordered_set<aid_t> E);
 
   /** After the call to this function, at least one transition from set of process E will
    *  be explored at some point, ie. one transition must be marked todo, already been marked
    *  todo, or already been done */
-  void ensure_one_considered_among_set_in(State* state, std::unordered_set<aid_t> E)
-  {
-    for (auto& [p, actor] : state->get_actors_list()) {
-      // If we find an actor already satisfying condition E, we return
-      if (E.count(p) > 0 && (actor.is_done() or actor.is_todo()))
-        return;
-    }
-
-    consider_best_among_set_in(state, E);
-  }
+  aid_t ensure_one_considered_among_set_in(State* state, std::unordered_set<aid_t> E);
 };
 
 } // namespace simgrid::mc

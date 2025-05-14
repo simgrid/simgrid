@@ -87,11 +87,11 @@ int ExplorationStrategy::get_actor_valuation_in(const State* state, aid_t aid) c
 
 /** Ensure at least one transition is marked as todo among the enabled ones not done in E.
  *  If required, it marks as todo the best transition according to the StratLocalInfo. */
-void ExplorationStrategy::consider_best_among_set_in(State* state, std::unordered_set<aid_t> E)
+aid_t ExplorationStrategy::consider_best_among_set_in(State* state, std::unordered_set<aid_t> E)
 {
 
   if (std::any_of(begin(E), end(E), [=](const auto& aid) { return state->get_actors_list().at(aid).is_todo(); }))
-    return;
+    return -1;
 
   auto actors = state->get_actors_list();
   if (_sg_mc_strategy == "none") {
@@ -100,7 +100,7 @@ void ExplorationStrategy::consider_best_among_set_in(State* state, std::unordere
       if (E.count(aid) > 0) {
         xbt_assert(actor.is_enabled(), "Asked to consider one among a set containing the disabled actor %ld", aid);
         state->consider_one(aid);
-        return;
+        return aid;
       }
     }
   } else {
@@ -113,9 +113,20 @@ void ExplorationStrategy::consider_best_among_set_in(State* state, std::unordere
       xbt_assert(state->is_actor_enabled(aid), "Asked to consider one among a set containing the disabled actor %ld",
                  chosen);
       state->consider_one(aid);
-      return;
+      return aid;
     }
   }
+  return -1;
 }
 
+aid_t ExplorationStrategy::ensure_one_considered_among_set_in(State* state, std::unordered_set<aid_t> E)
+{
+  for (auto& [p, actor] : state->get_actors_list()) {
+    // If we find an actor already satisfying condition E, we return
+    if (E.count(p) > 0 && (actor.is_done() or actor.is_todo()))
+      return -1;
+  }
+
+  return consider_best_among_set_in(state, E);
+}
 } // namespace simgrid::mc

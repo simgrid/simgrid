@@ -9,7 +9,7 @@ $ $VALGRIND_NO_LEAK_CHECK ../../../smpi_script/bin/smpirun -quiet -wrapper "${bi
 > rank 0 recv the data
 > rank 1 recv the data
 > Sent 1 to rank 0
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 9 unique states visited; 1 explored traces (0 transition replays, 9 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 12 unique states visited; 1 explored traces (0 transition replays, 9 states visited overall)
 
 p Testing the paranoid model
 ! timeout 60
