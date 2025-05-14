@@ -13,33 +13,34 @@
  #include "src/simgrid/module.hpp" // SIMGRID_REGISTER_PLUGIN
  
  // Makes sure that this plugin can be activated from the command line with ``--cfg=plugin:vm_load``
- SIMGRID_REGISTER_PLUGIN(vm_load, "Cpu load", &sg_vm_load_plugin_init)
+ SIMGRID_REGISTER_PLUGIN(vm_load, "VM CPU load", &sg_vm_load_plugin_init)
  
- /** @defgroup plugin_host_load Simple plugin that monitors the current load for each host. */
+ /** @defgroup plugin_vm_load Simple plugin that monitors the current load for each VM. 
+
+  @beginrst
+This plugin is similar to host_load but for VMs.
+It attaches an extension to each VM to store some data, and places callbacks in the following signals:
+
+  - :cpp:func:`simgrid::s4u::VirtualMachine::on_creation_cb`: Attach a new extension to the newly created vm.
+  - :cpp:func:`simgrid::s4u::Exec::on_start_cb`: Make note that a new execution started, increasing the load.
+  - :cpp:func:`simgrid::s4u::Exec::on_completion_cb`: Make note that an execution completed, decreasing the load.
+  - :cpp:func:`simgrid::s4u::Host::on_onoff_cb`: Do what is appropriate when the host of the VM gets turned off or on.
+  - :cpp:func:`simgrid::s4u::Host::on_speed_change_cb`: Do what is appropriate when the DVFS is modified in the host of the VM.
+
+  Note that extensions are automatically destroyed when the virtual machine gets destroyed.
+  @endrst
+*/
  
- XBT_LOG_NEW_DEFAULT_SUBCATEGORY(vm_load, plugin, "Logging specific to the HostLoad plugin");
+ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(vm_load, plugin, "Logging specific to the VMLoad plugin");
  
  namespace simgrid::plugin {
  
  static const double activity_uninitialized_remaining_cost = -1;
  
- /** This class stores the extra data needed by this plugin about a given host
-  *
-  * It is stored as an extension of s4u::Host. Such extensions are retrieved by type as follows:
-  *
-  * @verbatim
-  * simgrid::s4u::Host* this_host = ???;
-  * this_extension = host->extension<HostLoad>();
-  * @endverbatim
-  *
-  * If no extension of that type was ever attached to the inspected object, the ``extension<X>()`` template returns
-  * nullptr.
-  *
-  * Please refer to the implementation of ``sg_vm_load_plugin_init()`` to see the extension objects are attached to
-  * hosts at initialization time.
-  */
+ // This class stores the extra data needed by this plugin about a given vm
  class VMLoad {
  public:
+  // It uses simgrid::s4u::Host because a VM is a extension of a Host
    static simgrid::xbt::Extension<simgrid::s4u::Host, VMLoad> EXTENSION_ID;
  
    explicit VMLoad(simgrid::s4u::VirtualMachine* ptr)
@@ -82,8 +83,7 @@
     */
    double current_speed_     = 0;
    /**
-    * How many flops are currently used by all the processes running on this
-    * host?
+    * How many flops are currently used by all the processes running on this VM
     */
    double current_flops_     = 0;
    double computed_flops_    = 0;
@@ -171,12 +171,14 @@
   * (because the user changed the pstate, or because of external trace events) */
  static void on_vm_change(simgrid::s4u::Host const& host)
  {
+    // If the host is a VM already, just update it
     if (dynamic_cast<simgrid::s4u::VirtualMachine const*>(&host)) // If it is a VM
     {
       host.extension<VMLoad>()->update();
     }
     else
     {
+      // Verifies the VMs allocated in the host that changed
       const simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
       for (auto& h : e->get_all_hosts()) {
         if (dynamic_cast<simgrid::s4u::VirtualMachine const*>(h))
