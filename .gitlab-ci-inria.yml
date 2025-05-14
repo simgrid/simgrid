@@ -103,12 +103,6 @@ make-distcheck:
   - export JAVA_HOME=/usr/lib/jvm/java-22-openjdk-amd64
   - cmake -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON ..
   - make distcheck
-  artifacts:
-    when: always
-    expire_in: 6 months
-    reports:
-      junit: result.xml
-
 
 # Test the Python build
 build-pip:
@@ -441,13 +435,16 @@ check_changes:
       when: never
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
   tags:
-    - small  # Inria infra
+    - small
   script:
-  - if [ $(expr $(date +%s) - $(git log -1 --format=%ct)) -gt 86400 ] ;  then
+  - |
+    if [ $(expr $(date +%s) - $(git log -1 --format=%ct)) -gt 86400 ] ;  then
       echo "No change in 24h. Canceling current pipeline..." ;
-      curl --request POST --form token=$GITLAB_API_TOKEN
-        --form ref=$CI_COMMIT_REF_NAME
-        "https://gitlab.inria.fr/api/v4/projects/$CI_PROJECT_ID/pipeline/$CI_PIPELINE_ID/cancel" ;
+      apt update; apt install -y curl ; set -x;
+      curl --request POST  --header "PRIVATE-TOKEN: $GITLAB_API_TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel" ;
+      sleep 10;
+      echo "Canceling the job failed; fail it instead" ;
+      exit 1;
     else
       echo "Something was commited since yesterday. Proceed with the build." ;
     fi
@@ -497,18 +494,18 @@ sonarqube:
   - export SONAR_SCANNER_VERSION=7.0.2.4839
   - export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux-x64
   - curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux-x64.zip
-  - unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
+  - unzip -q -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
   - export PATH=$SONAR_SCANNER_HOME/bin:$PATH
   - export SONAR_SCANNER_OPTS="-server"
   - curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
-  - unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
+  - unzip -q -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
   - export PATH=$HOME/.sonar/build-wrapper-linux-x86:$PATH
   # configure and build simgrid
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_coverage=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
   - build-wrapper-linux-x86-64 --out-dir bw-output ninja all tests
   # Install Jacoco
   - wget https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.12/jacoco-0.8.12.zip -O /tmp/jacoco.zip
-  - (cd /tmp ; unzip jacoco.zip)
+  - (cd /tmp ; unzip -q jacoco.zip)
   - export JACOCO_PATH=/tmp/lib
   - export JAVA_TOOL_OPTIONS="-javaagent:${JACOCO_PATH}/jacocoagent.jar"
   # run the tests
