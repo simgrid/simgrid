@@ -9,72 +9,31 @@
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
+#include "src/mc/mc_forward.hpp"
 #include <memory>
 
 namespace simgrid::mc {
 
 class XBT_PRIVATE WutState : public SleepSetState {
 
-protected:
-  /**
-   * The wakeup tree with respect to the execution represented
-   * by the totality of all states before and including this one
-   * and with respect to this state's sleep set
-   */
-  odpor::WakeupTree wakeup_tree_;
-
-  bool has_initialized_wakeup_tree = false;
-
-  void initialize_if_empty_wut(RemoteApp& remote_app);
-
 public:
-  explicit WutState(RemoteApp& remote_app);
-  explicit WutState(RemoteApp& remote_app, StatePtr parent_state, bool initialize_wut_if_empty = true);
-
-  /**
-   * Same as next_transition(), but the choice is based off the ODPOR
-   * wakeup tree associated with this state
-   */
-  aid_t next_odpor_transition() const;
-
-  /**
-   * @brief Removes the subtree rooted at the single-process node
-   * `N` running actor `p` of this state's wakeup tree
-   */
-  void remove_subtree_using_children_in_transition(const std::shared_ptr<Transition> transition);
-  void remove_subtree_at_aid(aid_t proc);
-  bool has_empty_tree() const { return this->wakeup_tree_.empty(); }
-  std::string string_of_wut() const { return this->wakeup_tree_.string_of_whole_tree(); }
+  explicit WutState(RemoteApp& remote_app) : SleepSetState(remote_app) {}
+  explicit WutState(RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr<Transition> incoming_transition,
+                    bool set_actor_status = true)
+      : SleepSetState(remote_app, parent_state, incoming_transition, set_actor_status)
+  {
+  }
 
   /**
    * @brief
    */
-  odpor::InsertionResult insert_into_wakeup_tree(const odpor::PartialExecution&);
+  StatePtr insert_into_tree(odpor::PartialExecution&);
 
-  /** @brief Prepares the parent state for re-exploration following
-   * another after having followed ODPOR from this state with
-   * the current in transition
-   *
-   * After ODPOR has completed searching a maximal trace, it
-   * finds the first point in the execution with a nonempty wakeup
-   * tree. This method corresponds to lines 20 and 21 in the ODPOR
-   * pseudocode
-   */
-  void do_odpor_unwind();
-
-  unsigned int direct_children() const { return wakeup_tree_.count_direct_children(); }
+  unsigned int direct_children() const { return opened_.size() - closed_.size(); }
 
   bool has_more_to_be_explored() const override { return direct_children() > 0; }
 
-  /**
-   * @brief Adds an arbitrary enabled transition to the wakeup tree.
-   *
-   * 99 percent of the times, this is not the way you want to do this. Instead
-   * use other methods that already handle the wakeup tree by themselves. If
-   * you think you are in the other 1 percent, write a paper about your new
-   * algorithm first, and only then use this method.
-   */
-  void add_arbitrary_todo(aid_t aid = -1);
+  std::unordered_set<aid_t> get_sleeping_actors(aid_t after_actor) const override;
 };
 
 } // namespace simgrid::mc

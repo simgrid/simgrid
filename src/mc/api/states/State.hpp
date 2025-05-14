@@ -10,6 +10,9 @@
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/xbt_intrusiveptr.hpp"
+#include "xbt/asserts.h"
+#include <memory>
+#include <vector>
 
 namespace simgrid::mc {
 
@@ -31,6 +34,9 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
   /** @brief The incoming transition is what led to this state, coming from its parent  */
   std::shared_ptr<Transition> incoming_transition_ = nullptr;
 
+  /** @brief The outgoing transition is the last transition that we took to leave this state.  */
+  std::shared_ptr<Transition> outgoing_transition_ = nullptr;
+
   /** Sequential state ID (used for debugging) */
   long num_ = 0;
 
@@ -44,19 +50,44 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
    *  Used by the critical transition algorithm */
   bool has_correct_descendent_ = false;
 
+  /** @brief Add transition to the opened_ one in this state.
+   *  If we find a placeholder for transition, replace it. Else simply add it. */
+  void update_opened(std::shared_ptr<Transition> transition);
+
 protected:
   /** State's exploration status by actor. All actors should be present, eventually disabled for now. */
   std::map<aid_t, ActorState> actors_to_run_;
-
-  /** @brief The outgoing transition is the last transition that we took to leave this state.  */
-  std::shared_ptr<Transition> outgoing_transition_ = nullptr;
+  bool actor_status_set_ = false;
 
   ActorState get_actor_at(aid_t aid) { return actors_to_run_.at(aid); }
 
+  std::vector<std::vector<StatePtr>> children_states_; // first key is aid, second time considered
+
+  /** Store the aid that have been visited at least once. This is usefull both to know what not to
+   *  revisit, but also to remember the order in which the children were visited. The latter information
+   *  being important for the correction. */
+  std::vector<std::shared_ptr<Transition>> opened_;
+
+  size_t get_opened_size()
+  {
+    return std::count_if(opened_.begin(), opened_.end(), [](auto const& ptr_t) { return ptr_t != nullptr; });
+  }
+
+  /** Only leftmosts states of the tree can be closed. This is decided on creation based on parent
+   *  value, and then updated when nearby states are closed. */
+  bool is_leftmost_;
+
+  /** Store the aid that have been closed. This is usefull to determine wether a given state is leftmost. */
+  std::vector<aid_t> closed_;
+
 public:
-  explicit State(const RemoteApp& remote_app);
-  explicit State(const RemoteApp& remote_app, StatePtr parent_state);
-  virtual ~State();
+  explicit State(const RemoteApp& remote_app, bool set_actor_status = true);
+  explicit State(const RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr<Transition> incoming_transition,
+                 bool set_actor_status = true);
+  ~State();
+
+  bool has_been_initialized() const { return actor_status_set_; }
+  void initialize(const RemoteApp& remote_app);
 
   int get_ref_count() { return refcount_; }
   /* Returns a positive number if there is another transition to pick, or -1 if not */
@@ -84,17 +115,25 @@ public:
    *  + consider_all mark all enabled actor that are not done yet */
   void consider_one(aid_t aid)
   {
+    xbt_assert(actors_to_run_.find(aid) != actors_to_run_.end(),
+               "Actor %ld does not exist in state #%ld, yet one was asked", aid, get_num());
     xbt_assert(actors_to_run_.at(aid).is_enabled() && not actors_to_run_.at(aid).is_done(),
-               "Tried to mark as TODO actor %ld but it is either not enabled or already done", aid);
+               "Tried to mark as TODO actor %ld in state #%ld but it is either not enabled or already done", aid,
+               get_num());
     actors_to_run_.at(aid).mark_todo();
+    opened_.emplace_back(
+        std::make_shared<Transition>(Transition::Type::UNKNOWN, aid, actors_to_run_.at(aid).get_times_considered()));
   }
+
   unsigned long consider_all()
   {
     unsigned long count = 0;
-    for (auto& [_, actor] : actors_to_run_)
+    for (auto& [aid, actor] : actors_to_run_)
       if (actor.is_enabled() && not actor.is_done()) {
         actor.mark_todo();
         count++;
+        opened_.emplace_back(
+            std::make_shared<Transition>(Transition::Type::UNKNOWN, aid, actor.get_times_considered()));
       }
     return count;
   }
@@ -103,7 +142,7 @@ public:
   std::shared_ptr<Transition> get_transition_out() const { return outgoing_transition_; }
   std::shared_ptr<Transition> get_transition_in() const { return incoming_transition_; }
   State* get_parent_state() const { return parent_state_.get(); }
-  void reset_parent_state() { parent_state_ = nullptr; }
+  void reset_parent_state();
 
   std::map<aid_t, ActorState> const& get_actors_list() const { return actors_to_run_; }
 
@@ -157,7 +196,19 @@ public:
   /**
    * @brief To be called when this state is backtracked in the exploration.
    */
-  virtual void signal_on_backtrack(){};
+  void signal_on_backtrack();
+
+  StatePtr get_children_state_of_aid(aid_t next, int times_considered)
+  {
+    if (next >= 0 && times_considered >= 0 && children_states_.size() > static_cast<long unsigned>(next) &&
+        children_states_[next].size() > static_cast<long unsigned>(times_considered))
+      return children_states_[next][times_considered];
+    return nullptr;
+  }
+
+  void record_child_state(StatePtr child);
+
+  const std::vector<std::shared_ptr<Transition>> get_opened_transitions() const { return opened_; }
 
   xbt::reference_holder<State> reference_holder_;
 };

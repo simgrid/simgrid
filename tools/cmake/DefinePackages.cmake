@@ -562,8 +562,6 @@ set(MC_SRC_STATELESS
   src/mc/remote/CheckerSide.hpp
   src/mc/remote/mc_protocol.h
 
-  src/mc/api/states/BeFSWutState.cpp
-  src/mc/api/states/BeFSWutState.hpp
   src/mc/api/states/SleepSetState.cpp
   src/mc/api/states/SleepSetState.hpp
   src/mc/api/states/SoftLockedState.hpp
@@ -592,9 +590,6 @@ set(MC_SRC_STATELESS
   src/mc/mc_private.hpp
   src/mc/mc_record.cpp
 
-  
-  src/mc/explo/reduction/BeFSODPOR.cpp
-  src/mc/explo/reduction/BeFSODPOR.hpp
   src/mc/explo/reduction/Reduction.cpp
   src/mc/explo/reduction/Reduction.hpp
   src/mc/explo/reduction/NoReduction.hpp

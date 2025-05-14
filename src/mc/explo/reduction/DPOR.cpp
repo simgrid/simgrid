@@ -10,7 +10,7 @@
 #include <cstddef>
 #include <memory>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc, "Dynamic partial order reduction algorithm");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc_reduction, "Dynamic partial order reduction algorithm");
 
 namespace simgrid::mc {
 
@@ -91,6 +91,7 @@ unsigned long DPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> upd
 
   auto dpor_updates        = static_cast<RaceUpdate*>(updates.get());
   unsigned long nb_updates = 0;
+  XBT_DEBUG("%ld updates to be considered", dpor_updates->get_value().size());
   for (auto& [state, ancestors] : dpor_updates->get_value()) {
     if (not ancestors.empty()) {
       Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), ancestors);
@@ -105,14 +106,13 @@ unsigned long DPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> upd
   return nb_updates;
 }
 
-StatePtr DPOR::state_create(RemoteApp& remote_app, StatePtr parent_state)
+StatePtr DPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
+                            std::shared_ptr<Transition> incoming_transition)
 {
-  auto res             = Reduction::state_create(remote_app, parent_state);
+  auto res             = Reduction::state_create(remote_app, parent_state, incoming_transition);
   auto sleep_set_state = static_cast<SleepSetState*>(res.get());
 
-  if (not sleep_set_state->get_enabled_minus_sleep().empty()) {
-    Exploration::get_strategy()->consider_best_in(sleep_set_state);
-  }
+  sleep_set_state->add_arbitrary_transition(remote_app);
 
   return res;
 }

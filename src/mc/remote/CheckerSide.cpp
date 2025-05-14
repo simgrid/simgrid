@@ -251,32 +251,49 @@ Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool ne
   return nullptr;
 }
 
-void CheckerSide::handle_replay(std::deque<std::pair<aid_t, int>> to_replay)
+void CheckerSide::handle_replay(std::deque<std::pair<aid_t, int>> to_replay,
+                                std::deque<std::pair<aid_t, int>> to_replay_and_actor_status)
 {
+  long unsigned msg_length = to_replay.size() + to_replay_and_actor_status.size() + 1;
+
   s_mc_message_int_t replay_msg = {};
   replay_msg.type  = MessageType::REPLAY;
-  replay_msg.value              = to_replay.size();
+  replay_msg.value              = msg_length;
 
-  unsigned char* aids  = (unsigned char*)alloca(sizeof(unsigned char) * to_replay.size());
-  unsigned char* times = (unsigned char*)alloca(sizeof(unsigned char) * to_replay.size());
+  unsigned char* aids  = (unsigned char*)alloca(sizeof(unsigned char) * msg_length);
+  unsigned char* times = (unsigned char*)alloca(sizeof(unsigned char) * msg_length);
 
-  XBT_DEBUG("send a replay of size %lu", to_replay.size());
+  XBT_DEBUG("send a replay of size %lu", msg_length);
   int i = 0;
   for (auto const& [aid, time] : to_replay) {
-    xbt_assert(aid < 255, "Overflow on the aid value. %ld is too big to fit in an unsigned char", aid);
-    xbt_assert(time < 255, "Overflow on the time_considered value. %d is too big to fit in an unsigned char", time);
+    xbt_assert(aid < 254, "Overflow on the aid value. %ld is too big to fit in an unsigned char", aid);
+    xbt_assert(time < 254, "Overflow on the time_considered value. %d is too big to fit in an unsigned char", time);
     aids[i]  = aid;
     times[i] = time;
     i++;
   }
+  // Signal the end of the first part
+  aids[i]  = -1;
+  times[i] = -1;
+  i++;
+
+  for (auto const& [aid, time] : to_replay_and_actor_status) {
+    xbt_assert(aid < 254, "Overflow on the aid value. %ld is too big to fit in an unsigned char", aid);
+    xbt_assert(time < 254, "Overflow on the time_considered value. %d is too big to fit in an unsigned char", time);
+    aids[i]  = aid;
+    times[i] = time;
+    i++;
+  }
+
   get_channel().pack(&replay_msg, sizeof(replay_msg));
-  get_channel().pack(aids, sizeof(unsigned char) * to_replay.size());
-  get_channel().pack(times, sizeof(unsigned char) * to_replay.size());
+  get_channel().pack(aids, sizeof(unsigned char) * msg_length);
+  get_channel().pack(times, sizeof(unsigned char) * msg_length);
 
   xbt_assert(get_channel().send() == 0, "Could not send message to the app: %s", strerror(errno));
 
   // Wait for the application to signal that it is waiting
-  sync_with_app();
+  if (to_replay_and_actor_status.size() == 0)
+    sync_with_app();
 }
 
 void CheckerSide::finalize(bool terminate_asap)

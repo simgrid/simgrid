@@ -6,6 +6,7 @@
 #include "src/mc/explo/BeFSExplorer.hpp"
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/explo/reduction/ODPOR.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_forward.hpp"
@@ -15,7 +16,6 @@
 #include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"
 
-#include "src/mc/explo/reduction/BeFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
@@ -207,7 +207,7 @@ void BeFSExplorer::run()
              state->get_num(), state->count_todo(), opened_states_.size());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    auto next_state = reduction_algo_->state_create(get_remote_app(), state);
+    auto next_state = reduction_algo_->state_create(get_remote_app(), state, executed_transition);
 
     if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
       static unsigned max_files = sysconf(_SC_OPEN_MAX);
@@ -260,14 +260,19 @@ StatePtr BeFSExplorer::best_opened_state()
 
     // Else we are picking uniformly among opened_states
   } else {
-    if (opened_states_.size() == 0)
+    if (opened_states_.size() == 0) {
+      XBT_DEBUG("No more opened state");
       return nullptr;
+    }
     int guess          = xbt::random::uniform_int(0, opened_states_.size() - 1);
     StatePtr candidate = std::move(opened_states_[guess]);
     opened_states_.erase(opened_states_.begin() + guess);
     while (candidate->next_transition_guided().first == -1) {
-      if (opened_states_.size() == 0)
+      XBT_DEBUG("Candidate state #%ld discarded because the next transition guided is -1", candidate->get_num());
+      if (opened_states_.size() == 0) {
+        XBT_DEBUG("No more opened state");
         return nullptr;
+      }
       guess     = xbt::random::uniform_int(0, opened_states_.size() - 1);
       candidate = std::move(opened_states_[guess]);
       opened_states_.erase(opened_states_.begin() + guess);
@@ -294,6 +299,9 @@ void BeFSExplorer::backtrack()
     stack_.clear();
     return;
   }
+
+  XBT_DEBUG("Backtracking to state #%ld at depth %ld", backtracking_point->get_num(), backtracking_point->get_depth());
+
   // We found a backtracking point, let's go to it
   backtrack_to_state(backtracking_point.get());
   this->restore_stack(backtracking_point);
@@ -309,7 +317,7 @@ BeFSExplorer::BeFSExplorer(const std::vector<char*>& args, ReductionMode mode)
   else if (reduction_mode_ == ReductionMode::sdpor)
     reduction_algo_ = std::make_unique<SDPOR>();
   else if (reduction_mode_ == ReductionMode::odpor)
-    reduction_algo_ = std::make_unique<BeFSODPOR>();
+    reduction_algo_ = std::make_unique<ODPOR>();
   else {
     xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by BeFS explorer",
                to_c_str(reduction_mode_));

@@ -548,10 +548,10 @@ void MazurkiewiczTraces::record_new_execution(const Execution& exec)
     XBT_DEBUG("Newly added trace:\n%s\nPreviously known one:\n%s", one_string_textual_trace(seq).c_str(),
               one_string_textual_trace(can_be_equivalent).c_str());
     if (are_equivalent(seq, can_be_equivalent)) {
-      //   XBT_CRITICAL("Inserted a sequence that is equivalent with an already explored one! Be carefull!");
-      //   XBT_CRITICAL("Previous sequence was:\n%s", one_string_textual_trace(can_be_equivalent).c_str());
-      //   XBT_CRITICAL("New one is:\n%s", one_string_textual_trace(seq).c_str());
-      //   xbt_die("Fix me!");
+      XBT_CRITICAL("Inserted a sequence that is equivalent with an already explored one! Be carefull!");
+      XBT_CRITICAL("Previous sequence was:\n%s", one_string_textual_trace(can_be_equivalent).c_str());
+      XBT_CRITICAL("New one is:\n%s", one_string_textual_trace(seq).c_str());
+      xbt_die("Fix me!");
       return;
     }
   }

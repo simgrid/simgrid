@@ -77,9 +77,10 @@ public:
     return nb_updates;
   }
 
-  StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override
+  StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state,
+                        std::shared_ptr<Transition> incoming_transition) override
   {
-    auto res             = Reduction::state_create(remote_app, parent_state);
+    auto res             = Reduction::state_create(remote_app, parent_state, incoming_transition);
     auto sleep_set_state = static_cast<SleepSetState*>(res.get());
 
     if (not sleep_set_state->get_enabled_minus_sleep().empty()) {

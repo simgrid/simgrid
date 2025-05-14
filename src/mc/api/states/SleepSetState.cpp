@@ -5,6 +5,7 @@
 
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_sleepset, mc_state, "DFS exploration algorithm of the model-checker");
@@ -13,21 +14,57 @@ namespace simgrid::mc {
 
 SleepSetState::SleepSetState(RemoteApp& remote_app) : State(remote_app) {}
 
-SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state) : State(remote_app, parent_state)
+SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state,
+                             std::shared_ptr<Transition> incoming_transition, bool set_actor_status)
+    : State(remote_app, parent_state, incoming_transition, set_actor_status)
 {
   /* Copy the sleep set and eventually removes things from it: */
   /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.
    * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
    * it is not explored*/
-  for (const auto& [aid, transition] : static_cast<SleepSetState*>(parent_state.get())->get_sleep_set()) {
-    if (not get_transition_in()->depends(transition.get()))
+  for (size_t i = 0; i < static_cast<SleepSetState*>(parent_state.get())->opened_.size(); i++) {
+    auto const& transition = static_cast<SleepSetState*>(parent_state.get())->opened_[i];
+    XBT_DEBUG("At state #%ld, transition <Actor %ld: %s> is contained in parent opened", get_num(), transition->aid_,
+              transition->to_string().c_str());
+    if (not get_transition_in()->depends(transition.get())) {
+      XBT_DEBUG("sleep set @ state #%ld: transition <Actor %ld: %s> added from parent opened set", get_num(),
+                transition->aid_, transition->to_string().c_str());
       sleep_add_and_mark(transition);
+    }
+    if (transition->aid_ == incoming_transition->aid_)
+      break;
+  }
+
+  for (const auto& [aid, transition] : static_cast<SleepSetState*>(parent_state.get())->get_sleep_set()) {
+    if (not get_transition_in()->depends(transition.get())) {
+      XBT_DEBUG("sleep set @ state #%ld: transition <Actor %ld: %s> added from parent sleep set", get_num(),
+                transition->aid_, transition->to_string().c_str());
+      sleep_add_and_mark(transition);
+    }
   }
 
   if (not sleep_set_.empty() and parent_state->has_correct_execution())
     this->register_as_correct(); // FIX ME
   // This is only working if the parent has been fully explored when creating this state
   // In other word, if we are doing any sort of BeFS, there are no good reason for this to work as intented
+}
+
+void SleepSetState::add_arbitrary_transition(RemoteApp& remote_app)
+{
+  XBT_DEBUG("Adding arbitraty transition in state #%ld", get_num());
+  if (sleep_set_.empty() and _sg_mc_befs_threshold == 0 and _sg_mc_send_determinism == false and
+      _sg_mc_comms_determinism == false) {
+    XBT_DEBUG("Asking for one way");
+    remote_app.go_one_way();
+    aid_t aid = remote_app.get_aid_of_next_transition();
+    if (aid == -1) {
+      xbt_assert(Exploration::get_strategy()->best_transition_in(this, false).first == -1);
+      return; // No more enabled actors here
+    }
+    consider_one(aid);
+  } else {
+    Exploration::get_strategy()->consider_best_in(this);
+  }
 }
 
 void SleepSetState::sleep_add_and_mark(std::shared_ptr<Transition> transition)

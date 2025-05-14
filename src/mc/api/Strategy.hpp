@@ -11,6 +11,7 @@
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "xbt/asserts.h"
+#include "xbt/log.h"
 #include <map>
 #include <utility>
 #include <vector>

@@ -7,6 +7,7 @@
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
+#include "xbt/asserts.h"
 #include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 
@@ -26,17 +27,29 @@ State::~State()
   XBT_VERB("Closing state n°%ld! There are %ld remaining states", this->get_num(), get_in_memory_states());
 }
 
-State::State(const RemoteApp& remote_app) : num_(++expended_states_)
+State::State(const RemoteApp& remote_app, bool set_actor_status) : num_(++expended_states_)
 {
   in_memory_states_++;
-  remote_app.get_actors_status(actors_to_run_);
+  if (set_actor_status) {
+    actor_status_set_ = true;
+    remote_app.get_actors_status(actors_to_run_);
+  }
+  if (get_num() == 1)
+    is_leftmost_ = true; // The first state is the only one at that depth, so the leftmost one.
 }
 
-State::State(const RemoteApp& remote_app, StatePtr parent_state) : State(remote_app)
+State::State(const RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr<Transition> incoming_transition,
+             bool set_actor_status)
+    : State(remote_app, set_actor_status)
 {
+  xbt_assert(incoming_transition != nullptr);
   parent_state_        = std::move(parent_state);
-  incoming_transition_ = parent_state_->get_transition_out();
+  incoming_transition_ = std::move(incoming_transition);
   depth_               = parent_state_->depth_ + 1;
+
+  is_leftmost_ = parent_state_->is_leftmost_ and parent_state_->opened_.size() == parent_state_->closed_.size();
+  parent_state_->update_opened(get_transition_in());
+  parent_state_->record_child_state(this);
 
   XBT_DEBUG("Creating %ld, son of %ld", get_num(), parent_state_->get_num());
 }
@@ -76,6 +89,7 @@ aid_t State::next_transition() const
 
     return aid;
   }
+
   return -1;
 }
 
@@ -91,8 +105,8 @@ std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
 
   // 1. Identify the appropriate ActorState to prepare for execution
   // when simcall_handle will be called on it
-  auto& actor_state               = actors_to_run_.at(next);
-  const unsigned times_considered = actor_state.do_consider();
+  auto& actor_state                              = actors_to_run_.at(next);
+  const unsigned times_considered                = actor_state.do_consider();
   const Transition* expected_executed_transition = nullptr;
   if (_sg_mc_debug) {
     expected_executed_transition = actor_state.get_transition(times_considered).get();
@@ -176,6 +190,66 @@ void State::register_as_correct()
     parent_state_->register_as_correct();
 }
 
+void State::record_child_state(StatePtr child)
+{
+  aid_t child_aid      = child->get_transition_in()->aid_;
+  int times_considered = child->get_transition_in()->times_considered_;
+  if (children_states_.size() < static_cast<long unsigned>(child_aid + 1))
+    children_states_.resize(child_aid + 1);
+  if (children_states_[child_aid].size() < static_cast<long unsigned>(times_considered + 1))
+    children_states_[child_aid].resize(times_considered + 1);
+  children_states_[child_aid][times_considered] = std::move(child);
+}
+
+void State::signal_on_backtrack()
+{
+  XBT_VERB("State n°%ld, child of %ld by actor %ld, being signaled to backtrack", get_num(),
+           get_parent_state() != nullptr ? get_parent_state()->get_num() : -1, get_transition_in()->aid_);
+  XBT_VERB("... %s",
+           is_leftmost_ ? "This state is the leftmost at this depth" : "This state is NOT the leftmost at this depth");
+
+  if (not is_leftmost_)
+    return;
+
+  if (closed_.size() < opened_.size()) {
+    // if there are children states that are being visited, we may need to update the leftmost information
+    auto const& leftmost_transition = opened_[closed_.size()];
+    auto children_aid   = children_states_[leftmost_transition->aid_][leftmost_transition->times_considered_];
+    auto children_state = children_aid.get();
+    if (children_aid == nullptr)
+      reference_holder_.tell("Assertion (children_aid == nullptr) failed!");
+    xbt_assert(children_aid != nullptr, "Leftmost aid: %ld; state_num: %ld", leftmost_transition->aid_, get_num());
+    children_aid->is_leftmost_ = true;
+    children_aid->signal_on_backtrack();
+    return;
+  }
+
+  XBT_VERB("... there's still at least one actor to execute (%ld)", next_transition());
+  if (next_transition() == -1) {
+    // This is the leftmost state, it doesn't have anymore open children and nothing left to do
+    // Let's close this by marking it
+    if (parent_state_ != nullptr) {
+      XBT_VERB("\t... there are %lu recorded children StatePtr in its parent state n°%ld",
+               parent_state_->opened_.size(), parent_state_->get_num());
+      parent_state_->children_states_[get_transition_in()->aid_][get_transition_in()->times_considered_] = nullptr;
+
+      auto findme = std::find(parent_state_->closed_.begin(), parent_state_->closed_.end(), get_transition_in()->aid_);
+      xbt_assert(findme == parent_state_->closed_.end(), "I'm already in the closed_ of my parent");
+      parent_state_->closed_.emplace_back(get_transition_in()->aid_);
+
+      XBT_VERB("\t... The count of remaining intrusive_ptr on this node #%ld is %d", get_num(), get_ref_count());
+      parent_state_->signal_on_backtrack();
+    }
+    reset_parent_state();
+  }
+}
+
+void State::reset_parent_state()
+{
+  XBT_VERB("Cleaning the parent state of state #%ld", get_num());
+  parent_state_ = nullptr;
+}
+
 // boost::intrusive_ptr<State> support:
 void intrusive_ptr_add_ref(State* state)
 {
@@ -192,4 +266,32 @@ void intrusive_ptr_release(State* state)
   }
 }
 
+void State::initialize(const RemoteApp& remote_app)
+{
+  XBT_VERB("Initializing state #%ld", get_num());
+  xbt_assert(not actor_status_set_);
+  actor_status_set_ = true;
+  remote_app.get_actors_status(actors_to_run_);
+
+  for (auto const& t : opened_) {
+    xbt_assert(t != nullptr);
+    actors_to_run_.at(t->aid_).mark_todo();
+  }
+}
+
+void State::update_opened(std::shared_ptr<Transition> transition)
+{
+  xbt_assert(transition != nullptr);
+  for (size_t i = 0; i < opened_.size(); i++) {
+    if (opened_[i]->aid_ != transition->aid_)
+      continue;
+    if (opened_[i]->times_considered_ != transition->times_considered_)
+      continue;
+
+    opened_[i] = transition;
+    return;
+  }
+
+  opened_.push_back(transition);
+}
 } // namespace simgrid::mc

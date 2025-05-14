@@ -135,6 +135,7 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
 
 void AppSide::handle_replay(const s_mc_message_int_t* msg)
 {
+  XBT_DEBUG("Starting to handle the replay");
   unsigned replay_size = msg->value;
 
   auto [more_aid, aids] = channel_.receive(sizeof(unsigned char) * replay_size);
@@ -145,8 +146,36 @@ void AppSide::handle_replay(const s_mc_message_int_t* msg)
   if (not more_times)
     ::_Exit(0); // Nobody's listening to that process anymore => exit as quickly as possible.
 
-  XBT_DEBUG("Going to replay %u transitions", replay_size);
-  for (unsigned i = 0; i < replay_size; i++) {
+  XBT_DEBUG("Going to replay %u transitions", replay_size - 1);
+  unsigned i = 0;
+  for (; i < replay_size; i++) {
+    aid_t aid            = ((unsigned char*)aids)[i];
+    int times_considered = ((unsigned char*)times)[i];
+
+    if (aid == 255 and times_considered == 255) // -1 in unsigned char
+      break;
+
+    XBT_VERB("MC asked to replay %ld(nb_times=%d)", aid, times_considered);
+    kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(aid);
+    xbt_assert(actor != nullptr, "Invalid pid %ld", aid);
+    xbt_assert((actor->simcall_.observer_ == nullptr &&
+                actor->simcall_.call_ != simgrid::kernel::actor::Simcall::Type::NONE) ||
+                   (actor->simcall_.observer_ != nullptr && actor->simcall_.observer_->is_enabled()),
+               "Please, model-checker, don't execute disabled transitions. You tried to execute %s which is disabled",
+               actor->simcall_.observer_->to_string().c_str());
+
+    actor->simcall_handle(times_considered);
+    simgrid::mc::execute_actors();
+  }
+  i++;
+  XBT_DEBUG("Now going to ask for actor status for the next %u transitions", replay_size - i - 1);
+  if (i >= replay_size)
+    // Say the server that the replay is over and that it should proceed
+    xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send MESSAGE_WAITING to model-checker: %s",
+               strerror(errno));
+
+  // else, the actor status will tell when the replay is over
+  for (; i < replay_size; i++) {
     aid_t aid            = ((unsigned char*)aids)[i];
     int times_considered = ((unsigned char*)times)[i];
 
@@ -161,11 +190,8 @@ void AppSide::handle_replay(const s_mc_message_int_t* msg)
 
     actor->simcall_handle(times_considered);
     simgrid::mc::execute_actors();
+    send_actor_status(false); // This doesn't look safe, and it would be better to modify the msg content
   }
-
-  // Say the server that the replay is over and that it should proceed
-  xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send MESSAGE_WAITING to model-checker: %s",
-             strerror(errno));
 }
 
 void AppSide::handle_one_way(const s_mc_message_one_way_t* msg)
@@ -363,7 +389,8 @@ void AppSide::handle_wait_child(const s_mc_message_int_t* msg)
   answer.value              = status;
   xbt_assert(channel_.send(answer) == 0, "Could not send response to WAIT_CHILD: %s", strerror(errno));
 }
-void AppSide::handle_actors_status(const s_mc_message_actors_status_t* msg)
+
+void AppSide::send_actor_status(bool want_transitions)
 {
   auto const& actor_list = kernel::EngineImpl::get_instance()->get_actor_list();
   XBT_DEBUG("Serialize the actors to answer ACTORS_STATUS from the checker. %zu actors to go.", actor_list.size());
@@ -393,7 +420,7 @@ void AppSide::handle_actors_status(const s_mc_message_actors_status_t* msg)
 
     channel_.pack(status, status_size);
 
-    if (msg->want_transitions_) {
+    if (want_transitions) {
       // Serialize each transition to describe what each actor is doing
       XBT_DEBUG("pack the transitions");
       for (int i = 0; i < answer.count; i++) {
@@ -417,10 +444,16 @@ void AppSide::handle_actors_status(const s_mc_message_actors_status_t* msg)
     } else {
       XBT_DEBUG("Do not pack the transitions: the checker don't want them");
     }
+  }
+  xbt_assert(channel_.send() == 0, "Could not send ACTORS_STATUS_REPLY: %s", strerror(errno));
+  XBT_DEBUG("Done sending ACTORS_STATUS_REPLY");
 }
-xbt_assert(channel_.send() == 0, "Could not send ACTORS_STATUS_REPLY: %s", strerror(errno));
-XBT_DEBUG("Done sending ACTORS_STATUS_REPLY");
+
+void AppSide::handle_actors_status(const s_mc_message_actors_status_t* msg)
+{
+  send_actor_status(msg->want_transitions_);
 }
+
 void AppSide::handle_actors_maxpid()
 {
   s_mc_message_int_t answer = {};

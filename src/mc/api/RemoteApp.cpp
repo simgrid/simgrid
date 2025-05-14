@@ -235,9 +235,10 @@ Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_
   return checker_side_->handle_simcall(aid, times_considered, new_transition);
 }
 
-void RemoteApp::replay_sequence(std::deque<std::pair<aid_t, int>> to_replay)
+void RemoteApp::replay_sequence(std::deque<std::pair<aid_t, int>> to_replay,
+                                std::deque<std::pair<aid_t, int>> to_replay_and_actor_status)
 {
-  checker_side_->handle_replay(to_replay);
+  checker_side_->handle_replay(to_replay, to_replay_and_actor_status);
 }
 
 void RemoteApp::finalize_app(bool terminate_asap)

@@ -6,6 +6,7 @@
 #include "src/mc/api/states/WutState.hpp"
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/odpor/WakeupTree.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_forward.hpp"
@@ -18,127 +19,98 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wutstate, mc_state, "States using wakeup tree
 
 namespace simgrid::mc {
 
-WutState::WutState(RemoteApp& remote_app) : SleepSetState(remote_app)
+StatePtr WutState::insert_into_tree(odpor::PartialExecution& w)
 {
-  initialize_if_empty_wut(remote_app);
-}
+  XBT_DEBUG("Inserting at state #%ld sequence\n%s", get_num(), odpor::one_string_textual_trace(w).c_str());
 
-WutState::WutState(RemoteApp& remote_app, StatePtr parent_state, bool initialize_wut_if_empty)
-    : SleepSetState(remote_app, parent_state)
-{
+  for (auto& t : this->opened_) {
+    auto aid              = t->aid_;
+    auto times_considered = t->times_considered_;
+    auto state            = this->children_states_[aid][times_considered];
+    if (state == nullptr)
+      continue;
 
-  auto parent = static_cast<WutState*>(parent_state.get());
+    const auto& next_E_p = state->get_transition_in();
 
-  xbt_assert(parent != nullptr, "Attempting to construct a wakeup tree for the root state "
-                                "(or what appears to be, rather for state without a parent defined)");
+    XBT_DEBUG("... considering state after transition Actor %ld:%s as a candidate", next_E_p->aid_,
+              next_E_p->to_string().c_str());
 
-  XBT_DEBUG("Initializing Wut with parent one:");
-  XBT_DEBUG("\n%s", parent->wakeup_tree_.string_of_whole_tree().c_str());
+    // Is `p in `I_[E](w)`?
+    if (const aid_t p = next_E_p->aid_; odpor::Execution::is_initial_after_execution_of(w, p)) {
+      // Remove `p` from w and continue with this node
 
-  const auto min_process_node = parent->wakeup_tree_.get_min_single_process_node();
-  xbt_assert(min_process_node.has_value(), "Attempting to construct a subtree for a substate from a "
-                                           "parent with an empty wakeup tree. This indicates either that ODPOR "
-                                           "actor selection in State.cpp is incorrect, or that the code "
-                                           "deciding when to make subtrees in ODPOR is incorrect");
-  if (not(get_transition_in()->aid_ ==
-          min_process_node.value()
-              ->get_actor() //&&
-                            // get_transition_in()->type_ == min_process_node.value()->get_action()->type_
-          )) {
-    XBT_ERROR("We tried to make a subtree from a parent state who claimed to have executed `%s` on actor %ld "
-              "but whose wakeup tree indicates it should have executed `%s` on actor %ld. This indicates "
-              "that exploration is not following ODPOR. Are you sure you're choosing actors "
-              "to schedule from the wakeup tree? Trace so far:",
-              get_transition_in()->to_string(false).c_str(), get_transition_in()->aid_,
-              min_process_node.value()->get_action()->to_string(false).c_str(), min_process_node.value()->get_actor());
-    xbt_abort();
-  }
-  wakeup_tree_ = parent->wakeup_tree_.get_first_subtree();
-  if (initialize_wut_if_empty)
-    initialize_if_empty_wut(remote_app);
-}
+      // INVARIANT: If `p` occurs in `w`, it had better refer to the same
+      // transition referenced by `v`. Unfortunately, we have two
+      // sources of truth here which can be manipulated at the same
+      // time as arguments to the function. If ODPOR works correctly,
+      // they should always refer to the same value; but as a sanity check,
+      // we have an assert that tests that at least the types are the same.
+      const auto action_by_p_in_w =
+          std::find_if(w.begin(), w.end(), [=](const auto& action) { return action->aid_ == p; });
+      xbt_assert(action_by_p_in_w != w.end(), "Invariant violated: actor `p` "
+                                              "is claimed to be an initial after `w` but is "
+                                              "not actually contained in `w`. This indicates that there "
+                                              "is a bug computing initials");
+      const auto& w_action = *action_by_p_in_w;
+      xbt_assert(w_action->type_ == next_E_p->type_,
+                 "Invariant violated: `v` claims that actor `%ld` executes '%s' while "
+                 "`w` claims that it executes '%s'. These two partial executions both "
+                 "refer to `next_[E](p)`, which should be the same",
+                 p, next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
+      w.erase(action_by_p_in_w);
+      auto state_wut = static_cast<WutState*>(state.get());
+      return state_wut->insert_into_tree(w);
+    }
+    // Is `E ⊢ p ◇ w`?
+    else if (odpor::Execution::is_independent_with_execution_of(w, next_E_p)) {
+      // Nothing to remove, we simply move on
 
-aid_t WutState::next_odpor_transition() const
-{
-  return wakeup_tree_.get_min_single_process_actor().value_or(-1);
-}
-
-void WutState::initialize_if_empty_wut(RemoteApp& remote_app)
-{
-  xbt_assert(!has_initialized_wakeup_tree);
-  has_initialized_wakeup_tree = true;
-
-  if (wakeup_tree_.empty()) {
-
-    if (_sg_mc_befs_threshold == 0 and sleep_set_.empty()) {
-      XBT_DEBUG("WuT is asking for one way");
-      remote_app.go_one_way();
-      aid_t aid = remote_app.get_aid_of_next_transition();
-      add_arbitrary_todo(aid);
-    } else {
-      add_arbitrary_todo();
+      // INVARIANT: Note that it is impossible for `p` to be
+      // excluded from the set `I_[E](w)` BUT ALSO be contained in
+      // `w` itself if `E ⊢ p ◇ w` (intuitively, the fact that `E ⊢ p ◇ w`
+      // means that are able to move `p` anywhere in `w` IF it occurred, so
+      // if it really does occur we know it must then be an initial).
+      // We assert this is the case here
+      const auto action_by_p_in_w =
+          std::find_if(w.begin(), w.end(), [=](const auto& action) { return action->aid_ == p; });
+      xbt_assert(action_by_p_in_w == w.end(),
+                 "Invariant violated: We claimed that actor `%ld` is not an initial "
+                 "after `w`, yet it's independent with all actions of `w` AND occurs in `w`."
+                 "This indicates that there is a bug computing initials",
+                 p);
+      auto state_wut = static_cast<WutState*>(state.get());
+      return state_wut->insert_into_tree(w);
     }
   }
-}
 
-void WutState::add_arbitrary_todo(aid_t actor)
-{
-  if (actor == -1) {
-    // Find an enabled transition to pick
-    auto const [best_actor, _] = Exploration::get_strategy()->best_transition_in(this, false);
-    if (best_actor == -1)
-      return; // This means that no transitions are enabled at this point
-    actor = best_actor;
+  if (w.size() == 0)
+    return nullptr;
+
+  StatePtr current_state = this;
+  StatePtr parrent_state = this->get_parent_state();
+  if (actor_status_set_)
+    consider_one((*w.begin())->aid_);
+  for (auto tran : w) {
+    parrent_state = current_state;
+    XBT_DEBUG("Creating state after actor %ld in parent state %ld", tran->aid_, current_state->get_num());
+    current_state =
+        StatePtr(new WutState(Exploration::get_instance()->get_remote_app(), current_state, tran, false), true);
   }
+  return current_state;
+}
 
-  xbt_assert(sleep_set_.find(actor) == sleep_set_.end(),
-             "Why is a transition in a sleep set not marked as done? <%ld, %s> is in the sleep set", actor,
-             sleep_set_.find(actor)->second->to_string().c_str());
-  consider_one(actor);
-  auto actor_state = get_actors_list().at(actor);
-  // For each variant of the transition that is enabled, we want to insert the action into the tree.
-  // This ensures that all variants are searched
-  for (unsigned times = 0; times < actor_state.get_max_considered(); ++times) {
-    // WuT don't really need the transition that will be executed since it will disapear anyway as soon as the child
-    // state is created
-    wakeup_tree_.insert_at_root(std::make_shared<Transition>(Transition::Type::UNKNOWN, actor, times));
+std::unordered_set<aid_t> WutState::get_sleeping_actors(aid_t after_actor) const
+{
+  std::unordered_set<aid_t> actors;
+  for (const auto& [aid, _] : get_sleep_set()) {
+    actors.insert(aid);
   }
-}
-
-void WutState::remove_subtree_at_aid(const aid_t proc)
-{
-  wakeup_tree_.remove_subtree_at_aid(proc);
-}
-
-odpor::InsertionResult WutState::insert_into_wakeup_tree(const odpor::PartialExecution& pe)
-{
-  return this->wakeup_tree_.insert(pe);
-}
-
-void WutState::do_odpor_unwind()
-{
-  XBT_DEBUG("Unwinding ODPOR from state %ld", get_num());
-  xbt_assert(get_parent_state() != nullptr, "ODPOR shouldn't try to unwind from root state");
-
-  auto parent = static_cast<WutState*>(get_parent_state());
-
-  // Only when we've exhausted all variants of the transition which
-  // can be chosen from this state do we finally add the actor to the
-  // sleep set. This ensures that the current logic handling sleep sets
-  // works with ODPOR in the way we intend it to work. There is not a
-  // good way to perform transition equality in SimGrid; instead, we
-  // effectively simply check for the presence of an actor in the sleep set.
-  if (not parent->get_actors_list().at(get_transition_in()->aid_).has_more_to_consider()) {
-    parent->add_sleep_set((get_transition_in()));
-    parent->get_actor_at(get_transition_in()->aid_).mark_done();
-
-    if (parent->wakeup_tree_.get_node_after_actor(get_transition_in()->aid_) != nullptr) {
-      xbt_assert(Exploration::get_instance()->is_critical_transition_explorer(),
-                 "From my understanding, the only case for the wut to still have something here is that it's the final "
-                 "leaf explored before going into critical transition search mode");
-      parent->remove_subtree_at_aid(get_transition_in()->aid_);
-    }
+  for (const auto& t : opened_) {
+    if (t->aid_ == after_actor)
+      break;
+    actors.insert(t->aid_);
   }
+  return actors;
 }
 
 } // namespace simgrid::mc

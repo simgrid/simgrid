@@ -67,8 +67,13 @@ public:
   /** Take a transition. A new Transition is created iff the last parameter is true */
   Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
 
-  /** Replay a whole sequence on the application with a single communication */
-  void replay_sequence(std::deque<std::pair<aid_t, int>> to_replay);
+  /** Replay a whole sequence on the application with a single communication.
+   *  The sequence is split in two: a first part that will only be replayed, and a second part that will
+   *  be replayed and asked for actor status.
+   *
+   *  @note: this call should be followed by |to_replay_and_actor_status| calls to get_actors_status. */
+  void replay_sequence(std::deque<std::pair<aid_t, int>> to_replay,
+                       std::deque<std::pair<aid_t, int>> to_replay_and_actor_status);
 
   /** Read the aid in the SIMCALL_EXECUTE message that is expected to be next on the wire */
   aid_t get_aid_of_next_transition() const { return checker_side_->get_aid_of_next_transition(); }
@@ -76,6 +81,8 @@ public:
   /** Tell the checker side that the application should now pick transitions, execute them, send the reply and actor
    *  status until reaching a leaf or a problem */
   void go_one_way() { checker_side_->go_one_way(); }
+  bool is_one_way() { return checker_side_->get_one_way(); }
+  void set_one_way(bool b) { checker_side_->set_one_way(b); }
 };
 } // namespace simgrid::mc
 

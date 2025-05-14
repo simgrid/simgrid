@@ -50,7 +50,8 @@ public:
   // Update the state s field according to the reduction.
   // The base case is to only do the Sleep-Set procedure since most of the
   // algorithm are based on sleep sets anyway.
-  virtual StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state = nullptr);
+  virtual StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state = nullptr,
+                                std::shared_ptr<Transition> incoming_transition = nullptr);
   // Update the state s fields assuming we just ended the exploration of the subtree
   // rooted in s.
   // base case simply add the incoming transition to the sleep set of the parent

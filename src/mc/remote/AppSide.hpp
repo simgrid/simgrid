@@ -39,6 +39,7 @@ private:
   void handle_finalize(const s_mc_message_int_t* msg);
   void handle_fork(const s_mc_message_fork_t* msg);
   void handle_wait_child(const s_mc_message_int_t* msg);
+  void send_actor_status(bool want_transitions);
   void handle_actors_status(const s_mc_message_actors_status_t* msg);
   void handle_actors_maxpid();
 

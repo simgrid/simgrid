@@ -13,8 +13,6 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Executed 2: MUTEX_UNLOCK(mutex: 0, owner: -1) (stack depth: 6, state: 6, 0 interleaves)
 > [Checker] Execution came to an end at 1;1;1;2;2;2
 > [Checker] (state: 7, depth: 7, 1 explored traces)
-> [Checker] Sleep set actually containing:
-> [Checker]   <1,MUTEX_ASYNC_LOCK(mutex: 0, owner: 1)>
 > [Checker] Executed 2: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (stack depth: 1, state: 1, 0 interleaves)
 > [Checker] Executed 1: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2) (stack depth: 2, state: 8, 0 interleaves)
 > [Checker] Executed 2: MUTEX_WAIT(mutex: 0, owner: 2) (stack depth: 3, state: 9, 0 interleaves)
