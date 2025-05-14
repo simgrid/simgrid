@@ -5,8 +5,6 @@
 [![License: LGPL v2.1][license-badge]](COPYING)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/1845/badge)](https://bestpractices.coreinfrastructure.org/projects/1845)
 
-This fork creates a new plugin for SimGrid, similar to host-load but for VMs.
-
 # Welcome to the SimGrid project!
 
 SimGrid is a scientific instrument to study the behavior of
