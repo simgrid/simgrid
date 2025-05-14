@@ -91,7 +91,7 @@ unsigned long DPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> upd
 
   auto dpor_updates        = static_cast<RaceUpdate*>(updates.get());
   unsigned long nb_updates = 0;
-  XBT_DEBUG("%ld updates to be considered", dpor_updates->get_value().size());
+  XBT_DEBUG("%lu updates to be considered", dpor_updates->get_value().size());
   for (auto& [state, ancestors] : dpor_updates->get_value()) {
     if (not ancestors.empty()) {
       Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), ancestors);

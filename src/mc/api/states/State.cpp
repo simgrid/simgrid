@@ -214,8 +214,7 @@ void State::signal_on_backtrack()
   if (closed_.size() < opened_.size()) {
     // if there are children states that are being visited, we may need to update the leftmost information
     auto const& leftmost_transition = opened_[closed_.size()];
-    auto children_aid   = children_states_[leftmost_transition->aid_][leftmost_transition->times_considered_];
-    auto children_state = children_aid.get();
+    auto children_aid = children_states_[leftmost_transition->aid_][leftmost_transition->times_considered_];
     if (children_aid == nullptr)
       reference_holder_.tell("Assertion (children_aid == nullptr) failed!");
     xbt_assert(children_aid != nullptr, "Leftmost aid: %ld; state_num: %ld", leftmost_transition->aid_, get_num());

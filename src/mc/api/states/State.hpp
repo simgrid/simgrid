@@ -84,7 +84,7 @@ public:
   explicit State(const RemoteApp& remote_app, bool set_actor_status = true);
   explicit State(const RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr<Transition> incoming_transition,
                  bool set_actor_status = true);
-  ~State();
+  virtual ~State();
 
   bool has_been_initialized() const { return actor_status_set_; }
   void initialize(const RemoteApp& remote_app);

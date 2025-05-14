@@ -300,7 +300,7 @@ void BeFSExplorer::backtrack()
     return;
   }
 
-  XBT_DEBUG("Backtracking to state #%ld at depth %ld", backtracking_point->get_num(), backtracking_point->get_depth());
+  XBT_DEBUG("Backtracking to state #%ld at depth %lu", backtracking_point->get_num(), backtracking_point->get_depth());
 
   // We found a backtracking point, let's go to it
   backtrack_to_state(backtracking_point.get());
