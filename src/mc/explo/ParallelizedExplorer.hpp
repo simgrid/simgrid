@@ -55,9 +55,6 @@ private:
   ReductionMode reduction_mode_;
   std::unique_ptr<Reduction> reduction_algo_;
 
-  // For statistics
-  unsigned long explored_traces_ = 0;
-
   parallel_channel<State*> opened_heads_;
   parallel_channel<Reduction::RaceUpdate*> races_list_;
 
