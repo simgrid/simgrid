@@ -27,10 +27,10 @@ public:
     void add_element(StatePtr state, odpor::PartialExecution v) { state_and_seq_.emplace_back(state, v); }
     std::vector<std::pair<StatePtr, odpor::PartialExecution>> get_value() { return state_and_seq_; }
   };
-
-  std::unique_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
-                                                           std::vector<StatePtr>* opened_states) override;
-  unsigned long apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates,
+  Reduction::RaceUpdate* empty_race_update() override { return new RaceUpdate(); }
+  Reduction::RaceUpdate* races_computation(odpor::Execution& E, stack_t* S,
+                                           std::vector<StatePtr>* opened_states) override;
+  unsigned long apply_race_update(RemoteApp& remote_app, Reduction::RaceUpdate* updates,
                                   std::vector<StatePtr>* opened_states = nullptr) override;
   aid_t next_to_explore(odpor::Execution& E, stack_t* S) override;
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state,

@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/reduction/DPOR.hpp"
+#include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "xbt/asserts.h"
@@ -57,8 +58,7 @@ std::unordered_set<aid_t> DPOR::compute_ancestors(const odpor::Execution& S, sta
   return E;
 }
 
-std::unique_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution& E, stack_t* S,
-                                                               std::vector<StatePtr>* opened_states)
+Reduction::RaceUpdate* DPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
 {
   XBT_DEBUG("Doing the race computation phase with a stack of size %lu and an execution of size %lu", S->size(),
             E.size());
@@ -66,9 +66,9 @@ std::unique_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution&
   State* last_state = S->back().get();
   // let's look for all the races but only at the end
   if (not last_state->get_enabled_actors().empty())
-    return std::make_unique<RaceUpdate>();
+    return new RaceUpdate();
 
-  auto updates = std::make_unique<RaceUpdate>();
+  auto updates = new RaceUpdate();
 
   for (std::size_t i = 1; i < S->size(); i++) {
     StatePtr s = (*S)[i];
@@ -86,11 +86,11 @@ std::unique_ptr<Reduction::RaceUpdate> DPOR::races_computation(odpor::Execution&
   return updates;
 }
 
-unsigned long DPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates,
+unsigned long DPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpdate* updates,
                                       std::vector<StatePtr>* opened_states)
 {
 
-  auto dpor_updates        = static_cast<RaceUpdate*>(updates.get());
+  auto dpor_updates        = static_cast<RaceUpdate*>(updates);
   unsigned long nb_updates = 0;
   XBT_DEBUG("%lu updates to be considered", dpor_updates->get_value().size());
   for (auto& [state, ancestors] : dpor_updates->get_value()) {

@@ -19,16 +19,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor, mc_reduction, "Logging specific to the
 
 namespace simgrid::mc {
 
-std::unique_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution& E, stack_t* S,
-                                                                std::vector<StatePtr>* opened_states)
+Reduction::RaceUpdate* ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
 {
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
   if (not s->get_enabled_actors().empty())
-    return std::make_unique<RaceUpdate>();
+    return new RaceUpdate();
 
   const auto last_event = E.get_latest_event_handle();
-  auto updates          = std::make_unique<RaceUpdate>();
+  auto updates          = new RaceUpdate();
   /**
    * ODPOR Race Detection Procedure:
    *
@@ -37,13 +36,16 @@ std::unique_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution
    * by the wakeup tree at the appropriate reversal point, either as `C` directly or an as equivalent to `C`
    * ("eventually looks like C", viz. the `~_E` relation)
    */
-  XBT_DEBUG("Going to compute all the reversible races on sequence \n%s", E.get_one_string_textual_trace().c_str());
+  XBT_DEBUG("Going to compute all the reversible races (size stack: %lu) on sequence (size sequence: %lu) \n%s",
+            S->size(), E.size(), E.get_one_string_textual_trace().c_str());
   for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
     if (E.get_event_with_handle(e_prime).has_race_been_computed())
       continue;
 
     XBT_VERB("Computing reversible races of Event `%u`", e_prime);
     for (const auto e : E.get_reversible_races_of(e_prime, S)) {
+      xbt_assert((*S)[e] != nullptr and (*S)[e_prime] != nullptr);
+
       XBT_DEBUG("... racing event `%u``", e);
       XBT_DEBUG("... race between event `%u`:%s and event `%u`:%s", e_prime,
                 E.get_transition_for_handle(e_prime)->to_string().c_str(), e,
@@ -53,21 +55,24 @@ std::unique_ptr<Reduction::RaceUpdate> ODPOR::races_computation(odpor::Execution
 
       auto actor_after_e = ((*S)[e + 1].get())->get_transition_in()->aid_;
 
-      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state, actor_after_e); v.has_value())
+      if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state, actor_after_e); v.has_value()) {
         updates->add_element(prev_state, v.value());
+        XBT_DEBUG("... ... work will be added at state #%ld", prev_state->get_num());
+      }
     }
     E.get_event_with_handle(e_prime).consider_races();
   }
+  XBT_DEBUG("Packing a total of %lu race updates", updates->get_value().size());
   return updates;
 }
 
-unsigned long ODPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> updates,
+unsigned long ODPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpdate* updates,
                                        std::vector<StatePtr>* opened_states)
 {
 
   unsigned long nb_updates = 0;
-  auto odpor_updates = static_cast<RaceUpdate*>(updates.get());
-
+  auto odpor_updates       = static_cast<RaceUpdate*>(updates);
+  XBT_DEBUG("Applying the %lu received race updates", odpor_updates->get_value().size());
   for (auto& [state, seq] : odpor_updates->get_value()) {
     XBT_DEBUG("Going to insert sequence\n%s", odpor::one_string_textual_trace(seq).c_str());
     XBT_DEBUG("... at state #%ld", state->get_num());
@@ -77,8 +82,8 @@ unsigned long ODPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> up
 
       if (opened_states != nullptr)
         opened_states->push_back(inserted_state);
+      nb_updates++;
     }
-    nb_updates++;
   }
   return nb_updates;
 }

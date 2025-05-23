@@ -22,13 +22,15 @@ public:
   NoReduction()           = default;
   ~NoReduction() override = default;
 
-  std::unique_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
-                                                           std::vector<StatePtr>* opened_states) override
+  Reduction::RaceUpdate* races_computation(odpor::Execution& E, stack_t* S,
+                                           std::vector<StatePtr>* opened_states) override
   {
-    return std::make_unique<RaceUpdate>();
+    return new RaceUpdate();
   };
 
-  unsigned long apply_race_update(std::unique_ptr<RaceUpdate> updates,
+  Reduction::RaceUpdate* empty_race_update() override { return new RaceUpdate(); }
+
+  unsigned long apply_race_update(RemoteApp&, RaceUpdate* updates,
                                   std::vector<StatePtr>* opened_states = nullptr) override
   {
     return 0;
