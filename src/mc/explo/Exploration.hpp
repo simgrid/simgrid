@@ -51,7 +51,8 @@ protected:
   FILE* dot_output_ = nullptr;
 
 public:
-  explicit Exploration(const std::vector<char*>& args);
+  explicit Exploration();
+  void initialize_remote_app(const std::vector<char*>& args) { remote_app_ = std::make_unique<RemoteApp>(args); }
   explicit Exploration(std::unique_ptr<RemoteApp> remote_app);
   virtual ~Exploration();
 

@@ -251,9 +251,10 @@ DFSExplorer::DFSExplorer(std::unique_ptr<RemoteApp> remote_app, ReductionMode mo
   }
 }
 
-DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration(args), reduction_mode_(mode)
+DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration(), reduction_mode_(mode)
 {
-
+  Exploration::initialize_remote_app(args);
+  
   if (reduction_mode_ == ReductionMode::dpor)
     reduction_algo_ = std::make_unique<DPOR>();
   else if (reduction_mode_ == ReductionMode::sdpor)

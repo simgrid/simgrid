@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wutstate, mc_state, "States using wakeup tree
 
 namespace simgrid::mc {
 
-  StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remote_app)
+StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remote_app)
 {
   XBT_DEBUG("Inserting at state #%ld sequence\n%s", get_num(), odpor::one_string_textual_trace(w).c_str());
 
@@ -87,14 +87,13 @@ namespace simgrid::mc {
     return nullptr;
 
   StatePtr current_state = this;
-  StatePtr parent_state = this->get_parent_state();
+  StatePtr parent_state  = this->get_parent_state();
   if (actor_status_set_)
     consider_one((*w.begin())->aid_);
   for (auto tran : w) {
     parent_state = current_state;
     XBT_DEBUG("Creating state after actor %ld in parent state %ld", tran->aid_, current_state->get_num());
-    current_state =
-        StatePtr(new WutState(remote_app, current_state, tran, false), true);
+    current_state = StatePtr(new WutState(remote_app, current_state, tran, false), true);
   }
   return current_state;
 }

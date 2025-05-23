@@ -309,9 +309,10 @@ void BeFSExplorer::backtrack()
 }
 
 BeFSExplorer::BeFSExplorer(const std::vector<char*>& args, ReductionMode mode)
-    : Exploration(args), reduction_mode_(mode)
+    : Exploration(), reduction_mode_(mode)
 {
-
+  Exploration::initialize_remote_app(args);
+  
   if (reduction_mode_ == ReductionMode::dpor)
     reduction_algo_ = std::make_unique<DPOR>();
   else if (reduction_mode_ == ReductionMode::sdpor)

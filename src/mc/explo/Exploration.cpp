@@ -53,7 +53,7 @@ Exploration::Exploration(std::unique_ptr<RemoteApp> remote_app) : remote_app_(st
   is_looking_for_critical = true;
 }
 
-Exploration::Exploration(const std::vector<char*>& args) : remote_app_(std::make_unique<RemoteApp>(args))
+Exploration::Exploration()
 {
   xbt_assert(instance_ == nullptr, "Cannot have more than one exploration instance");
   instance_ = this;

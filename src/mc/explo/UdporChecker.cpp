@@ -19,7 +19,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to verification 
 
 namespace simgrid::mc::udpor {
 
-UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration(args) {}
+UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration()
+{
+  Exploration::initialize_remote_app(args);
+}
 
 void UdporChecker::log_state()
 {
