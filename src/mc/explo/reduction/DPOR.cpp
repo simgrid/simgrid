@@ -100,7 +100,7 @@ unsigned long DPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> upd
       if (considered == -1)
         continue; // Do not create a new state if the actor was already created before
       StatePtr(new SleepSetState(
-                   Exploration::get_instance()->get_remote_app(), state,
+                   remote_app, state,
                    std::make_shared<Transition>(Transition::Type::UNKNOWN, considered,
                                                 state->get_actors_list().at(considered).get_times_considered()),
                    false),
@@ -109,7 +109,7 @@ unsigned long DPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> upd
       state->consider_all();
       for (auto const& [_, actor] : state->get_actors_list())
         if (state->get_children_state_of_aid(actor.get_aid(), actor.get_times_considered()) == nullptr)
-          StatePtr(new SleepSetState(Exploration::get_instance()->get_remote_app(), state,
+          StatePtr(new SleepSetState(remote_app, state,
                                      std::make_shared<Transition>(Transition::Type::UNKNOWN, actor.get_aid(),
                                                                   actor.get_times_considered()),
                                      false),

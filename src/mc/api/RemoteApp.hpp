@@ -65,7 +65,7 @@ public:
   void get_actors_status(std::map<aid_t, simgrid::mc::ActorState>& whereto) const;
 
   /** Take a transition. A new Transition is created iff the last parameter is true */
-  Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
+  Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition) const;
 
   /** Replay a whole sequence on the application with a single communication.
    *  The sequence is split in two: a first part that will only be replayed, and a second part that will
@@ -83,6 +83,7 @@ public:
   void go_one_way() { checker_side_->go_one_way(); }
   bool is_one_way() { return checker_side_->get_one_way(); }
   void set_one_way(bool b) { checker_side_->set_one_way(b); }
+  void terminate_one_way() { checker_side_->terminate_one_way(); }
 };
 } // namespace simgrid::mc
 

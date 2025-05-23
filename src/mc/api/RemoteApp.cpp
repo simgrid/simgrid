@@ -12,6 +12,7 @@
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/remote/CheckerSide.hpp"
+#include "src/mc/remote/mc_protocol.h"
 #include "xbt/asserts.h"
 #include "xbt/backtrace.hpp"
 #include "xbt/log.h"
@@ -47,7 +48,9 @@ RemoteApp::RemoteApp(const std::vector<char*>& args) : app_args_(args)
   master_socket_ = socket(AF_UNIX, SOCK_STREAM, 0);
   xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
 
-  master_socket_name = "/tmp/simgrid-mc-" + std::to_string(getpid());
+  master_socket_name = "/tmp/simgrid-mc-" + std::to_string(getpid() + '-' + gettid());
+  xbt_assert(master_socket_name.length() < MC_SOCKET_NAME_LEN,
+             "The socket name is too long for the affected size, probably because of the tid. Fix Me");
   master_socket_name.resize(MC_SOCKET_NAME_LEN); // truncate socket name if it's too long
   master_socket_name.back() = '\0';              // ensure the data are null-terminated
 #ifdef __linux__
@@ -132,8 +135,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   // unlock actors.
 
   if (not checker_side_->get_one_way()) {
-    s_mc_message_actors_status_t msg = {MessageType::ACTORS_STATUS,
-                                        Exploration::get_instance()->need_actor_status_transitions()};
+    s_mc_message_actors_status_t msg = {MessageType::ACTORS_STATUS, Exploration::need_actor_status_transitions()};
     checker_side_->get_channel().send(msg);
   }
 
@@ -165,7 +167,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
       const auto& actor = status[i];
       std::vector<std::shared_ptr<Transition>> actor_transitions;
 
-      if (Exploration::get_instance()->need_actor_status_transitions()) {
+      if (Exploration::need_actor_status_transitions()) {
         int n_transitions = actor.max_considered;
         for (int times_considered = 0; times_considered < n_transitions; times_considered++) {
           actor_transitions.emplace_back(
@@ -200,8 +202,8 @@ bool RemoteApp::check_deadlock(bool verbose) const
     verbose = false;
 
   s_mc_message_int_t request = {};
-  request.type  = MessageType::DEADLOCK_CHECK;
-  request.value = verbose;
+  request.type               = MessageType::DEADLOCK_CHECK;
+  request.value              = verbose;
   xbt_assert(checker_side_->get_channel().send(request) == 0, "Could not check deadlock state");
 
   auto answer = (s_mc_message_int_t*)checker_side_->get_channel().expect_message(
@@ -227,7 +229,7 @@ void RemoteApp::wait_for_requests()
   checker_side_->wait_for_requests();
 }
 
-Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_transition)
+Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_transition) const
 {
   XBT_DEBUG("Handle simcall of pid %d (time considered: %d; %s)", (int)aid, times_considered,
             (new_transition ? "newly considered -- not replay" : "replay"));

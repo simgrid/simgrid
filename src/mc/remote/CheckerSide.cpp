@@ -436,7 +436,7 @@ void CheckerSide::go_one_way()
     is_one_way = true;
     s_mc_message_one_way_t msg{};
     msg.type = MessageType::GO_ONE_WAY;
-    msg.want_transitions = Exploration::get_instance()->need_actor_status_transitions();
+    msg.want_transitions = Exploration::need_actor_status_transitions();
     msg.is_random        = (_sg_mc_strategy == "uniform");
     msg.random_seed      = _sg_mc_random_seed;
     xbt_assert(get_channel().send(msg) == 0, "Could not ask the application to go one way: %s", strerror(errno));

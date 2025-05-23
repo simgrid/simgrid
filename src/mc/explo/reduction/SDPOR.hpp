@@ -70,7 +70,7 @@ public:
     for (auto& [state, choices] : sdpor_updates->get_value()) {
       aid_t considered = Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), choices);
       StatePtr(new SleepSetState(
-                   Exploration::get_instance()->get_remote_app(), state,
+                   remote_app, state,
                    std::make_shared<Transition>(Transition::Type::UNKNOWN, considered,
                                                 state->get_actors_list().at(considered).get_times_considered()),
                    false),

@@ -141,7 +141,7 @@ std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
   // about a transition AFTER it has executed.
   outgoing_transition_ = std::shared_ptr<Transition>(just_executed);
 
-  if (Exploration::get_instance()->need_actor_status_transitions())
+  if (Exploration::need_actor_status_transitions())
     actor_state.set_transition(outgoing_transition_, times_considered);
   app.wait_for_requests();
 
