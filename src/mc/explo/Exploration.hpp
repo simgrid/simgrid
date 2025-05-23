@@ -93,7 +93,12 @@ public:
    * @param finalize_app wether we should try to finalize the app before rollbacking. This should always be done,
    *                     except if you already know that the application is dead.
    */
-  void backtrack_to_state(State* target_state, bool finalize_app = true);
+  void backtrack_to_state(State* target_state, bool finalize_app = true)
+  {
+    backtrack_remote_app_to_state(*remote_app_.get(), target_state, finalize_app);
+  }
+
+  void backtrack_remote_app_to_state(RemoteApp& remote_app, State* target_state, bool finalize_app = true);
 
   /* These methods are callbacks called by the model-checking engine
    * to get and display information about the current state of the
@@ -169,7 +174,7 @@ public:
 
   void run_critical_exploration_on_need(ExitStatus error);
 
-  bool need_actor_status_transitions()
+  static bool need_actor_status_transitions()
   {
     return _sg_mc_debug or get_model_checking_reduction() == ReductionMode::udpor;
   }
