@@ -121,8 +121,9 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
     state_stack.emplace_back(std::move(next_state));
     stack_ = &state_stack;
     S.push_transition(executed_transition);
-    std::unique_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, stack_);
-    reduction_algo_->apply_race_update(std::move(todo_updates));
+    Reduction::RaceUpdate* todo_updates = reduction_algo_->races_computation(S, stack_);
+    reduction_algo_->apply_race_update(get_remote_app(), todo_updates);
+    delete todo_updates;
 
     // ... If we are not already doing it, start critical exploration
     run_critical_exploration_on_need(error.value);
@@ -193,8 +194,9 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
     step_exploration(S, next_to_explore, state_stack);
   }
 
-  std::unique_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, &state_stack);
-  reduction_algo_->apply_race_update(std::move(todo_updates));
+  Reduction::RaceUpdate* todo_updates = reduction_algo_->races_computation(S, &state_stack);
+  reduction_algo_->apply_race_update(get_remote_app(), todo_updates);
+  delete todo_updates;
 
   XBT_DEBUG("%lu actors remain, but none of them need to be interleaved (depth %zu).", s->get_actor_count(),
             state_stack.size() + 1);
@@ -254,7 +256,7 @@ DFSExplorer::DFSExplorer(std::unique_ptr<RemoteApp> remote_app, ReductionMode mo
 DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration(), reduction_mode_(mode)
 {
   Exploration::initialize_remote_app(args);
-  
+
   if (reduction_mode_ == ReductionMode::dpor)
     reduction_algo_ = std::make_unique<DPOR>();
   else if (reduction_mode_ == ReductionMode::sdpor)

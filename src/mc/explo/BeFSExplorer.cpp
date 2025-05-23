@@ -145,9 +145,10 @@ void BeFSExplorer::run()
 
       if (state->get_actor_count() == 0) {
         // Compute the race when reaching a leaf, and apply them immediately
-        std::unique_ptr<Reduction::RaceUpdate> todo_updates =
+        Reduction::RaceUpdate* todo_updates =
             reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
-        reduction_algo_->apply_race_update(std::move(todo_updates), &opened_states_);
+        reduction_algo_->apply_race_update(get_remote_app(), todo_updates, &opened_states_);
+        delete todo_updates;
 
         explored_traces_++;
         // Costly verification used to check against algorithm optimality
@@ -308,11 +309,10 @@ void BeFSExplorer::backtrack()
   last_explored_state->signal_on_backtrack();
 }
 
-BeFSExplorer::BeFSExplorer(const std::vector<char*>& args, ReductionMode mode)
-    : Exploration(), reduction_mode_(mode)
+BeFSExplorer::BeFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration(), reduction_mode_(mode)
 {
   Exploration::initialize_remote_app(args);
-  
+
   if (reduction_mode_ == ReductionMode::dpor)
     reduction_algo_ = std::make_unique<DPOR>();
   else if (reduction_mode_ == ReductionMode::sdpor)
