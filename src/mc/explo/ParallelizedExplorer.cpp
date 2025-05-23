@@ -22,6 +22,7 @@
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 
+#include <bits/types/locale_t.h>
 #include <cassert>
 #include <cstdio>
 
@@ -75,6 +76,11 @@ void TreeHandler(Reduction* reduction_algo_, parallel_channel<State*>* opened_he
     while (!races_list_->pop(to_apply)) {
     }
 
+    if (to_apply == nullptr) {
+      // An Explorer reached a bug! We need to terminate the exploration ASAP
+      break;
+    }
+
     // The race correspond to an explorer finishing, so we decrement the count
     remaining_todo--;
     XBT_DEBUG("[tid:%d] Received a race update! Going to apply it", gettid());
@@ -87,8 +93,8 @@ void TreeHandler(Reduction* reduction_algo_, parallel_channel<State*>* opened_he
 
     // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
     for (auto state : new_opened)
-      while (!opened_heads_->push(state.get()))
-        ;
+      while (!opened_heads_->push(state.get())) {
+      }
 
     delete to_apply;
   }
@@ -105,16 +111,47 @@ void ThreadLocalExplorer::backtrack_to_state(State* to_visit)
 void ThreadLocalExplorer::check_deadlock()
 {
   if (get_remote_app().check_deadlock()) {
-    throw McError(ExitStatus::DEADLOCK);
+    throw McWarning(ExitStatus::DEADLOCK);
   }
 }
 
-void Explorer(const std::vector<char*>& args, Reduction* reduction_algo_, parallel_channel<State*>* opened_heads_,
-              parallel_channel<Reduction::RaceUpdate*>* races_list_)
+void ExplorerHandler(const std::vector<char*>& args, Reduction* reduction_algo_,
+                     parallel_channel<State*>* opened_heads_, parallel_channel<Reduction::RaceUpdate*>* races_list_,
+                     ExitStatus* exploration_result)
+{
+  // Local explorer containing the remote app for this thread
+  ThreadLocalExplorer local_explorer(args);
+  local_explorer.reduction_algo = reduction_algo_;
+  local_explorer.opened_heads   = opened_heads_;
+  local_explorer.races_list     = races_list_;
+
+  // Base case is success
+  *exploration_result = ExitStatus::SUCCESS;
+
+  try {
+    Explorer(local_explorer);
+
+  } catch (McWarning& error) {
+    // An error occured while exploring
+    // We need to tell the Tree Handler to stop immediately
+
+    while (!races_list_->push(nullptr)) {
+    }
+
+    *exploration_result = error.value;
+  }
+
+  // close the connection properly: remember that the exploration might not be over if another explorer found an error
+  local_explorer.get_remote_app().finalize_app();
+}
+
+void Explorer(ThreadLocalExplorer& local_explorer)
 {
 
-  // Local structure containing helper functions and data regarding this thread and the exploration
-  ThreadLocalExplorer local_explorer(args);
+  // Loading the local data regarding this thread and the exploration
+  auto opened_heads_   = local_explorer.opened_heads;
+  auto races_list_     = local_explorer.races_list;
+  auto reduction_algo_ = local_explorer.reduction_algo;
 
   XBT_DEBUG("Lauching thread %d", gettid());
 
@@ -240,8 +277,9 @@ void ParallelizedExplorer::run()
     ;
 
   // Create an explorer
-  std::thread* texplorer =
-      new std::thread(Explorer, std::ref(args_), reduction_algo_.get(), &opened_heads_, &races_list_);
+  ExitStatus exploration_result;
+  std::thread* texplorer = new std::thread(ExplorerHandler, std::ref(args_), reduction_algo_.get(), &opened_heads_,
+                                           &races_list_, &exploration_result);
 
   thread_pool_.push_back(texplorer);
 
@@ -255,6 +293,9 @@ void ParallelizedExplorer::run()
   // Terminate the original remote_app from the main explorer
   get_remote_app().terminate_one_way();
   get_remote_app().finalize_app();
+
+  if (exploration_result != ExitStatus::SUCCESS)
+    throw McWarning(exploration_result);
 }
 
 ParallelizedExplorer::ParallelizedExplorer(const std::vector<char*>& args, ReductionMode mode)

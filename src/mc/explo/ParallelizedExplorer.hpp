@@ -13,6 +13,7 @@
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
+#include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_forward.hpp"
 
 #include <boost/lockfree/queue.hpp>
@@ -47,6 +48,10 @@ public:
 
   unsigned long explored_traces      = 0; // for statistics
   unsigned long visited_states_count = 0; // for statistics
+
+  Reduction* reduction_algo;
+  parallel_channel<State*>* opened_heads;
+  parallel_channel<Reduction::RaceUpdate*>* races_list;
 };
 
 class XBT_PRIVATE ParallelizedExplorer : public Exploration {
@@ -70,9 +75,12 @@ public:
   RecordTrace get_record_trace() override;
 };
 
-void Explorer(const std::vector<char*>& args, Reduction* reduction_algo_, parallel_channel<State*>* opened_heads_,
-              parallel_channel<Reduction::RaceUpdate*>* races_list_);
+// Wrapper function around explorer that helps handling the different termination cases of the explorer
+void ExplorerHandler(const std::vector<char*>& args, Reduction* reduction_algo_,
+                     parallel_channel<State*>* opened_heads_, parallel_channel<Reduction::RaceUpdate*>* races_list_,
+                     ExitStatus* exploration_result);
 
+void Explorer(ThreadLocalExplorer&);
 void TreeHandler(Reduction* reduction_algo_, parallel_channel<State*>* opened_heads_,
                  parallel_channel<Reduction::RaceUpdate*>* races_list_);
 RecordTrace get_record_trace_from_stack(stack_t& stack);
