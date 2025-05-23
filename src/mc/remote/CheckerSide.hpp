@@ -77,6 +77,7 @@ public:
 
   bool get_one_way() const { return is_one_way; }
   void set_one_way(bool b) { is_one_way = b; }
+  void terminate_one_way();
 };
 
 } // namespace simgrid::mc

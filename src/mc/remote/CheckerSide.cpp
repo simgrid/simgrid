@@ -443,4 +443,19 @@ void CheckerSide::go_one_way()
   }
 }
 
+void CheckerSide::terminate_one_way()
+{
+  xbt_assert(is_one_way);
+
+  auto [more_data, type] = get_channel().peek_message_type();
+  while (more_data && type != MessageType::WAITING) {
+    get_channel().expect_message(sizeof(type), type, "Could not receive the Message");
+    more_data = get_channel().peek_message_type().first;
+    type      = get_channel().peek_message_type().second;
+  }
+
+  get_channel().expect_message(sizeof(s_mc_message_t), MessageType::WAITING, "Could not receive MessageType::WAITING");
+  is_one_way = false;
+}
+
 } // namespace simgrid::mc
