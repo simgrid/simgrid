@@ -8,6 +8,7 @@
 #include "xbt/asserts.h"
 #include "xbt/asserts.hpp"
 #include "xbt/backtrace.hpp"
+#include "xbt/log.h"
 #include "xbt/sysdep.h"
 
 #if __linux__
@@ -188,7 +189,7 @@ std::pair<bool, void*> Channel::peek(size_t size)
     /* Receive as much data as we can (filling MC_MESSAGE_LENGTH bytes in the buffer) to save some recv syscalls */
     int avail = MC_MESSAGE_LENGTH - (buffer_in_next_ + buffer_in_size_);
     int got   = recv(this->socket_, buffer_in_ + buffer_in_next_ + buffer_in_size_, avail, 0);
-    xbt_assert(got != -1 || errno == EAGAIN, "Channel::receive failure: %s", strerror(errno));
+    xbt_assert(got != -1 || errno == EAGAIN, "[tid:%d] Channel::receive failure: %s", gettid(), strerror(errno));
     if (got == 0) {
       XBT_DEBUG("%d: Connection closed :(", getpid());
       return std::make_pair(false, nullptr);
