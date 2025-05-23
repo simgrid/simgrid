@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <exception>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <mutex>
@@ -39,262 +40,230 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_parallel, mc, "Parallel exploration algorithm
 
 namespace simgrid::mc {
 
-RecordTrace ParallelizedExplorer::get_record_trace() // override
+RecordTrace ParallelizedExplorer::get_record_trace()
+{
+  return {}; // Is it required here?
+}
+
+RecordTrace get_record_trace_from_stack(stack_t& stack)
 {
   RecordTrace res;
 
-  if (const auto trans = stack_.back()->get_transition_out(); trans != nullptr)
+  if (const auto trans = stack.back()->get_transition_out(); trans != nullptr)
     res.push_back(trans.get());
-  for (const auto* state = stack_.back().get(); state != nullptr; state = state->get_parent_state())
+  for (const auto* state = stack.back().get(); state != nullptr; state = state->get_parent_state())
     if (state->get_transition_in() != nullptr)
       res.push_front(state->get_transition_in().get());
 
   return res;
 }
 
-void ParallelizedExplorer::restore_stack(StatePtr state)
+void TreeHandler(Reduction* reduction_algo_, parallel_channel<State*>* opened_heads_,
+                 parallel_channel<Reduction::RaceUpdate*>* races_list_)
 {
-  XBT_DEBUG("Going to restore stack. Current depth is %lu; chosen state is #%ld", stack_.size(), state->get_num());
-  stack_.clear();
-  execution_seq_     = odpor::Execution();
-  auto current_state = state;
-  stack_.emplace_front(current_state);
-  // condition corresponds to reaching initial state
-  while (current_state->get_parent_state() != nullptr) {
-    current_state = current_state->get_parent_state();
-    stack_.emplace_front(current_state);
+
+  // This local counter will repreent the number of things in opened_heads_ + the number of currently working Explorer
+  int remaining_todo = 1; // The intial state
+
+  // While there is something in opened_heads_ OR an Explorer is working
+  while (remaining_todo > 0) {
+
+    XBT_DEBUG("[tid:%d] New round of tree handling! There are currently %d remaining todo", gettid(), remaining_todo);
+
+    Reduction::RaceUpdate* to_apply;
+    // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
+    while (!races_list_->pop(to_apply)) {
+    }
+
+    // The race correspond to an explorer finishing, so we decrement the count
+    remaining_todo--;
+    XBT_DEBUG("[tid:%d] Received a race update! Going to apply it", gettid());
+
+    std::vector<StatePtr> new_opened;
+    remaining_todo +=
+        reduction_algo_->apply_race_update(Exploration::get_instance()->get_remote_app(), to_apply, &new_opened);
+    XBT_DEBUG("[tid:%d] The update contained %lu new states, so now there are %d remaining todo", gettid(),
+              new_opened.size(), remaining_todo);
+
+    // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
+    for (auto state : new_opened)
+      while (!opened_heads_->push(state.get()))
+        ;
+
+    delete to_apply;
   }
-  XBT_DEBUG("Replaced stack by %s", get_record_trace().to_string().c_str());
-  // NOTE: The outgoing transition for the top-most state of the  stack refers to that which was taken
-  // as part of the last trace explored by the algorithm. Thus, only the sequence of transitions leading up to,
-  // but not including, the last state must be included when reconstructing the Exploration for SDPOR.
-  for (auto iter = std::next(stack_.begin()); iter != stack_.end(); ++iter) {
-    execution_seq_.push_transition((*iter)->get_transition_in());
+
+  while (!opened_heads_->push(nullptr))
+    ; // In the future, we should push as many nullptr as explorer
+}
+
+void ThreadLocalExplorer::backtrack_to_state(State* to_visit)
+{
+  Exploration::get_instance()->backtrack_remote_app_to_state(get_remote_app(), to_visit);
+}
+
+void ThreadLocalExplorer::check_deadlock()
+{
+  if (get_remote_app().check_deadlock()) {
+    throw McError(ExitStatus::DEADLOCK);
   }
 }
 
-void ParallelizedExplorer::log_state() // override
+void Explorer(const std::vector<char*>& args, Reduction* reduction_algo_, parallel_channel<State*>* opened_heads_,
+              parallel_channel<Reduction::RaceUpdate*>* races_list_)
 {
-  on_log_state_signal(get_remote_app());
-  XBT_INFO("BeFS exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, "
-           "%lu states "
-           "visited overall)",
-           State::get_expanded_states(), explored_traces_, Transition::get_replayed_transitions(),
-           visited_states_count_);
-  Exploration::log_state();
+
+  // Local structure containing helper functions and data regarding this thread and the exploration
+  ThreadLocalExplorer local_explorer(args);
+
+  XBT_DEBUG("Lauching thread %d", gettid());
+
+  // While true -> we leave when receiving a poisoned value (nullptr)
+  while (true) {
+
+    State* to_visit;
+    // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
+    while (!opened_heads_->pop(to_visit)) {
+    }
+
+    if (to_visit == nullptr) {
+      XBT_DEBUG("[tid:%d] Drinking the Kool-Aid sent by the TreeHandler! See ya", gettid());
+      break;
+    }
+
+    XBT_DEBUG("Found a next candidate to visit: state #%ld!", to_visit->get_num());
+
+    // Backtrack to to_visit, and restore stack/execution
+    local_explorer.backtrack_to_state(to_visit);
+
+    local_explorer.stack.clear();
+    local_explorer.execution_seq = odpor::Execution();
+    State* current_state         = to_visit;
+    local_explorer.stack.emplace_front(current_state);
+    // condition corresponds to reaching initial state
+    while (current_state->get_parent_state() != nullptr) {
+      current_state = current_state->get_parent_state();
+      local_explorer.stack.emplace_front(current_state);
+    }
+    XBT_DEBUG("Replaced stack with %s", get_record_trace_from_stack(local_explorer.stack).to_string().c_str());
+    for (auto iter = std::next(local_explorer.stack.begin()); iter != local_explorer.stack.end(); ++iter) {
+      XBT_DEBUG("... taking transition <Actor %ld: %s> from state %ld to reconstitute the execution sequence",
+                (*iter)->get_transition_in()->aid_, (*iter)->get_transition_in()->to_string().c_str(),
+                (*iter)->get_num());
+      local_explorer.execution_seq.push_transition((*iter)->get_transition_in());
+    }
+
+    // Explore until reaching a leaf
+    bool do_explore = true;
+    while (do_explore) {
+      State* state = local_explorer.stack.back().get();
+
+      const aid_t next = reduction_algo_->next_to_explore(local_explorer.execution_seq, &local_explorer.stack);
+
+      if (next < 0) {
+        // It can be: a leaf, a deadlock or a stop caused by reduction (eg. by sleep set)
+
+        XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
+                 local_explorer.stack.size() + 1);
+        local_explorer.check_deadlock(); // DEADLOCK CASE
+
+        if (state->get_actor_count() == 0) {
+          // LEAF CASE
+          // Compute the race when reaching a leaf, and push it in the shared structure
+          Reduction::RaceUpdate* todo_updates =
+              reduction_algo_->races_computation(local_explorer.execution_seq, &local_explorer.stack);
+          // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
+          while (!races_list_->push(todo_updates))
+            ;
+          local_explorer.explored_traces++;
+
+          local_explorer.get_remote_app().finalize_app();
+          XBT_VERB("Execution came to an end at %s",
+                   get_record_trace_from_stack(local_explorer.stack).to_string().c_str());
+          XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), local_explorer.stack.size(),
+                   local_explorer.explored_traces);
+        } else {
+          // BLOCKED CASE
+          // We still need to produce an empty RaceUpdate so the TreeHandler knows we returned from this exploration
+          auto todo_updates = reduction_algo_->empty_race_update();
+          // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
+          while (!races_list_->push(todo_updates))
+            ;
+        }
+
+        do_explore = false;
+        continue;
+      }
+
+      // If there is a next, explore it
+
+      xbt_assert(state->is_actor_enabled(next));
+      auto executed_transition = state->execute_next(next, local_explorer.get_remote_app());
+
+      XBT_VERB("[tid:%d] Executed %ld: %.60s (stack depth: %zu, state: %ld)", gettid(),
+               state->get_transition_out()->aid_, state->get_transition_out()->to_string().c_str(),
+               local_explorer.stack.size(), state->get_num());
+
+      auto next_state = reduction_algo_->state_create(local_explorer.get_remote_app(), state, executed_transition);
+
+      reduction_algo_->on_backtrack(state);
+
+      local_explorer.stack.emplace_back(std::move(next_state));
+      local_explorer.execution_seq.push_transition(std::move(executed_transition));
+    }
+
+    XBT_DEBUG("[tid:%d] Ended exploration, going to wait for next state. (%lu explored traces so far)", gettid(),
+              local_explorer.explored_traces);
+  }
+
+  // Do some logging that makes sens for now since there is only one thread
+
+  XBT_INFO(
+      "Parallel exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, %lu states "
+      "visited overall)",
+      State::get_expanded_states(), local_explorer.explored_traces, Transition::get_replayed_transitions(),
+      local_explorer.visited_states_count);
+  Exploration::get_instance()->log_state();
 }
 
 void ParallelizedExplorer::run()
 {
-  on_exploration_start_signal(get_remote_app());
-  /* This function runs the Best First Search algorithm the state space.
-   * We do so iteratively instead of recursively, dealing with the call stack manually.
-   * This allows one to explore the call stack at will. */
-  try {
-    Explorer();
-  } catch (McError& error) {
-    XBT_CRITICAL("Going to kill the reducer");
-    reducer.std::thread::~thread();
-    throw error;
-  }
-  log_state();
-}
+  XBT_INFO("Start a Parallel exploration with one thread. Reduction is: %s.", to_c_str(reduction_mode_));
 
-StatePtr ParallelizedExplorer::best_opened_state()
-{
-  int best_prio = 0; // cache the value for the best priority found so far (initialized to silence gcc)
-  auto best     = end(opened_states_);   // iterator to the state to explore having the best priority
-  auto valid    = begin(opened_states_); // iterator marking the limit between states still to explore, and already
-                                         // explored ones
+  auto initial_state = reduction_algo_->state_create(get_remote_app());
 
-  // Keep only still non-explored states (aid != -1), and record the one with the best (greater) priority.
-  for (auto current = begin(opened_states_); current != end(opened_states_); ++current) {
-    aid_t aid;
-    int prio;
-    if (current->get() == nullptr) {
-      aid  = 0;
-      prio = std::numeric_limits<int>::max();
-    } else {
-      aid  = (*current)->next_transition_guided().first;
-      prio = (*current)->next_transition_guided().second;
-    }
-    if (aid == -1)
-      continue;
-    if (valid != current) {
-      *valid = std::move(*current);
-    }
-    if (best == end(opened_states_) || prio <= best_prio) {
-      best_prio = prio;
-      best      = valid;
-    }
-    ++valid;
+  /* Get an enabled actor and insert it in the interleave set of the initial state */
+  XBT_DEBUG("Initial state. %lu actors to consider", initial_state->get_actor_count());
+
+  // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
+  while (!opened_heads_.push(initial_state.get()))
+    ;
+
+  // Create an explorer
+  std::thread* texplorer =
+      new std::thread(Explorer, std::ref(args_), reduction_algo_.get(), &opened_heads_, &races_list_);
+
+  thread_pool_.push_back(texplorer);
+
+  TreeHandler(reduction_algo_.get(), &opened_heads_, &races_list_);
+
+  for (auto t : thread_pool_) {
+    t->join();
+    delete t;
   }
 
-  StatePtr best_state;
-  if (best < valid) {
-    // There are non-explored states, and one of them has the best priority.  Remove it from opened_states_ before
-    // returning.
-    best_state = std::move(*best);
-    --valid;
-    if (best != valid)
-      *best = std::move(*valid);
-  }
-  opened_states_.erase(valid, end(opened_states_));
-
-  return best_state;
-}
-
-void ParallelizedExplorer::backtrack()
-{
-  XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
-  XBT_DEBUG("%lu alternatives are yet to be explored:", opened_states_.size());
-
-  Exploration::check_deadlock();
-
-  // Take the point with smallest distance
-  std::unique_lock<std::mutex> lock_oh(opened_heads_lock_);
-  opened_heads_cv_.wait(lock_oh, [&] { return opened_states_.size() > 1; });
-  auto backtracking_point = best_opened_state();
-  lock_oh.unlock();
-
-  // if no backtracking point, then set the stack_ to empty so we can end the exploration
-  if (not backtracking_point) {
-    XBT_DEBUG("No more opened point of exploration, the search will end");
-    stack_.clear();
-    return;
-  }
-  // We found a backtracking point, let's go to it
-  backtrack_to_state(backtracking_point.get());
-  this->restore_stack(backtracking_point);
-}
-
-void ParallelizedExplorer::Explorer()
-{
-  while (not stack_.empty()) {
-    /* Get current state */
-    auto state = stack_.back();
-
-    XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%zu (state:#%ld; %zu interleaves todo; %lu currently opened states)", stack_.size(),
-              state->get_num(), state->count_todo(), opened_states_.size());
-
-    // Backtrack if we reached the maximum depth
-    if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
-      XBT_WARN("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the reduction /!\\", _sg_mc_max_depth.get());
-      XBT_WARN("/!\\ Any bug you may find are real, but not finding bug doesn't mean anything /!\\");
-      XBT_WARN("/!\\ You should consider changing the depth limit with --cfg=model-check/max-depth /!\\");
-      XBT_WARN("/!\\ Asumming you know what you are doing, the programm will now backtrack /!\\");
-      this->backtrack();
-      continue;
-    }
-
-    // Search for the next transition
-    // next_transition returns a pair<aid_t, int>
-    // in case we want to consider multiple states (eg. during backtrack)
-    const aid_t next = reduction_algo_->next_to_explore(execution_seq_, &stack_);
-
-    if (next < 0) {
-
-      // If there is no more transition in the current state (or if ODPOR picked an actor that is not enabled --
-      // ReversibleRace is an overapproximation), backtrace
-      XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
-               stack_.size() + 1);
-      Exploration::check_deadlock();
-
-      if (state->get_actor_count() == 0) {
-        // Compute the race when reaching a leaf, and pass them to the Reductor through the dedicated queue
-        std::unique_ptr<Reduction::RaceUpdate> todo_updates =
-            reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
-        std::unique_lock<std::mutex> lock_ru(race_updates_lock_);
-        race_updates_.push_back(std::move(todo_updates));
-        lock_ru.unlock();
-        race_updates_cv_.notify_one();
-
-        explored_traces_++;
-        get_remote_app().finalize_app();
-        XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
-        XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(), explored_traces_);
-        report_correct_execution(state.get());
-      }
-
-      this->backtrack();
-      continue;
-    }
-
-    xbt_assert(state->is_actor_enabled(next));
-
-    // If we use a state containing a sleep state, display it during debug
-    if (XBT_LOG_ISENABLED(mc_parallel, xbt_log_priority_verbose) && reduction_mode_ != ReductionMode::none) {
-      auto sleep_state = static_cast<SleepSetState*>(state.get());
-      if (not sleep_state->get_sleep_set().empty()) {
-        XBT_VERB("Sleep set actually containing:");
-
-        for (const auto& [aid, transition] : sleep_state->get_sleep_set())
-          XBT_VERB("  <%ld,%s>", aid, transition->to_string().c_str());
-      }
-    }
-
-    auto todo = state->get_actors_list().at(next).get_transition();
-    XBT_DEBUG("wanna execute %ld: %.60s", next, todo->to_string().c_str());
-
-    /* Actually answer the request: let's execute the selected request (MCed does one step) */
-    auto executed_transition = state->execute_next(next, get_remote_app());
-    on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
-
-    // If there are processes to interleave and the maximum depth has not been
-    // reached then perform one step of the exploration algorithm.
-    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves, %lu opened states)",
-             state->get_transition_out()->aid_, state->get_transition_out()->to_string().c_str(), stack_.size(),
-             state->get_num(), state->count_todo(), opened_states_.size());
-
-    /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    auto next_state = reduction_algo_->state_create(get_remote_app(), state);
-    if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
-      next_state->set_state_factory(get_remote_app().clone_checker_side());
-    }
-    on_state_creation_signal(next_state.get(), get_remote_app());
-
-    visited_states_count_++;
-
-    reduction_algo_->on_backtrack(state.get());
-
-    // Before leaving that state, if the transition we just took can be taken multiple times, we
-    // need to give it to the opened states
-    if (stack_.back()->has_more_to_be_explored() > 0) {
-      std::unique_lock<std::mutex> lock_oh(opened_heads_lock_);
-      opened_states_.emplace_back(state);
-      lock_oh.unlock();
-    }
-
-    stack_.emplace_back(std::move(next_state));
-    execution_seq_.push_transition(std::move(executed_transition));
-  }
-}
-
-void ParallelizedExplorer::Reducter()
-{
-  unsigned long possible_remaining_explo = 1;
-  while (true) {
-    std::unique_lock<std::mutex> lock_ru(race_updates_lock_);
-    race_updates_cv_.wait(lock_ru, [&] { return race_updates_.size() > 0; });
-    auto update = std::move(race_updates_.back());
-    race_updates_.pop_back();
-    lock_ru.unlock();
-
-    std::unique_lock<std::mutex> lock_oh(opened_heads_lock_);
-    possible_remaining_explo = reduction_algo_->apply_race_update(std::move(update), &opened_states_) - 1;
-    if (possible_remaining_explo == 0) {
-      opened_states_.emplace_back();
-    }
-    lock_oh.unlock();
-    opened_heads_cv_.notify_one();
-  }
+  // Terminate the original remote_app from the main explorer
+  get_remote_app().terminate_one_way();
+  get_remote_app().finalize_app();
 }
 
 ParallelizedExplorer::ParallelizedExplorer(const std::vector<char*>& args, ReductionMode mode)
-    : Exploration(args), reduction_mode_(mode)
+    : Exploration(), args_(args)
 {
 
+  Exploration::initialize_remote_app(args);
+
+  reduction_mode_ = mode;
   if (reduction_mode_ == ReductionMode::dpor)
     reduction_algo_ = std::make_unique<DPOR>();
   else if (reduction_mode_ == ReductionMode::sdpor)
@@ -307,20 +276,9 @@ ParallelizedExplorer::ParallelizedExplorer(const std::vector<char*>& args, Reduc
     reduction_algo_ = std::make_unique<NoReduction>();
   }
 
-  reducer = std::thread([&] { this->Reducter(); });
   XBT_INFO("Start a parallelized exploration. Reduction is: %s.", to_c_str(reduction_mode_));
 
-  auto initial_state = reduction_algo_->state_create(get_remote_app());
-
   XBT_DEBUG("**************************************************");
-
-  stack_.emplace_back(std::move(initial_state));
-  visited_states_count_++;
-
-  /* Get an enabled actor and insert it in the interleave set of the initial state */
-  XBT_DEBUG("Initial state. %lu actors to consider", stack_.back()->get_actor_count());
-
-  opened_states_.emplace_back(stack_.back());
 }
 
 Exploration* create_parallelized_exploration(const std::vector<char*>& args, ReductionMode mode)

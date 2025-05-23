@@ -7,12 +7,15 @@
 #define SIMGRID_MC_SAFETY_CHECKER_HPP
 
 #include "src/mc/api/ClockVector.hpp"
+#include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
+#include "src/mc/mc_forward.hpp"
 
+#include <boost/lockfree/queue.hpp>
 #include <condition_variable>
 #include <deque>
 #include <list>
@@ -24,9 +27,30 @@
 #include <unordered_map>
 #include <vector>
 
+template <typename T> using parallel_channel = boost::lockfree::queue<T, boost::lockfree::capacity<1024>>;
+
 namespace simgrid::mc {
 
+class ThreadLocalExplorer {
+  std::unique_ptr<RemoteApp> remote_app_;
+
+public:
+  ThreadLocalExplorer(const std::vector<char*>& args) : remote_app_(std::make_unique<RemoteApp>(args)) {}
+
+  void check_deadlock();
+  void backtrack_to_state(State* to_visit);
+
+  stack_t stack;
+  odpor::Execution execution_seq;
+
+  RemoteApp& get_remote_app() { return *remote_app_.get(); }
+
+  unsigned long explored_traces      = 0; // for statistics
+  unsigned long visited_states_count = 0; // for statistics
+};
+
 class XBT_PRIVATE ParallelizedExplorer : public Exploration {
+
 private:
   ReductionMode reduction_mode_;
   std::unique_ptr<Reduction> reduction_algo_;
@@ -34,53 +58,24 @@ private:
   // For statistics
   unsigned long explored_traces_ = 0;
 
+  parallel_channel<State*> opened_heads_;
+  parallel_channel<Reduction::RaceUpdate*> races_list_;
+
+  std::vector<std::thread*> thread_pool_;
+
+  const std::vector<char*>& args_; // Application args saved to create threads
 public:
   explicit ParallelizedExplorer(const std::vector<char*>& args, ReductionMode mode);
   void run() override;
   RecordTrace get_record_trace() override;
-  void log_state() override;
-  stack_t get_stack() override { return stack_; }
-
-private:
-  void backtrack();
-
-  std::mutex opened_heads_lock_;
-  std::condition_variable opened_heads_cv_;
-
-  std::vector<std::unique_ptr<Reduction::RaceUpdate>> race_updates_;
-  std::mutex race_updates_lock_;
-  std::condition_variable race_updates_cv_;
-
-  std::thread reducer;
-
-  void Reducter();
-
-  void Explorer();
-
-  /** Stack representing the position in the exploration graph */
-  stack_t stack_;
-
-  /**
-   * Provides additional metadata about the position in the exploration graph
-   * which is used by SDPOR and ODPOR
-   */
-  odpor::Execution execution_seq_;
-
-  /** Per-actor clock vectors used to compute the "happens-before" relation */
-  std::unordered_map<aid_t, ClockVector> per_actor_clocks_;
-
-  /** Opened states are states that still contains todo actors.
-   *  When backtracking, we pick a state from it*/
-  std::vector<StatePtr> opened_states_;
-  StatePtr best_opened_state();
-
-  /** Change current stack_ value to correspond to the one we would have
-   *  had if we executed transition to get to state. This is required when
-   *  backtracking, and achieved thanks to the fact states save their parent.*/
-  void restore_stack(StatePtr state);
-
-  RecordTrace get_record_trace_of_stack(stack_t stack);
 };
+
+void Explorer(const std::vector<char*>& args, Reduction* reduction_algo_, parallel_channel<State*>* opened_heads_,
+              parallel_channel<Reduction::RaceUpdate*>* races_list_);
+
+void TreeHandler(Reduction* reduction_algo_, parallel_channel<State*>* opened_heads_,
+                 parallel_channel<Reduction::RaceUpdate*>* races_list_);
+RecordTrace get_record_trace_from_stack(stack_t& stack);
 
 } // namespace simgrid::mc
 
