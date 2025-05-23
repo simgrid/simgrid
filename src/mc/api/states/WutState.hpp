@@ -27,7 +27,7 @@ public:
   /**
    * @brief
    */
-  StatePtr insert_into_tree(odpor::PartialExecution&);
+  StatePtr insert_into_tree(odpor::PartialExecution&, RemoteApp&);
 
   unsigned int direct_children() const { return opened_.size() - closed_.size(); }
 

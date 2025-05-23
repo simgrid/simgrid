@@ -71,7 +71,7 @@ unsigned long ODPOR::apply_race_update(std::unique_ptr<Reduction::RaceUpdate> up
   for (auto& [state, seq] : odpor_updates->get_value()) {
     XBT_DEBUG("Going to insert sequence\n%s", odpor::one_string_textual_trace(seq).c_str());
     XBT_DEBUG("... at state #%ld", state->get_num());
-    const auto inserted_state = static_cast<WutState*>(state.get())->insert_into_tree(seq);
+    const auto inserted_state = static_cast<WutState*>(state.get())->insert_into_tree(seq, remote_app);
     if (inserted_state != nullptr) {
       XBT_DEBUG("... ended up adding work to do at state #%ld", inserted_state->get_num());
 

@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wutstate, mc_state, "States using wakeup tree
 
 namespace simgrid::mc {
 
-StatePtr WutState::insert_into_tree(odpor::PartialExecution& w)
+  StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remote_app)
 {
   XBT_DEBUG("Inserting at state #%ld sequence\n%s", get_num(), odpor::one_string_textual_trace(w).c_str());
 
@@ -59,7 +59,7 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w)
                  p, next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
       w.erase(action_by_p_in_w);
       auto state_wut = static_cast<WutState*>(state.get());
-      return state_wut->insert_into_tree(w);
+      return state_wut->insert_into_tree(w, remote_app);
     }
     // Is `E ⊢ p ◇ w`?
     else if (odpor::Execution::is_independent_with_execution_of(w, next_E_p)) {
@@ -79,7 +79,7 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w)
                  "This indicates that there is a bug computing initials",
                  p);
       auto state_wut = static_cast<WutState*>(state.get());
-      return state_wut->insert_into_tree(w);
+      return state_wut->insert_into_tree(w, remote_app);
     }
   }
 
@@ -87,14 +87,14 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w)
     return nullptr;
 
   StatePtr current_state = this;
-  StatePtr parrent_state = this->get_parent_state();
+  StatePtr parent_state = this->get_parent_state();
   if (actor_status_set_)
     consider_one((*w.begin())->aid_);
   for (auto tran : w) {
-    parrent_state = current_state;
+    parent_state = current_state;
     XBT_DEBUG("Creating state after actor %ld in parent state %ld", tran->aid_, current_state->get_num());
     current_state =
-        StatePtr(new WutState(Exploration::get_instance()->get_remote_app(), current_state, tran, false), true);
+        StatePtr(new WutState(remote_app, current_state, tran, false), true);
   }
   return current_state;
 }
