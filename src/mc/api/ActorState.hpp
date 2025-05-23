@@ -154,9 +154,9 @@ public:
 
   std::shared_ptr<Transition> get_transition(unsigned char times_considered) const
   {
-    xbt_assert(
-        times_considered < this->pending_transitions_.size() || _sg_mc_debug,
-        "You must activate --cfg=model-check/debug:true to see the debug and error messages involving transitions.");
+    xbt_assert(times_considered < this->pending_transitions_.size() || _sg_mc_debug,
+               "There is no transition in this ActorState. Try to activate --cfg=model-check/debug:true to see the "
+               "debug and error messages involving transitions.");
     xbt_assert(times_considered < this->pending_transitions_.size(),
                "Actor %d does not have a state available transition with `times_considered = %u`,\n"
                "yet one was asked for. Pending transitions are: %s",
