@@ -88,6 +88,7 @@ public:
 
   bool has_been_initialized() const { return actor_status_set_; }
   void initialize(const RemoteApp& remote_app);
+  void update_incoming_transition_with_remote_app(const RemoteApp& remote_app, aid_t aid, int times_considered);
 
   int get_ref_count() { return refcount_; }
   /* Returns a positive number if there is another transition to pick, or -1 if not */
@@ -117,9 +118,10 @@ public:
   {
     xbt_assert(actors_to_run_.find(aid) != actors_to_run_.end(),
                "Actor %ld does not exist in state #%ld, yet one was asked", aid, get_num());
-    xbt_assert(actors_to_run_.at(aid).is_enabled() && not actors_to_run_.at(aid).is_done(),
-               "Tried to mark as TODO actor %ld in state #%ld but it is either not enabled or already done", aid,
-               get_num());
+    xbt_assert(actors_to_run_.at(aid).is_enabled(),
+               "Tried to mark as TODO actor %ld in state #%ld but it is not enabled", aid, get_num());
+    xbt_assert(not actors_to_run_.at(aid).is_done(),
+               "Tried to mark as TODO actor %ld in state #%ld but it is already done", aid, get_num());
     actors_to_run_.at(aid).mark_todo();
     opened_.emplace_back(
         std::make_shared<Transition>(Transition::Type::UNKNOWN, aid, actors_to_run_.at(aid).get_times_considered()));

@@ -5,6 +5,7 @@
 
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/api/ActorState.hpp"
+#include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
 #include "xbt/asserts.h"
@@ -13,6 +14,7 @@
 
 #include <algorithm>
 #include <boost/range/algorithm.hpp>
+#include <memory>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc, "Logging specific to MC states");
 
@@ -270,12 +272,18 @@ void State::initialize(const RemoteApp& remote_app)
   XBT_VERB("Initializing state #%ld", get_num());
   xbt_assert(not actor_status_set_);
   actor_status_set_ = true;
-  remote_app.get_actors_status(actors_to_run_);
+  remote_app.get_actors_status(actors_to_run_); // We tell the remote app to get the transitions this time
 
   for (auto const& t : opened_) {
     xbt_assert(t != nullptr);
     actors_to_run_.at(t->aid_).mark_todo();
   }
+}
+
+void State::update_incoming_transition_with_remote_app(const RemoteApp& remote_app, aid_t aid, int times_considered)
+{
+
+  incoming_transition_ = std::shared_ptr<Transition>(remote_app.handle_simcall(aid, times_considered, true));
 }
 
 void State::update_opened(std::shared_ptr<Transition> transition)
