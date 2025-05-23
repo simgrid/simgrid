@@ -186,8 +186,12 @@ bool MutexTransition::can_be_co_enabled(const Transition* o) const
 }
 
 static bool is_sem_wait_fireable_without_unlock(const odpor::Execution* exec, EventHandle unlock_handle,
-                                         EventHandle wait_handle)
+                                                EventHandle wait_handle)
 {
+  XBT_DEBUG(
+      "Expertise has been required in the following matter:%s\nIs the wait <%s> enabled if we remove the unlock <%s>",
+      exec->get_one_string_textual_trace().c_str(), exec->get_transition_for_handle(wait_handle)->to_string().c_str(),
+      exec->get_transition_for_handle(unlock_handle)->to_string().c_str());
 
   unsigned sem_id  = static_cast<const SemaphoreTransition*>(exec->get_transition_for_handle(unlock_handle))->get_sem();
   int max_capacity = -1;
@@ -227,6 +231,10 @@ static bool is_sem_wait_fireable_without_unlock(const odpor::Execution* exec, Ev
       nb_unlock++;
   }
 
+  XBT_DEBUG("Conclusion is the following:\n\t[Max_capacity = %d]\n\t[nb_lock = %d]\n\t[nb_unlock = %d]", max_capacity,
+            nb_lock, nb_unlock);
+  XBT_DEBUG("Hence, the wait is %s without the unlock",
+            max_capacity - nb_lock + nb_unlock >= 0 ? "fireable" : "not fireable");
   return max_capacity - nb_lock + nb_unlock >= 0;
 }
 
@@ -386,13 +394,13 @@ bool CondvarTransition::depends(const Transition* o) const
 }
 
 static bool is_cv_wait_fireable_without_transition(const odpor::Execution* exec, EventHandle cv_wait_handle,
-                                            EventHandle other_handle)
+                                                   EventHandle other_handle)
 {
   unsigned cv_id =
       static_cast<const CondvarTransition*>(exec->get_transition_for_handle(cv_wait_handle))->get_condvar();
   int signal_after_lock = 0;
 
-  EventHandle lock_handle  = 0;
+  EventHandle lock_handle = 0;
 
   for (EventHandle e = cv_wait_handle - 1; e <= cv_wait_handle; e--) {
 
@@ -457,11 +465,11 @@ static bool is_cv_wait_fireable_without_transition(const odpor::Execution* exec,
         break;
       case Transition::Type::CONDVAR_BROADCAST:
         currently_waiting_on_cv = 0;
-	break;
+        break;
       case Transition::Type::CONDVAR_SIGNAL:
         // If no one is currently waiting, the signal is lost
         currently_waiting_on_cv = std::max(0, currently_waiting_on_cv - 1);
-	break;
+        break;
       default:
         xbt_die("What? What is this kind of transition? (%s) Fix Me!", Transition::to_c_str(cv_transition->type_));
     }
