@@ -98,6 +98,27 @@ void AppSide::handle_deadlock_check(const s_mc_message_int_t* request)
   answer.value              = deadlock;
   xbt_assert(channel_.send(answer) == 0, "Could not send response: %s", strerror(errno));
 }
+
+void AppSide::send_executed_transition(kernel::actor::ActorImpl* actor, bool want_transition)
+{
+  s_mc_message_simcall_execute_answer_t answer{};
+  answer.type = MessageType::SIMCALL_EXECUTE_REPLY;
+  answer.aid  = actor->get_pid();
+  channel_.pack(answer);
+
+  if (want_transition) {
+    if (actor->simcall_.observer_ != nullptr) {
+      actor->simcall_.observer_->serialize(channel_);
+    } else {
+      channel_.pack(mc::Transition::Type::UNKNOWN);
+    }
+    XBT_VERB("send SIMCALL_EXECUTE_REPLY(%s:%ld) with a transition", actor->get_cname(), actor->get_pid());
+  } else
+    XBT_VERB("send SIMCALL_EXECUTE_REPLY(%s:%ld) with no transition inside", actor->get_cname(), actor->get_pid());
+
+  xbt_assert(channel_.send() == 0, "Could not send response: %s", strerror(errno));
+}
+
 void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* message)
 {
   kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(message->aid_);
@@ -115,22 +136,7 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
              strerror(errno));
 
   // Finish the RPC from the server: return a serialized observer, to build a Transition on Checker side
-  s_mc_message_simcall_execute_answer_t answer{};
-  answer.type = MessageType::SIMCALL_EXECUTE_REPLY;
-  answer.aid  = actor->get_pid();
-  channel_.pack(answer);
-
-  if (message->want_transition) {
-    if (actor->simcall_.observer_ != nullptr) {
-      actor->simcall_.observer_->serialize(channel_);
-    } else {
-      channel_.pack(mc::Transition::Type::UNKNOWN);
-    }
-    XBT_VERB("send SIMCALL_EXECUTE_REPLY(%s:%ld) with a transition", actor->get_cname(), actor->get_pid());
-  } else
-    XBT_VERB("send SIMCALL_EXECUTE_REPLY(%s:%ld) with no transition inside", actor->get_cname(), actor->get_pid());
-
-  xbt_assert(channel_.send() == 0, "Could not send response: %s", strerror(errno));
+  send_executed_transition(actor, message->want_transition);
 }
 
 void AppSide::handle_replay(const s_mc_message_int_t* msg)
@@ -152,6 +158,7 @@ void AppSide::handle_replay(const s_mc_message_int_t* msg)
     aid_t aid            = ((unsigned char*)aids)[i];
     int times_considered = ((unsigned char*)times)[i];
 
+    // The -1 value is used to indicate the part requiring transition and status
     if (aid == 255 and times_considered == 255) // -1 in unsigned char
       break;
 
@@ -189,15 +196,21 @@ void AppSide::handle_replay(const s_mc_message_int_t* msg)
                actor->simcall_.observer_->to_string().c_str());
 
     actor->simcall_handle(times_considered);
+    // The checker is asking for this message specifically to update the incoming
+    // transition, so let's sent it with 'true'
+    send_executed_transition(actor, true);
+
     simgrid::mc::execute_actors();
-    send_actor_status(false); // This doesn't look safe, and it would be better to modify the msg content
+    // The false doesn't look safe, and it would be better to modify the msg content to rlly know if the checker want
+    // the transition or not
+    send_actor_status(false);
   }
 }
 
 void AppSide::handle_one_way(const s_mc_message_one_way_t* msg)
 {
-  auto* engine = kernel::EngineImpl::get_instance();
-  bool is_random = msg->is_random;
+  auto* engine                   = kernel::EngineImpl::get_instance();
+  bool is_random                 = msg->is_random;
   static bool initialized_random = false;
   if (not initialized_random and is_random) {
     xbt::random::set_mersenne_seed(msg->random_seed);
@@ -233,7 +246,7 @@ void AppSide::handle_one_way(const s_mc_message_one_way_t* msg)
 
     // Sending the transition message
     s_mc_message_simcall_execute_answer_t transition_execute_msg = {};
-    transition_execute_msg.type = MessageType::SIMCALL_EXECUTE_REPLY;
+    transition_execute_msg.type                                  = MessageType::SIMCALL_EXECUTE_REPLY;
     transition_execute_msg.aid                                   = chosen_aid;
     channel_.pack(transition_execute_msg);
 
