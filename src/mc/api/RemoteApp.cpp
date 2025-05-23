@@ -17,15 +17,16 @@
 #include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
-#include <cstring>
-#include <limits>
-#include <signal.h>
+#include "xbt/thread.hpp"
 
 #include <algorithm>
 #include <array>
+#include <cstring>
 #include <limits.h>
+#include <limits>
 #include <memory>
 #include <numeric>
+#include <signal.h>
 #include <string>
 #include <sys/ptrace.h>
 #include <sys/socket.h>
@@ -48,7 +49,7 @@ RemoteApp::RemoteApp(const std::vector<char*>& args) : app_args_(args)
   master_socket_ = socket(AF_UNIX, SOCK_STREAM, 0);
   xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
 
-  master_socket_name = "/tmp/simgrid-mc-" + std::to_string(getpid() + '-' + gettid());
+  master_socket_name = "/tmp/simgrid-mc-" + std::to_string(getpid() + '-') + simgrid::xbt::gettid();
   xbt_assert(master_socket_name.length() < MC_SOCKET_NAME_LEN,
              "The socket name is too long for the affected size, probably because of the tid. Fix Me");
   master_socket_name.resize(MC_SOCKET_NAME_LEN); // truncate socket name if it's too long

@@ -715,6 +715,7 @@ set(headers_to_install
   include/xbt/string.hpp
   include/xbt/sysdep.h
   include/xbt/system_error.hpp
+  include/xbt/thread.hpp
   include/xbt/utility.hpp
   include/xbt/virtu.h
   include/xbt/xbt_os_time.h

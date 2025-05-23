@@ -21,6 +21,7 @@
 
 #include "xbt/asserts.h"
 #include "xbt/log.h"
+#include "xbt/thread.hpp"
 
 #include <cassert>
 #include <cstdio>
@@ -68,7 +69,8 @@ void TreeHandler(Reduction* reduction_algo_, parallel_channel<State*>* opened_he
   // While there is something in opened_heads_ OR an Explorer is working
   while (remaining_todo > 0) {
 
-    XBT_DEBUG("[tid:%d] New round of tree handling! There are currently %d remaining todo", gettid(), remaining_todo);
+    XBT_DEBUG("[tid:%s] New round of tree handling! There are currently %d remaining todo", xbt::gettid().c_str(),
+              remaining_todo);
 
     Reduction::RaceUpdate* to_apply;
     // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
@@ -77,12 +79,12 @@ void TreeHandler(Reduction* reduction_algo_, parallel_channel<State*>* opened_he
 
     // The race correspond to an explorer finishing, so we decrement the count
     remaining_todo--;
-    XBT_DEBUG("[tid:%d] Received a race update! Going to apply it", gettid());
+    XBT_DEBUG("[tid:%s] Received a race update! Going to apply it", xbt::gettid().c_str());
 
     std::vector<StatePtr> new_opened;
     remaining_todo +=
         reduction_algo_->apply_race_update(Exploration::get_instance()->get_remote_app(), to_apply, &new_opened);
-    XBT_DEBUG("[tid:%d] The update contained %lu new states, so now there are %d remaining todo", gettid(),
+    XBT_DEBUG("[tid:%s] The update contained %lu new states, so now there are %d remaining todo", xbt::gettid().c_str(),
               new_opened.size(), remaining_todo);
 
     // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
@@ -116,7 +118,7 @@ void Explorer(const std::vector<char*>& args, Reduction* reduction_algo_, parall
   // Local structure containing helper functions and data regarding this thread and the exploration
   ThreadLocalExplorer local_explorer(args);
 
-  XBT_DEBUG("Lauching thread %d", gettid());
+  XBT_DEBUG("Lauching thread %s", xbt::gettid().c_str());
 
   // While true -> we leave when receiving a poisoned value (nullptr)
   while (true) {
@@ -127,7 +129,7 @@ void Explorer(const std::vector<char*>& args, Reduction* reduction_algo_, parall
     }
 
     if (to_visit == nullptr) {
-      XBT_DEBUG("[tid:%d] Drinking the Kool-Aid sent by the TreeHandler! See ya", gettid());
+      XBT_DEBUG("[tid:%s] Drinking the Kool-Aid sent by the TreeHandler! See ya", xbt::gettid().c_str());
       break;
     }
 
@@ -200,7 +202,7 @@ void Explorer(const std::vector<char*>& args, Reduction* reduction_algo_, parall
       xbt_assert(state->is_actor_enabled(next));
       auto executed_transition = state->execute_next(next, local_explorer.get_remote_app());
 
-      XBT_VERB("[tid:%d] Executed %ld: %.60s (stack depth: %zu, state: %ld)", gettid(),
+      XBT_VERB("[tid:%s] Executed %ld: %.60s (stack depth: %zu, state: %ld)", xbt::gettid().c_str(),
                state->get_transition_out()->aid_, state->get_transition_out()->to_string().c_str(),
                local_explorer.stack.size(), state->get_num());
 
@@ -212,8 +214,8 @@ void Explorer(const std::vector<char*>& args, Reduction* reduction_algo_, parall
       local_explorer.execution_seq.push_transition(std::move(executed_transition));
     }
 
-    XBT_DEBUG("[tid:%d] Ended exploration, going to wait for next state. (%lu explored traces so far)", gettid(),
-              local_explorer.explored_traces);
+    XBT_DEBUG("[tid:%s] Ended exploration, going to wait for next state. (%lu explored traces so far)",
+              xbt::gettid().c_str(), local_explorer.explored_traces);
   }
 
   // Do some logging that makes sens for now since there is only one thread
