@@ -13,6 +13,7 @@
 #include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
+#include "xbt/thread.hpp"
 
 #include <cmath>
 #include <sstream>
