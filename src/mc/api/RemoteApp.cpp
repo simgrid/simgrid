@@ -41,16 +41,15 @@ XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 namespace simgrid::mc {
 
-static std::string master_socket_name;
-
-RemoteApp::RemoteApp(const std::vector<char*>& args) : app_args_(args)
+RemoteApp::RemoteApp(const std::vector<char*>& args, const std::string additionnal_name) : app_args_(args)
 {
   master_socket_ = socket(AF_UNIX, SOCK_STREAM, 0);
   xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
 
-  master_socket_name = "/tmp/simgrid-mc-" + std::to_string(getpid() + '-' + gettid());
+  master_socket_name = "/tmp/simgrid-mc-" + std::to_string(getpid()) + '-' + additionnal_name;
   xbt_assert(master_socket_name.length() < MC_SOCKET_NAME_LEN,
              "The socket name is too long for the affected size, probably because of the tid. Fix Me");
+
   master_socket_name.resize(MC_SOCKET_NAME_LEN); // truncate socket name if it's too long
   master_socket_name.back() = '\0';              // ensure the data are null-terminated
 #ifdef __linux__

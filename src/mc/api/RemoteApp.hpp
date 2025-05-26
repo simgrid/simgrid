@@ -25,6 +25,7 @@ private:
   std::unique_ptr<CheckerSide> checker_side_;
   std::unique_ptr<CheckerSide> application_factory_; // create checker_side_ by cloning this one
   int master_socket_ = -1;
+  std::string master_socket_name;
 
   const std::vector<char*> app_args_;
 
@@ -39,8 +40,10 @@ public:
    *  (environment variables, sockets, etc.).
    *
    *  The code is expected to `exec` the model-checked application.
+   *
+   *  An additionnal name can be provided if different remote app are going to be created.
    */
-  explicit RemoteApp(const std::vector<char*>& args);
+  explicit RemoteApp(const std::vector<char*>& args, const std::string additionnal_name = "");
 
   /** Rollback the application to the state passed as argument or to the beginning of history if from == nullptr */
   void restore_checker_side(CheckerSide* from, bool finalize_app = true);
