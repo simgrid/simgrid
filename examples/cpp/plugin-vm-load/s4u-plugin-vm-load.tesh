@@ -1,0 +1,38 @@
+#!/usr/bin/env tesh
+
+p This tests the VM Load plugin (that allows the user to get the current load of a vm and the computed flops)
+
+$ ${bindir:=.}/s4u-plugin-vm-load ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (1:load_test@MyHost1) Initial. VM VM_1 on machine MyHost1 using 1 cores. Peak speed: 1e+08 Computed flops: 0e+00 (should be 0) Average Load: 0e+00 (should be 0)
+> [  0.000000] (1:load_test@MyHost1) Initial. VM VM_2 on machine MyHost1 using 1 cores. Peak speed: 1e+08 Computed flops: 0e+00 (should be 0) Average Load: 0e+00 (should be 0)
+> [  0.000000] (1:load_test@MyHost1) Initial. VM VM_3 on machine MyHost2 using 2 cores. Peak speed: 1e+08 Computed flops: 0e+00 (should be 0) Average Load: 0e+00 (should be 0)
+> [  0.000000] (1:load_test@MyHost1) Sleep for 10 seconds
+> [ 10.000000] (1:load_test@MyHost1) Done sleeping. VM_1 Peak speed: 1.0e+08 Computed flops: 0e+00 (should be 0) Average Load: 0e+00 (should be 0)
+> [ 10.000000] (1:load_test@MyHost1) Done sleeping. VM_2 Peak speed: 1.0e+08 Computed flops: 0e+00 (should be 0) Average Load: 0e+00 (should be 0)
+> [ 10.000000] (1:load_test@MyHost1) Done sleeping. VM_3 Peak speed: 1.0e+08 Computed flops: 0e+00 (should be 0) Average Load: 0e+00 (should be 0)
+> [ 10.000000] (1:load_test@MyHost1) ========= Starting activities on VM_1 and VM_2
+> [ 10.000000] (1:load_test@MyHost1) Run an activity of 2.0e+08 flops on VM_1
+> [ 10.000000] (1:load_test@MyHost1) Run an activity of 1.5e+08 flops on VM_2
+> [ 10.500000] (2:change_speed@MyHost1) I slept until now, but now I'll change the speed of this host while the other actor is still computing! This should slow the computation down.
+> [ 18.000000] (1:load_test@MyHost1) Done activity on VM_1. It took 8.00s (should be 8.00s). Peak speed: 2.0e+07 (should be 2E+07) Computed flops: 2.0e+08 (should be 2.0e+08) Average Load: 0.16666667 (should be 0.16666667) 
+> [ 18.000000] (1:load_test@MyHost1) Done activity on VM_2. It took 5.50s (should be 5.50s). Peak speed: 2.0e+07 (should be 2E+07) Computed flops: 1.5e+08 (should be 1.5e+08) Average Load: 0.12500000 (should be 0.12500000) 
+> [ 18.000000] (1:load_test@MyHost1) VM_3 was idle (so, no computation). Peak speed: 1.0e+08 (should be 1E+08) Computed flops: 0.0e+00 (should be 0.0e+00) Average Load: 0.00000000 (should be 0.00000000) 
+> [ 18.000000] (1:load_test@MyHost1) ========= Requesting pstate 1 on machine MyHost2
+> [ 18.000000] (1:load_test@MyHost1) Machine VM_1 Peak speed: 2.0e+07
+> [ 18.000000] (1:load_test@MyHost1) Machine VM_2 Peak speed: 2.0e+07
+> [ 18.000000] (1:load_test@MyHost1) Machine VM_3 Peak speed: 5.0e+07
+> [ 18.000000] (1:load_test@MyHost1) ========= Starting activities on VM_3
+> [ 18.000000] (1:load_test@MyHost1) Run an activity of 1.0e+08 flops on VM_3
+> [ 20.000000] (1:load_test@MyHost1) VM_1 was idle (so, no computation). Peak speed: 2.0e+07 (should be 2E+07) Computed flops: 2.0e+08 (should be 2.0e+08) Average Load: 0.16129032 (should be 0.16129032) 
+> [ 20.000000] (1:load_test@MyHost1) VM_2 was idle (so, no computation). Peak speed: 2.0e+07 (should be 2E+07) Computed flops: 1.5e+08 (should be 1.5e+08) Average Load: 0.12096774 (should be 0.12096774) 
+> [ 20.000000] (1:load_test@MyHost1) Done activity on VM_3. It took 2.00s (should be 2.00s). Peak speed: 5.0e+07 (should be 5E+07) Computed flops: 1.0e+08 (should be 1.0e+08) Average Load: 0.02631579 (should be 0.02631579) 
+> [ 20.000000] (1:load_test@MyHost1) ========= Requesting a reset of the computation and load counters
+> [ 20.000000] (1:load_test@MyHost1) After reseting. VM_1 Peak speed: 2.0e+07 Computed flops: 0.0e+00 (should be 0) Average Load: 0.0e+00 (should be 0)
+> [ 20.000000] (1:load_test@MyHost1) After reseting. VM_2 Peak speed: 2.0e+07 Computed flops: 0.0e+00 (should be 0) Average Load: 0.0e+00 (should be 0)
+> [ 20.000000] (1:load_test@MyHost1) After reseting. VM_3 Peak speed: 5.0e+07 Computed flops: 0.0e+00 (should be 0) Average Load: 0.0e+00 (should be 0)
+> [ 20.000000] (1:load_test@MyHost1) Sleep for 4 seconds
+> [ 24.000000] (1:load_test@MyHost1) Done sleeping. VM_1 Peak speed: 2.0e+07 Computed flops: 0.0e+00 (should be 0) Average Load: 0.0e+00 (should be 0)
+> [ 24.000000] (1:load_test@MyHost1) Done sleeping. VM_2 Peak speed: 2.0e+07 Computed flops: 0.0e+00 (should be 0) Average Load: 0.0e+00 (should be 0)
+> [ 24.000000] (1:load_test@MyHost1) Done sleeping. VM_3 Peak speed: 5.0e+07 Computed flops: 0.0e+00 (should be 0) Average Load: 0.0e+00 (should be 0)
+> [ 24.000000] (0:maestro@) Total simulation time: 24.00
+
