@@ -335,7 +335,8 @@ void Exploration::backtrack_remote_app_to_state(RemoteApp& remote_app, State* ta
   for (auto& transition : replayed_transitions)
     on_transition_replay_signal(transition, remote_app);
 
-  if (state_needing_actor_status.size() != 0)
+  // If we initialized something and it has not yet been given a possible thing to explore, go one way
+  if (state_needing_actor_status.size() != 0 and target_state->next_transition() == -1)
     static_cast<SleepSetState*>(target_state)->add_arbitrary_transition(remote_app);
 
   return;

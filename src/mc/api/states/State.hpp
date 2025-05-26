@@ -89,6 +89,10 @@ public:
   bool has_been_initialized() const { return actor_status_set_; }
   void initialize(const RemoteApp& remote_app);
   void update_incoming_transition_with_remote_app(const RemoteApp& remote_app, aid_t aid, int times_considered);
+  void update_incoming_transition_explicitly(std::shared_ptr<Transition> incoming_transition)
+  {
+    incoming_transition_ = incoming_transition;
+  }
 
   int get_ref_count() { return refcount_; }
   /* Returns a positive number if there is another transition to pick, or -1 if not */

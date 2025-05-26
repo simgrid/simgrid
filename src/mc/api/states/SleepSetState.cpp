@@ -55,6 +55,9 @@ void SleepSetState::add_arbitrary_transition(RemoteApp& remote_app)
   if (sleep_set_.empty() and _sg_mc_befs_threshold == 0 and _sg_mc_send_determinism == false and
       _sg_mc_comms_determinism == false) {
     XBT_DEBUG("Asking for one way");
+    xbt_assert(next_transition() == -1,
+               "State #%ld already has something to explore, why are we adding an arbitrary transition there?",
+               get_num());
     remote_app.go_one_way();
     aid_t aid = remote_app.get_aid_of_next_transition();
     if (aid == -1) {

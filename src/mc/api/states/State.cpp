@@ -269,8 +269,7 @@ void intrusive_ptr_release(State* state)
 
 void State::initialize(const RemoteApp& remote_app)
 {
-  XBT_VERB("Initializing state #%ld", get_num());
-  xbt_assert(not actor_status_set_);
+  xbt_assert(not actor_status_set_, "State #%ld is already initialized!", get_num());
   actor_status_set_ = true;
   remote_app.get_actors_status(actors_to_run_); // We tell the remote app to get the transitions this time
 
@@ -282,12 +281,12 @@ void State::initialize(const RemoteApp& remote_app)
 
 void State::update_incoming_transition_with_remote_app(const RemoteApp& remote_app, aid_t aid, int times_considered)
 {
-
   incoming_transition_ = std::shared_ptr<Transition>(remote_app.handle_simcall(aid, times_considered, true));
 }
 
 void State::update_opened(std::shared_ptr<Transition> transition)
 {
+
   xbt_assert(transition != nullptr);
   for (size_t i = 0; i < opened_.size(); i++) {
     if (opened_[i]->aid_ != transition->aid_)
