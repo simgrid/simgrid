@@ -41,6 +41,9 @@ public:
                                         std::vector<StatePtr>* opened_states = nullptr) = 0;
   // Create an empty race update of the right type
   virtual RaceUpdate* empty_race_update() = 0;
+  // Delete a raceupdate in memory. This is required since the pointer must be of the corresponding type for a call
+  // to delete.
+  virtual void delete_race_update(RaceUpdate*) = 0;
   // Update the states saved in RaceUpdate accordingly to the saved informations
   // Splitting the update in two steps is mandatory for a future parallelization of the
   // race_computation() operation

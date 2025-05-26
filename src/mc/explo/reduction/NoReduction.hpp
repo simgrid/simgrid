@@ -29,6 +29,7 @@ public:
   };
 
   Reduction::RaceUpdate* empty_race_update() override { return new RaceUpdate(); }
+  void delete_race_update(RaceUpdate* race_update) override { delete (RaceUpdate*)race_update; }
 
   unsigned long apply_race_update(RemoteApp&, RaceUpdate* updates,
                                   std::vector<StatePtr>* opened_states = nullptr) override

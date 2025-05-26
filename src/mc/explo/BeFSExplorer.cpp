@@ -148,7 +148,7 @@ void BeFSExplorer::run()
         Reduction::RaceUpdate* todo_updates =
             reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
         reduction_algo_->apply_race_update(get_remote_app(), todo_updates, &opened_states_);
-        delete todo_updates;
+        reduction_algo_->delete_race_update(todo_updates);
 
         explored_traces_++;
         // Costly verification used to check against algorithm optimality

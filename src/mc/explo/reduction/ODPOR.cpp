@@ -111,6 +111,7 @@ StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
             parent_state->get_children_state_of_aid(incoming_transition->aid_, incoming_transition->times_considered_);
         existing_state != nullptr) {
       if (not existing_state->has_been_initialized()) {
+        existing_state->update_incoming_transition_explicitly(incoming_transition);
         existing_state->initialize(remote_app);
         if (existing_state->next_transition() == -1)
           static_cast<SleepSetState*>(existing_state.get())->add_arbitrary_transition(remote_app);

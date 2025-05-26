@@ -36,6 +36,8 @@ public:
 
   RaceUpdate* empty_race_update() override { return new RaceUpdate(); }
 
+  void delete_race_update(Reduction::RaceUpdate* race_update) override { delete (RaceUpdate*)race_update; }
+
   Reduction::RaceUpdate* races_computation(odpor::Execution& E, stack_t* S,
                                            std::vector<StatePtr>* opened_states) override
   {

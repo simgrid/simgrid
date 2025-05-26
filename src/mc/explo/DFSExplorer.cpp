@@ -123,7 +123,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
     S.push_transition(executed_transition);
     Reduction::RaceUpdate* todo_updates = reduction_algo_->races_computation(S, stack_);
     reduction_algo_->apply_race_update(get_remote_app(), todo_updates);
-    delete todo_updates;
+    reduction_algo_->delete_race_update(todo_updates);
 
     // ... If we are not already doing it, start critical exploration
     run_critical_exploration_on_need(error.value);
@@ -196,7 +196,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 
   Reduction::RaceUpdate* todo_updates = reduction_algo_->races_computation(S, &state_stack);
   reduction_algo_->apply_race_update(get_remote_app(), todo_updates);
-  delete todo_updates;
+  reduction_algo_->delete_race_update(todo_updates);
 
   XBT_DEBUG("%lu actors remain, but none of them need to be interleaved (depth %zu).", s->get_actor_count(),
             state_stack.size() + 1);
