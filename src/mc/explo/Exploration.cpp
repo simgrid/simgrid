@@ -328,6 +328,7 @@ void Exploration::backtrack_remote_app_to_state(RemoteApp& remote_app, State* ta
   }
   remote_app.set_one_way(false);
 
+  // not thread-safe counts
   visited_states_count_ += recipe.size();
   backtrack_count_++;
   Transition::replayed_transitions_ += recipe.size();
