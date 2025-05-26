@@ -13,8 +13,12 @@
 #include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
+#include "xbt/thread.hpp"
 
 #include <cmath>
+#include <sstream>
+#include <string>
+#include <thread>
 #include <unistd.h>
 
 XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories"); /* lives here even if that's a bit odd to solve linking issues: this
@@ -25,11 +29,11 @@ const int xbt_pagesize = static_cast<int>(sysconf(_SC_PAGESIZE));
 const int xbt_pagebits = static_cast<int>(log2(xbt_pagesize));
 
 XBT_ATTRIB_NOINLINE void sthread_enable()
-{ // These symbols are used from ContextSwapped in any case, but they are only useful
+{ // These symbols are used from ContextSwapped in any case, but they are only useful ...
   asm("");
 }
 XBT_ATTRIB_NOINLINE void sthread_disable()
-{ //  when libsthread is LD_PRELOADED. In this case, sthread's implem gets used instead.
+{ //  ... when libsthread is LD_PRELOADED. In this case, sthread's implem gets used instead.
   asm("");
 }
 
@@ -60,3 +64,17 @@ int SMPI_is_inited()
   return false;
 }
 #endif
+
+namespace simgrid::xbt {
+std::string& gettid()
+{
+  static thread_local std::ostringstream id;
+  static thread_local std::string sid = id.str();
+
+  if (sid.empty()) {
+    id << std::this_thread::get_id();
+    sid = id.str();
+  }
+  return sid;
+}
+}; // namespace simgrid::xbt

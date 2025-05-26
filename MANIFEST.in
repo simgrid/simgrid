@@ -2253,6 +2253,7 @@ include include/xbt/str.h
 include include/xbt/string.hpp
 include include/xbt/sysdep.h
 include include/xbt/system_error.hpp
+include include/xbt/thread.hpp
 include include/xbt/utility.hpp
 include include/xbt/virtu.h
 include include/xbt/xbt_os_time.h

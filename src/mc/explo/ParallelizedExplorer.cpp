@@ -21,6 +21,7 @@
 
 #include "xbt/asserts.h"
 #include "xbt/log.h"
+#include "xbt/thread.hpp"
 
 #include <bits/types/locale_t.h>
 #include <cassert>

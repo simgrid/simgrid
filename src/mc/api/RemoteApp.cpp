@@ -17,15 +17,16 @@
 #include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
-#include <cstring>
-#include <limits>
-#include <signal.h>
+#include "xbt/thread.hpp"
 
 #include <algorithm>
 #include <array>
+#include <cstring>
 #include <limits.h>
+#include <limits>
 #include <memory>
 #include <numeric>
+#include <signal.h>
 #include <string>
 #include <sys/ptrace.h>
 #include <sys/socket.h>
