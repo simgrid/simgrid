@@ -164,6 +164,8 @@ ExecPtr Exec::set_thread_count(int thread_count)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the bytes_amounts of an exec after its start");
+  xbt_assert(thread_count > 0, "The number of threads must be positive");
+
   kernel::actor::simcall_object_access(pimpl_.get(), [this, thread_count] {
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_thread_count(thread_count);
   });
