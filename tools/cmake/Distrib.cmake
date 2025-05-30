@@ -43,7 +43,7 @@ add_custom_target(simgrid_convert_TI_traces ALL
 
 # libraries
 install(TARGETS simgrid DESTINATION ${CMAKE_INSTALL_LIBDIR}/)
-if("${CMAKE_SYSTEM}" MATCHES "Linux")
+if(${enable_sthread})
   install(TARGETS sthread DESTINATION ${CMAKE_INSTALL_LIBDIR}/)
 endif()
 

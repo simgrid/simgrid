@@ -46,6 +46,14 @@ if(enable-model-checking)
   SET(enable-model-checking 0)
 endif()
 
+if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  set(default_enable_sthread ON)
+else()
+  message(STATUS "SimGrid sthread moduel cannot be built on this system as it is Linux-only for now.")
+  set(default_enable_sthread OFF)
+endif()
+option(enable_sthread "Whether the sthread module is built" ${default_enable_sthread})
+
 option(enable_smpi "Whether SMPI is included in the library." on)
 option(enable_smpi_papi    "Whether SMPI supports PAPI bindings." off)
 

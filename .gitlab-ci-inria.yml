@@ -473,7 +473,9 @@ flags:
   - if [ ${MC} == "MC" ]       ; then BUILD_MC="ON"    ; else BUILD_MC="OFF"    ; fi
   - if [ ${SMPI} == "SMPI" ]   ; then BUILD_SMPI="ON"  ; else BUILD_SMPI="OFF"  ; fi
   - if [ ${DEBUG} == "DEBUG" ] ; then BUILD_DEBUG="ON" ; else BUILD_DEBUG="OFF" ; fi
-  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_smpi=${BUILD_SMPI} -Denable_testsuite_smpi_MPICH3=${BUILD_SMPI} -Denable_model-checking=${BUILD_MC} -Denable_testsuite_McMini=${BUILD_MC} -Denable_debug=${BUILD_DEBUG} -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  # We cannot use sthread with the debugging features of the GLIBC as the later uses extra mutex locking in malloc, messing up sthread
+  - if [ "${BUILD_MC}/${BUILD_SMPI}/${BUILD_DEBUG}" = "ON/ON/ON" ]; then BUILD_STHREAD=OFF ; else BUILD_STHREAD=ON ; fi
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_smpi=${BUILD_SMPI} -Denable_testsuite_smpi_MPICH3=${BUILD_SMPI} -Denable_model-checking=${BUILD_MC} -Denable_testsuite_McMini=${BUILD_MC} -Denable_debug=${BUILD_DEBUG} -Denable_sthread=${BUILD_STHREAD}  -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   # Run the test in one config with GLIBCXX_DEBUG
   - if [ "${BUILD_MC}/${BUILD_SMPI}/${BUILD_DEBUG}" = "ON/ON/ON" ]; then
