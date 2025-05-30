@@ -41,6 +41,7 @@ SIMGRID_REGISTER_NETWORK_MODEL(raw,
                                  simgrid::config::set_default<std::string>("network/latency-factor", "1.0");
                                  simgrid::config::set_default<std::string>("network/bandwidth-factor", "1.0");
                                  simgrid::config::set_default<double>("network/weight-S", 0.0);
+                                 simgrid::config::set_default<double>("network/TCP-gamma", 0.0);
                                  simgrid::config::set_default<bool>("network/crosstraffic", false);
                                });
 
