@@ -116,10 +116,10 @@ int main(int argc, char** argv)
   zone->add_route(hosts["S2"], hosts["C2"], {links["L3"], links["L0"], links["L4"]});
   zone->seal();
 
-  e.add_actor("", hosts["S1"], sender, "C1", nullptr);
-  e.add_actor("", hosts["C1"], receiver);
-  e.add_actor("", hosts["S2"], sender, "C2", links["L4"]);
-  e.add_actor("", hosts["C2"], receiver);
+  hosts["S1"]->add_actor("", sender, "C1", nullptr);
+  hosts["C1"]->add_actor("", receiver);
+  hosts["S2"]->add_actor("", sender, "C2", links["L4"]);
+  hosts["C2"]->add_actor("", receiver);
 
   e.run();
 

@@ -67,8 +67,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  e.add_actor("writer", e.host_by_name("bob"), writer);
-  e.add_actor("privileged_writer", e.host_by_name("bob"), privileged_writer);
+  e.host_by_name("bob")->add_actor("writer", writer);
+  e.host_by_name("bob")->add_actor("privileged_writer", privileged_writer);
 
   e.run();
 

@@ -35,16 +35,16 @@ public:
 
 int main(int argc, char** argv)
 {
-  auto engine = new simgrid::s4u::Engine(&argc, argv);
-  engine->load_platform(argv[1]);
+  auto engine = simgrid::s4u::Engine(&argc, argv);
+  engine.load_platform(argv[1]);
 
   mutex = simgrid::s4u::Mutex::create();
 
-  auto host = engine->get_all_hosts()[0];
-  engine->add_actor("MutexHoldingActor", host, MutexHoldingActor())->daemonize();
-  engine->add_actor("NonDaemonizedActor", host, NonDaemonizedActor());
+  auto host = engine.get_all_hosts()[0];
+  host->add_actor("MutexHoldingActor", MutexHoldingActor())->daemonize();
+  host->add_actor("NonDaemonizedActor", NonDaemonizedActor());
 
-  engine->run();
+  engine.run();
   XBT_INFO("Returned from engine->run()");
 
   return 0;

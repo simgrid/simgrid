@@ -78,8 +78,8 @@ public class comm_awaituntil {
     Engine e = new Engine(args);
 
     e.load_platform(args[0]);
-    e.add_actor("sender", e.host_by_name("Tremblay"), new sender(3, (int)5e7));
-    e.add_actor("receiver", e.host_by_name("Ruby"), new receiver());
+    e.host_by_name("Tremblay").add_actor("sender", new sender(3, (int)5e7));
+    e.host_by_name("Ruby").add_actor("receiver", new receiver());
 
     e.run();
   }

@@ -63,8 +63,8 @@ class main_actor extends Actor {
 
     var host = get_host();
     for (int i = 0; i < 10; ++i)
-      e.add_actor("competitor", host, new Competitor(i, cv, mtx));
-    e.add_actor("go", host, new Go(cv, mtx));
+      host.add_actor("competitor", new Competitor(i, cv, mtx));
+    host.add_actor("go", new Go(cv, mtx));
   }
 }
 public class synchro_condition_variable_awaituntil {
@@ -74,7 +74,7 @@ public class synchro_condition_variable_awaituntil {
     var e = new Engine(args);
     e.load_platform(args[0]);
 
-    e.add_actor("main", e.host_by_name("Tremblay"), new main_actor());
+    e.host_by_name("Tremblay").add_actor("main", new main_actor());
 
     e.run();
   }

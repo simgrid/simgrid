@@ -29,8 +29,8 @@ static void killer()
   auto e = simgrid::s4u::this_actor::get_engine();
 
   XBT_INFO("Hello!"); /* - First start a victim actor */
-  sg4::ActorPtr victimA = e->add_actor("victim A", sg4::Host::by_name("Fafard"), victimA_fun);
-  sg4::ActorPtr victimB = e->add_actor("victim B", sg4::Host::by_name("Jupiter"), victimB_fun);
+  sg4::ActorPtr victimA = e->host_by_name("Fafard")->add_actor("victim A", victimA_fun);
+  sg4::ActorPtr victimB = e->host_by_name("Jupiter")->add_actor("victim B", victimB_fun);
   sg4::this_actor::sleep_for(10); /* - Wait for 10 seconds */
 
   XBT_INFO("Resume the victim A"); /* - Resume it from its suspended state */
@@ -48,7 +48,7 @@ static void killer()
   sg4::this_actor::sleep_for(1);
 
   XBT_INFO("Start a new actor, and kill it right away");
-  sg4::ActorPtr victimC = e->add_actor("victim C", sg4::Host::by_name("Jupiter"), victimA_fun);
+  sg4::ActorPtr victimC = e->host_by_name("Jupiter")->add_actor("victim C", victimA_fun);
   victimC->kill();
 
   sg4::this_actor::sleep_for(1);
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]); /* - Load the platform description */
   /* - Create and deploy killer actor, that will create the victim actors  */
-  e.add_actor("killer", e.host_by_name("Tremblay"), killer);
+  e.host_by_name("Tremblay")->add_actor("killer", killer);
 
   e.run(); /* - Run the simulation */
 

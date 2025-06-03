@@ -98,8 +98,8 @@ int main(int argc, char** argv)
 
   zone->seal();
 
-  engine.add_actor("Dispatcher", hosts[2], dispatcher, hosts);
-  engine.add_actor("HostKiller", hosts[2], host_killer, hosts[0]);
+  hosts[2]->add_actor("Dispatcher", dispatcher, hosts);
+  hosts[2]->add_actor("HostKiller", host_killer, hosts[0]);
 
   engine.run();
 

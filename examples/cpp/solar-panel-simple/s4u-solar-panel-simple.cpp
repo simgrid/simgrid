@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
-  e.add_actor("manager", e.host_by_name("Tremblay"), manager);
+  e.host_by_name("Tremblay")->add_actor("manager", manager);
   e.run();
   return 0;
 }

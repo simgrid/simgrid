@@ -44,7 +44,7 @@ def master(actor_count: int):
     workers_count = actor_count - 1
     this_actor.info(f"Spawning {workers_count} workers")
     for i in range(workers_count):
-        this_actor.get_engine().add_actor(f"worker-{i}", Host.by_name("Jupiter"), worker, barrier)
+        Host.by_name("Jupiter").add_actor(f"worker-{i}", worker, barrier)
     this_actor.info("Waiting on the barrier")
     barrier.wait()
     this_actor.info("Bye")
@@ -56,7 +56,7 @@ def main():
         raise ValueError("--actors must be greater than 0")
     e = Engine(sys.argv)
     e.load_platform(settings.platform)
-    e.add_actor("master", Host.by_name("Tremblay"), master, settings.actors)
+    e.host_by_name("Tremblay").add_actor("master", master, settings.actors)
     e.run()
 
 

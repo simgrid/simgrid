@@ -104,10 +104,10 @@ public class actor_create {
      *
      * Once created, the actors must be explicitely added to the simulation engine.
      */
-    e.add_actor("receiver", e.host_by_name("Fafard"), new Receiver("mb42"));
-    e.add_actor("sender1", e.host_by_name("Tremblay"), new Sender());
+    e.host_by_name("Fafard").add_actor("receiver", new Receiver("mb42"));
+    e.host_by_name("Tremblay").add_actor("sender1", new Sender());
     /* If you want to pass parameters to your class, that's very easy: just use your constructors */
-    e.add_actor("sender2", e.host_by_name("Jupiter"), new Sender("GloubiBoulga"));
+    e.host_by_name("Jupiter").add_actor("sender2", new Sender("GloubiBoulga"));
 
     /* But starting actors directly is considered as a bad experimental habit, since it ties the code
      * you want to test with the experimental scenario. Starting your actors from an external deployment

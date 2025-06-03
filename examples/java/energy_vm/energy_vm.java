@@ -18,9 +18,9 @@ class dvfs extends Actor {
   {
     Engine e = get_engine();
 
-    Host host1 = get_engine().host_by_name("MyHost1");
-    Host host2 = get_engine().host_by_name("MyHost2");
-    Host host3 = get_engine().host_by_name("MyHost3");
+    Host host1 = e.host_by_name("MyHost1");
+    Host host2 = e.host_by_name("MyHost2");
+    Host host3 = e.host_by_name("MyHost3");
 
     /* Host 1 */
     Engine.info("Creating and starting two VMs");
@@ -30,16 +30,16 @@ class dvfs extends Actor {
     vm_host2.start();
 
     Engine.info("Create two activities on Host1: both inside a VM");
-    e.add_actor("p11", vm_host1, new Executor());
-    e.add_actor("p12", vm_host1, new Executor());
+    vm_host1.add_actor("p11", new Executor());
+    vm_host1.add_actor("p12", new Executor());
 
     Engine.info("Create two activities on Host2: one inside a VM, the other directly on the host");
-    e.add_actor("p21", vm_host2, new Executor());
-    e.add_actor("p22", host2, new Executor());
+    vm_host2.add_actor("p21", new Executor());
+    host2.add_actor("p22", new Executor());
 
     Engine.info("Create two activities on Host3: both directly on the host");
-    e.add_actor("p31", host3, new Executor());
-    e.add_actor("p32", host3, new Executor());
+    host3.add_actor("p31", new Executor());
+    host3.add_actor("p32", new Executor());
 
     Engine.info("Wait 5 seconds. The activities are still running (they run for 3 seconds, but 2 activities are "
                 + "co-located, so they run for 6 seconds)");
@@ -63,7 +63,7 @@ public class energy_vm {
                  + "../platforms/energy_platform.xml\n");
 
     e.load_platform(args[0]);
-    e.add_actor("dvfs", e.host_by_name("MyHost1"), new dvfs());
+    e.host_by_name("MyHost1").add_actor("dvfs", new dvfs());
     e.run();
 
     Engine.info("Simulation ends. Host2 and Host3 must have the exact same energy consumption; Host1 "

@@ -55,8 +55,8 @@ public class exec_dvfs {
 
     e.load_platform(args[0]);
 
-    e.add_actor("dvfs_test", e.host_by_name("MyHost1"), new dvfs());
-    e.add_actor("dvfs_test", e.host_by_name("MyHost2"), new dvfs());
+    e.host_by_name("MyHost1").add_actor("dvfs_test", new dvfs());
+    e.host_by_name("MyHost2").add_actor("dvfs_test", new dvfs());
 
     e.run();
 

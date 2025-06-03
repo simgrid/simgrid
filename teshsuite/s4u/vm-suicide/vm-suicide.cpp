@@ -65,11 +65,10 @@ static void life_cycle_manager()
  */
 static void master(const std::vector<simgrid::s4u::Host*>& hosts)
 {
-  simgrid::s4u::Engine& e = *simgrid::s4u::this_actor::get_engine();
   for (int i = 1; i <= 2; i++) {
     auto* vm = hosts.at(i)->create_vm("test_vm", 4);
     vm->start();
-    e.add_actor("life_cycle_manager-" + std::to_string(i), vm, life_cycle_manager);
+    vm->add_actor("life_cycle_manager-" + std::to_string(i), life_cycle_manager);
 
     simgrid::s4u::this_actor::sleep_for(10);
     print_status(hosts);
@@ -95,7 +94,7 @@ int main(int argc, char* argv[])
   std::vector<simgrid::s4u::Host*> hosts = e.get_all_hosts();
   xbt_assert(hosts.size() > 3);
   hosts.resize(3);
-  e.add_actor("test_master", hosts[0], master, hosts);
+  hosts[0]->add_actor("test_master", master, hosts);
 
   e.run();
   return 0;

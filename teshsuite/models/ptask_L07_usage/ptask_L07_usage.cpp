@@ -324,7 +324,7 @@ int main(int argc, char** argv)
 {
   sg4::Engine engine(&argc, argv);
   engine.load_platform(argv[1]);
-  engine.add_actor("dispatcher", engine.host_by_name("cpu0"), main_dispatcher);
+  engine.host_by_name("cpu0")->add_actor("dispatcher", main_dispatcher);
   engine.run();
 
   return 0;

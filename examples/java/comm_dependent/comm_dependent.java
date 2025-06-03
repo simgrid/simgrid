@@ -51,8 +51,8 @@ public class comm_dependent {
 
     Mailbox mbox = e.mailbox_by_name("Mailbox");
 
-    e.add_actor("sender", e.host_by_name("Tremblay"), new Sender(mbox));
-    e.add_actor("receiver", e.host_by_name("Jupiter"), new Receiver(mbox));
+    e.host_by_name("Tremblay").add_actor("sender", new Sender(mbox));
+    e.host_by_name("Jupiter").add_actor("receiver", new Receiver(mbox));
 
     e.run();
 

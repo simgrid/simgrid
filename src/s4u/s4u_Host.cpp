@@ -134,6 +134,28 @@ unsigned long Host::get_pstate_count() const
   return this->pimpl_cpu_->get_pstate_count();
 }
 
+ActorPtr Host::add_actor(const std::string& name, const std::function<void()>& code)
+{
+  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
+  kernel::actor::ActorCreateSimcall observer{self};
+  kernel::actor::ActorImpl* actor = kernel::actor::simcall_answered(
+      [self, &name, this, &code, &observer] {
+        auto child = self->init(name, this)->start(code);
+        observer.set_child(child->get_pid());
+        return child;
+      },
+      &observer);
+
+  return actor->get_iface();
+}
+
+ActorPtr Host::add_actor(const std::string& name, const std::string& function,
+                           std::vector<std::string> args)
+{
+  const simgrid::kernel::actor::ActorCodeFactory& factory = Engine::get_instance()->get_impl()->get_function(function);
+  return add_actor(name, factory(std::move(args)));
+}
+
 /**
  * @brief Return a copy of the list of actors that are executing on this host.
  *

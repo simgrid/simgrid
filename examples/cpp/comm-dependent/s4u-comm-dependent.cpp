@@ -43,12 +43,12 @@ int main(int argc, char* argv[])
 
   sg4::Mailbox* mbox = e.mailbox_by_name_or_create("Mailbox");
 
-  e.add_actor("sender", e.host_by_name("Tremblay"), sender, mbox);
-  e.add_actor("receiver", e.host_by_name("Jupiter"), receiver, mbox);
+  e.host_by_name("Tremblay")->add_actor("sender", sender, mbox);
+  e.host_by_name("Jupiter")->add_actor("receiver", receiver, mbox);
 
   e.run();
 
-  XBT_INFO("Simulation time: %.3f", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time: %.3f", e.get_clock());
 
   return 0;
 }

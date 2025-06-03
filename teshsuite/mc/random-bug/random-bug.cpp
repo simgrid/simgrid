@@ -61,6 +61,6 @@ int main(int argc, char* argv[])
   }
 
   e.load_platform(argv[2]);
-  e.add_actor("app", e.host_by_name("Fafard"), &app);
+  e.host_by_name("Fafard")->add_actor("app", &app);
   e.run();
 }

@@ -87,11 +87,11 @@ public class comm_failure {
     zone.add_route(host1, host3, new Link[] {link3});
     zone.seal();
 
-    e.add_actor("Sender", host1, new Sender("mailbox2", "mailbox3"));
-    e.add_actor("Receiver", host2, new Receiver("mailbox2"));
-    e.add_actor("Receiver", host3, new Receiver("mailbox3"));
+    host1.add_actor("Sender", new Sender("mailbox2", "mailbox3"));
+    host2.add_actor("Receiver", new Receiver("mailbox2"));
+    host3.add_actor("Receiver", new Receiver("mailbox3"));
 
-    e.add_actor("LinkKiller", host1, new Actor() {
+    host1.add_actor("LinkKiller", new Actor() {
       @Override public void run()
       {
         this.sleep_for(10.0);

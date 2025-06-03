@@ -63,7 +63,7 @@ public class exec_remote {
   {
     Engine e = new Engine(args);
     e.load_platform(args[0]);
-    e.add_actor("test", e.host_by_name("Fafard"), new wizard());
+    e.host_by_name("Fafard").add_actor("test", new wizard());
 
     e.run();
   }

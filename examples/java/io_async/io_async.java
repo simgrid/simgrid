@@ -106,11 +106,11 @@ public class io_async {
     Engine e = new Engine(args);
 
     e.load_platform(args[0]);
-    e.add_actor("test", e.host_by_name("bob"), new test(2e7));
-    e.add_actor("test_detach", e.host_by_name("bob"), new test_detach(2e7));
-    e.add_actor("test_waitfor", e.host_by_name("alice"), new test_waitfor(5e7));
-    e.add_actor("test_cancel", e.host_by_name("alice"), new test_cancel(5e7));
-    e.add_actor("test_monitor", e.host_by_name("alice"), new test_monitor(5e7));
+    e.host_by_name("bob").add_actor("test", new test(2e7));
+    e.host_by_name("bob").add_actor("test_detach", new test_detach(2e7));
+    e.host_by_name("alice").add_actor("test_waitfor", new test_waitfor(5e7));
+    e.host_by_name("alice").add_actor("test_cancel", new test_cancel(5e7));
+    e.host_by_name("alice").add_actor("test_monitor", new test_monitor(5e7));
 
     e.run();
 

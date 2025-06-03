@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform.xml\n", argv[0]);
 
   e.load_platform(argv[1]);
-  e.add_actor("master", e.host_by_name("Tremblay"), master);
+  e.host_by_name("Tremblay")->add_actor("master", master);
   e.run();
 
   return 0;

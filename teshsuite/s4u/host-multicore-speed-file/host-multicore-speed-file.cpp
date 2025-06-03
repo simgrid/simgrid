@@ -101,12 +101,12 @@ int main(int argc, char* argv[])
       ->seal();
   zone->seal();
 
-  e.add_actor("carol", e.host_by_name("carol"), worker);
-  e.add_actor("erin", e.host_by_name("erin"), failed_worker)->set_auto_restart(true);
+  e.host_by_name("carol")->add_actor("carol", worker);
+  e.host_by_name("erin")->add_actor("erin", failed_worker)->set_auto_restart(true);
 
   e.run();
 
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

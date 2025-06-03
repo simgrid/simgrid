@@ -111,8 +111,8 @@ public class energy_link {
     } else { // No parameter at all? Then use the default value
       argSender.add("25000");
     }
-    e.add_actor("sender", e.host_by_name("MyHost1"), new Sender(argSender));
-    e.add_actor("receiver", e.host_by_name("MyHost2"), new Receiver(argReceiver));
+    e.host_by_name("MyHost1").add_actor("sender", new Sender(argSender));
+    e.host_by_name("MyHost2").add_actor("receiver", new Receiver(argReceiver));
 
     /* And now, launch the simulation */
     e.run();

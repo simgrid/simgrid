@@ -53,7 +53,7 @@ class Monitor extends Actor {
     Host jacquelin = e.host_by_name("Jacquelin");
     Host fafard    = e.host_by_name("Fafard");
 
-    Actor actor = e.add_actor("worker", fafard, new Worker(boivin, jacquelin));
+    Actor actor = fafard.add_actor("worker", new Worker(boivin, jacquelin));
 
     this.sleep_for(5);
 
@@ -72,7 +72,7 @@ public class actor_migrate {
     Engine e = new Engine(args);
     e.load_platform(args[0]);
 
-    e.add_actor("monitor", e.host_by_name("Boivin"), new Monitor());
+    e.host_by_name("Boivin").add_actor("monitor", new Monitor());
     e.run();
   }
 }

@@ -92,7 +92,7 @@ ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::func
 ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::string& function,
                        std::vector<std::string> args)
 {
-  return s4u::Engine::get_instance()->add_actor(name, host, function, std::move(args));
+  return host->add_actor(name, function, std::move(args));
 }
 
 void intrusive_ptr_add_ref(const Actor* actor)

@@ -90,7 +90,7 @@ int main(int argc, char** argv)
   sg4::Engine e(&argc, argv);
   sg_storage_file_system_init();
   e.load_platform(argv[1]);
-  e.add_actor("host", e.host_by_name("bob"), MyHost());
+  e.host_by_name("bob")->add_actor("host", MyHost());
   e.run();
 
   return 0;

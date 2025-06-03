@@ -29,8 +29,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);             /* Load the platform description */
 
-  e.add_actor("yielder", e.host_by_name("Tremblay"), yielder, 10);
-  e.add_actor("yielder", e.host_by_name("Ruby"), yielder, 15);
+  e.host_by_name("Tremblay")->add_actor("yielder", yielder, 10);
+  e.host_by_name("Ruby")->add_actor("yielder", yielder, 15);
 
   e.run(); /* - Run the simulation */
 

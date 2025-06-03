@@ -37,11 +37,11 @@ int main(int argc, char* argv[])
   e.load_platform(argv[1]);
 
   simgrid::s4u::Actor::kill_all();
-
-  e.add_actor("sendpid", e.host_by_name("Tremblay"), sendpid);
-  e.add_actor("sendpid", e.host_by_name("Tremblay"), sendpid);
-  e.add_actor("sendpid", e.host_by_name("Tremblay"), sendpid);
-  e.add_actor("killall", e.host_by_name("Tremblay"), killall);
+  auto tremblay =  e.host_by_name("Tremblay");
+  tremblay->add_actor("sendpid", sendpid);
+  tremblay->add_actor("sendpid", sendpid);
+  tremblay->add_actor("sendpid", sendpid);
+  tremblay->add_actor("killall", killall);
 
   e.run();
 

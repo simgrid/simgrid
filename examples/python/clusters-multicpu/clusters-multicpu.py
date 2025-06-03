@@ -288,10 +288,10 @@ def main():
 
     host_list = e.all_hosts
 # create the sender actor running on first host
-    e.add_actor("sender", host_list[0], Sender(host_list))
+    host_list[0].add_actor("sender", Sender(host_list))
 # create receiver in every host
     for host in host_list:
-        e.add_actor("receiver-" + host.name, host, Receiver())
+        host.add_actor("receiver-" + host.name, Receiver())
 
 # runs the simulation
     e.run()

@@ -37,8 +37,8 @@ public class actor_daemon {
     Engine e = new Engine(args);
 
     e.load_platform(args[0]);
-    e.add_actor("worker", e.host_by_name("Boivin"), new worker());
-    e.add_actor("daemon", e.host_by_name("Tremblay"), new my_daemon());
+    e.host_by_name("Boivin").add_actor("worker", new worker());
+    e.host_by_name("Tremblay").add_actor("daemon", new my_daemon());
 
     e.run();
   }

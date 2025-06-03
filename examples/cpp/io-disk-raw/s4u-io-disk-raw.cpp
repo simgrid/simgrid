@@ -64,10 +64,10 @@ int main(int argc, char** argv)
       XBT_INFO("  %s -> %s", key.c_str(), value.c_str());
   }
 
-  e.add_actor("", e.host_by_name("bob"), host);
+  e.host_by_name("bob")->add_actor("", host);
 
   e.run();
-  XBT_INFO("Simulated time: %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulated time: %g", e.get_clock());
 
   return 0;
 }

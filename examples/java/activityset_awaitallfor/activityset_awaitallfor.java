@@ -70,9 +70,9 @@ public class activityset_awaitallfor {
 
     e.load_platform(args[0]);
 
-    e.add_actor("bob", e.host_by_name("bob"), new bob());
-    e.add_actor("alice", e.host_by_name("alice"), new alice());
-    e.add_actor("carl", e.host_by_name("carl"), new carl());
+    e.host_by_name("bob").add_actor("bob", new bob());
+    e.host_by_name("alice").add_actor("alice", new alice());
+    e.host_by_name("carl").add_actor("carl", new carl());
 
     e.run();
   }

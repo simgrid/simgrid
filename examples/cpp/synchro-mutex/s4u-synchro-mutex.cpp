@@ -54,8 +54,8 @@ int main(int argc, char** argv)
 
   for (int i = 0; i < cfg_actor_count; i++) {
     sg4::MutexPtr mutex = sg4::Mutex::create();
-    e.add_actor("worker", sg4::Host::by_name("Jupiter"), workerScopedLock, mutex, std::ref(result[i]));
-    e.add_actor("worker", sg4::Host::by_name("Tremblay"), worker, mutex, std::ref(result[i]));
+    e.host_by_name("Jupiter")->add_actor("worker", workerScopedLock, mutex, std::ref(result[i]));
+    e.host_by_name("Tremblay")->add_actor("worker", worker, mutex, std::ref(result[i]));
   }
 
   e.run();

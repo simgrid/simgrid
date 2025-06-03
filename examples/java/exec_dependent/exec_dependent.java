@@ -53,7 +53,7 @@ public class exec_dependent {
     Engine e = new Engine(args);
     e.load_platform(args[0]);
 
-    e.add_actor("worker", e.host_by_name("Fafard"), new Worker());
+    e.host_by_name("Fafard").add_actor("worker", new Worker());
 
     Exec.on_veto_cb(new CallbackExec() {
       public void run(Exec exec)

@@ -40,8 +40,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  e.add_actor("executor", e.host_by_name("Tremblay"), executor);
-  e.add_actor("privileged", e.host_by_name("Tremblay"), privileged);
+  e.host_by_name("Tremblay")->add_actor("executor", executor);
+  e.host_by_name("Tremblay")->add_actor("privileged", privileged);
 
   e.run();
 

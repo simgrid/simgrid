@@ -99,9 +99,9 @@ class comm_ready {
   {
     Engine e = new Engine(args);
     e.load_platform(args[0]);
-    e.add_actor("peer", e.host_by_name("Tremblay"), new peer(0, 2, 5e7, 3));
-    e.add_actor("peer", e.host_by_name("Ruby"), new peer(1, 6, 2.5e5, 3));
-    e.add_actor("peer", e.host_by_name("Perl"), new peer(2, 0, 5e7, 3));
+    e.host_by_name("Tremblay").add_actor("peer", new peer(0, 2, 5e7, 3));
+    e.host_by_name("Ruby").add_actor("peer", new peer(1, 6, 2.5e5, 3));
+    e.host_by_name("Perl").add_actor("peer", new peer(2, 0, 5e7, 3));
 
     e.run();
   }

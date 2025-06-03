@@ -56,8 +56,8 @@ public class energy_wifi {
     l.set_host_wifi_rate(engine.host_by_name("Station 2"), 0);
 
     // create the two actors for the test
-    engine.add_actor("act0", engine.host_by_name("Station 1"), new Sender());
-    engine.add_actor("act1", engine.host_by_name("Station 2"), new Receiver());
+    engine.host_by_name("Station 1").add_actor("act0", new Sender());
+    engine.host_by_name("Station 2").add_actor("act1", new Receiver());
 
     engine.run();
   }

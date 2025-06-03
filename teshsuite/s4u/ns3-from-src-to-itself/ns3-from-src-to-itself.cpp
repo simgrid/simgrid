@@ -46,9 +46,9 @@ int main(int argc, char* argv[])
   e.load_platform(argv[1]);
 
   auto hosts = e.get_all_hosts();
-  e.add_actor("receiver", hosts[0], test_receive);
-  e.add_actor("send_same", hosts[0], test_send);
-  e.add_actor("send_other", hosts[1], test_send);
+  hosts[0]->add_actor("receiver", test_receive);
+  hosts[0]->add_actor("send_same", test_send);
+  hosts[1]->add_actor("send_other", test_send);
 
   e.run();
 

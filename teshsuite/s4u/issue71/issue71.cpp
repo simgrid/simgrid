@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 
   try {
     e.load_platform(platform_file);
-    e.add_actor("actor", e.host_by_name("c1_0"), runner);
+    e.host_by_name("c1_0")->add_actor("actor", runner);
     e.run();
   } catch (const simgrid::AssertionError& e) {
     std::cout << e.what() << "\n";

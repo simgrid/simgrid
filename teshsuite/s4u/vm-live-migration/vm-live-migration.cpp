@@ -38,9 +38,9 @@ int main(int argc, char* argv[])
   auto* pm = e.host_by_name("host1");
   auto* vm = pm->create_vm("VM0", 1 /*nCores*/);
   vm->set_ramsize(1250000000)->start();
-  e.add_actor("executor", vm, task_executor);
+  vm->add_actor("executor", task_executor);
 
-  e.add_actor("migration", pm, [vm]() {
+  pm->add_actor("migration", [vm]() {
     XBT_INFO("%s migration started", vm->get_cname());
     const auto* old = vm->get_pm();
 

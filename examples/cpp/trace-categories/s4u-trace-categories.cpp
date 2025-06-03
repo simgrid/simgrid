@@ -63,8 +63,8 @@ int main(int argc, char* argv[])
   simgrid::instr::declare_tracing_category("data", "0 0 1");     // blue
   simgrid::instr::declare_tracing_category("finalize", "0 0 0"); // black
 
-  e.add_actor("master", e.host_by_name("Tremblay"), master);
-  e.add_actor("worker", e.host_by_name("Fafard"), worker);
+  e.host_by_name("Tremblay")->add_actor("master", master);
+  e.host_by_name("Fafard")->add_actor("worker", worker);
 
   e.run();
   return 0;

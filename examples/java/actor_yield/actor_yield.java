@@ -31,8 +31,8 @@ public class actor_yield {
     Engine e = new Engine(args);
     e.load_platform(args[0]);
 
-    e.add_actor("yielder", e.host_by_name("Tremblay"), new Yielder(10));
-    e.add_actor("yielder", e.host_by_name("Ruby"), new Yielder(15));
+    e.host_by_name("Tremblay").add_actor("yielder", new Yielder(10));
+    e.host_by_name("Ruby").add_actor("yielder", new Yielder(15));
 
     e.run(); /* - Run the simulation */
   }

@@ -120,8 +120,8 @@ int main(int argc, char** argv)
   rootzone->add_route(paul, carol, {link});
 
   SharedBuffer buffer;
-  e.add_actor("producer", paul, producer, std::ref(buffer))->set_auto_restart();
-  e.add_actor("consumer", carol, consumer, std::cref(buffer))->set_auto_restart();
+  paul->add_actor("producer", producer, std::ref(buffer))->set_auto_restart();
+  carol->add_actor("consumer", consumer, std::cref(buffer))->set_auto_restart();
   e.run();
 
   return 0;

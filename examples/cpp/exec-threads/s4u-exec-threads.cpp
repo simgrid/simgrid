@@ -14,26 +14,26 @@ static void runner()
   const auto* e             = sg4::Engine::get_instance();
   sg4::Host* multicore_host = e->host_by_name("MyHost1");
   // First test with less than, same number as, and more threads than cores
-  double start_time = sg4::Engine::get_clock();
+  double start_time = e->get_clock();
   sg4::this_actor::thread_execute(multicore_host, 1e9, 2);
   XBT_INFO("Computed 2-thread activity on a 4-core host. Took %g s", e->get_clock() - start_time);
 
-  start_time = sg4::Engine::get_clock();
+  start_time = e->get_clock();
   sg4::this_actor::thread_execute(multicore_host, 1e9, 4);
   XBT_INFO("Computed 4-thread activity on a 4-core host. Took %g s", e->get_clock() - start_time);
 
-  start_time = sg4::Engine::get_clock();
+  start_time = e->get_clock();
   sg4::this_actor::thread_execute(multicore_host, 1e9, 6);
   XBT_INFO("Computed 6-thread activity on a 4-core host. Took %g s", e->get_clock() - start_time);
 
   simgrid::s4u::ExecPtr background_task = sg4::this_actor::exec_async(2.5e9);
   XBT_INFO("Start a 1-core background task on the 4-core host.");
 
-  start_time = sg4::Engine::get_clock();
+  start_time = e->get_clock();
   sg4::this_actor::thread_execute(multicore_host, 1e9, 2);
   XBT_INFO("Computed 2-thread activity on a 4-core host. Took %g s", e->get_clock() - start_time);
 
-  start_time = sg4::Engine::get_clock();
+  start_time = e->get_clock();
   sg4::this_actor::thread_execute(multicore_host, 1e9, 4);
   XBT_INFO("Computed 4-thread activity on a 4-core host. Took %g s", e->get_clock() - start_time);
 
@@ -46,7 +46,7 @@ static void runner()
   XBT_INFO("Sleep for 5 seconds before starting another competing task");
   sg4::this_actor::sleep_for(5);
 
-  start_time = sg4::Engine::get_clock();
+  start_time = e->get_clock();
   sg4::this_actor::execute(1e9);
   XBT_INFO("Computed 1-thread activity on a 4-core host. Took %g s", e->get_clock() - start_time);
 
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s <platform file>", argv[0]);
 
   e.load_platform(argv[1]);
-  e.add_actor("test", e.host_by_name("MyHost1"), runner);
+  e.host_by_name("MyHost1")->add_actor("test", runner);
 
   e.run();
   XBT_INFO("Simulation done.");

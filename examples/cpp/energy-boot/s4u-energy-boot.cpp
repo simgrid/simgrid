@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
-  e.add_actor("Boot Monitor", e.host_by_name("MyHost2"), monitor);
+  e.host_by_name("MyHost2")->add_actor("Boot Monitor", monitor);
 
   e.run();
 

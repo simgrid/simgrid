@@ -210,17 +210,22 @@ public:
   /** Create an actor from a @c std::function<void()>.
    *  If the actor is restarted, it gets a fresh copy of the function.
    *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  XBT_ATTRIB_DEPRECATED_v403("Please use Host::add_actor.")
   static ActorPtr add_actor(const std::string& name, s4u::Host* host, const std::function<void()>& code);
 
   /** Add an actor taking a vector of strings as parameters.
    *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  XBT_ATTRIB_DEPRECATED_v403("Please use Host::add_actor.")
   ActorPtr add_actor(const std::string& name, s4u::Host* host, const std::string& function,
                      std::vector<std::string> args);
   /** Create an actor from a callable thing.
    *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
-  template <class F> ActorPtr add_actor(const std::string& name, s4u::Host* host, F code)
+  
+  template <class F> 
+  XBT_ATTRIB_DEPRECATED_v403("Please use Host::add_actor.")
+  ActorPtr add_actor(const std::string& name, s4u::Host* host, F code)
   {
-    return add_actor(name, host, std::function<void()>(std::move(code)));
+    return host->add_actor(name, std::function<void()>(std::move(code)));
   }
 
   /** Create an actor using a callable thing and its arguments.
@@ -228,14 +233,15 @@ public:
    * Note that the arguments will be copied, so move-only parameters are forbidden.
    * @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   template <class F, class... Args // This constructor is enabled only if calling code(args...) is valid
-#ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
-            ,
-            typename = typename std::invoke_result_t<F, Args...>
-#endif
-            >
+  #ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
+  ,
+  typename = typename std::invoke_result_t<F, Args...>
+  #endif
+  >
+  XBT_ATTRIB_DEPRECATED_v403("Please use Host::add_actor.")
   ActorPtr add_actor(const std::string& name, s4u::Host* host, F code, Args... args)
   {
-    return add_actor(name, host, std::bind(std::move(code), std::move(args)...));
+    return host->add_actor(name, std::bind(std::move(code), std::move(args)...));
   }
 
   kernel::EngineImpl* get_impl() const { return pimpl_; }

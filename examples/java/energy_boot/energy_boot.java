@@ -104,7 +104,7 @@ public class energy_boot {
                  + "energy_boot platform.xml\n");
 
     e.load_platform(args[0]);
-    e.add_actor("Boot Monitor", e.host_by_name("MyHost2"), new monitor());
+    e.host_by_name("MyHost2").add_actor("Boot Monitor", new monitor());
 
     e.run();
 

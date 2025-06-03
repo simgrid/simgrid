@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
-  e.add_actor("test", e.host_by_name("Fafard"), wizard);
+  e.host_by_name("Fafard")->add_actor("test", wizard);
 
   e.run();
 

@@ -67,20 +67,19 @@ static void pop_some_processes(int nb_processes, simgrid::s4u::Host* host)
 {
   for (int i = 0; i < nb_processes; ++i) {
     int param = i + 1;
-    simgrid::s4u::this_actor::get_engine()->add_actor("meh", host, sleeper_process, param);
+    host->add_actor("meh", sleeper_process, param);
   }
 }
 
 static int job_executor_process(const std::vector<simgrid::s4u::Host*>& hosts, Job* job)
 {
-  simgrid::s4u::Engine& e = *simgrid::s4u::this_actor::get_engine();
   XBT_INFO("Executing job %d (smpi_app '%s')", job->unique_job_number, job->smpi_app_name.c_str());
 
   simgrid::s4u::BarrierPtr barrier = simgrid::s4u::Barrier::create(job->app_size + 1);
 
   for (int i = 0; i < job->app_size; ++i) {
     char* str_pname = bprintf("rank_%d_%d", job->unique_job_number, i);
-    e.add_actor(str_pname, hosts[job->allocation[i]], smpi_replay_process, job, barrier, i);
+    hosts[job->allocation[i]]->add_actor(str_pname,smpi_replay_process, job, barrier, i);
     xbt_free(str_pname);
   }
 
@@ -96,7 +95,6 @@ static int job_executor_process(const std::vector<simgrid::s4u::Host*>& hosts, J
 static int workload_executor_process(const std::vector<simgrid::s4u::Host*>& hosts,
                                      const std::vector<std::unique_ptr<Job>>& workload, int noise_between_jobs)
 {
-  simgrid::s4u::Engine& e = *simgrid::s4u::this_actor::get_engine();
   for (auto const& job : workload) {
     // Let's wait until the job's waiting time if needed
     if (double curr_time = simgrid::s4u::Engine::get_clock(); job->starting_time > curr_time) {
@@ -116,7 +114,7 @@ static int workload_executor_process(const std::vector<simgrid::s4u::Host*>& hos
     // Let's finally run the job executor
     char* str_pname = bprintf("job_%04d", job->unique_job_number);
     XBT_INFO("Launching the job executor of job %d (app '%s')", job->unique_job_number, job->smpi_app_name.c_str());
-    e.add_actor(str_pname, hosts[job->allocation[0]], job_executor_process, std::cref(hosts), job.get());
+    hosts[job->allocation[0]]->add_actor(str_pname, job_executor_process, std::cref(hosts), job.get());
     xbt_free(str_pname);
   }
 
@@ -234,10 +232,10 @@ int main(int argc, char* argv[])
   }
 
   // Let's execute the workload
-  e.add_actor("workload", hosts[0], workload_executor_process, std::cref(hosts), std::cref(jobs), noise_between_jobs);
+  hosts[0]->add_actor("workload", workload_executor_process, std::cref(hosts), std::cref(jobs), noise_between_jobs);
 
   e.run();
-  XBT_INFO("Simulation finished! Final time: %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulation finished! Final time: %g", e.get_clock());
 
   SMPI_finalize();
 

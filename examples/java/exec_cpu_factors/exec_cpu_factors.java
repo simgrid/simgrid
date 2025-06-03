@@ -47,7 +47,7 @@ public class exec_cpu_factors {
     zone.seal();
 
     /* create actor runner */
-    e.add_actor("runner", runner_host, new runner());
+    runner_host.add_actor("runner", new runner());
 
     /* runs the simulation */
     e.run();

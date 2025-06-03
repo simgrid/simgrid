@@ -35,8 +35,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  e.add_actor("send", e.host_by_name("Tremblay"), sender_fun);
-  e.add_actor("receive", e.host_by_name("Tremblay"), receiver_fun);
+  e.host_by_name("Tremblay")->add_actor("send", sender_fun);
+  e.host_by_name("Tremblay")->add_actor("receive", receiver_fun);
 
   e.run();
   return 0;

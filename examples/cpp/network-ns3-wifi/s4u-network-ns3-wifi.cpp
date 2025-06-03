@@ -43,24 +43,24 @@ int main(int argc, char* argv[])
   int msg_size = 1e5;
 
   /* Communication between STA in the same wifi zone */
-  e.add_actor("sender", e.host_by_name("STA0-0"), sender, "1", msg_size, 10);
-  e.add_actor("receiver", e.host_by_name("STA0-1"), receiver, "1");
-  e.add_actor("sender", e.host_by_name("STA0-1"), sender, "2", msg_size, 20);
-  e.add_actor("receiver", e.host_by_name("STA0-0"), receiver, "2");
-  e.add_actor("sender", e.host_by_name("STA1-1"), sender, "3", msg_size, 30);
-  e.add_actor("receiver", e.host_by_name("STA1-2"), receiver, "3");
-  e.add_actor("sender", e.host_by_name("STA1-2"), sender, "4", msg_size, 40);
-  e.add_actor("receiver", e.host_by_name("STA1-1"), receiver, "4");
+  e.host_by_name("STA0-0")->add_actor("sender", sender, "1", msg_size, 10);
+  e.host_by_name("STA0-1")->add_actor("receiver",receiver, "1");
+  e.host_by_name("STA0-1")->add_actor("sender", sender, "2", msg_size, 20);
+  e.host_by_name("STA0-0")->add_actor("receiver", receiver, "2");
+  e.host_by_name("STA1-1")->add_actor("sender", sender, "3", msg_size, 30);
+  e.host_by_name("STA1-2")->add_actor("receiver", receiver, "3");
+  e.host_by_name("STA1-2")->add_actor("sender", sender, "4", msg_size, 40);
+  e.host_by_name("STA1-1")->add_actor("receiver", receiver, "4");
 
   /* Communication between STA of different wifi zones */
-  e.add_actor("sender", e.host_by_name("STA0-0"), sender, "5", msg_size, 50);
-  e.add_actor("receiver", e.host_by_name("STA1-0"), receiver, "5");
-  e.add_actor("sender", e.host_by_name("STA1-0"), sender, "6", msg_size, 60);
-  e.add_actor("receiver", e.host_by_name("STA0-0"), receiver, "6");
-  e.add_actor("sender", e.host_by_name("STA0-1"), sender, "7", msg_size, 70);
-  e.add_actor("receiver", e.host_by_name("STA1-2"), receiver, "7");
-  e.add_actor("sender", e.host_by_name("STA1-2"), sender, "8", msg_size, 80);
-  e.add_actor("receiver", e.host_by_name("STA0-1"), receiver, "8");
+  e.host_by_name("STA0-0")->add_actor("sender", sender, "5", msg_size, 50);
+  e.host_by_name("STA1-0")->add_actor("receiver", receiver, "5");
+  e.host_by_name("STA1-0")->add_actor("sender", sender, "6", msg_size, 60);
+  e.host_by_name("STA0-0")->add_actor("receiver", receiver, "6");
+  e.host_by_name("STA0-1")->add_actor("sender", sender, "7", msg_size, 70);
+  e.host_by_name("STA1-2")->add_actor("receiver", receiver, "7");
+  e.host_by_name("STA1-2")->add_actor("sender", sender, "8", msg_size, 80);
+  e.host_by_name("STA0-1")->add_actor("receiver", receiver, "8");
 
   e.run();
   return 0;

@@ -68,8 +68,8 @@ public class mess_await {
     Engine e = new Engine(args);
 
     e.load_platform(args[0]);
-    e.add_actor("sender", e.host_by_name("Tremblay"), new Sender(3));
-    e.add_actor("receiver", e.host_by_name("Fafard"), new Receiver());
+    e.host_by_name("Tremblay").add_actor("sender", new Sender(3));
+    e.host_by_name("Fafard").add_actor("receiver", new Receiver());
 
     e.run();
   }

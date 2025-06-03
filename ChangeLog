@@ -1,5 +1,9 @@
 SimGrid (4.1) unreleased. Target: summer or fall 2025
 
+S4U:
+ - Deprecate Engine::add_actor in favor of Host::add_actor to avoid always passing the host 
+   on which to create the new actor as parameter. 
+
 Maint:
  - Simplify our code by removing SysV contexts which do not bring much. It's not portable on all OSes and a bit less efficient
    than our raw contexts. Raw contexts are limited to amd64 processors, but boost contexts should work on exotic architectures.

@@ -106,7 +106,7 @@ if __name__ == '__main__':
     lili.seal()
 
     # Create an actor on that new host, to monitor its own state
-    actor = e.add_actor("sleeper", lili, sleeper)
+    actor = lili.add_actor("sleeper", sleeper)
     actor.set_auto_restart(True)
 
     e.run()

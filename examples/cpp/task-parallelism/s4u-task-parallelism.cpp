@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
   sg4::Task::on_completion_cb(
       [](const sg4::Task* task) { XBT_INFO("Task %s finished (%d)", task->get_cname(), task->get_count()); });
   sg4::Task::on_start_cb([](const sg4::Task* t) { XBT_INFO("Task %s start", t->get_cname()); });
-  e.add_actor("sender", pm0, manager, t);
+  pm0->add_actor("sender", manager, t);
 
   e.run();
   return 0;

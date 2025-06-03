@@ -150,11 +150,11 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n", argv[0]);
   e.load_platform(argv[1]);
 
-  e.add_actor("server", e.host_by_name("alice"), server);
-  e.add_actor("client", e.host_by_name("bob"), client);
+  e.host_by_name("alice")->add_actor("server", server);
+  e.host_by_name("bob")->add_actor("client", client);
 
   e.run();
 
-  XBT_INFO("Simulated time: %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulated time: %g", e.get_clock());
   return 0;
 }

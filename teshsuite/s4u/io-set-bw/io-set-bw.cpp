@@ -87,7 +87,7 @@ int main(int argc, char** argv)
   disk->set_readwrite_bandwidth(1e6);
   zone->seal();
 
-  e.add_actor("", bob, host);
+  bob->add_actor("", host);
 
   e.run();
 

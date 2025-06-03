@@ -67,8 +67,8 @@ def main():
     settings = create_parser().parse_known_args()[0]
     e = Engine(sys.argv)
     e.load_platform(settings.platform)
-    e.add_actor("producer", Host.by_name("Tremblay"), producer, settings.words)
-    e.add_actor("consumer", Host.by_name("Jupiter"), consumer)
+    e.host_by_name("Tremblay").add_actor("producer", producer, settings.words)
+    e.host_by_name("Jupiter").add_actor("consumer", consumer)
     e.run()
 
 

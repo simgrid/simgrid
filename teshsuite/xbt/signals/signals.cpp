@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  e.add_actor("worker", e.host_by_name("Tremblay"), worker);
+  e.host_by_name("Tremblay")->add_actor("worker", worker);
 
   e.run();
 

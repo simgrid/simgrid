@@ -20,12 +20,12 @@ static void manager(simgrid::plugins::ChillerPtr c)
 {
   display_chiller(c);
 
-  simgrid::s4u::this_actor::sleep_for(c->get_time_to_goal_temp());
+  sg4::this_actor::sleep_for(c->get_time_to_goal_temp());
   XBT_INFO("The input temperature is now equal to the goal temperature. After this point the Chiller will compensate "
            "heat with electrical power.");
   display_chiller(c);
 
-  simgrid::s4u::this_actor::sleep_for(1);
+  sg4::this_actor::sleep_for(1);
   display_chiller(c);
 
   XBT_INFO("Let's compute something.");
@@ -35,14 +35,14 @@ static void manager(simgrid::plugins::ChillerPtr c)
   XBT_INFO("Now let's stress the chiller by decreasing the goal temperature to 23°C.");
   c->set_goal_temp(23);
 
-  simgrid::s4u::this_actor::sleep_for(1);
+  sg4::this_actor::sleep_for(1);
   display_chiller(c);
 
-  simgrid::s4u::this_actor::sleep_for(c->get_time_to_goal_temp());
+  sg4::this_actor::sleep_for(c->get_time_to_goal_temp());
   XBT_INFO("The input temperature is back to the goal temperature.");
   display_chiller(c);
 
-  simgrid::s4u::this_actor::sleep_for(1);
+  sg4::this_actor::sleep_for(1);
   display_chiller(c);
 }
 
@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
   chiller->add_host(e.host_by_name("MyHost1"));
   chiller->add_host(e.host_by_name("MyHost2"));
   chiller->add_host(e.host_by_name("MyHost3"));
-  e.add_actor("manager", e.host_by_name("MyHost1"), manager, chiller);
+  e.host_by_name("MyHost1")->add_actor("manager", manager, chiller);
 
   e.run();
   return 0;

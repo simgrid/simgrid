@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
   simgrid::instr::declare_host_variable("HDD_capacity");
   simgrid::instr::declare_host_variable("HDD_utilization", "1 0 0"); // red color
 
-  e.add_actor("master", e.host_by_name("Tremblay"), trace_fun);
+  e.host_by_name("Tremblay")->add_actor("master", trace_fun);
 
   e.run();
 

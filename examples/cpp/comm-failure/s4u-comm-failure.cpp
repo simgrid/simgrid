@@ -88,11 +88,11 @@ int main(int argc, char** argv)
   zone->add_route(host1, host3, {link3});
   zone->seal();
 
-  e.add_actor("Sender", host1, Sender("mailbox2", "mailbox3"));
-  e.add_actor("Receiver", host2, Receiver("mailbox2"));
-  e.add_actor("Receiver", host3, Receiver("mailbox3"));
+  host1->add_actor("Sender", Sender("mailbox2", "mailbox3"));
+  host2->add_actor("Receiver", Receiver("mailbox2"));
+  host3->add_actor("Receiver", Receiver("mailbox3"));
 
-  e.add_actor("LinkKiller", host1, []() {
+  host1->add_actor("LinkKiller", []() {
     sg4::this_actor::sleep_for(10.0);
     XBT_INFO("Turning off link 'linkto2'");
     sg4::Link::by_name("linkto2")->turn_off();

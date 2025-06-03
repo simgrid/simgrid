@@ -337,9 +337,8 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   std::string rx_name = "__pr_mig_rx:" + vm->get_name() + "(" + src_pm->get_name() + "-" + dst_pm->get_name() + ")";
   std::string tx_name = "__pr_mig_tx:" + vm->get_name() + "(" + src_pm->get_name() + "-" + dst_pm->get_name() + ")";
 
-  auto e                    = simgrid::s4u::Engine::get_instance();
-  simgrid::s4u::ActorPtr rx = e->add_actor(rx_name.c_str(), dst_pm, simgrid::plugin::vm::MigrationRx(vm, dst_pm));
-  simgrid::s4u::ActorPtr tx = e->add_actor(tx_name.c_str(), src_pm, simgrid::plugin::vm::MigrationTx(vm, dst_pm));
+  simgrid::s4u::ActorPtr rx = dst_pm->add_actor(rx_name.c_str(), simgrid::plugin::vm::MigrationRx(vm, dst_pm));
+  simgrid::s4u::ActorPtr tx = src_pm->add_actor(tx_name.c_str(), simgrid::plugin::vm::MigrationTx(vm, dst_pm));
 
   vm->extension_set<VmMigrationExt>(new VmMigrationExt(simgrid::s4u::Actor::self(), rx, tx));
 

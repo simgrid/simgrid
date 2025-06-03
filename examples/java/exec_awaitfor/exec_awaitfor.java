@@ -60,7 +60,7 @@ public class exec_awaitfor {
   {
     Engine e = new Engine(args);
     e.load_platform(args[0]);
-    e.add_actor("worker", e.host_by_name("Tremblay"), new worker());
+    e.host_by_name("Tremblay").add_actor("worker", new worker());
     e.run();
   }
 }

@@ -239,6 +239,37 @@ public:
   Host* set_pstate(unsigned long pstate_index);
   Host* set_coordinates(const std::string& coords);
 
+  /** Create an actor from a @c std::function<void()>.
+   *  If the actor is restarted, it gets a fresh copy of the function.
+   *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  ActorPtr add_actor(const std::string& name, const std::function<void()>& code);
+
+  /** Add an actor taking a vector of strings as parameters.
+   *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  ActorPtr add_actor(const std::string& name, const std::string& function,
+                     std::vector<std::string> args);
+  /** Create an actor from a callable thing.
+   *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  template <class F> ActorPtr add_actor(const std::string& name, F code)
+  {
+    return add_actor(name, std::function<void()>(std::move(code)));
+  }
+
+  /** Create an actor using a callable thing and its arguments.
+   *
+   * Note that the arguments will be copied, so move-only parameters are forbidden.
+   * @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  template <class F, class... Args // This constructor is enabled only if calling code(args...) is valid
+#ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
+            ,
+            typename = typename std::invoke_result_t<F, Args...>
+#endif
+            >
+  ActorPtr add_actor(const std::string& name, F code, Args... args)
+  {
+    return add_actor(name, std::bind(std::move(code), std::move(args)...));
+  }
+
   std::vector<Disk*> get_disks() const;
   Disk* get_disk_by_name(const std::string& name) const;
 

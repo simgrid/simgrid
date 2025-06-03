@@ -17,26 +17,25 @@ class sleeper extends Actor {
 class master extends Actor {
   public void run()
   {
-    Engine e = this.get_engine();
     Actor actor;
 
     Engine.info("Start sleeper");
-    actor = e.add_actor("sleeper from master", Host.current(), new sleeper());
+    actor = Host.current().add_actor("sleeper from master", new sleeper());
     Engine.info("Join the sleeper (timeout 2)");
     actor.join(2);
 
     Engine.info("Start sleeper");
-    actor = e.add_actor("sleeper from master", Host.current(), new sleeper());
+    actor = Host.current().add_actor("sleeper from master", new sleeper());
     Engine.info("Join the sleeper (timeout 4)");
     actor.join(4);
 
     Engine.info("Start sleeper");
-    actor = e.add_actor("sleeper from master", Host.current(), new sleeper());
+    actor = Host.current().add_actor("sleeper from master", new sleeper());
     Engine.info("Join the sleeper (timeout 2)");
     actor.join(2);
 
     Engine.info("Start sleeper");
-    actor = e.add_actor("sleeper from master", Host.current(), new sleeper());
+    actor = Host.current().add_actor("sleeper from master", new sleeper());
     Engine.info("Waiting 4");
     sleep_for(4);
     Engine.info("Join the sleeper after its end (timeout 1)");
@@ -56,7 +55,7 @@ public class actor_join {
     Engine e = new Engine(args);
 
     e.load_platform(args[0]);
-    e.add_actor("master", e.host_by_name("Tremblay"), new master());
+    e.host_by_name("Tremblay").add_actor("master", new master());
     e.run();
 
     Engine.info("Simulation ends.");

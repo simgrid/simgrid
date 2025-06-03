@@ -172,7 +172,7 @@ public class energy_exec_ptask {
                  + "\tExample: java -cp energy_exec_ptask.jar energy_exec_ptask ../platforms/energy_platform.xml");
 
     e.load_platform(args[0]);
-    e.add_actor("energy_ptask_test", e.host_by_name("MyHost1"), new runner());
+    e.host_by_name("MyHost1").add_actor("energy_ptask_test", new runner());
 
     e.run();
     Engine.info("End of simulation.");

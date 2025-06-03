@@ -50,9 +50,9 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  e.add_actor("server", e.host_by_name("HostA"), server);
-  e.add_actor("client", e.host_by_name("HostB"), client, 1);
-  e.add_actor("client", e.host_by_name("HostC"), client, 2);
+  e.host_by_name("HostA")->add_actor("server", server);
+  e.host_by_name("HostB")->add_actor("client", client, 1);
+  e.host_by_name("HostC")->add_actor("client", client, 2);
 
   e.run();
   return 0;

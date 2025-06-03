@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 
   auto myhost1 = e.host_by_name("MyHost1");
 
-  auto connector     = sp::Battery::init();
+  auto connector   = sp::Battery::init();
   auto solar_panel = sp::SolarPanel::init("Solar Panel", 1, 1, 200, 0, 1e3);
 
   connector->set_load("Solar Panel", solar_panel->get_power() * -1);
@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
   solar_panel->on_this_power_change_cb(
       [connector](const sp::SolarPanel* s) { connector->set_load("Solar Panel", s->get_power() * -1); });
 
-  e.add_actor("manager", myhost1, [&myhost1, &solar_panel, &connector] {
+  myhost1->add_actor("manager", [&myhost1, &solar_panel, &connector] {
     XBT_INFO("Solar Panel power = %.2fW, MyHost1 power = %.2fW. The Solar Panel provides more than needed.", solar_panel->get_power(), sg_host_get_current_consumption(myhost1));
     simgrid::s4u::this_actor::sleep_for(100);
     XBT_INFO("Energy consumption MyHost1: %.2fkJ, Energy from the Solar Panel %.2fkJ", sg_host_get_consumed_energy(myhost1) / 1e3, connector->get_energy_provided() / 1e3);
