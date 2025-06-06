@@ -114,6 +114,15 @@ XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std
 /** Block the current actor until the built multi-thread execution completes. */
 XBT_PUBLIC void thread_execute(s4u::Host* host, double flop_amounts, int thread_count);
 
+/** Block the current actor until the built multi-thread execution completes on the current host. */
+XBT_PUBLIC void thread_execute(double flop_amounts, int thread_count);
+
+/** Initialize and start a multi-thread execution on 'host' */
+XBT_PUBLIC ExecPtr thread_execute_async(s4u::Host* host, double flop_amounts, int thread_count);
+
+/** Initialize and start a multi-thread execution on the current host */
+XBT_PUBLIC ExecPtr thread_execute_async(double flop_amounts, int thread_count);
+
 /** Initialize a sequential execution that must then be started manually */
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
 /** Initialize a parallel execution that must then be started manually */
