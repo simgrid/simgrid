@@ -46,12 +46,12 @@ int main(int argc, char* argv[])
   root->add_route(host1, host2, {link});
   root->seal();
 
-  e.add_actor("I/O manager", host1, io_manager)->set_auto_restart();
-  e.add_actor("host_killer", host2, host_killer);
+  host1->add_actor("I/O manager", io_manager)->set_auto_restart();
+  host2->add_actor("host_killer", host_killer);
 
   e.run();
 
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

@@ -100,8 +100,8 @@ int main(int argc, char* argv[])
   } else { // No parameter at all? Then use the default value
     argSender.emplace_back("25000");
   }
-  e.add_actor("sender", e.host_by_name("MyHost1"), sender, argSender);
-  e.add_actor("receiver", e.host_by_name("MyHost2"), receiver, argReceiver);
+  e.host_by_name("MyHost1")->add_actor("sender", sender, argSender);
+  e.host_by_name("MyHost2")->add_actor("receiver", receiver, argReceiver);
 
   /* And now, launch the simulation */
   e.run();

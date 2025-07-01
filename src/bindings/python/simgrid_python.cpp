@@ -238,25 +238,10 @@ PYBIND11_MODULE(simgrid, m)
           },
           "Registers the main function of an actor (used for the deployment file)")
       .def(
-          "add_actor",
-          [](Engine* engine, const std::string& name, Host* h, py::object fun, py::args args) {
-            fun.inc_ref();  // keep alive after return
-            args.inc_ref(); // keep alive after return
-            const py::gil_scoped_release gil_release;
-            return engine->add_actor(name, h, [fun_p = fun.ptr(), args_p = args.ptr()]() {
-              const py::gil_scoped_acquire py_context;
-              try {
-                const auto fun  = py::reinterpret_borrow<py::object>(fun_p);
-                const auto args = py::reinterpret_borrow<py::args>(args_p);
-                fun(*args);
-              } catch (const py::error_already_set& ex) {
-                if (ex.matches(pyForcefulKillEx)) {
-                  XBT_VERB("Actor killed");
-                  simgrid::ForcefulKillException::do_throw(); // Forward that ForcefulKill exception
-                }
-                throw;
-              }
-            });
+          "add_actor", // XBT_ATTRIB_DEPRECATED_v403
+          [](std::string const& name) {
+            PyErr_WarnEx(PyExc_DeprecationWarning, "add_actor) is deprecated, use Host.add_actor().", 2);
+            throw std::logic_error("Please call Host.add_actor() instead");
           },
           "Create an actor from a function or an object. See the :ref:`example <s4u_ex_actors_create>`.")
       .def("set_log_control", [](Engine*, const std::string& settings) { xbt_log_control_set(settings.c_str()); });
@@ -615,6 +600,27 @@ PYBIND11_MODULE(simgrid, m)
            "Set the coordinates of this host")
       .def("set_sharing_policy", &simgrid::s4u::Host::set_sharing_policy, py::call_guard<py::gil_scoped_release>(),
            "Describe how the CPU is shared", py::arg("policy"), py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
+      .def("add_actor",
+          [](Host* host, const std::string& name, py::object fun, py::args args) {
+            fun.inc_ref();  // keep alive after return
+            args.inc_ref(); // keep alive after return
+            const py::gil_scoped_release gil_release;
+            return host->add_actor(name, [fun_p = fun.ptr(), args_p = args.ptr()]() {
+              const py::gil_scoped_acquire py_context;
+              try {
+                const auto fun  = py::reinterpret_borrow<py::object>(fun_p);
+                const auto args = py::reinterpret_borrow<py::args>(args_p);
+                fun(*args);
+              } catch (const py::error_already_set& ex) {
+                if (ex.matches(pyForcefulKillEx)) {
+                  XBT_VERB("Actor killed");
+                  simgrid::ForcefulKillException::do_throw(); // Forward that ForcefulKill exception
+                }
+                throw;
+              }
+            });
+          },
+          "Create an actor from a function or an object. See the :ref:`example <s4u_ex_actors_create>`.")
       .def("add_disk", py::overload_cast<const std::string&, double, double>(&Host::add_disk),
            py::call_guard<py::gil_scoped_release>(), "Add a disk")
       .def("add_disk", py::overload_cast<const std::string&, const std::string&, const std::string&>(&Host::add_disk),
@@ -1081,7 +1087,7 @@ PYBIND11_MODULE(simgrid, m)
             fun.inc_ref();  // keep alive after return
             args.inc_ref(); // keep alive after return
             const py::gil_scoped_release gil_release;
-            return Engine::get_instance()->add_actor(name, h, [fun_p = fun.ptr(), args_p = args.ptr()]() {
+            return h->add_actor(name, [fun_p = fun.ptr(), args_p = args.ptr()]() {
               const py::gil_scoped_acquire py_context;
               try {
                 const auto fun  = py::reinterpret_borrow<py::object>(fun_p);

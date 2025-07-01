@@ -67,8 +67,8 @@ public class io_priority {
 
     e.load_platform(args[0]);
 
-    e.add_actor("writer", e.host_by_name("bob"), new Writer());
-    e.add_actor("privileged_writer", e.host_by_name("bob"), new PrivilegedWriter());
+    e.host_by_name("bob").add_actor("writer", new Writer());
+    e.host_by_name("bob").add_actor("privileged_writer", new PrivilegedWriter());
 
     e.run();
   }

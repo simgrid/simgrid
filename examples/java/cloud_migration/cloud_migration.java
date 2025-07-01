@@ -38,7 +38,7 @@ class Main extends Actor {
     vm0.start();
 
     Engine.info("Test: Migrate a VM with %d Mbytes RAM", vm0.get_ramsize() / 1000 / 1000);
-    e.add_actor("MigMgr", Host.current(), new MigrationManager(vm0, pm1)).join();
+    Host.current().add_actor("MigMgr", new MigrationManager(vm0, pm1)).join();
 
     vm0.destroy();
 
@@ -47,7 +47,7 @@ class Main extends Actor {
     vm0.start();
 
     Engine.info("Test: Migrate a VM with %d Mbytes RAM", vm0.get_ramsize() / 1000 / 1000);
-    e.add_actor("MigMgr", Host.current(), new MigrationManager(vm0, pm1)).join();
+    Host.current().add_actor("MigMgr", new MigrationManager(vm0, pm1)).join();
     vm0.destroy();
 
     vm0     = pm0.create_vm("VM0", 1);
@@ -59,8 +59,8 @@ class Main extends Actor {
     vm1.start();
 
     Engine.info("Test: Migrate two VMs at once from PM0 to PM1");
-    e.add_actor("MigMgr", Host.current(), new MigrationManager(vm0, pm1));
-    e.add_actor("MigMgr", Host.current(), new MigrationManager(vm1, pm1));
+    Host.current().add_actor("MigMgr", new MigrationManager(vm0, pm1));
+    Host.current().add_actor("MigMgr", new MigrationManager(vm1, pm1));
     this.sleep_for(10000);
 
     vm0.destroy();
@@ -75,8 +75,8 @@ class Main extends Actor {
     vm1.start();
 
     Engine.info("Test: Migrate two VMs at once to different PMs");
-    e.add_actor("MigMgr", Host.current(), new MigrationManager(vm0, pm1));
-    e.add_actor("MigMgr", Host.current(), new MigrationManager(vm1, pm2));
+    Host.current().add_actor("MigMgr", new MigrationManager(vm0, pm1));
+    Host.current().add_actor("MigMgr", new MigrationManager(vm1, pm2));
     this.sleep_for(10000);
 
     vm0.destroy();
@@ -91,7 +91,7 @@ public class cloud_migration {
     e.plugin_vm_live_migration_init();
 
     e.load_platform(args[0]);
-    e.add_actor("Main", e.host_by_name("Fafard"), new Main());
+    e.host_by_name("Fafard").add_actor("Main", new Main());
     e.run();
 
     Engine.info("Simulation ends.");

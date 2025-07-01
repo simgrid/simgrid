@@ -42,8 +42,8 @@ public class exec_basic {
       Engine.die("Usage: exec_basic platform_file\n\tExample: exec_basic platform.xml");
 
     e.load_platform(args[0]);
-    e.add_actor("executor", e.host_by_name("Tremblay"), new executor());
-    e.add_actor("privileged", e.host_by_name("Tremblay"), new privileged());
+    e.host_by_name("Tremblay").add_actor("executor", new executor());
+    e.host_by_name("Tremblay").add_actor("privileged", new privileged());
 
     e.run();
   }

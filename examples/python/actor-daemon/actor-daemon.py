@@ -38,7 +38,7 @@ if __name__ == '__main__':
             "Usage: actor-daemon.py platform_file [other parameters]")
 
     e.load_platform(sys.argv[1])
-    e.add_actor("worker", Host.by_name("Boivin"), worker)
-    e.add_actor("daemon", Host.by_name("Tremblay"), my_daemon)
+    Host.by_name("Boivin").add_actor("worker", worker)
+    Host.by_name("Tremblay").add_actor("daemon", my_daemon)
 
     e.run()

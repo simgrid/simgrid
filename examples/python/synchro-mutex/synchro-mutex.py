@@ -60,8 +60,8 @@ def main():
     results = [ResultHolder(value=0) for _ in range(settings.actors)]
     for i in range(settings.actors):
         mutex = Mutex()
-        e.add_actor(f"worker-{i}(mgr)", Host.by_name("Jupiter"), worker_context_manager, mutex, results[i])
-        e.add_actor(f"worker-{i}", Host.by_name("Tremblay"), worker, mutex, results[i])
+        e.host_by_name("Jupiter").add_actor(f"worker-{i}(mgr)", worker_context_manager, mutex, results[i])
+        e.host_by_name("Tremblay").add_actor(f"worker-{i}", worker, mutex, results[i])
 
     e.run()
 

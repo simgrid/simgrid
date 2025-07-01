@@ -66,8 +66,8 @@ public class comm_pingpong {
     Mailbox mb1 = e.mailbox_by_name("Mailbox 1");
     Mailbox mb2 = e.mailbox_by_name("Mailbox 2");
 
-    e.add_actor("pinger", e.host_by_name("Tremblay"), new Pinger(mb1, mb2));
-    e.add_actor("ponger", e.host_by_name("Jupiter"), new Ponger(mb2, mb1));
+    e.host_by_name("Tremblay").add_actor("pinger", new Pinger(mb1, mb2));
+    e.host_by_name("Jupiter").add_actor("ponger", new Ponger(mb2, mb1));
 
     e.run();
     Engine.info("The simulation is terminating.");

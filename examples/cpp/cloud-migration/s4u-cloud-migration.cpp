@@ -23,7 +23,7 @@ static void vm_migrate(sg4::VirtualMachine* vm, sg4::Host* dst_pm)
 
 static void vm_migrate_async(sg4::VirtualMachine* vm, sg4::Host* dst_pm)
 {
-  sg4::Engine::get_instance()->add_actor("mig_wrk", sg4::Host::current(), vm_migrate, vm, dst_pm);
+  sg4::Host::current()->add_actor("mig_wrk", vm_migrate, vm, dst_pm);
 }
 
 static void master_main()
@@ -92,11 +92,11 @@ int main(int argc, char* argv[])
   /* load the platform file */
   e.load_platform(argv[1]);
 
-  e.add_actor("master_", sg4::Host::by_name("Fafard"), master_main);
+  sg4::Host::by_name("Fafard")->add_actor("master_", master_main);
 
   e.run();
 
-  XBT_INFO("Bye (simulation time %g)", sg4::Engine::get_clock());
+  XBT_INFO("Bye (simulation time %g)", e.get_clock());
 
   return 0;
 }

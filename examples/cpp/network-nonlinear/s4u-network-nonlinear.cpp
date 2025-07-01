@@ -136,8 +136,8 @@ static void load_platform(simgrid::s4u::Engine& e)
   zone->seal();
 
   /* create actors Sender/Receiver */
-  e.add_actor("receiver", receiver, Receiver(9));
-  e.add_actor("sender", sender, Sender(9));
+  receiver->add_actor("receiver", Receiver(9));
+  sender->add_actor("sender", Sender(9));
 }
 
 /*************************************************************************************************/

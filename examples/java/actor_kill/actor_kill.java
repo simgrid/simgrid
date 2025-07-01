@@ -32,8 +32,8 @@ class Killer extends Actor {
   {
     Engine e = this.get_engine();
     Engine.info("Hello!"); /* - First start a victim actor */
-    Actor victimA = e.add_actor("victim A", e.host_by_name("Fafard"), new VictimA());
-    Actor victimB = e.add_actor("victim B", e.host_by_name("Jupiter"), new VictimB());
+    Actor victimA = e.host_by_name("Fafard").add_actor("victim A", new VictimA());
+    Actor victimB = e.host_by_name("Jupiter").add_actor("victim B", new VictimB());
     sleep_for(10); /* - Wait for 10 seconds */
 
     Engine.info("Resume the victim A"); /* - Resume it from its suspended state */
@@ -51,7 +51,7 @@ class Killer extends Actor {
     sleep_for(1);
 
     Engine.info("Start a new actor, and kill it right away.");
-    Actor victimC = e.add_actor("victim C", e.host_by_name("Jupiter"), new VictimA());
+    Actor victimC = e.host_by_name("Jupiter").add_actor("victim C", new VictimA());
     victimC.kill();
 
     sleep_for(1);
@@ -73,7 +73,7 @@ public class actor_kill {
 
     e.load_platform(args[0]); /* - Load the platform description */
     /* - Create and deploy killer actor, that will create the victim actors  */
-    e.add_actor("killer", e.host_by_name("Tremblay"), new Killer());
+    e.host_by_name("Tremblay").add_actor("killer", new Killer());
 
     e.run(); /* - Run the simulation */
   }

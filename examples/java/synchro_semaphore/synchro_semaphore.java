@@ -69,8 +69,8 @@ public class synchro_semaphore {
     Semaphore sem_empty = Semaphore.create(1); /* indicates whether the buffer is empty */
     Semaphore sem_full  = Semaphore.create(0); /* indicates whether the buffer is full */
 
-    e.add_actor("producer", e.host_by_name("Tremblay"), new producer(sem_empty, sem_full, params));
-    e.add_actor("consumer", e.host_by_name("Jupiter"), new consumer(sem_empty, sem_full));
+    e.host_by_name("Tremblay").add_actor("producer", new producer(sem_empty, sem_full, params));
+    e.host_by_name("Jupiter").add_actor("consumer", new consumer(sem_empty, sem_full));
     e.run();
   }
 }

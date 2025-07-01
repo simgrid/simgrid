@@ -55,12 +55,12 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  e.add_actor("master", e.host_by_name("Tremblay"), master);
-  e.add_actor("worker", e.host_by_name("Jupiter"), worker);
+  e.host_by_name("Tremblay")->add_actor("master", master);
+  e.host_by_name("Jupiter")->add_actor("worker", worker);
 
   e.run();
 
-  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
   rootzone->add_route(hostA, hostB, {backb});
   rootzone->seal();
 
-  e.add_actor("ptask", hostA, ptask, hostA, hostB);
+  hostA->add_actor("ptask", ptask, hostA, hostB);
 
   e.run();
 

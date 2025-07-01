@@ -39,7 +39,7 @@ class Main extends Actor {
     ConditionVariable cv = ConditionVariable.create();
 
     mutex.lock();
-    Actor worker = e.add_actor("worker", e.host_by_name("Jupiter"), new Worker(cv, mutex));
+    Actor worker = e.host_by_name("Jupiter").add_actor("worker", new Worker(cv, mutex));
 
     // wait for the worker
     cv.await(mutex);
@@ -55,7 +55,7 @@ public class synchro_condition_variable {
   {
     Engine e = new Engine(args);
     e.load_platform(args[0]);
-    e.add_actor("main", e.host_by_name("Tremblay"), new Main());
+    e.host_by_name("Tremblay").add_actor("main", new Main());
     e.run();
   }
 }

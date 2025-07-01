@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
   lilibeth->seal();
 
   // Create an actor on that new host, to monitor its own state
-  auto actor = e.add_actor("sleeper", lilibeth, []() {
+  auto actor = lilibeth->add_actor("sleeper", []() {
     XBT_INFO("Start sleeping...");
     sg4::this_actor::sleep_for(1);
     XBT_INFO("done sleeping.");
@@ -137,6 +137,6 @@ int main(int argc, char* argv[])
 
   e.run();
 
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
   return 0;
 }

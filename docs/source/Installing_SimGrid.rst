@@ -260,6 +260,10 @@ enable_ns3 (on/OFF)
 enable_smpi (ON/off)
   Allows one to run MPI code on top of SimGrid.
 
+enable_sthead (ON/off)
+  Build the sthread module, in charge of intercepting the pthread actions at runtime, so that unmodified applications can run on top of the simulator, or on top of the model checker.
+  It is Linux-only, so it's ON by default on this system while OFF by default on other systems (in particular Mac and FreeBSD).
+
 enable_testsuite_McMini (on/OFF)
   Adds several extra tests for the model checker module (targeting threaded applications).
 

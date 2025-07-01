@@ -71,8 +71,8 @@ def main():
     settings = create_parser().parse_known_args()[0]
     e = Engine(sys.argv)
     e.load_platform(settings.platform)
-    e.add_actor(
-        "sender", e.host_by_name("Boivin"), sender,
+    e.host_by_name("Boivin").add_actor(
+        "sender", sender,
         e.host_by_name("Tremblay"),  # h1
         e.host_by_name("Jupiter"),  # h2
         e.host_by_name("Fafard"),  # h3

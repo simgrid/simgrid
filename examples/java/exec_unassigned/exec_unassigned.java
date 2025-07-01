@@ -29,7 +29,7 @@ public class exec_unassigned {
     Engine e = new Engine(args);
     e.load_platform(args[0]);
 
-    e.add_actor("worker", e.host_by_name("Fafard"), new worker());
+    e.host_by_name("Fafard").add_actor("worker", new worker());
 
     e.run();
 

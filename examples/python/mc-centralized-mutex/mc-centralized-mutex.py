@@ -81,8 +81,8 @@ if __name__ == '__main__':
 
     e.load_platform(sys.argv[1])
 
-    e.add_actor("coordinator", e.host_by_name("Tremblay"), coordinator)
+    e.host_by_name("Tremblay").add_actor("coordinator", coordinator)
     for i in range(PROCESS_AMOUNT):
-      e.add_actor("client", e.host_by_name("Fafard"), client)
+      e.host_by_name("Fafard").add_actor("client", client)
 
     e.run()

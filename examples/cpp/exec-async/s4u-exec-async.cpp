@@ -78,14 +78,14 @@ int main(int argc, char* argv[])
   sg4::Host* boivin  = e.host_by_name("Boivin");
   sg4::Host* tremblay  = e.host_by_name("Tremblay");
 
-  e.add_actor("wait", fafard, waiter);
-  e.add_actor("monitor", ginette, monitor);
-  e.add_actor("cancel", boivin, canceller);
-  e.add_actor("detach", tremblay, detached);
+  fafard->add_actor("wait", waiter);
+  ginette->add_actor("monitor", monitor);
+  boivin->add_actor("cancel", canceller);
+  tremblay->add_actor("detach", detached);
 
   e.run();
 
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

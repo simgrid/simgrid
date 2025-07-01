@@ -253,25 +253,18 @@ const std::vector<simgrid::kernel::resource::Model*>& Engine::get_all_models() c
 {
   return pimpl_->get_all_models();
 }
-ActorPtr Engine::add_actor(const std::string& name, s4u::Host* host, const std::function<void()>& code)
-{
-  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
-  kernel::actor::ActorCreateSimcall observer{self};
-  kernel::actor::ActorImpl* actor = kernel::actor::simcall_answered(
-      [self, &name, host, &code, &observer] {
-        auto child = self->init(name, host)->start(code);
-        observer.set_child(child->get_pid());
-        return child;
-      },
-      &observer);
 
-  return actor->get_iface();
+
+ActorPtr Engine::add_actor(const std::string& name, s4u::Host* host, const std::function<void()>& code) //XBT_ATTRIB_DEPRECATED_v403
+{
+  return host->add_actor(name, code);
 }
+
 ActorPtr Engine::add_actor(const std::string& name, s4u::Host* host, const std::string& function,
-                           std::vector<std::string> args)
+                           std::vector<std::string> args) //XBT_ATTRIB_DEPRECATED_v403
 {
   const simgrid::kernel::actor::ActorCodeFactory& factory = pimpl_->get_function(function);
-  return add_actor(name, host, factory(std::move(args)));
+  return host->add_actor(name, factory(std::move(args)));
 }
 
 void Engine::load_platform(const std::string& platf) const

@@ -49,12 +49,12 @@ int main(int argc, char* argv[])
   sg4::Mailbox* mb1 = e.mailbox_by_name_or_create("Mailbox 1");
   sg4::Mailbox* mb2 = e.mailbox_by_name_or_create("Mailbox 2");
 
-  e.add_actor("pinger", e.host_by_name("Tremblay"), pinger, mb1, mb2);
-  e.add_actor("ponger", e.host_by_name("Jupiter"), ponger, mb2, mb1);
+  e.host_by_name("Tremblay")->add_actor("pinger", pinger, mb1, mb2);
+  e.host_by_name("Jupiter")->add_actor("ponger", ponger, mb2, mb1);
 
   e.run();
 
-  XBT_INFO("Total simulation time: %.3f", sg4::Engine::get_clock());
+  XBT_INFO("Total simulation time: %.3f", e.get_clock());
 
   return 0;
 }

@@ -84,15 +84,15 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
-  e.add_actor("test", e.host_by_name("bob"), test, 2e7);
-  e.add_actor("test_detach", e.host_by_name("bob"), test_detach, 2e7);
-  e.add_actor("test_waitfor", e.host_by_name("alice"), test_waitfor, 5e7);
-  e.add_actor("test_cancel", e.host_by_name("alice"), test_cancel, 5e7);
-  e.add_actor("test_monitor", e.host_by_name("alice"), test_monitor, 5e7);
+  e.host_by_name("bob")->add_actor("test", test, 2e7);
+  e.host_by_name("bob")->add_actor("test_detach", test_detach, 2e7);
+  e.host_by_name("alice")->add_actor("test_waitfor", test_waitfor, 5e7);
+  e.host_by_name("alice")->add_actor("test_cancel", test_cancel, 5e7);
+  e.host_by_name("alice")->add_actor("test_monitor", test_monitor, 5e7);
 
   e.run();
 
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

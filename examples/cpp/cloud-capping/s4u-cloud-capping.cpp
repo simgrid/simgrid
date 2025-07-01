@@ -56,7 +56,6 @@ static void worker_busy_loop(const char* name, double speed)
 
 static void test_dynamic_change()
 {
-  auto e         = simgrid::s4u::this_actor::get_engine();
   sg4::Host* pm0 = sg4::Host::by_name("Fafard");
 
   auto* vm0 = pm0->create_vm("VM0", 1);
@@ -64,8 +63,8 @@ static void test_dynamic_change()
   vm0->start();
   vm1->start();
 
-  e->add_actor("worker0", vm0, worker_busy_loop, "Task0", -1);
-  e->add_actor("worker1", vm1, worker_busy_loop, "Task1", pm0->get_speed());
+  vm0->add_actor("worker0", worker_busy_loop, "Task0", -1);
+  vm1->add_actor("worker1", worker_busy_loop, "Task1", pm0->get_speed());
 
   sg4::this_actor::sleep_for(3000); // let the activities end
   vm0->destroy();
@@ -80,27 +79,27 @@ static void test_one_activity(sg4::Engine& e, sg4::Host* host)
   XBT_INFO("### Test: with/without activity set_bound");
 
   XBT_INFO("### Test: no bound for Task1@%s", host->get_cname());
-  e.add_actor("worker0", host, worker, computation_amount, false, 0);
+  host->add_actor("worker0", worker, computation_amount, false, 0);
 
   sg4::this_actor::sleep_for(1000);
 
   XBT_INFO("### Test: 50%% for Task1@%s", host->get_cname());
-  e.add_actor("worker0", host, worker, computation_amount, true, cpu_speed / 2);
+  host->add_actor("worker0", worker, computation_amount, true, cpu_speed / 2);
 
   sg4::this_actor::sleep_for(1000);
 
   XBT_INFO("### Test: 33%% for Task1@%s", host->get_cname());
-  e.add_actor("worker0", host, worker, computation_amount, true, cpu_speed / 3);
+  host->add_actor("worker0", worker, computation_amount, true, cpu_speed / 3);
 
   sg4::this_actor::sleep_for(1000);
 
   XBT_INFO("### Test: zero for Task1@%s (i.e., unlimited)", host->get_cname());
-  e.add_actor("worker0", host, worker, computation_amount, true, 0);
+  host->add_actor("worker0", worker, computation_amount, true, 0);
 
   sg4::this_actor::sleep_for(1000);
 
   XBT_INFO("### Test: 200%% for Task1@%s (i.e., meaningless)", host->get_cname());
-  e.add_actor("worker0", host, worker, computation_amount, true, cpu_speed * 2);
+  host->add_actor("worker0", worker, computation_amount, true, cpu_speed * 2);
 
   sg4::this_actor::sleep_for(1000);
 }
@@ -114,44 +113,44 @@ static void test_two_activities(sg4::Engine& e, sg4::Host* hostA, sg4::Host* hos
   const char* hostB_name          = hostB->get_cname();
 
   XBT_INFO("### Test: no bound for Task1@%s, no bound for Task2@%s", hostA_name, hostB_name);
-  e.add_actor("worker0", hostA, worker, computation_amount, false, 0);
-  e.add_actor("worker1", hostB, worker, computation_amount, false, 0);
+  hostA->add_actor("worker0", worker, computation_amount, false, 0);
+  hostB->add_actor("worker1", worker, computation_amount, false, 0);
 
   sg4::this_actor::sleep_for(1000);
 
   XBT_INFO("### Test: 0 for Task1@%s, 0 for Task2@%s (i.e., unlimited)", hostA_name, hostB_name);
-  e.add_actor("worker0", hostA, worker, computation_amount, true, 0);
-  e.add_actor("worker1", hostB, worker, computation_amount, true, 0);
+  hostA->add_actor("worker0", worker, computation_amount, true, 0);
+  hostB->add_actor("worker1", worker, computation_amount, true, 0);
 
   sg4::this_actor::sleep_for(1000);
 
   XBT_INFO("### Test: 50%% for Task1@%s, 50%% for Task2@%s", hostA_name, hostB_name);
-  e.add_actor("worker0", hostA, worker, computation_amount, true, cpu_speed / 2);
-  e.add_actor("worker1", hostB, worker, computation_amount, true, cpu_speed / 2);
+  hostA->add_actor("worker0", worker, computation_amount, true, cpu_speed / 2);
+  hostB->add_actor("worker1", worker, computation_amount, true, cpu_speed / 2);
 
   sg4::this_actor::sleep_for(1000);
 
   XBT_INFO("### Test: 25%% for Task1@%s, 25%% for Task2@%s", hostA_name, hostB_name);
-  e.add_actor("worker0", hostA, worker, computation_amount, true, cpu_speed / 4);
-  e.add_actor("worker1", hostB, worker, computation_amount, true, cpu_speed / 4);
+  hostA->add_actor("worker0", worker, computation_amount, true, cpu_speed / 4);
+  hostB->add_actor("worker1", worker, computation_amount, true, cpu_speed / 4);
 
   sg4::this_actor::sleep_for(1000);
 
   XBT_INFO("### Test: 75%% for Task1@%s, 100%% for Task2@%s", hostA_name, hostB_name);
-  e.add_actor("worker0", hostA, worker, computation_amount, true, cpu_speed * 0.75);
-  e.add_actor("worker1", hostB, worker, computation_amount, true, cpu_speed);
+  hostA->add_actor("worker0", worker, computation_amount, true, cpu_speed * 0.75);
+  hostB->add_actor("worker1", worker, computation_amount, true, cpu_speed);
 
   sg4::this_actor::sleep_for(1000);
 
   XBT_INFO("### Test: no bound for Task1@%s, 25%% for Task2@%s", hostA_name, hostB_name);
-  e.add_actor("worker0", hostA, worker, computation_amount, false, 0);
-  e.add_actor("worker1", hostB, worker, computation_amount, true, cpu_speed / 4);
+  hostA->add_actor("worker0", worker, computation_amount, false, 0);
+  hostB->add_actor("worker1", worker, computation_amount, true, cpu_speed / 4);
 
   sg4::this_actor::sleep_for(1000);
 
   XBT_INFO("### Test: 75%% for Task1@%s, 25%% for Task2@%s", hostA_name, hostB_name);
-  e.add_actor("worker0", hostA, worker, computation_amount, true, cpu_speed * 0.75);
-  e.add_actor("worker1", hostB, worker, computation_amount, true, cpu_speed / 4);
+  hostA->add_actor("worker0", worker, computation_amount, true, cpu_speed * 0.75);
+  hostB->add_actor("worker1", worker, computation_amount, true, cpu_speed / 4);
 
   sg4::this_actor::sleep_for(1000);
 }
@@ -219,13 +218,13 @@ static void master_main()
   const double computation_amount = cpu_speed * 10;
 
   XBT_INFO("# 10. (a) Put an activity on a VM without any bound.");
-  e.add_actor("worker0", vm0, worker, computation_amount, false, 0);
+  vm0->add_actor("worker0", worker, computation_amount, false, 0);
   sg4::this_actor::sleep_for(1000);
   XBT_INFO(".");
 
   XBT_INFO("# 10. (b) set 10%% bound to the VM, and then put an activity on the VM.");
   vm0->set_bound(cpu_speed / 10);
-  e.add_actor("worker0", vm0, worker, computation_amount, false, 0);
+  vm0->add_actor("worker0", worker, computation_amount, false, 0);
   sg4::this_actor::sleep_for(1000);
   XBT_INFO(".");
 
@@ -235,7 +234,7 @@ static void master_main()
   XBT_INFO(".");
 
   XBT_INFO("# 10. (d) Put an activity again on the VM.");
-  e.add_actor("worker0", vm0, worker, computation_amount, false, 0);
+  vm0->add_actor("worker0", worker, computation_amount, false, 0);
   sg4::this_actor::sleep_for(1000);
   XBT_INFO(".");
 
@@ -254,10 +253,10 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  e.add_actor("master_", e.host_by_name("Fafard"), master_main);
+  e.host_by_name("Fafard")->add_actor("master_", master_main);
 
   e.run();
-  XBT_INFO("Bye (simulation time %g)", sg4::Engine::get_clock());
+  XBT_INFO("Bye (simulation time %g)", e.get_clock());
 
   return 0;
 }

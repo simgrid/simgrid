@@ -82,15 +82,10 @@ public class exec_async {
     Engine e = new Engine(args);
     e.load_platform(args[0]);
 
-    Host fafard   = e.host_by_name("Fafard");
-    Host ginette  = e.host_by_name("Ginette");
-    Host boivin   = e.host_by_name("Boivin");
-    Host tremblay = e.host_by_name("Tremblay");
-
-    e.add_actor("wait", fafard, new waiter());
-    e.add_actor("monitor", ginette, new monitor());
-    e.add_actor("cancel", boivin, new canceller());
-    e.add_actor("detach", tremblay, new detached());
+    e.host_by_name("Fafard").add_actor("wait", new waiter());
+    e.host_by_name("Ginette").add_actor("monitor", new monitor());
+    e.host_by_name("Boivin").add_actor("cancel", new canceller());
+    e.host_by_name("Tremblay").add_actor("detach", new detached());
 
     e.run();
 

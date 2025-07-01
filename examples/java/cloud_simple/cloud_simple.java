@@ -59,8 +59,8 @@ class Main extends Actor {
   {
     String mbox_name = "MBOX:" + tx_host.get_name() + "-" + rx_host.get_name();
 
-    this.get_engine().add_actor("comm_tx", tx_host, new CommunicationTX(mbox_name));
-    this.get_engine().add_actor("comm_rx", rx_host, new CommunicationRX(mbox_name));
+    tx_host.add_actor("comm_tx", new CommunicationTX(mbox_name));
+    rx_host.add_actor("comm_rx", new CommunicationRX(mbox_name));
   }
   public void run()
   {
@@ -72,17 +72,17 @@ class Main extends Actor {
     Engine.info("## Test 1 (started): check computation on normal PMs");
 
     Engine.info("### Put an activity on a PM");
-    e.add_actor("compute", pm0, new ComputationWorker());
+    pm0.add_actor("compute", new ComputationWorker());
     this.sleep_for(2);
 
     Engine.info("### Put two activities on a PM");
-    e.add_actor("compute", pm0, new ComputationWorker());
-    e.add_actor("compute", pm0, new ComputationWorker());
+    pm0.add_actor("compute", new ComputationWorker());
+    pm0.add_actor("compute", new ComputationWorker());
     this.sleep_for(2);
 
     Engine.info("### Put an activity on each PM");
-    e.add_actor("compute", pm0, new ComputationWorker());
-    e.add_actor("compute", pm1, new ComputationWorker());
+    pm0.add_actor("compute", new ComputationWorker());
+    pm1.add_actor("compute", new ComputationWorker());
     this.sleep_for(2);
 
     Engine.info("## Test 1 (ended)");
@@ -93,7 +93,7 @@ class Main extends Actor {
     Engine.info("### Put a VM on a PM, and put an activity to the VM");
     VirtualMachine vm0 = pm0.create_vm("VM0", 1);
     vm0.start();
-    e.add_actor("compute", vm0, new ComputationWorker());
+    vm0.add_actor("compute", new ComputationWorker());
     this.sleep_for(2);
     vm0.destroy();
 
@@ -106,7 +106,7 @@ class Main extends Actor {
     Engine.info("### Put a VM on a PM, and put an activity to the PM");
     vm0 = pm0.create_vm("VM0", 1);
     vm0.start();
-    e.add_actor("compute", pm0, new ComputationWorker());
+    pm0.add_actor("compute", new ComputationWorker());
     this.sleep_for(2);
     vm0.destroy();
     Engine.info("## Test 3 (ended)");
@@ -120,8 +120,8 @@ class Main extends Actor {
     vm0 = pm0.create_vm("VM0", 1);
     vm0.start();
     VirtualMachine vm1 = pm0.create_vm("VM1", 1);
-    e.add_actor("compute", vm0, new ComputationWorker());
-    e.add_actor("compute", vm1, new ComputationWorker());
+    vm0.add_actor("compute", new ComputationWorker());
+    vm1.add_actor("compute", new ComputationWorker());
     this.sleep_for(2);
     vm0.destroy();
     vm1.destroy();
@@ -131,8 +131,8 @@ class Main extends Actor {
     vm1 = pm1.create_vm("VM1", 1);
     vm0.start();
     vm1.start();
-    e.add_actor("compute", vm0, new ComputationWorker());
-    e.add_actor("compute", vm1, new ComputationWorker());
+    vm0.add_actor("compute", new ComputationWorker());
+    vm1.add_actor("compute", new ComputationWorker());
     this.sleep_for(2);
     vm0.destroy();
     vm1.destroy();
@@ -214,7 +214,7 @@ public class cloud_simple {
     e.plugin_vm_live_migration_init();
     e.load_platform(args[0]);
 
-    e.add_actor("main", e.host_by_name("Fafard"), new Main());
+    e.host_by_name("Fafard").add_actor("main", new Main());
 
     e.run();
 

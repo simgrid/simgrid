@@ -63,7 +63,7 @@ public class io_disk_raw {
         Engine.info("  %s -> %s", key, h.get_property(key));
     }
 
-    e.add_actor("", e.host_by_name("bob"), new HostRunner());
+    e.host_by_name("bob").add_actor("", new HostRunner());
 
     e.run();
     Engine.info("Simulated ends.");

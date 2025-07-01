@@ -9,7 +9,7 @@ foreach(x
         mutex-simple mutex-recursive
       	producer-consumer)
 
-  if("${CMAKE_SYSTEM}" MATCHES "Linux" AND (NOT SIMGRID_HAVE_MUSL))
+  if(enable_sthread AND (NOT SIMGRID_HAVE_MUSL))
     add_executable       (pthread-${x} EXCLUDE_FROM_ALL pthread-${x}.c)
     set_target_properties(pthread-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(pthread-${x} PRIVATE Threads::Threads)
@@ -35,7 +35,7 @@ endforeach()
 foreach(x
         mutex-simpledeadlock)
 
-  if("${CMAKE_SYSTEM}" MATCHES "Linux") # sthread is linux-only
+  if(enable_sthread)
 
     add_executable       (pthread-${x} EXCLUDE_FROM_ALL pthread-${x}.c)
     set_target_properties(pthread-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
@@ -57,7 +57,7 @@ endforeach()
 foreach(example
         stdobject)
 
-  if("${CMAKE_SYSTEM}" MATCHES "Linux") # sthread is linux-only
+  if(${enable_sthread})
 
     add_executable       (${example} EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.cpp)
     set_target_properties(${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})

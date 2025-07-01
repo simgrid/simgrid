@@ -72,10 +72,10 @@ def main():
     zone.add_route(host1, host3, [link_to_3])
     zone.seal()
 
-    e.add_actor("Sender", host1, sender, "mailbox2", "mailbox3")
-    e.add_actor("Receiver-1", host2, receiver, "mailbox2").daemonize()
-    e.add_actor("Receiver-2", host3, receiver, "mailbox3").daemonize()
-    e.add_actor("LinkKiller", host2, link_killer, "link_to_2").daemonize()
+    host1.add_actor("Sender", sender, "mailbox2", "mailbox3")
+    host2.add_actor("Receiver-1", receiver, "mailbox2").daemonize()
+    host3.add_actor("Receiver-2", receiver, "mailbox3").daemonize()
+    host2.add_actor("LinkKiller", link_killer, "link_to_2").daemonize()
 
     e.run()
 

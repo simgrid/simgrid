@@ -89,15 +89,15 @@ if __name__ == '__main__':
     # The easiest way to do so is to implement the behavior of your actor in a single function,
     # as we do here for the receiver actors. This function can take any kind of parameters, as
     # long as the last parameters of Actor::create() match what your function expects.
-    e.add_actor("receiver", Host.by_name("Fafard"), receiver, "mb42")
+    Host.by_name("Fafard").add_actor("receiver", receiver, "mb42")
 
     # If your actor is getting more complex, you probably want to implement it as a class instead,
     # as we do here for the sender actors. The main behavior goes into operator()() of the class.
     #
     # You can then directly start your actor, as follows:
-    e.add_actor("sender1", Host.by_name("Tremblay"), Sender())
+    Host.by_name("Tremblay").add_actor("sender1", Sender())
     # If you want to pass parameters to your class, that's very easy: just use your constructors
-    e.add_actor("sender2", Host.by_name("Jupiter"), Sender("GloubiBoulga"))
+    Host.by_name("Jupiter").add_actor("sender2", Sender("GloubiBoulga"))
 
     # But starting actors directly is considered as a bad experimental habit, since it ties the code
     # you want to test with the experimental scenario. Starting your actors from an external deployment

@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
       ->seal();
 
   // Add a watcher of the changes
-  e.add_actor("watcher", e.host_by_name("Fafard"), watcher);
+  e.host_by_name("Fafard")->add_actor("watcher", watcher);
 
   e.run();
 

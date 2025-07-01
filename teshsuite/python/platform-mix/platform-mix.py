@@ -106,9 +106,9 @@ def load_platform(e: Engine):
     root.add_route(empty, wifi, [link_c])
 
     # create actors Sender/Receiver
-    e.add_actor("sender", hosts[0], Sender(hosts))
+    hosts[0].add_actor("sender", Sender(hosts))
     for host in hosts:
-        e.add_actor("receiver", host, Receiver())
+        host.add_actor("receiver", Receiver())
 
 ###################################################################################################
 

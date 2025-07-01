@@ -66,8 +66,7 @@ public class exec_suspend {
     Engine e = new Engine(args);
     e.load_platform(args[0]);
 
-    var tremblay = e.host_by_name("Tremblay");
-    e.add_actor("executor", tremblay, new executor());
+    e.host_by_name("Tremblay").add_actor("executor", new executor());
 
     // Start the simulation
     e.run();

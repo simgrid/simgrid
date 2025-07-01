@@ -27,8 +27,8 @@ static void run_transfer(sg4::Engine& e, sg4::Host* src_host, sg4::Host* dst_hos
                          unsigned long msg_size)
 {
   XBT_INFO("Launching the transfer of %lu bytes", msg_size);
-  e.add_actor("sender", src_host, sender, mailbox, msg_size);
-  e.add_actor("receiver", dst_host, receiver, mailbox);
+  src_host->add_actor("sender", sender, mailbox, msg_size);
+  dst_host->add_actor("receiver", receiver, mailbox);
 }
 
 static void execute_load_test()
@@ -97,12 +97,12 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/energy_platform.xml\n", argv[0], argv[0]);
   e.load_platform(argv[1]);
 
-  e.add_actor("load_test", e.host_by_name("node-42.simgrid.org"), execute_load_test);
-  e.add_actor("monitor", e.host_by_name("node-51.simgrid.org"), monitor);
+  e.host_by_name("node-42.simgrid.org")->add_actor("load_test", execute_load_test);
+  e.host_by_name("node-51.simgrid.org")->add_actor("monitor", monitor);
 
   e.run();
 
-  XBT_INFO("Total simulation time: %.2f", sg4::Engine::get_clock());
+  XBT_INFO("Total simulation time: %.2f", e.get_clock());
 
   return 0;
 }

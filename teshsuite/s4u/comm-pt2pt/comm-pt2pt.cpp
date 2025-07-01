@@ -182,11 +182,11 @@ int main(int argc, char* argv[])
 
   std::vector<simgrid::s4u::Host*> hosts = e.get_all_hosts();
 
-  e.add_actor("sender", hosts[0], sender, argSend);
-  e.add_actor("recver", hosts[1], receiver, argRecv);
+  hosts[0]->add_actor("sender", sender, argSend);
+  hosts[1]->add_actor("recver", receiver, argRecv);
 
   e.run();
-  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

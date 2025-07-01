@@ -68,8 +68,8 @@ def main():
     e = Engine(sys.argv)
     e.load_platform(settings.platform)
     receiver_mailbox: Mailbox = Mailbox.by_name("receiver")
-    e.add_actor("sender", e.host_by_name("Tremblay"), sender, receiver_mailbox, 3, int(5e7))
-    e.add_actor("receiver", e.host_by_name("Ruby"), receiver, receiver_mailbox)
+    e.host_by_name("Tremblay").add_actor("sender", sender, receiver_mailbox, 3, int(5e7))
+    e.host_by_name("Ruby").add_actor("receiver", receiver, receiver_mailbox)
     e.run()
 
 

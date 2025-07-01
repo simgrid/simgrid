@@ -74,7 +74,7 @@ public class energy_exec {
                  + "energy_exec ../platforms/energy_platform.xml\n");
 
     e.load_platform(args[0]);
-    e.add_actor("dvfs_test", e.host_by_name("MyHost1"), new dvfs());
+    e.host_by_name("MyHost1").add_actor("dvfs_test", new dvfs());
 
     e.run();
 

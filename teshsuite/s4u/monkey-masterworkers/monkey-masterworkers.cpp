@@ -120,10 +120,10 @@ int main(int argc, char* argv[])
   }
   rootzone->seal();
 
-  e.add_actor("master", master_host, master, mailbox)->daemonize()->set_auto_restart(true);
+  master_host->add_actor("master", master, mailbox)->daemonize()->set_auto_restart(true);
   int id = 0;
   for (auto* h : worker_hosts) {
-    e.add_actor("worker", h, worker, id, mailbox, std::ref(todo))->set_auto_restart(true);
+    h->add_actor("worker", worker, id, mailbox, std::ref(todo))->set_auto_restart(true);
     id++;
   }
 

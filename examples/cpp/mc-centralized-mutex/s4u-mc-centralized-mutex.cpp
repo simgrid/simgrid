@@ -88,11 +88,11 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  e.add_actor("coordinator", e.host_by_name("Tremblay"), coordinator);
-  e.add_actor("client", e.host_by_name("Fafard"), client);
-  e.add_actor("client", e.host_by_name("Boivin"), client);
-  e.add_actor("client", e.host_by_name("Jacquelin"), client);
-  e.add_actor("client", e.host_by_name("Ginette"), client);
+  e.host_by_name("Tremblay")->add_actor("coordinator", coordinator);
+  e.host_by_name("Fafard")->add_actor("client",client);
+  e.host_by_name("Boivin")->add_actor("client", client);
+  e.host_by_name("Jacquelin")->add_actor("client", client);
+  e.host_by_name("Ginette")->add_actor("client", client);
 
   e.run();
 

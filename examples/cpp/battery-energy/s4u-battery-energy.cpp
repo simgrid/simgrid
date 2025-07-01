@@ -16,7 +16,7 @@ static void manager()
 {
   auto battery = simgrid::plugins::Battery::init("Battery", 0.8, -300, 300, 0.9, 0.9, 10, 1000);
 
-  auto e      = simgrid::s4u::this_actor::get_engine();
+  auto e      = sg4::this_actor::get_engine();
   auto* host1 = e->host_by_name("MyHost1");
   auto* host2 = e->host_by_name("MyHost2");
   auto* host3 = e->host_by_name("MyHost3");
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
   sg_host_energy_plugin_init();
   e.load_platform(argv[1]);
 
-  e.add_actor("manager", e.host_by_name("MyHost1"), manager);
+  e.host_by_name("MyHost1")->add_actor("manager", manager);
 
   e.run();
   return 0;

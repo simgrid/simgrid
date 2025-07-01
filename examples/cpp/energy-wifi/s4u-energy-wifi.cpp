@@ -58,8 +58,8 @@ int main(int argc, char** argv)
   l->set_host_wifi_rate(engine.host_by_name("Station 2"), 0);
 
   // create the two actors for the test
-  engine.add_actor("act0", engine.host_by_name("Station 1"), sender);
-  engine.add_actor("act1", engine.host_by_name("Station 2"), receiver);
+  engine.host_by_name("Station 1")->add_actor("act0", sender);
+  engine.host_by_name("Station 2")->add_actor("act1", receiver);
 
   engine.run();
 

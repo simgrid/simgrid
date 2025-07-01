@@ -34,7 +34,7 @@ if __name__ == '__main__':
     e = Engine(sys.argv)
     e.load_platform(sys.argv[1])
 
-    e.add_actor("executor", Host.by_name("Tremblay"), executor)
-    e.add_actor("privileged", Host.by_name("Tremblay"), privileged)
+    e.host_by_name("Tremblay").add_actor("executor", executor)
+    e.host_by_name("Tremblay").add_actor("privileged", privileged)
 
     e.run()

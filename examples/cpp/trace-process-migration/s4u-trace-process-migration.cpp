@@ -53,8 +53,8 @@ int main(int argc, char* argv[])
 
   simgrid::instr::declare_tracing_category("migration_order");
 
-  e.add_actor("emigrant", e.host_by_name("Fafard"), emigrant);
-  e.add_actor("policeman", e.host_by_name("Tremblay"), policeman);
+  e.host_by_name("Fafard")->add_actor("emigrant", emigrant);
+  e.host_by_name("Tremblay")->add_actor("policeman", policeman);
 
   e.run();
   return 0;

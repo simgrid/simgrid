@@ -104,8 +104,8 @@ public class platform_comm_serialize {
     zone.seal();
 
     /* create actors Sender/Receiver */
-    e.add_actor("receiver", receiver, new Receiver(10));
-    e.add_actor("sender", sender, new Sender((int)1e6, 10));
+    receiver.add_actor("receiver", new Receiver(10));
+    sender.add_actor("sender", new Sender((int)1e6, 10));
 
     e.run();
   }

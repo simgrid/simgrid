@@ -23,9 +23,8 @@ static void master(int actor_count)
   sg4::BarrierPtr barrier = sg4::Barrier::create(actor_count);
 
   XBT_INFO("Spawning %d workers", actor_count - 1);
-  for (int i = 0; i < actor_count - 1; i++) {
-    sg4::this_actor::get_engine()->add_actor("worker", sg4::Host::by_name("Jupiter"), worker, barrier);
-  }
+  for (int i = 0; i < actor_count - 1; i++)
+    sg4::Host::by_name("Jupiter")->add_actor("worker", worker, barrier);
 
   XBT_INFO("Waiting on the barrier");
   if (barrier->wait())
@@ -44,7 +43,7 @@ int main(int argc, char **argv)
   xbt_assert(actor_count > 0, "<actor-count> must be greater than 0");
 
   e.load_platform(argc > 2 ? argv[2] : "../../platforms/two_hosts.xml");
-  e.add_actor("master", e.host_by_name("Tremblay"), master, actor_count);
+  e.host_by_name("Tremblay")->add_actor("master", master, actor_count);
   e.run();
 
   return 0;

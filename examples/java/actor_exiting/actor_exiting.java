@@ -98,9 +98,9 @@ class actor_exiting {
     });
 
     /* Create some actors */
-    e.add_actor("A", e.host_by_name("Tremblay"), new ActorA());
-    e.add_actor("B", e.host_by_name("Fafard"), new ActorB());
-    e.add_actor("C", e.host_by_name("Ginette"), new ActorC());
+    e.host_by_name("Tremblay").add_actor("A", new ActorA());
+    e.host_by_name("Fafard").add_actor("B", new ActorB());
+    e.host_by_name("Ginette").add_actor("C", new ActorC());
 
     e.run(); /* Run the simulation */
     Engine.info("Run the garbage collector now in the hope to get the actors destroyed. In vain :(");

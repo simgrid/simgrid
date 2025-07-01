@@ -30,11 +30,11 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  e.add_actor("worker", e.host_by_name("Fafard"), worker);
+  e.host_by_name("Fafard")->add_actor("worker", worker);
 
   e.run();
 
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

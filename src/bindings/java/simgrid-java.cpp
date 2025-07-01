@@ -23,7 +23,7 @@
  * The idea is that when an actor needs to be forcefully killed, it was launched from:
  *   - (Java) Actor constructor: In most case, the ctor called manually in the user code
  *       but actors created from the deployment file use ctor(String[]), which calls the ctor().
- *   - (Java) once the actor is created, it's started by calling Engine::add_actor() which calls:
+ *   - (Java) once the actor is created, it's started by calling Host::add_actor() which calls:
  *   - (C++) Actor_create(), does a C++->Java JNI call onto:
  *   - (Java) Actor.do_run(), which try/catch(ForcefullKillException) and call user's Actor.run()
  *
@@ -2852,7 +2852,7 @@ static void java_main(int argc, char* argv[])
   // creates the java actor
   jobject jactor = jenv->NewGlobalRef(jenv->NewObject(actor_class, actor_constructor, args));
 
-  ActorPtr result = Engine::get_instance()->add_actor(argv[0], simgrid::s4u::Host::current(), [jactor]() {
+  ActorPtr result = simgrid::s4u::Host::current()->add_actor(argv[0], [jactor]() {
     auto jenv = ((simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self())->jenv_;
 
     jenv->CallVoidMethod(jactor, Actor_methodId, (jlong)s4u::Actor::self());

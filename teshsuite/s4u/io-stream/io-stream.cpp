@@ -120,9 +120,9 @@ int main(int argc, char** argv)
 
   zone->seal();
 
-  e.add_actor("streamer", bob, streamer, 4e6);
-  e.add_actor("background send", bob, background_send);
-  e.add_actor("background recv", alice, background_recv);
+  bob->add_actor("streamer", streamer, 4e6);
+  bob->add_actor("background send", background_send);
+  alice->add_actor("background recv", background_recv);
 
   e.run();
 

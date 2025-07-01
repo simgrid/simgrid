@@ -114,6 +114,15 @@ XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std
 /** Block the current actor until the built multi-thread execution completes. */
 XBT_PUBLIC void thread_execute(s4u::Host* host, double flop_amounts, int thread_count);
 
+/** Block the current actor until the built multi-thread execution completes on the current host. */
+XBT_PUBLIC void thread_execute(double flop_amounts, int thread_count);
+
+/** Initialize and start a multi-thread execution on 'host' */
+XBT_PUBLIC ExecPtr thread_execute_async(s4u::Host* host, double flop_amounts, int thread_count);
+
+/** Initialize and start a multi-thread execution on the current host */
+XBT_PUBLIC ExecPtr thread_execute_async(double flop_amounts, int thread_count);
+
 /** Initialize a sequential execution that must then be started manually */
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
 /** Initialize a parallel execution that must then be started manually */
@@ -289,7 +298,7 @@ public:
   /** Add a callback fired when this specific actor is about to disappear (its destructor was called). */
   void on_this_destruction_cb(const std::function<void(Actor const&)>& cb) { on_this_destruction.connect(cb); }
 
-  XBT_ATTRIB_DEPRECATED_v403("Please use Engine::add_actor() instead") static ActorPtr
+  XBT_ATTRIB_DEPRECATED_v403("Please use Host::add_actor() instead") static ActorPtr
       create(const std::string& name, s4u::Host* host, const std::function<void()>& code);
   /** \static
    *  Create an actor, but don't start it yet.
@@ -317,10 +326,10 @@ public:
   ActorPtr start(const std::function<void()>& code, std::vector<std::string> args);
 
   template <class F>
-  XBT_ATTRIB_DEPRECATED_v403("Please use Engine::add_actor() instead") static ActorPtr
+  XBT_ATTRIB_DEPRECATED_v403("Please use Host::add_actor() instead") static ActorPtr
       create(const std::string& name, s4u::Host* host, F code)
   {
-    return s4u::Engine::get_instance()->add_actor(name, host, std::function<void()>(std::move(code)));
+    return host->add_actor(name, std::function<void()>(std::move(code)));
   }
   template <class F, class... Args // This constructor is enabled only if calling code(args...) is valid
 #ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
@@ -328,7 +337,7 @@ public:
             typename = typename std::invoke_result_t<F, Args...>
 #endif
             >
-  XBT_ATTRIB_DEPRECATED_v403("Please use Engine::add_actor() instead") static ActorPtr
+  XBT_ATTRIB_DEPRECATED_v403("Please use Host::add_actor() instead") static ActorPtr
       create(const std::string& name, s4u::Host* host, F code, Args... args)
   {
     return create(name, host, std::bind(std::move(code), std::move(args)...));

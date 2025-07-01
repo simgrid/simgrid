@@ -79,9 +79,9 @@ public class comm_host2host {
     Engine e = new Engine(args);
 
     e.load_platform(args[0]);
-    e.add_actor("sender", e.host_by_name("Boivin"),
-                new sender(e.host_by_name("Tremblay"), e.host_by_name("Jupiter"), e.host_by_name("Fafard"),
-                           e.host_by_name("Ginette")));
+    e.host_by_name("Boivin").add_actor("sender", 
+                   new sender(e.host_by_name("Tremblay"), e.host_by_name("Jupiter"), e.host_by_name("Fafard"),
+                              e.host_by_name("Ginette")));
     e.run();
 
     Engine.info("Simulation ends");

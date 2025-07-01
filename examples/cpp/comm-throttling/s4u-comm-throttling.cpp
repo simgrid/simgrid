@@ -47,8 +47,8 @@ int main(int argc, char* argv[])
 
   sg4::Mailbox* mbox = e.mailbox_by_name_or_create("Mailbox");
 
-  e.add_actor("sender", e.host_by_name("node-0.simgrid.org"), sender, mbox);
-  e.add_actor("receiver", e.host_by_name("node-1.simgrid.org"), receiver, mbox);
+  e.host_by_name("node-0.simgrid.org")->add_actor("sender", sender, mbox);
+  e.host_by_name("node-1.simgrid.org")->add_actor("receiver", receiver, mbox);
 
   e.run();
 

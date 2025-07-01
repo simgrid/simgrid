@@ -80,8 +80,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  e.add_actor("sender", e.host_by_name("Tremblay"), sender, 3);
-  e.add_actor("receiver", e.host_by_name("Fafard"), receiver);
+  e.host_by_name("Tremblay")->add_actor("sender", sender, 3);
+  e.host_by_name("Fafard")->add_actor("receiver", receiver);
 
   e.run();
 

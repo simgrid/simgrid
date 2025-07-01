@@ -50,6 +50,12 @@ public class Host {
     long cPtr = simgridJNI.Host_add_disk(swigCPtr, this, name, read_bandwidth, write_bandwidth);
     return (cPtr == 0) ? null : new Disk(cPtr);
   }
+
+  public Actor add_actor(String name, Actor actor)
+  {
+    simgridJNI.Actor_create(name, Host.getCPtr(this), this, actor);
+    return actor;
+  }
   public String[] get_properties_names() { return simgridJNI.Host_get_properties_names(swigCPtr, this); }
   public String get_property(String name) { return simgridJNI.Host_get_property(swigCPtr, this, name); }
 

@@ -133,17 +133,17 @@ static void create_sata_disk(sg4::Host* host, const std::string& disk_name)
 int main(int argc, char** argv)
 {
   sg4::Engine e(&argc, argv);
-  /* simple platform containing 1 host and 2 disk */
+  /* simple platform containing 1 host and 2 disks */
   auto* zone = e.get_netzone_root();
   auto* bob  = zone->add_host("bob", 1e6);
   create_ssd_disk(bob, "Edel (SSD)");
   create_sata_disk(bob, "Griffon (SATA II)");
   zone->seal();
 
-  e.add_actor("", bob, host);
+  bob->add_actor("", host);
 
   e.run();
-  XBT_INFO("Simulated time: %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulated time: %g", e.get_clock());
 
   return 0;
 }

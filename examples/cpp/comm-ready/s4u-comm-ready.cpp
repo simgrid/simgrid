@@ -94,9 +94,9 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  e.add_actor("peer", e.host_by_name("Tremblay"), peer, 0, 2, 5e7, 3);
-  e.add_actor("peer", e.host_by_name("Ruby"), peer, 1, 6, 2.5e5, 3);
-  e.add_actor("peer", e.host_by_name("Perl"), peer, 2, 0, 5e7, 3);
+  e.host_by_name("Tremblay")->add_actor("peer", peer, 0, 2, 5e7, 3);
+  e.host_by_name("Ruby")->add_actor("peer", peer, 1, 6, 2.5e5, 3);
+  e.host_by_name("Perl")->add_actor("peer", peer, 2, 0, 5e7, 3);
 
   e.run();
 

@@ -106,7 +106,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 
   /* Launch the user's main() on an actor */
   sthread_enable();
-  sg4::ActorPtr main_actor = e.add_actor("main thread", lilibeth, raw_main, argc, argv, envp);
+  sg4::ActorPtr main_actor = lilibeth->add_actor("main thread", raw_main, argc, argv, envp);
 
   sg4::Engine::get_instance()->run();
   sthread_disable();
@@ -134,9 +134,8 @@ int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr
     name = simgrid::xbt::string_printf("%d:%d", rank, TID);
   }
 #endif
-  sg4::ActorPtr actor = sg4::Engine::get_instance()->add_actor(
-      name, lilibeth,
-      [](auto* user_function, auto* param) {
+  sg4::ActorPtr actor = 
+    lilibeth->add_actor(name, [](auto* user_function, auto* param) {
 #if HAVE_SMPI
         if (SMPI_is_inited())
           SMPI_thread_create();

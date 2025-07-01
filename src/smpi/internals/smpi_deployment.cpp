@@ -195,7 +195,7 @@ int smpi_deployment_smpirun(simgrid::s4u::Engine* e, const std::string& hostfile
     simgrid::s4u::Host* host = hosts[i % hosts_size];
     std::string rank_id      = std::to_string(i);
     auto args                = smpi_deployment_get_args(i, replay, run_args);
-    auto actor               = e->add_actor(rank_id, host, rank_id, args);
+    auto actor               = host->add_actor(rank_id, rank_id, args);
     /* keeping the same behavior as done in smpirun script, print mapping rank/process */
     if (map != 0) {
       XBT_INFO("[rank %d] -> %s", i, host->get_cname());
@@ -224,7 +224,7 @@ void SMPI_executable_start(const std::string& executable, const std::vector<simg
     std::string rank_id      = std::to_string(i);
     std::vector<std::string> args{rank_id};
     args.insert(args.end(), run_args.begin(), run_args.end());
-    auto actor = simgrid::s4u::Engine::get_instance()->add_actor(rank_id, host, executable, args);
+    auto actor = host->add_actor(rank_id, executable, args);
     actor->set_property("instance_id", "SMPI_app");
     actor->set_property("rank", rank_id);
   }

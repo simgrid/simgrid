@@ -99,5 +99,5 @@ if __name__ == "__main__":
     engine = Engine.instance
     Engine.set_config("host/model:ptask_L07")  # /!\ this is required for running ptasks
     engine.load_platform(platform)
-    engine.add_actor("foo", engine.host_by_name("MyHost1"), runner)
+    engine.host_by_name("MyHost1").add_actor("foo", runner)
     engine.run()

@@ -64,8 +64,7 @@ int main(int argc, char* argv[])
 
   int status = 42;
   all_hosts  = e.get_all_hosts();
-  e.add_actor("main_dispatcher", all_hosts[0],
-              [&argc, &argv, &status]() { status = Catch::Session().run(argc, argv); });
+  all_hosts[0]->add_actor("main_dispatcher", [&argc, &argv, &status]() { status = Catch::Session().run(argc, argv); });
 
   e.run();
   XBT_INFO("Simulation done");

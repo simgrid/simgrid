@@ -18,26 +18,25 @@ static void sleeper()
 
 static void master()
 {
-  auto e = simgrid::s4u::this_actor::get_engine();
   sg4::ActorPtr actor;
 
   XBT_INFO("Start sleeper");
-  actor = e->add_actor("sleeper from master", sg4::Host::current(), sleeper);
+  actor = sg4::Host::current()->add_actor("sleeper from master", sleeper);
   XBT_INFO("Join the sleeper (timeout 2)");
   actor->join(2);
 
   XBT_INFO("Start sleeper");
-  actor = e->add_actor("sleeper from master", sg4::Host::current(), sleeper);
+  actor = sg4::Host::current()->add_actor("sleeper from master", sleeper);
   XBT_INFO("Join the sleeper (timeout 4)");
   actor->join(4);
 
   XBT_INFO("Start sleeper");
-  actor = e->add_actor("sleeper from master", sg4::Host::current(), sleeper);
+  actor = sg4::Host::current()->add_actor("sleeper from master", sleeper);
   XBT_INFO("Join the sleeper (timeout 2)");
   actor->join(2);
 
   XBT_INFO("Start sleeper");
-  actor = e->add_actor("sleeper from master", sg4::Host::current(), sleeper);
+  actor = sg4::Host::current()->add_actor("sleeper from master", sleeper);
   XBT_INFO("Waiting 4");
   sg4::this_actor::sleep_for(4);
   XBT_INFO("Join the sleeper after its end (timeout 1)");
@@ -57,7 +56,7 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  e.add_actor("master", e.host_by_name("Tremblay"), master);
+  e.host_by_name("Tremblay")->add_actor("master", master);
 
   e.run();
 

@@ -34,7 +34,7 @@ class DreamMaster extends Actor {
   public void run()
   {
     Engine.info("Let's create a lazy guy."); /* - Create a lazy_guy actor */
-    Actor lazy = this.get_engine().add_actor("Lazy", this.get_host(), new LazyGuy());
+    Actor lazy = this.get_host().add_actor("Lazy", new LazyGuy());
     Engine.info("Let's wait a little bit...");
     this.sleep_for(10); /* - Wait for 10 seconds */
     Engine.info("Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!");
@@ -74,7 +74,7 @@ public class actor_suspend {
   {
     Engine e = new Engine(args);
     e.load_platform(args[0]);
-    e.add_actor("dream_master", e.host_by_name("Boivin"), new DreamMaster());
+    e.host_by_name("Boivin").add_actor("dream_master", new DreamMaster());
     e.run();
   }
 }

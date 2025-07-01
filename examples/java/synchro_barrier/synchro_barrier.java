@@ -31,7 +31,7 @@ class master extends Actor {
 
     Engine.info("Spawning %d workers", actor_count - 1);
     for (int i = 0; i < actor_count - 1; i++)
-      e.add_actor("worker", e.host_by_name("Jupiter"), new worker(barrier));
+      e.host_by_name("Jupiter").add_actor("worker", new worker(barrier));
 
     Engine.info("Waiting on the barrier");
     if (barrier.await())
@@ -54,7 +54,7 @@ public class synchro_barrier {
       Engine.die("<actor-count> must be greater than 0");
 
     e.load_platform(args.length >= 2 ? args[1] : "../platforms/two_hosts.xml");
-    e.add_actor("master", e.host_by_name("Tremblay"), new master(actor_count));
+    e.host_by_name("Tremblay").add_actor("master", new master(actor_count));
     e.run();
   }
 }

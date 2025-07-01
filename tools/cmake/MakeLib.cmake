@@ -30,7 +30,7 @@ set_property(TARGET simgrid
 
 add_dependencies(simgrid maintainer_files)
 
-if("${CMAKE_SYSTEM}" MATCHES "Linux")
+if(${enable_sthread})
   add_library(sthread SHARED ${STHREAD_SRC})
   set_target_properties(sthread PROPERTIES VERSION ${libsimgrid_version})
   set_property(TARGET sthread
@@ -51,7 +51,7 @@ if(SIMGRID_HAVE_MC)
   install(TARGETS simgrid-mc # install that binary without breaking the rpath on Mac
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/)
   add_dependencies(tests-mc simgrid-mc)
-  if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  if(${enable_sthread})
     add_dependencies(tests-mc sthread)
   endif()
 endif()

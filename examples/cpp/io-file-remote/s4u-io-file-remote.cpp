@@ -59,6 +59,6 @@ int main(int argc, char** argv)
                sg_disk_get_size_free(d) / INMEGA, d->get_cname(), h->get_cname());
   }
 
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
   return 0;
 }

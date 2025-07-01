@@ -94,12 +94,12 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/energy_platform.xml\n", argv[0], argv[0]);
   e.load_platform(argv[1]);
 
-  e.add_actor("load_test", e.host_by_name("MyHost1"), execute_load_test);
-  e.add_actor("change_speed", e.host_by_name("MyHost1"), change_speed);
+  e.host_by_name("MyHost1")->add_actor("load_test", execute_load_test);
+  e.host_by_name("MyHost1")->add_actor("change_speed", change_speed);
 
   e.run();
 
-  XBT_INFO("Total simulation time: %.2f", sg4::Engine::get_clock());
+  XBT_INFO("Total simulation time: %.2f", e.get_clock());
 
   return 0;
 }

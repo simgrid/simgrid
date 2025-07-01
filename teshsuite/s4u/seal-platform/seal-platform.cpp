@@ -87,10 +87,10 @@ int main(int argc, char* argv[])
 
   std::vector<sg4::Host*> host_list = e.get_all_hosts();
   /* create the sender actor running on first host */
-  e.add_actor("sender", host_list[0], Sender(host_list));
+  host_list[0]->add_actor("sender", Sender(host_list));
   /* create receiver in every host */
   for (auto* host : host_list) {
-    e.add_actor("receiver-" + host->get_name(), host, Receiver());
+    host->add_actor("receiver-" + host->get_name(),Receiver());
   }
 
   /* runs the simulation */

@@ -285,6 +285,7 @@ endif()
 mark_as_advanced(PAPI_PREFIX)
 
 if(CMAKE_VERSION VERSION_LESS 3.20)
+  message(STATUS "cmake is too old to test for C++23 stacks (v${CMAKE_VERSION})")
   set(HAVE_STD_STACKTRACE 0) # CMake does not know about C++23, we cannot test it on the compiler
 else()
   try_compile(HAVE_STD_STACKTRACE ${CMAKE_BINARY_DIR}
@@ -293,6 +294,11 @@ else()
     CXX_STANDARD_REQUIRED 23
     LINK_LIBRARIES stdc++exp
     OUTPUT_VARIABLE compile_stacktrace_output)
+  if(HAVE_STD_STACKTRACE)
+    message(STATUS "C++23 stacks: found.")
+  else()
+    message(STATUS "C++23 stacks: NOT FOUND.\n${compile_stacktrace_output}")
+  endif()
 endif()
 
 # But we do need the core of Boost
@@ -444,6 +450,10 @@ SET(SIMGRID_HAVE_MC OFF)
 if(enable_model-checking)
   message(STATUS "Enabling the stateless model-checking as requested.")
   SET(SIMGRID_HAVE_MC ON)
+endif()
+
+if((DEFINED enable_sthread) AND enable_sthread AND (NOT ("${CMAKE_SYSTEM}" MATCHES "Linux")))
+  message(FATAL_ERROR "sthread can only be enabled on Linux for now. Please disable the 'enable_sthread' option.")
 endif()
 
 if(enable_smpi)

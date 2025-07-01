@@ -68,7 +68,7 @@ public class exec_ptask_multicore_latency {
       Engine.die("Usage: exec_ptask_multicore_latency <platform file>");
 
     e.load_platform(args[0]);
-    e.add_actor("test", e.host_by_name("MyHost1"), new runner());
+    e.host_by_name("MyHost1").add_actor("test", new runner());
 
     e.run();
     Engine.info("Simulation done.");

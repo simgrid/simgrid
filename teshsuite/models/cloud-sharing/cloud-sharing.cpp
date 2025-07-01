@@ -32,7 +32,7 @@ static void computation_fun(double size)
 
 static void run_test_process(const std::string& name, simgrid::s4u::Host* location, double size)
 {
-  simgrid::s4u::this_actor::get_engine()->add_actor(name, location, computation_fun, floor(size));
+  location->add_actor(name, computation_fun, floor(size));
 }
 
 static void test_energy_consumption(const std::string& name, int nb_cores)
@@ -582,7 +582,7 @@ int main(int argc, char* argv[])
 
   simgrid::s4u::Host* pm0 = e.host_by_name("node-0.1core.org");
   xbt_assert(pm0, "Host 'node-0.1core.org' not found");
-  e.add_actor("master", pm0, master_main);
+  pm0->add_actor("master", master_main);
 
   e.run();
 }

@@ -54,7 +54,7 @@ static void load_platform(sg4::Engine& e)
   zone->seal();
 
   /* create actor runner */
-  e.add_actor("runner", runner_host, runner);
+  runner_host->add_actor("runner", runner);
 }
 
 /*************************************************************************************************/
