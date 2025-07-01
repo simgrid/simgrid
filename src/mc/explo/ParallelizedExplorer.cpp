@@ -81,6 +81,7 @@ void ParallelizedExplorer::TreeHandler()
 
     if (to_apply == nullptr) {
       // An Explorer reached a bug! We need to terminate the exploration ASAP
+      XBT_DEBUG("[tid:TreeHandler] The exploration has been terminated by an explorer");
       break;
     }
 
@@ -94,9 +95,11 @@ void ParallelizedExplorer::TreeHandler()
     XBT_DEBUG("[tid:TreeHandler] The update contained %lu new states, so now there are %d remaining todo",
               new_opened.size(), remaining_todo);
 
+    to_apply->get_last_explored_state()->signal_on_backtrack();
+
     // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
-    for (auto state : new_opened)
-      while (!opened_heads_.push(state.get())) {
+    for (auto state_it = new_opened.crbegin(); state_it != new_opened.crend(); state_it++)
+      while (!opened_heads_.push((*state_it).get())) {
       }
 
     reduction_algo_->delete_race_update(to_apply);
@@ -140,7 +143,7 @@ void ExplorerHandler(ThreadLocalExplorer* local_explorer, ExitStatus* exploratio
   } catch (McWarning& error) {
     // An error occured while exploring
     // We need to tell the Tree Handler to stop immediately
-
+    XBT_DEBUG("[tid:Explorer %d] An error has been found!", local_explorer->get_explorer_id());
     while (!local_explorer->races_list->push(nullptr)) {
     }
 
@@ -174,7 +177,15 @@ void Explorer(ThreadLocalExplorer& local_explorer)
       break;
     }
 
-    XBT_DEBUG("Found a next candidate to visit: state #%ld!", to_visit->get_num());
+    if (to_visit->being_explored.test_and_set()) {
+      // This state has already been or will be explored very soon by the TreeHandler, skip it
+      while (!races_list_->push(reduction_algo_->empty_race_update()))
+        ;
+      continue;
+    }
+
+    XBT_DEBUG("[tid: Explorer %d] Found a next candidate to visit: state #%ld!", local_explorer.get_explorer_id(),
+              to_visit->get_num());
 
     // Backtrack to to_visit, and restore stack/execution
     local_explorer.backtrack_to_state(to_visit);
@@ -206,32 +217,27 @@ void Explorer(ThreadLocalExplorer& local_explorer)
       if (next < 0) {
         // It can be: a leaf, a deadlock or a stop caused by reduction (eg. by sleep set)
 
-        XBT_VERB("%lu actors remain, but none of them need to be interleaved (depth %zu).", state->get_actor_count(),
-                 local_explorer.stack.size() + 1);
+        XBT_VERB("[tid: Explorer %d] %lu actors remain, but none of them need to be interleaved (depth %zu).",
+                 local_explorer.get_explorer_id(), state->get_actor_count(), local_explorer.stack.size() + 1);
         local_explorer.check_deadlock(); // DEADLOCK CASE
+
+        // Compute the race when reaching a leaf, and push it in the shared structure
+        Reduction::RaceUpdate* todo_updates =
+            reduction_algo_->races_computation(local_explorer.execution_seq, &local_explorer.stack);
+        // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
+
+        while (!races_list_->push(todo_updates))
+          ;
 
         if (state->get_actor_count() == 0) {
           // LEAF CASE
-          // Compute the race when reaching a leaf, and push it in the shared structure
-          Reduction::RaceUpdate* todo_updates =
-              reduction_algo_->races_computation(local_explorer.execution_seq, &local_explorer.stack);
-          // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
-          while (!races_list_->push(todo_updates))
-            ;
           local_explorer.explored_traces++;
 
           local_explorer.get_remote_app().finalize_app();
-          XBT_VERB("Execution came to an end at %s",
+          XBT_VERB("[tid: Explorer %d] Execution came to an end at %s", local_explorer.get_explorer_id(),
                    get_record_trace_from_stack(local_explorer.stack).to_string().c_str());
-          XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), local_explorer.stack.size(),
-                   local_explorer.explored_traces);
-        } else {
-          // BLOCKED CASE
-          // We still need to produce an empty RaceUpdate so the TreeHandler knows we returned from this exploration
-          auto todo_updates = reduction_algo_->empty_race_update();
-          // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
-          while (!races_list_->push(todo_updates))
-            ;
+          XBT_VERB("[tid: Explorer %d] (state: %ld, depth: %zu, %lu explored traces)", local_explorer.get_explorer_id(),
+                   state->get_num(), local_explorer.stack.size(), local_explorer.explored_traces);
         }
 
         do_explore = false;
@@ -247,6 +253,8 @@ void Explorer(ThreadLocalExplorer& local_explorer)
                local_explorer.get_explorer_id(), state->get_transition_out()->aid_,
                state->get_transition_out()->to_string().c_str(), local_explorer.stack.size(), state->get_num());
 
+      local_explorer.visited_states_count++;
+
       auto next_state = reduction_algo_->state_create(local_explorer.get_remote_app(), state, executed_transition);
 
       reduction_algo_->on_backtrack(state);
@@ -261,11 +269,9 @@ void Explorer(ThreadLocalExplorer& local_explorer)
 
   // Do some logging that makes sens for now since there is only one thread
 
-  XBT_INFO(
-      "Parallel exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, %lu states "
-      "visited overall)",
-      State::get_expanded_states(), local_explorer.explored_traces, Transition::get_replayed_transitions(),
-      local_explorer.visited_states_count);
+  XBT_INFO("[tid: Explorer %d] Parallel exploration ended. This explored visited %lu traces and %lu states "
+           "visited overall",
+           local_explorer.get_explorer_id(), local_explorer.explored_traces, local_explorer.visited_states_count);
   Exploration::get_instance()->log_state();
 }
 
@@ -273,7 +279,12 @@ void ParallelizedExplorer::run()
 {
   XBT_INFO("Start a Parallel exploration with one thread. Reduction is: %s.", to_c_str(reduction_mode_));
 
+  one_way_disabled_ = true;
+
   auto initial_state = reduction_algo_->state_create(get_remote_app());
+  initial_state->being_explored.clear();
+
+  one_way_disabled_ = false;
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   XBT_DEBUG("Initial state. %lu actors to consider", initial_state->get_actor_count());
@@ -305,12 +316,18 @@ void ParallelizedExplorer::run()
   }
 
   // Terminate the original remote_app from the main explorer
-  get_remote_app().terminate_one_way();
+  // get_remote_app().terminate_one_way();
   get_remote_app().finalize_app();
 
   for (auto result : thread_results_)
     if (result != ExitStatus::SUCCESS)
       throw McWarning(result);
+
+  long unsigned total_traces = 0;
+  for (const auto& explo : local_explorers_)
+    total_traces += explo->explored_traces;
+
+  XBT_INFO("Parallel exploration ended. %lu explored traces overall", total_traces);
 }
 
 ParallelizedExplorer::ParallelizedExplorer(const std::vector<char*>& args, ReductionMode mode)

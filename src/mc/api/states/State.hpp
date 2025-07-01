@@ -6,12 +6,15 @@
 #ifndef SIMGRID_MC_STATE_HPP
 #define SIMGRID_MC_STATE_HPP
 
+#include "simgrid/forward.h"
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/xbt_intrusiveptr.hpp"
 #include "xbt/asserts.h"
+#include <atomic>
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace simgrid::mc {
@@ -26,6 +29,10 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
   static long expended_states_; /* Count total amount of states, for stats */
 
   static long in_memory_states_; // Count the number of states currently still in memory
+
+  // Store the largest number of actors encountered at the same time
+  // This is used to initialize the size of the actor_status_, which has to be >= than the reality in parallel mode
+  static size_t max_actor_encountered_;
 
   /** A forked application stationned in this state, to quickly recreate child states w/o replaying from the beginning
    */
@@ -55,11 +62,11 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
   void update_opened(std::shared_ptr<Transition> transition);
 
 protected:
-  /** State's exploration status by actor. All actors should be present, eventually disabled for now. */
-  std::map<aid_t, ActorState> actors_to_run_;
+  /** State's exploration status by actor. All actors should be present, eventually disabled for now.
+   *  Key is aid. */
+  std::vector<std::optional<ActorState>> actors_to_run_;
   bool actor_status_set_ = false;
-
-  ActorState get_actor_at(aid_t aid) { return actors_to_run_.at(aid); }
+  bool is_a_leaf         = true;
 
   std::vector<std::vector<StatePtr>> children_states_; // first key is aid, second time considered
 
@@ -114,46 +121,49 @@ public:
 
   virtual bool has_more_to_be_explored() const;
 
+  bool actor_exists(aid_t aid)
+  {
+    return aid >= 0 and actors_to_run_.size() >= (unsigned)aid and actors_to_run_[aid].has_value();
+  }
+
+  const ActorState& get_actor_at(aid_t aid)
+  {
+    xbt_assert(actor_exists(aid), "Actor %ld does not exist in state #%ld, yet one was asked", aid, get_num());
+    return *actors_to_run_[aid];
+  }
+
   /* Marking as TODO some actor in this state:
    *  + consider_one mark aid actor (and assert it is possible)
    *  + consider_best ensure one actor is marked by eventually marking the best regarding its guiding method
    *  + consider_all mark all enabled actor that are not done yet */
-  void consider_one(aid_t aid)
-  {
-    xbt_assert(actors_to_run_.find(aid) != actors_to_run_.end(),
-               "Actor %ld does not exist in state #%ld, yet one was asked", aid, get_num());
-    xbt_assert(actors_to_run_.at(aid).is_enabled(),
-               "Tried to mark as TODO actor %ld in state #%ld but it is not enabled", aid, get_num());
-    xbt_assert(not actors_to_run_.at(aid).is_done(),
-               "Tried to mark as TODO actor %ld in state #%ld but it is already done", aid, get_num());
-    actors_to_run_.at(aid).mark_todo();
-    opened_.emplace_back(
-        std::make_shared<Transition>(Transition::Type::UNKNOWN, aid, actors_to_run_.at(aid).get_times_considered()));
-  }
+  void consider_one(aid_t aid);
 
   unsigned long consider_all()
   {
     unsigned long count = 0;
-    for (auto& [aid, actor] : actors_to_run_)
-      if (actor.is_enabled() && not actor.is_done()) {
-        actor.mark_todo();
+    for (auto& actor : actors_to_run_) {
+      if (not actor.has_value())
+        continue;
+      if (actor.value().is_enabled() && not actor.value().is_done()) {
+        actor.value().mark_todo();
         count++;
-        opened_.emplace_back(
-            std::make_shared<Transition>(Transition::Type::UNKNOWN, aid, actor.get_times_considered()));
+        opened_.emplace_back(std::make_shared<Transition>(Transition::Type::UNKNOWN, actor.value().get_aid(),
+                                                          actor.value().get_times_considered()));
       }
+    }
     return count;
   }
 
-  bool is_actor_done(aid_t actor) const { return actors_to_run_.at(actor).is_done(); }
+  bool is_actor_done(aid_t actor) const { return actors_to_run_.at(actor).value().is_done(); }
   std::shared_ptr<Transition> get_transition_out() const { return outgoing_transition_; }
   std::shared_ptr<Transition> get_transition_in() const { return incoming_transition_; }
   State* get_parent_state() const { return parent_state_.get(); }
   void reset_parent_state();
 
-  std::map<aid_t, ActorState> const& get_actors_list() const { return actors_to_run_; }
+  std::vector<std::optional<ActorState>> const& get_actors_list() const { return actors_to_run_; }
 
   unsigned long get_actor_count() const { return actors_to_run_.size(); }
-  bool is_actor_enabled(aid_t actor) const { return actors_to_run_.at(actor).is_enabled(); }
+  bool is_actor_enabled(aid_t actor) const { return actors_to_run_.at(actor).value().is_enabled(); }
 
   /** Returns whether this state has a state factory.
    *
@@ -217,6 +227,8 @@ public:
   const std::vector<std::shared_ptr<Transition>> get_opened_transitions() const { return opened_; }
 
   xbt::reference_holder<State> reference_holder_;
+
+  std::atomic_flag being_explored = ATOMIC_FLAG_INIT;
 };
 } // namespace simgrid::mc
 

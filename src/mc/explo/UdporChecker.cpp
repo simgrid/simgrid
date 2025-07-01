@@ -177,8 +177,11 @@ EventSet UdporChecker::compute_exC(const Configuration& C, const State& stateC, 
   // UDPOR in a deterministic order. The processing done here always processes
   // actors in a consistent order since `std::map` is by-default ordered using
   // `std::less<Key>` (see the return type of `State::get_actors_list()`)
-  for (const auto& [aid, actor_state] : stateC.get_actors_list()) {
-    const auto& enabled_transitions = actor_state.get_enabled_transitions();
+  for (const auto& actor_state : stateC.get_actors_list()) {
+    if (not actor_state.has_value())
+      continue;
+    aid_t aid                       = actor_state->get_aid();
+    const auto& enabled_transitions = actor_state->get_enabled_transitions();
     if (enabled_transitions.empty()) {
       XBT_DEBUG("\t Actor `%ld` is disabled: no partial extensions need to be considered", aid);
     } else {

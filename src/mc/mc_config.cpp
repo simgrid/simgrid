@@ -64,6 +64,12 @@ simgrid::config::Flag<int> _sg_mc_cached_states_interval{
     1000,
     [](int val) { xbt_assert(val >= 0, "The value of model-check/cached-states-interval must be positive or null"); }};
 
+simgrid::config::Flag<int> _sg_mc_parallel_thread{
+    "model-check/parallel-thread",
+    "Specify how explorer should be launched in parallel. Each explorer will be a different separate thread spawned by "
+    "McSimGrid.",
+    1, [](int val) { xbt_assert(val >= 1, "The value of model-check/parallel-thread must be >= 1"); }};
+
 simgrid::config::Flag<std::string> _sg_mc_explore_algo{
     "model-check/exploration-algo",
     "Specify the type of search politic to use in MC algorithm",

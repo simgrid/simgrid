@@ -249,10 +249,10 @@ void Exploration::report_correct_execution(State* last_state)
 
 bool Exploration::empty()
 {
-  std::map<aid_t, simgrid::mc::ActorState> actors;
+  std::vector<std::optional<simgrid::mc::ActorState>> actors;
   get_remote_app().get_actors_status(actors);
   return std::none_of(actors.begin(), actors.end(),
-                      [](std::pair<aid_t, simgrid::mc::ActorState> kv) { return kv.second.is_enabled(); });
+                      [](std::optional<simgrid::mc::ActorState> kv) { return kv.has_value() && kv->is_enabled(); });
 }
 
 bool Exploration::soft_timouted() const

@@ -23,10 +23,25 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
 {
   XBT_DEBUG("Inserting at state #%ld sequence\n%s", get_num(), odpor::one_string_textual_trace(w).c_str());
 
+  if (w.size() == 0)
+    return nullptr;
+
+  if (this->is_a_leaf) {
+    // If the state considered is a leaf
+    if (this->being_explored.test_and_set()) {
+      // ... and it is already being explored by someone
+      // then wait for a child to appear
+      while (this->is_a_leaf) {
+      } // busy-waiting
+    }
+
+    // Else, we just set the value ourself: we are responsible for this leaf exploration!
+  }
+
   for (auto& t : this->opened_) {
     auto aid              = t->aid_;
     auto times_considered = t->times_considered_;
-    auto state            = this->children_states_[aid][times_considered];
+    StatePtr state        = this->children_states_[aid][times_considered];
     if (state == nullptr)
       continue;
 
@@ -83,18 +98,29 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
     }
   }
 
-  if (w.size() == 0)
-    return nullptr;
-
   StatePtr current_state = this;
   StatePtr parent_state  = this->get_parent_state();
+  auto tran_it           = w.begin();
+
+  parent_state = current_state;
+  XBT_DEBUG("Creating state after actor %ld in parent state %ld", (*tran_it)->aid_, current_state->get_num());
+  current_state = StatePtr(new WutState(remote_app, current_state, (*tran_it), false), true);
+
+  // We need to mark the option of the first state as TODO in order to take this branch at some point
+  // but this can only be done if the actor status is set
+  // Also, we do this AFTER creating a child: this way the initialize will happen the transition already in opened_
   if (actor_status_set_)
-    consider_one((*w.begin())->aid_);
-  for (auto tran : w) {
+    actors_to_run_[(*tran_it)->aid_]->mark_todo();
+
+  tran_it++;
+
+  for (; tran_it != w.end(); tran_it++) {
     parent_state = current_state;
-    XBT_DEBUG("Creating state after actor %ld in parent state %ld", tran->aid_, current_state->get_num());
-    current_state = StatePtr(new WutState(remote_app, current_state, tran, false), true);
+    XBT_DEBUG("Creating state after actor %ld in parent state %ld", (*tran_it)->aid_, current_state->get_num());
+    current_state = StatePtr(new WutState(remote_app, current_state, (*tran_it), false), true);
   }
+  // Mark the last state (the leaf) as not being explored (ie. someone need to transform it into a node later)
+  current_state->being_explored.clear();
   return current_state;
 }
 
@@ -102,11 +128,16 @@ std::unordered_set<aid_t> WutState::get_sleeping_actors(aid_t after_actor) const
 {
   std::unordered_set<aid_t> actors;
   for (const auto& [aid, _] : get_sleep_set()) {
+    xbt_assert(aid != 0);
     actors.insert(aid);
   }
-  for (const auto& t : opened_) {
+  // Access them directly to ensure the order of traversal
+  for (size_t i = 0; i < opened_.size(); i++) {
+    const auto& t = opened_[i];
     if (t->aid_ == after_actor)
       break;
+    xbt_assert(t->aid_ != 0);
+
     actors.insert(t->aid_);
   }
   return actors;

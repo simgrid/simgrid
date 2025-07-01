@@ -9,6 +9,7 @@
 #include "simgrid/forward.h"
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/remote/CheckerSide.hpp"
+#include <optional>
 
 namespace simgrid::mc {
 
@@ -65,7 +66,7 @@ public:
   unsigned long get_maxpid() const;
 
   /* Get the list of actors that are ready to run at that step. Usually shorter than maxpid */
-  void get_actors_status(std::map<aid_t, simgrid::mc::ActorState>& whereto) const;
+  void get_actors_status(std::vector<std::optional<simgrid::mc::ActorState>>& whereto) const;
 
   /** Take a transition. A new Transition is created iff the last parameter is true */
   Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition) const;

@@ -103,7 +103,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
   } catch (McWarning& error) {
     // If an error is reached while executing the transition ...
     if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_debug)) {
-      auto transition_to_be_executed = state->get_actors_list().at(next_actor).get_transition();
+      auto transition_to_be_executed = state->get_actor_at(next_actor).get_transition();
       XBT_DEBUG("An error occured while executing %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)",
                 transition_to_be_executed->aid_, transition_to_be_executed->to_string().c_str(), state_stack.size(),
                 state->get_num(), state->count_todo());
@@ -189,7 +189,9 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 
   aid_t next_to_explore;
 
-  while ((next_to_explore = reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
+  while ((next_to_explore = s->next_transition()) != -1) {
+
+    // reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
 
     step_exploration(S, next_to_explore, state_stack);
   }

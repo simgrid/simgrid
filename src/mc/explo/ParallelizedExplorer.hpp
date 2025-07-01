@@ -28,7 +28,7 @@
 #include <unordered_map>
 #include <vector>
 
-template <typename T> using parallel_channel = boost::lockfree::queue<T, boost::lockfree::capacity<1024>>;
+template <typename T> using parallel_channel = boost::lockfree::queue<T, boost::lockfree::capacity<65534>>;
 
 namespace simgrid::mc {
 
@@ -77,7 +77,7 @@ private:
 
   const std::vector<char*>& args_; // Application args saved to create threads
 
-  int number_of_threads = 2;
+  int number_of_threads = _sg_mc_parallel_thread;
 
 public:
   explicit ParallelizedExplorer(const std::vector<char*>& args, ReductionMode mode);

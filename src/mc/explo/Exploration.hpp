@@ -50,6 +50,8 @@ protected:
 
   FILE* dot_output_ = nullptr;
 
+  bool one_way_disabled_ = false;
+
 public:
   explicit Exploration();
   void initialize_remote_app(const std::vector<char*>& args) { remote_app_ = std::make_unique<RemoteApp>(args); }
@@ -177,6 +179,12 @@ public:
   static bool need_actor_status_transitions()
   {
     return _sg_mc_debug or get_model_checking_reduction() == ReductionMode::udpor;
+  }
+
+  static bool can_go_one_way()
+  {
+    return _sg_mc_befs_threshold == 0 and _sg_mc_send_determinism == false and _sg_mc_comms_determinism == false and
+           not get_instance()->one_way_disabled_;
   }
 
   /** Print something to the dot output file*/

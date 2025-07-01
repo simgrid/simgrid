@@ -52,8 +52,7 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state,
 void SleepSetState::add_arbitrary_transition(RemoteApp& remote_app)
 {
   XBT_DEBUG("Adding arbitraty transition in state #%ld", get_num());
-  if (sleep_set_.empty() and _sg_mc_befs_threshold == 0 and _sg_mc_send_determinism == false and
-      _sg_mc_comms_determinism == false) {
+  if (sleep_set_.empty() and Exploration::can_go_one_way()) {
     XBT_DEBUG("Asking for one way");
     xbt_assert(next_transition() == -1,
                "State #%ld already has something to explore, why are we adding an arbitrary transition there?",
@@ -75,8 +74,8 @@ void SleepSetState::sleep_add_and_mark(std::shared_ptr<Transition> transition)
   XBT_DEBUG("Adding transition Actor %ld:%s to the sleep set from parent state", transition->aid_,
             transition->to_string().c_str());
   sleep_set_.try_emplace(transition->aid_, transition);
-  if (actors_to_run_.count(transition->aid_) != 0) {
-    actors_to_run_.at(transition->aid_).mark_done();
+  if (actors_to_run_.size() > (unsigned)transition->aid_ and actors_to_run_[transition->aid_].has_value()) {
+    actors_to_run_[transition->aid_]->mark_done();
   }
 }
 
@@ -91,9 +90,11 @@ std::unordered_set<aid_t> SleepSetState::get_sleeping_actors(aid_t) const
 std::vector<aid_t> SleepSetState::get_enabled_minus_sleep() const
 {
   std::vector<aid_t> actors;
-  for (const auto& [aid, state] : actors_to_run_) {
-    if (state.is_enabled() && sleep_set_.count(aid) < 1) {
-      actors.insert(actors.begin(), aid);
+  for (const auto& state : actors_to_run_) {
+    if (not state.has_value())
+      continue;
+    if (state->is_enabled() && sleep_set_.count(state->get_aid()) < 1) {
+      actors.insert(actors.begin(), state->get_aid());
     }
   }
   return actors;

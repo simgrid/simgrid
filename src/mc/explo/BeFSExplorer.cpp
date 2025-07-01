@@ -193,7 +193,7 @@ void BeFSExplorer::run()
     }
 
     if (XBT_LOG_ISENABLED(mc_befs, xbt_log_priority_debug)) {
-      auto todo = state->get_actors_list().at(next).get_transition();
+      auto todo = state->get_actor_at(next).get_transition();
       XBT_DEBUG("wanna execute %ld: %.60s", next, todo->to_string().c_str());
     }
 
@@ -201,8 +201,6 @@ void BeFSExplorer::run()
     auto executed_transition = state->execute_next(next, get_remote_app());
     on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
 
-    // If there are processes to interleave and the maximum depth has not been
-    // reached then perform one step of the exploration algorithm.
     XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves, %lu opened states)",
              state->get_transition_out()->aid_, state->get_transition_out()->to_string().c_str(), stack_.size(),
              state->get_num(), state->count_todo(), opened_states_.size());
@@ -298,6 +296,7 @@ void BeFSExplorer::backtrack()
   if (not backtracking_point) {
     XBT_DEBUG("No more opened point of exploration, the search will end");
     stack_.clear();
+    last_explored_state->signal_on_backtrack();
     return;
   }
 

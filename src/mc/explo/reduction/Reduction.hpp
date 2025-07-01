@@ -30,6 +30,13 @@ public:
   class RaceUpdate {
   public:
     RaceUpdate() = default;
+    State* last_explored_state_ = nullptr; // This is mandatory if we want the // algo to handle state destruction
+    State* get_last_explored_state() const
+    {
+      xbt_assert(last_explored_state_ != nullptr,
+                 "This reduction seems to be lacking some method. Please contact the Mc SimGrid developpment team");
+      return last_explored_state_;
+    }
   };
 
   Reduction()          = default;

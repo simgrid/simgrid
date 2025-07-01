@@ -450,8 +450,9 @@ void CheckerSide::terminate_one_way()
   auto [more_data, type] = get_channel().peek_message_type();
   while (more_data && type != MessageType::WAITING) {
     get_channel().expect_message(sizeof(type), type, "Could not receive the Message");
-    more_data = get_channel().peek_message_type().first;
-    type      = get_channel().peek_message_type().second;
+    auto [first, second] = get_channel().peek_message_type();
+    more_data            = first;
+    type                 = second;
   }
 
   get_channel().expect_message(sizeof(s_mc_message_t), MessageType::WAITING, "Could not receive MessageType::WAITING");

@@ -30,6 +30,7 @@ extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_max_depth;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_max_errors;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_befs_threshold;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_random_seed;
+extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_parallel_thread;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_k_alternatives;
 extern XBT_PRIVATE simgrid::config::Flag<std::string> _sg_mc_dot_output_file;
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_strategy;

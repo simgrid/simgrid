@@ -4,7 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/api/Strategy.hpp"
+#include "simgrid/forward.h"
 #include "src/mc/mc_config.hpp"
+#include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 #include "xbt/random.hpp"
 
@@ -28,7 +30,7 @@ std::pair<aid_t, int> ExplorationStrategy::best_transition_in(const State* state
       return std::make_pair(opened_transitions[0]->aid_, state->get_depth());
     } else {
       int chosen = xbt::random::uniform_int(0, opened_transitions.size() - 1);
-      return std::make_pair(chosen, 0);
+      return std::make_pair(opened_transitions[chosen]->aid_, 0);
     }
   }
 
@@ -39,8 +41,12 @@ std::pair<aid_t, int> ExplorationStrategy::best_transition_in(const State* state
 
   if (_sg_mc_strategy == "none") {
 
-    for (auto const& [aid, actor] : actors) {
+    for (auto const& actor_opt : actors) {
       /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
+      if (not actor_opt.has_value())
+        continue;
+      auto const actor = actor_opt.value();
+      aid_t aid        = actor.get_aid();
       if ((not actor.is_todo() && must_be_todo) || not actor.is_enabled() || actor.is_done()) {
         continue;
         XBT_DEBUG("Actor %ld discarded as best possible transition", aid);
@@ -53,9 +59,11 @@ std::pair<aid_t, int> ExplorationStrategy::best_transition_in(const State* state
     int possibilities = 0;
 
     // Consider only valid actors
-    for (auto const& [aid, actor] : actors) {
-      if ((actor.is_todo() || not must_be_todo) && (not actor.is_done()) && actor.is_enabled())
-        possibilities++;
+    for (auto const& actor : actors) {
+      if (actor.has_value())
+        if ((actor.value().is_todo() || not must_be_todo) && (not actor.value().is_done()) &&
+            actor.value().is_enabled())
+          possibilities++;
     }
 
     int chosen;
@@ -66,11 +74,13 @@ std::pair<aid_t, int> ExplorationStrategy::best_transition_in(const State* state
     else
       chosen = xbt::random::uniform_int(0, possibilities - 1);
 
-    for (auto const& [aid, actor] : actors) {
-      if (((not actor.is_todo()) && must_be_todo) || actor.is_done() || (not actor.is_enabled()))
+    for (auto const& actor : actors) {
+      if (not actor.has_value())
+        continue;
+      if (((not actor->is_todo()) && must_be_todo) || actor->is_done() || (not actor->is_enabled()))
         continue;
       if (chosen == 0) {
-        return std::make_pair(aid, state->get_depth());
+        return std::make_pair(actor->get_aid(), state->get_depth());
       }
       chosen--;
     }
@@ -90,15 +100,20 @@ int ExplorationStrategy::get_actor_valuation_in(const State* state, aid_t aid) c
 aid_t ExplorationStrategy::consider_best_among_set_in(State* state, std::unordered_set<aid_t> E)
 {
 
-  if (std::any_of(begin(E), end(E), [=](const auto& aid) { return state->get_actors_list().at(aid).is_todo(); }))
-    return -1;
-
   auto actors = state->get_actors_list();
+
+  if (std::any_of(begin(E), end(E), [=](const auto& aid) {
+        return actors.size() > (unsigned)aid && actors[aid].has_value() && actors[aid]->is_todo();
+      }))
+    return -1;
   if (_sg_mc_strategy == "none") {
 
-    for (auto& [aid, actor] : actors) {
+    for (auto& actor : actors) {
+      if (not actor.has_value())
+        continue;
+      aid_t aid = actor->get_aid();
       if (E.count(aid) > 0) {
-        xbt_assert(actor.is_enabled(), "Asked to consider one among a set containing the disabled actor %ld", aid);
+        xbt_assert(actor->is_enabled(), "Asked to consider one among a set containing the disabled actor %ld", aid);
         state->consider_one(aid);
         return aid;
       }
@@ -121,9 +136,11 @@ aid_t ExplorationStrategy::consider_best_among_set_in(State* state, std::unorder
 
 aid_t ExplorationStrategy::ensure_one_considered_among_set_in(State* state, std::unordered_set<aid_t> E)
 {
-  for (auto& [p, actor] : state->get_actors_list()) {
+  for (auto& actor : state->get_actors_list()) {
+    if (not actor.has_value())
+      continue;
     // If we find an actor already satisfying condition E, we return
-    if (E.count(p) > 0 && (actor.is_done() or actor.is_todo()))
+    if (E.count(actor->get_aid()) > 0 && (actor->is_done() or actor->is_todo()))
       return -1;
   }
 
