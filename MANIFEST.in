@@ -550,6 +550,10 @@ include examples/java/mess_await/mess_await.java
 include examples/java/mess_await/mess_await.java.tesh
 include examples/java/platform_comm_serialize/platform_comm_serialize.java
 include examples/java/platform_comm_serialize/platform_comm_serialize.java.tesh
+include examples/java/plugin_host_load/plugin_host_load.java
+include examples/java/plugin_host_load/plugin_host_load.java.tesh
+include examples/java/plugin_link_load/plugin_link_load.java
+include examples/java/plugin_link_load/plugin_link_load.java.tesh
 include examples/java/synchro_barrier/synchro_barrier.java
 include examples/java/synchro_barrier/synchro_barrier.java.tesh
 include examples/java/synchro_condition_variable/synchro_condition_variable.java

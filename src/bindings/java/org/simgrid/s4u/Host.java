@@ -26,6 +26,8 @@ public class Host {
   public double get_pstate_speed(int pstate) { return simgridJNI.Host_get_pstate_speed(swigCPtr, this, pstate); }
   public double get_load() { return simgridJNI.Host_get_load(swigCPtr); }
 
+  public double get_core_count() { return simgridJNI.Host_get_core_count(swigCPtr); }
+
   public boolean is_on() { return simgridJNI.Host_is_on(swigCPtr, this); }
   public void turn_off() { simgridJNI.Host_turn_off(swigCPtr); }
   public void turn_on() { simgridJNI.Host_turn_on(swigCPtr); }
@@ -74,6 +76,13 @@ public class Host {
   public void set_concurrency_limit(int i) { simgridJNI.Host_set_concurrency_limit(swigCPtr, i); }
   /** If the action runs on more than one Host, only the first one is returned */
   public void set_cpu_factor_cb(CallbackDHostDouble cb) { simgridJNI.Host_set_cpu_factor_cb(swigCPtr, cb); }
+
+  public double get_current_load() { return simgridJNI.Host_get_current_load(swigCPtr); }
+  public double get_avg_load() { return simgridJNI.Host_get_avg_load(swigCPtr); }
+  public double get_idle_time() { return simgridJNI.Host_get_idle_time(swigCPtr); }
+  public double get_total_idle_time() { return simgridJNI.Host_get_total_idle_time(swigCPtr); }
+  public double get_computed_flops() { return simgridJNI.Host_get_computed_flops(swigCPtr); }
+  public void load_reset() { simgridJNI.Host_load_reset(swigCPtr); }
 
   public double get_consumed_energy() { return simgridJNI.Host_get_consumed_energy(swigCPtr); }
   public double get_wattmin_at(int pstate) { return simgridJNI.Host_get_wattmin_at(swigCPtr, pstate); }

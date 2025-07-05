@@ -178,6 +178,8 @@ public class Engine {
   public void plugin_host_energy_init() { simgridJNI.Engine_plugin_host_energy_init(swigCPtr); }
   public void plugin_link_energy_init() { simgridJNI.Engine_plugin_link_energy_init(swigCPtr); }
   public void plugin_wifi_energy_init() { simgridJNI.Engine_plugin_wifi_energy_init(swigCPtr); }
+  public void plugin_host_load_init() { simgridJNI.Engine_plugin_host_load_init(swigCPtr); }
+  public void plugin_link_load_init() { simgridJNI.Engine_plugin_link_load_init(swigCPtr); }
 
   public static void on_platform_created_cb(CallbackVoid cb) { simgridJNI.Engine_on_platform_created_cb(cb); }
 

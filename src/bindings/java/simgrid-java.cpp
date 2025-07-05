@@ -65,6 +65,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/plugins/energy.h"
 #include "simgrid/plugins/live_migration.h"
+#include "simgrid/plugins/load.h"
 
 #include "simgrid/s4u/Activity.hpp"
 #include "simgrid/s4u/ActivitySet.hpp"
@@ -3139,6 +3140,14 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1wifi_1en
 {
   sg_wifi_energy_plugin_init();
 }
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1link_1load_1init(JNIEnv*, jclass, jlong cthis)
+{
+  sg_link_load_plugin_init();
+}
+XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1plugin_1host_1load_1init(JNIEnv*, jclass, jlong cthis)
+{
+  sg_host_load_plugin_init();
+}
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1on_1platform_1created_1cb(JNIEnv* jenv, jclass,
                                                                                           jobject cb)
@@ -3552,6 +3561,12 @@ XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1load(JNIEn
 {
   return (jdouble)((Host*)cthis)->get_load();
 }
+/* Signature of Host_get_core_count: (J)I */
+JNIEXPORT jint JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1core_1count(JNIEnv*, jclass, jlong cthis)
+{
+  return (jint)((Host*)cthis)->get_core_count();
+}
+
 XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1is_1on(JNIEnv*, jclass, jlong cthis, jobject jthis)
 {
   return ((simgrid::s4u::Host*)cthis)->is_on();
@@ -3642,6 +3657,37 @@ XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1wattmin_1a
                                                                                   jint pstate)
 {
   return sg_host_get_wattmin_at((Host*)cthis, pstate);
+}
+/* Signature of Host_load_reset: (J)V */
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1load_1reset(JNIEnv*, jclass, jlong cthis)
+{
+  sg_host_load_reset((simgrid::s4u::Host const*)cthis);
+}
+/* Signature of Host_load_get_current_load: (J)D */
+JNIEXPORT jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1current_1load(JNIEnv*, jclass, jlong cthis)
+{
+  return (jdouble)sg_host_get_current_load((simgrid::s4u::Host const*)cthis);
+}
+/* Signature of Host_load_get_avg_load: (J)D */
+JNIEXPORT jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1avg_1load(JNIEnv*, jclass, jlong cthis)
+{
+  return (jdouble)sg_host_get_avg_load((simgrid::s4u::Host const*)cthis);
+}
+/* Signature of Host_load_get_idle_time: (J)D */
+JNIEXPORT jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1idle_1time(JNIEnv*, jclass, jlong cthis)
+{
+  return (jdouble)sg_host_get_idle_time((simgrid::s4u::Host const*)cthis);
+}
+/* Signature of Host_load_get_total_idle_time: (J)D */
+JNIEXPORT jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1total_1idle_1time(JNIEnv*, jclass, jlong cthis)
+{
+  return (jdouble)sg_host_get_total_idle_time((simgrid::s4u::Host const*)cthis);
+}
+
+/* Signature of Host_get_computed_flops: (J)D */
+JNIEXPORT jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Host_1get_1computed_1flops(JNIEnv*, jclass, jlong cthis)
+{
+  return (jdouble)sg_host_get_computed_flops((simgrid::s4u::Host const*)cthis);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Io_1init(JNIEnv* jenv, jclass jcls)
@@ -4084,6 +4130,49 @@ XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_LinkInRoute_1Direction_1
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_LinkInRoute_1Direction_1NONE_1get(JNIEnv*, jclass jcls)
 {
   return (jint)simgrid::s4u::LinkInRoute::Direction::NONE;
+}
+/* Signature of Link_load_track: (J)V */
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1load_1track(JNIEnv*, jclass, jlong cthis)
+{
+  sg_link_load_track((simgrid::s4u::Link const*)cthis);
+}
+
+/* Signature of Link_load_untrack: (J)V */
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1load_1untrack(JNIEnv*, jclass, jlong cthis)
+{
+  sg_link_load_untrack((simgrid::s4u::Link const*)cthis);
+}
+
+/* Signature of Link_load_reset: (J)V */
+JNIEXPORT void JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1load_1reset(JNIEnv*, jclass, jlong cthis)
+{
+  sg_link_load_reset((simgrid::s4u::Link const*)cthis);
+}
+
+/* Signature of Link_get_cum_load: (J)D */
+JNIEXPORT jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1cum_1load(JNIEnv*, jclass, jlong cthis)
+{
+  return (jdouble)sg_link_get_cum_load((simgrid::s4u::Link const*)cthis);
+}
+
+/* Signature of Link_get_avg_load: (J)D */
+JNIEXPORT jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1avg_1load(JNIEnv*, jclass, jlong cthis)
+{
+  return (jdouble)sg_link_get_avg_load((simgrid::s4u::Link const*)cthis);
+}
+
+/* Signature of Link_get_min_instantaneous_load: (J)D */
+JNIEXPORT jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1min_1instantaneous_1load(JNIEnv*, jclass,
+                                                                                              jlong cthis)
+{
+  return (jdouble)sg_link_get_min_instantaneous_load((simgrid::s4u::Link const*)cthis);
+}
+
+/* Signature of Link_get_max_instantaneous_load: (J)D */
+JNIEXPORT jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1max_1instantaneous_1load(JNIEnv*, jclass,
+                                                                                              jlong cthis)
+{
+  return (jdouble)sg_link_get_max_instantaneous_load((simgrid::s4u::Link const*)cthis);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1LinkInRoute_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
