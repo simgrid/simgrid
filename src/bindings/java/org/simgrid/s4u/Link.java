@@ -184,11 +184,51 @@ public class Link {
     private final String swigName;
   }
 
-  public void load_track() { simgridJNI.Link_load_track(swigCPtr); }
-  public void load_untrack() { simgridJNI.Link_load_untrack(swigCPtr); }
-  public void load_reset() { simgridJNI.Link_load_reset(swigCPtr); }
-  public double get_cum_load() { return simgridJNI.Link_get_cum_load(swigCPtr); }
-  public double get_avg_load() { return simgridJNI.Link_get_avg_load(swigCPtr); }
-  public double get_min_instantaneous_load() { return simgridJNI.Link_get_min_instantaneous_load(swigCPtr); }
-  public double get_max_instantaneous_load() { return simgridJNI.Link_get_max_instantaneous_load(swigCPtr); }
+  public class LoadPlugin {
+    static boolean inited = false;
+
+    public void track()
+    {
+      if (!inited)
+        Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
+      simgridJNI.Link_load_track(swigCPtr);
+    }
+    public void untrack()
+    {
+      if (!inited)
+        Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
+      simgridJNI.Link_load_untrack(swigCPtr);
+    }
+    public void reset()
+    {
+      if (!inited)
+        Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
+      simgridJNI.Link_load_reset(swigCPtr);
+    }
+    public double get_cumulative()
+    {
+      if (!inited)
+        Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
+      return simgridJNI.Link_get_cum_load(swigCPtr);
+    }
+    public double get_average()
+    {
+      if (!inited)
+        Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
+      return simgridJNI.Link_get_avg_load(swigCPtr);
+    }
+    public double get_min_instantaneous()
+    {
+      if (!inited)
+        Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
+      return simgridJNI.Link_get_min_instantaneous_load(swigCPtr);
+    }
+    public double get_max_instantaneous()
+    {
+      if (!inited)
+        Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
+      return simgridJNI.Link_get_max_instantaneous_load(swigCPtr);
+    }
+  }
+  public LoadPlugin load = new LoadPlugin();
 }

@@ -15,7 +15,7 @@ class execute_load_test extends Actor {
     Engine.info(
         "Initial peak speed: %.0E flop/s; number of flops computed so far: %.0E (should be 0) and current average "
             + "load: %.5f (should be 0)",
-        host.get_speed(), host.get_computed_flops(), host.get_avg_load());
+        host.get_speed(), host.load.get_computed_flops(), host.load.get_average());
 
     double start = Engine.get_clock();
     Engine.info("Sleep for 10 seconds");
@@ -25,7 +25,7 @@ class execute_load_test extends Actor {
     Engine.info(
         "Done sleeping %.2fs; peak speed: %.0E flop/s; number of flops computed so far: %.0E (nothing should have "
             + "changed)",
-        Engine.get_clock() - start, host.get_speed(), host.get_computed_flops());
+        Engine.get_clock() - start, host.get_speed(), host.load.get_computed_flops());
 
     // Run an activity
     start = Engine.get_clock();
@@ -35,7 +35,8 @@ class execute_load_test extends Actor {
     Engine.info("Done working on my activity; this took %.2fs; current peak speed: %.0E flop/s (when I started the "
                     + "computation, the speed was set to %.0E flop/s); number of flops computed so "
                     + "far: %.2E, average load as reported by the HostLoad plugin: %.5f (should be %.5f)",
-                Engine.get_clock() - start, host.get_speed(), speed, host.get_computed_flops(), host.get_avg_load(),
+                Engine.get_clock() - start, host.get_speed(), speed, host.load.get_computed_flops(),
+                host.load.get_average(),
                 200E6 / (10.5 * speed * host.get_core_count() +
                          (Engine.get_clock() - start - 0.5) * host.get_speed() * host.get_core_count()));
 
@@ -44,7 +45,7 @@ class execute_load_test extends Actor {
     host.set_pstate(pstate);
     Engine.info(
         "========= Requesting pstate %d (speed should be of %.0E flop/s and is of %.0E flop/s, average load is %.5f)",
-        pstate, host.get_pstate_speed(pstate), host.get_speed(), host.get_avg_load());
+        pstate, host.get_pstate_speed(pstate), host.get_speed(), host.load.get_average());
 
     // Run a second activity
     start = Engine.get_clock();
@@ -53,27 +54,28 @@ class execute_load_test extends Actor {
     Engine.info(
         "Done working on my activity; this took %.2fs; current peak speed: %.0E flop/s; number of flops computed so "
             + "far: %.2E",
-        Engine.get_clock() - start, host.get_speed(), host.get_computed_flops());
+        Engine.get_clock() - start, host.get_speed(), host.load.get_computed_flops());
 
     start = Engine.get_clock();
     Engine.info("========= Requesting a reset of the computation and load counters");
-    host.load_reset();
-    Engine.info("After reset: %.0E flops computed; load is %.5f", host.get_computed_flops(), host.get_avg_load());
+    host.load.reset();
+    Engine.info("After reset: %.0E flops computed; load is %.5f", host.load.get_computed_flops(),
+                host.load.get_average());
     Engine.info("Sleep for 4 seconds");
     sleep_for(4);
     Engine.info("Done sleeping %.2f s; peak speed: %.0E flop/s; number of flops computed so far: %.0E",
-                Engine.get_clock() - start, host.get_speed(), host.get_computed_flops());
+                Engine.get_clock() - start, host.get_speed(), host.load.get_computed_flops());
 
     // =========== Turn the other host off ==========
     Host host2 = e.host_by_name("MyHost2");
     Engine.info("Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 computed %.0f flops so far and has an "
                     + "average load of %.5f.",
-                host2.get_computed_flops(), host2.get_avg_load());
+                host2.load.get_computed_flops(), host2.load.get_average());
     host2.turn_off();
     start = Engine.get_clock();
     sleep_for(10);
     Engine.info("Done sleeping %.2f s; peak speed: %.0E flop/s; number of flops computed so far: %.0E",
-                Engine.get_clock() - start, host.get_speed(), host.get_computed_flops());
+                Engine.get_clock() - start, host.get_speed(), host.load.get_computed_flops());
   }
 }
 

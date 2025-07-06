@@ -53,8 +53,8 @@ class execute_load_test extends Actor {
 class Monitor extends Actor {
   static void show_link_load(String link_name, Link link)
   {
-    Engine.info("%s link load (cum, avg, min, max): (%g, %g, %g, %g)", link_name, link.get_cum_load(),
-                link.get_avg_load(), link.get_min_instantaneous_load(), link.get_max_instantaneous_load());
+    Engine.info("%s link load (cum, avg, min, max): (%g, %g, %g, %g)", link_name, link.load.get_cumulative(),
+                link.load.get_average(), link.load.get_min_instantaneous(), link.load.get_max_instantaneous());
   }
 
   public void run()
@@ -65,9 +65,9 @@ class Monitor extends Actor {
     var link_host1    = e.link_by_name("cluster0_link_1_DOWN");
 
     Engine.info("Tracking desired links");
-    link_backbone.load_track();
-    link_host0.load_track();
-    link_host1.load_track();
+    link_backbone.load.track();
+    link_host0.load.track();
+    link_host1.load.track();
 
     show_link_load("Backbone", link_backbone);
     while (Engine.get_clock() < 5) {
@@ -76,7 +76,7 @@ class Monitor extends Actor {
     }
 
     Engine.info("Untracking the backbone link");
-    link_backbone.load_untrack();
+    link_backbone.load.untrack();
 
     show_link_load("Host0_UP", link_host0);
     show_link_load("Host1_UP", link_host1);
@@ -84,8 +84,8 @@ class Monitor extends Actor {
     Engine.info("Now resetting and probing host links each second.");
 
     while (Engine.get_clock() < 29) {
-      link_host0.load_reset();
-      link_host1.load_reset();
+      link_host0.load.reset();
+      link_host1.load.reset();
 
       sleep_for(1);
 
