@@ -205,12 +205,12 @@ public class simgridJNI {
   public final static native void Disk_set_concurrency_limit(long jarg1, Disk jarg1_, int jarg2);
   public final static native int Disk_get_concurrency_limit(long jarg1, Disk jarg1_);
   public final static native long Disk_io_init(long jarg1, Disk jarg1_, int jarg2, int jarg3);
-  public final static native long Disk_read_async(long jarg1, Disk jarg1_, int jarg2);
-  public final static native int Disk_read__SWIG_0(long jarg1, Disk jarg1_, int jarg2);
-  public final static native int Disk_read__SWIG_1(long jarg1, Disk jarg1_, int jarg2, double jarg3);
-  public final static native long Disk_write_async(long jarg1, Disk jarg1_, int jarg2);
-  public final static native int Disk_write__SWIG_0(long jarg1, Disk jarg1_, int jarg2);
-  public final static native int Disk_write__SWIG_1(long jarg1, Disk jarg1_, int jarg2, double jarg3);
+  public final static native long Disk_read_async(long jarg1, Disk jarg1_, long jarg2);
+  public final static native long Disk_read__SWIG_0(long jarg1, Disk jarg1_, long jarg2);
+  public final static native long Disk_read__SWIG_1(long jarg1, Disk jarg1_, long jarg2, double jarg3);
+  public final static native long Disk_write_async(long jarg1, Disk jarg1_, long jarg2);
+  public final static native long Disk_write__SWIG_0(long jarg1, Disk jarg1_, long jarg2);
+  public final static native long Disk_write__SWIG_1(long jarg1, Disk jarg1_, long jarg2, double jarg3);
   public final static native int Disk_SharingPolicy_NONLINEAR_get();
   public final static native int Disk_SharingPolicy_LINEAR_get();
   public final static native int Disk_Operation_READ_get();
