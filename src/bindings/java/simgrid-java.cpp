@@ -2499,7 +2499,7 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1io_1init(JNIEnv*,
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1async(JNIEnv*, jclass, jlong cthis, jobject jthis,
-                                                                           jint jarg2)
+                                                                           jlong jarg2)
 {
   auto self = (Disk*)cthis;
 
@@ -2509,8 +2509,8 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1async(JNIEn
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
-                                                                              jobject jthis, jint jarg2)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
+                                                                              jobject jthis, jlong jarg2)
 {
   try {
     return ((Disk*)cthis)->read(jarg2);
@@ -2519,8 +2519,8 @@ XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1_1SWIG_10(JN
   }
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1_1SWIG_11(JNIEnv*, jclass, jlong cthis,
-                                                                              jobject jthis, jint jarg2, jdouble jarg3)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1_1SWIG_11(JNIEnv*, jclass, jlong cthis,
+                                                                              jobject jthis, jlong jarg2, jdouble jarg3)
 {
   try {
     return ((Disk*)cthis)->read(jarg2, jarg3);
@@ -2530,7 +2530,7 @@ XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1read_1_1SWIG_11(JN
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1async(JNIEnv*, jclass, jlong cthis, jobject jthis,
-                                                                            jint jarg2)
+                                                                            jlong jarg2)
 {
   auto self = (Disk*)cthis;
 
@@ -2540,8 +2540,8 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1async(JNIE
   return (jlong)result.get();
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
-                                                                               jobject jthis, jint jarg2)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1_1SWIG_10(JNIEnv*, jclass, jlong cthis,
+                                                                               jobject jthis, jlong jarg2)
 {
   try {
     return ((Disk*)cthis)->write(jarg2);
@@ -2550,8 +2550,8 @@ XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1_1SWIG_10(J
   }
 }
 
-XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1_1SWIG_11(JNIEnv*, jclass, jlong cthis,
-                                                                               jobject jthis, jint jarg2, jdouble jarg3)
+XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1write_1_1SWIG_11(JNIEnv*, jclass, jlong cthis,
+                                                                               jobject jthis, jlong jarg2, jdouble jarg3)
 {
   try {
     return ((Disk*)cthis)->write(jarg2, jarg3);

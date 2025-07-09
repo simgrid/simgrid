@@ -25,16 +25,16 @@ class HostRunner extends Actor {
 
     /* - Write 400,000 bytes on Disk1 */
     Disk disk = disk_list[0];
-    int write = disk.write(400000);
+    long write = disk.write(400000);
     Engine.info("Wrote %d bytes on '%s'", write, disk.get_name());
 
     /*  - Now read 200,000 bytes */
-    int read = disk.read(200000);
+    long read = disk.read(200000);
     Engine.info("Read %d bytes on '%s'", read, disk.get_name());
 
     /* - Write 800,000 bytes on Disk3 */
     Disk disk3         = disk_list[disk_list.length - 1];
-    int write_on_disk3 = disk3.write(800000);
+    long write_on_disk3 = disk3.write(800000);
     Engine.info("Wrote %d bytes on '%s'", write_on_disk3, disk3.get_name());
 
     /* - Attach some user data to disk1 */
