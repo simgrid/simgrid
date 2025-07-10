@@ -180,12 +180,12 @@ public class Engine {
   public void plugin_wifi_energy_init() { simgridJNI.Engine_plugin_wifi_energy_init(swigCPtr); }
   public void plugin_host_load_init()
   {
-    Host.LoadPlugin.inited = true;
+    Host.LoadPluginInited = true;
     simgridJNI.Engine_plugin_host_load_init(swigCPtr);
   }
   public void plugin_link_load_init()
   {
-    Link.LoadPlugin.inited = true;
+    Link.LoadPluginInited = true;
     simgridJNI.Engine_plugin_link_load_init(swigCPtr);
   }
 

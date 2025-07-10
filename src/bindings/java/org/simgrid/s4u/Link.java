@@ -184,48 +184,48 @@ public class Link {
     private final String swigName;
   }
 
+  static boolean LoadPluginInited = false;
   public class LoadPlugin {
-    static boolean inited = false;
 
     public void track()
     {
-      if (!inited)
+      if (!LoadPluginInited)
         Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
       simgridJNI.Link_load_track(swigCPtr);
     }
     public void untrack()
     {
-      if (!inited)
+      if (!LoadPluginInited)
         Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
       simgridJNI.Link_load_untrack(swigCPtr);
     }
     public void reset()
     {
-      if (!inited)
+      if (!LoadPluginInited)
         Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
       simgridJNI.Link_load_reset(swigCPtr);
     }
     public double get_cumulative()
     {
-      if (!inited)
+      if (!LoadPluginInited)
         Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
       return simgridJNI.Link_get_cum_load(swigCPtr);
     }
     public double get_average()
     {
-      if (!inited)
+      if (!LoadPluginInited)
         Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
       return simgridJNI.Link_get_avg_load(swigCPtr);
     }
     public double get_min_instantaneous()
     {
-      if (!inited)
+      if (!LoadPluginInited)
         Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
       return simgridJNI.Link_get_min_instantaneous_load(swigCPtr);
     }
     public double get_max_instantaneous()
     {
-      if (!inited)
+      if (!LoadPluginInited)
         Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
       return simgridJNI.Link_get_max_instantaneous_load(swigCPtr);
     }
