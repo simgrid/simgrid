@@ -7,6 +7,7 @@ S4U:
 Java:
  - Add plugin host_load and link_load (see the relevant examples)
  - Add Host.get_core_count()
+ - Add signal Actor.on_creation_cb()
 
 Maint:
  - Simplify our code by removing SysV contexts which do not bring much. It's not portable on all OSes and a bit less efficient

@@ -76,6 +76,7 @@
 #include "src/kernel/context/ContextJava.hpp"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
+#include "xbt/signal.hpp"
 #include "xbt/sysdep.h"
 
 #include <boost/core/demangle.hpp>

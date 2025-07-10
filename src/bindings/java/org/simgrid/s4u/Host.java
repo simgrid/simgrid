@@ -4,8 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 package org.simgrid.s4u;
 
-import org.simgrid.s4u.Link.LoadPlugin;
-
 public class Host {
   private transient long swigCPtr;
 
@@ -57,7 +55,8 @@ public class Host {
 
   public Actor add_actor(String name, Actor actor)
   {
-    simgridJNI.Actor_create(name, Host.getCPtr(this), this, actor);
+    var cPtr = simgridJNI.Actor_create(name, Host.getCPtr(this), this, actor);
+    Actor.fire_creation_signal(actor, cPtr);
     return actor;
   }
   public String[] get_properties_names() { return simgridJNI.Host_get_properties_names(swigCPtr, this); }

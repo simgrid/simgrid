@@ -79,6 +79,13 @@ class actor_exiting {
     Engine e = new Engine(args);
     e.load_platform(args[0]); /* - Load the platform description */
 
+    /* Register a callback in the Actor::on_creation signal. It will be called for every started actors */
+    Actor.on_creation_cb(new CallbackActor() {
+      @Override public void run(Actor a)
+      {
+        Engine.info("Actor " + a.get_name() + " starts now.");
+      }
+    });
     /* Register a callback in the Actor::on_termination signal. It will be called for every terminated actors */
     Actor.on_termination_cb(new CallbackActor() {
       @Override public void run(Actor a)
@@ -107,12 +114,3 @@ class actor_exiting {
     System.gc();
   }
 }
-
-/*
-
-int main(int argc, char* argv[])
-{
-  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/small_platform.xml\n", argv[0], argv[0]);
-
-//}
-*/
