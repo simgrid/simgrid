@@ -131,12 +131,16 @@ if(enable_lib_in_jar)
     )
 endif()
 
+add_custom_target(java-bindings COMMENT "Recompiling the Java files: jarfile and libraries (use 'tests-java' to get the Java tests in addition).")
+
 add_custom_target(tests-java COMMENT "Building all Java examples...")
 add_dependencies(tests tests-java)
-add_dependencies(tests-java simgrid_jar)
-add_dependencies(tests-java simgrid)      # useful when the libs are not included in the jar
+add_dependencies(tests-java java-bindings)
+
+add_dependencies(java-bindings simgrid_jar)
+add_dependencies(java-bindings simgrid)      # useful when the libs are not included in the jar
 if(NOT ${merge_java_in_libsimgrid})
-  add_dependencies(tests-java simgrid-java) # useful when the libs are not included in the jar
+  add_dependencies(java-bindings simgrid-java) # useful when the libs are not included in the jar
 endif()
 
 include_directories(${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})

@@ -5,6 +5,8 @@
 
 package org.simgrid.s4u;
 
+import java.util.Vector;
+
 public abstract class Actor {
   protected Actor() {}
   /**
@@ -203,4 +205,19 @@ public abstract class Actor {
   public void exit() { simgridJNI.Actor_exit(swigCPtr, this); }
 
   public void on_exit(CallbackBoolean code) { simgridJNI.Actor_on_exit(swigCPtr, code); }
+
+  // we need a signal specific to the Java world because the C++ signal is fired before we have any chance to fully
+  // initialize the Java side of the actor
+  static Vector<CallbackActor> on_creation_signal = new Vector<>();
+  public static void on_creation_cb(CallbackActor cb) { on_creation_signal.add(cb); }
+
+  public static void fire_creation_signal(Actor actor, long cPtr)
+  {
+    // Usually, swigCPtr is set by do_run(), but we need it in advance here. Doing it only here fails for actors added
+    // to VMs, because the new actor runs before its creator in this case (maybe an extra simcal). The new actor thus
+    // finds its swgCPtr null.
+    actor.swigCPtr = cPtr;
+    for (var cb : on_creation_signal)
+      cb.run(actor);
+  }
 }

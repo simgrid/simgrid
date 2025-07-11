@@ -26,6 +26,8 @@ public class Host {
   public double get_pstate_speed(int pstate) { return simgridJNI.Host_get_pstate_speed(swigCPtr, this, pstate); }
   public double get_load() { return simgridJNI.Host_get_load(swigCPtr); }
 
+  public int get_core_count() { return simgridJNI.Host_get_core_count(swigCPtr); }
+
   public boolean is_on() { return simgridJNI.Host_is_on(swigCPtr, this); }
   public void turn_off() { simgridJNI.Host_turn_off(swigCPtr); }
   public void turn_on() { simgridJNI.Host_turn_on(swigCPtr); }
@@ -53,7 +55,8 @@ public class Host {
 
   public Actor add_actor(String name, Actor actor)
   {
-    simgridJNI.Actor_create(name, Host.getCPtr(this), this, actor);
+    var cPtr = simgridJNI.Actor_create(name, Host.getCPtr(this), this, actor);
+    Actor.fire_creation_signal(actor, cPtr);
     return actor;
   }
   public String[] get_properties_names() { return simgridJNI.Host_get_properties_names(swigCPtr, this); }
@@ -74,6 +77,47 @@ public class Host {
   public void set_concurrency_limit(int i) { simgridJNI.Host_set_concurrency_limit(swigCPtr, i); }
   /** If the action runs on more than one Host, only the first one is returned */
   public void set_cpu_factor_cb(CallbackDHostDouble cb) { simgridJNI.Host_set_cpu_factor_cb(swigCPtr, cb); }
+
+  static boolean LoadPluginInited = false;
+  public class LoadPlugin {
+    public double get_current()
+    {
+      if (!LoadPluginInited)
+        Engine.die("Please use Engine.plugin_link_load_init() before using this plugin");
+      return simgridJNI.Host_get_current_load(swigCPtr);
+    }
+    public double get_average()
+    {
+      if (!LoadPluginInited)
+        Engine.die("Please use Engine.plugin_link_load_init() before using this plugin");
+      return simgridJNI.Host_get_avg_load(swigCPtr);
+    }
+    public double get_idle_time()
+    {
+      if (!LoadPluginInited)
+        Engine.die("Please use Engine.plugin_link_load_init() before using this plugin");
+      return simgridJNI.Host_get_idle_time(swigCPtr);
+    }
+    public double get_total_idle_time()
+    {
+      if (!LoadPluginInited)
+        Engine.die("Please use Engine.plugin_link_load_init() before using this plugin");
+      return simgridJNI.Host_get_total_idle_time(swigCPtr);
+    }
+    public double get_computed_flops()
+    {
+      if (!LoadPluginInited)
+        Engine.die("Please use Engine.plugin_link_load_init() before using this plugin");
+      return simgridJNI.Host_get_computed_flops(swigCPtr);
+    }
+    public void reset()
+    {
+      if (!LoadPluginInited)
+        Engine.die("Please use Engine.plugin_link_load_init() before using this plugin");
+      simgridJNI.Host_load_reset(swigCPtr);
+    }
+  }
+  public LoadPlugin load = new LoadPlugin();
 
   public double get_consumed_energy() { return simgridJNI.Host_get_consumed_energy(swigCPtr); }
   public double get_wattmin_at(int pstate) { return simgridJNI.Host_get_wattmin_at(swigCPtr, pstate); }

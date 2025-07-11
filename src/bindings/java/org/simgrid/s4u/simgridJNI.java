@@ -205,12 +205,12 @@ public class simgridJNI {
   public final static native void Disk_set_concurrency_limit(long jarg1, Disk jarg1_, int jarg2);
   public final static native int Disk_get_concurrency_limit(long jarg1, Disk jarg1_);
   public final static native long Disk_io_init(long jarg1, Disk jarg1_, int jarg2, int jarg3);
-  public final static native long Disk_read_async(long jarg1, Disk jarg1_, int jarg2);
-  public final static native int Disk_read__SWIG_0(long jarg1, Disk jarg1_, int jarg2);
-  public final static native int Disk_read__SWIG_1(long jarg1, Disk jarg1_, int jarg2, double jarg3);
-  public final static native long Disk_write_async(long jarg1, Disk jarg1_, int jarg2);
-  public final static native int Disk_write__SWIG_0(long jarg1, Disk jarg1_, int jarg2);
-  public final static native int Disk_write__SWIG_1(long jarg1, Disk jarg1_, int jarg2, double jarg3);
+  public final static native long Disk_read_async(long jarg1, Disk jarg1_, long jarg2);
+  public final static native long Disk_read__SWIG_0(long jarg1, Disk jarg1_, long jarg2);
+  public final static native long Disk_read__SWIG_1(long jarg1, Disk jarg1_, long jarg2, double jarg3);
+  public final static native long Disk_write_async(long jarg1, Disk jarg1_, long jarg2);
+  public final static native long Disk_write__SWIG_0(long jarg1, Disk jarg1_, long jarg2);
+  public final static native long Disk_write__SWIG_1(long jarg1, Disk jarg1_, long jarg2, double jarg3);
   public final static native int Disk_SharingPolicy_NONLINEAR_get();
   public final static native int Disk_SharingPolicy_LINEAR_get();
   public final static native int Disk_Operation_READ_get();
@@ -265,6 +265,8 @@ public class simgridJNI {
   public final static native void Engine_plugin_host_energy_init(long jarg1);
   public final static native void Engine_plugin_link_energy_init(long jarg1);
   public final static native void Engine_plugin_wifi_energy_init(long jarg1);
+  public final static native void Engine_plugin_host_load_init(long jarg1);
+  public final static native void Engine_plugin_link_load_init(long jarg1);
   public final static native void Engine_on_platform_created_cb(CallbackVoid jarg1);
   public final static native void Engine_on_platform_creation_cb(CallbackVoid jarg1);
   public final static native void Engine_on_simulation_start_cb(CallbackVoid jarg1);
@@ -314,6 +316,7 @@ public class simgridJNI {
   public final static native int Host_get_pstate_count(long jarg1, Host jarg1_);
   public final static native double Host_get_pstate_speed(long jarg1, Host jarg1_, int pstate);
   public final static native double Host_get_load(long jarg1);
+  public final static native int Host_get_core_count(long jarg1);
   public final static native boolean Host_is_on(long jarg1, Host jarg1_);
   public final static native void Host_turn_on(long jarg1);
   public final static native void Host_turn_off(long jarg1);
@@ -503,4 +506,19 @@ public class simgridJNI {
   public final static native void VirtualMachine_on_migration_end_cb(CallbackVirtualMachine cb);
   public final static native void VirtualMachine_on_this_migration_end_cb(long jarg1, VirtualMachine jarg1_,
                                                                           CallbackVirtualMachine cb);
+
+  public final static native void Host_load_reset(long swigCPtr);
+  public final static native double Host_get_current_load(long swigCPtr);
+  public final static native double Host_get_avg_load(long swigCPtr);
+  public final static native double Host_get_idle_time(long swigCPtr);
+  public final static native double Host_get_total_idle_time(long swigCPtr);
+  public final static native double Host_get_computed_flops(long swigCPtr);
+
+  public final static native void Link_load_track(long swigCPtr);
+  public final static native void Link_load_untrack(long swigCPtr);
+  public final static native void Link_load_reset(long swigCPtr);
+  public final static native double Link_get_cum_load(long swigCPtr);
+  public final static native double Link_get_avg_load(long swigCPtr);
+  public final static native double Link_get_min_instantaneous_load(long swigCPtr);
+  public final static native double Link_get_max_instantaneous_load(long swigCPtr);
 }

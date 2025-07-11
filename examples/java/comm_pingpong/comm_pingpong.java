@@ -6,23 +6,23 @@
 import org.simgrid.s4u.*;;
 
 class Pinger extends Actor {
-  Mailbox mailbox_in;
-  Mailbox mailbox_out;
-  public Pinger(Mailbox mailbox_in, Mailbox mailbox_out)
+  Mailbox mailboxIn;
+  Mailbox mailboxOut;
+  public Pinger(Mailbox mailboxIn, Mailbox mailboxOut)
   {
-    this.mailbox_in = mailbox_in;
-    this.mailbox_out = mailbox_out;
+    this.mailboxIn  = mailboxIn;
+    this.mailboxOut = mailboxOut;
   }
   @Override public void run() throws SimgridException
   {
-    Engine.info("Ping from mailbox "+mailbox_in.get_name()+" to mailbox "+mailbox_out.get_name());
+    Engine.info("Ping from mailbox " + mailboxIn.get_name() + " to mailbox " + mailboxOut.get_name());
 
     /* - Do the ping with a 1-Byte payload (latency bound) ... */
     Double payload = Engine.get_clock();
 
-    mailbox_out.put(payload, 1);
+    mailboxOut.put(payload, 1);
     /* - ... then wait for the (large) pong */
-    Double sender_time = (Double)mailbox_in.get();
+    Double sender_time = (Double)mailboxIn.get();
 
     double communication_time = Engine.get_clock() - sender_time;
     Engine.info("Payload received : large communication (bandwidth bound)");
@@ -31,28 +31,28 @@ class Pinger extends Actor {
 }
 
 class Ponger extends Actor {
-  Mailbox mailbox_in;
-  Mailbox mailbox_out;
-  public Ponger(Mailbox mailbox_in, Mailbox mailbox_out)
+  Mailbox mailboxIn;
+  Mailbox mailboxOut;
+  public Ponger(Mailbox mailboxIn, Mailbox mailboxOut)
   {
-    this.mailbox_in = mailbox_in;
-    this.mailbox_out = mailbox_out;
+    this.mailboxIn  = mailboxIn;
+    this.mailboxOut = mailboxOut;
   }
   @Override public void run() throws SimgridException
   {
-    Engine.info("Pong from mailbox "+mailbox_in.get_name()+" to mailbox "+mailbox_out.get_name());
+    Engine.info("Pong from mailbox " + mailboxIn.get_name() + " to mailbox " + mailboxOut.get_name());
 
     /* - Receive the (small) ping first ....*/
-    Double sender_time        = (Double)mailbox_in.get();
-    double communication_time = Engine.get_clock() - sender_time;
+    Double senderTime        = (Double)mailboxIn.get();
+    double communicationTime = Engine.get_clock() - senderTime;
     Engine.info("Payload received : small communication (latency bound)");
-    Engine.info("Ping time (latency bound) " + communication_time);
-  
+    Engine.info("Ping time (latency bound) " + communicationTime);
+
     /*  - ... Then send a 1GB pong back (bandwidth bound) */
     Double payload = Engine.get_clock();
     Engine.info("payload = " + payload);
-  
-    mailbox_out.put(payload, (long)1e9);
+
+    mailboxOut.put(payload, (long)1e9);
   }
 }
 

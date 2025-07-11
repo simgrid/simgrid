@@ -10,10 +10,10 @@ class Sender extends Actor {
   public Sender(Mailbox mb) { mailbox = mb; }
   public void run() throws SimgridException
   {
-    Double computation_amount = get_host().get_speed();
+    Double computationAmount = get_host().get_speed();
 
-    Exec exec = exec_init(2 * computation_amount);
-    Comm comm = mailbox.put_init(computation_amount, 7e6);
+    Exec exec = exec_init(2 * computationAmount);
+    Comm comm = mailbox.put_init(computationAmount, 7e6);
 
     exec.set_name("exec on sender").add_successor(comm).start();
     comm.set_name("comm to receiver").start();
@@ -26,9 +26,9 @@ class Receiver extends Actor {
   public Receiver(Mailbox mb) { mailbox = mb; }
   public void run() throws SimgridException
   {
-    Double computation_amount = get_host().get_speed();
+    Double computationAmount = get_host().get_speed();
 
-    Exec exec = exec_init(2 * computation_amount);
+    Exec exec = exec_init(2 * computationAmount);
     Comm comm = mailbox.get_init();
 
     comm.set_name("comm from sender").add_successor(exec).start();

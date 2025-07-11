@@ -22,6 +22,7 @@ following lines, or several lines if you need several languages.
 
    $ apt install libsimgrid-dev  # if you want to develop in C or C++
    $ apt install python3-simgrid # if you want to develop in Python
+   $ apt install simgrid-java    # if you want to develop in Java
 
 If you use the Nix_ package manager, the latest SimGrid release is packaged as ``simgrid`` in Nixpkgs_.
 Previous SimGrid versions are maintained in `NUR-Kapack`_ and are available
@@ -111,6 +112,8 @@ boost recommended components (optional).
   - On Debian / Ubuntu: ``apt install libboost-context-dev libboost-stacktrace-dev``
 python bindings (optional):
   - On Debian / Ubuntu: ``apt install pybind11-dev python3-dev``
+Java bindings (optional):
+  - On Debian / Ubuntu: ``apt install default-jdk-headless javahelper``
 Eigen3 (optional)
   - On Debian / Ubuntu: ``apt install libeigen3-dev``
   - On CentOS / Fedora: ``dnf install eigen3-devel``
@@ -238,6 +241,16 @@ enable_documentation (on/OFF)
   as easy as it used to be, and you should probably use the online
   version for now.
 
+enable_java (enabled by default if installable)
+  Enable the Java bindings. This option is not visible by default
+  (e.g. in ccmake), but gets enabled by default if you have all
+  dependencies. You can use ``-Denable_java=ON`` to force its
+  selection (the build fails if it cannot be enabled) or
+  ``-Denable_java=ON`` to forbid its selection (it won't be built even
+  if the dependencies are installed).
+  Note that the ``minimal-bindings`` config option is recommanded if
+  you only plan to use SimGrid in Java.
+
 enable_lto (ON/off)
   Enables the *Link Time Optimization* in the C++ compiler.
   This feature really speeds up the code produced, but it is fragile
@@ -257,6 +270,16 @@ enable_model-checking (ON/off)
 enable_ns3 (on/OFF)
   Activates the ns-3 bindings. See section :ref:`models_ns3`.
 
+enable_python (enabled by default if installable)
+  Enable the Java bindings. This option is not visible by default
+  (e.g. in ccmake), but gets enabled by default if you have all
+  dependencies. You can use ``-Denable_python=ON`` to force its
+  selection (the build fails if it cannot be enabled) or
+  ``-Denable_python=ON`` to forbid its selection (it won't be built even
+  if the dependencies are installed).
+  Note that the ``minimal-bindings`` config option is recommanded if
+  you only plan to use SimGrid in Python.
+
 enable_smpi (ON/off)
   Allows one to run MPI code on top of SimGrid.
 
@@ -275,7 +298,7 @@ enable_testsuite_smpi_MPICH3 (on/OFF)
 
 minimal-bindings (on/OFF)
   Take as few optional dependencies as possible, to get minimal
-  library bindings in Python.
+  library bindings in Python or Java.
 
 NS3_HINT (empty by default)
   Alternative path into which ns-3 should be searched for.
@@ -343,6 +366,8 @@ if some do not work for you.
 - **make simgrid**: Build only the SimGrid library. Not any example nor the helper tools.
 - **make s4u-comm-pingpong**: Build only this example (works for any example)
 - **make python-bindings**: Build the Python bindings
+- **make java-bindings**: Build the Java bindings 
+- **make tests-java**: Build the Java bindings and the associated tests
 - **make clean**: Clean the results of a previous compilation
 - **make install**: Install the project (doc/ bin/ lib/ include/)
 - **make dist**: Build a distribution archive (tar.gz)

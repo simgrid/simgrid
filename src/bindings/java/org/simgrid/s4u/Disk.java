@@ -74,30 +74,30 @@ public class Disk {
     return (cPtr == 0) ? null : new Io(cPtr, true);
   }
 
-  public Io read_async(double size) { return read_async((int)size); }
-  public Io read_async(int size) {
+  public Io read_async(double size) { return read_async((long)size); }
+  public Io read_async(long size) {
     long cPtr = simgridJNI.Disk_read_async(swigCPtr, this, size);
     return (cPtr == 0) ? null : new Io(cPtr, true);
   }
 
-  public int read(int size) {
+  public long read(long size) {
     return simgridJNI.Disk_read__SWIG_0(swigCPtr, this, size);
   }
 
-  public int read(int size, double priority) {
+  public long read(long size, double priority) {
     return simgridJNI.Disk_read__SWIG_1(swigCPtr, this, size, priority);
   }
 
-  public Io write_async(int size) {
+  public Io write_async(long size) {
     long cPtr = simgridJNI.Disk_write_async(swigCPtr, this, size);
     return (cPtr == 0) ? null : new Io(cPtr, true);
   }
 
-  public int write(int size) {
+  public long write(long size) {
     return simgridJNI.Disk_write__SWIG_0(swigCPtr, this, size);
   }
 
-  public int write(int size, double priority) {
+  public long write(long size, double priority) {
     return simgridJNI.Disk_write__SWIG_1(swigCPtr, this, size, priority);
   }
 

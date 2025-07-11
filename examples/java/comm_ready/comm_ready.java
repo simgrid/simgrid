@@ -20,46 +20,46 @@
 import org.simgrid.s4u.*;
 
 class peer extends Actor {
-  int my_id;
-  int messages_count;
-  int payload_size;
-  int peers_count;
-  peer(int my_id_, int messages_count_, double payload_size_, int peers_count_)
+  int myId;
+  int messagesCount;
+  int payloadSize;
+  int peersCount;
+  peer(int myId_, int messagesCount_, double payloadSize_, int peersCount_)
   {
-    my_id          = my_id_;
-    messages_count = messages_count_;
-    payload_size   = (int)payload_size_;
-    peers_count    = peers_count_;
+    myId          = myId_;
+    messagesCount = messagesCount_;
+    payloadSize   = (int)payloadSize_;
+    peersCount    = peersCount_;
   }
   public void run() throws SimgridException
   {
     Engine e = this.get_engine();
     /* Set myself as the persistent receiver of my mailbox so that messages start flowing to me as soon as they are put
      * into it */
-    Mailbox my_mbox = e.mailbox_by_name("peer-" + my_id);
-    my_mbox.set_receiver(Actor.self());
+    Mailbox myMbox = e.mailbox_by_name("peer-" + myId);
+    myMbox.set_receiver(Actor.self());
 
     ActivitySet pending_comms = new ActivitySet();
 
     /* Start dispatching all messages to peers others that myself */
-    for (int i = 0; i < messages_count; i++) {
-      for (int peer_id = 0; peer_id < peers_count; peer_id++) {
-        if (peer_id != my_id) {
+    for (int i = 0; i < messagesCount; i++) {
+      for (int peer_id = 0; peer_id < peersCount; peer_id++) {
+        if (peer_id != myId) {
           Mailbox mbox   = e.mailbox_by_name("peer-" + peer_id);
-          String payload = "Message " + i + " from peer " + my_id;
+          String payload = "Message " + i + " from peer " + myId;
           Engine.info("Send '" + payload + "' to '" + mbox.get_name() + "'");
           /* Create a communication representing the ongoing communication */
-          pending_comms.push(mbox.put_async(payload, payload_size));
+          pending_comms.push(mbox.put_async(payload, payloadSize));
         }
       }
     }
 
     /* Start sending messages to let peers know that they should stop */
-    for (int peer_id = 0; peer_id < peers_count; peer_id++) {
-      if (peer_id != my_id) {
+    for (int peer_id = 0; peer_id < peersCount; peer_id++) {
+      if (peer_id != myId) {
         Mailbox mbox   = e.mailbox_by_name("peer-" + peer_id);
         String payload = "finalize";
-        pending_comms.push(mbox.put_async(payload, payload_size));
+        pending_comms.push(mbox.put_async(payload, payloadSize));
         Engine.info("Send 'finalize' to 'peer-" + peer_id + "'");
       }
     }
@@ -67,19 +67,19 @@ class peer extends Actor {
 
     /* Retrieve all the messages other peers have been sending to me until I receive all the corresponding "Finalize"
      * messages */
-    long pending_finalize_messages = peers_count - 1;
-    while (pending_finalize_messages > 0) {
-      if (my_mbox.ready()) {
+    long pendingFinalizeMessages = peersCount - 1;
+    while (pendingFinalizeMessages > 0) {
+      if (myMbox.ready()) {
         double start        = Engine.get_clock();
-        String received     = (String)my_mbox.get();
-        double waiting_time = Engine.get_clock() - start;
-        if (waiting_time > 0)
+        String received     = (String)myMbox.get();
+        double waitingTime  = Engine.get_clock() - start;
+        if (waitingTime > 0)
           Engine.die("Expecting the waiting time to be 0 because the communication was supposedly ready, but got " +
-                     waiting_time + " instead");
+                     waitingTime + " instead");
         Engine.info("I got a '" + received + "'.");
 
         if (received.equals("finalize"))
-          pending_finalize_messages--;
+          pendingFinalizeMessages--;
 
       } else {
         Engine.info("Nothing ready to consume yet, I better sleep for a while");

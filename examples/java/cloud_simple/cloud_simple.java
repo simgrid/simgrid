@@ -8,49 +8,49 @@ import org.simgrid.s4u.*;
 class ComputationWorker extends Actor {
   public void run()
   {
-    double clock_sta = Engine.get_clock();
+    double clockStart = Engine.get_clock();
     this.execute(1000000);
-    double clock_end = Engine.get_clock();
+    double clockEnd = Engine.get_clock();
 
-    Engine.info("%s:%s executed %g", this.get_host().get_name(), this.get_name(), clock_end - clock_sta);
+    Engine.info("%s:%s executed %g", this.get_host().get_name(), this.get_name(), clockEnd - clockStart);
   }
 }
 
 class Payload {
-  public Host tx_host;
-  public String tx_actor_name;
-  public double clock_sta;
+  public Host txHost;
+  public String txActorName;
+  public double clockStart;
 }
 
 class CommunicationTX extends Actor {
-  String mbox_name;
-  CommunicationTX(String mbox_name) { this.mbox_name = mbox_name; }
+  String mboxName;
+  CommunicationTX(String mboxName) { this.mboxName = mboxName; }
   public void run()
   {
-    Mailbox mbox          = this.get_engine().mailbox_by_name(mbox_name);
+    Mailbox mbox          = this.get_engine().mailbox_by_name(mboxName);
     Payload payload       = new Payload();
-    payload.tx_actor_name = Actor.self().get_name();
-    payload.tx_host       = this.get_host();
-    payload.clock_sta     = Engine.get_clock();
+    payload.txActorName   = Actor.self().get_name();
+    payload.txHost        = this.get_host();
+    payload.clockStart    = Engine.get_clock();
 
     mbox.put(payload, 1000000);
   }
 }
 
 class CommunicationRX extends Actor {
-  String mbox_name;
-  CommunicationRX(String mbox_name) { this.mbox_name = mbox_name; }
+  String mboxName;
+  CommunicationRX(String mboxName) { this.mboxName = mboxName; }
   public void run() throws SimgridException
   {
     String actor_name = Actor.self().get_name();
     String host_name  = this.get_host().get_name();
-    Mailbox mbox      = this.get_engine().mailbox_by_name(mbox_name);
+    Mailbox mbox      = this.get_engine().mailbox_by_name(mboxName);
 
     Payload payload  = (Payload)mbox.get();
     double clock_end = Engine.get_clock();
 
-    Engine.info("%s:%s to %s:%s => %g sec", payload.tx_host.get_name(), payload.tx_actor_name, host_name, actor_name,
-                clock_end - payload.clock_sta);
+    Engine.info("%s:%s to %s:%s => %g sec", payload.txHost.get_name(), payload.txActorName, host_name, actor_name,
+                clock_end - payload.clockStart);
   }
 }
 

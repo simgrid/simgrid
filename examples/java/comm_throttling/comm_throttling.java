@@ -34,14 +34,14 @@ class receiver extends Actor {
   public void run() throws SimgridException
   {
     /* - Receive the first payload sent at full bandwidth */
-    Double sender_time        = (Double)mailbox.get();
-    double communication_time = Engine.get_clock() - sender_time;
-    Engine.info(String.format("Payload received (full bandwidth) in %f seconds", communication_time));
+    Double senderTime        = (Double)mailbox.get();
+    double communicationTime = Engine.get_clock() - senderTime;
+    Engine.info(String.format("Payload received (full bandwidth) in %f seconds", communicationTime));
 
     /*  - ... Then receive the second payload sent with a throttled Comm */
-    sender_time        = (Double)mailbox.get();
-    communication_time = Engine.get_clock() - sender_time;
-    Engine.info(String.format("Payload received (throttled) in %f seconds", communication_time));
+    senderTime        = (Double)mailbox.get();
+    communicationTime = Engine.get_clock() - senderTime;
+    Engine.info(String.format("Payload received (throttled) in %f seconds", communicationTime));
   }
 }
 

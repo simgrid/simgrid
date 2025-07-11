@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
   e.load_platform(argv[1]);
 
   e.host_by_name("MyHost1")->add_actor("load_test", execute_load_test);
-  e.host_by_name("MyHost1")->add_actor("change_speed", change_speed);
+  e.host_by_name("MyHost2")->add_actor("change_speed", change_speed);
 
   e.run();
 

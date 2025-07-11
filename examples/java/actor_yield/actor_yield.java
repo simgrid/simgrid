@@ -15,13 +15,13 @@ import org.simgrid.s4u.*;
  */
 
 class Yielder extends Actor {
-  long number_of_yields;
-  public Yielder(long number_of_yields) { this.number_of_yields = number_of_yields; }
+  long numberOfYields;
+  public Yielder(long numberOfYields) { this.numberOfYields = numberOfYields; }
   public void run()
   {
-    for (int i = 0; i < number_of_yields; i++)
+    for (int i = 0; i < numberOfYields; i++)
       this.yield();
-    Engine.info("I yielded %d times. Goodbye now!", number_of_yields);
+    Engine.info("I yielded %d times. Goodbye now!", numberOfYields);
   }
 }
 

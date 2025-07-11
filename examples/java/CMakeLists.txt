@@ -30,6 +30,7 @@ foreach (example activityset_awaitall activityset_awaitallfor activityset_awaita
                  platform_comm_serialize # platform_failures  platform_profile  platform_properties
                  synchro_barrier synchro_condition_variable synchro_condition_variable_awaituntil synchro_mutex synchro_semaphore
                  #task_dispatch  task_io  task_microservice  task_parallelism  task_simple  task_storm  task_switch_host  task_variable_load
+                 plugin_host_load plugin_link_load
                  )
   
   # Use default source file unless specified otherwise
