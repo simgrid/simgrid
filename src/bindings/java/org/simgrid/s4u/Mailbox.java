@@ -49,16 +49,16 @@ public class Mailbox {
     return (cPtr == 0) ? null : new Comm(cPtr, true);
   }
 
-  public Comm put_init(Object data, long simulated_size_in_bytes) {
-    long cPtr = simgridJNI.Mailbox_put_init__SWIG_1(swigCPtr, this, data, simulated_size_in_bytes);
+  public Comm putInit(Object data, long simulatedSizeInBytes)
+  {
+    long cPtr = simgridJNI.Mailbox_put_init__SWIG_1(swigCPtr, this, data, simulatedSizeInBytes);
     return (cPtr == 0) ? null : new Comm(cPtr, true);
   }
-  public Comm put_init(Object data, double simulated_size_in_bytes) {
-    return put_init(data, (long)simulated_size_in_bytes);
-  }
+  public Comm put_init(Object data, double simulatedSizeInBytes) { return putInit(data, (long)simulatedSizeInBytes); }
 
-  public Comm put_async(Object data, long simulated_size_in_bytes) {
-    long cPtr = simgridJNI.Mailbox_put_async(swigCPtr, this, data, simulated_size_in_bytes);
+  public Comm put_async(Object data, long simulatedSizeInBytes)
+  {
+    long cPtr = simgridJNI.Mailbox_put_async(swigCPtr, this, data, simulatedSizeInBytes);
     return (cPtr == 0) ? null : new Comm(cPtr, true);
   }
 
@@ -80,16 +80,18 @@ public class Mailbox {
     simgridJNI.Mailbox_clear(swigCPtr, this);
   }
 
-  public void put(Object payload, double simulated_size_in_bytes)
+  public void put(Object payload, double simulatedSizeInBytes)
   {
-    simgridJNI.Mailbox_put__SWIG_0(swigCPtr, this, payload, (long)simulated_size_in_bytes);
+    simgridJNI.Mailbox_put__SWIG_0(swigCPtr, this, payload, (long)simulatedSizeInBytes);
   }
-  public void put(Object payload, long simulated_size_in_bytes) {
-    simgridJNI.Mailbox_put__SWIG_0(swigCPtr, this, payload, simulated_size_in_bytes);
+  public void put(Object payload, long simulatedSizeInBytes)
+  {
+    simgridJNI.Mailbox_put__SWIG_0(swigCPtr, this, payload, simulatedSizeInBytes);
   }
 
-  public void put(Object payload, long simulated_size_in_bytes, double timeout) {
-    simgridJNI.Mailbox_put__SWIG_1(swigCPtr, this, payload, simulated_size_in_bytes, timeout);
+  public void put(Object payload, long simulatedSizeInBytes, double timeout)
+  {
+    simgridJNI.Mailbox_put__SWIG_1(swigCPtr, this, payload, simulatedSizeInBytes, timeout);
   }
 
   public java.lang.Object get() throws NetworkFailureException { return simgridJNI.Mailbox_get(swigCPtr, this); }

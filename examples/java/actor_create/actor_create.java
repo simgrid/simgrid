@@ -24,11 +24,11 @@ import org.simgrid.s4u.*;
  * Later, this actor class is instantiated within the simulation.
  */
 class Receiver extends Actor {
-  String mailbox_name;
-  public Receiver(String mailbox_name) { this.mailbox_name = mailbox_name; }
+  String mailboxName;
+  public Receiver(String mailboxName) { this.mailboxName = mailboxName; }
   public void run() throws SimgridException
   {
-    Mailbox mailbox = this.get_engine().mailbox_by_name(mailbox_name);
+    Mailbox mailbox = this.get_engine().mailbox_by_name(mailboxName);
 
     Engine.info("Hello s4u, I'm ready to get any message you'd want on %s", mailbox.get_name());
 

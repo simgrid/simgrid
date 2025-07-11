@@ -8,35 +8,35 @@
 import org.simgrid.s4u.*;
 
 class sender extends Actor {
-  int messages_count;
-  int payload_size;
+  int messagesCount;
+  int payloadSize;
 
-  public sender(int messages_count_, int payload_size_)
+  public sender(int messagesCount, int payloadSize)
   {
-    messages_count = messages_count_;
-    payload_size   = payload_size_;
+    this.messagesCount = messagesCount;
+    this.payloadSize   = payloadSize;
   }
 
   public void run() throws SimgridException
   {
-    double sleep_start_time = 5.0;
-    double sleep_test_time  = 0;
+    double sleepStartTime = 5.0;
+    double sleepTestTime  = 0;
 
     Mailbox mbox = this.get_engine().mailbox_by_name("receiver");
 
-    Engine.info("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time, sleep_test_time);
-    sleep_for(sleep_start_time);
+    Engine.info("sleep_start_time : %f , sleep_test_time : %f", sleepStartTime, sleepTestTime);
+    sleep_for(sleepStartTime);
 
-    for (int i = 0; i < messages_count; i++) {
+    for (int i = 0; i < messagesCount; i++) {
       String payload = "Message " + i;
 
       /* Create a communication representing the ongoing communication and then */
-      Comm comm = mbox.put_async(payload, payload_size);
+      Comm comm = mbox.put_async(payload, payloadSize);
       Engine.info("Send '%s' to '%s'", payload, mbox.get_name());
 
-      if (sleep_test_time > 0) { /* - "test_time" is set to 0, wait */
+      if (sleepTestTime > 0) {   /* - "test_time" is set to 0, wait */
         while (!comm.test()) {   /* - Call test() every "sleep_test_time" otherwise */
-          sleep_for(sleep_test_time);
+          sleep_for(sleepTestTime);
         }
       } else {
         comm.await();
@@ -52,28 +52,28 @@ class sender extends Actor {
 class receiver extends Actor {
   public void run()
   {
-    double sleep_start_time = 1.0;
-    double sleep_test_time  = 0.1;
+    double sleepStartTime = 1.0;
+    double sleepTestTime  = 0.1;
 
     Mailbox mbox = this.get_engine().mailbox_by_name("receiver");
 
-    Engine.info("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time, sleep_test_time);
-    sleep_for(sleep_start_time);
+    Engine.info("sleep_start_time : %f , sleep_test_time : %f", sleepStartTime, sleepTestTime);
+    sleep_for(sleepStartTime);
 
     Engine.info("Wait for my first message");
-    for (boolean more_messages = true; more_messages;) { // While we expect more messages
+    for (boolean moreMessages = true; moreMessages;) { // While we expect more messages
 
       Comm comm = mbox.get_async();
       // Such an active loop is possible but inefficient. If you don't have anything to do meanwhile, just use await()
       while (!comm.test()) {
-        sleep_for(sleep_test_time);
+        sleep_for(sleepTestTime);
         // I could deal with other things while waiting for the message to come
       }
 
       String received = (String)comm.get_payload();
       Engine.info("I got a '%s'.", received);
       if (received.equals("finalize"))
-        more_messages = false; // If it's a finalize message, we're done.
+        moreMessages = false; // If it's a finalize message, we're done.
     }
   }
 }

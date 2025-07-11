@@ -35,7 +35,7 @@ import org.simgrid.s4u.*;
 class monitor extends Actor {
   void simulate_bootup(Host host)
   {
-    int previous_pstate = host.get_pstate();
+    int previousPstate = host.get_pstate();
 
     Engine.info("Switch to virtual pstate 3, that encodes the 'booting up' state in that platform");
     host.set_pstate(3);
@@ -46,13 +46,13 @@ class monitor extends Actor {
     Engine.info("Wait 150s to simulate the boot time.");
     sleep_for(150);
 
-    Engine.info("The host is now up and running. Switch back to previous pstate %d", previous_pstate);
-    host.set_pstate(previous_pstate);
+    Engine.info("The host is now up and running. Switch back to previous pstate %d", previousPstate);
+    host.set_pstate(previousPstate);
   }
 
   void simulate_shutdown(Host host)
   {
-    int previous_pstate = host.get_pstate();
+    int previousPstate = host.get_pstate();
 
     Engine.info("Switch to virtual pstate 4, that encodes the 'shutting down' state in that platform");
     host.set_pstate(4);
@@ -60,8 +60,8 @@ class monitor extends Actor {
     Engine.info("Wait 7 seconds to simulate the shutdown time.");
     sleep_for(7);
 
-    Engine.info("Switch back to previous pstate %d, that will be used on reboot.", previous_pstate);
-    host.set_pstate(previous_pstate);
+    Engine.info("Switch back to previous pstate %d, that will be used on reboot.", previousPstate);
+    host.set_pstate(previousPstate);
 
     Engine.info("Actually shutdown the host");
     host.turn_off();

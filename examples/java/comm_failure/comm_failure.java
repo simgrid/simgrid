@@ -10,20 +10,20 @@
 import org.simgrid.s4u.*;
 
 class Sender extends Actor {
-  String mailbox1_name;
-  String mailbox2_name;
+  String mailbox1Name;
+  String mailbox2Name;
 
-  public Sender(String mailbox1_name_, String mailbox2_name_)
+  public Sender(String mailbox1Name, String mailbox2Name)
   {
-    mailbox1_name = mailbox1_name_;
-    mailbox2_name = mailbox2_name_;
+    this.mailbox1Name = mailbox1Name;
+    this.mailbox2Name = mailbox2Name;
   }
 
   public void run() throws SimgridException
   {
     Engine e         = this.get_engine();
-    Mailbox mailbox1 = e.mailbox_by_name(mailbox1_name);
-    Mailbox mailbox2 = e.mailbox_by_name(mailbox2_name);
+    Mailbox mailbox1 = e.mailbox_by_name(mailbox1Name);
+    Mailbox mailbox2 = e.mailbox_by_name(mailbox2Name);
     Integer payload1 = 666;
     Integer payload2 = 888;
 
@@ -33,11 +33,11 @@ class Sender extends Actor {
     Comm comm2 = mailbox2.put_async(payload2, 2);
 
     Engine.info("Calling wait_any..");
-    ActivitySet pending_comms = new ActivitySet();
-    pending_comms.push(comm1);
-    pending_comms.push(comm2);
+    ActivitySet pendingComms = new ActivitySet();
+    pendingComms.push(comm1);
+    pendingComms.push(comm2);
     try {
-      Activity acti = pending_comms.await_any();
+      Activity acti = pendingComms.await_any();
       Engine.info("Wait any returned comm to %s", ((Comm)acti).get_mailbox().get_name());
     } catch (NetworkFailureException ex) {
       Engine.info("Sender has experienced a network failure exception, so it knows that something went wrong");
@@ -52,7 +52,7 @@ class Sender extends Actor {
       Engine.info("Waiting on a FAILED comm raises an exception: '%s'", ex.getMessage());
     }
     Engine.info("Wait for remaining comm, just to be nice");
-    pending_comms.await_all();
+    pendingComms.await_all();
   }
 }
 

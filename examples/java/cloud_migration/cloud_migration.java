@@ -7,21 +7,20 @@ import org.simgrid.s4u.*;
 
 class MigrationManager extends Actor {
   VirtualMachine vm;
-  Host dst_pm;
-  MigrationManager(VirtualMachine vm, Host dst_pm)
+  Host dstPM;
+  MigrationManager(VirtualMachine vm, Host dstPM)
   {
     this.vm     = vm;
-    this.dst_pm = dst_pm;
+    this.dstPM  = dstPM;
   }
   public void run()
   {
     Host src_pm      = vm.get_pm();
-    double mig_start = Engine.get_clock();
-    vm.migrate(dst_pm);
-    double mig_end = Engine.get_clock();
+    double migStart  = Engine.get_clock();
+    vm.migrate(dstPM);
+    double migEnd = Engine.get_clock();
 
-    Engine.info("%s migrated: %s->%s in %g s", vm.get_name(), src_pm.get_name(), dst_pm.get_name(),
-                mig_end - mig_start);
+    Engine.info("%s migrated: %s->%s in %g s", vm.get_name(), src_pm.get_name(), dstPM.get_name(), migEnd - migStart);
   }
 }
 

@@ -3,7 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-import java.util.List;
 import org.simgrid.s4u.*;
 
 class bob extends Actor {
@@ -15,14 +14,14 @@ class bob extends Actor {
     Disk disk           = get_host().get_disks()[0];
 
     Engine.info("Create my asynchronous activities");
-    ActivitySet pending_activities = new ActivitySet();
-    pending_activities.push(this.exec_async(5e9));
-    pending_activities.push(mbox.get_async());
-    pending_activities.push(mqueue.get_async());
-    pending_activities.push(disk.read_async(3e8));
+    ActivitySet pendingActivities = new ActivitySet();
+    pendingActivities.push(this.exec_async(5e9));
+    pendingActivities.push(mbox.get_async());
+    pendingActivities.push(mqueue.get_async());
+    pendingActivities.push(disk.read_async(3e8));
 
     Engine.info("Wait for asynchronous activities to complete, all in one shot.");
-    pending_activities.await_all();
+    pendingActivities.await_all();
 
     Engine.info("All activities are completed.");
   }

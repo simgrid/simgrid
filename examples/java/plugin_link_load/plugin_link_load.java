@@ -41,12 +41,12 @@ class execute_load_test extends Actor {
     var host1 = e.host_by_name("node-1.simgrid.org");
 
     sleep_for(1);
-    run_transfer(e, host0, host1, "1", 1000 * 1000 * 1000);
+    run_transfer(e, host0, host1, "1", 1000L * 1000 * 1000);
 
     sleep_for(10);
-    run_transfer(e, host0, host1, "2", 1000 * 1000 * 1000);
+    run_transfer(e, host0, host1, "2", 1000L * 1000 * 1000);
     sleep_for(3);
-    run_transfer(e, host0, host1, "3", 1000 * 1000 * 1000);
+    run_transfer(e, host0, host1, "3", 1000L * 1000 * 1000);
   }
 }
 

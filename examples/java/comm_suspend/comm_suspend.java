@@ -15,7 +15,7 @@ class sender extends Actor {
     String payload = "Sent message";
 
     /* Create a communication representing the ongoing communication and then */
-    Comm comm = mbox.put_init(payload, 13194230);
+    Comm comm = mbox.putInit(payload, 13194230);
     Engine.info(String.format("Suspend the communication before it starts (remaining: %.0f bytes) and wait a second.",
                               comm.get_remaining()));
     sleep_for(1);

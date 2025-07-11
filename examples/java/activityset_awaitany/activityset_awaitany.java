@@ -14,23 +14,23 @@ class bob extends Actor {
     Disk disk           = get_host().get_disks()[0];
 
     Engine.info("Create my asynchronous activities");
-    ActivitySet pending_activities = new ActivitySet();
-    pending_activities.push(this.exec_async(5e9));
-    pending_activities.push(mbox.get_async());
-    pending_activities.push(mqueue.get_async());
-    pending_activities.push(disk.read_async(3e8));
+    ActivitySet pendingActivities = new ActivitySet();
+    pendingActivities.push(this.exec_async(5e9));
+    pendingActivities.push(mbox.get_async());
+    pendingActivities.push(mqueue.get_async());
+    pendingActivities.push(disk.read_async(3e8));
 
     Engine.info("Wait for asynchronous activities to complete");
-    while (!pending_activities.empty()) {
-      var completed_one = pending_activities.await_any();
-      if (completed_one != null) {
-        if (completed_one instanceof Comm)
+    while (!pendingActivities.empty()) {
+      var completedOne = pendingActivities.await_any();
+      if (completedOne != null) {
+        if (completedOne instanceof Comm)
           Engine.info("Completed a Comm");
-        else if (completed_one instanceof Mess)
+        else if (completedOne instanceof Mess)
           Engine.info("Completed a Mess");
-        else if (completed_one instanceof Exec)
+        else if (completedOne instanceof Exec)
           Engine.info("Completed an Exec");
-        else if (completed_one instanceof Io)
+        else if (completedOne instanceof Io)
           Engine.info("Completed an I/O");
       }
     }

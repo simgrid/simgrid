@@ -14,43 +14,43 @@ import java.util.Vector;
 import org.simgrid.s4u.*;
 
 class sender extends Actor {
-  int messages_count;
-  int payload_size;
+  int messagesCount;
+  int payloadSize;
 
-  public sender(int messages_count_, int payload_size_)
+  public sender(int messagesCount, int payloadSize)
   {
-    messages_count = messages_count_;
-    payload_size   = payload_size_;
+    this.messagesCount = messagesCount;
+    this.payloadSize   = payloadSize;
   }
   public void run() throws SimgridException
   {
-    Vector<Comm> pending_comms = new Vector<>();
-    Mailbox mbox               = this.get_engine().mailbox_by_name("receiver-0");
+    Vector<Comm> pendingComms = new Vector<>();
+    Mailbox mbox              = this.get_engine().mailbox_by_name("receiver-0");
 
     /* Start dispatching all messages to the receiver */
-    for (int i = 0; i < messages_count; i++) {
+    for (int i = 0; i < messagesCount; i++) {
       String payload = "Message " + i;
 
       // 'msgName' is not a stable storage location
       Engine.info("Send '%s' to '%s'", payload, mbox.get_name());
       /* Create a communication representing the ongoing communication */
-      Comm comm = mbox.put_async(payload, payload_size);
+      Comm comm = mbox.put_async(payload, payloadSize);
       /* Add this comm to the vector of all known comms */
-      pending_comms.add(comm);
+      pendingComms.add(comm);
     }
 
     /* Start the finalize signal to the receiver*/
     String payload = "finalize";
 
     Comm final_comm = mbox.put_async(payload, 0);
-    pending_comms.add(final_comm);
+    pendingComms.add(final_comm);
     Engine.info("Send 'finalize' to 'receiver-0'");
 
     Engine.info("Done dispatching all messages");
 
     /* Now that all message exchanges were initiated, wait for their completion, in order of creation. */
-    while (!pending_comms.isEmpty()) {
-      Comm comm = pending_comms.remove(0);
+    while (!pendingComms.isEmpty()) {
+      Comm comm = pendingComms.remove(0);
       comm.await_for(1);
     }
 
