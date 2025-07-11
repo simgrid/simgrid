@@ -159,6 +159,7 @@ void BeFSExplorer::run()
         XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(), explored_traces_);
         report_correct_execution(state);
       }
+      state->mark_to_delete(); // This state is fully explored, let's suppress it when we can
 
       this->backtrack();
       continue;
@@ -225,8 +226,6 @@ void BeFSExplorer::run()
     on_state_creation_signal(next_state.get(), get_remote_app());
 
     visited_states_count_++;
-
-    reduction_algo_->on_backtrack(state);
 
     // Before leaving that state, if the transition we just took can be taken multiple times, we
     // need to give it to the opened states
@@ -296,7 +295,8 @@ void BeFSExplorer::backtrack()
   if (not backtracking_point) {
     XBT_DEBUG("No more opened point of exploration, the search will end");
     stack_.clear();
-    last_explored_state->signal_on_backtrack();
+    last_explored_state->mark_to_delete();
+    State::garbage_collect();
     return;
   }
 
@@ -305,7 +305,7 @@ void BeFSExplorer::backtrack()
   // We found a backtracking point, let's go to it
   backtrack_to_state(backtracking_point.get());
   this->restore_stack(backtracking_point);
-  last_explored_state->signal_on_backtrack();
+  State::garbage_collect();
 }
 
 BeFSExplorer::BeFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration(), reduction_mode_(mode)

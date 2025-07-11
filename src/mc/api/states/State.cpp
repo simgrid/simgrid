@@ -14,22 +14,25 @@
 #include "xbt/thread.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <boost/range/algorithm.hpp>
 #include <memory>
+#include <mutex>
 #include <optional>
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc, "Logging specific to MC states");
 
 namespace simgrid::mc {
 
 long State::expended_states_  = 0;
-long State::in_memory_states_ = 0;
+std::atomic_ulong State::in_memory_states_ = 0;
 size_t State::max_actor_encountered_ = 1;
 
 State::~State()
 {
   in_memory_states_--;
-  XBT_INFO("Closing state n°%ld! There are %ld remaining states", this->get_num(), get_in_memory_states());
+  XBT_VERB("Closing state n°%ld! There are %ld remaining states", this->get_num(), get_in_memory_states());
 }
 
 State::State(const RemoteApp& remote_app, bool set_actor_status) : num_(++expended_states_)
@@ -46,8 +49,11 @@ State::State(const RemoteApp& remote_app, bool set_actor_status) : num_(++expend
 
   opened_.reserve(max_actor_encountered_);
 
-  if (get_num() == 1)
+  if (get_num() == 1) {
+    traversal_ = std::make_shared<PostFixTraversal>(this);
+
     is_leftmost_ = true; // The first state is the only one at that depth, so the leftmost one.
+  }
 
   being_explored.test_and_set();
 }
@@ -67,7 +73,9 @@ State::State(const RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr
       parent_state_->is_leftmost_ and parent_state_->opened_[parent_state_->closed_.size()] == get_transition_in();
   parent_state_->record_child_state(this);
 
-  XBT_INFO("State %ld ==> Actor %ld: %.60s ==> State %ld", parent_state_->num_, incoming_transition_->aid_,
+  traversal_ = std::make_shared<PostFixTraversal>(this);
+
+  XBT_VERB("State %ld ==> Actor %ld: %.60s ==> State %ld", parent_state_->num_, incoming_transition_->aid_,
            incoming_transition_->to_string().c_str(), num_);
 }
 
@@ -230,53 +238,9 @@ void State::record_child_state(StatePtr child)
 
 void State::signal_on_backtrack()
 {
-  XBT_VERB("State n°%ld, child of %ld by actor %ld, being signaled to backtrack", get_num(),
-           get_parent_state() != nullptr ? get_parent_state()->get_num() : -1, get_transition_in()->aid_);
-  XBT_VERB("... %s",
-           is_leftmost_ ? "This state is the leftmost at this depth" : "This state is NOT the leftmost at this depth");
-
-  if (not is_leftmost_) // Not racy: TH is the only one deciding who is leftmost
-    return;
-
-  if (closed_.size() < opened_.size()) { // Racy
-    // if there are children states that are being visited, we may need to update the leftmost information
-    auto const& leftmost_transition = opened_[closed_.size()];
-
-    xbt_assert(leftmost_transition->aid_ > 0);
-
-    if (children_states_.size() <= (size_t)leftmost_transition->aid_ or
-        children_states_[leftmost_transition->aid_].size() <= (size_t)leftmost_transition->times_considered_)
-      // The child state is not there yet, so no worry, it will get the correct info when created
-      return;
-
-    auto children_state = children_states_[leftmost_transition->aid_][leftmost_transition->times_considered_];
-    if (children_state == nullptr)
-      reference_holder_.tell("Assertion (children_aid == nullptr) failed!");
-    xbt_assert(children_state != nullptr, "Leftmost aid: %ld; state_num: %ld", leftmost_transition->aid_, get_num());
-    children_state->is_leftmost_ = true;
-    children_state->signal_on_backtrack();
-    return;
-  }
-
-  XBT_VERB("... there's still at least one actor to execute (%ld)", next_transition());
-  // Check is this state is concrete (== has been initialized) and has explored everything it wanted to explore
-  if (has_been_initialized() and next_transition() == -1) { // Racy
-    // This is the leftmost state, it doesn't have anymore open children and nothing left to do
-    // Let's close this by marking it
-    if (parent_state_ != nullptr) {
-      XBT_VERB("\t... there are %lu recorded children StatePtr in its parent state n°%ld",
-               parent_state_->opened_.size(), parent_state_->get_num());
-      parent_state_->children_states_[get_transition_in()->aid_][get_transition_in()->times_considered_] = nullptr;
-
-      auto findme = std::find(parent_state_->closed_.begin(), parent_state_->closed_.end(), get_transition_in()->aid_);
-      xbt_assert(findme == parent_state_->closed_.end(), "I'm already in the closed_ of my parent");
-      parent_state_->closed_.emplace_back(get_transition_in()->aid_);
-
-      XBT_VERB("\t... The count of remaining intrusive_ptr on this node #%ld is %d", get_num(), get_ref_count());
-      parent_state_->signal_on_backtrack();
-    }
-    reset_parent_state();
-  }
+  to_be_deleted_ = true;
+  State::garbage_collect();
+  return;
 }
 
 void State::reset_parent_state()
@@ -321,7 +285,7 @@ void State::initialize(const RemoteApp& remote_app)
 void State::update_incoming_transition_with_remote_app(const RemoteApp& remote_app, aid_t aid, int times_considered)
 {
   incoming_transition_ = std::shared_ptr<Transition>(remote_app.handle_simcall(aid, times_considered, true));
-  XBT_INFO("State %ld ==> Actor %ld: %.60s ==> State %ld", parent_state_->num_, incoming_transition_->aid_,
+  XBT_VERB("State %ld ==> Actor %ld: %.60s ==> State %ld", parent_state_->num_, incoming_transition_->aid_,
            incoming_transition_->to_string().c_str(), num_);
 }
 
@@ -351,4 +315,96 @@ void State::consider_one(aid_t aid)
   opened_.emplace_back(std::make_shared<Transition>(Transition::Type::UNKNOWN, aid, actor.get_times_considered()));
   XBT_DEBUG("Considered actor %hd at state %ld", actor.get_aid(), get_num());
 }
+State::PostFixTraversal::PostFixTraversal(StatePtr state)
+{
+  prev_ = nullptr;
+  next_ = nullptr;
+  self_ = state;
+
+  if (state->parent_state_ == nullptr)
+    return;
+
+  // Insert the new node just at the left of his parent
+  PostFixTraversal* parent_traversal = state->parent_state_->traversal_.get();
+  xbt_assert(parent_traversal != nullptr, "Why does this state parent have no traversal?");
+
+  next_ = parent_traversal;
+
+  // Wait until we can lock the node before where we are inserting, if any
+  // This is mandatory when we try to insert at the beginning of the list
+  while (parent_traversal->prev_ != nullptr and parent_traversal->prev_->lock_.try_lock()) {
+  }
+
+  if (parent_traversal->prev_ != nullptr)
+    parent_traversal->prev_->next_ = this;
+
+  prev_                   = parent_traversal->prev_;
+  parent_traversal->prev_ = this;
+
+  if (first_ == nullptr or first_ == parent_traversal)
+    first_ = this;
+
+  if (prev_ != nullptr)
+    prev_->lock_.unlock();
+}
+
+void State::remove_ref_in_parent()
+{
+
+  parent_state_->children_states_[get_transition_in()->aid_][get_transition_in()->times_considered_] = nullptr;
+
+  auto findme = std::find(parent_state_->closed_.begin(), parent_state_->closed_.end(), get_transition_in()->aid_);
+  xbt_assert(findme == parent_state_->closed_.end(), "I'm already in the closed_ of my parent");
+}
+
+State::PostFixTraversal* simgrid::mc::State::PostFixTraversal::first_ = nullptr;
+
+void State::garbage_collect()
+{
+  StatePtr first_state = PostFixTraversal::get_first();
+  while (first_state != nullptr and first_state->to_be_deleted_) {
+    PostFixTraversal::remove_first();
+
+    if (first_state->parent_state_ != nullptr) {
+      first_state->parent_state_->to_be_deleted_ = true;
+      first_state->remove_ref_in_parent();
+      first_state->reset_parent_state();
+    }
+
+    first_state = PostFixTraversal::get_first();
+  }
+}
+void State::PostFixTraversal::remove_first()
+{
+  // Waiting until the first is accessible
+  // and lock it so no one modify what's coming next
+  while (not first_->lock_.try_lock()) {
+  }
+
+  if (first_->next_ != nullptr)
+    // try to remove the second entry predecessor
+    first_->next_->prev_ = nullptr;
+
+  first_->self_ = nullptr;
+  first_        = first_->next_;
+}
+StatePtr State::PostFixTraversal::get_first()
+{
+  if (first_ != nullptr)
+    return first_->self_;
+  else
+    return nullptr;
+}
+std::string State::PostFixTraversal::get_traversal_as_ids()
+{
+  std::string res = "";
+
+  auto curr = first_;
+  while (curr != nullptr) {
+    res += std::to_string(curr->self_->num_) + ';';
+    curr = curr->next_;
+  }
+
+  return res;
+};
 } // namespace simgrid::mc

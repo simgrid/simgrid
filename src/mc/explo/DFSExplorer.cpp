@@ -172,7 +172,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
   XBT_DEBUG("Backtracking from the exploration by one step");
 
   reduction_algo_->on_backtrack(state_stack.back().get());
-  state_stack.back()->signal_on_backtrack();
+  State::garbage_collect();
   is_execution_descending = false;
 
   state_stack.pop_back();
@@ -213,6 +213,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
     if (_sg_mc_debug_optimality)
       odpor::MazurkiewiczTraces::record_new_execution(S);
   }
+  s->mark_to_delete();
 
   XBT_DEBUG("End of Exploration at depth %lu", S.size() + 1);
 }

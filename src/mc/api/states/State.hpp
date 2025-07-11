@@ -9,11 +9,13 @@
 #include "simgrid/forward.h"
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/xbt_intrusiveptr.hpp"
 #include "xbt/asserts.h"
 #include <atomic>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <vector>
 
@@ -26,9 +28,36 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
   friend XBT_PUBLIC void intrusive_ptr_add_ref(State* activity);
   friend XBT_PUBLIC void intrusive_ptr_release(State* activity);
 
+  // Helper class used to store every information to realize a postorder traversal
+  // by saving one element of it per State
+  class PostFixTraversal {
+
+    // deque structure
+    PostFixTraversal* prev_;
+    PostFixTraversal* next_;
+
+    StatePtr self_;
+    std::mutex lock_; // This lock is used to synchronize remove_first() and the constructor which insert to the left
+
+    static PostFixTraversal* first_;
+
+  public:
+    // Construct a traversal information corresponding to the child of parameter state
+    // in particular, the new traversal is just at the left of state traversal (in the list)
+    PostFixTraversal(StatePtr state);
+    static StatePtr get_first();
+    static void remove_first();
+    static std::string get_traversal_as_ids();
+  };
+
+  std::shared_ptr<PostFixTraversal> traversal_;
+  // Is this state as deletable? i.e. someone has finished explored it and we can garbage collect it now
+  bool to_be_deleted_ = false;
+  void remove_ref_in_parent();
+
   static long expended_states_; /* Count total amount of states, for stats */
 
-  static long in_memory_states_; // Count the number of states currently still in memory
+  static std::atomic_ulong in_memory_states_; // Count the number of states currently still in memory
 
   // Store the largest number of actors encountered at the same time
   // This is used to initialize the size of the actor_status_, which has to be >= than the reality in parallel mode
@@ -214,6 +243,15 @@ public:
    */
   void signal_on_backtrack();
 
+  /**
+   * @brief Garbage collect procedure over states. It consider the postfixtraversal
+   * order and free states until the first one in the traversal is not marked as to_be_deleted_.
+   *
+   * Complexity is in O(number of node freed). In other words, the traversal is not recomputed
+   * each time the procedure is called
+   */
+  static void garbage_collect();
+
   StatePtr get_children_state_of_aid(aid_t next, int times_considered)
   {
     if (next >= 0 && times_considered >= 0 && children_states_.size() > static_cast<long unsigned>(next) &&
@@ -229,6 +267,8 @@ public:
   xbt::reference_holder<State> reference_holder_;
 
   std::atomic_flag being_explored = ATOMIC_FLAG_INIT;
+
+  void mark_to_delete() { to_be_deleted_ = true; }
 };
 } // namespace simgrid::mc
 

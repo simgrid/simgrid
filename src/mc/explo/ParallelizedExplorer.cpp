@@ -95,14 +95,15 @@ void ParallelizedExplorer::TreeHandler()
     XBT_DEBUG("[tid:TreeHandler] The update contained %lu new states, so now there are %d remaining todo",
               new_opened.size(), remaining_todo);
 
-    to_apply->get_last_explored_state()->signal_on_backtrack();
-
     // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
     for (auto state_it = new_opened.crbegin(); state_it != new_opened.crend(); state_it++)
       while (!opened_heads_.push((*state_it).get())) {
       }
-
+    if (to_apply->get_last_explored_state() != nullptr)
+      to_apply->get_last_explored_state()->mark_to_delete();
     reduction_algo_->delete_race_update(to_apply);
+
+    State::garbage_collect();
   }
 
   for (int i = 0; i < number_of_threads; i++)
