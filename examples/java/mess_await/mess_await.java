@@ -18,7 +18,7 @@ class Sender extends Actor {
     this.sleep_for(0.5);
 
     Engine.info("Send 'hello' to 'receiver'");
-    mqueue.put(new String("hello"));
+    mqueue.put("hello");
 
     for (int i = 0; i < messages_count; i++) {
       String payload = "Message " + i;
@@ -31,7 +31,7 @@ class Sender extends Actor {
 
     /* Send message to let the receiver know that it should stop */
     Engine.info("Send 'finalize' to 'receiver'");
-    mqueue.put(new String("finalize"));
+    mqueue.put("finalize");
   }
 }
 
