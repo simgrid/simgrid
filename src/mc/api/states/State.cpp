@@ -49,7 +49,9 @@ State::State(const RemoteApp& remote_app, bool set_actor_status) : num_(++expend
 
   opened_.reserve(max_actor_encountered_);
 
-  if (get_num() == 1) {
+  // UDPOR create state that have no parentship links at all and manage everything
+  // its own way so let it cook
+  if (get_num() == 1 and get_model_checking_reduction() != ReductionMode::udpor) {
     traversal_ = std::make_shared<PostFixTraversal>(this);
 
     is_leftmost_ = true; // The first state is the only one at that depth, so the leftmost one.
