@@ -117,8 +117,19 @@ find_package_handle_standard_args(SimGrid
 
 if (SimGrid_FOUND)
 
+  find_program(SMPICC smpicc
+               HINTS ${SimGrid_PATH}/bin /opt/simgrid/bin)
+  find_program(SMPICXX smpicxx
+               HINTS ${SimGrid_PATH}/bin /opt/simgrid/bin)
+  find_program(SMPIF90 smpif90
+               HINTS ${SimGrid_PATH}/bin /opt/simgrid/bin)
+  set(MPI_C_COMPILER       ${SMPICC})
+  set(MPI_CXX_COMPILER     ${SMPICXX})
+  set(MPI_Fortran_COMPILER ${SMPIF90})
+
   find_program(SMPIRUN smpirun
                HINTS ${SimGrid_PATH}/bin /opt/simgrid/bin)
+  #set(MPIEXEC_EXECUTABLE ${SMPIRUN} -platform /home/mquinson/Code/simgrid/examples/platforms/cluster_backbone.xml)
 
   MACRO(smpi_c_target NAME)
     target_compile_options(${NAME} PUBLIC "-include;smpi/smpi_helpers.h;-fPIC;-shared;-Wl,-z,defs")
