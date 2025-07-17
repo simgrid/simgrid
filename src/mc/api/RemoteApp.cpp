@@ -25,6 +25,7 @@
 #include <limits.h>
 #include <limits>
 #include <memory>
+#include <mutex>
 #include <numeric>
 #include <optional>
 #include <signal.h>
@@ -33,6 +34,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/wait.h>
+#include <vector>
 
 #ifdef __linux__
 #include <sys/personality.h>
@@ -42,6 +44,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_session, mc, "Model-checker session");
 XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 namespace simgrid::mc {
+std::vector<std::string> master_socket_names;
+std::mutex mtx_master_socket_names;
 
 RemoteApp::RemoteApp(const std::vector<char*>& args, const std::string additionnal_name) : app_args_(args)
 {
@@ -57,12 +61,19 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, const std::string additionn
 #ifdef __linux__
   master_socket_name[0] = '\0'; // abstract socket, automatically removed after close
 #else
+  mtx_master_socket_names.lock();
   unlink(master_socket_name.c_str()); // remove possible stale socket before bind
-  atexit([]() {
-    if (not master_socket_name.empty())
-      unlink(master_socket_name.c_str());
-    master_socket_name.clear();
-  });
+  if (master_socket_names.empty()) {
+    atexit([]() {
+      for (auto& master_socket_name : master_socket_names) {
+        if (not master_socket_name.empty())
+          unlink(master_socket_name.c_str());
+        master_socket_name.clear();
+      }
+    });
+  }
+  master_socket_names.push_back(master_socket_name);
+  mtx_master_socket_names.unlock();
 #endif
 
   struct sockaddr_un serv_addr = {};
