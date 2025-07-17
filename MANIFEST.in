@@ -324,7 +324,6 @@ include examples/cpp/mc-centralized-mutex/s4u-mc-centralized-mutex.cpp
 include examples/cpp/mc-centralized-mutex/s4u-mc-centralized-mutex.tesh
 include examples/cpp/mc-electric-fence/s4u-mc-electric-fence.cpp
 include examples/cpp/mc-electric-fence/s4u-mc-electric-fence.tesh
-include examples/cpp/mc-failing-assert/s4u-mc-failing-assert-nodpor.tesh
 include examples/cpp/mc-failing-assert/s4u-mc-failing-assert.cpp
 include examples/cpp/mc-failing-assert/s4u-mc-failing-assert.tesh
 include examples/cpp/mess-wait/s4u-mess-wait.cpp
