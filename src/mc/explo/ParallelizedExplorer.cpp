@@ -65,7 +65,7 @@ RecordTrace get_record_trace_from_stack(stack_t& stack)
 
 void ParallelizedExplorer::TreeHandler()
 {
-
+  long traces_count = 0;
   // This local counter will repreent the number of things in opened_heads_ + the number of currently working Explorer
   int remaining_todo = 1; // The intial state
 
@@ -104,6 +104,9 @@ void ParallelizedExplorer::TreeHandler()
     reduction_algo_->delete_race_update(to_apply);
 
     State::garbage_collect();
+    traces_count++;
+    if (traces_count % 10 == 0)
+      XBT_INFO("Total amount of traces explored so far: %ld. Remaining todo: %d", traces_count, remaining_todo);
   }
 
   for (int i = 0; i < number_of_threads; i++)
