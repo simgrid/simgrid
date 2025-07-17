@@ -40,7 +40,8 @@ public:
   void consider_best_in(State* state)
   {
     auto actors = state->get_actors_list();
-    if (std::any_of(begin(actors), end(actors), [](const auto& actor) { return actor.second.is_todo(); }))
+    if (std::any_of(begin(actors), end(actors),
+                    [](const auto& actor) { return actor.has_value() and actor->is_todo(); }))
       return;
     aid_t best_aid = best_transition_in(state, false).first;
     if (best_aid != -1)

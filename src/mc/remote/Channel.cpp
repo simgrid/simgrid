@@ -38,7 +38,7 @@ int recvs[msg_type_count] = {0};
 namespace simgrid::mc {
 Channel::Channel(int sock, Channel const& other) : socket_(sock), buffer_in_size_(other.buffer_in_size_)
 {
-  XBT_DEBUG("%d Adopt %zu bytes buffered by father channel.", getpid(), buffer_in_size_);
+  XBT_DEBUG("%s Adopt %zu bytes buffered by father channel.", xbt::gettid().c_str(), buffer_in_size_);
   if (buffer_in_size_ > 0)
     memcpy(buffer_in_, other.buffer_in_ + other.buffer_in_next_, buffer_in_size_);
 #ifdef CHANNEL_TRACE_MSG_COUNT
@@ -106,14 +106,14 @@ int Channel::send(const void* message, size_t size)
              "Cannot send directly data while some other data is packed for later emission");
 
   if (size >= sizeof(int) && is_valid_MessageType(*static_cast<const int*>(message))) {
-    XBT_DEBUG("%d sends msg %s (%zu bytes from %p) buffsize: %lu next:%lu", getpid(),
+    XBT_DEBUG("%s sends msg %s (%zu bytes from %p) buffsize: %lu next:%lu", xbt::gettid().c_str(),
               to_c_str(*static_cast<const MessageType*>(message)), size, message, buffer_in_size_, buffer_in_next_);
 #ifdef CHANNEL_TRACE_MSG_COUNT
     if (message != buffer_out_)
       sends[(int)*static_cast<const MessageType*>(message)]++;
 #endif
   } else {
-    XBT_DEBUG("%d sends %zu bytes from %p (not a message) buffsize: %lu next:%lu", getpid(), size, message,
+    XBT_DEBUG("%s sends %zu bytes from %p (not a message) buffsize: %lu next:%lu", xbt::gettid().c_str(), size, message,
               buffer_in_size_, buffer_in_next_);
     xbt_assert(size > 0, "Request to send a 0-sized message! Please fix your code.");
   }
@@ -138,13 +138,13 @@ int Channel::send(const void* message, size_t size)
 
 std::pair<bool, void*> Channel::receive(size_t size)
 {
-  XBT_DEBUG("%d wants to receive %lu bytes; buffer size: %lu; buffer next: %lu", getpid(), size, buffer_in_size_,
-            buffer_in_next_);
+  XBT_DEBUG("%s wants to receive %lu bytes; buffer size: %lu; buffer next: %lu", xbt::gettid().c_str(), size,
+            buffer_in_size_, buffer_in_next_);
   void* answer;
   if (buffer_in_size_ < size) { // We need more data from the network
     auto [more, got] = peek(size);
     if (not more) {
-      XBT_DEBUG("%d has no more data to consume", getpid());
+      XBT_DEBUG("%s has no more data to consume", xbt::gettid().c_str());
       return std::make_pair(more, nullptr);
     }
     answer = got;
@@ -152,7 +152,7 @@ std::pair<bool, void*> Channel::receive(size_t size)
     answer = buffer_in_ + buffer_in_next_;
   }
   /* Consume the data */
-  XBT_DEBUG("%d consumes %s (data size:%lu, previous value of next: %lu, of bufsize: %lu)", getpid(),
+  XBT_DEBUG("%s consumes %s (data size:%lu, previous value of next: %lu, of bufsize: %lu)", xbt::gettid().c_str(),
             to_c_str(*((const MessageType*)(buffer_in_ + buffer_in_next_))), size, buffer_in_next_, buffer_in_size_);
   buffer_in_next_ += size;
   buffer_in_size_ -= size;
@@ -175,7 +175,8 @@ void* Channel::expect_message(size_t size, MessageType type, const char* error_m
 
 std::pair<bool, void*> Channel::peek(size_t size)
 {
-  XBT_DEBUG("%d peeks %lu bytes; buffer size: %lu; buffer next: %lu", getpid(), size, buffer_in_size_, buffer_in_next_);
+  XBT_DEBUG("%s peeks %lu bytes; buffer size: %lu; buffer next: %lu", xbt::gettid().c_str(), size, buffer_in_size_,
+            buffer_in_next_);
   if (MC_MESSAGE_LENGTH - buffer_in_next_ < size) {
     XBT_DEBUG("Move the data before receiving the rest");
     memmove(buffer_in_, buffer_in_ + buffer_in_next_, buffer_in_size_);
@@ -193,14 +194,15 @@ std::pair<bool, void*> Channel::peek(size_t size)
     xbt_assert(got != -1 || errno == EAGAIN, "[tid:%s] Channel::receive failure: %s", simgrid::xbt::gettid().c_str(),
                strerror(errno));
     if (got == 0) {
-      XBT_DEBUG("%d: Connection closed :(", getpid());
+      XBT_DEBUG("%s: Connection closed :(", xbt::gettid().c_str());
       return std::make_pair(false, nullptr);
     }
     buffer_in_size_ += got;
-    XBT_DEBUG("%d receives %d bytes from the network (avail was %d). New size: %lu", getpid(), got, avail,
+    XBT_DEBUG("%s receives %d bytes from the network (avail was %d). New size: %lu", xbt::gettid().c_str(), got, avail,
               buffer_in_size_);
   }
-  XBT_DEBUG("%d peeks msg/type %s", getpid(), to_c_str(*((const MessageType*)(buffer_in_ + buffer_in_next_))));
+  XBT_DEBUG("%s peeks msg/type %s", xbt::gettid().c_str(),
+            to_c_str(*((const MessageType*)(buffer_in_ + buffer_in_next_))));
 
   return std::make_pair(true, buffer_in_ + buffer_in_next_);
 }
@@ -221,7 +223,7 @@ void Channel::reinject(const char* data, size_t size)
   xbt_assert(size + buffer_in_size_ < MC_MESSAGE_LENGTH,
              "Reinjecting these data would make the buffer to overflow. Please increase MC_MESSAGE_LENGTH in the code "
              "(or fix your code).");
-  XBT_DEBUG("%d Reinject %zu bytes on top of %zu pre-existing bytes", getpid(), size, buffer_in_size_);
+  XBT_DEBUG("%s Reinject %zu bytes on top of %zu pre-existing bytes", xbt::gettid().c_str(), size, buffer_in_size_);
   memcpy(buffer_in_ + buffer_in_next_ + buffer_in_size_, data, size);
   buffer_in_size_ += size;
 }

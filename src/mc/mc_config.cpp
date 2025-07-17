@@ -51,11 +51,11 @@ simgrid::config::Flag<bool> _sg_mc_timeout{
     }};
 
 static simgrid::config::Flag<std::string> cfg_mc_reduction{
-    "model-check/reduction", "Specify the kind of exploration reduction (either none or DPOR)", "dpor",
+    "model-check/reduction", "Specify the kind of exploration reduction (DPOR, ODPOR or UDPOR)", "dpor",
     [](std::string_view value) {
-      if (value != "none" && value != "dpor" && value != "sdpor" && value != "odpor" && value != "udpor")
+      if (value != "dpor" && value != "sdpor" && value != "odpor" && value != "udpor")
         xbt_die("configuration option 'model-check/reduction' must be one of the following: "
-                " 'none', 'dpor', 'sdpor', 'odpor', or 'udpor'");
+                " 'dpor', 'sdpor', 'odpor', or 'udpor'");
     }};
 
 simgrid::config::Flag<int> _sg_mc_cached_states_interval{
@@ -63,6 +63,12 @@ simgrid::config::Flag<int> _sg_mc_cached_states_interval{
     "Specify how often a state factory shall be created. This enables fast state restore at the cost of wasted memory.",
     1000,
     [](int val) { xbt_assert(val >= 0, "The value of model-check/cached-states-interval must be positive or null"); }};
+
+simgrid::config::Flag<int> _sg_mc_parallel_thread{
+    "model-check/parallel-thread",
+    "Specify how explorer should be launched in parallel. Each explorer will be a different separate thread spawned by "
+    "McSimGrid.",
+    1, [](int val) { xbt_assert(val >= 1, "The value of model-check/parallel-thread must be >= 1"); }};
 
 simgrid::config::Flag<std::string> _sg_mc_explore_algo{
     "model-check/exploration-algo",

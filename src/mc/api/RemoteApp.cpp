@@ -26,6 +26,7 @@
 #include <limits>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <signal.h>
 #include <string>
 #include <sys/ptrace.h>
@@ -42,16 +43,15 @@ XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 namespace simgrid::mc {
 
-static std::string master_socket_name;
-
-RemoteApp::RemoteApp(const std::vector<char*>& args) : app_args_(args)
+RemoteApp::RemoteApp(const std::vector<char*>& args, const std::string additionnal_name) : app_args_(args)
 {
   master_socket_ = socket(AF_UNIX, SOCK_STREAM, 0);
   xbt_assert(master_socket_ != -1, "Cannot create the master socket: %s", strerror(errno));
 
-  master_socket_name = "/tmp/simgrid-mc-" + std::to_string(getpid() + '-') + simgrid::xbt::gettid();
+  master_socket_name = "/tmp/simgrid-mc-" + std::to_string(getpid()) + '-' + additionnal_name;
   xbt_assert(master_socket_name.length() < MC_SOCKET_NAME_LEN,
              "The socket name is too long for the affected size, probably because of the tid. Fix Me");
+
   master_socket_name.resize(MC_SOCKET_NAME_LEN); // truncate socket name if it's too long
   master_socket_name.back() = '\0';              // ensure the data are null-terminated
 #ifdef __linux__
@@ -122,7 +122,7 @@ unsigned long RemoteApp::get_maxpid() const
   return answer->value;
 }
 
-void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
+void RemoteApp::get_actors_status(std::vector<std::optional<ActorState>>& whereto) const
 {
   // The messaging happens as follows:
   //
@@ -155,7 +155,6 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
              "short int to save memory. Such app is probably too big for MC anyway.",
              std::numeric_limits<short>::max());
 
-  whereto.clear();
   if (actor_count > 0) {
     size_t size           = actor_count * sizeof(s_mc_message_actors_status_one_t);
     auto [more_data, got] = checker_side_->get_channel().receive(size);
@@ -166,6 +165,10 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
 
     for (int i = 0; i < actor_count; i++) {
       const auto& actor = status[i];
+
+      if ((unsigned)actor.aid >= whereto.size())
+        whereto.resize(actor.aid + 1);
+
       std::vector<std::shared_ptr<Transition>> actor_transitions;
 
       if (Exploration::need_actor_status_transitions()) {
@@ -180,16 +183,17 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
         XBT_DEBUG("No need for the actor transitions today");
       }
 
-      whereto.try_emplace(actor.aid, actor.aid, actor.enabled, actor.max_considered, std::move(actor_transitions));
+      whereto[actor.aid].emplace(actor.aid, actor.enabled, actor.max_considered, std::move(actor_transitions));
     }
   }
   XBT_DEBUG("Done receiving ACTORS_STATUS_REPLY");
-  for (auto kv : whereto) {
-    ActorState state = kv.second;
-    XBT_DEBUG("Actor %ld is %s, %s/%s/%s considered %u/%u with %lu transitions", kv.first,
-              state.is_enabled() ? "enabled" : "disabled", state.is_todo() ? "todo" : "-",
-              state.is_done() ? "done" : "-", state.is_unknown() ? "unknown" : "-", state.get_times_considered(),
-              state.get_max_considered(), state.get_enabled_transitions().size());
+  for (auto state : whereto) {
+    if (state.has_value())
+      XBT_DEBUG("Actor %hd is %s, %s/%s/%s considered %u/%u with %lu transitions", state.value().get_aid(),
+                state.value().is_enabled() ? "enabled" : "disabled", state.value().is_todo() ? "todo" : "-",
+                state.value().is_done() ? "done" : "-", state.value().is_unknown() ? "unknown" : "-",
+                state.value().get_times_considered(), state.value().get_max_considered(),
+                state.value().get_enabled_transitions().size());
   }
 }
 

@@ -62,6 +62,7 @@ Reduction::RaceUpdate* ODPOR::races_computation(odpor::Execution& E, stack_t* S,
     }
     E.get_event_with_handle(e_prime).consider_races();
   }
+  updates->last_explored_state_ = S->back().get();
   XBT_DEBUG("Packing a total of %lu race updates", updates->get_value().size());
   return updates;
 }
@@ -91,7 +92,7 @@ unsigned long ODPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpd
 aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 {
   auto s           = S->back().get();
-  const aid_t next = s->next_transition();
+  const aid_t next = Exploration::get_strategy()->next_transition_in(s).first;
 
   if (next == -1)
     return -1;
@@ -111,6 +112,7 @@ StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
             parent_state->get_children_state_of_aid(incoming_transition->aid_, incoming_transition->times_considered_);
         existing_state != nullptr) {
       if (not existing_state->has_been_initialized()) {
+        existing_state->update_incoming_transition_explicitly(incoming_transition);
         existing_state->initialize(remote_app);
         if (existing_state->next_transition() == -1)
           static_cast<SleepSetState*>(existing_state.get())->add_arbitrary_transition(remote_app);
@@ -118,7 +120,6 @@ StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
       return existing_state;
     }
     new_state = StatePtr(new WutState(remote_app, parent_state, incoming_transition), true);
-    parent_state->record_child_state(new_state);
   }
   static_cast<SleepSetState*>(new_state.get())->add_arbitrary_transition(remote_app);
   return new_state;

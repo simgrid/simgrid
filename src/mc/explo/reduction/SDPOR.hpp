@@ -36,6 +36,8 @@ public:
 
   RaceUpdate* empty_race_update() override { return new RaceUpdate(); }
 
+  void delete_race_update(Reduction::RaceUpdate* race_update) override { delete (RaceUpdate*)race_update; }
+
   Reduction::RaceUpdate* races_computation(odpor::Execution& E, stack_t* S,
                                            std::vector<StatePtr>* opened_states) override
   {
@@ -71,11 +73,10 @@ public:
 
     for (auto& [state, choices] : sdpor_updates->get_value()) {
       aid_t considered = Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), choices);
-      StatePtr(new SleepSetState(
-                   remote_app, state,
-                   std::make_shared<Transition>(Transition::Type::UNKNOWN, considered,
-                                                state->get_actors_list().at(considered).get_times_considered()),
-                   false),
+      StatePtr(new SleepSetState(remote_app, state,
+                                 std::make_shared<Transition>(Transition::Type::UNKNOWN, considered,
+                                                              state->get_actor_at(considered).get_times_considered()),
+                                 false),
                true);
       if (opened_states != nullptr) {
         opened_states->emplace_back(state);

@@ -296,6 +296,7 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
 
   XBT_DEBUG("... Sleepinging set at E_prime containing %s",
             std::accumulate(sleep_E_prime.begin(), sleep_E_prime.end(), std::string(), [](std::string a, aid_t b) {
+              xbt_assert(b != 0, "How did we create an actor 0??");
               return std::move(a) + ';' + std::to_string(b);
             }).c_str());
 

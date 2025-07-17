@@ -99,21 +99,21 @@ unsigned long DPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpda
       XBT_DEBUG("Enabling the considered actor %ld in state #%ld", considered, state->get_num());
       if (considered == -1)
         continue; // Do not create a new state if the actor was already created before
-      StatePtr(new SleepSetState(
-                   remote_app, state,
-                   std::make_shared<Transition>(Transition::Type::UNKNOWN, considered,
-                                                state->get_actors_list().at(considered).get_times_considered()),
-                   false),
+      StatePtr(new SleepSetState(remote_app, state,
+                                 std::make_shared<Transition>(Transition::Type::UNKNOWN, considered,
+                                                              state->get_actor_at(considered).get_times_considered()),
+                                 false),
                true);
     } else {
       state->consider_all();
-      for (auto const& [_, actor] : state->get_actors_list())
-        if (state->get_children_state_of_aid(actor.get_aid(), actor.get_times_considered()) == nullptr)
-          StatePtr(new SleepSetState(remote_app, state,
-                                     std::make_shared<Transition>(Transition::Type::UNKNOWN, actor.get_aid(),
-                                                                  actor.get_times_considered()),
-                                     false),
-                   true);
+      for (auto const& actor : state->get_actors_list())
+        if (actor.has_value())
+          if (state->get_children_state_of_aid(actor->get_aid(), actor->get_times_considered()) == nullptr)
+            StatePtr(new SleepSetState(remote_app, state,
+                                       std::make_shared<Transition>(Transition::Type::UNKNOWN, actor->get_aid(),
+                                                                    actor->get_times_considered()),
+                                       false),
+                     true);
     }
 
     if (opened_states != nullptr) {

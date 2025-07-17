@@ -28,6 +28,7 @@ public:
     std::vector<std::pair<StatePtr, odpor::PartialExecution>> get_value() { return state_and_seq_; }
   };
   Reduction::RaceUpdate* empty_race_update() override { return new RaceUpdate(); }
+  void delete_race_update(Reduction::RaceUpdate* race_update) override { delete (RaceUpdate*)race_update; }
   Reduction::RaceUpdate* races_computation(odpor::Execution& E, stack_t* S,
                                            std::vector<StatePtr>* opened_states) override;
   unsigned long apply_race_update(RemoteApp& remote_app, Reduction::RaceUpdate* updates,

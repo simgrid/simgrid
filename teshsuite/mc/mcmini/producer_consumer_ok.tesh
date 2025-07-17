@@ -5,3 +5,9 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 1429 unique states visited; 36 explored traces (588 transition replays, 2017 states visited overall)
+
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/exploration-algo:BeFS --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-producer_consumer_ok 2 2 2 1 0
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BeFS'
+> [0.000000] [mc_befs/INFO] Start a BeFS exploration. Reduction is: odpor.
+> [0.000000] [mc_befs/INFO] BeFS exploration ended. 1429 unique states visited; 36 explored traces (588 transition replays, 2017 states visited overall)

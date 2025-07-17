@@ -103,7 +103,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
   } catch (McWarning& error) {
     // If an error is reached while executing the transition ...
     if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_debug)) {
-      auto transition_to_be_executed = state->get_actors_list().at(next_actor).get_transition();
+      auto transition_to_be_executed = state->get_actor_at(next_actor).get_transition();
       XBT_DEBUG("An error occured while executing %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)",
                 transition_to_be_executed->aid_, transition_to_be_executed->to_string().c_str(), state_stack.size(),
                 state->get_num(), state->count_todo());
@@ -123,7 +123,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
     S.push_transition(executed_transition);
     Reduction::RaceUpdate* todo_updates = reduction_algo_->races_computation(S, stack_);
     reduction_algo_->apply_race_update(get_remote_app(), todo_updates);
-    delete todo_updates;
+    reduction_algo_->delete_race_update(todo_updates);
 
     // ... If we are not already doing it, start critical exploration
     run_critical_exploration_on_need(error.value);
@@ -172,7 +172,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
   XBT_DEBUG("Backtracking from the exploration by one step");
 
   reduction_algo_->on_backtrack(state_stack.back().get());
-  state_stack.back()->signal_on_backtrack();
+  State::garbage_collect();
   is_execution_descending = false;
 
   state_stack.pop_back();
@@ -189,14 +189,16 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 
   aid_t next_to_explore;
 
-  while ((next_to_explore = reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
+  while ((next_to_explore = s->next_transition()) != -1) {
+
+    // reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
 
     step_exploration(S, next_to_explore, state_stack);
   }
 
   Reduction::RaceUpdate* todo_updates = reduction_algo_->races_computation(S, &state_stack);
   reduction_algo_->apply_race_update(get_remote_app(), todo_updates);
-  delete todo_updates;
+  reduction_algo_->delete_race_update(todo_updates);
 
   XBT_DEBUG("%lu actors remain, but none of them need to be interleaved (depth %zu).", s->get_actor_count(),
             state_stack.size() + 1);
@@ -211,6 +213,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
     if (_sg_mc_debug_optimality)
       odpor::MazurkiewiczTraces::record_new_execution(S);
   }
+  s->mark_to_delete();
 
   XBT_DEBUG("End of Exploration at depth %lu", S.size() + 1);
 }

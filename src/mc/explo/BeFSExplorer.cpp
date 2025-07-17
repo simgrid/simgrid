@@ -148,7 +148,7 @@ void BeFSExplorer::run()
         Reduction::RaceUpdate* todo_updates =
             reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
         reduction_algo_->apply_race_update(get_remote_app(), todo_updates, &opened_states_);
-        delete todo_updates;
+        reduction_algo_->delete_race_update(todo_updates);
 
         explored_traces_++;
         // Costly verification used to check against algorithm optimality
@@ -159,6 +159,7 @@ void BeFSExplorer::run()
         XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(), explored_traces_);
         report_correct_execution(state);
       }
+      state->mark_to_delete(); // This state is fully explored, let's suppress it when we can
 
       this->backtrack();
       continue;
@@ -193,7 +194,7 @@ void BeFSExplorer::run()
     }
 
     if (XBT_LOG_ISENABLED(mc_befs, xbt_log_priority_debug)) {
-      auto todo = state->get_actors_list().at(next).get_transition();
+      auto todo = state->get_actor_at(next).get_transition();
       XBT_DEBUG("wanna execute %ld: %.60s", next, todo->to_string().c_str());
     }
 
@@ -201,8 +202,6 @@ void BeFSExplorer::run()
     auto executed_transition = state->execute_next(next, get_remote_app());
     on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
 
-    // If there are processes to interleave and the maximum depth has not been
-    // reached then perform one step of the exploration algorithm.
     XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves, %lu opened states)",
              state->get_transition_out()->aid_, state->get_transition_out()->to_string().c_str(), stack_.size(),
              state->get_num(), state->count_todo(), opened_states_.size());
@@ -227,8 +226,6 @@ void BeFSExplorer::run()
     on_state_creation_signal(next_state.get(), get_remote_app());
 
     visited_states_count_++;
-
-    reduction_algo_->on_backtrack(state);
 
     // Before leaving that state, if the transition we just took can be taken multiple times, we
     // need to give it to the opened states
@@ -298,6 +295,8 @@ void BeFSExplorer::backtrack()
   if (not backtracking_point) {
     XBT_DEBUG("No more opened point of exploration, the search will end");
     stack_.clear();
+    last_explored_state->mark_to_delete();
+    State::garbage_collect();
     return;
   }
 
@@ -306,7 +305,7 @@ void BeFSExplorer::backtrack()
   // We found a backtracking point, let's go to it
   backtrack_to_state(backtracking_point.get());
   this->restore_stack(backtracking_point);
-  last_explored_state->signal_on_backtrack();
+  State::garbage_collect();
 }
 
 BeFSExplorer::BeFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration(), reduction_mode_(mode)

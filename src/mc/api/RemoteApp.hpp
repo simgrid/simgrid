@@ -9,6 +9,7 @@
 #include "simgrid/forward.h"
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/remote/CheckerSide.hpp"
+#include <optional>
 
 namespace simgrid::mc {
 
@@ -25,6 +26,7 @@ private:
   std::unique_ptr<CheckerSide> checker_side_;
   std::unique_ptr<CheckerSide> application_factory_; // create checker_side_ by cloning this one
   int master_socket_ = -1;
+  std::string master_socket_name;
 
   const std::vector<char*> app_args_;
 
@@ -39,8 +41,10 @@ public:
    *  (environment variables, sockets, etc.).
    *
    *  The code is expected to `exec` the model-checked application.
+   *
+   *  An additionnal name can be provided if different remote app are going to be created.
    */
-  explicit RemoteApp(const std::vector<char*>& args);
+  explicit RemoteApp(const std::vector<char*>& args, const std::string additionnal_name = "");
 
   /** Rollback the application to the state passed as argument or to the beginning of history if from == nullptr */
   void restore_checker_side(CheckerSide* from, bool finalize_app = true);
@@ -62,7 +66,7 @@ public:
   unsigned long get_maxpid() const;
 
   /* Get the list of actors that are ready to run at that step. Usually shorter than maxpid */
-  void get_actors_status(std::map<aid_t, simgrid::mc::ActorState>& whereto) const;
+  void get_actors_status(std::vector<std::optional<simgrid::mc::ActorState>>& whereto) const;
 
   /** Take a transition. A new Transition is created iff the last parameter is true */
   Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition) const;

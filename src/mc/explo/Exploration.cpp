@@ -249,10 +249,10 @@ void Exploration::report_correct_execution(State* last_state)
 
 bool Exploration::empty()
 {
-  std::map<aid_t, simgrid::mc::ActorState> actors;
+  std::vector<std::optional<simgrid::mc::ActorState>> actors;
   get_remote_app().get_actors_status(actors);
   return std::none_of(actors.begin(), actors.end(),
-                      [](std::pair<aid_t, simgrid::mc::ActorState> kv) { return kv.second.is_enabled(); });
+                      [](std::optional<simgrid::mc::ActorState> kv) { return kv.has_value() && kv->is_enabled(); });
 }
 
 bool Exploration::soft_timouted() const
@@ -328,6 +328,7 @@ void Exploration::backtrack_remote_app_to_state(RemoteApp& remote_app, State* ta
   }
   remote_app.set_one_way(false);
 
+  // not thread-safe counts
   visited_states_count_ += recipe.size();
   backtrack_count_++;
   Transition::replayed_transitions_ += recipe.size();
@@ -335,7 +336,8 @@ void Exploration::backtrack_remote_app_to_state(RemoteApp& remote_app, State* ta
   for (auto& transition : replayed_transitions)
     on_transition_replay_signal(transition, remote_app);
 
-  if (state_needing_actor_status.size() != 0)
+  // If we initialized something and it has not yet been given a possible thing to explore, go one way
+  if (state_needing_actor_status.size() != 0 and target_state->next_transition() == -1)
     static_cast<SleepSetState*>(target_state)->add_arbitrary_transition(remote_app);
 
   return;
