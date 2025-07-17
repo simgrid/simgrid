@@ -51,11 +51,11 @@ simgrid::config::Flag<bool> _sg_mc_timeout{
     }};
 
 static simgrid::config::Flag<std::string> cfg_mc_reduction{
-    "model-check/reduction", "Specify the kind of exploration reduction (either none or DPOR)", "dpor",
+    "model-check/reduction", "Specify the kind of exploration reduction (DPOR, ODPOR or UDPOR)", "dpor",
     [](std::string_view value) {
-      if (value != "none" && value != "dpor" && value != "sdpor" && value != "odpor" && value != "udpor")
+      if (value != "dpor" && value != "sdpor" && value != "odpor" && value != "udpor")
         xbt_die("configuration option 'model-check/reduction' must be one of the following: "
-                " 'none', 'dpor', 'sdpor', 'odpor', or 'udpor'");
+                " 'dpor', 'sdpor', 'odpor', or 'udpor'");
     }};
 
 simgrid::config::Flag<int> _sg_mc_cached_states_interval{
