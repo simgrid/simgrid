@@ -17,9 +17,15 @@ class ComputationWorker extends Actor {
 }
 
 class Payload {
-  public Host txHost;
-  public String txActorName;
-  public double clockStart;
+  public final Host txHost;
+  public final String txActorName;
+  public final double clockStart;
+  Payload(Host h, String n)
+  {
+    txHost      = h;
+    txActorName = n;
+    clockStart  = Engine.get_clock();
+  }
 }
 
 class CommunicationTX extends Actor {
@@ -28,10 +34,7 @@ class CommunicationTX extends Actor {
   public void run()
   {
     Mailbox mbox          = this.get_engine().mailbox_by_name(mboxName);
-    Payload payload       = new Payload();
-    payload.txActorName   = Actor.self().get_name();
-    payload.txHost        = this.get_host();
-    payload.clockStart    = Engine.get_clock();
+    Payload payload       = new Payload(this.get_host(), Actor.self().get_name());
 
     mbox.put(payload, 1000000);
   }

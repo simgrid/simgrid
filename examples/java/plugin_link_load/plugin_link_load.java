@@ -7,16 +7,16 @@ import org.simgrid.s4u.*;
 
 class Sender extends Actor {
   String mailbox;
-  long msg_size;
-  Sender(String mailbox, long msg_size)
+  long msgSize;
+  Sender(String mailbox, long msgSize)
   {
     this.mailbox  = mailbox;
-    this.msg_size = msg_size;
+    this.msgSize  = msgSize;
   }
   public void run()
   {
     int payload = 42;
-    this.get_engine().mailbox_by_name(mailbox).put(payload, msg_size);
+    this.get_engine().mailbox_by_name(mailbox).put(payload, msgSize);
   }
 }
 
@@ -27,11 +27,11 @@ class Receiver extends Actor {
 }
 
 class execute_load_test extends Actor {
-  static void run_transfer(Engine e, Host src_host, Host dst_host, String mailbox, long msg_size)
+  static void runTransfer(Host srcHost, Host dstHost, String mailbox, long msgSize)
   {
-    Engine.info("Launching the transfer of %d bytes", msg_size);
-    src_host.add_actor("sender", new Sender(mailbox, msg_size));
-    dst_host.add_actor("receiver", new Receiver(mailbox));
+    Engine.info("Launching the transfer of %d bytes", msgSize);
+    srcHost.add_actor("sender", new Sender(mailbox, msgSize));
+    dstHost.add_actor("receiver", new Receiver(mailbox));
   }
 
   public void run()
@@ -41,56 +41,56 @@ class execute_load_test extends Actor {
     var host1 = e.host_by_name("node-1.simgrid.org");
 
     sleep_for(1);
-    run_transfer(e, host0, host1, "1", 1000L * 1000 * 1000);
+    runTransfer(host0, host1, "1", 1000L * 1000 * 1000);
 
     sleep_for(10);
-    run_transfer(e, host0, host1, "2", 1000L * 1000 * 1000);
+    runTransfer(host0, host1, "2", 1000L * 1000 * 1000);
     sleep_for(3);
-    run_transfer(e, host0, host1, "3", 1000L * 1000 * 1000);
+    runTransfer(host0, host1, "3", 1000L * 1000 * 1000);
   }
 }
 
 class Monitor extends Actor {
-  static void show_link_load(String link_name, Link link)
+  static void showLinkLoad(String linkName, Link link)
   {
-    Engine.info("%s link load (cum, avg, min, max): (%g, %g, %g, %g)", link_name, link.load.get_cumulative(),
+    Engine.info("%s link load (cum, avg, min, max): (%g, %g, %g, %g)", linkName, link.load.get_cumulative(),
                 link.load.get_average(), link.load.get_min_instantaneous(), link.load.get_max_instantaneous());
   }
 
   public void run()
   {
     Engine e          = this.get_engine();
-    var link_backbone = e.link_by_name("cluster0_backbone");
-    var link_host0    = e.link_by_name("cluster0_link_0_UP");
-    var link_host1    = e.link_by_name("cluster0_link_1_DOWN");
+    var linkBackbone  = e.link_by_name("cluster0_backbone");
+    var linkHost0     = e.link_by_name("cluster0_link_0_UP");
+    var linkHost1     = e.link_by_name("cluster0_link_1_DOWN");
 
     Engine.info("Tracking desired links");
-    link_backbone.load.track();
-    link_host0.load.track();
-    link_host1.load.track();
+    linkBackbone.load.track();
+    linkHost0.load.track();
+    linkHost1.load.track();
 
-    show_link_load("Backbone", link_backbone);
+    showLinkLoad("Backbone", linkBackbone);
     while (Engine.get_clock() < 5) {
       sleep_for(1);
-      show_link_load("Backbone", link_backbone);
+      showLinkLoad("Backbone", linkBackbone);
     }
 
     Engine.info("Untracking the backbone link");
-    link_backbone.load.untrack();
+    linkBackbone.load.untrack();
 
-    show_link_load("Host0_UP", link_host0);
-    show_link_load("Host1_UP", link_host1);
+    showLinkLoad("Host0_UP", linkHost0);
+    showLinkLoad("Host1_UP", linkHost1);
 
     Engine.info("Now resetting and probing host links each second.");
 
     while (Engine.get_clock() < 29) {
-      link_host0.load.reset();
-      link_host1.load.reset();
+      linkHost0.load.reset();
+      linkHost1.load.reset();
 
       sleep_for(1);
 
-      show_link_load("Host0_UP", link_host0);
-      show_link_load("Host1_UP", link_host1);
+      showLinkLoad("Host0_UP", linkHost0);
+      showLinkLoad("Host1_UP", linkHost1);
     }
   }
 }
