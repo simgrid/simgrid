@@ -9,10 +9,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
-#include "src/mc/remote/mc_protocol.h"
-#include "src/mc/transition/Transition.hpp"
 
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
@@ -21,9 +18,7 @@
 
 #include "xbt/asserts.h"
 #include "xbt/log.h"
-#include "xbt/thread.hpp"
 
-#include <bits/types/locale_t.h>
 #include <cassert>
 #include <cstdio>
 
