@@ -61,6 +61,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 
   /* Do not intercept system binaries such as valgrind step 1 */
   std::vector<std::string> binaries = {"/usr/bin/valgrind.bin",
+                                       "/usr/bin/env",
                                        "/bin/sh",
                                        "/bin/bash",
                                        "addr2line",
@@ -71,8 +72,10 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
                                        "ltrace",
                                        "make",
                                        "md5sum",
+                                       "mktemp",
                                        "rm",
                                        "sed",
+                                       "sh",
                                        "strace",
                                        "simgrid-mc",
                                        "wc"};
