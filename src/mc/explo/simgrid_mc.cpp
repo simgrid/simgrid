@@ -8,6 +8,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/simgrid/sg_config.hpp"
+#include "xbt/log.hpp"
 
 #if HAVE_SMPI
 #include "smpi/smpi.h"
@@ -54,6 +55,8 @@ int main(int argc, char** argv)
     xbt_die("sthread is not ported to that operating system yet. You should try it under Linux.");
 #endif
   }
+
+  simgrid::xbt::install_exception_handler();
 
   std::unique_ptr<Exploration> explo;
 
