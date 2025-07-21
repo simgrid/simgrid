@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/remote/CheckerSide.hpp"
+#include "simgrid/Exception.hpp"
 #include "src/mc/api/Strategy.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
@@ -154,7 +155,12 @@ CheckerSide::CheckerSide(const std::vector<char*>& args)
   ::close(sockets[0]);
   channel_.reset_socket(sockets[1]);
 
-  wait_for_requests();
+  try {
+    wait_for_requests();
+  } catch (const AssertionError& ae) {
+    xbt_die("Failed to get an answer from the child. Use valgrind to check whether it's segfaulting on start (instead "
+            "of verifying your code, verify valgrind that runs your code).");
+  }
 }
 
 CheckerSide::~CheckerSide()

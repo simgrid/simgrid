@@ -191,8 +191,8 @@ std::pair<bool, void*> Channel::peek(size_t size)
     /* Receive as much data as we can (filling MC_MESSAGE_LENGTH bytes in the buffer) to save some recv syscalls */
     int avail = MC_MESSAGE_LENGTH - (buffer_in_next_ + buffer_in_size_);
     int got   = recv(this->socket_, buffer_in_ + buffer_in_next_ + buffer_in_size_, avail, 0);
-    xbt_assert(got != -1 || errno == EAGAIN, "[tid:%s] Channel::receive failure: %s", simgrid::xbt::gettid().c_str(),
-               strerror(errno));
+    xbt_enforce(got != -1 || errno == EAGAIN, "[tid:%s] Channel::receive failure: %s", simgrid::xbt::gettid().c_str(),
+                strerror(errno));
     if (got == 0) {
       XBT_DEBUG("%s: Connection closed :(", xbt::gettid().c_str());
       return std::make_pair(false, nullptr);
