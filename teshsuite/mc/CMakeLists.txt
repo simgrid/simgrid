@@ -89,14 +89,6 @@ if(${enable_testsuite_McMini} AND (NOT SIMGRID_HAVE_MC))
   message(STATUS "McMini tests cannot be executed when MC is disabled.")
 endif()
 
-# Borrowed from FindSimGrid with modification because we are in tree. TODO: this should be moved to a better location
-MACRO(smpi_c_target NAME)
-  target_compile_options(${NAME} PUBLIC "-include;smpi/smpi_helpers.h;-fPIC")
-  target_link_options(${NAME} PUBLIC "-fPIC;-shared")
-  target_link_libraries(${NAME} PUBLIC simgrid)
-  target_include_directories(${NAME} PUBLIC "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/include/smpi")
-ENDMACRO()
-
 set(probe_deadlock_disable 1)
 set(probe_ok_disable 1)
 foreach(x iprobe_ok iprobe_nok probe_deadlock probe_ok)

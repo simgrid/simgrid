@@ -439,7 +439,8 @@ ActorImplPtr ActorImpl::init(const std::string& name, s4u::Host* host) const
 
 ActorImpl* ActorImpl::start(const ActorCode& code)
 {
-  xbt_assert(code && host_ != nullptr, "Invalid parameters");
+  xbt_assert(code, "Cannot start an actor that does not have any code");
+  xbt_assert(host_ != nullptr, "Cannot start an actor that is not located on an host");
   auto* engine = EngineImpl::get_instance();
 
   if (not host_->is_on()) {

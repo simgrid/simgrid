@@ -109,6 +109,10 @@ void sthread_disable(void)
 { // Stop intercepting all pthread calls
   sthread_inside_simgrid = 1;
 }
+int sthread_in_memory()
+{
+  return 1;
+}
 
 #define _STHREAD_CONCAT(a, b) a##b
 #define intercepted_pthcall(name, raw_params, call_params, sim_params)                                                 \

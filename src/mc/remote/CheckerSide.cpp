@@ -53,7 +53,7 @@ unsigned CheckerSide::count_ = 0;
 
 XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<char*>& args)
 {
-  /* On startup, simix_global_init() calls simgrid::mc::Client::initialize(), which checks whether the MC_ENV_SOCKET_FD
+  /* On startup, EngineImpl::initialize() calls simgrid::mc::AppSide::get(), which checks whether the MC_ENV_SOCKET_FD
    * env variable is set. If so, MC mode is assumed, and the client is setup from its side
    */
 

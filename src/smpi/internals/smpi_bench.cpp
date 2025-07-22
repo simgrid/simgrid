@@ -13,6 +13,7 @@
 #include "src/internal_config.h"
 #include "src/kernel/lmm/System.hpp" // sg_precision_timing
 #include "src/mc/mc_replay.hpp"
+#include "src/sthread/sthread.h"
 #include "xbt/config.hpp"
 #include "xbt/file.hpp"
 #include <getopt.h>
@@ -90,6 +91,8 @@ void smpi_bench_begin()
   }
 #endif
   xbt_os_threadtimer_start(smpi_process()->timer());
+
+  sthread_enable();
 }
 
 double smpi_adjust_comp_speed(){
@@ -107,6 +110,8 @@ double smpi_adjust_comp_speed(){
 
 void smpi_bench_end()
 {
+  sthread_disable();
+
   if (MC_is_active() || MC_record_replay_is_active())
     return;
 

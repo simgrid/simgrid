@@ -811,6 +811,11 @@ include examples/sthread/pthread-mutex-simple.tesh
 include examples/sthread/pthread-mutex-simpledeadlock.c
 include examples/sthread/pthread-producer-consumer.c
 include examples/sthread/pthread-producer-consumer.tesh
+include examples/sthread/smpi-mc-mutex-simple.tesh
+include examples/sthread/smpi-mc-mutex-simpledeadlock.tesh
+include examples/sthread/smpi-mutex-simple.c
+include examples/sthread/smpi-mutex-simple.tesh
+include examples/sthread/smpi-mutex-simpledeadlock.c
 include examples/sthread/stdobject/stdobject.cpp
 include examples/sthread/stdobject/stdobject.tesh
 include teshsuite/catch_simgrid.hpp

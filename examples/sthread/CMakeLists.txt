@@ -52,6 +52,40 @@ foreach(x
 
 endforeach()
 
+# MPI + pthread tests in C (with or without error)
+###################################################
+
+set(_mutex-simpledeadlock_failing ON)
+
+foreach(x
+        mutex-simple mutex-simpledeadlock)
+
+  if(enable_sthread AND enable_smpi AND (NOT SIMGRID_HAVE_MUSL))
+    add_executable       (smpi-${x} EXCLUDE_FROM_ALL smpi-${x}.c)
+    set_target_properties(smpi-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(smpi-${x} PRIVATE Threads::Threads)
+    smpi_c_target(smpi-${x})
+
+    add_dependencies(tests smpi-${x})
+    if(NOT DEFINED _${x}_failing)
+      ADD_TESH_FACTORIES(smpi-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/smpi-${x}.tesh)
+    endif()
+    
+    if(SIMGRID_HAVE_MC)
+      add_dependencies(tests-mc smpi-${x})
+      ADD_TESH_FACTORIES(smpi-mc-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/smpi-mc-${x}.tesh)
+    endif()
+  endif()
+  
+  if(NOT DEFINED _${x}_failing)
+    set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/smpi-${x}.tesh)
+  endif()
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/smpi-mc-${x}.tesh)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/smpi-${x}.c)
+  unset(_${x}_failing)
+
+endforeach()
+
 # C++ tests with sthread+MC that live in their own directory
 ########################################################
 foreach(example

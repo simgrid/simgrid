@@ -36,6 +36,10 @@ XBT_ATTRIB_NOINLINE void sthread_disable()
 { //  ... when libsthread is LD_PRELOADED. In this case, sthread's implem gets used instead.
   asm("");
 }
+int sthread_in_memory()
+{
+  return 0;
+}
 
 /* these two functions belong to xbt/sysdep.h, which have no corresponding .c file */
 /** @brief like xbt_free, but you can be sure that it is a function  */

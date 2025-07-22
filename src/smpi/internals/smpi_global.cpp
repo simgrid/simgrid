@@ -15,8 +15,10 @@
 #include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
+#include "src/sthread/sthread.h"
 #include "xbt/config.hpp"
 #include "xbt/file.hpp"
+#include "xbt/log.h"
 
 #include <algorithm>
 #include <array>
@@ -53,16 +55,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
   extern "C" void __io_set_argv(char **);
 #elif SMPI_GFORTRAN
   extern "C" void _gfortran_set_args(int, char **);
-#endif
-
-/* RTLD_DEEPBIND is a bad idea of GNU ld that obviously does not exist on other platforms
- * See https://www.akkadia.org/drepper/dsohowto.pdf
- * and https://lists.freebsd.org/pipermail/freebsd-current/2016-March/060284.html
-*/
-#if !defined(RTLD_DEEPBIND) || !RTLD_DEEPBIND || HAVE_SANITIZER_ADDRESS || HAVE_SANITIZER_THREAD
-#define WANT_RTLD_DEEPBIND 0
-#else
-#define WANT_RTLD_DEEPBIND RTLD_DEEPBIND
 #endif
 
 #if HAVE_PAPI
@@ -477,7 +469,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable, bool u
 
           rank++;
           // Load the copy and resolve the entry point:
-          void* handle    = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | WANT_RTLD_DEEPBIND);
+          void* handle    = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL);
           int saved_errno = errno;
           if (not simgrid::config::get_value<bool>("smpi/keep-temps")) {
             unlink(target_executable.c_str());
@@ -552,6 +544,8 @@ int smpi_main(const char* executable, int argc, char* argv[])
   sg_storage_file_system_init();
   // parse the platform file: get the host list
   engine.load_platform(argv[1]);
+  if (sthread_in_memory())
+    engine.get_netzone_root()->add_host("Lilibeth", 1e15);
   engine.set_default_comm_data_copy_callback(smpi_comm_copy_buffer_callback);
 
   xbt_assert(not MC_is_active() || smpi_cfg_privatization() != SmpiPrivStrategies::MMAP,

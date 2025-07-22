@@ -104,6 +104,14 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
     set(SMPI_FORTRAN ON)
   endif(CMAKE_Fortran_COMPILER)
 
+  # Borrowed from FindSimGrid with modification because we are in tree
+  macro(smpi_c_target NAME)
+    target_compile_options(${NAME} PUBLIC "-include;smpi/smpi_helpers.h;-fPIC")
+    target_link_options(${NAME} PUBLIC "-fPIC;-shared")
+    target_link_libraries(${NAME} PUBLIC simgrid)
+    target_include_directories(${NAME} PUBLIC "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/include/smpi")
+  endmacro()
+
 endif()
 
 execute_process(COMMAND ${CMAKE_LINKER} -v OUTPUT_VARIABLE LINKER_VERSION ERROR_VARIABLE LINKER_VERSION)
