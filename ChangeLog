@@ -9,6 +9,11 @@ Java:
  - Add Host.get_core_count()
  - Add signal Actor.on_creation_cb()
 
+Model-checking:
+ - The 'none' reduction method is gone. It was useless and made the code more complex than needed.
+ - Enable the joint use of SMPI and sthread.
+ - Implement a 'parallel' stategy to leverage multicores during the exploration
+
 Maint:
  - Simplify our code by removing SysV contexts which do not bring much. It's not portable on all OSes and a bit less efficient
    than our raw contexts. Raw contexts are limited to amd64 processors, but boost contexts should work on exotic architectures.
