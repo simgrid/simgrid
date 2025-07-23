@@ -304,7 +304,11 @@ void CheckerSide::handle_replay(std::deque<std::pair<aid_t, int>> to_replay,
 
 void CheckerSide::finalize(bool terminate_asap)
 {
-  xbt_assert(!is_one_way);
+  if (is_one_way) {
+    this->killed_by_us_ = true;
+    kill(pid_, SIGTERM);
+    return;
+  }
   s_mc_message_int_t m = {};
   m.type               = MessageType::FINALIZE;
   m.value              = terminate_asap;
@@ -395,7 +399,8 @@ void CheckerSide::handle_dead_child(int status)
   }
 
   else if (WIFSIGNALED(status)) {
-    Exploration::get_instance()->report_crash(status);
+    if (not killed_by_us_) // We did not send the kill signal ourselves, so report it
+      Exploration::get_instance()->report_crash(status);
   } else if (WIFEXITED(status)) {
     XBT_DEBUG("Child process is over");
   }

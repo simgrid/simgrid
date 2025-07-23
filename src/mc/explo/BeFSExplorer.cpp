@@ -126,6 +126,8 @@ void BeFSExplorer::run()
       XBT_WARN("/!\\ Any bug you may find are real, but not finding bug doesn't mean anything /!\\");
       XBT_WARN("/!\\ You should consider changing the depth limit with --cfg=model-check/max-depth /!\\");
       XBT_WARN("/!\\ Asumming you know what you are doing, the programm will now backtrack /!\\");
+
+      state->mark_to_delete(); // We won't explore further this state, even if it's not fully explored. Suppress it.
       this->backtrack();
       continue;
     }
@@ -160,6 +162,8 @@ void BeFSExplorer::run()
         report_correct_execution(state);
       }
       state->mark_to_delete(); // This state is fully explored, let's suppress it when we can
+
+      Exploration::check_deadlock();
 
       this->backtrack();
       continue;
@@ -283,8 +287,6 @@ void BeFSExplorer::backtrack()
 {
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
   XBT_DEBUG("%lu alternatives are yet to be explored:", opened_states_.size());
-
-  Exploration::check_deadlock();
 
   auto last_explored_state = stack_.back();
 

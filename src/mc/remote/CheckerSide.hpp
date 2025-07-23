@@ -27,6 +27,8 @@ class CheckerSide {
   // In one way, the application is picking transitions, executing them, sending the transition and actor status until
   // reaching a leaf or a problem
   bool is_one_way = false;
+  // When max-depth is reached, we kill the child process but we don't want to report this as a failure
+  bool killed_by_us_ = false;
 
   void handle_dead_child(int status); // Launched when the dying child is the PID we follow
   void handle_waitpid();              // Launched when receiving a sigchild
