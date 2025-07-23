@@ -407,9 +407,9 @@ static bool is_cv_wait_fireable_without_transition(const odpor::Execution* exec,
     if (e == other_handle)
       continue;
 
-    if (exec->get_transition_for_handle(e)->type_ != Transition::Type::CONDVAR_ASYNC_LOCK and
-        exec->get_transition_for_handle(e)->type_ != Transition::Type::CONDVAR_BROADCAST and
-        exec->get_transition_for_handle(e)->type_ != Transition::Type::CONDVAR_SIGNAL)
+    if (const auto type = exec->get_transition_for_handle(e)->type_; type != Transition::Type::CONDVAR_ASYNC_LOCK and
+                                                                     type != Transition::Type::CONDVAR_BROADCAST and
+                                                                     type != Transition::Type::CONDVAR_SIGNAL)
       continue;
 
     auto cv_transition = static_cast<const CondvarTransition*>(exec->get_transition_for_handle(e));
@@ -419,7 +419,7 @@ static bool is_cv_wait_fireable_without_transition(const odpor::Execution* exec,
 
     if (cv_transition->aid_ == exec->get_actor_with_handle(cv_wait_handle)) {
       xbt_assert(cv_transition->type_ == Transition::Type::CONDVAR_ASYNC_LOCK,
-                 "A condvar wait is always preceeded by an async_lock right?");
+                 "A condvar wait is always preceeded by an async_lock right? (aid: %ld)", cv_transition->aid_);
       lock_handle = e;
       break;
     }
@@ -506,9 +506,9 @@ bool CondvarTransition::reversible_race(const Transition* other, const odpor::Ex
     case Type::CONDVAR_SIGNAL:
       xbt_assert(other->type_ == Transition::Type::CONDVAR_ASYNC_LOCK or
                  other->type_ == Transition::Type::CONDVAR_WAIT);
-      return is_cv_wait_fireable_without_transition(exec, this_handle, other_handle);
+      return is_cv_wait_fireable_without_transition(exec, other_handle, this_handle);
 
-      // if wait can be executed in the first place, then broadcast and signal don't impact him
+      // if wait can be executed in the first place, then broadcast and signal don't impact it
     case Type::CONDVAR_WAIT:
       xbt_assert(other->type_ == Transition::Type::CONDVAR_BROADCAST or
                  other->type_ == Transition::Type::CONDVAR_SIGNAL);
