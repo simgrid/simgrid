@@ -21,6 +21,7 @@
 
 /* We don't want to intercept pthread within SimGrid. Instead we should provide the real implem to SimGrid */
 static int (*raw_pthread_create)(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*);
+static int (*raw_pthread_detach)(pthread_t);
 static int (*raw_pthread_join)(pthread_t, void**);
 static void (*raw_pthread_exit)(void*);
 static int (*raw_pthread_mutex_init)(pthread_mutex_t*, const pthread_mutexattr_t*);
@@ -62,6 +63,7 @@ static int (*raw_sem_timedwait)(sem_t*, const struct timespec*);
 static void intercepter_init()
 {
   raw_pthread_create = dlsym(RTLD_NEXT, "pthread_create");
+  raw_pthread_detach        = dlsym(RTLD_NEXT, "pthread_detach");
   raw_pthread_join   = dlsym(RTLD_NEXT, "pthread_join");
   raw_pthread_mutex_init    = dlsym(RTLD_NEXT, "pthread_mutex_init");
   raw_pthread_mutex_lock    = dlsym(RTLD_NEXT, "pthread_mutex_lock");
@@ -141,6 +143,7 @@ intercepted_pthcall(mutexattr_getrobust, (const pthread_mutexattr_t* attr, int* 
 
 intercepted_pthcall(create, (pthread_t * thread, const pthread_attr_t* attr, void* (*start_routine)(void*), void* arg),
                     (thread, attr, start_routine, arg), ((sthread_t*)thread, attr, start_routine, arg));
+intercepted_pthcall(detach, (pthread_t thread), (thread), ((sthread_t)thread));
 intercepted_pthcall(join, (pthread_t thread, void** retval), (thread, retval), ((sthread_t)thread, retval));
 void pthread_exit(void* retval)
 { // our macros do not cope properly with void non-returning functions

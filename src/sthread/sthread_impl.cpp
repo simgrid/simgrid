@@ -160,6 +160,10 @@ int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr
   *thread = reinterpret_cast<unsigned long>(actor.get());
   return 0;
 }
+int sthread_detach(sthread_t thread)
+{
+  return 0;
+}
 int sthread_join(sthread_t thread, void** retval)
 {
   sg4::ActorPtr actor(reinterpret_cast<sg4::Actor*>(thread));
@@ -229,8 +233,8 @@ int sthread_mutex_init(sthread_mutex_t* mutex, const sthread_mutexattr_t* attr)
   intrusive_ptr_add_ref(m.get());
 
   mutex->mutex = m.get();
-  if (attr)
-    mutex->errorcheck = attr->errorcheck;
+  mutex->errorcheck = attr ? attr->errorcheck : false;
+
   return 0;
 }
 
