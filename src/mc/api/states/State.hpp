@@ -191,7 +191,7 @@ public:
 
   std::vector<std::optional<ActorState>> const& get_actors_list() const { return actors_to_run_; }
 
-  unsigned long get_actor_count() const { return actors_to_run_.size(); }
+  unsigned long get_actor_count() const;
   bool is_actor_enabled(aid_t actor) const { return actors_to_run_.at(actor).value().is_enabled(); }
 
   /** Returns whether this state has a state factory.

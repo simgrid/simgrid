@@ -101,7 +101,7 @@ void ParallelizedExplorer::TreeHandler()
     State::garbage_collect();
     traces_count++;
     if (traces_count % 10 == 0)
-      XBT_INFO("Total amount of traces explored so far: %ld. Remaining todo: %d", traces_count, remaining_todo);
+      XBT_INFO("About %ld traces have been explored so far. Remaining todo: %d", traces_count, remaining_todo);
   }
 
   for (int i = 0; i < number_of_threads; i++)

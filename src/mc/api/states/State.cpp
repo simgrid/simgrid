@@ -409,4 +409,8 @@ std::string State::PostFixTraversal::get_traversal_as_ids()
 
   return res;
 };
+unsigned long State::get_actor_count() const
+{
+  return std::count_if(actors_to_run_.begin(), actors_to_run_.end(), [](auto actor) { return actor.has_value(); });
+}
 } // namespace simgrid::mc
