@@ -283,8 +283,29 @@ ubuntu24-release:
     reports:
       junit: result.xml
 
+ubuntu-rolling:
+  image: ubuntu:rolling # Latest released version that is not LTS. It's not the equivalent of Debian's testing but a real release
+  stage: test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - large  # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - ninja --verbose all tests
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+  artifacts:
+    when: always
+    expire_in: 6 months
+    reports:
+      junit: result.xml
+
 fedora-rawhide-release:
-  image: fedora:rawhide
+  image: fedora:rawhide # rolling release
   stage: test
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
@@ -518,7 +539,8 @@ sonarqube:
   - apt-get --allow-releaseinfo-change update
   - apt install -y unzip curl python3-coverage wget
   # Install sonar wrapper and sonar scanner
-  - export SONAR_SCANNER_VERSION=7.0.2.4839
+  # get the version number from https://docs.sonarsource.com/sonarqube-server/10.8/analyzing-source-code/scanners/sonarscanner/ (try to download it)
+  - export SONAR_SCANNER_VERSION=7.2.0.5079
   - export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux-x64
   - curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux-x64.zip
   - unzip -q -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
