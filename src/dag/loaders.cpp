@@ -122,7 +122,7 @@ std::vector<ActivityPtr> create_DAG_from_json(const std::string& filename)
       if (task["parents"].size() == 1) {
         ActivityPtr parent_activity;
         for (auto const& activity: dag) {
-          if (activity->get_name() == task["parents"][0]) {
+          if (activity->get_name() == task["parents"][0].get<std::string>()) {
             parent_activity = activity;
             break;
           }
