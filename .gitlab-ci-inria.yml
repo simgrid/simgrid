@@ -105,10 +105,9 @@ make-distcheck:
   - make distcheck
 
 # Test the Python build on our build-deps image that is based on debian stable
-pip-defaultimg:
+pip-default-img:
   stage: test
-#  image: $CI_REGISTRY_IMAGE/build-deps:latest
-  image: build-deps
+  image: $CI_REGISTRY_IMAGE/build-deps:latest
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never

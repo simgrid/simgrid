@@ -18,7 +18,7 @@ if docker pull $image_name ; then
 else 
 	need_build=yes ;
 fi
-need_build=yes
+
 if [ -n "$need_build" ] ; then
 	docker build -f $dockerfile -t $image_name . ;
 	docker push $image_name ; 
