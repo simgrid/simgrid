@@ -96,9 +96,10 @@ class Task<R(Args...)> {
   struct whatever {};
 
   // Union used for storage:
-  using TaskUnion =
-      typename std::aligned_union_t<0, void*, std::pair<void (*)(), void*>, std::pair<void (whatever::*)(), whatever*>>;
-
+  struct TaskUnion {
+    alignas(std::max({alignof(void*), alignof(std::pair<void (*)(), void*>)}))
+        std::byte storage[std::max({sizeof(void*), sizeof(std::pair<void (*)(), void*>)})];
+  };
   // Is F suitable for small buffer optimization?
   template<class F>
   static constexpr bool canSBO()

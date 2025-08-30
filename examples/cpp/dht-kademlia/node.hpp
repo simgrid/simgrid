@@ -5,8 +5,6 @@
 
 #ifndef KADEMLIA_NODE_HPP
 #define KADEMLIA_NODE_HPP
-#include "answer.hpp"
-#include "message.hpp"
 #include "routing_table.hpp"
 #include "s4u-dht-kademlia.hpp"
 

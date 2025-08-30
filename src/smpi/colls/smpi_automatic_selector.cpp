@@ -8,6 +8,7 @@
 
 #include "colls_private.hpp"
 #include "simgrid/s4u/Engine.hpp"
+#include "src/instr/instr_paje_types.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
 //attempt to do a quick autotuning version of the collective,

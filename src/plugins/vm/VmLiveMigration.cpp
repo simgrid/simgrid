@@ -7,7 +7,8 @@
 #include <simgrid/plugins/live_migration.h>
 
 #include "simgrid/s4u/Engine.hpp"
-#include "src/instr/instr_private.hpp"
+#include "src/instr/instr_paje_containers.hpp"
+#include "src/instr/instr_paje_types.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/plugins/vm/VmLiveMigration.hpp"
 

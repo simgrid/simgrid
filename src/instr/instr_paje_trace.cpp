@@ -3,11 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/Exception.hpp"
-#include "src/instr/instr_private.hpp"
-#include "src/instr/instr_smpi.hpp"
+#include "src/instr/instr_paje_events.hpp"
 #include "src/simgrid/sg_config.hpp"
-#include "src/smpi/include/private.hpp"
 #include <fstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "tracing event system");

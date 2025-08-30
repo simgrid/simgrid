@@ -4,8 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/smpi/plugins/ampi/instr_ampi.hpp"
-#include "smpi/smpi.h"
-#include "src/instr/instr_private.hpp"
+#include "src/instr/instr_paje_types.hpp"
 #include <src/instr/instr_smpi.hpp>
 #include <src/smpi/include/smpi_actor.hpp>
 

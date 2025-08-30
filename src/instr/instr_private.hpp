@@ -10,10 +10,6 @@
 
 #include "simgrid/instr.h"
 #include "simgrid/s4u/Actor.hpp"
-#include "src/instr/instr_paje_containers.hpp"
-#include "src/instr/instr_paje_events.hpp"
-#include "src/instr/instr_paje_types.hpp"
-#include "src/instr/instr_paje_values.hpp"
 
 #include <fstream>
 #include <iomanip> /** std::setprecision **/

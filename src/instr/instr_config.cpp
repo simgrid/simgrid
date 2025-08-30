@@ -6,6 +6,9 @@
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Engine.hpp>
 
+#include "src/instr/instr_paje_containers.hpp"
+#include "src/instr/instr_paje_events.hpp"
+#include "src/instr/instr_paje_types.hpp"
 #include "src/instr/instr_private.hpp"
 #include "xbt/config.hpp"
 #include "xbt/xbt_os_time.h"

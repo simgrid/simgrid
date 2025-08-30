@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "node.hpp"
+#include "message.hpp"
 #include "routing_table.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(kademlia_node, "Messages specific for this example");

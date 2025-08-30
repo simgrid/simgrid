@@ -8,7 +8,7 @@
 #include <simgrid/s4u/Engine.hpp>
 #include <xbt/random.hpp>
 
-#include "src/instr/instr_private.hpp"
+#include "src/instr/instr_paje_types.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include <algorithm>
 #include <cmath>
