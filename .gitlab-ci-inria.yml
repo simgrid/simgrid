@@ -104,10 +104,11 @@ make-distcheck:
   - cmake -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON ..
   - make distcheck
 
-# Test the Python build
-build-pip:
+# Test the Python build on our build-deps image that is based on debian stable
+pip-defaultimg:
   stage: test
-  image: $CI_REGISTRY_IMAGE/build-deps:latest
+#  image: $CI_REGISTRY_IMAGE/build-deps:latest
+  image: build-deps
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
       when: never
@@ -117,11 +118,36 @@ build-pip:
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3.11-venv
-  - python3 -m build --outdir dist
+  - cmake .
+  - make dist
+  - tar xf simgrid*tar.gz ; rm simgrid*tar.gz
+  - cd simgrid-4* ; python3 -m build --outdir ../dist
   artifacts:
     paths:
     - dist/
     expire_in: 2 weeks
+
+pip-oldstable:
+  stage: test
+  image: debian:oldstable
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags: # Select a runner
+    - medium # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3.11-venv
+  - cmake .
+  - make dist
+  - tar xf simgrid*tar.gz ; rm simgrid*tar.gz
+  - cd simgrid-4* ; python3 -m build --outdir ../dist
+  artifacts:
+    paths:
+    - dist/
+    expire_in: 2 weeks
+
 
 # ###################################################################################################
 # ###################################################################################################
