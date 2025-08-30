@@ -116,7 +116,7 @@ pip-default-img:
     - medium # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3.11-venv
+  - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3-venv
   - cmake .
   - make dist
   - tar xf simgrid*tar.gz ; rm simgrid*tar.gz
@@ -137,7 +137,7 @@ pip-oldstable:
     - medium # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3.11-venv
+  - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3-venv
   - cmake .
   - make dist
   - tar xf simgrid*tar.gz ; rm simgrid*tar.gz
