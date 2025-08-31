@@ -86,6 +86,17 @@ docker_build:
     - export CCACHE_DIR="$PWD/ccache"
     - ccache --show-stats
 
+#Fire up cloudstack image for distcheck job
+prepare:
+  stage: .pre
+  tags:
+    - linux
+    - small
+  image: "registry.gitlab.inria.fr/inria-ci/docker/python3-cloudstack"
+  script:
+    - python3 tools/jenkins/prepare-vm.py start
+  resource_group: cloudstack-vm
+
 # Fast job running on a manually managed openstack node, thus out of docker, and with ccache setup. Fail fail fast on trivial errors.
 make-distcheck:
   extends: .cached-build
@@ -97,12 +108,14 @@ make-distcheck:
       when: never
     - if: '$CI_PIPELINE_SOURCE == "push"'
   tags:
+    - docker
     - debian-testing  # Private runner on the inria infra, not docker but openstack node
   script:
   - mkdir -p build && cd build
   - export JAVA_HOME=/usr/lib/jvm/java-22-openjdk-amd64
   - cmake -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON ..
   - make distcheck
+  resource_group: cloudstack-vm
 
 # Test the Python build on our build-deps image that is based on debian stable
 pip-default-img:
@@ -582,3 +595,16 @@ sonarqube:
     - when: never  # By default, do not execute this job (so it's executed only daily)
   tags:
     - large  # Inria infra
+
+#stop cloudstack image after pipeline end
+stop vm:
+  stage: .post
+  tags:
+    - linux
+    - small
+  image: "registry.gitlab.inria.fr/inria-ci/docker/python3-cloudstack"
+  script:
+    - python3 tools/jenkins/prepare-vm.py stop
+  resource_group: cloudstack-vm
+  when: always
+
