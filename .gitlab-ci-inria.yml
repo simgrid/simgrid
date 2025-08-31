@@ -326,7 +326,7 @@ fedora-rawhide-release:
       junit: result.xml
 
 rocky-release:
-  image: rockylinux:9
+  image: rockylinux/rockylinux:10
   stage: test
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
@@ -336,6 +336,7 @@ rocky-release:
     - large  # Inria infra
   script:
   - yum install -y dnf-plugins-core # get the 'dnf config-manage' tool
+  - dnf install 'dnf-command(config-manager)'
   - dnf config-manager --set-enabled crb # enable the repository for ninja package
   # Still missing on Rocky Linux: nlohmann-json
   - dnf install -y ninja-build cmake g++ gcc-c++ git cmake pybind11-devel python3-devel graphviz-devel eigen3-devel boost-devel java-21-openjdk-devel valgrind-devel diffutils
