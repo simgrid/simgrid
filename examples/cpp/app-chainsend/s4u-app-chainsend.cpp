@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u.hpp"
+#include <format>
 #include <vector>
 
 constexpr unsigned PIECE_SIZE                    = 65536;
@@ -122,7 +123,7 @@ public:
   Broadcaster(int hostcount, unsigned int piece_count) : piece_count(piece_count)
   {
     for (int i = 1; i <= hostcount; i++) {
-      std::string name = "node-" + std::to_string(i) + ".simgrid.org";
+      std::string name = std::format("node-{}.simgrid.org", i);
       XBT_DEBUG("%s", name.c_str());
       mailboxes.push_back(sg4::Mailbox::by_name(name));
     }

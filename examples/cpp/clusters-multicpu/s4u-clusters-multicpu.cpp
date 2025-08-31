@@ -12,6 +12,7 @@
 
 #include "simgrid/s4u.hpp"
 #include "simgrid/s4u/NetZone.hpp"
+#include <format>
 namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_torus_multicpu, "Messages specific for this s4u example");
@@ -95,13 +96,13 @@ static sg4::NetZone* create_hostzone(sg4::NetZone* zone, const std::vector<unsig
   constexpr double link_bw  = 100e9; //!< Link bw connecting the CPU
   constexpr double link_lat = 1e-9;  //!< Link latency
 
-  std::string hostname = "host" + std::to_string(id);
+  std::string hostname = std::format("host{}", id);
   /* create the StarZone */
   auto* host_zone = zone->add_netzone_star(hostname);
 
   /* create CPUs */
   for (int i = 0; i < num_cpus; i++) {
-    std::string cpu_name  = hostname + "-cpu" + std::to_string(i);
+    std::string cpu_name  = std::format("{}-cpu{}", hostname, i);
     const sg4::Host* host = host_zone->add_host(cpu_name, speed);
     /* the first CPU is the gateway */
     if (i == 0)
@@ -135,7 +136,7 @@ static sg4::NetZone* create_hostzone(sg4::NetZone* zone, const std::vector<unsig
  */
 static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
 {
-  return zone->add_link("limiter-" + std::to_string(id), 1e9)->seal();
+  return zone->add_link(std::format("limiter-{}", id), 1e9)->seal();
 }
 
 /**
