@@ -16,6 +16,7 @@
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_forward.hpp"
 
+#include <algorithm>
 #include <boost/lockfree/queue.hpp>
 #include <condition_variable>
 #include <deque>
@@ -28,9 +29,71 @@
 #include <unordered_map>
 #include <vector>
 
-template <typename T> using parallel_channel = boost::lockfree::queue<T, boost::lockfree::capacity<65534>>;
+// template <typename T> using parallel_channel = boost::lockfree::queue<T, boost::lockfree::capacity<65534>>;
 
 namespace simgrid::mc {
+
+template <typename T> class ParallelChannel {
+
+public:
+  ParallelChannel()    = default;
+  virtual T pop()      = 0;
+  virtual void push(T) = 0;
+  virtual void sort()  = 0;
+};
+
+template <typename T> class lock_free_channel : public ParallelChannel<T> {
+  boost::lockfree::queue<T, boost::lockfree::capacity<65534>> queue_;
+  // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
+public:
+  lock_free_channel() = default;
+  T pop() override
+  {
+    T element;
+    while (!queue_.pop(element)) {
+    }
+    return element;
+  }
+  void push(T element) override
+  {
+    while (!queue_.push(element)) {
+    }
+  }
+  void sort() override
+  {
+    // This can't be done here, simply pass
+    return;
+  }
+};
+
+template <typename T> class mutex_channel : public ParallelChannel<T> {
+  std::deque<T> queue_;
+  std::mutex m_;
+
+public:
+  mutex_channel() = default;
+  T pop() override
+  {
+    T element;
+    m_.lock();
+    element = queue_.front();
+    queue_.pop_front();
+    m_.unlock();
+    return element;
+  }
+  void push(T element) override
+  {
+    m_.lock();
+    queue_.push_back(element);
+    m_.unlock();
+  }
+  void sort() override
+  {
+    m_.lock();
+    std::sort(queue_.begin(), queue_.end());
+    m_.unlock();
+  }
+};
 
 class ThreadLocalExplorer {
   const int explorer_id;
@@ -58,8 +121,8 @@ public:
   unsigned long visited_states_count = 0; // for statistics
 
   Reduction* reduction_algo;
-  parallel_channel<State*>* opened_heads;
-  parallel_channel<Reduction::RaceUpdate*>* races_list;
+  lock_free_channel<State*>* opened_heads;
+  lock_free_channel<Reduction::RaceUpdate*>* races_list;
 };
 
 class XBT_PRIVATE ParallelizedExplorer : public Exploration {
@@ -68,8 +131,8 @@ private:
   ReductionMode reduction_mode_;
   std::unique_ptr<Reduction> reduction_algo_;
 
-  parallel_channel<State*> opened_heads_;
-  parallel_channel<Reduction::RaceUpdate*> races_list_;
+  lock_free_channel<State*> opened_heads_;
+  lock_free_channel<Reduction::RaceUpdate*> races_list_;
 
   std::vector<std::thread> thread_pool_;
   std::vector<std::shared_ptr<ThreadLocalExplorer>> local_explorers_;

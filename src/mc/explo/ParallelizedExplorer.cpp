@@ -69,10 +69,7 @@ void ParallelizedExplorer::TreeHandler()
 
     XBT_DEBUG("[tid:TreeHandler] New round of tree handling! There are currently %d remaining todo", remaining_todo);
 
-    Reduction::RaceUpdate* to_apply;
-    // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
-    while (!races_list_.pop(to_apply)) {
-    }
+    Reduction::RaceUpdate* to_apply = races_list_.pop();
 
     if (to_apply == nullptr) {
       // An Explorer reached a bug! We need to terminate the exploration ASAP
@@ -90,10 +87,9 @@ void ParallelizedExplorer::TreeHandler()
     XBT_DEBUG("[tid:TreeHandler] The update contained %lu new states, so now there are %d remaining todo",
               new_opened.size(), remaining_todo);
 
-    // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
     for (auto state_it = new_opened.crbegin(); state_it != new_opened.crend(); state_it++)
-      while (!opened_heads_.push((*state_it).get())) {
-      }
+      opened_heads_.push((*state_it).get());
+
     if (to_apply->get_last_explored_state() != nullptr)
       to_apply->get_last_explored_state()->mark_to_delete();
     reduction_algo_->delete_race_update(to_apply);
@@ -102,11 +98,13 @@ void ParallelizedExplorer::TreeHandler()
     traces_count++;
     if (traces_count % 10 == 0)
       XBT_INFO("About %ld traces have been explored so far. Remaining todo: %d", traces_count, remaining_todo);
+
+    if (traces_count % 1000 == 0)
+      opened_heads_.sort();
   }
 
   for (int i = 0; i < number_of_threads; i++)
-    while (!opened_heads_.push(nullptr)) {
-    } // Push a poison for each thread
+    opened_heads_.push(nullptr);
 }
 
 void ThreadLocalExplorer::backtrack_to_state(State* to_visit)
@@ -143,8 +141,7 @@ void ExplorerHandler(ThreadLocalExplorer* local_explorer, ExitStatus* exploratio
     // An error occured while exploring
     // We need to tell the Tree Handler to stop immediately
     XBT_DEBUG("[tid:Explorer %d] An error has been found!", local_explorer->get_explorer_id());
-    while (!local_explorer->races_list->push(nullptr)) {
-    }
+    local_explorer->races_list->push(nullptr);
 
     *exploration_result = error.value;
   }
@@ -164,11 +161,8 @@ void Explorer(ThreadLocalExplorer& local_explorer)
   // While true -> we leave when receiving a poisoned value (nullptr)
   while (true) {
 
-    State* to_visit;
-    // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
     XBT_DEBUG("[tid: Explorer %d] Let's grab something to work on shall we?", local_explorer.get_explorer_id());
-    while (!opened_heads_->pop(to_visit)) {
-    }
+    State* to_visit = opened_heads_->pop();
 
     if (to_visit == nullptr) {
       XBT_DEBUG("[tid:Explorer %d] Drinking the Kool-Aid sent by the TreeHandler! See ya",
@@ -178,8 +172,7 @@ void Explorer(ThreadLocalExplorer& local_explorer)
 
     if (to_visit->being_explored.test_and_set()) {
       // This state has already been or will be explored very soon by the TreeHandler, skip it
-      while (!races_list_->push(reduction_algo_->empty_race_update()))
-        ;
+      races_list_->push(reduction_algo_->empty_race_update());
       continue;
     }
 
@@ -225,8 +218,7 @@ void Explorer(ThreadLocalExplorer& local_explorer)
             reduction_algo_->races_computation(local_explorer.execution_seq, &local_explorer.stack);
         // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
 
-        while (!races_list_->push(todo_updates))
-          ;
+        races_list_->push(todo_updates);
 
         if (state->get_actor_count() == 0) {
           // LEAF CASE
@@ -276,7 +268,8 @@ void Explorer(ThreadLocalExplorer& local_explorer)
 
 void ParallelizedExplorer::run()
 {
-  XBT_INFO("Start a Parallel exploration with one thread. Reduction is: %s.", to_c_str(reduction_mode_));
+  XBT_INFO("Start a Parallel exploration with %d threads. Reduction is: %s.", number_of_threads,
+           to_c_str(reduction_mode_));
 
   one_way_disabled_ = true;
 
@@ -288,9 +281,7 @@ void ParallelizedExplorer::run()
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   XBT_DEBUG("Initial state. %lu actors to consider", initial_state->get_actor_count());
 
-  // pop/push on boost lockfree queue returns true iff the pop worked; a while loop is required by spec.
-  while (!opened_heads_.push(initial_state.get()))
-    ;
+  opened_heads_.push(initial_state.get());
 
   thread_results_.resize(number_of_threads);
 
@@ -347,8 +338,6 @@ ParallelizedExplorer::ParallelizedExplorer(const std::vector<char*>& args, Reduc
                to_c_str(reduction_mode_));
     reduction_algo_ = std::make_unique<NoReduction>();
   }
-
-  XBT_INFO("Start a parallelized exploration. Reduction is: %s.", to_c_str(reduction_mode_));
 
   XBT_DEBUG("**************************************************");
 }
