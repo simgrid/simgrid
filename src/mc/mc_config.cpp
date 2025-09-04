@@ -51,9 +51,9 @@ simgrid::config::Flag<bool> _sg_mc_timeout{
     }};
 
 static simgrid::config::Flag<std::string> cfg_mc_reduction{
-    "model-check/reduction", "Specify the kind of exploration reduction (DPOR, ODPOR or UDPOR)", "dpor",
+    "model-check/reduction", "Specify the kind of exploration reduction (none, DPOR, ODPOR or UDPOR)", "dpor",
     [](std::string_view value) {
-      if (value != "dpor" && value != "sdpor" && value != "odpor" && value != "udpor")
+      if (value != "none" && value != "dpor" && value != "sdpor" && value != "odpor" && value != "udpor")
         xbt_die("configuration option 'model-check/reduction' must be one of the following: "
                 " 'dpor', 'sdpor', 'odpor', or 'udpor'");
     }};
@@ -119,6 +119,12 @@ simgrid::config::Flag<bool> _sg_mc_debug_optimality{
     "model-check/debug-optimality",
     "Whether to enable advance runtime verification. Those may be costly and therefore are desactivated by default.",
     false, [](bool) { _mc_cfg_cb_check("value to enable/disable advance runtime verification"); }};
+
+simgrid::config::Flag<bool> _sg_mc_output_lts{"model-check/output-lts",
+                                              "Whether to print informations about the explored LTS.", false,
+                                              [](bool) { _mc_cfg_cb_check("value to enable/disable LTS printing"); }};
+// In a perfect world, We should use the already existing dot output system
+// TODO
 
 simgrid::config::Flag<std::string> _sg_mc_buffering{
     "smpi/buffering",
