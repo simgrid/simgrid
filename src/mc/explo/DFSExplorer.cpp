@@ -267,8 +267,8 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode) : E
   else if (reduction_mode_ == ReductionMode::odpor)
     reduction_algo_ = std::make_unique<ODPOR>();
   else {
-    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
-               to_c_str(reduction_mode_));
+    //  xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
+    //           to_c_str(reduction_mode_));
     reduction_algo_ = std::make_unique<NoReduction>();
   }
 }

@@ -32,7 +32,8 @@ size_t State::max_actor_encountered_ = 1;
 State::~State()
 {
   in_memory_states_--;
-  XBT_VERB("Closing state n°%ld! There are %ld remaining states", this->get_num(), get_in_memory_states());
+  if (_sg_mc_output_lts)
+    XBT_CRITICAL("Closing state n°%ld! There are %ld remaining states", this->get_num(), get_in_memory_states());
 }
 
 State::State(const RemoteApp& remote_app, bool set_actor_status) : num_(++expended_states_)
@@ -77,8 +78,9 @@ State::State(const RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr
 
   traversal_ = std::make_shared<PostFixTraversal>(this);
 
-  XBT_VERB("State %ld ==> Actor %ld: %.60s ==> State %ld", parent_state_->num_, incoming_transition_->aid_,
-           incoming_transition_->to_string().c_str(), num_);
+  if (_sg_mc_output_lts)
+    XBT_CRITICAL("State %ld ==> Actor %ld: %.60s ==> State %ld", parent_state_->num_, incoming_transition_->aid_,
+                 incoming_transition_->to_string().c_str(), num_);
 }
 
 std::size_t State::count_todo() const
@@ -247,7 +249,8 @@ void State::signal_on_backtrack()
 
 void State::reset_parent_state()
 {
-  XBT_VERB("Cleaning the parent state of state #%ld", get_num());
+  if (_sg_mc_output_lts)
+    XBT_CRITICAL("Cleaning the parent state of state #%ld", get_num());
   parent_state_ = nullptr;
 }
 
@@ -287,8 +290,9 @@ void State::initialize(const RemoteApp& remote_app)
 void State::update_incoming_transition_with_remote_app(const RemoteApp& remote_app, aid_t aid, int times_considered)
 {
   incoming_transition_ = std::shared_ptr<Transition>(remote_app.handle_simcall(aid, times_considered, true));
-  XBT_VERB("State %ld ==> Actor %ld: %.60s ==> State %ld", parent_state_->num_, incoming_transition_->aid_,
-           incoming_transition_->to_string().c_str(), num_);
+  if (_sg_mc_output_lts)
+    XBT_CRITICAL("State %ld ==> Actor %ld: %.60s ==> State %ld", parent_state_->num_, incoming_transition_->aid_,
+                 incoming_transition_->to_string().c_str(), num_);
 }
 
 void State::update_opened(std::shared_ptr<Transition> transition)
@@ -412,5 +416,21 @@ std::string State::PostFixTraversal::get_traversal_as_ids()
 unsigned long State::get_actor_count() const
 {
   return std::count_if(actors_to_run_.begin(), actors_to_run_.end(), [](auto actor) { return actor.has_value(); });
+}
+unsigned long State::consider_all()
+{
+  unsigned long count = 0;
+  for (auto& actor : actors_to_run_) {
+    if (not actor.has_value())
+      continue;
+    if (actor.value().is_enabled() && not actor.value().is_done()) {
+      actor.value().mark_todo();
+      count++;
+      opened_.emplace_back(std::make_shared<Transition>(Transition::Type::UNKNOWN, actor.value().get_aid(),
+                                                        actor.value().get_times_considered()));
+      XBT_DEBUG("Marked actor %hd at state %ld", actor->get_aid(), get_num());
+    }
+  }
+  return count;
 }
 } // namespace simgrid::mc

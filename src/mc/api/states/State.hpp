@@ -167,21 +167,7 @@ public:
    *  + consider_all mark all enabled actor that are not done yet */
   void consider_one(aid_t aid);
 
-  unsigned long consider_all()
-  {
-    unsigned long count = 0;
-    for (auto& actor : actors_to_run_) {
-      if (not actor.has_value())
-        continue;
-      if (actor.value().is_enabled() && not actor.value().is_done()) {
-        actor.value().mark_todo();
-        count++;
-        opened_.emplace_back(std::make_shared<Transition>(Transition::Type::UNKNOWN, actor.value().get_aid(),
-                                                          actor.value().get_times_considered()));
-      }
-    }
-    return count;
-  }
+  unsigned long consider_all();
 
   bool is_actor_done(aid_t actor) const { return actors_to_run_.at(actor).value().is_done(); }
   std::shared_ptr<Transition> get_transition_out() const { return outgoing_transition_; }
@@ -270,6 +256,14 @@ public:
 
   void mark_to_delete() { to_be_deleted_ = true; }
 };
+
 } // namespace simgrid::mc
+
+template <> struct std::less<simgrid::mc::State> {
+  bool operator()(const simgrid::mc::State& lhs, const simgrid::mc::State& rhs) const
+  {
+    return lhs.get_depth() < rhs.get_depth();
+  }
+};
 
 #endif
