@@ -13,8 +13,8 @@
 #include <simgrid/s4u/VirtualMachine.hpp>
 #include <xbt/graph.h>
 
-#include "src/instr/instr_private.hpp"
-#include "src/kernel/activity/ExecImpl.hpp"
+#include "src/instr/instr_paje_containers.hpp"
+#include "src/instr/instr_paje_types.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "xbt/log.h"

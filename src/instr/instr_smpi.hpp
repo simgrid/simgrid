@@ -6,7 +6,7 @@
 #ifndef INSTR_SMPI_HPP
 #define INSTR_SMPI_HPP
 
-#include "smpi/smpi.h"
+#include "src/instr/instr_paje_containers.hpp"
 #include "src/instr/instr_private.hpp"
 #include <string>
 

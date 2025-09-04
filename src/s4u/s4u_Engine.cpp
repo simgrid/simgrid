@@ -5,12 +5,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-
-#include <simgrid/kernel/routing/NetPoint.hpp>
-#include <simgrid/modelchecker.h>
-#include <simgrid/s4u/Engine.hpp>
-
-#include "simgrid/forward.h"
 #include "simgrid/kernel/routing/DijkstraZone.hpp"
 #include "simgrid/kernel/routing/EmptyZone.hpp"
 #include "simgrid/kernel/routing/FloydZone.hpp"
@@ -19,6 +13,7 @@
 #include "simgrid/kernel/routing/VivaldiZone.hpp"
 #include "simgrid/kernel/routing/WifiZone.hpp"
 #include "src/instr/instr_private.hpp"
+#include "src/internal_config.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/resource/HostImpl.hpp"
@@ -30,6 +25,9 @@
 #include "src/simgrid/module.hpp"
 #include "xbt/asserts.h"
 #include "xbt/config.hpp"
+#include <simgrid/kernel/routing/NetPoint.hpp>
+#include <simgrid/modelchecker.h>
+#include <simgrid/s4u/Engine.hpp>
 
 #if HAVE_PAPI
 #include "src/simgrid/sg_config.hpp"

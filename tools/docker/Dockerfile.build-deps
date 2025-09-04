@@ -1,5 +1,5 @@
-# Base image: bookworm is Debian 12
-FROM debian:bookworm
+# Base image: Trixie is Debian 13 released in August 2025
+FROM debian:trixie
 
 # Install the dependencies of simgrid itself
 #  - of the website

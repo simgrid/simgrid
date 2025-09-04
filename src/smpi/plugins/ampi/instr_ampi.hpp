@@ -6,7 +6,6 @@
 #ifndef INSTR_INSTR_AMPI_HPP_
 #define INSTR_INSTR_AMPI_HPP_
 
-#include "smpi/smpi.h"
 #include "src/instr/instr_private.hpp"
 
 XBT_PRIVATE void TRACE_Iteration_in(aid_t pid, simgrid::instr::TIData* extra);

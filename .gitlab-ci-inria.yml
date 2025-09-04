@@ -86,6 +86,17 @@ docker_build:
     - export CCACHE_DIR="$PWD/ccache"
     - ccache --show-stats
 
+#Fire up cloudstack image for distcheck job
+prepare:
+  stage: .pre
+  tags:
+    - linux
+    - small
+  image: "registry.gitlab.inria.fr/inria-ci/docker/python3-cloudstack"
+  script:
+    - python3 tools/jenkins/prepare-vm.py start
+  resource_group: cloudstack-vm
+
 # Fast job running on a manually managed openstack node, thus out of docker, and with ccache setup. Fail fail fast on trivial errors.
 make-distcheck:
   extends: .cached-build
@@ -97,15 +108,17 @@ make-distcheck:
       when: never
     - if: '$CI_PIPELINE_SOURCE == "push"'
   tags:
+    - docker
     - debian-testing  # Private runner on the inria infra, not docker but openstack node
   script:
   - mkdir -p build && cd build
   - export JAVA_HOME=/usr/lib/jvm/java-22-openjdk-amd64
   - cmake -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON ..
   - make distcheck
+  resource_group: cloudstack-vm
 
-# Test the Python build
-build-pip:
+# Test the Python build on our build-deps image that is based on debian stable
+pip-default-img:
   stage: test
   image: $CI_REGISTRY_IMAGE/build-deps:latest
   rules:
@@ -116,12 +129,37 @@ build-pip:
     - medium # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3.11-venv
-  - python3 -m build --outdir dist
+  - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3-venv
+  - cmake .
+  - make dist
+  - tar xf simgrid*tar.gz ; rm simgrid*tar.gz
+  - cd simgrid-4* ; python3 -m build --outdir ../dist
   artifacts:
     paths:
     - dist/
     expire_in: 2 weeks
+
+pip-oldstable:
+  stage: test
+  image: debian:oldstable
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags: # Select a runner
+    - medium # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3-venv
+  - cmake .
+  - make dist
+  - tar xf simgrid*tar.gz ; rm simgrid*tar.gz
+  - cd simgrid-4* ; python3 -m build --outdir ../dist
+  artifacts:
+    paths:
+    - dist/
+    expire_in: 2 weeks
+
 
 # ###################################################################################################
 # ###################################################################################################
@@ -258,8 +296,29 @@ ubuntu24-release:
     reports:
       junit: result.xml
 
+ubuntu-rolling:
+  image: ubuntu:rolling # Latest released version that is not LTS. It's not the equivalent of Debian's testing but a real release
+  stage: test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - large  # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - ninja --verbose all tests
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
+  artifacts:
+    when: always
+    expire_in: 6 months
+    reports:
+      junit: result.xml
+
 fedora-rawhide-release:
-  image: fedora:rawhide
+  image: fedora:rawhide # rolling release
   stage: test
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
@@ -280,7 +339,7 @@ fedora-rawhide-release:
       junit: result.xml
 
 rocky-release:
-  image: rockylinux:9
+  image: rockylinux/rockylinux:10
   stage: test
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
@@ -290,6 +349,7 @@ rocky-release:
     - large  # Inria infra
   script:
   - yum install -y dnf-plugins-core # get the 'dnf config-manage' tool
+  - dnf install 'dnf-command(config-manager)'
   - dnf config-manager --set-enabled crb # enable the repository for ninja package
   # Still missing on Rocky Linux: nlohmann-json
   - dnf install -y ninja-build cmake g++ gcc-c++ git cmake pybind11-devel python3-devel graphviz-devel eigen3-devel boost-devel java-21-openjdk-devel valgrind-devel diffutils
@@ -493,7 +553,8 @@ sonarqube:
   - apt-get --allow-releaseinfo-change update
   - apt install -y unzip curl python3-coverage wget
   # Install sonar wrapper and sonar scanner
-  - export SONAR_SCANNER_VERSION=7.0.2.4839
+  # get the version number from https://docs.sonarsource.com/sonarqube-server/10.8/analyzing-source-code/scanners/sonarscanner/ (try to download it)
+  - export SONAR_SCANNER_VERSION=7.2.0.5079
   - export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux-x64
   - curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux-x64.zip
   - unzip -q -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
@@ -534,3 +595,16 @@ sonarqube:
     - when: never  # By default, do not execute this job (so it's executed only daily)
   tags:
     - large  # Inria infra
+
+#stop cloudstack image after pipeline end
+stop vm:
+  stage: .post
+  tags:
+    - linux
+    - small
+  image: "registry.gitlab.inria.fr/inria-ci/docker/python3-cloudstack"
+  script:
+    - python3 tools/jenkins/prepare-vm.py stop
+  resource_group: cloudstack-vm
+  when: always
+

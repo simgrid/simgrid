@@ -67,12 +67,14 @@ class CMakeBuild(build_ext):
         build_args = ['--config', cfg]
 
         cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-        build_args += ['--', '-j4']
+        build_args += ['--'] # no extra argument to make
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
                                                               self.distribution.get_version())
         env['LDFLAGS'] = '{} -L{}'.format(env.get('LDFLAGS', ''), extdir)
+        env['MAKEFLAGS'] = '-j'+str(os.cpu_count())
+        # env['VERBOSE'] = "1" # Please, make, be verbose about the commands you run
 
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
