@@ -2346,6 +2346,8 @@ include src/kernel/activity/IoImpl.cpp
 include src/kernel/activity/IoImpl.hpp
 include src/kernel/activity/MailboxImpl.cpp
 include src/kernel/activity/MailboxImpl.hpp
+include src/kernel/activity/MemoryImpl.cpp
+include src/kernel/activity/MemoryImpl.hpp
 include src/kernel/activity/MessImpl.cpp
 include src/kernel/activity/MessImpl.hpp
 include src/kernel/activity/MessageQueueImpl.cpp
@@ -2478,6 +2480,7 @@ include src/kernel/xml/simgrid_dtd.h
 include src/mc/api/ActorState.hpp
 include src/mc/api/ClockVector.cpp
 include src/mc/api/ClockVector.hpp
+include src/mc/api/MemOp.hpp
 include src/mc/api/RemoteApp.cpp
 include src/mc/api/RemoteApp.hpp
 include src/mc/api/Strategy.cpp
@@ -2624,6 +2627,8 @@ include src/simgrid/sg_config.cpp
 include src/simgrid/sg_config.hpp
 include src/simgrid/sg_version.cpp
 include src/simgrid/util.hpp
+include src/smo/memory_observer.cpp
+include src/smo/memory_observer.h
 include src/smpi/bindings/smpi_f77.cpp
 include src/smpi/bindings/smpi_f77_coll.cpp
 include src/smpi/bindings/smpi_f77_comm.cpp
