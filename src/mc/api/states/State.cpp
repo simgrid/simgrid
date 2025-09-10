@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <boost/current_function.hpp>
 #include <boost/range/algorithm.hpp>
 #include <memory>
 #include <mutex>
@@ -432,5 +433,17 @@ unsigned long State::consider_all()
     }
   }
   return count;
+}
+void State::PostFixTraversal::update_leftness()
+{
+  PostFixTraversal* current_state = PostFixTraversal::get_first()->traversal_.get();
+  unsigned long count             = 0;
+  while (current_state != nullptr) {
+
+    current_state->self_->leftness_ = count;
+
+    current_state = current_state->next_;
+    count++;
+  }
 }
 } // namespace simgrid::mc

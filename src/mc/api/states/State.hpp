@@ -48,6 +48,7 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
     static StatePtr get_first();
     static void remove_first();
     static std::string get_traversal_as_ids();
+    static void update_leftness();
   };
 
   std::shared_ptr<PostFixTraversal> traversal_;
@@ -78,6 +79,9 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
 
   /** Depth of this state in the tree. Used for DFS-like strategy in BeFS algorithm */
   unsigned long depth_ = 0;
+
+  /** leftness in the tree */
+  unsigned long leftness_ = 0;
 
   /** Unique parent of this state */
   StatePtr parent_state_ = nullptr;
@@ -255,6 +259,9 @@ public:
   std::atomic_flag being_explored = ATOMIC_FLAG_INIT;
 
   void mark_to_delete() { to_be_deleted_ = true; }
+
+  static void update_leftness() { PostFixTraversal::update_leftness(); };
+  unsigned long get_leftness() const { return leftness_; }
 };
 
 } // namespace simgrid::mc
@@ -262,7 +269,12 @@ public:
 template <> struct std::less<simgrid::mc::State> {
   bool operator()(const simgrid::mc::State& lhs, const simgrid::mc::State& rhs) const
   {
-    return lhs.get_depth() < rhs.get_depth();
+    return lhs.get_leftness() < rhs.get_leftness();
+    // if (lhs.get_depth() < rhs.get_depth())
+    //   return true;
+    // if (lhs.get_depth() > rhs.get_depth())
+    //   return false;
+    // return lhs.get_num() < rhs.get_num();
   }
 };
 

@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <boost/lockfree/queue.hpp>
 #include <condition_variable>
+#include <cstddef>
 #include <deque>
 #include <list>
 #include <memory>
@@ -75,16 +76,24 @@ public:
   T pop() override
   {
     T element;
-    m_.lock();
-    element = queue_.front();
-    queue_.pop_front();
-    m_.unlock();
+    while (true) {
+      m_.lock();
+      if (queue_.size() == 0) {
+        m_.unlock();
+        continue;
+      } else {
+        element = queue_.front();
+        queue_.pop_front();
+        m_.unlock();
+        break;
+      }
+    }
     return element;
   }
   void push(T element) override
   {
     m_.lock();
-    queue_.push_back(element);
+    queue_.push_front(element);
     m_.unlock();
   }
   void sort() override
@@ -121,8 +130,8 @@ public:
   unsigned long visited_states_count = 0; // for statistics
 
   Reduction* reduction_algo;
-  lock_free_channel<State*>* opened_heads;
-  lock_free_channel<Reduction::RaceUpdate*>* races_list;
+  mutex_channel<State*>* opened_heads;
+  mutex_channel<Reduction::RaceUpdate*>* races_list;
 };
 
 class XBT_PRIVATE ParallelizedExplorer : public Exploration {
@@ -131,8 +140,8 @@ private:
   ReductionMode reduction_mode_;
   std::unique_ptr<Reduction> reduction_algo_;
 
-  lock_free_channel<State*> opened_heads_;
-  lock_free_channel<Reduction::RaceUpdate*> races_list_;
+  mutex_channel<State*> opened_heads_;
+  mutex_channel<Reduction::RaceUpdate*> races_list_;
 
   std::vector<std::thread> thread_pool_;
   std::vector<std::shared_ptr<ThreadLocalExplorer>> local_explorers_;

@@ -87,7 +87,7 @@ void ParallelizedExplorer::TreeHandler()
     XBT_DEBUG("[tid:TreeHandler] The update contained %lu new states, so now there are %d remaining todo",
               new_opened.size(), remaining_todo);
 
-    for (auto state_it = new_opened.crbegin(); state_it != new_opened.crend(); state_it++)
+    for (auto state_it = new_opened.begin(); state_it != new_opened.end(); state_it++)
       opened_heads_.push((*state_it).get());
 
     if (to_apply->get_last_explored_state() != nullptr)
@@ -99,8 +99,10 @@ void ParallelizedExplorer::TreeHandler()
     if (traces_count % 10 == 0)
       XBT_INFO("About %ld traces have been explored so far. Remaining todo: %d", traces_count, remaining_todo);
 
-    if (traces_count % 1000 == 0)
-      opened_heads_.sort();
+    if (traces_count % 1000 == 0) {
+      // State::update_leftness();
+      // opened_heads_.sort();
+    }
   }
 
   for (int i = 0; i < number_of_threads; i++)
