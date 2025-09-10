@@ -513,6 +513,7 @@ set(MC_SRC_STATELESS
   src/mc/api/ActorState.hpp
   src/mc/api/ClockVector.cpp
   src/mc/api/ClockVector.hpp
+  src/mc/api/MemOp.hpp
   src/mc/api/RemoteApp.cpp
   src/mc/api/RemoteApp.hpp
   src/mc/api/Strategy.cpp
