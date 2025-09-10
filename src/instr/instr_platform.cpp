@@ -308,8 +308,7 @@ static void on_netzone_creation(s4u::NetZone const& netzone)
 
 static void on_link_creation(s4u::Link const& link)
 {
-  if (currentContainer.empty() ||
-      link.get_name() == "__loopback__") // No ongoing parsing. Are you creating the loopback?
+  if (link.get_name() == "__loopback__") // Don't trace the loopback
     return;
 
   auto* container = new Container(link.get_name(), "LINK", currentContainer.back());
@@ -333,7 +332,7 @@ static void on_host_creation(s4u::Host const& host)
   if (Container::by_name_or_null(host.get_name())) // This host already exists, do nothing
     return;
 
-  Container* container  = new HostContainer(host, currentContainer.back());
+  Container* container  = new HostContainer(host);
   const Container* root = Container::get_root();
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
@@ -442,7 +441,7 @@ static void on_actor_host_change(s4u::Actor const& actor, s4u::Host const& /*pre
 
 static void on_vm_creation(s4u::Host const& host)
 {
-  const Container* container = new HostContainer(host, currentContainer.back());
+  const Container* container = new HostContainer(host);
   const Container* root      = Container::get_root();
   auto* vm                   = container->get_type()->by_name_or_create<ContainerType>("VM");
   auto* state                = vm->by_name_or_create<StateType>("VM_STATE");
@@ -478,7 +477,7 @@ void define_callbacks()
     });
     kernel::routing::NetPoint::on_creation.connect([](kernel::routing::NetPoint const& netpoint) {
       if (netpoint.is_router())
-        new RouterContainer(netpoint.get_name(), currentContainer.back());
+        new RouterContainer(netpoint);
     });
   }
 
