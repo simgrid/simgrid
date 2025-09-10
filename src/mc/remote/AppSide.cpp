@@ -109,6 +109,7 @@ void AppSide::send_executed_transition(kernel::actor::ActorImpl* actor, bool wan
   if (want_transition) {
     if (actor->simcall_.observer_ != nullptr) {
       actor->simcall_.observer_->serialize(channel_);
+      actor->recorded_memory_accesses_->serialize(channel_);
     } else {
       channel_.pack(mc::Transition::Type::UNKNOWN);
     }
@@ -244,20 +245,8 @@ void AppSide::handle_one_way(const s_mc_message_one_way_t* msg)
     // hence, let's play the transition with considered_times = 0
     actor->simcall_handle(0);
 
-    // Sending the transition message
-    s_mc_message_simcall_execute_answer_t transition_execute_msg = {};
-    transition_execute_msg.type                                  = MessageType::SIMCALL_EXECUTE_REPLY;
-    transition_execute_msg.aid                                   = chosen_aid;
-    channel_.pack(transition_execute_msg);
-
-    if (actor->simcall_.observer_ != nullptr) {
-      actor->simcall_.observer_->serialize(channel_);
-    } else {
-      channel_.pack(mc::Transition::Type::UNKNOWN);
-    }
-    XBT_VERB("send SIMCALL_EXECUTE_ANSWER(%s) ", actor->get_cname());
-    xbt_assert(channel_.send() == 0, "Could not send response: %s", strerror(errno));
-
+    // Sending the transition message with the actual transition
+    send_executed_transition(actor, true);
     // Make a step in the app
     simgrid::mc::execute_actors(); // May raise assertion errors, every packed data must be send before this.
 

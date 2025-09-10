@@ -251,6 +251,7 @@ Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool ne
   if (new_transition) {
     auto* t = deserialize_transition(aid, times_considered, channel_);
     XBT_DEBUG("Got a transtion: %s", t->to_string(true).c_str());
+    t->deserialize_memory_operations(channel_);
     return t;
   }
   XBT_DEBUG("No need for transitions today");

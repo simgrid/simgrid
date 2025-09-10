@@ -294,6 +294,8 @@ set(KERNEL_SRC
   src/kernel/activity/IoImpl.hpp
   src/kernel/activity/MailboxImpl.cpp
   src/kernel/activity/MailboxImpl.hpp
+  src/kernel/activity/MemoryImpl.cpp
+  src/kernel/activity/MemoryImpl.hpp
   src/kernel/activity/MessImpl.cpp
   src/kernel/activity/MessImpl.hpp
   src/kernel/activity/MessageQueueImpl.cpp
@@ -464,6 +466,8 @@ set(SIMGRID_SRC
   src/simgrid/sg_config.cpp
   src/simgrid/sg_version.cpp
   src/simgrid/util.hpp
+  src/smo/memory_observer.cpp
+  src/smo/memory_observer.h
   )
 
 set(DAG_SRC

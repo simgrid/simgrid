@@ -180,6 +180,8 @@ namespace activity {
   using ExecImplPtr = boost::intrusive_ptr<ExecImpl>;
   class IoImpl;
   using IoImplPtr = boost::intrusive_ptr<IoImpl>;
+  class MemoryAccessImpl;
+  using MemoryAccessImplPtr = boost::intrusive_ptr<MemoryAccessImpl>;
   class MessImpl;
   using MessImplPtr = boost::intrusive_ptr<MessImpl>;
   class MutexImpl;

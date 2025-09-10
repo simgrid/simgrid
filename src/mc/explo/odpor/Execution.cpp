@@ -53,6 +53,12 @@ Execution::Execution(const PartialExecution& w)
 
 void Execution::push_transition(std::shared_ptr<Transition> t, bool are_we_restoring_execution)
 {
+  static std::unordered_set<void*> known_memory_adress;
+  for (auto ma : t->get_mem_op())
+    known_memory_adress.insert(ma.get_location());
+
+  XBT_VERB("Saw %lu memory adresses so far", known_memory_adress.size());
+
   xbt_assert(t != nullptr, "Unexpectedly received `nullptr`");
   ClockVector max_clock_vector;
   for (const auto& events : this->skip_list_) {

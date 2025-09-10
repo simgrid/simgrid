@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/transition/Transition.hpp"
+#include "src/kernel/activity/MemoryImpl.hpp"
 #include "src/kernel/actor/Simcall.hpp"
 #include "src/mc/remote/Channel.hpp"
 #include "xbt/asserts.h"
@@ -50,6 +51,22 @@ void Transition::replay(RemoteApp& app) const
   app.handle_simcall(aid_, times_considered_, false);
   app.wait_for_requests();
 #endif
+}
+
+void Transition::deserialize_memory_operations(mc::Channel& channel)
+{
+
+  unsigned long nb_of_ops = channel.unpack<unsigned long>();
+
+  XBT_DEBUG("Going to read %lu memory access to feed the transition", nb_of_ops);
+
+  for (unsigned long i = 0; i < nb_of_ops; i++) {
+    MemOpType type = channel.unpack<MemOpType>();
+    void* location = channel.unpack<void*>();
+    memory_operations_.emplace_back(type, location);
+  }
+
+  XBT_DEBUG("Created a memory operation vector for the new transition");
 }
 
 Transition* deserialize_transition(aid_t issuer, int times_considered, mc::Channel& channel)
