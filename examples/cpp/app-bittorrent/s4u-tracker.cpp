@@ -50,7 +50,7 @@ void Tracker::operator()()
         do {
           next_peer = known_peers.begin();
           std::advance(next_peer, random.uniform_int(0, nb_known_peers - 1));
-        } while (answer->getPeers().contains(*next_peer));
+        } while (answer->getPeers().find(*next_peer) != answer->getPeers().end());
         answer->addPeer(*next_peer);
         tried++;
       }
