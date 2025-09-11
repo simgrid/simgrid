@@ -279,9 +279,9 @@ static void on_netzone_creation(s4u::NetZone const& netzone)
     auto* root = new NetZoneContainer(id, 0, nullptr);
     xbt_assert(Container::get_root() == root);
 
-    if (TRACE_needs_platform()) {
+    if (TRACE_needs_platform())
       currentContainer.push_back(root);
-    }
+
     return;
   }
 
@@ -311,7 +311,7 @@ static void on_link_creation(s4u::Link const& link)
   if (link.get_name() == "__loopback__") // Don't trace the loopback
     return;
 
-  auto* container = new Container(link.get_name(), "LINK", currentContainer.back());
+  auto* container = new Container(link.get_name(), "LINK", Container::by_name(link.get_englobing_zone()->get_name()));
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     VariableType* bandwidth = container->get_type()->by_name_or_create("bandwidth", "");
@@ -391,7 +391,6 @@ static void on_activity_suspend_resume(s4u::Activity const& activity)
 
 static void on_platform_sealed()
 {
-  currentContainer.clear();
   std::set<std::string, std::less<>> filter;
   XBT_DEBUG("Starting graph extraction.");
   recursiveGraphExtraction(s4u::Engine::get_instance()->get_netzone_root(), Container::get_root(), &filter);
