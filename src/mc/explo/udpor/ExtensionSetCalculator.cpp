@@ -45,6 +45,7 @@ EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, Unfold
       {Action::MUTEX_WAIT, &ExtensionSetCalculator::partially_extend_MutexWait},
       {Action::MUTEX_TEST, &ExtensionSetCalculator::partially_extend_MutexTest},
       {Action::ACTOR_JOIN, &ExtensionSetCalculator::partially_extend_ActorJoin},
+      {Action::ACTOR_EXIT, &ExtensionSetCalculator::partially_extend_ActorExit},
       {Action::ACTOR_SLEEP, &ExtensionSetCalculator::partially_extend_ActorSleep},
       {Action::ACTOR_CREATE, &ExtensionSetCalculator::partially_extend_ActorCreate},
 
@@ -737,6 +738,31 @@ EventSet ExtensionSetCalculator::partially_extend_ActorJoin(const Configuration&
   return exC;
 }
 
+EventSet ExtensionSetCalculator::partially_extend_ActorExit(const Configuration& C, Unfolding* U,
+                                                            std::shared_ptr<Transition> action)
+{
+  EventSet exC;
+
+  const auto exit_action = std::static_pointer_cast<ActorExitTransition>(action);
+
+  // Handling ActorExit is very simple: it corresponds to a no-op.
+  if (const auto pre_event_a_C = C.pre_event(exit_action->aid_); pre_event_a_C.has_value()) {
+    const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), exit_action);
+    exC.insert(e_prime);
+  } else {
+    if (const auto creator_event = find_ActorCreate_Event(C.get_events(), exit_action->aid_);
+        creator_event.has_value()) {
+      const auto e_prime = U->discover_event(EventSet({creator_event.value()}), exit_action);
+      exC.insert(e_prime);
+    } else {
+
+      const auto e_prime = U->discover_event(EventSet({}), exit_action);
+      exC.insert(e_prime);
+    }
+  }
+
+  return exC;
+}
 EventSet ExtensionSetCalculator::partially_extend_ActorSleep(const Configuration& C, Unfolding* U,
                                                              std::shared_ptr<Transition> action)
 {

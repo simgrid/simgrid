@@ -489,7 +489,9 @@ void suspend()
 void exit()
 {
   kernel::actor::ActorImpl* self = simgrid::kernel::actor::ActorImpl::self();
-  simgrid::kernel::actor::simcall_answered([self] { self->exit(); });
+  kernel::actor::ActorExitSimcall observer{self};
+
+  simgrid::kernel::actor::simcall_answered([self] { self->exit(); }, &observer);
   THROW_IMPOSSIBLE;
 }
 

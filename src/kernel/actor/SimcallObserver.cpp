@@ -57,6 +57,15 @@ std::string ActorJoinSimcall::to_string() const
 {
   return "ActorJoin(pid:" + std::to_string(other_->get_pid()) + ")";
 }
+ActorExitSimcall::ActorExitSimcall(ActorImpl* actor) : SimcallObserver(actor) {}
+void ActorExitSimcall::serialize(mc::Channel& channel) const
+{
+  channel.pack(mc::Transition::Type::ACTOR_EXIT);
+}
+std::string ActorExitSimcall::to_string() const
+{
+  return "ActorExit()";
+}
 void ActorSleepSimcall::serialize(mc::Channel& channel) const
 {
   channel.pack(mc::Transition::Type::ACTOR_SLEEP);

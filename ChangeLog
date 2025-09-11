@@ -14,6 +14,7 @@ Model-checking:
  - The 'none' reduction method is gone. It was useless and made the code more complex than needed.
  - Enable the joint use of SMPI and sthread.
  - Implement a 'parallel' stategy to leverage multicores during the exploration
+ - Observe ActorExit events, to get the trailing memory accesses when memory accesses are observed.
 
 Maint:
  - Simplify our code by removing SysV contexts which do not bring much. It's not portable on all OSes and a bit less efficient

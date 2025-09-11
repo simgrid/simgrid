@@ -26,7 +26,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [   0.000000] (maestro@)   Actor 2 in simcall BeginObjectAccess(&v)
 > [   0.000000] (maestro@)   Actor 3 in simcall BeginObjectAccess(&v)
 > [   0.000000] (maestro@) You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;2;3'
-> [   0.000000] (maestro@) DFS exploration ended. 10 unique states visited; 1 explored traces (3 transition replays, 12 states visited overall)
+> [   0.000000] (maestro@) DFS exploration ended. 12 unique states visited; 1 explored traces (3 transition replays, 14 states visited overall)
 > waiting for helpers to finish...
 > [   0.000000] (maestro@) thread 1 takes &v
 > [   0.000000] (maestro@) Start the critical transition detection phase.
