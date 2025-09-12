@@ -69,10 +69,12 @@ public:
           ss << (frame_name.empty() ? "(debug info not found and log:no_loc activated)" : frame_name) << "\n";
         else
           ss << frame << "\n";
-        if (frame_name == "main")
+        if (not cfg_fullstdstack || // Do not trim the stack end if requested so
+            frame_name == "main")
           break;
       } else if (frame_name ==
-                 "std::shared_ptr<simgrid::xbt::BacktraceImpl> std::make_shared<simgrid::xbt::BacktraceImpl>()") {
+                     "std::shared_ptr<simgrid::xbt::BacktraceImpl> std::make_shared<simgrid::xbt::BacktraceImpl>()" ||
+                 frame_name == "xbt_backtrace_display_current") {
         print = true;
       }
     }
