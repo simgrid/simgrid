@@ -10,6 +10,7 @@
 #include <xbt/config.hpp>
 #include <xbt/parse_units.hpp>
 
+#include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "src/kernel/resource/LinkImpl.hpp"
 #include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
 #include "src/kernel/resource/WifiLinkImpl.hpp"
@@ -54,6 +55,11 @@ const std::string& Link::get_name() const
 const char* Link::get_cname() const
 {
   return this->pimpl_->get_cname();
+}
+/** @brief Returns the networking zone englobing that host */
+NetZone* Link::get_englobing_zone() const
+{
+  return pimpl_->get_englobing_zone()->get_iface();
 }
 bool Link::is_used() const
 {

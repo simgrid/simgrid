@@ -37,6 +37,8 @@ public:
   double get_bandwidth() const override { return link_up_->get_bandwidth(); }
   void set_bandwidth(double value) override;
 
+  routing::NetZoneImpl* get_englobing_zone() const override { return link_up_->get_englobing_zone(); }
+
   /** @brief Get the latency in seconds of current Link */
   double get_latency() const override { return link_up_->get_latency(); }
   void set_latency(double value) override;

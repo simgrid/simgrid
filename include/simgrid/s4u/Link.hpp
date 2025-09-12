@@ -68,6 +68,9 @@ public:
   static Link* by_name(const std::string& name);
   static Link* by_name_or_null(const std::string& name);
 
+  /** @brief Returns the networking zone englobing that host */
+  NetZone* get_englobing_zone() const;
+
   /** @brief Retrieves the name of that link as a C++ string */
   const std::string& get_name() const;
   /** @brief Retrieves the name of that link as a C string */

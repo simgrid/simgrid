@@ -151,8 +151,9 @@ int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr
           SMPI_thread_create();
 #endif
         sthread_enable();
-        user_function(param);
+        auto* ret = user_function(param);
         sthread_disable();
+        sthread_exit(ret);
       },
       start_routine, arg);
 

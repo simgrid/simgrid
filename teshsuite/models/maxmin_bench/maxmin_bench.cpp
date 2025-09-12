@@ -136,7 +136,8 @@ int main(int argc, char** argv)
 
   if (mode == 1)
     xbt_log_control_set("ker_lmm.threshold:DEBUG ker_lmm.fmt:'[%r]: [%c/%p] %m%n' "
-                        "kernel.threshold:DEBUG kernel.fmt:'[%r]: [%c/%p] %m%n' ");
+                        "kernel.threshold:DEBUG kernel.fmt:'[%r]: [%c/%p] %m%n'  "
+                        "ker_activity.threshold:INFO");
 
   if (mode == 2)
     xbt_log_control_set("ker_lmm.threshold:DEBUG kernel.threshold:DEBUG");

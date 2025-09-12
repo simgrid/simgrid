@@ -30,7 +30,7 @@ static void peer(int my_id, int messages_count, size_t payload_size, int peers_c
 {
   /* Set myself as the persistent receiver of my mailbox so that messages start flowing to me as soon as they are put
    * into it */
-  sg4::Mailbox* my_mbox = sg4::Mailbox::by_name(std::format("peer-{}", my_id));
+  sg4::Mailbox* my_mbox = sg4::Mailbox::by_name("peer-" + std::to_string(my_id));
   my_mbox->set_receiver(sg4::Actor::self());
 
   sg4::ActivitySet pending_comms;
@@ -39,8 +39,8 @@ static void peer(int my_id, int messages_count, size_t payload_size, int peers_c
   for (int i = 0; i < messages_count; i++) {
     for (int peer_id = 0; peer_id < peers_count; peer_id++) {
       if (peer_id != my_id) {
-        sg4::Mailbox* mbox  = sg4::Mailbox::by_name(std::format("peer-{}", peer_id));
-        std::string message = std::format("Message {} from peer {}", i, my_id);
+        sg4::Mailbox* mbox  = sg4::Mailbox::by_name("peer-" + std::to_string(peer_id));
+        std::string message = "Message " + std::to_string(i) + " from peer " + std::to_string(my_id);
         auto* payload       = new std::string(message); // copy the data we send:
         // 'message' is not a stable storage location
         XBT_INFO("Send '%s' to '%s'", message.c_str(), mbox->get_cname());
@@ -53,7 +53,7 @@ static void peer(int my_id, int messages_count, size_t payload_size, int peers_c
   /* Start sending messages to let peers know that they should stop */
   for (int peer_id = 0; peer_id < peers_count; peer_id++) {
     if (peer_id != my_id) {
-      sg4::Mailbox* mbox = sg4::Mailbox::by_name(std::format("peer-{}", peer_id));
+      sg4::Mailbox* mbox = sg4::Mailbox::by_name("peer-" + std::to_string(peer_id));
       auto* payload      = new std::string("finalize"); // Make a copy of the data we will send
       pending_comms.push(mbox->put_async(payload, payload_size));
       XBT_INFO("Send 'finalize' to 'peer-%d'", peer_id);

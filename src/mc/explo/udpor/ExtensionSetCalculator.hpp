@@ -54,6 +54,7 @@ private:
   static std::optional<const UnfoldingEvent*> find_ActorCreate_Event(const EventSet history, aid_t actor);
 
   static EventSet partially_extend_ActorJoin(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
+  static EventSet partially_extend_ActorExit(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
   static EventSet partially_extend_ActorSleep(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
   static EventSet partially_extend_ActorCreate(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
 

@@ -74,12 +74,58 @@ bool ActorJoinTransition::reversible_race(const Transition* other, const odpor::
   // Clearly, then, we could not join on that actor `T` and then run a transition by `T`, so no race is reversible
   return false;
 }
+/* --------------------- */
+/* This action is a no-op and could be explored in most cases, but it's useful when observing the memory accesses, as
+   the vector of memaccesses is sent with the following simcall. If this action were omited, the last mem accesses of
+   the actors would not get observed by the checker. See this as a placeholder intended to carry the trailing memory
+   accesses */
+ActorExitTransition::ActorExitTransition(aid_t issuer, int times_considered, mc::Channel& channel)
+    : Transition(Type::ACTOR_EXIT, issuer, times_considered)
+{
+  XBT_DEBUG("ActorExitTransition ");
+}
+std::string ActorExitTransition::to_string(bool verbose) const
+{
+  return xbt::string_printf("ActorExit()");
+}
+bool ActorExitTransition::depends(const Transition* other) const
+{
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
 
-  ActorSleepTransition::ActorSleepTransition(aid_t issuer, int times_considered, mc::Channel&)
-      : Transition(Type::ACTOR_SLEEP, issuer, times_considered)
-  {
-    XBT_DEBUG("ActorSleepTransition()");
-  }
+  // It is dependent with create and join, that are located before exit in the transition enum
+  if (other->type_ < type_)
+    return other->depends(this);
+
+  // Otherwise, exiting is indep with any other transitions: it's equivalent to no-op
+  return false;
+}
+
+bool ActorExitTransition::can_be_co_enabled(const Transition* other) const
+{
+  if (other->type_ < type_)
+    return other->can_be_co_enabled(this);
+
+  // Transitions of a same actor have no chance at being co-enabled
+  if (other->aid_ == aid_)
+    return false;
+
+  return true;
+}
+
+bool ActorExitTransition::reversible_race(const Transition* other, const odpor::Execution* exec,
+                                          EventHandle this_handle, EventHandle other_handle) const
+{
+  // ActorExit races only with JOIN or CREATE, and then, they are not reversible.
+  return false;
+}
+/* --------------------- */
+ActorSleepTransition::ActorSleepTransition(aid_t issuer, int times_considered, mc::Channel&)
+    : Transition(Type::ACTOR_SLEEP, issuer, times_considered)
+{
+  XBT_DEBUG("ActorSleepTransition()");
+}
 std::string ActorSleepTransition::to_string(bool verbose) const
 {
   return xbt::string_printf("ActorSleep()");

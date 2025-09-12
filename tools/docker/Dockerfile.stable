@@ -1,6 +1,7 @@
 # Base image: use a named release to avoid names clashes when calling apt upgrade on the resulting image
 # debian:12 is Bookworm, release 2023-06-10
-FROM debian:12
+# debian:13 is Trixie, release 2025-08-09
+FROM debian:13
 
 ARG DLURL
 

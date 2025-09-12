@@ -32,6 +32,8 @@ public:
   virtual void set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb) = 0;
   virtual s4u::Link::SharingPolicy get_sharing_policy() const                                          = 0;
 
+  virtual routing::NetZoneImpl* get_englobing_zone() const = 0;
+
   /* setup the profile file with bandwidth events (peak speed changes due to external load).
    * Profile must contain percentages (value between 0 and 1). */
   virtual void set_bandwidth_profile(kernel::profile::Profile* profile) = 0;

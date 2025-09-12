@@ -67,12 +67,12 @@ public:
 
 class RouterContainer : public Container {
 public:
-  RouterContainer(const std::string& name, Container* parent);
+  RouterContainer(kernel::routing::NetPoint const& netpoint);
 };
 
 class HostContainer : public Container {
 public:
-  HostContainer(s4u::Host const& host, NetZoneContainer* parent);
+  HostContainer(s4u::Host const& host);
 };
 } // namespace simgrid::instr
 #endif

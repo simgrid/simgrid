@@ -13,7 +13,6 @@
 
 #include "simgrid/s4u.hpp"
 #include <cstdlib>
-#include <format>
 #include <iostream>
 #include <string>
 namespace sg4 = simgrid::s4u;
@@ -31,7 +30,7 @@ static void sender(int messages_count, size_t payload_size)
   sg4::this_actor::sleep_for(sleep_start_time);
 
   for (int i = 0; i < messages_count; i++) {
-    std::string msg_content = std::format("Message {}", i);
+    std::string msg_content = "Message " + std::to_string(i);
     // Copy the data we send: the 'msg_content' variable is not a stable storage location.
     // It will be destroyed when this actor leaves the loop, ie before the receiver gets the data
     auto* payload = new std::string(msg_content);

@@ -49,7 +49,7 @@ public:
   /** @brief Get the latency in seconds of current Link */
   double get_latency() const override { return latency_.peak * latency_.scale; }
 
-  routing::NetZoneImpl* get_englobing_zone() const { return englobing_zone_; }
+  routing::NetZoneImpl* get_englobing_zone() const override { return englobing_zone_; }
   /** @brief Set the NetZone in which this Link is included */
   StandardLinkImpl* set_englobing_zone(routing::NetZoneImpl* netzone_p);
 

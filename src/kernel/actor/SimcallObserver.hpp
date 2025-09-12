@@ -122,6 +122,13 @@ public:
   s4u::ActorPtr get_other_actor() const { return other_; }
   double get_timeout() const { return timeout_; }
 };
+class ActorExitSimcall final : public SimcallObserver {
+public:
+  ActorExitSimcall(ActorImpl* actor);
+  void serialize(mc::Channel& channel) const override;
+  std::string to_string() const override;
+};
+
 /* Dummy observer, not visible by the checker but needed for the template to compile */
 class ActorSuspendSimcall final : public DelayedSimcallObserver<void> {
 public:
