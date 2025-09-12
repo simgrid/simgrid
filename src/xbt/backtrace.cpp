@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/internal_config.h"
+#include "xbt/config.hpp"
 
 #include <simgrid/actor.h>
 #include <simgrid/s4u/Actor.hpp>
@@ -35,6 +36,11 @@ void xbt_backtrace_display_current()
   simgrid::xbt::Backtrace().display();
 }
 
+simgrid::config::Flag<bool> cfg_fullstdstack{"debug/fullstack:yes",
+                                             "Whether the std::stacktrace should be displayed completely. The default "
+                                             "value 'no' requests the stack to be trimed for user comfort.",
+                                             true};
+
 namespace simgrid::xbt {
 
 class BacktraceImpl {
@@ -47,13 +53,14 @@ public:
     std::stringstream ss;
 
     int frame_count = 0;
-    bool print      = false;
+    bool print      = cfg_fullstdstack; // Start printing right away if we are requested not to trim
 
     for (const auto& frame : st) {
       const std::string frame_name = frame.description();
 
       if (print) {
-        if (frame_name.rfind("simgrid::xbt::MainFunction", 0) == 0 ||
+        if (not cfg_fullstdstack || // Do not trim the stack end if requested so
+            frame_name.rfind("simgrid::xbt::MainFunction", 0) == 0 ||
             frame_name.rfind("simgrid::kernel::context::Context::operator()()", 0) == 0 ||
             frame_name.rfind("auto sthread_create::{lambda") == 0)
           break;
@@ -69,6 +76,10 @@ public:
         print = true;
       }
     }
+    if (ss.str() == "")
+      return "The C++23 backtrace returned an empty string. You may want to use --cfg:debug/fullstack:yes to get ride "
+             "of the stack trimming logic. If it helps, please report this bug (including a full stack obtained with "
+             "the additional config flag).";
     return ss.str();
   }
 #elif HAVE_BOOST_STACKTRACE_BACKTRACE || HAVE_BOOST_STACKTRACE_ADDR2LINE
