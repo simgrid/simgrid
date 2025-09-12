@@ -4,8 +4,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/kernel/activity/MemoryImpl.hpp"
+#include "src/mc/api/ClockVector.hpp"
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/api/states/State.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/transition/Transition.hpp"
@@ -17,10 +20,12 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_odpor_execution, mc_reduction, "ODPOR exploration algorithm of the model-checker");
+XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 namespace simgrid::mc::odpor {
 
@@ -44,6 +49,58 @@ std::string one_string_textual_trace(const PartialExecution& w)
   return res;
 }
 
+void Event::initialize_epoch()
+{
+  aid_t event_aid_ = contents_.first->aid_;
+  for (auto rw : contents_.first->get_mem_op())
+    if (rw.get_type() == MemOpType::WRITE)
+      last_write_[rw.get_location()] = {event_aid_, contents_.second.get(event_aid_).value() - 1};
+}
+
+void report_datarace(void* location)
+{
+  XBT_CINFO(mc_global, "Found a datarace at location %p after the follwing execution:", location);
+  for (auto const& frame : Exploration::get_instance()->get_textual_trace())
+    XBT_CINFO(mc_global, "  %s", frame.c_str());
+  XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
+           "--cfg=model-check/replay:'%s'",
+           Exploration::get_instance()->get_record_trace().to_string().c_str());
+  Exploration::get_instance()->log_state();
+  xbt_assert(false);
+}
+
+void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_event)
+{
+  XBT_VERB("Updating epoch");
+  last_write_ = prev_event.last_write_;
+
+  for (auto rw : contents_.first->get_mem_op()) {
+    auto location    = rw.get_location();
+    auto prev_write  = last_write_.find(location);
+    aid_t event_aid_ = contents_.first->aid_;
+
+    if (rw.get_type() == MemOpType::READ) {
+
+      if (prev_write != last_write_.end()) {
+        auto [aid, clock] = prev_write->second;
+        if (clock >= prev_clock.get(aid).value())
+          report_datarace(location);
+      }
+
+    } else {
+
+      if (prev_write != last_write_.end()) {
+        auto [aid, clock] = prev_write->second;
+        if (clock >= prev_clock.get(aid).value())
+          report_datarace(location);
+      }
+
+      // Record the new write as it happened juste before this transition
+      last_write_[location] = {event_aid_, contents_.second.get(event_aid_).value() - 1};
+    }
+  }
+}
+
 PartialExecution Execution::preallocated_partial_execution_ = PartialExecution();
 
 Execution::Execution(const PartialExecution& w)
@@ -53,17 +110,15 @@ Execution::Execution(const PartialExecution& w)
 
 void Execution::push_transition(std::shared_ptr<Transition> t, bool are_we_restoring_execution)
 {
-  static std::unordered_set<void*> known_memory_adress;
-  for (auto ma : t->get_mem_op())
-    known_memory_adress.insert(ma.get_location());
-
-  XBT_VERB("Saw %lu memory adresses so far", known_memory_adress.size());
 
   xbt_assert(t != nullptr, "Unexpectedly received `nullptr`");
   ClockVector max_clock_vector;
+  // For each aid
   for (const auto& events : this->skip_list_) {
+    // Find the most recent event with which we are dependent
     for (auto event_it = events.crbegin(); event_it != events.crend(); ++event_it) {
       if (contents_[*event_it].get_transition()->depends(t.get())) {
+        // And update the clock to reflect this
         ClockVector::max_emplace_left(max_clock_vector, contents_[*event_it].get_clock_vector());
         break;
       }
@@ -73,10 +128,18 @@ void Execution::push_transition(std::shared_ptr<Transition> t, bool are_we_resto
   contents_.push_back(Event({t, std::move(max_clock_vector)}));
   if (skip_list_.size() <= (unsigned)t->aid_)
     skip_list_.resize(t->aid_ + 1, {});
+  EventHandle prev_event_of_aid = skip_list_[t->aid_].size() == 0 ? -1 : skip_list_[t->aid_].back();
   skip_list_[t->aid_].push_back(this->size() - 1);
 
   if (are_we_restoring_execution)
     contents_.back().consider_races();
+
+  if (contents_.size() == 1)
+    contents_.back().initialize_epoch();
+  else {
+    ClockVector clock = prev_event_of_aid == -1 ? ClockVector(0) : contents_[prev_event_of_aid].get_clock_vector();
+    contents_.back().update_epoch_from(clock, *(std::prev(contents_.end(), 2)));
+  }
 }
 
 void Execution::remove_last_event()

@@ -16,6 +16,7 @@
 #include <map>
 #include <optional>
 #include <set>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -23,6 +24,9 @@ namespace simgrid::mc::odpor {
 
 std::vector<std::string> get_textual_trace(const PartialExecution& w);
 std::string one_string_textual_trace(const PartialExecution& w);
+
+// Data structure to implement FastTrack algorithm (see [Flanagan'09])
+using epoch = std::pair<aid_t, long>;
 
 /**
  * @brief The occurrence of a transition in an execution
@@ -33,6 +37,8 @@ std::string one_string_textual_trace(const PartialExecution& w);
  */
 class Event {
   std::pair<std::shared_ptr<Transition>, ClockVector> contents_;
+
+  std::unordered_map<void*, epoch> last_write_;
 
   // Have reversible races between this event and its prefix already been computed ?
   mutable bool race_considered_ = false;
@@ -49,6 +55,8 @@ public:
 
   bool has_race_been_computed() const { return race_considered_; }
   void consider_races() const { race_considered_ = true; }
+  void initialize_epoch();
+  void update_epoch_from(const ClockVector prev_clock, const Event prev_event);
 };
 
 /**

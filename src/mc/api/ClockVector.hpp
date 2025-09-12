@@ -59,6 +59,7 @@ public:
   ClockVector(ClockVector&&)                 = default;
   // ClockVector(std::initializer_list<std::pair<const aid_t, uint32_t>> init) : contents_(std::move(init)) {}
   ClockVector(std::vector<long> init) : contents_(std::move(init)) {}
+  ClockVector(long initial_value) : contents_(std::vector<long>(max_size, initial_value)) {}
 
   bool empty() const { return this->contents_.empty(); }
   auto begin() const { return this->contents_.begin(); }
