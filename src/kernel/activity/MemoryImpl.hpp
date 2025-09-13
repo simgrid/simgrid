@@ -16,8 +16,9 @@
 #include <boost/intrusive/list.hpp>
 #include <cstdio>
 #include <string>
+#include <unordered_map>
 
-XBT_DECLARE_ENUM_CLASS(MemOpType, READ, WRITE);
+XBT_DECLARE_ENUM_CLASS(MemOpType, READ = 0, WRITE = 1);
 
 namespace simgrid::kernel::activity {
 
@@ -34,15 +35,30 @@ public:
 class XBT_PUBLIC MemoryAccessImpl : public ActivityImpl {
   actor::ActorImpl* issuer_ = nullptr;
 
+  // Memorry accesses made by the actor
   std::vector<activity::MemoryAccess> memory_accesses_;
+
+  // Used to save backtrace in replay mode. This is mandatory if we want to display them for
+  // the user when the race is finally detected.
+  // This has to be static since the actor can die before we detect the corresponding race
+  // vecotr[aid is key] -> Map location -> vector[round is key] -> <Read, Write> data
+  static std::vector<std::unordered_map<void*, std::vector<std::pair<std::string, std::string>>>> saved_accesses_;
+
+  unsigned long curr_round_ = 0;
 
 public:
   MemoryAccessImpl(actor::ActorImpl* issuer);
 
+  // Called by the user code
   void record_memory_access(MemOpType type, void* where);
 
   actor::ActorImpl* get_issuer() const { return issuer_; }
 
+  // Retrieve the value saved in the static structure
+  static std::string get_info_from_access(aid_t aid, unsigned long round, MemoryAccess mem_op);
+
+  // Prepare the data corresponding to the savec memory accesses and pack them in the channel.
+  // After that, flush the data so we are ready to register the next round.
   void serialize(mc::Channel& channel);
 
   void finish() override {}

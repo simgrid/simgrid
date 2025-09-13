@@ -89,6 +89,9 @@ int main(int argc, char** argv)
     status = e.value;
   } catch (const McWarning& e) {
     status = e.value;
+  } catch (const McDataRace& e) {
+    explo->report_data_race(e);
+    status = e.value;
   }
   return static_cast<int>(status);
 }

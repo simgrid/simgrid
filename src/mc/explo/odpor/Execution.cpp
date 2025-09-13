@@ -11,6 +11,7 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/mc_config.hpp"
+#include "src/mc/mc_exit.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/transition/TransitionSynchro.hpp"
 #include "xbt/asserts.h"
@@ -18,6 +19,8 @@
 #include "xbt/log.h"
 #include "xbt/string.hpp"
 #include <algorithm>
+#include <exception>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -57,34 +60,47 @@ void Event::initialize_epoch()
       last_write_[rw.get_location()] = {event_aid_, contents_.second.get(event_aid_).value() - 1};
 }
 
-void report_datarace(void* location)
-{
-  XBT_CINFO(mc_global, "Found a datarace at location %p after the follwing execution:", location);
-  for (auto const& frame : Exploration::get_instance()->get_textual_trace())
-    XBT_CINFO(mc_global, "  %s", frame.c_str());
-  XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
-           "--cfg=model-check/replay:'%s'",
-           Exploration::get_instance()->get_record_trace().to_string().c_str());
-  Exploration::get_instance()->log_state();
-  xbt_assert(false);
-}
+struct EventDataRace : public std::exception {
+  void* location_;
+  const MemOpType first_mem_op_;
+  const MemOpType second_mem_op_;
+  const EventHandle first_event_;
+  const EventHandle second_event_;
+  explicit EventDataRace(void* location, MemOpType first_mem_op, MemOpType second_mem_op, EventHandle first_event,
+                         EventHandle second_event)
+      : location_(location)
+      , first_mem_op_(first_mem_op)
+      , second_mem_op_(second_mem_op)
+      , first_event_(first_event)
+      , second_event_(second_event)
+  {
+  }
+};
 
 void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_event)
 {
-  XBT_VERB("Updating epoch");
-  last_write_ = prev_event.last_write_;
+  XBT_VERB("Updating epoch wiht %lu memory accesses", contents_.first->get_mem_op().size());
+  last_write_      = prev_event.last_write_;
+  aid_t event_aid_ = contents_.first->aid_;
 
   for (auto rw : contents_.first->get_mem_op()) {
-    auto location    = rw.get_location();
-    auto prev_write  = last_write_.find(location);
-    aid_t event_aid_ = contents_.first->aid_;
+    auto location   = rw.get_location();
+    auto prev_write = last_write_.find(location);
+
+    if (prev_write != last_write_.end() and prev_write->second.first == event_aid_) {
+      continue; // We just found an op that happened in the same transition, just after a previous write
+      // Obviously, those are not in race
+    }
 
     if (rw.get_type() == MemOpType::READ) {
 
       if (prev_write != last_write_.end()) {
         auto [aid, clock] = prev_write->second;
-        if (clock >= prev_clock.get(aid).value())
-          report_datarace(location);
+        if (clock >= prev_clock.get(aid).value()) {
+          throw EventDataRace(location, MemOpType::WRITE, MemOpType::READ, clock + 1,
+                              this->contents_.second.get(event_aid_).value());
+          // +1 is here to find the right transition in replay mode
+        }
       }
 
     } else {
@@ -92,10 +108,14 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_eve
       if (prev_write != last_write_.end()) {
         auto [aid, clock] = prev_write->second;
         if (clock >= prev_clock.get(aid).value())
-          report_datarace(location);
+          throw EventDataRace(location, MemOpType::WRITE, MemOpType::WRITE, clock + 1,
+                              this->contents_.second.get(event_aid_).value());
+        // +1 is here to find the right transition in replay mode
       }
 
       // Record the new write as it happened juste before this transition
+      // the -1 is here because we receive reads and writes AFTER the transition while
+      // in reality it happened BEFORE
       last_write_[location] = {event_aid_, contents_.second.get(event_aid_).value() - 1};
     }
   }
@@ -137,8 +157,24 @@ void Execution::push_transition(std::shared_ptr<Transition> t, bool are_we_resto
   if (contents_.size() == 1)
     contents_.back().initialize_epoch();
   else {
-    ClockVector clock = prev_event_of_aid == -1 ? ClockVector(0) : contents_[prev_event_of_aid].get_clock_vector();
-    contents_.back().update_epoch_from(clock, *(std::prev(contents_.end(), 2)));
+    ClockVector clock =
+        prev_event_of_aid == (unsigned)-1 ? ClockVector(0) : contents_[prev_event_of_aid].get_clock_vector();
+    try {
+      contents_.back().update_epoch_from(clock, *(std::prev(contents_.end(), 2)));
+    } catch (EventDataRace& dr) {
+
+      aid_t first_aid  = contents_[dr.first_event_].get_transition()->aid_;
+      aid_t second_aid = contents_[dr.second_event_].get_transition()->aid_;
+
+      // count the number of previously recorded transition made by the corresponding actor
+      // this way the replayed app can pinpoint which transition has done the transition and display the right backtrace
+      long first_op  = std::count_if(contents_.begin(), contents_.begin() + dr.first_event_,
+                                     [&](auto event) { return event.get_transition()->aid_ == first_aid; });
+      long second_op = std::count_if(contents_.begin(), contents_.begin() + dr.second_event_,
+                                     [&](auto event) { return event.get_transition()->aid_ == second_aid; });
+
+      throw McDataRace({first_aid, first_op}, {second_aid, second_op}, dr.location_, dr.second_mem_op_);
+    }
   }
 }
 

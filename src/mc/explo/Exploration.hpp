@@ -71,6 +71,9 @@ public:
    *  in corresponding states, and eventually rise an exception if we were looking for the critical transition. */
   void report_correct_execution(State* last_state);
 
+  /** Produce an error message corresponding to a data race in the application */
+  void report_data_race(const McDataRace& e);
+
   /** Produce an error message indicating that the application crashed (status was produced by waitpid) */
   XBT_ATTRIB_NORETURN void report_crash(int status);
   /** Produce an error message indicating that a property was violated */

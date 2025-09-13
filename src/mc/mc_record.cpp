@@ -4,15 +4,39 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/mc_record.hpp"
+#include "simgrid/forward.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/activity/MemoryImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
+#include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_base.hpp"
+#include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/transition/Transition.hpp"
+#include "xbt/asserts.h"
+#include <memory>
+#include <sys/socket.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc, "Logging specific to MC record/replay facility");
 
 namespace simgrid::mc {
+
+// Create a model check transition with the memory access so we can feed the Execution structure
+// which executes the FastTrack algorithm in order to find data races
+std::shared_ptr<Transition> create_mc_transition(kernel::actor::ActorImpl* actor, Channel& app_side,
+                                                 Channel& checker_side)
+{
+
+  actor->simcall_.observer_->serialize(app_side);
+  actor->recorded_memory_accesses_->serialize(app_side);
+  xbt_assert(app_side.send() == 0, "Could not send response: %s", strerror(errno));
+
+  auto* t = deserialize_transition(actor->get_pid(), actor->get_restart_count(), checker_side);
+  t->deserialize_memory_operations(checker_side);
+
+  return std::shared_ptr<Transition>(t);
+}
 
 void RecordTrace::replay() const
 {
@@ -24,6 +48,17 @@ void RecordTrace::replay() const
     XBT_INFO("The backtrace of each transition will not be shown because of --log=no_loc");
   else
     simgrid_mc_replay_show_backtraces = true;
+
+  // Creating two non-blocking sockets locally so we can simulate the application talking to MC
+  // This way we can use everything already in place in the model checker code despite being in the App side
+  int sockets[2];
+  xbt_assert(socketpair(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0, sockets) != -1,
+             "Could not create socketpair: %s.\nPlease increase the file limit with `ulimit -n 10000`.",
+             strerror(errno));
+  auto app_side     = std::make_unique<Channel>(sockets[0]);
+  auto checker_side = std::make_unique<Channel>(sockets[1]);
+
+  auto exec = std::make_unique<odpor::Execution>();
 
   for (const simgrid::mc::Transition* transition : transitions_) {
     kernel::actor::ActorImpl* actor = engine->get_actor_by_pid(transition->aid_);
@@ -45,6 +80,34 @@ void RecordTrace::replay() const
 
     // Execute the request:
     simcall->issuer_->simcall_handle(transition->times_considered_);
+
+    xbt_assert(simcall->observer_ != nullptr, "null observer, :'(");
+
+    auto t = create_mc_transition(actor, *app_side.get(), *checker_side.get());
+    try {
+      exec->push_transition(t); // Race detection is done here
+    } catch (const McDataRace& e) {
+      XBT_INFO("Found a datarace at location %p", e.location_);
+      // Printing the epoch is not very interesting for the user
+      XBT_DEBUG("Race between %ld@%ld and %ld@%ld", e.first_mem_op_.second, e.first_mem_op_.first,
+                e.second_mem_op_.second, e.second_mem_op_.first);
+
+      XBT_INFO("First operation was a WRITE made by actor %ld:\n%s", e.first_mem_op_.first,
+               kernel::activity::MemoryAccessImpl::get_info_from_access(
+                   e.first_mem_op_.first, e.first_mem_op_.second,
+                   kernel::activity::MemoryAccess(MemOpType::WRITE, e.location_))
+                   .c_str());
+
+      XBT_INFO("Second operation was a %s made by actor %ld:\n%s",
+               e.second_mem_type_ == MemOpType::READ ? "READ" : "WRITE", e.second_mem_op_.first,
+               kernel::activity::MemoryAccessImpl::get_info_from_access(
+                   e.second_mem_op_.first, e.second_mem_op_.second,
+                   kernel::activity::MemoryAccess(e.second_mem_type_, e.location_))
+                   .c_str());
+
+      abort();
+    }
+
     simgrid::mc::execute_actors();
   }
 

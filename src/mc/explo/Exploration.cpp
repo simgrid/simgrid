@@ -247,6 +247,18 @@ void Exploration::report_correct_execution(State* last_state)
     throw McError(ExitStatus::SUCCESS);
 }
 
+void Exploration::report_data_race(const McDataRace& e)
+{
+  XBT_INFO("Found a datarace at location %p between actor %ld and %ld after the follwing execution:", e.location_,
+           e.first_mem_op_.first, e.second_mem_op_.first);
+  for (auto const& frame : Exploration::get_instance()->get_textual_trace())
+    XBT_INFO("  %s", frame.c_str());
+  XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
+           "--cfg=model-check/replay:'%s'",
+           Exploration::get_instance()->get_record_trace().to_string().c_str());
+  Exploration::get_instance()->log_state();
+}
+
 bool Exploration::empty()
 {
   std::vector<std::optional<simgrid::mc::ActorState>> actors;
