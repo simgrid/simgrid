@@ -130,8 +130,8 @@ public:
   unsigned long visited_states_count = 0; // for statistics
 
   Reduction* reduction_algo;
-  mutex_channel<State*>* opened_heads;
-  mutex_channel<Reduction::RaceUpdate*>* races_list;
+  lock_free_channel<State*>* opened_heads;
+  lock_free_channel<Reduction::RaceUpdate*>* races_list;
 };
 
 class XBT_PRIVATE ParallelizedExplorer : public Exploration {
@@ -140,8 +140,8 @@ private:
   ReductionMode reduction_mode_;
   std::unique_ptr<Reduction> reduction_algo_;
 
-  mutex_channel<State*> opened_heads_;
-  mutex_channel<Reduction::RaceUpdate*> races_list_;
+  lock_free_channel<State*> opened_heads_;
+  lock_free_channel<Reduction::RaceUpdate*> races_list_;
 
   std::vector<std::thread> thread_pool_;
   std::vector<std::shared_ptr<ThreadLocalExplorer>> local_explorers_;
