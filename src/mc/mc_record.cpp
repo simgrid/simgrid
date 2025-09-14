@@ -83,6 +83,7 @@ void RecordTrace::replay() const
 
     xbt_assert(simcall->observer_ != nullptr, "null observer, :'(");
 
+#if SIMGRID_HAVE_MC
     auto t = create_mc_transition(actor, *app_side.get(), *checker_side.get());
     try {
       exec->push_transition(t); // Race detection is done here
@@ -107,6 +108,11 @@ void RecordTrace::replay() const
 
       abort();
     }
+#else
+    if (not xbt_log_no_loc)
+      XBT_INFO("(data races cannot be replayed when MC is not enabled, but that's OK if you don't have any race in "
+               "your code)");
+#endif
 
     simgrid::mc::execute_actors();
   }
