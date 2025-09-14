@@ -465,19 +465,17 @@ If you want to search for race conditions in your code, you must use our compila
    $ mclang plusplus.c -o plusplus
    (a lot of debug output that can safely be ignored)
 
-To run the program directly, you need to inject the sthread library to work around a bug (FIXME: things should be more robust).
+Looking at the source code, there is a clear race condition between the two threads on the variable ``i``. This is because
+incrementing an integer is not an atomic operation, so ``i`` could have the value of ``1`` if the threads compete for its
+increment. But if you run the program, it is very unlikely that you observe any issue, even if you run it 10,000 times in a row. 
 
 .. code-block:: console
 
    # From within the container, directory /source/tutorial/
    $ ./plusplus
-   Segmentation fault         (core dumped) ./plusplus
-   $ LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libsthread.so ./plusplus 
-   sthread is intercepting the execution of ./plusplus. If it's not what you want, export STHREAD_IGNORE_BINARY=./plusplus
-   [0.000000] [sthread/INFO] All threads exited. Terminating the simulation.
-   $
+   $ for i in `seq 1 10000` ; do echo "XXX Run $i" ; ./plusplus ; done
 
-``sthread`` is also mandatory to run the program in the model-checker.
+But if you run this program within the model checker, it detects the issue instantaneously, and properly report the race condition:
 
 .. code-block:: console
 
