@@ -4,16 +4,23 @@
 #    docker run -it simgrid/tuto-mc bash
 
 # Base image
-FROM simgrid/stable
+FROM simgrid/unstable
 
 RUN apt update && apt -y upgrade
 
-# - Clone simgrid-template-s4u, as it is needed by the tutorial
+# - Clone tutorial-model-checking so that the example source codes are included in the image
 # - Add an empty makefile advising to run cmake before make, just in case
 RUN apt install -y cmake g++ git libboost-dev libfmt-dev valgrind && \
     cd /source && \
     git clone --depth=1 https://framagit.org/simgrid/tutorial-model-checking.git tutorial-model-checking.git && \
     printf "all:\n\t@echo \"Please run the following command before make:\";echo \"    cmake .\"; exit 1" > Makefile && \
+    apt autoremove -y && apt clean && apt autoclean
+
+# - Add the clang pass that allows Mc SimGrid to observe memory accesses
+RUN cd /source && \
+    git clone --depth=1 https://gitlab.inria.fr/simgrid/llvm-instru.git llvm-instru.git && \
+    mkdir -p llvm-instru.git/build && cd llvm-instru.git/build && \
+    cmake -DCMAKE_CXX_COMPILER=clang++-17 -DCMAKE_C_COMPILER=clang-17 .. && make install && \
     apt autoremove -y && apt clean && apt autoclean
 
 CMD ["/bin/bash"]
