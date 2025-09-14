@@ -102,6 +102,7 @@ Please apply the following checklist before releasing.
 - Bump release number to 4.X.1 in CMakeLists.txt sonar-project.properties docs/source/conf.py setup.py
 - Deal with deprecations:
   - jed include/xbt/base.h: Introduce the next XBT_ATTRIB_DEPRECATED_v??? macro
+  - jed docs/source/Doxyfile: ask doxygen to ignore the new XBT_ATTRIB_DEPRECATED_v??? macro
   - Kill the one for the current release and remove all code that were
     mandated by the deprecated functions (both in source and headers).
   - Do the possible cleanups now that these features are gone.

@@ -71,4 +71,5 @@ PREDEFINED             += \
     XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cname,parent,desc)= \
     XBT_ATTRIB_DEPRECATED_v338(mesg)= \
     XBT_ATTRIB_DEPRECATED_v401(mesg)= \
-    XBT_ATTRIB_DEPRECATED_v402(mesg)=
+    XBT_ATTRIB_DEPRECATED_v402(mesg)= \
+    XBT_ATTRIB_DEPRECATED_v403(mesg)=
