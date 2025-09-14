@@ -9,9 +9,6 @@
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/remote/Channel.hpp"
-#include "xbt/asserts.h"
-#include "xbt/backtrace.hpp"
-#include "xbt/log.h"
 #include "xbt/utility.hpp"
 #include <boost/intrusive/list.hpp>
 #include <cstdio>

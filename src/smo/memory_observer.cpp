@@ -1,5 +1,9 @@
+/* Copyright (c) 2025-2025. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "memory_observer.h"
-#include <stdio.h>
 
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/MemoryImpl.hpp"
