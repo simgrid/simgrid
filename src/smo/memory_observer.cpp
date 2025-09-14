@@ -11,7 +11,8 @@ void create_memory_access(MemOpType, void*);
 void create_memory_access(MemOpType type, void* where)
 {
   simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
-  issuer->get_memory_access()->record_memory_access(type, where);
+  if (issuer && issuer->get_memory_access())
+    issuer->get_memory_access()->record_memory_access(type, where);
 }
 
 /* Write operations */
