@@ -117,8 +117,13 @@ In the container, you have access to the following directories of interest:
 - ``/source/simgrid-v???``: Source code of SimGrid, pre-configured in MC mode. The framework is also installed in ``/usr``
   so the source code is only provided for your information.
 
-Lab1: Dining philosophers
--------------------------
+To use valgrind from within the container, you probably need to run the following command
+
+.. code-block:: console
+   $ ulimit -n 1024
+
+Lab1: Dining philosophers with sthread
+--------------------------------------
 
 Let's first explore the behavior of bugged implementation of the `dining philosophers problem
 <https://en.wikipedia.org/wiki/Dining_philosophers_problem>`_. Once in the container, copy all files from the tutorial into the
@@ -445,7 +450,46 @@ We hope this tool proves useful for debugging your multithreaded code. We encour
 or negative. Additionally, we would appreciate learning about any bugs you have identified using this tool. Our team will strive
 to address any challenges you encounter while working with Mc SimGrid.
 
-Lab2: non-deterministic receive (S4U or MPI)
+Lab2: race condition with sthread
+---------------------------------
+
+This short lab aims at searching for race conditions with the latest version of SimGrid. It requires SimGrid v4.1 (that is not
+yet released), and was only tested with the Docker image. See above to pull and start the Docker image.
+
+If you want to search for race conditions in your code, you must use our compilation wrapper to compile the programs.
+
+.. code-block:: console
+
+   # From within the container, directory /source/tutorial/
+   $ cp /source/tutorial-model-checking.git/plusplus.c .
+   $ mclang plusplus.c -o plusplus
+   (a lot of debug output that can safely be ignored)
+
+To run the program directly, you need to inject the sthread library to work around a bug (FIXME: things should be more robust).
+
+.. code-block:: console
+
+   # From within the container, directory /source/tutorial/
+   $ ./plusplus
+   Segmentation fault         (core dumped) ./plusplus
+   $ LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libsthread.so ./plusplus 
+   sthread is intercepting the execution of ./plusplus. If it's not what you want, export STHREAD_IGNORE_BINARY=./plusplus
+   [0.000000] [sthread/INFO] All threads exited. Terminating the simulation.
+   $
+
+``sthread`` is also mandatory to run the program in the model-checker.
+
+.. code-block:: console
+
+   # From within the container, directory /source/tutorial/
+   $ simgrid-mc --sthread ./plusplus
+   [0.000000] [mc_checkerside/INFO] setenv 'LD_PRELOAD'='/usr/lib/x86_64-linux-gnu/libsthread.so'
+   sthread is intercepting the execution of ./plusplus. If it's not what you want, export STHREAD_IGNORE_BINARY=./plusplus
+   [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+   [0.000000] [mc_explo/INFO] Found a datarace at location 0x55d463ce604c between actor 2 and 3 after the follwing execution:
+   (an hopefully informative message)
+
+Lab3: non-deterministic receive (S4U or MPI)
 --------------------------------------------
 
 Motivational example
