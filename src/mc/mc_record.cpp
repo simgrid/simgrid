@@ -52,7 +52,7 @@ void RecordTrace::replay() const
   // Creating two non-blocking sockets locally so we can simulate the application talking to MC
   // This way we can use everything already in place in the model checker code despite being in the App side
   int sockets[2];
-  xbt_assert(socketpair(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0, sockets) != -1,
+  xbt_assert(socketpair(AF_UNIX, SOCK_STREAM, 0, sockets) != -1,
              "Could not create socketpair: %s.\nPlease increase the file limit with `ulimit -n 10000`.",
              strerror(errno));
   auto app_side     = std::make_unique<Channel>(sockets[0]);
