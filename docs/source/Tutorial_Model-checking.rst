@@ -20,35 +20,54 @@ does not verify the property, the model checker gives a counter-example that can
 Conversely, if no counter-example can be found after an exhaustive exploration of the model, we know that the property holds for
 the model. It may also happen that the model is too large to be exhaustively explored, in which case the model checker is not
 conclusive. Model checkers rely on so-called reduction techniques (based on symmetries and equivalence) to efficiently explore
-the system state. `Spin <https://spinroot.com/spin/whatispin.html>` is a renowned model checker while `TLA+
-<https://en.wikipedia.org/wiki/TLA%2B>` is a mathematical language that can be used in such context.
+the system state. `Spin <https://spinroot.com/spin/whatispin.html>`_ is a renowned model checker while `TLA+
+<https://en.wikipedia.org/wiki/TLA%2B>`_ is a mathematical language that can be used in such context.
 
 Software model checking applies similar ideas to programs, without requiring a mathematical model of the system. Instead, the
 program itself is used as a model to verify against a property. Along these lines, Mc SimGrid is a stateless model checker: it
 does not leverage static analysis nor symbolic execution. Instead, the program is simply executed through all possible outcomes.
-On indecision points, the application is forked (in the UNIX meaning), the first branch is executed exhaustively, and then the
-other fork of the system is used to explore the other execution branch.
+On indecision points, the application is forked (in the `UNIX meaning <https://en.wikipedia.org/wiki/Fork_(system_call)>`_), the
+first branch is executed exhaustively, and then the other fork of the system is used to explore the other execution branch.
 
-Mc SimGrid targets distributed applications that interact through message passing or through synchronization mechanisms (mutex,
-barrier, etc). Since it does not explicitly observe memory accesses, Mc SimGrid cannot automatically detect race conditions in
-multithreaded programs. It can however be used to detect misuses of the synchronization functions, such as the ones resulting in
-deadlocks.
+Mc SimGrid targets parallel and distributed applications that interact through message passing or through synchronization
+mechanisms (mutex, barrier, etc). It can be used to find crash and other property violations even if they only occur under rare
+conditions. Starting with v4.1, it can also detect any race conditions under some conditions. In addition to these classical
+`safety properties <https://en.wikipedia.org/wiki/Linear_time_property>`_, it can also ensure `communication determinism
+<https://hal.inria.fr/hal-01953167/document>`_, a property that allows more efficient solutions toward fault-tolerance. It can
+alleviate the state space explosion problem through several variants of `Dynamic Partial Ordering Reduction (DPOR)
+<https://en.wikipedia.org/wiki/Partial_order_reduction>`_. Note that Mc SimGrid is currently less mature than other parts of the
+framework, but it improves every month. Please report any question and issue so that we can further improve it.
 
-Mc SimGrid can be used to verify classical `safety properties <https://en.wikipedia.org/wiki/Linear_time_property>`_, but also
-`communication determinism <https://hal.inria.fr/hal-01953167/document>`_, a property that allows more efficient solutions
-toward fault-tolerance. It can alleviate the state space explosion problem through several variants of `Dynamic Partial Ordering
-Reduction (DPOR) <https://en.wikipedia.org/wiki/Partial_order_reduction>`_. Note that Mc SimGrid is currently less mature than
-other parts of the framework, but it improves every month. Please report any question and issue so that we can further improve
-it.
+Instrumentation solutions
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The model checker can only find bugs coming from  misuses of the events it can observe.  Several partially compatible solutions
+exist to make the applicative events observable by Mc SimGrid. The first instrumentation solution leverage :ref:`SMPI
+<usecase_smpi>` to detect misuses of the MPI interface. It can observe communications done with MPI, but not thread operations
+nor memory accesses. The second instrumentation solution is called ``sthread``. This library can be injected with `LD_PRELOAD
+<https://en.wikipedia.org/wiki/Dynamic_linker#Systems_using_ELF>`_ into the applications to observe thread operations and
+several synchronizations (mutex, barrier, semaphores, etc).
+
+Prior to SimGrid v4.1, memory accesses could not be observed, preventing Mc SimGrid from the detection of memory race conditions
+and other bugs that can only be observed for specific ordering of the memory read and write events. As such, It could only be
+used to detect misuses of the synchronization functions such as pthread calls or MPI calls (depending on the leveraged
+instrumentation solution), such as the ones resulting in deadlocks.
+
+Starting with v4.1 (not released at the time of writing), read and write memory events can be observed in programs compiled with
+our ``mclang`` compilation wrapper that adds an extra pass to the ``clang`` compiler that tracks memory accesses at runtime. The
+memory events are not interleaved explicitly. Instead, Mc SimGrid uses a race detector inspired from `FastTrack
+<https://dl.acm.org/doi/abs/10.1145/1543135.1542490>`_ to detect races on the explored executions.
+
 
 Limits
 ^^^^^^
 
-The main theoretical limit of the SimGrid model checker is that it does not observe memory accesses, which makes it
-inappropriate to the detection of memory race conditions and other bugs that can only be observed for specific ordering of the
-memory read and write events. 
+The first limit lies in the observation of events. Some bugs remain at time of writing, making it tedious to combine all
+instrumentation solutions (SMPI + sthread + the clang pass). This should  improve in the coming months, but many other
+applicative events remain unobserved. Communications are not observed if they don't use the MPI standard; Disk accesses are left
+completely unobserved, and so are the time-related APIs. 
 
-The main practical limit lies in the huge amount of scenarios to explore. SimGrid tries to explore only non-redundant scenarios
+The second practical limit lies in the huge amount of scenarios to explore. SimGrid tries to explore only non-redundant scenarios
 thanks to classical reduction techniques (such as DPOR) but the exploration may well never finish if you don't carefully adapt
 your application to this mode. The amount of event interleavings to explore grows exponentially with the amount of actors and
 amount of events in each actor's history. Keep your program small to fully explore your scenarios.
@@ -60,8 +79,8 @@ is to not start at all, because of a stupid bug.
 Another limit of this mode is that time becomes discrete in the model checker: You can say for example that the application took
 42 steps to run, but there is no way to know how much time it took or the number of watts that were dissipated.
 
-The model checker may well miss existing issues, as it computes the possible outcomes *from a given initial situation*. There is
-no way to prove the correctness of your application in full generality with this tool.
+The model checker may well miss existing issues, as it computes the possible outcomes *from a given initial situation*. This
+approach is not adapted to prove the correctness of your application in full generality.
 
 Getting Mc SimGrid
 ------------------
