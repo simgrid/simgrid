@@ -57,7 +57,7 @@ std::string MemoryAccessImpl::get_info_from_access(aid_t aid, unsigned long roun
   xbt_assert(aid >= 0);
   xbt_assert(saved_accesses_.size() > (unsigned)aid);
   xbt_assert(saved_accesses_[aid].find(mem_op.get_location()) != saved_accesses_[aid].end());
-  xbt_assert(saved_accesses_[aid][mem_op.get_location()].size() > round, "aid=%ld size=%ld", aid,
+  xbt_assert(saved_accesses_[aid][mem_op.get_location()].size() > round, "aid=%ld size=%zu", aid,
              saved_accesses_[aid][mem_op.get_location()].size());
 
   auto where_to_find = saved_accesses_[aid][mem_op.get_location()][round];
