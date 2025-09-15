@@ -5,7 +5,7 @@ FROM debian:testing
 # - Compile and install SimGrid itself. Clean the tree.
 # - Remove everything that was installed, and re-install what's needed by the SimGrid libraries before the Gran Final Cleanup
 RUN apt-get --allow-releaseinfo-change update && apt -y upgrade && \
-    apt install -y g++ gcc git valgrind gfortran libboost-dev libboost-all-dev libeigen3-dev cmake dpkg-dev python3-dev pybind11-dev && \
+    apt install -y clang git valgrind gfortran libboost-dev libboost-all-dev libeigen3-dev cmake dpkg-dev python3-dev pybind11-dev && \
     mkdir /source/ && cd /source && git clone --depth=1 https://framagit.org/simgrid/simgrid.git simgrid.git && \
     cd simgrid.git && \
     cmake -DCMAKE_INSTALL_PREFIX=/usr/ -Denable_documentation=OFF -Denable_smpi=ON -Denable_compile_optimizations=ON . && \

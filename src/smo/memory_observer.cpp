@@ -1,5 +1,9 @@
+/* Copyright (c) 2025-2025. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "memory_observer.h"
-#include <stdio.h>
 
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/MemoryImpl.hpp"
@@ -11,7 +15,8 @@ void create_memory_access(MemOpType, void*);
 void create_memory_access(MemOpType type, void* where)
 {
   simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
-  issuer->get_memory_access()->record_memory_access(type, where);
+  if (issuer && issuer->get_memory_access())
+    issuer->get_memory_access()->record_memory_access(type, where);
 }
 
 /* Write operations */

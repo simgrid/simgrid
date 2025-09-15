@@ -117,8 +117,13 @@ In the container, you have access to the following directories of interest:
 - ``/source/simgrid-v???``: Source code of SimGrid, pre-configured in MC mode. The framework is also installed in ``/usr``
   so the source code is only provided for your information.
 
-Lab1: Dining philosophers
--------------------------
+To use valgrind from within the container, you probably need to run the following command
+
+.. code-block:: console
+   $ ulimit -n 1024
+
+Lab1: Dining philosophers with sthread
+--------------------------------------
 
 Let's first explore the behavior of bugged implementation of the `dining philosophers problem
 <https://en.wikipedia.org/wiki/Dining_philosophers_problem>`_. Once in the container, copy all files from the tutorial into the
@@ -445,7 +450,46 @@ We hope this tool proves useful for debugging your multithreaded code. We encour
 or negative. Additionally, we would appreciate learning about any bugs you have identified using this tool. Our team will strive
 to address any challenges you encounter while working with Mc SimGrid.
 
-Lab2: non-deterministic receive (S4U or MPI)
+Lab2: race condition with sthread
+---------------------------------
+
+This short lab aims at searching for race conditions with the latest version of SimGrid. It requires SimGrid v4.1 (that is not
+yet released), and was only tested with the Docker image. See above to pull and start the Docker image.
+
+If you want to search for race conditions in your code, you must use our compilation wrapper to compile the programs.
+
+.. code-block:: console
+
+   # From within the container, directory /source/tutorial/
+   $ cp /source/tutorial-model-checking.git/plusplus.c .
+   $ mclang plusplus.c -o plusplus
+   (a lot of debug output that can safely be ignored)
+
+Looking at the source code, there is a clear race condition between the two threads on the variable ``i``. This is because
+incrementing an integer is not an atomic operation, so ``i`` could have the value of ``1`` if the threads compete for its
+increment. But if you run the program, it is very unlikely that you observe any issue. Running it 10,000 times in a row may lead
+to some buggy executions, but it's not even sure. 
+
+.. code-block:: console
+
+   # From within the container, directory /source/tutorial/
+   $ ./plusplus
+   $ for i in `seq 1 10000` ; do echo "XXX Run $i" ; ./plusplus ; done
+   (10,000 executions, of which a few dozen may be buggy)
+
+But if you run this program within the model checker, it detects the issue instantaneously, and properly report the race condition:
+
+.. code-block:: console
+
+   # From within the container, directory /source/tutorial/
+   $ simgrid-mc --sthread ./plusplus
+   [0.000000] [mc_checkerside/INFO] setenv 'LD_PRELOAD'='/usr/lib/x86_64-linux-gnu/libsthread.so'
+   sthread is intercepting the execution of ./plusplus. If it's not what you want, export STHREAD_IGNORE_BINARY=./plusplus
+   [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+   [0.000000] [mc_explo/INFO] Found a datarace at location 0x55d463ce604c between actor 2 and 3 after the follwing execution:
+   (an hopefully informative message)
+
+Lab3: non-deterministic receive (S4U or MPI)
 --------------------------------------------
 
 Motivational example
