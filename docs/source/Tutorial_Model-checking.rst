@@ -457,12 +457,13 @@ This short lab aims at searching for race conditions with the latest version of 
 yet released), and was only tested with the Docker image. See above to pull and start the Docker image.
 
 If you want to search for race conditions in your code, you must use our compilation wrapper to compile the programs.
+Do not forget the ``-g`` flag, or the messages will be less informative.
 
 .. code-block:: console
 
    # From within the container, directory /source/tutorial/
    $ cp /source/tutorial-model-checking.git/plusplus.c .
-   $ mclang plusplus.c -o plusplus
+   $ mclang plusplus.c -o plusplus -g
    (a lot of debug output that can safely be ignored)
 
 Looking at the source code, there is a clear race condition between the two threads on the variable ``i``. This is because
@@ -485,7 +486,43 @@ But if you run this program within the model checker, it detects the issue insta
    sthread is intercepting the execution of ./plusplus. If it's not what you want, export STHREAD_IGNORE_BINARY=./plusplus
    [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
    [0.000000] [mc_explo/INFO] Found a datarace at location 0x55d463ce604c between actor 2 and 3 after the follwing execution:
-   (an hopefully informative message)
+   [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorCreate(child 2)
+   [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorCreate(child 3)
+   [0.000000] [mc_explo/INFO]   Actor 2 in simcall ActorExit()
+   [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorJoin(target 2, no timeout)
+   [0.000000] [mc_explo/INFO]   Actor 3 in simcall ActorExit()
+   [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;2;1;3'
+   [0.000000] [mc_dfs/INFO] DFS exploration ended. 6 unique states visited; 0 explored traces (0 transition replays, 5 states visited overall)
+
+To replay the execution to get more details, you must inject sthread manually through ``LD_PRELOAD``. The syntax is given in the first line of the ``simgrid-mc`` output.
+
+.. code-block:: console
+
+   # From within the container, directory /source/tutorial/
+   $ LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libsthread.so ./plusplus --cfg=model-check/replay:'1;1;2;1;3'
+   # (verbose description of the first execution steps, that are not that informative)
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] * Path chunk #5 '3/0' Actor thread 2(pid:3): ActorExit()
+   [0.000000] [mc_record/INFO] ***********************************************************************************
+   [0.000000] [mc_record/INFO] Found a datarace at location 0x562a1c30c04c
+   [0.000000] [mc_record/INFO] First operation was a WRITE made by actor 2:
+     ->  #0 simgrid::xbt::BacktraceImpl::BacktraceImpl() at ./src/xbt/backtrace.cpp:46
+     ->  #1 simgrid::kernel::activity::MemoryAccessImpl::record_memory_access(MemOpType, void*) at ./src/kernel/activity/MemoryImpl.cpp:29
+     ->  #2 thread_code at /source/tutorial-model-checking.git/plusplus.c:8
+     ->  #3 operator()<void*(void*), void> at ./src/sthread/sthread_impl.cpp:154
+     ->  #4 std::function<void ()>::operator()() const at /usr/include/c++/15/bits/std_function.h:593
+     ->  #5 
+
+   [0.000000] [mc_record/INFO] Second operation was a READ made by actor 3:
+     ->  #0 simgrid::xbt::BacktraceImpl::BacktraceImpl() at ./src/xbt/backtrace.cpp:46
+     ->  #1 simgrid::kernel::activity::MemoryAccessImpl::record_memory_access(MemOpType, void*) at ./src/kernel/activity/MemoryImpl.cpp:29
+     ->  #2 thread_code at /source/tutorial-model-checking.git/plusplus.c:8
+     ->  #3 operator()<void*(void*), void> at ./src/sthread/sthread_impl.cpp:154
+     ->  #4 std::function<void ()>::operator()() const at /usr/include/c++/15/bits/std_function.h:593
+     ->  #5 
+
+So we see clearly from this output that the bug comes from a READ and a WRITE, both occuring at line ``plusplus.c:8`` in the
+function ``thread_code`` of the provided example.
 
 Lab3: non-deterministic receive (S4U or MPI)
 --------------------------------------------
