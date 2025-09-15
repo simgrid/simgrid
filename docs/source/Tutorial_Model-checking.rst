@@ -135,6 +135,9 @@ directory shared between your host computer and the container.
   $ cp -r /source/tutorial-model-checking.git/* /source/tutorial/
   $ cd /source/tutorial/
 
+If the copy command fails, complaining that you do not have the needed right, try removing the ``sudo`` in front of your
+``docker`` command, or the ``--user $UID:$GID`` part of the docker command if the ``sudo`` is mandatory in your setup.
+
 Several files should have appeared in the ``~/tuto-mcsimgrid`` directory of your computer.
 This lab uses `philosophers.c <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/philosophers.c>`_
 
@@ -466,9 +469,10 @@ Do not forget the ``-g`` flag, or the messages will be less informative.
    $ mclang plusplus.c -o plusplus -g
    (a lot of debug output that can safely be ignored)
 
-Looking at the source code, there is a clear race condition between the two threads on the variable ``i``. This is because
-incrementing an integer is not an atomic operation, so ``i`` could have the value of ``1`` if the threads compete for its
-increment. But if you run the program, it is very unlikely that you observe any issue, even if you run it 10,000 times in a row. 
+Looking at the `source code <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/philosophers.c>`_, there is a
+clear race condition between the two threads on the variable ``i``. This is because incrementing an integer is not an atomic
+operation, so ``i`` could have the value of ``1`` if the threads compete for its increment. But if you run the program, it is
+very unlikely that you observe any issue, even if you run it 10,000 times in a row. 
 
 .. code-block:: console
 
@@ -494,7 +498,8 @@ But if you run this program within the model checker, it detects the issue insta
    [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;2;1;3'
    [0.000000] [mc_dfs/INFO] DFS exploration ended. 6 unique states visited; 0 explored traces (0 transition replays, 5 states visited overall)
 
-To replay the execution to get more details, you must inject sthread manually through ``LD_PRELOAD``. The syntax is given in the first line of the ``simgrid-mc`` output.
+To replay the execution to get more details, you must inject sthread manually through ``LD_PRELOAD``. The syntax is given in the
+first line of the ``simgrid-mc`` output shown above.
 
 .. code-block:: console
 
