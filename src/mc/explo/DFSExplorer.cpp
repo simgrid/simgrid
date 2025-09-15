@@ -227,7 +227,7 @@ void DFSExplorer::run()
 
   XBT_DEBUG("**************************************************");
 
-  stack_t state_stack = std::deque<StatePtr>();
+  static stack_t state_stack = std::deque<StatePtr>();
   state_stack.emplace_back(std::move(initial_state));
 
   odpor::Execution empty_seq = odpor::Execution();
