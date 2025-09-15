@@ -257,6 +257,7 @@ void Exploration::report_data_race(const McDataRace& e)
            "--cfg=model-check/replay:'%s'",
            Exploration::get_instance()->get_record_trace().to_string().c_str());
   Exploration::get_instance()->log_state();
+  get_remote_app().finalize_app(true);
 }
 
 bool Exploration::empty()
