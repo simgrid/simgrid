@@ -423,6 +423,7 @@ set(PLUGINS_SRC
   src/plugins/host_dvfs.cpp
   src/plugins/host_energy.cpp
   src/plugins/host_load.cpp
+  src/plugins/vm_load.cpp
   src/plugins/jbod.cpp
   src/plugins/link_energy.cpp
   src/plugins/link_energy_wifi.cpp
