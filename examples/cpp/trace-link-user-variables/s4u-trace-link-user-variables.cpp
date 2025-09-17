@@ -18,10 +18,12 @@ static void trace_fun()
   // set initial values for the link user variables this example only shows for links identified by "6" and "3" in the
   // platform file
   // Set the Link_Capacity variable
+  simgrid::instr::declare_link_variable("Link_Capacity");
   simgrid::instr::set_link_variable("6", "Link_Capacity", 12.34);
   simgrid::instr::set_link_variable("3", "Link_Capacity", 56.78);
 
   // Set the Link_Utilization variable
+  simgrid::instr::declare_link_variable("Link_Utilization", "0.9 0.1 0.1");
   simgrid::instr::set_link_variable("3", "Link_Utilization", 1.2);
   simgrid::instr::set_link_variable("6", "Link_Utilization", 3.4);
 
@@ -49,12 +51,6 @@ int main(int argc, char* argv[])
   xbt_assert(argc > 1, "Usage: %s platform_file\n \tExample: %s small_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
-  // Have to seal the platform before declaring new tracing variables
-  e.seal_platform();
-
-  // declaring link user variables (one without, another with an RGB color)
-  simgrid::instr::declare_link_variable("Link_Capacity");
-  simgrid::instr::declare_link_variable("Link_Utilization", "0.9 0.1 0.1");
 
   e.host_by_name("Tremblay")->add_actor("master", trace_fun);
   e.host_by_name("Tremblay")->add_actor("worker", trace_fun);

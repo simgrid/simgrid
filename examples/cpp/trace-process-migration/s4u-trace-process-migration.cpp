@@ -36,6 +36,7 @@ static void policeman()
   // I tell it where it must emigrate to.
   auto destinations = {"Tremblay", "Jupiter", "Fafard", "Ginette", "Bourassa", "Fafard", "Tremblay", "Ginette", ""};
   auto* mailbox     = sg4::Mailbox::by_name("master_mailbox");
+  simgrid::instr::declare_tracing_category("migration_order");
 
   for (auto const& destination : destinations) {
     mailbox->put_init(new std::string(destination), 0)->set_tracing_category("migration_order")->wait();
@@ -48,10 +49,6 @@ int main(int argc, char* argv[])
   xbt_assert(argc > 1, "Usage: %s platform_file\n \tExample: %s small_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
-  // Have to seal the platform before declaring new tracing variables
-  e.seal_platform();
-
-  simgrid::instr::declare_tracing_category("migration_order");
 
   e.host_by_name("Fafard")->add_actor("emigrant", emigrant);
   e.host_by_name("Tremblay")->add_actor("policeman", policeman);
