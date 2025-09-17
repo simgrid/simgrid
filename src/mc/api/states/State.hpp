@@ -99,7 +99,7 @@ protected:
    *  Key is aid. */
   std::vector<std::optional<ActorState>> actors_to_run_;
   bool actor_status_set_ = false;
-  bool is_a_leaf         = true;
+  volatile bool is_a_leaf = true;
 
   std::vector<std::vector<StatePtr>> children_states_; // first key is aid, second time considered
 
