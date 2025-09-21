@@ -8,7 +8,10 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/simgrid/sg_config.hpp"
+#include "xbt/asserts.h"
+#include "xbt/log.h"
 #include "xbt/log.hpp"
+#include <string>
 
 #if HAVE_SMPI
 #include "smpi/smpi.h"
@@ -35,21 +38,64 @@ int main(int argc, char** argv)
 #if HAVE_SMPI
   smpi_init_options(); // that's OK to call it twice, and we need it ASAP
 #endif
-  sg_config_init(&argc, argv);
   bool sthread = false;
+  bool replay                  = false;
+  const std::string replay_arg = "--cfg=model-check/replay:";
   for (int i = 1; i < argc; i++) {
-    if (strcmp(argv[i], "--sthread") == 0) {
+    if (strcmp(argv[i], "--sthread") == 0)
       sthread = true;
-      break;
-    }
+
+    if (std::string(argv[i]).compare(0, replay_arg.size(), replay_arg) == 0)
+      replay = true;
   }
+
+  if (replay) {
+    /* Prepare the execve parameters */
+    std::vector<char*> params;
+    int i = 1;
+    // Search the command line for the executable name
+    while (argv[i] != nullptr && argv[i][0] == '-')
+      i++;
+    // Push the executable and all its options
+    while (argv[i] != nullptr) {
+      params.push_back(argv[i]);
+      i++;
+    }
+    // Push all options that were passed to simgrid-mc (i.e., before the executable name) so that sthread finds it
+    // (skip "--sthread": we deal with it just below)
+    i = 1;
+    while (argv[i] != nullptr && argv[i][0] == '-') {
+      if (strcmp(argv[i], "--sthread") != 0)
+        params.push_back(argv[i]);
+      i++;
+    }
+
+    // Honor sthread
+#ifdef STHREAD_PATH /* only on Linux for now */
+    if (sthread) {
+      char* env         = getenv("LD_PRELOAD");
+      std::string value = std::string(STHREAD_PATH) + (env == nullptr ? "" : std::string(":") + env);
+      setenv("LD_PRELOAD", value.c_str(), 1);
+    }
+#endif
+
+    /* Actually exec the child */
+    execvp(params[0], params.data());
+    perror("Error while starting the replay:");
+    std::cerr << "Please make sure that the binary exists and is executable. The command line was:\n  ";
+    for (auto* p : params)
+      std::cerr << " '" << p << "'";
+    std::cerr << "\nExiting now.\n";
+    xbt_abort();
+  }
+
+  sg_config_init(&argc, argv);
   if (sthread) {
 #ifdef STHREAD_PATH /* only on Linux for now */
     auto val = simgrid::config::get_value<std::string>("model-check/setenv");
     if (not val.empty())
       val += ";";
-    val += "LD_PRELOAD=";
-    val += STHREAD_PATH;
+    val = "LD_PRELOAD=" + val + STHREAD_PATH;
     simgrid::config::set_value("model-check/setenv", val);
 #else
     xbt_die("sthread is not ported to that operating system yet. You should try it under Linux.");

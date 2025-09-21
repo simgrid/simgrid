@@ -37,7 +37,9 @@ simgrid::config::Flag<std::string> _sg_mc_record_path{
       if (value.empty()) // Ignore default value
         return;
       if (simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::NONE &&
-          simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::REPLAY)
+          simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::REPLAY &&
+          /* simgrid-mc will execve the binary to remove itself when this parameter is set */
+          simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::CHECKER_SIDE)
         xbt_die("ERROR: Specifying a MC replay path is not allowed when running the model-checker in mode %s. "
                 "Either remove the model-check/replay parameter, or execute your code out of simgrid-mc.",
                 to_c_str(simgrid::mc::get_model_checking_mode()));

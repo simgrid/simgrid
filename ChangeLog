@@ -15,6 +15,7 @@ Model-checking:
  - Enable the joint use of SMPI and sthread.
  - Implement a 'parallel' stategy to leverage multicores during the exploration
  - Observe ActorExit events, to get the trailing memory accesses when memory accesses are observed.
+ - simgrid-mc now accepts the --cfg=model-check/replay parameter. In this case, it will execve() the binary to remove itself.
 
 Maint:
  - Simplify our code by removing SysV contexts which do not bring much. It's not portable on all OSes and a bit less efficient
