@@ -1,5 +1,5 @@
 # Base image
-FROM debian:testing
+FROM debian:testing-slim
 
 # - Install SimGrid's dependencies
 # - Compile and install SimGrid itself. Clean the tree.
