@@ -6,22 +6,17 @@
 # Base image
 FROM simgrid/unstable
 
-RUN apt update && apt -y upgrade
-
 # - Clone tutorial-model-checking so that the example source codes are included in the image
 # - Add an empty makefile advising to run cmake before make, just in case
-RUN apt install -y cmake clang git valgrind && \
+# - Add the clang pass that allows Mc SimGrid to observe memory accesses
+RUN apt install -y cmake clang git valgrind && apt clean && apt autoclean && \
     cd /source && \
     git clone --depth=1 https://framagit.org/simgrid/tutorial-model-checking.git tutorial-model-checking.git && \
     printf "all:\n\t@echo \"Please run the following command before make:\";echo \"    cmake .\"; exit 1" > Makefile && \
-    apt autoremove -y && apt clean && apt autoclean
-
-# - Add the clang pass that allows Mc SimGrid to observe memory accesses
-RUN cd /source && \
+    cd /source && \
     clang --version && \
     git clone --depth=1 https://gitlab.inria.fr/simgrid/llvm-instru.git llvm-instru.git && \
     mkdir -p llvm-instru.git/build && cd llvm-instru.git/build && \
     cmake -DCMAKE_CXX_COMPILER=clang++-19 -DCMAKE_C_COMPILER=clang-19 .. && make install && \
-    apt autoremove -y && apt clean && apt autoclean
 
 CMD ["/bin/bash"]
