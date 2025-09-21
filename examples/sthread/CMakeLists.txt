@@ -9,7 +9,7 @@ foreach(x
         mutex-simple mutex-recursive
       	producer-consumer)
 
-  if(enable_sthread AND (NOT SIMGRID_HAVE_MUSL))
+  if(enable_sthread)
     add_executable       (pthread-${x} EXCLUDE_FROM_ALL pthread-${x}.c)
     set_target_properties(pthread-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(pthread-${x} PRIVATE Threads::Threads)
@@ -60,7 +60,7 @@ set(_mutex-simpledeadlock_failing ON)
 foreach(x
         mutex-simple mutex-simpledeadlock)
 
-  if(enable_sthread AND enable_smpi AND (NOT SIMGRID_HAVE_MUSL))
+  if(enable_sthread AND enable_smpi)
     add_executable       (smpi-${x} EXCLUDE_FROM_ALL smpi-${x}.c)
     set_target_properties(smpi-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(smpi-${x} PRIVATE Threads::Threads)
