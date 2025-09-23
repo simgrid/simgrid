@@ -44,6 +44,12 @@ tuto-mc:
                  -t simgrid/tuto-mc:$$(date --iso-8601) \
 		 $(DOCKER_EXTRA) \
                  . | tee tuto-mc.log
+mc-slim:
+	docker build -f Dockerfile.mc-slim \
+	         -t simgrid/mc-slim:latest \
+                 -t simgrid/mc-slim:$$(date --iso-8601) \
+		 $(DOCKER_EXTRA) \
+                 . | tee mc-slim.log
 
 build-deps-stable:
 	docker build -f Dockerfile.build-deps-stable \
