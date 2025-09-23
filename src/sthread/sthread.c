@@ -234,9 +234,9 @@ int __libc_start_main(int (*main)(int, char**, char**), int argc, char** argv, i
   /* Save the real main function address */
   raw_main = main;
 
-  /* Find the real __libc_start_main()... */
+  /* Find the real __libc_start_main(). It cannot fail since our wrapper was picked. */
   typeof(&__libc_start_main) orig = dlsym(RTLD_NEXT, "__libc_start_main");
-  /* ... and call it with our custom main function */
+  /* Call it with our custom main function */
 #if HAVE_VALGRIND_H
   /* ... unless valgrind is used, and this instance is not the target program (but the valgrind launcher) */
   if (getenv("VALGRIND_LIB") && !RUNNING_ON_VALGRIND)
