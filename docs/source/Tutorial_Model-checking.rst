@@ -93,9 +93,9 @@ X). Double check the value of the ``SIMGRID_HAVE_MC`` in the generated file ``in
 1, read the configuration logs to understand why the model checker was not compiled in, and try again. 
 
 To test SimGrid without installing it, you can use Docker. You can either pull the ``simgrid/tuto-mc`` (3.3Gb) image that
-contains a full SimGrid installation and all needed files, or the ``simgrid/mc-slim`` image (950Mb) that contains the bare
+contains a full SimGrid installation and all needed files, or the ``simgrid/mc-slim`` image (850Mb) that contains the bare
 minimum to use the model-checker. That's still quite a large image, but we need a complete clang installation in the docker to
-recompile the code with SimGrid. It could be further reduced, as the docker still contains valgrind for convenience.
+recompile the C/C++ code with SimGrid.
 
 .. tabs::
 
@@ -969,14 +969,18 @@ now read it together. It can be split in several parts:
        [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out 
                                   of simgrid-mc with --cfg=model-check/replay:'1;2;1;1;2;4;1;1;3;1'
 
-    This is the magical string (here: ``1;2;1;1;2;4;1;1;3;1``) that you should pass to your simulator to follow the same execution path, 
-    but this time with many additional information. You can also add valgrind to the party to ensure that you have no memory error in your code.
+    This is the magical string (here: ``1;2;1;1;2;4;1;1;3;1``) that you should pass to your simulator to follow the same
+    execution path, but this time with many additional information. You can also add valgrind or a sanitizer to the party to
+    ensure that you have no memory error in your code.
 
 
    .. tabs::
 
       .. group-tab:: simgrid/mc-slim
 
+         Valgrind is not available in this docker image, but using the Address Sanitizer is quite easy:
+
+          $ ./simgrid.sh clang++ ndet-receive-s4u.cpp -lsimgrid -fsanitize=address -fno-omit-frame-pointer -o ndet
           $ ./simgrid.sh valgrind ./ndet-receive-s4u small_platform.xml --cfg=model-check/replay:'1;2;1;1;2;4;1;1;3;1'
           ==402== Memcheck, a memory error detector
           ==402== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
@@ -1083,12 +1087,16 @@ should use Mc SimGrid to exhaustively explore the state space and trigger the bu
 
    $ smpirun -wrapper simgrid-mc -np 4 -platform small_platform.xml ndet-receive-mpi
 
-The produced output is then very similar to the one you get with S4U, even if the exact execution path leading to the bug may differs. You
-can also trigger a given execution path out of the model-checker, for example to explore it with valgrind.
+The produced output is then very similar to the one you get with S4U, even if the exact execution path leading to the bug may
+differs. You can also trigger a given execution path out of the model-checker, for example to explore it with valgrind (if
+you're not in the ``simgrid/mc-slim`` docker image) or to get more information.
 
 .. code-block:: console
 
+   # With valgrind out of simgrid-mc if you're not in mc-slim
    $ smpirun -wrapper valgrind -np 4 -platform small_platform.xml --cfg=model-check/replay:'1;2;1;1;4;1;1;3;1' ndet-receive-mpi
+   # Still within simgrid-mc but with the full logs, the only way to go if you're in mc-slim
+   $ ./simgrid.sh smpirun -wrapper simgrid-mc -np 4 -platform small_platform.xml --cfg=model-check/replay:'1;2;1;1;4;1;1;3;1' ndet-receive-mpi
 
 Under the hood
 ^^^^^^^^^^^^^^
