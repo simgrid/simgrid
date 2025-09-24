@@ -74,6 +74,6 @@ int main(int argc, char** argv)
     if (strcmp(argv[2], "PROP") == 0)
       XBT_INFO("SG_TEST_mem: %s", e.host_by_name("host1")->get_property("SG_TEST_mem"));
   }
-
+  e.run();
   return 0;
 }

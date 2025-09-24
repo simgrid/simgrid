@@ -17,6 +17,9 @@ Model-checking:
  - Observe ActorExit events, to get the trailing memory accesses when memory accesses are observed.
  - simgrid-mc now accepts the --cfg=model-check/replay parameter. In this case, it will execve() the binary to remove itself.
 
+Platforms:
+ - Remove Engine::on_platform_sealed that was semi-private (not documented). Use Engine::on_simulation_start instead
+
 Maint:
  - Simplify our code by removing SysV contexts which do not bring much. It's not portable on all OSes and a bit less efficient
    than our raw contexts. Raw contexts are limited to amd64 processors, but boost contexts should work on exotic architectures.

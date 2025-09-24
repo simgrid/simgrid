@@ -389,7 +389,7 @@ static void on_activity_suspend_resume(s4u::Activity const& activity)
   on_action_state_change(*activity.get_impl()->model_action_, /*ignored*/ kernel::resource::Action::State::STARTED);
 }
 
-static void on_platform_sealed()
+static void on_simulation_start()
 {
   std::set<std::string, std::less<>> filter;
   XBT_DEBUG("Starting graph extraction.");
@@ -458,7 +458,7 @@ void define_callbacks()
   // always need the callbacks to zones (we need only the root zone), to create the rootContainer and the rootType
   // properly
   if (TRACE_needs_platform()) {
-    s4u::Engine::on_platform_sealed_cb(on_platform_sealed);
+    s4u::Engine::on_simulation_start_cb(on_simulation_start);
     s4u::Host::on_creation_cb(on_host_creation);
     s4u::Host::on_speed_change_cb([](s4u::Host const& host) {
       Container::by_name(host.get_name())

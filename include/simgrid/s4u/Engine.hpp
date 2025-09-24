@@ -268,9 +268,6 @@ public:
 
   /** Add a callback fired when the platform is created (ie, the xml file parsed). */
   static void on_platform_created_cb(const std::function<void()>& cb) { on_platform_created.connect(cb); }
-  /** Add a callback fired when the platform is sealed and cannot be further modified, right before the actual
-   *  simulation starts. */
-  static void on_platform_sealed_cb(const std::function<void()>& cb) { on_platform_sealed.connect(cb); }
   /** Add a callback fired when the platform is about to be created
    * (ie, after any configuration change and just before the resource creation) */
   static void on_platform_creation_cb(const std::function<void()>& cb) { on_platform_creation.connect(cb); }
@@ -293,7 +290,6 @@ public:
   /* FIXME signals should be private */
   static xbt::signal<void()> on_platform_creation;
   static xbt::signal<void()> on_platform_created;
-  static xbt::signal<void()> on_platform_sealed;
 #endif
 
 private:
