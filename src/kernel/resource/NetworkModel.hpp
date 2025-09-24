@@ -7,6 +7,7 @@
 #define SIMGRID_KERNEL_RESOURCE_NETWORKMODEL_HPP
 
 #include "simgrid/kernel/resource/Model.hpp"
+#include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "src/kernel/resource/NetworkModelFactors.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 
@@ -39,9 +40,11 @@ public:
    * @param name The name of the Link
    * @param bandwidths The vector of bandwidths of the Link in bytes per second
    */
-  virtual StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) = 0;
+  virtual StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths,
+                                        routing::NetZoneImpl* englobing_zone) = 0;
 
-  virtual StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) = 0;
+  virtual StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths,
+                                             routing::NetZoneImpl* englobing_zone) = 0;
 
   /**
    * @brief Create a communication between two hosts.

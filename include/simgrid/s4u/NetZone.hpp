@@ -105,7 +105,7 @@ class XBT_PUBLIC NetZone {
   friend kernel::routing::NetZoneImpl;
 #endif
 
-  kernel::routing::NetZoneImpl* const pimpl_;
+  kernel::routing::NetZoneImpl* const pimpl_ = nullptr;
 
 protected:
   explicit NetZone(kernel::routing::NetZoneImpl* impl) : pimpl_(impl) {}

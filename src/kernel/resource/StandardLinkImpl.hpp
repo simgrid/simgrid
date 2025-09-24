@@ -18,11 +18,10 @@ namespace simgrid::kernel::resource {
  ************/
 class StandardLinkImpl : public LinkImpl {
   s4u::Link piface_;
-  s4u::Link::SharingPolicy sharing_policy_ = s4u::Link::SharingPolicy::SHARED;
-  routing::NetZoneImpl* englobing_zone_    = nullptr;
 
 protected:
-  explicit StandardLinkImpl(const std::string& name);
+  explicit StandardLinkImpl(const std::string& name, s4u::Link::SharingPolicy sharing_policy,
+                            routing::NetZoneImpl* englobing_zone);
   StandardLinkImpl(const StandardLinkImpl&) = delete;
   StandardLinkImpl& operator=(const StandardLinkImpl&) = delete;
   ~StandardLinkImpl() override                         = default; // Use destroy() instead of this destructor.
@@ -49,13 +48,8 @@ public:
   /** @brief Get the latency in seconds of current Link */
   double get_latency() const override { return latency_.peak * latency_.scale; }
 
-  routing::NetZoneImpl* get_englobing_zone() const override { return englobing_zone_; }
-  /** @brief Set the NetZone in which this Link is included */
-  StandardLinkImpl* set_englobing_zone(routing::NetZoneImpl* netzone_p);
-
   /** @brief The sharing policy */
   void set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb) override;
-  s4u::Link::SharingPolicy get_sharing_policy() const override { return sharing_policy_; }
 
   void turn_on() override;
   void turn_off() override;

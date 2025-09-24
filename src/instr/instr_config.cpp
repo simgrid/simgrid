@@ -354,7 +354,7 @@ static void on_link_type_creation(const Type& type, const Type& source, const Ty
   tracing_file << stream.str() << '\n';
 }
 
-static void on_simulation_start()
+static void on_platform_creation()
 {
   if (trace_active || not TRACE_is_enabled())
     return;
@@ -458,7 +458,7 @@ void init()
                             6);
 
   /* Connect Engine callbacks */
-  s4u::Engine::on_platform_creation_cb(on_simulation_start);
+  s4u::Engine::on_platform_creation_cb(on_platform_creation);
   s4u::Engine::on_time_advance_cb([](double /*time_delta*/) { dump_buffer(false); });
   s4u::Engine::on_deadlock_cb(on_simulation_end);
   s4u::Engine::on_simulation_end_cb(on_simulation_end);

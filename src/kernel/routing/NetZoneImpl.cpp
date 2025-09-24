@@ -166,7 +166,7 @@ s4u::Host* NetZoneImpl::add_host(const std::string& name, const std::vector<doub
 
 resource::StandardLinkImpl* NetZoneImpl::do_create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  return network_model_->create_link(name, bandwidths);
+  return network_model_->create_link(name, bandwidths, this);
 }
 
 s4u::Link* NetZoneImpl::add_link(const std::string& name, const std::vector<double>& bandwidths)
@@ -176,7 +176,7 @@ s4u::Link* NetZoneImpl::add_link(const std::string& name, const std::vector<doub
       "Impossible to create link: %s. Invalid network model: nullptr. Have you set the parent of this NetZone: %s?",
       name.c_str(), get_cname());
   xbt_enforce(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
-  links_[name] = do_create_link(name, bandwidths)->set_englobing_zone(this);
+  links_[name] = do_create_link(name, bandwidths);
   return links_[name]->get_iface();
 }
 
@@ -189,8 +189,8 @@ s4u::SplitDuplexLink* NetZoneImpl::add_split_duplex_link(const std::string& name
       name.c_str(), get_cname());
   xbt_enforce(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
 
-  auto* link_up             = add_link(name + "_UP", bw_up)->get_impl()->set_englobing_zone(this);
-  auto* link_down           = add_link(name + "_DOWN", bw_down)->get_impl()->set_englobing_zone(this);
+  auto* link_up             = add_link(name + "_UP", bw_up)->get_impl();
+  auto* link_down           = add_link(name + "_DOWN", bw_down)->get_impl();
   split_duplex_links_[name] = std::make_unique<resource::SplitDuplexLinkImpl>(name, link_up, link_down);
   return split_duplex_links_[name]->get_iface();
 }

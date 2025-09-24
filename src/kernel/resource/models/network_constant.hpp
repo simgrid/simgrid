@@ -17,8 +17,10 @@ public:
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 
-  StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bws) override;
-  StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bws) override;
+  StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bws,
+                                routing::NetZoneImpl* englobing_zone) override;
+  StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bws,
+                                     routing::NetZoneImpl* englobing_zone) override;
 };
 
 class NetworkConstantAction final : public NetworkAction {

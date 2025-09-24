@@ -37,15 +37,12 @@ public:
   double get_bandwidth() const override { return link_up_->get_bandwidth(); }
   void set_bandwidth(double value) override;
 
-  routing::NetZoneImpl* get_englobing_zone() const override { return link_up_->get_englobing_zone(); }
-
   /** @brief Get the latency in seconds of current Link */
   double get_latency() const override { return link_up_->get_latency(); }
   void set_latency(double value) override;
 
   /** @brief The sharing policy */
   void set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb) override;
-  s4u::Link::SharingPolicy get_sharing_policy() const override { return s4u::Link::SharingPolicy::SPLITDUPLEX; }
 
   /** @brief Get link composing this split-duplex link */
   s4u::Link* get_link_up() const { return link_up_->get_iface(); }

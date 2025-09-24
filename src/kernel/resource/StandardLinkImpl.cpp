@@ -5,6 +5,7 @@
 
 #include <simgrid/s4u/Engine.hpp>
 
+#include "src/kernel/resource/LinkImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include <numeric>
 
@@ -16,7 +17,9 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
 namespace simgrid::kernel::resource {
 
-StandardLinkImpl::StandardLinkImpl(const std::string& name) : LinkImpl(name), piface_(this)
+StandardLinkImpl::StandardLinkImpl(const std::string& name, s4u::Link::SharingPolicy sharing_policy,
+                                   routing::NetZoneImpl* englobing_zone)
+    : LinkImpl(name, sharing_policy, englobing_zone), piface_(this)
 {
   if (name != "__loopback__")
     xbt_assert(not s4u::Link::by_name_or_null(name), "Link '%s' declared several times in the platform.", name.c_str());
@@ -57,7 +60,7 @@ constexpr kernel::lmm::Constraint::SharingPolicy to_maxmin_policy(s4u::Link::Sha
 void StandardLinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
 {
   get_constraint()->set_sharing_policy(to_maxmin_policy(policy), cb);
-  sharing_policy_ = policy;
+  LinkImpl::set_sharing_policy(policy, cb);
 }
 
 void StandardLinkImpl::latency_check(double latency) const
@@ -69,12 +72,6 @@ void StandardLinkImpl::latency_check(double latency) const
              get_cname(), latency, sg_precision_timing, latency);
     last_warned_latency = latency;
   }
-}
-
-StandardLinkImpl* StandardLinkImpl::set_englobing_zone(routing::NetZoneImpl* englobing_zone)
-{
-  englobing_zone_ = englobing_zone;
-  return this;
 }
 
 void StandardLinkImpl::turn_on()

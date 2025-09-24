@@ -7,6 +7,7 @@
 #define SIMGRID_MODEL_NETWORK_CM02_HPP_
 
 #include "src/kernel/resource/NetworkModel.hpp"
+#include "src/kernel/resource/Resource.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "xbt/base.h"
 
@@ -46,8 +47,10 @@ class NetworkCm02Model : public NetworkModel {
 
 public:
   explicit NetworkCm02Model(const std::string& name);
-  StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) final;
-  StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) override;
+  StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths,
+                                routing::NetZoneImpl* englobing_zone) final;
+  StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths,
+                                     routing::NetZoneImpl* englobing_zone) override;
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool streamed) override;
@@ -59,7 +62,8 @@ public:
 
 class NetworkCm02Link : public StandardLinkImpl {
 public:
-  NetworkCm02Link(const std::string& name, double bandwidth, lmm::System* system);
+  NetworkCm02Link(const std::string& name, double bandwidth, lmm::System* system,
+                  s4u::Link::SharingPolicy sharing_policy, routing::NetZoneImpl* englobing_zone);
   void apply_event(kernel::profile::Event* event, double value) override;
   void set_bandwidth(double value) override;
   void set_latency(double value) override;

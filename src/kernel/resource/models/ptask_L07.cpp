@@ -82,7 +82,7 @@ NetworkL07Model::NetworkL07Model(const std::string& name, HostL07Model* hmodel, 
     : NetworkModel(name), hostModel_(hmodel)
 {
   set_maxmin_system(sys);
-  loopback_.reset(create_link("__loopback__", {simgrid::config::get_value<double>("network/loopback-bw")}));
+  loopback_.reset(create_link("__loopback__", {simgrid::config::get_value<double>("network/loopback-bw")}, nullptr));
   loopback_->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE, {});
   loopback_->set_latency(simgrid::config::get_value<double>("network/loopback-lat"));
   loopback_->get_iface()->seal();
@@ -255,15 +255,17 @@ CpuImpl* CpuL07Model::create_cpu(s4u::Host* host, const std::vector<double>& spe
   return (new CpuL07(host, speed_per_pstate))->set_model(this);
 }
 
-StandardLinkImpl* NetworkL07Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
+StandardLinkImpl* NetworkL07Model::create_link(const std::string& name, const std::vector<double>& bandwidths,
+                                               routing::NetZoneImpl* englobing_zone)
 {
   xbt_assert(bandwidths.size() == 1, "Non WIFI link must have only 1 bandwidth.");
-  auto* link = new LinkL07(name, bandwidths[0], get_maxmin_system());
+  auto* link = new LinkL07(name, bandwidths[0], get_maxmin_system(), englobing_zone);
   link->set_model(this);
   return link;
 }
 
-StandardLinkImpl* NetworkL07Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
+StandardLinkImpl* NetworkL07Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths,
+                                                    routing::NetZoneImpl* englobing_zone)
 {
   THROW_UNIMPLEMENTED;
 }
@@ -312,7 +314,8 @@ void CpuL07::on_speed_change()
   CpuImpl::on_speed_change();
 }
 
-LinkL07::LinkL07(const std::string& name, double bandwidth, lmm::System* system) : StandardLinkImpl(name)
+LinkL07::LinkL07(const std::string& name, double bandwidth, lmm::System* system, routing::NetZoneImpl* englobing_zone)
+    : StandardLinkImpl(name, s4u::Link::SharingPolicy::SHARED, englobing_zone)
 {
   this->set_constraint(system->constraint_new(this, bandwidth));
   bandwidth_.peak = bandwidth;

@@ -37,7 +37,10 @@ class XBT_PUBLIC Link : public xbt::Extendable<Link> {
 
 protected:
   // Links are created from the NetZone, and destroyed by their private implementation when the simulation ends
-  explicit Link(kernel::resource::LinkImpl* pimpl) : pimpl_(pimpl) {}
+  explicit Link(kernel::resource::LinkImpl* pimpl) : pimpl_(pimpl)
+  {
+    s4u::Link::on_creation(*this); // notify the signal
+  }
   virtual ~Link() = default;
   // The implementation that never changes
   kernel::resource::LinkImpl* const pimpl_;
