@@ -8,7 +8,7 @@ FROM debian:testing-slim
 
 # - Only install the model-checker and the clang pass, remove everything if possible
 RUN apt-get --allow-releaseinfo-change update && \
-    apt install -y cmake g++ clang git libboost-dev valgrind && apt clean && apt autoclean && \
+    apt install -y cmake g++ clang git libboost-dev && apt clean && apt autoclean && \
     mkdir /source/ && git clone --depth=1 https://framagit.org/simgrid/simgrid.git /source/simgrid.git && \
     cd /source/simgrid.git && \
     cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DCMAKE_INSTALL_PREFIX=/usr/ -Dminimal-bindings=ON -Denable_documentation=OFF -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
