@@ -9,12 +9,12 @@ FROM simgrid/unstable
 # - Clone tutorial-model-checking so that the example source codes are included in the image
 # - Add an empty makefile advising to run cmake before make, just in case
 # - Add the clang pass that allows Mc SimGrid to observe memory accesses
-RUN apt install -y cmake clang libstdc++-14-dev git valgrind && \
+RUN apt install -y cmake clang libstdc++-15-dev git valgrind && \
     git clone --depth=1 https://framagit.org/simgrid/tutorial-model-checking.git /source/tutorial-model-checking.git && \
     printf "all:\n\t@echo \"Please run the following command before make:\";echo \"    cmake .\"; exit 1" > /source/tutorial-model-checking.git/Makefile && \
     git clone --depth=1 https://gitlab.inria.fr/simgrid/llvm-instru.git /source/llvm-instru.git && cd /source/llvm-instru.git && \
     cmake -DCMAKE_CXX_COMPILER=clang++-19 -DCMAKE_C_COMPILER=clang-19 . && make install && \
-    cd / && rm /source/llvm-instru.git && \
+    cd / && rm -rf /source/llvm-instru.git && \
     apt remove -y git && apt autoremove -y && apt autoclean && apt clean
 
 CMD ["/bin/bash"]
