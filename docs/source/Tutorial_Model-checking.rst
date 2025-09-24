@@ -107,11 +107,12 @@ recompile the C/C++ code with SimGrid.
    
          #! /bin/sh
    
-         exec docker run --rm -i -v $PWD:$PWD -w $PWD -u $UID:$UID --ulimit nofile=1024:1024 simgrid/mc-slim $*
+         exec docker run --rm -i -v $PWD:$PWD -w $PWD -u $UID:$UID simgrid/mc-slim $*
    
       The ``-v $PWD:$PWD`` makes the current directory visible from within the docker while ``-w $PWD`` uses that directory as a
-      working directory. ``-u $UID:$UID`` uses your identity within the docker so that the files created within the directory have the
-      right ownership and permissions. ``--ulimit nofile=1024:1024`` is only needed if you want to run valgrind within the container.
+      working directory. ``-u $UID:$UID`` uses your identity within the docker so that the files created within the directory
+      have the right ownership and permissions. Add ``--ulimit nofile=1024:1024`` if you want to run valgrind within the
+      container, but it's not installed for now.
    
       Name this script ``simgrid.sh`` and make it executable with a ``chmod``. Once it's done, you can use it to run a command within the docker.
    
@@ -411,10 +412,6 @@ As stated in the first message, you can rerun the faulty execution trace directl
 useful to run that execution within valgrind, you probably don't want to slow down your application with valgrind while running
 the time consuming model checker. But the real advantage of that command is that SimGrid provides much more information when
 replaying a given trace. As you can see below, that's probably more information than you could dream of. 
-
-Please notice how the program is run out of ``simgrid-mc`` (which binary disappeared from the following command line), but with
-*sthread* directly injected through ``LD_PRELOAD``. If you need to run extra tools such as ``bash`` or ``valgrind``, you
-probably want to use ``STHREAD_IGNORE_BINARY`` to instruct *sthread* to not intercept them.
 
 .. tabs::
 
