@@ -60,6 +60,10 @@ Interacting with the tests
 Breaking tests once in a while is completely OK in SimGrid. We accept temporarily breakages because we want things to evolve, but if you break something, it is
 your duty to fix it within 24 hours to not hinder the work of others.
 
+Note that need to build the tests with ``make examples`` or ``ninja examples`` before running the tests with ``ctest``. Calling
+``make all`` is not enough for that. We never managed to explain CMake that it should build the binaries before running the
+tests: any hint is welcome.
+
 Understanding the existing tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
