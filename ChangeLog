@@ -4,6 +4,8 @@ S4U:
  - Deprecate Engine::add_actor in favor of Host::add_actor to avoid always passing the host 
    on which to create the new actor as parameter. 
  - Add s4u::Link::get_englobing_zone()
+ - Add VM load plugin (similar to host load).
+   Thanks Igor Fontana de Nardin for this nice contribution.
 
 Java:
  - Add plugin host_load and link_load (see the relevant examples)
