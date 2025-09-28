@@ -74,11 +74,10 @@ static void execute_load_test()
   
   vm_exec_1->start();
   vm_exec_2->start();
-  double time_1;
-  double time_2;
+  double time_1 = -1;
+  double time_2 = -1;
 
-  while (!act.empty())
-  {
+  while (!act.empty()) {
     auto pointer = act.wait_any();
     if (pointer == vm_exec_1)
       time_1 = sg4::Engine::get_clock();
@@ -234,8 +233,9 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/energy_platform.xml\n", argv[0], argv[0]);
   e.load_platform(argv[1]);
 
-  e.add_actor("load_test", e.host_by_name("MyHost1"), execute_load_test);
-  e.add_actor("change_speed", e.host_by_name("MyHost1"), change_speed);
+  auto* host = e.host_by_name("MyHost1");
+  host->add_actor("load_test", execute_load_test);
+  host->add_actor("change_speed", change_speed);
 
   e.run();
 

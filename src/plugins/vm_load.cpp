@@ -208,12 +208,9 @@ It attaches an extension to each VM to store some data, and places callbacks in 
    VMLoad::EXTENSION_ID = simgrid::s4u::Host::extension_create<VMLoad>();
  
    // Make sure that every future host also gets an extension (in case the platform is not loaded yet)
-   simgrid::s4u::VirtualMachine::on_creation_cb([](simgrid::s4u::VirtualMachine& host) {
-     if (!dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore Hosts
-       return;
-     host.extension_set(new VMLoad(&host));
-   });
- 
+   simgrid::s4u::VirtualMachine::on_creation_cb(
+       [](simgrid::s4u::VirtualMachine& host) { host.extension_set(new VMLoad(&host)); });
+
    simgrid::s4u::Exec::on_start_cb([](simgrid::s4u::Exec const& activity) {
      if (activity.get_host_number() == 1) { // We only run on one host
        simgrid::s4u::Host* host         = activity.get_host();
