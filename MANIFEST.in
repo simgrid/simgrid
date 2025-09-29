@@ -357,14 +357,14 @@ include examples/cpp/platform-properties/s4u-platform-properties.cpp
 include examples/cpp/platform-properties/s4u-platform-properties.tesh
 include examples/cpp/plugin-host-load/s4u-plugin-host-load.cpp
 include examples/cpp/plugin-host-load/s4u-plugin-host-load.tesh
-include examples/cpp/plugin-vm-load/s4u-plugin-vm-load.cpp
-include examples/cpp/plugin-vm-load/s4u-plugin-vm-load.tesh
 include examples/cpp/plugin-jbod/s4u-plugin-jbod.cpp
 include examples/cpp/plugin-jbod/s4u-plugin-jbod.tesh
 include examples/cpp/plugin-link-load/s4u-plugin-link-load.cpp
 include examples/cpp/plugin-link-load/s4u-plugin-link-load.tesh
 include examples/cpp/plugin-prodcons/s4u-plugin-prodcons.cpp
 include examples/cpp/plugin-prodcons/s4u-plugin-prodcons.tesh
+include examples/cpp/plugin-vm-load/s4u-plugin-vm-load.cpp
+include examples/cpp/plugin-vm-load/s4u-plugin-vm-load.tesh
 include examples/cpp/replay-comm/s4u-replay-comm-split-p0.txt
 include examples/cpp/replay-comm/s4u-replay-comm-split-p1.txt
 include examples/cpp/replay-comm/s4u-replay-comm-split_d.xml
@@ -2593,7 +2593,6 @@ include src/plugins/file_system/s4u_FileSystem.cpp
 include src/plugins/host_dvfs.cpp
 include src/plugins/host_energy.cpp
 include src/plugins/host_load.cpp
-include src/plugins/vm_load.cpp
 include src/plugins/jbod.cpp
 include src/plugins/link_energy.cpp
 include src/plugins/link_energy_wifi.cpp
@@ -2602,6 +2601,7 @@ include src/plugins/solar_panel.cpp
 include src/plugins/vm/VmLiveMigration.cpp
 include src/plugins/vm/VmLiveMigration.hpp
 include src/plugins/vm/dirty_page_tracking.cpp
+include src/plugins/vm_load.cpp
 include src/s4u/s4u_Activity.cpp
 include src/s4u/s4u_ActivitySet.cpp
 include src/s4u/s4u_Actor.cpp
