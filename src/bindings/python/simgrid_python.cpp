@@ -193,6 +193,8 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("all_links", &Engine::get_all_links, "Returns the list of all links found in the platform")
       .def_property_readonly("all_netpoints", &Engine::get_all_netpoints,
                              "Returns the list of all netpoints found in the platform")
+      .def_property_readonly("all_netzones", &Engine::get_all_netzones,
+                             "Returns the list of all netzones found in the platform")
       .def_property_readonly("all_actors", &Engine::get_all_actors,
                              "Returns the list of all actors found in the platform")
       .def_property_readonly("netzone_root", &Engine::get_netzone_root,
