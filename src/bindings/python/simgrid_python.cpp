@@ -201,7 +201,7 @@ PYBIND11_MODULE(simgrid, m)
                              "Retrieve the root netzone, containing all others.")
       .def("netpoint_by_name", &Engine::netpoint_by_name_or_null)
       .def("netzone_by_name", &Engine::netzone_by_name_or_null)
-      .def("set_config", py::overload_cast<const std::string&>(&Engine::set_config),
+      .def_static("set_config", py::overload_cast<const std::string&>(&Engine::set_config),
            "Change one of SimGrid's configurations")
       .def("load_platform", &Engine::load_platform, "Load a platform file describing the environment")
       .def("load_deployment", &Engine::load_deployment, "Load a deployment file and launch the actors that it contains")
