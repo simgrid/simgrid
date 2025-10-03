@@ -738,6 +738,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("turn_on", &Disk::turn_on, py::call_guard<py::gil_scoped_release>(), "Turns the disk on.")
       .def("turn_off", &Disk::turn_off, py::call_guard<py::gil_scoped_release>(), "Turns the disk off.")
       .def_property_readonly("name", &simgrid::s4u::Disk::get_name, "The name of this disk (read-only property).")
+      .def_property_readonly("host", &simgrid::s4u::Disk::get_host, "The Host to which this disk is attached (read-only property)")
       .def(
           "__repr__", [](const Disk* d) { return "Disk(" + d->get_name() + ")"; },
           "Textual representation of the Disk");
