@@ -117,9 +117,6 @@ endif()
 execute_process(COMMAND ${CMAKE_LINKER} -v OUTPUT_VARIABLE LINKER_VERSION ERROR_VARIABLE LINKER_VERSION)
 string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
-### Find programs and paths
-FIND_PROGRAM(GCOV_PATH gcov)
-
 # tesh.py needs python 3
 find_package(Python3 COMPONENTS Interpreter)
 if(NOT Python3_Interpreter_FOUND)
