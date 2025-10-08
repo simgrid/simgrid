@@ -341,6 +341,20 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   simgrid::s4u::ActorPtr rx = dst_pm->add_actor(rx_name.c_str(), simgrid::plugin::vm::MigrationRx(vm, dst_pm));
   simgrid::s4u::ActorPtr tx = src_pm->add_actor(tx_name.c_str(), simgrid::plugin::vm::MigrationTx(vm, dst_pm));
 
+  // Make sure that if one of the actor is killed (e.g. because its host was turned off, the other actor is killed too)
+  rx->on_exit([tx](bool killed) {
+    if (killed) {
+      XBT_INFO("RX actor of VM migration killed. Killing the TX actor");
+      tx->kill();
+    }
+  });
+  tx->on_exit([rx](bool killed) {
+    if (killed) {
+      XBT_INFO("TX actor of VM migration killed. Killing the RX actor");
+      rx->kill();
+    }
+  });
+
   vm->extension_set<VmMigrationExt>(new VmMigrationExt(simgrid::s4u::Actor::self(), rx, tx));
 
   /* wait until the migration have finished or on error has occurred */
