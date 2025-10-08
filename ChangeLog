@@ -6,6 +6,7 @@ S4U:
  - Add s4u::Link::get_englobing_zone()
  - Add VM load plugin (similar to host load).
    Thanks Igor Fontana de Nardin for this nice contribution.
+ - Add Engine::display_all_actors_status() for debug
 
 Java:
  - Add plugin host_load and link_load (see the relevant examples)

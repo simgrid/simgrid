@@ -168,6 +168,8 @@ public:
   size_t get_actor_count() const;
   aid_t get_actor_max_pid() const;
   std::vector<ActorPtr> get_all_actors() const;
+  /* Display the status of all actors on the standard error stream */
+  void display_all_actors_status() const;
   std::vector<ActorPtr> get_filtered_actors(const std::function<bool(ActorPtr)>& filter) const;
 
   std::vector<kernel::routing::NetPoint*> get_all_netpoints() const;

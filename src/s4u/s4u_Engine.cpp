@@ -647,6 +647,11 @@ std::vector<ActorPtr> Engine::get_all_actors() const
   return actor_list;
 }
 
+void Engine::display_all_actors_status() const
+{
+  pimpl_->display_all_actor_status();
+}
+
 std::vector<ActorPtr> Engine::get_filtered_actors(const std::function<bool(ActorPtr)>& filter) const
 {
   std::vector<ActorPtr> actor_list;
