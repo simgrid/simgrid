@@ -13,6 +13,11 @@ Java:
  - Add Host.get_core_count()
  - Add signal Actor.on_creation_cb()
 
+Pyton:
+ - Fix the declaration of Engine.set_config as the C++ function is a static one
+ - Added a few missing functions related to Disk (host, turn_on, turn_off)
+
+
 Model-checking:
  - The 'none' reduction method is gone. It was useless and made the code more complex than needed.
  - Enable the joint use of SMPI and sthread.

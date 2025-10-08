@@ -193,13 +193,15 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("all_links", &Engine::get_all_links, "Returns the list of all links found in the platform")
       .def_property_readonly("all_netpoints", &Engine::get_all_netpoints,
                              "Returns the list of all netpoints found in the platform")
+      .def_property_readonly("all_netzones", &Engine::get_all_netzones,
+                             "Returns the list of all netzones found in the platform")
       .def_property_readonly("all_actors", &Engine::get_all_actors,
                              "Returns the list of all actors found in the platform")
       .def_property_readonly("netzone_root", &Engine::get_netzone_root,
                              "Retrieve the root netzone, containing all others.")
       .def("netpoint_by_name", &Engine::netpoint_by_name_or_null)
       .def("netzone_by_name", &Engine::netzone_by_name_or_null)
-      .def("set_config", py::overload_cast<const std::string&>(&Engine::set_config),
+      .def_static("set_config", py::overload_cast<const std::string&>(&Engine::set_config),
            "Change one of SimGrid's configurations")
       .def("load_platform", &Engine::load_platform, "Load a platform file describing the environment")
       .def("load_deployment", &Engine::load_deployment, "Load a deployment file and launch the actors that it contains")
@@ -709,7 +711,7 @@ PYBIND11_MODULE(simgrid, m)
       .value("LINEAR", simgrid::s4u::Host::SharingPolicy::LINEAR);
 
   /* Class Disk */
-  py::class_<simgrid::s4u::Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(
+  py::class_<Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(
       m, "Disk", "Simulated disk. See the C++ documentation for details.");
   disk.def("read", py::overload_cast<sg_size_t, double>(&simgrid::s4u::Disk::read, py::const_),
            py::call_guard<py::gil_scoped_release>(), "Read data from disk", py::arg("size"), py::arg("priority") = 1)
@@ -733,7 +735,10 @@ PYBIND11_MODULE(simgrid, m)
            "Set sharing policy for this disk", py::arg("op"), py::arg("policy"),
            py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
       .def("seal", &simgrid::s4u::Disk::seal, py::call_guard<py::gil_scoped_release>(), "Seal this disk")
+      .def("turn_on", &Disk::turn_on, py::call_guard<py::gil_scoped_release>(), "Turns the disk on.")
+      .def("turn_off", &Disk::turn_off, py::call_guard<py::gil_scoped_release>(), "Turns the disk off.")
       .def_property_readonly("name", &simgrid::s4u::Disk::get_name, "The name of this disk (read-only property).")
+      .def_property_readonly("host", &simgrid::s4u::Disk::get_host, "The Host to which this disk is attached (read-only property)")
       .def(
           "__repr__", [](const Disk* d) { return "Disk(" + d->get_name() + ")"; },
           "Textual representation of the Disk");

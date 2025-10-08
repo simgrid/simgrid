@@ -854,7 +854,7 @@ if(enable_python)
       if("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr")
         set(SIMGRID_PYTHON_LIBDIR ${Python3_SITEARCH})
       else("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr")
-        string(REGEX REPLACE "^/usr/" "${CMAKE_INSTALL_PREFIX}/" SIMGRID_PYTHON_LIBDIR ${Python3_SITEARCH})
+        string(REGEX REPLACE "^/usr/local/" "${CMAKE_INSTALL_PREFIX}/" SIMGRID_PYTHON_LIBDIR ${Python3_SITEARCH})
       endif("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr")
     endif()
     install(TARGETS python-bindings
