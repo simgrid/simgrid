@@ -136,8 +136,8 @@ Grab the last **stable release** from `FramaGit
    $ tar xf simgrid-3-XX.tar.gz
    $ cd simgrid-*
    $ cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid -GNinja .
-   $ make
-   $ make install
+   $ ninja                     # or 'make' if you remove the '-GNinja' above
+   $ ninja install
 
 If you want to stay on the **bleeding edge**, get the current git version,
 and recompile it as with stable archives. You may need some extra
@@ -147,9 +147,9 @@ dependencies.
 
    $ git clone https://framagit.org/simgrid/simgrid.git
    $ cd simgrid
-   $ cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
-   $ make
-   $ make install
+   $ cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid -GNinja .
+   $ ninja                     # or 'make' if you remove the '-GNinja' above
+   $ ninja install
 
 .. _install_src_config:
 

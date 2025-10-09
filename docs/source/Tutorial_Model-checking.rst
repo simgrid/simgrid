@@ -101,7 +101,7 @@ recompile the C/C++ code with SimGrid.
 
    .. group-tab:: simgrid/mc-slim
 
-      If you go for the small image, the following script will execute a command within the docker.
+      If you go for the small image, the following script ``simgrid.sh`` will execute a command within the docker.
    
       .. code-block:: shell
    
@@ -114,7 +114,7 @@ recompile the C/C++ code with SimGrid.
       have the right ownership and permissions. Add ``--ulimit nofile=1024:1024`` if you want to run valgrind within the
       container, but it's not installed for now.
    
-      Name this script ``simgrid.sh`` and make it executable with a ``chmod``. Once it's done, you can use it to run a command within the docker.
+      Make the ``simgrid.sh`` executable with a ``chmod``. Once it's done, you can use it to run a command within the docker.
    
       .. code-block:: console
    
