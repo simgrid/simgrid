@@ -395,6 +395,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
   else
     parent = simgrid::s4u::Engine::get_instance()->get_netzone_root();
   simgrid::s4u::NetZone* zone = parent->add_netzone_star(cluster->id);
+  zone->set_properties(cluster->properties);
 
   /* Make the backbone */
   const simgrid::s4u::Link* backbone = nullptr;

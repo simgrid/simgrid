@@ -33,6 +33,12 @@ const std::unordered_map<std::string, std::string>* NetZone::get_properties() co
   return pimpl_->get_properties();
 }
 
+NetZone* NetZone::set_properties(const std::unordered_map<std::string, std::string>& properties)
+{
+  pimpl_->set_properties(properties);
+  return this;
+}
+
 /** Retrieve the property value (or nullptr if not set) */
 const char* NetZone::get_property(const std::string& key) const
 {

@@ -131,6 +131,8 @@ public:
 
   /** Get the properties assigned to a netzone */
   const std::unordered_map<std::string, std::string>* get_properties() const;
+  /** Set the properties assigned to a netzone */
+  NetZone* set_properties(const std::unordered_map<std::string, std::string>& properties);
   /** Retrieve the property value (or nullptr if not set) */
   const char* get_property(const std::string& key) const;
   void set_property(const std::string& key, const std::string& value);
