@@ -367,17 +367,20 @@ NetworkNS3Model::~NetworkNS3Model()
   ns3::Simulator::Destroy();
 }
 
-StandardLinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
+StandardLinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths,
+                                               routing::NetZoneImpl* englobing_zone)
 {
   xbt_assert(bandwidths.size() == 1, "ns-3 links must use only 1 bandwidth.");
-  auto* link = new LinkNS3(name, bandwidths[0]);
+  auto* link = new LinkNS3(name, bandwidths[0], s4u::Link::SharingPolicy::SHARED, englobing_zone);
   link->set_model(this);
   return link;
 }
 
-StandardLinkImpl* NetworkNS3Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
+StandardLinkImpl* NetworkNS3Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths,
+                                                    routing::NetZoneImpl* englobing_zone)
 {
-  auto* link = create_link(name, bandwidths);
+  xbt_assert(bandwidths.size() == 1, "ns-3 links must use only 1 bandwidth.");
+  auto* link = new LinkNS3(name, bandwidths[0], s4u::Link::SharingPolicy::WIFI, englobing_zone);
   link->set_sharing_policy(s4u::Link::SharingPolicy::WIFI, {});
   return link;
 }
@@ -481,7 +484,9 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
  * Resource *
  ************/
 
-LinkNS3::LinkNS3(const std::string& name, double bandwidth) : StandardLinkImpl(name)
+LinkNS3::LinkNS3(const std::string& name, double bandwidth, s4u::Link::SharingPolicy sharing_policy,
+                 routing::NetZoneImpl* englobing_zone)
+    : StandardLinkImpl(name, sharing_policy, englobing_zone)
 {
   bandwidth_.peak = bandwidth;
 }
@@ -508,10 +513,6 @@ void LinkNS3::set_latency(double latency)
   latency_.peak = latency;
 }
 
-void LinkNS3::set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
-{
-  sharing_policy_ = policy;
-}
 /**********
  * Action *
  **********/

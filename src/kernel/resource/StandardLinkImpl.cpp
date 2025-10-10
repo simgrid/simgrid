@@ -59,7 +59,8 @@ constexpr kernel::lmm::Constraint::SharingPolicy to_maxmin_policy(s4u::Link::Sha
 
 void StandardLinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
 {
-  get_constraint()->set_sharing_policy(to_maxmin_policy(policy), cb);
+  if (auto constraint = get_constraint(); constraint != nullptr)
+    constraint->set_sharing_policy(to_maxmin_policy(policy), cb);
   LinkImpl::set_sharing_policy(policy, cb);
 }
 
