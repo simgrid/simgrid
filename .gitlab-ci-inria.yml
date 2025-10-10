@@ -199,7 +199,7 @@ debian-clang:
   - apt-get --allow-releaseinfo-change update
   - apt install -y build-essential ninja-build clang libgcc-14-dev cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
   - rm -rf CMakeFiles CMakeCache.txt
-  - cmake -GNinja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang  -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - cmake -GNinja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang  -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
@@ -222,7 +222,7 @@ debian-stable:
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
-  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
@@ -266,7 +266,7 @@ ubuntu22-release:
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
-  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
@@ -287,7 +287,7 @@ ubuntu24-release:
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
-  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
@@ -308,7 +308,7 @@ ubuntu-rolling:
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
-  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
