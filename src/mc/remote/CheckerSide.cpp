@@ -158,8 +158,11 @@ CheckerSide::CheckerSide(const std::vector<char*>& args)
   try {
     wait_for_requests();
   } catch (const AssertionError& ae) {
-    xbt_die("Failed to get an answer from the child. Use valgrind to check whether it's segfaulting on start (instead "
-            "of verifying your code, verify valgrind that runs your code).");
+    XBT_CRITICAL("Failed to get an answer from the child. The error was '%s'\n%s", ae.what(),
+                 ae.resolve_backtrace().c_str());
+    XBT_CRITICAL("Use valgrind to check whether your child process is segfaulting on start (instead of verifying your "
+                 "code with simgrid-mc, verify valgrind that runs your code).");
+    xbt_abort();
   }
 }
 
