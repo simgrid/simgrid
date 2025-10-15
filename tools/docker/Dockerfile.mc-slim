@@ -7,7 +7,7 @@
 FROM debian:testing-slim
 
 # - Only install the model-checker and the clang pass, remove everything if possible
-RUN apt-get --allow-releaseinfo-change update && \
+RUN set -x && apt-get --allow-releaseinfo-change update && \
     apt install -y cmake g++ clang git libboost-dev && apt clean && apt autoclean && \
     mkdir /source/ && git clone --depth=1 https://framagit.org/simgrid/simgrid.git /source/simgrid.git && \
     cd /source/simgrid.git && \
@@ -19,7 +19,7 @@ RUN apt-get --allow-releaseinfo-change update && \
     cp /usr/lib/sharedmemmm.so /usr/lib/x86_64-linux-gnu/ && \
     echo "XX Instru installed" && \
     cd / && rm -rf source &&  \
-    apt remove -y cmake cmake-data git gdb llvm-19-dev krb5-locales fakeroot openssh-client manpages libstdc++-15-dev:amd64 mount && apt autoremove -y && apt autoclean && apt clean && \
+    apt remove -y cmake cmake-data git gdb llvm-19-dev krb5-locales fakeroot openssh-client manpages mount && apt autoremove -y && apt autoclean && apt clean && \
     dpkg --purge $(dpkg --list | grep '^rc'|cut -f3 -d' ') && \
     rm -rf /usr/share/doc /usr/share/man /var/cache/apt/* /var/cache/debconf/*-old /var/lib/apt/* /var/log* /usr/local
 
