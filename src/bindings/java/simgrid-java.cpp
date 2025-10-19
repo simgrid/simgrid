@@ -2711,8 +2711,13 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jen
     SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, "array length negative");
     return 0;
   }
-  char** cargs = (char**)malloc((len + 2) * sizeof(char*)); // +1 for final NULL ; +1 for initial "java"
-  if (cargs == NULL) {
+  // Both vectors will contain a copy of the command-line arguments (we need to convert Java strings to C ones here).
+  // The size: +1 for the final NULL and +1 for the initial "java"
+  // cargs is passed to SimGrid that removes its arguments from it. We build a clean Java args vector from it
+  // cargs_saver will be used at the end to free all strings we strdup'ed, even if SimGrid removed them from cargs
+  char** cargs       = (char**)malloc((len + 2) * sizeof(char*));
+  char** cargs_saver = (char**)malloc((len + 2) * sizeof(char*));
+  if (cargs == nullptr || cargs_saver == nullptr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "memory allocation failed");
     return 0;
   }
@@ -2720,10 +2725,13 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jen
   cargs[0] = (char*)"java"; // SimGrid expects argv[0] to be useless
   for (jsize i = 0; i < len; i++) {
     jstring j_string     = (jstring)jenv->GetObjectArrayElement(jargs, i);
-    const char* c_string = jenv->GetStringUTFChars(j_string, 0);
-    cargs[i + 1]         = (char*)c_string;
+    const char* tmp      = jenv->GetStringUTFChars(j_string, 0);
+    cargs[i + 1]         = strdup(tmp);
+    cargs_saver[i + 1]   = cargs[i + 1];
+    jenv->ReleaseStringUTFChars(j_string, tmp);
   }
-  cargs[len + 1] = NULL;
+  cargs[len + 1]       = nullptr;
+  cargs_saver[len + 1] = nullptr;
   len++;
 
   auto* result = new simgrid::s4u::Engine(&len, cargs);
@@ -2735,8 +2743,11 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jen
     jenv->SetObjectArrayElement(cleaned_args, i - 1, jenv->NewStringUTF(cargs[i]));
     check_javaexception(jenv);
   }
+  for (int i = 1; cargs_saver[i] != nullptr; i++)
+    free(cargs_saver[i]);
 
   free(cargs);
+  free(cargs_saver);
   return (jlong)result;
 }
 XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1args(JNIEnv*, jclass, jlong cthis)
