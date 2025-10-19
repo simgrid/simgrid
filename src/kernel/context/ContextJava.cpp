@@ -56,7 +56,7 @@ void JavaContext::initialized()
 
 void JavaContext::stop()
 {
-  XBT_DEBUG("Stopping %s", get_actor()->get_cname());
+  XBT_DEBUG("Stopping %p (%s). Detatch it from the JVM", this, get_actor()->get_cname());
   this->get_actor()->cleanup_from_self();
  // sthread_disable();
 

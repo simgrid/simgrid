@@ -1005,10 +1005,11 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1create(JNIEnv* j
   jactor          = jenv->NewGlobalRef(jactor);
   ActorPtr result = Actor::init(name, host);
   result->extension_set<ActorJavaExt>(new ActorJavaExt(jactor));
-  result->start([jactor]() {
+  result->start([jactor, result]() {
     auto jenv = ((simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self())->jenv_;
 
     jenv->CallVoidMethod(jactor, Actor_methodId, (jlong)simgrid::s4u::Actor::self());
+    intrusive_ptr_release(result.get());
     exception_check_after_upcall(get_jenv());
   });
   intrusive_ptr_add_ref(result.get());
@@ -2864,6 +2865,7 @@ static void java_main(int argc, char* argv[])
 
   // creates the java actor
   jobject jactor = jenv->NewGlobalRef(jenv->NewObject(actor_class, actor_constructor, args));
+  xbt_assert((jactor != nullptr), "Actor creation failed.");
 
   ActorPtr result = simgrid::s4u::Host::current()->add_actor(argv[0], [jactor]() {
     auto jenv = ((simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self())->jenv_;
@@ -2875,18 +2877,17 @@ static void java_main(int argc, char* argv[])
   intrusive_ptr_add_ref(result.get());
 
   handle_exception(jenv);
-  xbt_assert((jactor != nullptr), "Actor creation failed.");
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1load_1deployment(JNIEnv* jenv, jclass, jlong cthis,
                                                                                  jstring jfilename)
 {
-  if (jfilename) {
-    simgrid_register_default(java_main);
-    std::string cfilename = java_string_to_std_string(jenv, jfilename);
-    ((Engine*)cthis)->load_deployment(cfilename);
-  } else
+  if (jfilename == nullptr)
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "The deployment file name shall not be null.");
+
+  simgrid_register_default(java_main);
+  std::string cfilename = java_string_to_std_string(jenv, jfilename);
+  ((Engine*)cthis)->load_deployment(cfilename);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1host_1count(JNIEnv*, jclass, jlong cthis,
