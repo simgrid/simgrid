@@ -105,7 +105,7 @@ static jmethodID CallbackIo_methodId          = nullptr;
 static jmethodID CallbackLink_methodId        = nullptr;
 static jmethodID CallbackNetzone_methodId     = nullptr;
 static jmethodID CallbackVoid_methodId        = nullptr;
-static jmethodID Actor_methodId               = nullptr;
+static jmethodID Actor_do_run_methodId        = nullptr;
 
 /* Various cached classIds */
 static jclass string_class = nullptr;
@@ -279,7 +279,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void*)
     CallbackNetzone_methodId     = init_methodId(maestro_jenv, "CallbackNetzone", "run", "(J)V");
     CallbackVoid_methodId        = init_methodId(maestro_jenv, "CallbackVoid", "run", "()V");
 
-    Actor_methodId = init_methodId(maestro_jenv, "Actor", "do_run", "(J)V");
+    Actor_do_run_methodId = init_methodId(maestro_jenv, "Actor", "do_run", "(J)V");
 
     string_class = (jclass)maestro_jenv->NewGlobalRef(maestro_jenv->FindClass("java/lang/String"));
     xbt_assert(string_class);
@@ -697,30 +697,6 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1exit(JNIEnv* jenv
   }
 }
 
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1termination_1cb(JNIEnv* jenv, jclass, jobject cb)
-{
-  if (cb) {
-    cb = jenv->NewGlobalRef(cb);
-    Actor::on_termination_cb([cb](Actor const& a) {
-      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, a.extension<ActorJavaExt>()->jactor_);
-      exception_check_after_upcall(get_jenv());
-    });
-  } else
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1destruction_1cb(JNIEnv* jenv, jclass, jobject cb)
-{
-  if (cb) {
-    cb = jenv->NewGlobalRef(cb);
-    Actor::on_destruction_cb([cb](Actor const& a) {
-      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, a.extension<ActorJavaExt>()->jactor_);
-      exception_check_after_upcall(get_jenv());
-    });
-  } else
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
-}
-
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1exit(JNIEnv* jenv, jclass, jlong cthis, jobject cb)
 {
   if (cb) {
@@ -804,34 +780,6 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1host_1c
     cb = jenv->NewGlobalRef(cb);
     ((Actor*)cthis)->on_this_host_change_cb([cb](Actor const& a, Host const& h) {
       get_jenv()->CallVoidMethod(cb, CallbackActorHost_methodId, a.extension<ActorJavaExt>()->jactor_, &h);
-      exception_check_after_upcall(get_jenv());
-    });
-  } else
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1termination_1cb(JNIEnv* jenv, jclass,
-                                                                                         jlong cthis, jobject jthis,
-                                                                                         jobject cb)
-{
-  if (cb) {
-    cb = jenv->NewGlobalRef(cb);
-    ((Actor*)cthis)->on_this_termination_cb([cb](Actor const& a) {
-      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, a.extension<ActorJavaExt>()->jactor_);
-      exception_check_after_upcall(get_jenv());
-    });
-  } else
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
-}
-
-XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1on_1this_1destruction_1cb(JNIEnv* jenv, jclass,
-                                                                                         jlong cthis, jobject jthis,
-                                                                                         jobject cb)
-{
-  if (cb) {
-    cb = jenv->NewGlobalRef(cb);
-    ((Actor*)cthis)->on_this_destruction_cb([cb](Actor const& a) {
-      get_jenv()->CallVoidMethod(cb, CallbackActor_methodId, a.extension<ActorJavaExt>()->jactor_);
       exception_check_after_upcall(get_jenv());
     });
   } else
@@ -1004,16 +952,17 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1create(JNIEnv* j
 {
   std::string name = java_string_to_std_string(jenv, jname);
   Host* host       = (Host*)chost;
+  jactor           = jenv->NewGlobalRef(jactor);
 
-  jactor          = jenv->NewGlobalRef(jactor);
   ActorPtr result = Actor::init(name, host);
   result->extension_set<ActorJavaExt>(new ActorJavaExt(jactor));
   result->start([jactor, result]() {
     auto jenv = ((simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self())->jenv_;
 
-    jenv->CallVoidMethod(jactor, Actor_methodId, (jlong)simgrid::s4u::Actor::self());
+    jenv->CallVoidMethod(jactor, Actor_do_run_methodId, (jlong)simgrid::s4u::Actor::self());
     intrusive_ptr_release(result.get());
     exception_check_after_upcall(get_jenv());
+    jenv->DeleteGlobalRef(jactor);
   });
   intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
@@ -2873,7 +2822,7 @@ static void java_main(int argc, char* argv[])
   ActorPtr result = simgrid::s4u::Host::current()->add_actor(argv[0], [jactor]() {
     auto jenv = ((simgrid::kernel::context::JavaContext*)simgrid::kernel::context::Context::self())->jenv_;
 
-    jenv->CallVoidMethod(jactor, Actor_methodId, (jlong)s4u::Actor::self());
+    jenv->CallVoidMethod(jactor, Actor_do_run_methodId, (jlong)s4u::Actor::self());
     exception_check_after_upcall(get_jenv());
   });
   result->extension_set<ActorJavaExt>(new ActorJavaExt(jactor));

@@ -12,6 +12,7 @@ Java:
  - Add plugin host_load and link_load (see the relevant examples)
  - Add Host.get_core_count()
  - Add signal Actor.on_creation_cb()
+ - Kill Actor.on_termination_cb() that was not working anyway
 
 Pyton:
  - Fix the declaration of Engine.set_config as the C++ function is a static one

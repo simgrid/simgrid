@@ -86,21 +86,12 @@ class actor_exiting {
         Engine.info("Actor " + a.get_name() + " starts now.");
       }
     });
-    /* Register a callback in the Actor::on_termination signal. It will be called for every terminated actors */
+    /* Register a callback in the Actor::on_termination signal. It will be called when the actor interrupts its
+     * execution (either by reaching its end or being killed) */
     Actor.on_termination_cb(new CallbackActor() {
       @Override public void run(Actor a)
       {
         Engine.info("Actor " + a.get_name() + " terminates now.");
-      }
-    });
-
-    /* Register a callback in the Actor::on_destruction signal. It will be called for every destructed actors
-     * Unfortunately, this example is too small to get the GC to actually destroy the actors :(
-     */
-    Actor.on_destruction_cb(new CallbackActor() {
-      public void run(Actor a)
-      {
-        Engine.info("Actor " + a.get_name() + " gets destroyed now.");
       }
     });
 
@@ -110,7 +101,6 @@ class actor_exiting {
     e.host_by_name("Ginette").add_actor("C", new ActorC());
 
     e.run(); /* Run the simulation */
-    Engine.info("Run the garbage collector now in the hope to get the actors destroyed. In vain :(");
 
     // The following call is useless in your code, but our continuous integration uses it to track memleaks
     e.force_garbage_collection();

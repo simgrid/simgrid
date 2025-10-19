@@ -27,6 +27,7 @@ public abstract class Actor {
       Engine.error("Actor killed by a %s exception: %s", e.getClass().getName(), e.getCause());
       e.printStackTrace();
     }
+    fire_termination_signal(this);
   }
 
   private transient long swigCPtr;
@@ -58,12 +59,6 @@ public abstract class Actor {
   {
     simgridJNI.Actor_on_this_host_change_cb(swigCPtr, this, cb);
   }
-
-  public static void on_termination_cb(CallbackActor cb) { simgridJNI.Actor_on_termination_cb(cb); }
-  public void on_this_termination_cb(CallbackActor cb) { simgridJNI.Actor_on_this_termination_cb(swigCPtr, this, cb); }
-
-  public static void on_destruction_cb(CallbackActor cb) { simgridJNI.Actor_on_destruction_cb(cb); }
-  public void on_this_destruction_cb(CallbackActor cb) { simgridJNI.Actor_on_this_destruction_cb(swigCPtr, this, cb); }
 
   public Actor daemonize() {
     simgridJNI.Actor_daemonize(swigCPtr, this);
@@ -218,6 +213,16 @@ public abstract class Actor {
     // finds its swgCPtr null.
     actor.swigCPtr = cPtr;
     for (var cb : on_creation_signal)
+      cb.run(actor);
+  }
+
+  // Same here: the C++ signal for destruction is called after Java is cleaned up, so don't use it
+  static Vector<CallbackActor> on_termination_signal = new Vector<>();
+  public static void on_termination_cb(CallbackActor cb) { on_termination_signal.add(cb); }
+
+  public static void fire_termination_signal(Actor actor)
+  {
+    for (var cb : on_termination_signal)
       cb.run(actor);
   }
 }

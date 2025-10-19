@@ -5,9 +5,9 @@ $ ${javacmd} -cp ../../simgrid.jar:actor_exiting.jar actor_exiting ${platfdir}/s
 > [  0.000000] (maestro@) Actor A starts now.
 > [  0.000000] (maestro@) Actor B starts now.
 > [  0.000000] (maestro@) Actor C starts now.
+> [  1.000000] (A@Tremblay) Actor A terminates now.
 > [  1.000000] (A@Tremblay) I stop now
-> [  1.000000] (maestro@) Actor A terminates now.
-> [  2.000000] (maestro@) Actor B terminates now.
+> [  2.000000] (B@Fafard) Actor B terminates now.
 > [  3.000000] (C@Ginette) And now, induce a deadlock by waiting for a message that will never come
 >
 >
@@ -15,5 +15,4 @@ $ ${javacmd} -cp ../../simgrid.jar:actor_exiting.jar actor_exiting ${platfdir}/s
 > [  3.000000] (maestro@) 1 actor is still active, awaiting something. Here is its status:
 > [  3.000000] (maestro@)  - pid 3 (C@Ginette): waiting for a communication activity 0xdeadbeef () in state WAITING
 > [  3.000000] (C@Ginette) I was killed!
-> [  3.000000] (maestro@) Actor C terminates now.
-> [  3.000000] (maestro@) Run the garbage collector now in the hope to get the actors destroyed. In vain :(
+> [  3.000000] (C@Ginette) Actor C terminates now.
