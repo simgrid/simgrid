@@ -41,6 +41,10 @@ JavaContext::JavaContext(std::function<void()>&& code, actor::ActorImpl* actor)
 {
   /* ThreadContext already does all we need */
 }
+JavaContext::~JavaContext()
+{
+  XBT_DEBUG("dtor JavaContextFactory on '%s'", get_actor()->get_cname());
+}
 
 void JavaContext::initialized()
 {
@@ -56,13 +60,14 @@ void JavaContext::initialized()
 
 void JavaContext::stop()
 {
-  XBT_DEBUG("Stopping %p (%s). Detatch it from the JVM", this, get_actor()->get_cname());
+  XBT_DEBUG("Stopping thread %s", get_actor()->get_cname());
   this->get_actor()->cleanup_from_self();
  // sthread_disable();
 
   /* Unregister the thread from the JVM */
   jint error = simgrid_cached_jvm->DetachCurrentThread();
   if (error != JNI_OK) {
+    XBT_DEBUG("Thread %s cannot be detached. Raise a Java exception to stop it", get_actor()->get_cname());
     /* This is probably a Java thread, ie an actor not created from the XML (and thus from the C++),
      * but from Java with something like new Process().start().
      *
@@ -77,6 +82,8 @@ void JavaContext::stop()
     }
 
     jenv_->ThrowNew(klass, "Actor killed");
+  } else {
+    XBT_DEBUG("Successfully detached thread %s", get_actor()->get_cname());
   }
 
   simgrid::ForcefulKillException::do_throw(); // clean RAII variables with the dedicated exception

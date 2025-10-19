@@ -297,13 +297,13 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void*)
   return JNI_VERSION_1_2;
 }
 
-static void inline init_exception_class(JNIEnv* jenv, jclass& klass, const char* name)
+static jclass inline init_exception_class(JNIEnv* jenv, const char* name)
 {
-  if (klass == nullptr) {
-    klass = jenv->FindClass(name);
-    xbt_assert(klass, "Class %s not found", name);
-    klass = (jclass)jenv->NewGlobalRef(klass);
-  }
+  jclass klass = jenv->FindClass(name);
+  xbt_assert(klass, "Class %s not found", name);
+  klass = (jclass)jenv->NewGlobalRef(klass);
+  xbt_assert(klass, "Unable to take a new global ref on class %s", name);
+  return klass;
 }
 static void rethrow_simgrid_exception(JNIEnv* jenv, std::exception const& e)
 {
@@ -313,22 +313,25 @@ static void rethrow_simgrid_exception(JNIEnv* jenv, std::exception const& e)
   static jclass hostfail_ex    = nullptr; // org/simgrid/s4u/HostFailureException
   static jclass illegal_ex     = nullptr; // std::invalid_argument <-> java/lang/IllegalArgumentException
 
+  if (assert_ex == nullptr) { // First time we're called
+    illegal_ex     = init_exception_class(jenv, "java/lang/IllegalArgumentException");
+    timeout_ex     = init_exception_class(jenv, "org/simgrid/s4u/TimeoutException");
+    networkfail_ex = init_exception_class(jenv, "org/simgrid/s4u/NetworkFailureException");
+    hostfail_ex    = init_exception_class(jenv, "org/simgrid/s4u/HostFailureException");
+    assert_ex      = init_exception_class(jenv, "org/simgrid/s4u/AssertionError");
+  }
+
   jenv->ExceptionClear();
 
   if (dynamic_cast<const std::invalid_argument*>(&e)) {
-    init_exception_class(jenv, illegal_ex, "java/lang/IllegalArgumentException");
     jenv->ThrowNew(illegal_ex, e.what());
   } else if (dynamic_cast<const simgrid::TimeoutException*>(&e) != nullptr) {
-    init_exception_class(jenv, timeout_ex, "org/simgrid/s4u/TimeoutException");
     jenv->ThrowNew(timeout_ex, e.what());
   } else if (dynamic_cast<const simgrid::NetworkFailureException*>(&e) != nullptr) {
-    init_exception_class(jenv, networkfail_ex, "org/simgrid/s4u/NetworkFailureException");
     jenv->ThrowNew(networkfail_ex, e.what());
   } else if (dynamic_cast<const simgrid::HostFailureException*>(&e) != nullptr) {
-    init_exception_class(jenv, hostfail_ex, "org/simgrid/s4u/HostFailureException");
     jenv->ThrowNew(hostfail_ex, e.what());
   } else if (dynamic_cast<const simgrid::AssertionError*>(&e) != nullptr) {
-    init_exception_class(jenv, assert_ex, "org/simgrid/s4u/AssertionError");
     jenv->ThrowNew(assert_ex, e.what());
   } else {
     XBT_INFO("Exception %s is not handled by the Java bindings", boost::core::demangle(typeid(e).name()).c_str());

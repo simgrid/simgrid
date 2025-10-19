@@ -27,6 +27,7 @@ public:
 
   friend class JavaContextFactory;
   JavaContext(std::function<void()>&& code, actor::ActorImpl* actor);
+  ~JavaContext() override;
 
   void initialized() override;
   // void finalizing() override;
