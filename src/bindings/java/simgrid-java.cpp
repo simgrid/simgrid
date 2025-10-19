@@ -76,15 +76,10 @@
 #include "src/kernel/context/ContextJava.hpp"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
-#include "xbt/signal.hpp"
-#include "xbt/sysdep.h"
 
 #include <boost/core/demangle.hpp>
 #include <jni.h>
-#include <locale.h>
 #include <stdexcept>
-#include <stdlib.h>
-#include <string.h>
 #include <vector>
 
 /* For the interactions with the other parts of simgrid */
@@ -129,8 +124,7 @@ simgrid::xbt::Extension<simgrid::s4u::Activity, ActivityJavaExt> ActivityJavaExt
 
 static void exception_check_after_upcall(JNIEnv* jenv)
 {
-  const jthrowable e = jenv->ExceptionOccurred();
-  if (e) {
+  if (jenv->ExceptionOccurred()) {
     jenv->ExceptionDescribe();
     jenv->ExceptionClear();
     throw std::runtime_error("Java exception occured");
@@ -964,7 +958,6 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1create(JNIEnv* j
     exception_check_after_upcall(get_jenv());
     jenv->DeleteGlobalRef(jactor);
   });
-  intrusive_ptr_add_ref(result.get());
   return (jlong)result.get();
 }
 
@@ -2826,7 +2819,6 @@ static void java_main(int argc, char* argv[])
     exception_check_after_upcall(get_jenv());
   });
   result->extension_set<ActorJavaExt>(new ActorJavaExt(jactor));
-  intrusive_ptr_add_ref(result.get());
 
   handle_exception(jenv);
 }

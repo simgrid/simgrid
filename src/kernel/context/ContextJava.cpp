@@ -68,12 +68,8 @@ void JavaContext::stop()
   jint error = simgrid_cached_jvm->DetachCurrentThread();
   if (error != JNI_OK) {
     XBT_DEBUG("Thread %s cannot be detached. Raise a Java exception to stop it", get_actor()->get_cname());
-    /* This is probably a Java thread, ie an actor not created from the XML (and thus from the C++),
-     * but from Java with something like new Process().start().
-     *
-     * We should not even try to detach such threads. Instead, we throw a Java exception that will raise up
-     * until run_jprocess(), IIUC.
-     */
+    /* The corresponding actor is probably still ongoing but killed forcefully. Raising a ForcefulKillException will
+     * terminate it */
     // Cache the exception class
     static jclass klass = 0;
     if (klass == 0) {

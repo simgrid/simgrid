@@ -55,7 +55,8 @@ public class Host {
 
   public Actor add_actor(String name, Actor actor)
   {
-    assert (Actor.getCPtr(actor) == 0);
+    if (Actor.getCPtr(actor) != 0)
+      Engine.die("The cPtr of actor %s is not 0 as expected", name);
     var cPtr = simgridJNI.Actor_create(name, Host.getCPtr(this), this, actor);
     Actor.fire_creation_signal(actor, cPtr);
     return actor;
