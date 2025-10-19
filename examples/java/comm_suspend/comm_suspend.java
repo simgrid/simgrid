@@ -59,5 +59,8 @@ public class comm_suspend {
     e.host_by_name("Jupiter").add_actor("receiver", new receiver());
 
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

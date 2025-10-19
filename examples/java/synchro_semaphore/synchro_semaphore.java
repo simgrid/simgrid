@@ -72,5 +72,8 @@ public class synchro_semaphore {
     e.host_by_name("Tremblay").add_actor("producer", new producer(sem_empty, sem_full, params));
     e.host_by_name("Jupiter").add_actor("consumer", new consumer(sem_empty, sem_full));
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

@@ -51,5 +51,8 @@ public class exec_cpu_factors {
 
     /* runs the simulation */
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

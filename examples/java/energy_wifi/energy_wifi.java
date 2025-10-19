@@ -60,5 +60,8 @@ public class energy_wifi {
     engine.host_by_name("Station 2").add_actor("act1", new Receiver());
 
     engine.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    engine.force_garbage_collection();
   }
 }

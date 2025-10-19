@@ -71,5 +71,8 @@ public class io_priority {
     e.host_by_name("bob").add_actor("privileged_writer", new PrivilegedWriter());
 
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

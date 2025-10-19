@@ -66,5 +66,8 @@ public class exec_remote {
     e.host_by_name("Fafard").add_actor("test", new wizard());
 
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

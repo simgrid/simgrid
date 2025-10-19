@@ -36,5 +36,8 @@ public class actor_lifetime {
     e.load_deployment(args[1]); /*  Deploy the sleeper actors with explicit start/kill times */
 
     e.run(); /* - Run the simulation */
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

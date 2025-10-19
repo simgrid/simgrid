@@ -69,5 +69,8 @@ public class energy_vm {
     Engine.info("Simulation ends. Host2 and Host3 must have the exact same energy consumption; Host1 "
                     + "is multi-core and will differ.",
                 Engine.get_clock());
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

@@ -73,5 +73,8 @@ public class dag_failure {
 
     Engine.info("Run the simulation again");
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

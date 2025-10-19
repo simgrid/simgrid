@@ -104,5 +104,8 @@ class comm_ready {
     e.host_by_name("Perl").add_actor("peer", new peer(2, 0, 5e7, 3));
 
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

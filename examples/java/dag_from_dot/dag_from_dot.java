@@ -69,5 +69,8 @@ public class dag_from_dot {
                     comm.get_name(), comm.get_source().get_name(), comm.get_destination().get_name());
       }
     }
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

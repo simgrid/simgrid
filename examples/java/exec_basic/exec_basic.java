@@ -46,5 +46,8 @@ public class exec_basic {
     e.host_by_name("Tremblay").add_actor("privileged", new privileged());
 
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

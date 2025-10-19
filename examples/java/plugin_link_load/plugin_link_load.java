@@ -110,5 +110,8 @@ class plugin_link_load {
     e.host_by_name("node-51.simgrid.org").add_actor("monitor", new Monitor());
 
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

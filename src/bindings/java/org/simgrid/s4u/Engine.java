@@ -5,6 +5,8 @@
 
 package org.simgrid.s4u;
 
+import java.lang.ref.WeakReference;
+
 public class Engine {
   private transient long swigCPtr;
   protected transient boolean swigCMemOwn;
@@ -240,6 +242,16 @@ public class Engine {
     e.run();
   }
 
-        /* Class initializer, to initialize various JNI stuff */
-        static { org.simgrid.s4u.NativeLib.nativeInit(); }
+  /* Class initializer, to initialize various JNI stuff */
+  static { org.simgrid.s4u.NativeLib.nativeInit(); }
+
+  public void force_garbage_collection()
+  {
+    Object obj                = new Object();
+    WeakReference<Object> ref = new WeakReference<Object>(obj);
+    obj                       = null;
+    while (ref.get() != null) {
+      System.gc();
+    }
+  }
 }

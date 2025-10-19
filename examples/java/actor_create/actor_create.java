@@ -121,5 +121,8 @@ public class actor_create {
     e.run();
 
     /* Once the simulation is done, the program is ended */
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

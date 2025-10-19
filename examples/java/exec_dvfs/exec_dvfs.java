@@ -61,5 +61,8 @@ public class exec_dvfs {
     e.run();
 
     Engine.info("Total simulation time: %e", Engine.get_clock());
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

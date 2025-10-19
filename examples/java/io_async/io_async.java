@@ -113,7 +113,9 @@ public class io_async {
     e.host_by_name("alice").add_actor("test_monitor", new test_monitor(5e7));
 
     e.run();
-
     Engine.info("Simulation ends.");
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

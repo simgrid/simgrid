@@ -99,5 +99,8 @@ public class exec_ptask_multicore {
 
     e.run();
     Engine.info("Simulation done.");
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

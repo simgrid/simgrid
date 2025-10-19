@@ -57,5 +57,8 @@ public class comm_throttling {
     e.host_by_name("node-1.simgrid.org").add_actor("receiver", new receiver(mbox));
 
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

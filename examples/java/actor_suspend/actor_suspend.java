@@ -76,5 +76,8 @@ public class actor_suspend {
     e.load_platform(args[0]);
     e.host_by_name("Boivin").add_actor("dream_master", new DreamMaster());
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

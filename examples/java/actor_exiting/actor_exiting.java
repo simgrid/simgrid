@@ -111,6 +111,8 @@ class actor_exiting {
 
     e.run(); /* Run the simulation */
     Engine.info("Run the garbage collector now in the hope to get the actors destroyed. In vain :(");
-    System.gc();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

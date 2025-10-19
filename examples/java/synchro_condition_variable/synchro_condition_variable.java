@@ -57,5 +57,8 @@ public class synchro_condition_variable {
     e.load_platform(args[0]);
     e.host_by_name("Tremblay").add_actor("main", new Main());
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

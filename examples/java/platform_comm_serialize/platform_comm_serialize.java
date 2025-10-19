@@ -108,5 +108,8 @@ public class platform_comm_serialize {
     sender.add_actor("sender", new Sender((int)1e6, 10));
 
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

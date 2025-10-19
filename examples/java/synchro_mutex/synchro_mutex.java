@@ -52,5 +52,8 @@ public class synchro_mutex {
 
     for (int i = 0; i < cfg_actor_count; i++)
       Engine.info("Result[%d] -> %d", i, result.get(i));
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

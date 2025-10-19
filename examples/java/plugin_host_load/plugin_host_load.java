@@ -105,5 +105,8 @@ public class plugin_host_load {
     e.host_by_name("MyHost2").add_actor("change_speed", new change_speed());
 
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

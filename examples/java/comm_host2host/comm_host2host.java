@@ -85,5 +85,8 @@ public class comm_host2host {
     e.run();
 
     Engine.info("Simulation ends");
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

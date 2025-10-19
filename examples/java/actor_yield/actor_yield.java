@@ -35,5 +35,8 @@ public class actor_yield {
     e.host_by_name("Ruby").add_actor("yielder", new Yielder(15));
 
     e.run(); /* - Run the simulation */
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }

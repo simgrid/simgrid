@@ -72,5 +72,8 @@ public class mess_await {
     e.host_by_name("Fafard").add_actor("receiver", new Receiver());
 
     e.run();
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }
