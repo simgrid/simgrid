@@ -84,7 +84,7 @@ but that's even more so for these unreleased versions).
 
 .. _install_src:
 
-Installing from the Source
+Installing from Source
 --------------------------
 
 .. _install_src_deps:
@@ -98,7 +98,7 @@ C++ compiler (either g++, clang, or icc).
   boost).  SimGrid compiles well with `clang` or `icc` too.
 Python 3.
   SimGrid should build without Python. That is only needed by our regression test suite.
-cmake (v3.5).
+cmake (v3.12).
   ``ccmake`` provides a nicer graphical interface compared to ``cmake``.
   Press ``t`` in ``ccmake`` if you need to see absolutely all
   configuration options (e.g., if your Python installation is not standard).
@@ -133,11 +133,11 @@ Grab the last **stable release** from `FramaGit
 
 .. code-block:: console
 
-   $ tar xf simgrid-3-XX.tar.gz
+   $ tar xf simgrid-4-XX.tar.gz
    $ cd simgrid-*
    $ cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid -GNinja .
    $ ninja                     # or 'make' if you remove the '-GNinja' above
-   $ ninja install
+   $ sudo ninja install
 
 If you want to stay on the **bleeding edge**, get the current git version,
 and recompile it as with stable archives. You may need some extra
@@ -331,7 +331,7 @@ Out of Tree Compilation
 By default, the files produced during the compilation are placed in
 the source directory. It is however often better to put them all in a
 separate directory: cleaning the tree becomes as easy as removing this
-directory, and you can have several such directories to test several
+directory, and you can have several such directories to test different
 parameter sets or architectures.
 
 For that, go to the directory where the files should be produced, and
@@ -476,4 +476,4 @@ You can add those variables to your bash profile to not specify it each time by 
 .. code-block:: console
 
   export PYTHONPATH="$PYTHONPATH:/opt/simgrid/lib/python3/dist-packages"
-  export LD_LIBRARY_PATH="$PYTHONPATH:/opt/simgrid/lib"
+  export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/opt/simgrid/lib"
