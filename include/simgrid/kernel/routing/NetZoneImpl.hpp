@@ -243,6 +243,8 @@ public:
 
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
   void seal();
+  /** @brief Unseal your netzone if you want to add more stuff, and do not forget to re-seal once you're done */
+  void unseal();
   /** @brief Check if netpoint is a member of this NetZone or some of the childrens */
   bool is_component_recursive(const NetPoint* netpoint) const;
   virtual unsigned long add_component(NetPoint* elm); /* A host, a router or a netzone, whatever */

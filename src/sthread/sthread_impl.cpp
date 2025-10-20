@@ -138,9 +138,15 @@ int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr
     name = simgrid::xbt::string_printf("%d:%d", rank, TID);
   }
   if (lilibeth == nullptr) {
-    for (auto* h : simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_all_hosts())
+    auto* zone = simgrid::s4u::Engine::get_instance()->get_netzone_root();
+    for (auto* h : zone->get_all_hosts())
       if (h->get_name() == "Lilibeth")
         lilibeth = h;
+    if (lilibeth == nullptr) { // Still not found. Let's create it
+      zone->unseal();
+      lilibeth = zone->add_host("Lilibeth", 1e15);
+      zone->seal();
+    }
     xbt_assert(lilibeth, "The host Lilibeth was not created. Something's wrong in sthread initialization.");
   }
 #endif

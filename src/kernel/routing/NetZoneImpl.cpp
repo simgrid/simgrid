@@ -746,6 +746,15 @@ void NetZoneImpl::seal()
   sealed_ = true;
   s4u::NetZone::on_seal(piface_);
 }
+void NetZoneImpl::unseal()
+{
+  /* already unsealed netzone */
+  if (not sealed_)
+    return;
+
+  sealed_ = false;
+  s4u::NetZone::on_unseal(piface_);
+}
 
 NetZoneImpl* NetZoneImpl::set_parent(NetZoneImpl* parent)
 {

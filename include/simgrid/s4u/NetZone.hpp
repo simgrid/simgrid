@@ -250,6 +250,7 @@ private:
 #ifndef DOXYGEN
   static xbt::signal<void(NetZone const&)> on_creation;
   static xbt::signal<void(NetZone const&)> on_seal;
+  static xbt::signal<void(NetZone const&)> on_unseal;
 #endif
 
 public:
@@ -257,6 +258,8 @@ public:
   static void on_creation_cb(const std::function<void(NetZone const&)>& cb) { on_creation.connect(cb); }
   /** \static Add a callback fired on each newly sealed NetZone */
   static void on_seal_cb(const std::function<void(NetZone const&)>& cb) { on_seal.connect(cb); }
+  /** \static Add a callback fired on each time a NetZone gets unsealed */
+  static void on_unseal_cb(const std::function<void(NetZone const&)>& cb) { on_unseal.connect(cb); }
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v403("Please use NetZone::add_host") s4u::Host* create_host(
@@ -383,6 +386,9 @@ public:
 
   /** @brief Seal this netzone configuration */
   NetZone* seal();
+  /** @brief Unseal this netzone configuration so that you can modify its content afterward. Do not forget to re-seal()
+   * it once you're done */
+  NetZone* unseal();
 
   void
   set_latency_factor_cb(std::function<double(double size, const s4u::Host* src, const s4u::Host* dst,

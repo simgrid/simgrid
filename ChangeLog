@@ -1,6 +1,7 @@
 SimGrid (4.1) unreleased. Target: summer or fall 2025
 
 S4U:
+ - Allow to unseal() netzones to add more content to them at any point. Don't forget to reuse seal() afterward
  - Deprecate Engine::add_actor in favor of Host::add_actor to avoid always passing the host 
    on which to create the new actor as parameter. 
  - Add s4u::Link::get_englobing_zone()

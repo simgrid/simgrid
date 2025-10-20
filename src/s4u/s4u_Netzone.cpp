@@ -27,6 +27,7 @@ namespace simgrid::s4u {
 
 xbt::signal<void(NetZone const&)> NetZone::on_creation;
 xbt::signal<void(NetZone const&)> NetZone::on_seal;
+xbt::signal<void(NetZone const&)> NetZone::on_unseal;
 
 const std::unordered_map<std::string, std::string>* NetZone::get_properties() const
 {
@@ -203,6 +204,11 @@ void NetZone::extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string
 NetZone* NetZone::seal()
 {
   kernel::actor::simcall_answered([this] { pimpl_->seal(); });
+  return this;
+}
+NetZone* NetZone::unseal()
+{
+  kernel::actor::simcall_answered([this] { pimpl_->unseal(); });
   return this;
 }
 void NetZone::set_latency_factor_cb(
