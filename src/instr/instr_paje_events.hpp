@@ -67,7 +67,7 @@ public:
 };
 
 class VariableEvent : public PajeEvent {
-  double value_;
+  double value_ = 0;
 
 public:
   VariableEvent(double timestamp, Container* container, Type* type, PajeEventType event_type, double value)
