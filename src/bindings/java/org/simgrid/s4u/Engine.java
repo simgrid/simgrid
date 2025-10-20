@@ -248,7 +248,7 @@ public class Engine {
   public void force_garbage_collection()
   {
     Object obj                = new Object();
-    WeakReference<Object> ref = new WeakReference<Object>(obj);
+    WeakReference<Object> ref = new WeakReference<>(obj);
     obj                       = null;
     while (ref.get() != null) {
       System.gc();

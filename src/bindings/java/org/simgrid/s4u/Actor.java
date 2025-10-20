@@ -5,7 +5,7 @@
 
 package org.simgrid.s4u;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 public abstract class Actor {
   protected Actor() {}
@@ -203,7 +203,7 @@ public abstract class Actor {
 
   // we need a signal specific to the Java world because the C++ signal is fired before we have any chance to fully
   // initialize the Java side of the actor
-  static Vector<CallbackActor> on_creation_signal = new Vector<>();
+  static ArrayList<CallbackActor> on_creation_signal = new ArrayList<>();
   public static void on_creation_cb(CallbackActor cb) { on_creation_signal.add(cb); }
 
   public static void fire_creation_signal(Actor actor, long cPtr)
@@ -217,7 +217,7 @@ public abstract class Actor {
   }
 
   // Same here: the C++ signal for destruction is called after Java is cleaned up, so don't use it
-  static Vector<CallbackActor> on_termination_signal = new Vector<>();
+  static ArrayList<CallbackActor> on_termination_signal = new ArrayList<>();
   public static void on_termination_cb(CallbackActor cb) { on_termination_signal.add(cb); }
 
   public static void fire_termination_signal(Actor actor)

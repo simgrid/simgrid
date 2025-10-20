@@ -37,7 +37,6 @@ static void execute_load_test()
       sg_vm_get_avg_load(vm)
     );
 
-  double start = sg4::Engine::get_clock();
   XBT_INFO("Sleep for 10 seconds");
   sg4::this_actor::sleep_for(10);
 
@@ -54,7 +53,7 @@ static void execute_load_test()
 
   // Run an activity
   XBT_INFO("========= Starting activities on VM_1 and VM_2");
-  start = sg4::Engine::get_clock();
+  double start = sg4::Engine::get_clock();
   s4u_ActivitySet act;
 
   double flops_1 = 2e8;
