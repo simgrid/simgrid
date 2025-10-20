@@ -14,6 +14,7 @@ Java:
  - Add Host.get_core_count()
  - Add signal Actor.on_creation_cb()
  - Kill Actor.on_termination_cb() that was not working anyway
+ - Fix a bunch of memleaks around actors that were not cleaned properly once terminating.
 
 Pyton:
  - Fix the declaration of Engine.set_config as the C++ function is a static one
