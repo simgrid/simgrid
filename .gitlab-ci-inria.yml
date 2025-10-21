@@ -471,29 +471,6 @@ freebsd:
     reports:
       junit: result.xml
 
-arm:
-  stage: test
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "stable"'
-      when: never
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      when: on_success
-    - when: never  # By default, do not execute this job (so it's executed only daily)
-  tags:
-    - armv8
-  script:
-    - module use /opt/arm/modulefiles/:/opt/arm/moduledeps/
-    - module load acfl armpl
-    - rm -rf CMakeFiles CMakeCache.txt
-    - CC=armclang CXX=armclang++ FC=armflang cmake -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" -DCMAKE_CXX_COMPILER_LAUNCHER=ccache .
-    - make VERBOSE=1 tests -j$(nproc)
-    - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
-  artifacts:
-    when: always
-    expire_in: 6 months
-    reports:
-      junit: result.xml
-
 # ###################################################################################################
 # ############# Daily jobs ##########################################################################
 # ###################################################################################################
