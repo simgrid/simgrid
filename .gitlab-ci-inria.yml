@@ -269,7 +269,7 @@ ubuntu22-release:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
@@ -292,7 +292,7 @@ ubuntu24-release:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
@@ -313,7 +313,7 @@ ubuntu-rolling:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
