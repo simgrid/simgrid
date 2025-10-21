@@ -7,6 +7,8 @@
 
 #$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/pthread-mutex-simpledeadlock
 
+# Musl gives the output in another order compared to glibc
+! output sort
 # This test raises a deadlock, thus the return code of 2
 ! expect return 2
 ! setenv ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS
