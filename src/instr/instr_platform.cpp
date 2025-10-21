@@ -393,6 +393,16 @@ static void on_simulation_start()
   XBT_DEBUG("Starting graph extraction.");
   recursiveGraphExtraction(s4u::Engine::get_instance()->get_netzone_root(), Container::get_root(), &filter);
   XBT_DEBUG("Graph extraction finished.");
+  if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
+   auto links = simgrid::s4u::Engine::get_instance()->get_all_links();
+   for (const auto& link : links) {
+     if (link->get_name() == "__loopback__")
+      continue; 
+     auto container = Container::by_name(link->get_name());
+     container->get_type()->by_name_or_create("bandwidth", "")->set_event(0, link->get_bandwidth());
+     container->get_type()->by_name_or_create("latency", "")->set_event(0, link->get_latency());
+    }
+  }
   dump_buffer(true);
 }
 
