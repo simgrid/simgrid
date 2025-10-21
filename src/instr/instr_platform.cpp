@@ -316,10 +316,8 @@ static void on_link_creation(s4u::Link const& link)
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     VariableType* bandwidth = container->get_type()->by_name_or_create("bandwidth", "");
     bandwidth->set_calling_container(container);
-    bandwidth->set_event(0, link.get_bandwidth());
     VariableType* latency = container->get_type()->by_name_or_create("latency", "");
     latency->set_calling_container(container);
-    latency->set_event(0, link.get_latency());
   }
 
   if (TRACE_uncategorized()) {
