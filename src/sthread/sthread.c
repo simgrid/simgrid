@@ -77,16 +77,16 @@ static void intercepter_init()
   raw_pthread_mutexattr_getrobust = dlsym(RTLD_NEXT, "pthread_mutexattr_getrobust");
   raw_pthread_mutexattr_setrobust = dlsym(RTLD_NEXT, "pthread_mutexattr_setrobust");
 
-  raw_pthread_barrier_init = dlsym(RTLD_NEXT, "raw_pthread_barrier_init");
-  raw_pthread_barrier_wait = dlsym(RTLD_NEXT, "raw_pthread_barrier_wait");
-  raw_pthread_barrier_destroy = dlsym(RTLD_NEXT, "raw_pthread_barrier_destroy");
+  raw_pthread_barrier_init    = dlsym(RTLD_NEXT, "pthread_barrier_init");
+  raw_pthread_barrier_wait    = dlsym(RTLD_NEXT, "pthread_barrier_wait");
+  raw_pthread_barrier_destroy = dlsym(RTLD_NEXT, "pthread_barrier_destroy");
 
-  raw_pthread_cond_init      = dlsym(RTLD_NEXT, "raw_pthread_cond_init");
-  raw_pthread_cond_signal    = dlsym(RTLD_NEXT, "raw_pthread_cond_signal");
-  raw_pthread_cond_broadcast = dlsym(RTLD_NEXT, "raw_pthread_cond_broadcast");
-  raw_pthread_cond_wait      = dlsym(RTLD_NEXT, "raw_pthread_cond_wait");
-  raw_pthread_cond_timedwait = dlsym(RTLD_NEXT, "raw_pthread_cond_timedwait");
-  raw_pthread_cond_destroy   = dlsym(RTLD_NEXT, "raw_pthread_cond_destroy");
+  raw_pthread_cond_init      = dlsym(RTLD_NEXT, "pthread_cond_init");
+  raw_pthread_cond_signal    = dlsym(RTLD_NEXT, "pthread_cond_signal");
+  raw_pthread_cond_broadcast = dlsym(RTLD_NEXT, "pthread_cond_broadcast");
+  raw_pthread_cond_wait      = dlsym(RTLD_NEXT, "pthread_cond_wait");
+  raw_pthread_cond_timedwait = dlsym(RTLD_NEXT, "pthread_cond_timedwait");
+  raw_pthread_cond_destroy   = dlsym(RTLD_NEXT, "pthread_cond_destroy");
 
   raw_sleep        = dlsym(RTLD_NEXT, "sleep");
   raw_usleep       = dlsym(RTLD_NEXT, "usleep");
