@@ -40,6 +40,10 @@ int sthread_in_memory()
 {
   return 0;
 }
+int sthread_is_enabled()
+{
+  return 0;
+}
 
 /* these two functions belong to xbt/sysdep.h, which have no corresponding .c file */
 /** @brief like xbt_free, but you can be sure that it is a function  */

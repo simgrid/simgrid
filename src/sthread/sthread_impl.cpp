@@ -107,12 +107,10 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
   lilibeth   = zone->add_host("Lilibeth", 1e15);
   zone->seal();
 
-  /* If not in SMPI, the old main becomes an actor in a newly created simulation */
-  sthread_enable();
+  /* If not in SMPI, the old main becomes an actor in a newly created simulation. Do not activate sthread yet: creating
+   * contextes won't like it */
   sg4::ActorPtr main_actor = lilibeth->add_actor("main thread", raw_main, argc, argv, envp);
-
   sg4::Engine::get_instance()->run();
-  sthread_disable();
 
   if (not sthread_quiet)
     XBT_INFO("All threads exited. Terminating the simulation.");

@@ -3,7 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/base.h>
+#include "src/sthread/sthread.h"
+#include "xbt/asserts.h"
 
 #include <condition_variable>
 #include <mutex>
@@ -11,7 +12,11 @@
 namespace simgrid::xbt {
 class XBT_PUBLIC OsSemaphore {
 public:
-  explicit inline OsSemaphore(unsigned int capa) : capa_(capa) {}
+  explicit inline OsSemaphore(unsigned int capa) : capa_(capa)
+  {
+    xbt_assert(not sthread_is_enabled(),
+               "SimGrid created a system semaphore while in sthread mode. SimGrid should not intercept itself.");
+  }
 
   inline void acquire()
   {

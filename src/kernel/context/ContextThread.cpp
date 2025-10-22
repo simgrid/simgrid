@@ -8,6 +8,7 @@
 #include "simgrid/Exception.hpp"
 #include "src/internal_config.h" /* loads context system definitions */
 #include "src/kernel/EngineImpl.hpp"
+#include "src/sthread/sthread.h"
 #include "xbt/function_types.h"
 
 #include <boost/core/demangle.hpp>
@@ -90,7 +91,9 @@ void ThreadContext::wrapper(ThreadContext* context)
   context->initialized();
 
   try {
+    sthread_enable();
     (*context)();
+    sthread_disable();
     if (not context->is_maestro()) // Just in case somebody detached maestro
       context->stop();
   } catch (ForcefulKillException const&) {
@@ -111,30 +114,40 @@ void ThreadContext::wrapper(ThreadContext* context)
 
 void ThreadContext::release()
 {
+  sthread_disable();
   this->begin_.release();
+  sthread_enable();
 }
 
 void ThreadContext::wait()
 {
+  sthread_disable();
   this->end_.acquire();
+  sthread_enable();
 }
 
 void ThreadContext::start()
 {
+  sthread_disable();
   this->begin_.acquire();
   this->start_hook();
+  sthread_enable();
 }
 
 void ThreadContext::yield()
 {
+  sthread_disable();
   this->yield_hook();
   this->end_.release();
+  sthread_enable();
 }
 
 void ThreadContext::suspend()
 {
+  sthread_disable();
   this->yield();
   this->start();
+  sthread_enable();
 }
 
 void ThreadContext::attach_start()
