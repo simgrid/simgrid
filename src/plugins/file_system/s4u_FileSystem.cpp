@@ -468,21 +468,25 @@ void sg_storage_file_system_init()
 
 sg_file_t sg_file_open(const char* fullpath, void* data)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   return simgrid::s4u::File::open(fullpath, data);
 }
 
 sg_size_t sg_file_read(sg_file_t fd, sg_size_t size)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   return fd->read(size);
 }
 
 sg_size_t sg_file_write(sg_file_t fd, sg_size_t size)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   return fd->write(size);
 }
 
 void sg_file_close(sg_file_t fd)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   fd->close();
 }
 
@@ -491,6 +495,7 @@ void sg_file_close(sg_file_t fd)
  */
 const char* sg_file_get_name(const_sg_file_t fd)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   xbt_assert((fd != nullptr), "Invalid file descriptor");
   return fd->get_path();
 }
@@ -500,11 +505,13 @@ const char* sg_file_get_name(const_sg_file_t fd)
  */
 sg_size_t sg_file_get_size(const_sg_file_t fd)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   return fd->size();
 }
 
 void sg_file_dump(const_sg_file_t fd)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   fd->dump();
 }
 
@@ -513,6 +520,7 @@ void sg_file_dump(const_sg_file_t fd)
  */
 void* sg_file_get_data(const_sg_file_t fd)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   return fd->get_data<void>();
 }
 
@@ -521,6 +529,7 @@ void* sg_file_get_data(const_sg_file_t fd)
  */
 void sg_file_set_data(sg_file_t fd, void* data)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   fd->set_data(data);
 }
 
@@ -536,21 +545,25 @@ void sg_file_set_data(sg_file_t fd, void* data)
  */
 void sg_file_seek(sg_file_t fd, sg_offset_t offset, int origin)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   fd->seek(offset, origin);
 }
 
 sg_size_t sg_file_tell(const_sg_file_t fd)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   return fd->tell();
 }
 
 void sg_file_move(const_sg_file_t fd, const char* fullpath)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   fd->move(fullpath);
 }
 
 void sg_file_unlink(sg_file_t fd)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   fd->unlink();
   fd->close();
 }
@@ -566,6 +579,7 @@ void sg_file_unlink(sg_file_t fd)
  */
 int sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   return file->remote_copy(host, fullpath);
 }
 
@@ -580,25 +594,30 @@ int sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath)
  */
 int sg_file_rmove(sg_file_t file, sg_host_t host, const char* fullpath)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   return file->remote_move(host, fullpath);
 }
 
 sg_size_t sg_disk_get_size_free(const_sg_disk_t d)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   return d->extension<FileSystemDiskExt>()->get_size() - d->extension<FileSystemDiskExt>()->get_used_size();
 }
 
 sg_size_t sg_disk_get_size_used(const_sg_disk_t d)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   return d->extension<FileSystemDiskExt>()->get_used_size();
 }
 
 sg_size_t sg_disk_get_size(const_sg_disk_t d)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   return d->extension<FileSystemDiskExt>()->get_size();
 }
 
 const char* sg_disk_get_mount_point(const_sg_disk_t d)
 {
+  xbt_assert(FileSystemDiskExt::EXTENSION_ID.valid(), "Please sg_storage_file_system_init() to initialize this plugin.");
   return d->extension<FileSystemDiskExt>()->get_mount_point();
 }
