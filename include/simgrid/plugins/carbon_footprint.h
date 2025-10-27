@@ -16,6 +16,7 @@ XBT_PUBLIC void sg_host_carbon_footprint_plugin_init();
 XBT_PUBLIC double sg_host_get_carbon_footprint(const_sg_host_t host);
 XBT_PUBLIC double sg_host_get_carbon_intensity(const_sg_host_t host);
 XBT_PUBLIC void sg_host_set_carbon_intensity(const_sg_host_t host, double carbon_intensity);
+XBT_PUBLIC void sg_host_carbon_footprint_load_trace_file(const char* trace_file);
 
 SG_END_DECL
 

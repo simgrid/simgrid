@@ -18,6 +18,10 @@
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <fstream>
+#include <sstream>
+#include <unordered_map>
+#include <map>
 
 
 SIMGRID_REGISTER_PLUGIN(host_carbon_footprint, "Host carbon footprint", &sg_host_carbon_footprint_plugin_init)
@@ -64,6 +68,9 @@ Keep this in mind when using this plugin.
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(host_carbon_footprint, kernel, "Logging specific to the host carbon footprint plugin");
 
+// Global storage for carbon intensity traces
+static std::unordered_map<std::string, std::map<std::string, double>> carbon_intensity_traces;
+static bool trace_file_loaded = false;
 
 namespace simgrid::plugin {
 
@@ -100,28 +107,92 @@ void HostCarbonFootprint::update()
   double finish_time = simgrid::s4u::Engine::get_clock();
 
   if (start_time < finish_time) {
-
     double previous_carbon_footprint = total_carbon_footprint;
+    double total_carbon_this_step = 0.0;
 
-    double instantaneous_power_consumption = sg_host_get_current_consumption(host_);
-   
-    double energy_this_step = instantaneous_power_consumption * (finish_time - start_time);
+    // Process carbon intensity changes during the time period
+    if (trace_file_loaded) {
+      std::string host_name = host_->get_cname();
+      auto host_traces = carbon_intensity_traces.find(host_name);
+      
+      if (host_traces != carbon_intensity_traces.end()) {
+        // Get all carbon intensity changes that occurred during this period
+        std::vector<std::pair<double, double>> intensity_changes; // (time, intensity)
+        
+        for (const auto& trace_entry : host_traces->second) {
+          double event_time = std::stod(trace_entry.first);
+          if (event_time > start_time && event_time <= finish_time) {
+            intensity_changes.push_back({event_time, trace_entry.second});
+          }
+        }
+        
+        // Sort by time
+        std::sort(intensity_changes.begin(), intensity_changes.end());
+        
+        // Add the current intensity at the end if no changes occurred
+        if (intensity_changes.empty()) {
+          intensity_changes.push_back({finish_time, this->carbon_intensity});
+        } else {
+          // Use the last intensity that was active before finish_time
+          double last_intensity = this->carbon_intensity;
+          for (const auto& change : intensity_changes) {
+            if (change.first <= finish_time) {
+              last_intensity = change.second;
+            }
+          }
+          intensity_changes.push_back({finish_time, last_intensity});
+        }
+        
+        // Calculate carbon footprint for each time segment
+        double current_time = start_time;
+        double current_intensity = this->carbon_intensity;
+        
+        for (const auto& change : intensity_changes) {
+          double segment_end_time = change.first;
+          double segment_duration = segment_end_time - current_time;
+          
+          if (segment_duration > 0) {
+            double instantaneous_power_consumption = sg_host_get_current_consumption(host_);
+            double energy_this_segment = instantaneous_power_consumption * segment_duration;
+            double energy_this_segment_kwh = energy_this_segment / 3.6e6;
+            double carbon_this_segment = energy_this_segment_kwh * current_intensity;
+            
+            total_carbon_this_step += carbon_this_segment;
+            
+            XBT_DEBUG("[carbon_footprint_segment of %s] period=[%.8f-%.8f]; power=%.2f W; carbon rate=%.2f g/kWh; "
+                      "carbon this segment: %.8f g",
+                      host_->get_cname(), current_time, segment_end_time, instantaneous_power_consumption, 
+                      current_intensity, carbon_this_segment);
+          }
+          
+          current_time = segment_end_time;
+          current_intensity = change.second;
+        }
+        
+        // Update the current carbon intensity to the final value
+        this->carbon_intensity = current_intensity;
+        
+      } else {
+        // No traces for this host, use standard calculation
+        double instantaneous_power_consumption = sg_host_get_current_consumption(host_);
+        double energy_this_step = instantaneous_power_consumption * (finish_time - start_time);
+        double energy_this_step_kwh = energy_this_step / 3.6e6;
+        total_carbon_this_step = energy_this_step_kwh * this->carbon_intensity;
+      }
+    } else {
+      // No trace file loaded, use standard calculation
+      double instantaneous_power_consumption = sg_host_get_current_consumption(host_);
+      double energy_this_step = instantaneous_power_consumption * (finish_time - start_time);
+      double energy_this_step_kwh = energy_this_step / 3.6e6;
+      total_carbon_this_step = energy_this_step_kwh * this->carbon_intensity;
+    }
 
-    double energy_this_step_kwh = energy_this_step / 3.6e6;
-
-    double carbon_this_step = energy_this_step_kwh * this->carbon_intensity;
-
-    total_carbon_footprint = previous_carbon_footprint + carbon_this_step;
-   
+    total_carbon_footprint = previous_carbon_footprint + total_carbon_this_step;
     last_updated = finish_time;
 
-    XBT_DEBUG("[update_carbon_footprint of %s] period=[%.8f-%.8f]; instantaneous power=%.2f W; carbon rate=%.2f g/kWh; "
-              "total carbon footprint before: %.8f g -> added now: %.8f g",
-              host_->get_cname(), start_time, finish_time, instantaneous_power_consumption, carbon_intensity,
-              previous_carbon_footprint, carbon_this_step);
-              
+    XBT_DEBUG("[update_carbon_footprint of %s] period=[%.8f-%.8f]; total carbon footprint before: %.8f g -> added now: %.8f g",
+              host_->get_cname(), start_time, finish_time, previous_carbon_footprint, total_carbon_this_step);
   }
-
 }
 
 HostCarbonFootprint::HostCarbonFootprint(simgrid::s4u::Host* ptr) : host_(ptr)
@@ -167,6 +238,7 @@ void HostCarbonFootprint::setHostCarbonIntensity(double carbon_intensity)
 
   this->carbon_intensity = carbon_intensity;
 }
+
 
 
 HostCarbonFootprint::~HostCarbonFootprint() = default;
@@ -293,5 +365,47 @@ void sg_host_set_carbon_intensity(const_sg_host_t host, double carbon_intensity)
 {
   ensure_plugin_inited();
   host->extension<HostCarbonFootprint>()->setHostCarbonIntensity(carbon_intensity);
+}
 
+void sg_host_carbon_footprint_load_trace_file(const char* trace_file)
+{
+  ensure_plugin_inited();
+  
+  if (trace_file == nullptr || strlen(trace_file) == 0) {
+    XBT_WARN("Trace file path is null or empty.");
+    return;
+  }
+  
+  std::ifstream file(trace_file);
+  if (!file.is_open()) {
+    XBT_ERROR("Cannot open carbon trace file: %s", trace_file);
+    return;
+  }
+
+  std::string line;
+  std::getline(file, line); // Skip header line
+
+  while (std::getline(file, line)) {
+    std::istringstream ss(line);
+    std::string host_id, timestamp, carbon_intensity_str;
+
+    try {
+      if (std::getline(ss, host_id, ',') &&
+          std::getline(ss, timestamp, ',') &&
+          std::getline(ss, carbon_intensity_str)) {
+        double carbon_intensity = std::stod(carbon_intensity_str); 
+        carbon_intensity_traces[host_id][timestamp] = carbon_intensity;
+      } else {
+        XBT_WARN("Malformed line in carbon trace file: '%s'.", line.c_str());
+      }
+    } catch (const std::exception &e) {
+      XBT_WARN("Error parsing line in carbon trace file: '%s'. Error: %s", line.c_str(), e.what());
+    }
+  }
+
+  file.close();
+  trace_file_loaded = true;
+  
+  XBT_INFO("Carbon trace file '%s' loaded successfully. Found traces for %zu hosts.", 
+           trace_file, carbon_intensity_traces.size());
 }
