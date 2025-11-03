@@ -16,10 +16,9 @@ Java:
  - Kill Actor.on_termination_cb() that was not working anyway
  - Fix a bunch of memleaks around actors that were not cleaned properly once terminating.
 
-Pyton:
+Python:
  - Fix the declaration of Engine.set_config as the C++ function is a static one
  - Added a few missing functions related to Disk (host, turn_on, turn_off)
-
 
 Model-checking:
  - The 'none' reduction method is gone. It was useless and made the code more complex than needed.
@@ -27,6 +26,9 @@ Model-checking:
  - Implement a 'parallel' stategy to leverage multicores during the exploration
  - Observe ActorExit events, to get the trailing memory accesses when memory accesses are observed.
  - simgrid-mc now accepts the --cfg=model-check/replay parameter. In this case, it will execve() the binary to remove itself.
+
+sthread:
+ - Now also work with the 'thread' context factory of SimGrid. Mostly useful for internal debugging
 
 Platforms:
  - Remove Engine::on_platform_sealed that was semi-private (not documented). Use Engine::on_simulation_start instead

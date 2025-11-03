@@ -186,6 +186,11 @@ CheckerSide::CheckerSide(int socket, CheckerSide* child_checker)
   wait_for_requests();
 }
 
+static void handle_sigalarm(int)
+{
+  xbt_die("The child process failed to connect within the 5 seconds time limit. The model-checker is bailing out now.");
+}
+
 std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket, const std::string& master_socket_name)
 {
   if (is_one_way)
@@ -197,7 +202,16 @@ std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket, const std::st
   std::copy_n(begin(master_socket_name), MC_SOCKET_NAME_LEN, begin(m.socket_name));
   xbt_assert(get_channel().send(m) == 0, "Could not ask the app to fork on need.");
 
+  /* Accept an incomming socket under a 5 seconds time limit*/
+  struct sigaction action;
+  action.sa_handler = handle_sigalarm;
+  sigaction(SIGALRM, &action, nullptr); /* Override the default behaviour which would be to end the process */
+  alarm(5);
   int sock = accept(master_socket, nullptr /* I know who's connecting*/, nullptr);
+  int real_errno = errno;
+  alarm(0);
+  errno = real_errno;
+
   if (sock <= 0) {
     switch (errno) {
       case EMFILE:

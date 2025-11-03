@@ -338,7 +338,7 @@ void AppSide::handle_fork(const s_mc_message_fork_t* msg)
 
     xbt_die("The SimGrid model-checker cannot handle the threaded context factory because it relies on forking the "
             "application, which is not possible with multi-threaded applications. Please remove the "
-            "--cfg=contexts/factory:thread parameter to the application, or add --cfg=model-check/no-fork:1 to "
+            "--cfg=contexts/factory:thread parameter to the application, or add --cfg=model-check/no-fork:on to "
             "simgrid-mc. The second option results in slower explorations, but it is the only option when verifying "
             "Python programs, as the SimGrid Python bindings mandate threads.");
     // See also commit c2c077dc7edb4a4217610dbaf675f414cbf6f09f for the reason why Python needs threads

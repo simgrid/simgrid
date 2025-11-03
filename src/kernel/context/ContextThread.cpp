@@ -60,6 +60,8 @@ ThreadContext::ThreadContext(std::function<void()>&& code, actor::ActorImpl* act
 {
   /* If the user provided a function for the actor then use it */
   if (has_code()) {
+    sthread_pause_guard guard; // Put sthread on pause during this call on need
+
     /* create and start the actor */
     this->thread_ = new std::thread(ThreadContext::wrapper, this);
     /* wait the start of the newly created actor */
@@ -174,6 +176,7 @@ void ThreadContext::attach_stop()
 
 void SerialThreadContext::run_all(std::vector<actor::ActorImpl*> const& actors_list)
 {
+  sthread_pause_guard guard; // Put sthread on pause during this call on need
   for (auto const* actor : actors_list) {
     XBT_DEBUG("Handling %p", actor);
     auto* context = static_cast<ThreadContext*>(actor->context_.get());

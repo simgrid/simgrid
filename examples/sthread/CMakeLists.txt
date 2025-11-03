@@ -15,11 +15,11 @@ foreach(x
     target_link_libraries(pthread-${x} PRIVATE Threads::Threads)
 
     add_dependencies(tests pthread-${x})
-    ADD_TESH_FACTORIES(pthread-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh)
+    ADD_TESH(pthread-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh)
 
     if(SIMGRID_HAVE_MC)
       add_dependencies(tests-mc pthread-${x})
-      ADD_TESH_FACTORIES(pthread-mc-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
+      ADD_TESH(pthread-mc-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
     endif()
   endif()
 
@@ -43,7 +43,7 @@ foreach(x
 
     if(SIMGRID_HAVE_MC)
       add_dependencies(tests-mc pthread-${x})
-      ADD_TESH_FACTORIES(pthread-mc-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
+      ADD_TESH(pthread-mc-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
     endif()
   endif()
 
@@ -68,12 +68,13 @@ foreach(x
 
     add_dependencies(tests smpi-${x})
     if(NOT DEFINED _${x}_failing)
-      ADD_TESH_FACTORIES(smpi-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/smpi-${x}.tesh)
+      ADD_TESH(smpi-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/smpi-${x}.tesh)
     endif()
     
     if(SIMGRID_HAVE_MC)
       add_dependencies(tests-mc smpi-${x})
-      ADD_TESH_FACTORIES(smpi-mc-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/smpi-mc-${x}.tesh)
+      ADD_TESH_FACTORIES(smpi-mc-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/sthread --setenv "extraparam=--cfg=model-check/no-fork:off" ${CMAKE_CURRENT_SOURCE_DIR}/smpi-mc-${x}.tesh)
+      ADD_TESH_FACTORIES(smpi-mc-${x}  "thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/sthread --setenv "extraparam=--cfg=model-check/no-fork:on"  ${CMAKE_CURRENT_SOURCE_DIR}/smpi-mc-${x}.tesh)
     endif()
   endif()
   
@@ -100,7 +101,8 @@ foreach(example
 
     if(SIMGRID_HAVE_MC)
       add_dependencies(tests-mc ${example})
-      ADD_TESH_FACTORIES(sthread-mc-${example} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread/${example} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
+      ADD_TESH_FACTORIES(sthread-mc-${example} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread/${example} --setenv "extraparam=--cfg=model-check/no-fork:off" ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
+      ADD_TESH_FACTORIES(sthread-mc-${example}  "thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread/${example} --setenv "extraparam=--cfg=model-check/no-fork:on"  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
     endif()
   endif()
 

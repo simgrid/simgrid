@@ -444,6 +444,7 @@ class Cmd:
         else:
             stdouta = stdout_data.split("\n")
             stdouta = self.remove_ignored_lines(stdouta)
+            self.output_pipe_stdout = self.remove_ignored_lines(self.output_pipe_stdout)
             while stdouta and stdouta[-1] == "":
                 del stdouta[-1]
             stdcpy = stdouta[:]

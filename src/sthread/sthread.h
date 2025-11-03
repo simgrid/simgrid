@@ -103,6 +103,19 @@ void sthread_access_end(void* objaddr, const char* objname, const char* file, in
 
 #if defined(__cplusplus)
 }
+
+/* Puts sthread on a pause as long as this object is alive */
+class sthread_pause_guard {
+  int previous_state_;
+
+public:
+  sthread_pause_guard() : previous_state_(sthread_is_enabled()) { sthread_disable(); }
+  ~sthread_pause_guard()
+  {
+    if (previous_state_)
+      sthread_enable();
+  }
+};
 #endif
 
 #endif

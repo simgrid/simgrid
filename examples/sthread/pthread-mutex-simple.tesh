@@ -4,10 +4,3 @@ $ env ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS LD_PRELOAD=${libdir:=.
 > The thread 1 is terminating.
 > User's main is terminating.
 > [0.000000] [sthread/INFO] All threads exited. Terminating the simulation.
-
-$ env ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS LD_PRELOAD=${libdir:=.}/libsthread.so ./pthread-mutex-simple --cfg=contexts/factory:thread
-> All threads are started.
-> The thread 0 is terminating.
-> The thread 1 is terminating.
-> User's main is terminating.
-> [0.000000] [sthread/INFO] All threads exited. Terminating the simulation.

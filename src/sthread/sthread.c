@@ -12,6 +12,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdio.h>
+#include <threads.h>
 #include <unistd.h>
 
 #if HAVE_VALGRIND_H
@@ -102,7 +103,7 @@ static void intercepter_init()
   raw_sem_timedwait = dlsym(RTLD_NEXT, "sem_timedwait");
 }
 
-static int sthread_inside_simgrid = 1;
+static thread_local int sthread_inside_simgrid = 1;
 void sthread_enable(void)
 { // Start intercepting all pthread calls
   sthread_inside_simgrid = 0;
