@@ -9,6 +9,7 @@
 #include "src/internal_config.h" /* loads context system definitions */
 #include "src/kernel/EngineImpl.hpp"
 #include "src/sthread/sthread.h"
+#include "xbt/asserts.h"
 #include "xbt/function_types.h"
 
 #include <boost/core/demangle.hpp>
@@ -116,44 +117,35 @@ void ThreadContext::wrapper(ThreadContext* context)
 
 void ThreadContext::release()
 {
-  sthread_disable();
   this->begin_.release();
-  sthread_enable();
 }
 
 void ThreadContext::wait()
 {
-  sthread_disable();
   this->end_.acquire();
-  sthread_enable();
 }
 
 void ThreadContext::start()
 {
-  sthread_disable();
   this->begin_.acquire();
   this->start_hook();
-  sthread_enable();
 }
 
 void ThreadContext::yield()
 {
-  sthread_disable();
   this->yield_hook();
   this->end_.release();
-  sthread_enable();
 }
 
 void ThreadContext::suspend()
 {
-  sthread_disable();
   this->yield();
   this->start();
-  sthread_enable();
 }
 
 void ThreadContext::attach_start()
 {
+  xbt_assert(not sthread_is_enabled(), "Mixing sthread and maestro_attach is not supported yet");
   // We're breaking the layers here by depending on the upper layer:
   auto* maestro = static_cast<ThreadContext*>(EngineImpl::get_instance()->get_maestro()->context_.get());
   maestro->begin_.release();
