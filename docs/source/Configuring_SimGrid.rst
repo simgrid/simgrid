@@ -99,6 +99,7 @@ Existing Configuration Items
 
 - **debug/breakpoint:** :ref:`cfg=debug/breakpoint`
 - **debug/clean-atexit:** :ref:`cfg=debug/clean-atexit`
+- **debug/lmm-leaks:** :ref:`cfg=debug/lmm-leaks`
 - **debug/verbose-exit:** :ref:`cfg=debug/verbose-exit`
 
 - **exception/cutpath:** :ref:`cfg=exception/cutpath`
@@ -1751,6 +1752,17 @@ If your code is segfaulting during its finalization, it may help to
 disable this option to request that SimGrid not attempt any cleanups at
 the end of the simulation. Since the Unix process is ending anyway,
 the operating system will wipe it all.
+
+.. _cfg=debug/lmm-leaks:
+
+Cleanup at Termination
+......................
+
+**Option** ``debug/lmm-leaks`` **default:** off
+
+Under some conditions, not all LMM variables are cleaned at the end of the simulation. As this is most certainly due to a bug,
+you may want to activate this option to get more information about the leaked variables. Note that taking all the system
+backtraces will hurt the performance of your simulation.
 
 .. _cfg=path:
 
