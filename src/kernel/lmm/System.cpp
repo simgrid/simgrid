@@ -8,6 +8,7 @@
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/simgrid/math_utils.h"
 #include "xbt/backtrace.hpp"
+#include "xbt/config.hpp"
 #if SIMGRID_HAVE_EIGEN3
 #include "src/kernel/lmm/bmf.hpp"
 #endif
