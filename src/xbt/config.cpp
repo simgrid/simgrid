@@ -37,10 +37,10 @@ namespace {
 
 bool parse_bool(const char* value)
 {
-  for (const char* true_value : {"yes", "on", "true", "1"})
+  for (const char* true_value : {"yes", "on", "ON", "true", "TRUE", "1"})
     if (std::strcmp(true_value, value) == 0)
       return true;
-  for (const char* false_value : {"no", "off", "false", "0"})
+  for (const char* false_value : {"no", "off", "OFF", "false", "FALSE", "0"})
     if (std::strcmp(false_value, value) == 0)
       return false;
   throw std::range_error("not a boolean");

@@ -196,7 +196,7 @@ System::~System()
     boost::core::scoped_demangled_name demangled(name);
     XBT_WARN("Probable bug: a %s variable (#%d) not removed before the LMM system destruction. %s",
              demangled.get() ? demangled.get() : name, var->rank_,
-             var->backtrace_ == nullptr ? "Use --cfg=debug/lmm-leaks:ON to see where this variable was created "
+             var->backtrace_ == nullptr ? "Use --cfg=debug/lmm-leaks:on to see where this variable was created "
                                           "(warning: this parameter will slow down your simulation)"
                                         : "This variable was created here:");
     if (var->backtrace_)
