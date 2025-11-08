@@ -15,7 +15,7 @@ static char MTEST_Descrip[] = "Use of MPI_BOTTOM in communication";
 int main(int argc, char *argv[])
 {
     int errs = 0, err;
-    int rank, size, source, dest, len, ii;
+    int rank, size, source, dest, len, ii = 42;
     MPI_Comm comm;
     MPI_Status status;
     MPI_Datatype newtype, oldtype;
