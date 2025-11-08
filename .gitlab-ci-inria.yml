@@ -177,7 +177,7 @@ alpine-release:
   tags:
     - large  # Inria infra
   script: 
-  - apk add --no-cache build-base git cmake python3 py3-pybind11-dev graphviz-dev eigen-dev boost-dev openjdk21-jdk valgrind-dev nlohmann-json fortify-headers
+  - apk add --no-cache build-base gfortran git cmake python3 py3-pybind11-dev graphviz-dev eigen-dev boost-dev openjdk21-jdk valgrind-dev nlohmann-json fortify-headers
   - export JAVA_HOME=/usr/lib/jvm/default-jvm
   - cmake -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_compile_optimizations=ON -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - make VERBOSE=1 -j$(nproc) all tests
@@ -199,7 +199,7 @@ debian-clang:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y build-essential ninja-build clang libgcc-14-dev cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y build-essential ninja-build clang gfortran libgcc-14-dev cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang  -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
@@ -223,7 +223,7 @@ debian-stable:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
@@ -244,7 +244,7 @@ debian-oldstable:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
@@ -269,7 +269,7 @@ ubuntu22-release:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev
   - apt -y clean && apt -y autoclean
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
@@ -293,7 +293,7 @@ ubuntu24-release:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
@@ -314,7 +314,7 @@ ubuntu-rolling:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
@@ -334,7 +334,7 @@ fedora-rawhide-release:
   tags:
     - large  # Inria infra
   script:
-  - dnf install -y @development-tools ninja-build cmake g++ git cmake python3-devel pybind11-devel graphviz-devel eigen3-devel boost-devel java-latest-openjdk-devel valgrind-devel json-devel
+  - dnf install -y @development-tools ninja-build gfortran g++ git cmake python3-devel pybind11-devel graphviz-devel eigen3-devel boost-devel java-latest-openjdk-devel valgrind-devel json-devel
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
@@ -359,7 +359,7 @@ rocky-release:
   - dnf install 'dnf-command(config-manager)'
   - dnf config-manager --set-enabled crb # enable the repository for ninja package
   # Still missing on Rocky Linux: nlohmann-json
-  - dnf install -y ninja-build cmake g++ gcc-c++ git cmake pybind11-devel python3-devel graphviz-devel eigen3-devel boost-devel java-21-openjdk-devel valgrind-devel diffutils
+  - dnf install -y ninja-build gfortran g++ gcc-c++ git cmake pybind11-devel python3-devel graphviz-devel eigen3-devel boost-devel java-21-openjdk-devel valgrind-devel diffutils
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
@@ -380,7 +380,7 @@ opensuse-release:
   tags:
     - large  # Inria infra
   script:
-  - zypper install -y ninja cmake gcc-c++ git cmake python313-pybind11-devel python313-numpy-devel graphviz-devel eigen3-devel boost-devel libboost_context-devel java-21-openjdk-devel valgrind-devel diffutils nlohmann_json-devel
+  - zypper install -y ninja gfortran gcc-c++ git cmake python313-pybind11-devel python313-numpy-devel graphviz-devel eigen3-devel boost-devel libboost_context-devel java-21-openjdk-devel valgrind-devel diffutils nlohmann_json-devel
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
@@ -438,7 +438,7 @@ arch-release:
   tags:
     - large  # Inria infra
   script:
-  - pacman --noconfirm -Sy ninja cmake gcc git cmake python-build graphviz eigen boost jdk21-openjdk valgrind pybind11 python-numpy nlohmann-json diffutils
+  - pacman --noconfirm -Sy ninja gcc-fortran gcc git cmake python-build graphviz eigen boost jdk21-openjdk valgrind pybind11 python-numpy nlohmann-json diffutils
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
