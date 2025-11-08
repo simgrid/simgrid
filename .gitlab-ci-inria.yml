@@ -409,7 +409,7 @@ docker-intelCC:
 
 opensuse-intelCC:
   needs: [docker-intelCC]
-  image: $CI_REGISTRY_IMAGE/intelcc:latest
+  image: $CI_REGISTRY_IMAGE/intelcc:2025.3
   stage: test
   rules:
     - if: '$CI_COMMIT_BRANCH == "stable"'
