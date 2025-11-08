@@ -3,12 +3,14 @@
 # License: MIT 
 
 # We need this in SimGrid because the Intel compiler seems to require -latomic to use these features
-# Change in SimGrid: remove the need for 64bits operations
+# Changes in SimGrid:
+#   - Remove the need for 64bits operations
+#   - More informative messages
+#   - Also test std::atomic_flag::test_and_set() as it is what seems to fail on Intel CC 2025.2
 
 # - Try to find if atomics need -latomic linking
 # Once done this will define
-#  HAVE_CXX_ATOMICS_WITHOUT_LIB - Wether atomic types work without -latomic
-#  HAVE_CXX_ATOMICS64_WITHOUT_LIB - Wether 64 bit atomic types work without -latomic
+#  HAVE_CXX_ATOMICS_WITHOUT_LIB - Whether atomic types work without -latomic
 
 INCLUDE(CheckCXXSourceCompiles)
 INCLUDE(CheckLibraryExists)
@@ -22,8 +24,12 @@ set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -std=c++11")
 CHECK_CXX_SOURCE_COMPILES("
 #include <atomic>
 std::atomic<int> x;
+std::atomic_ulong ul = 0;
+std::atomic_flag flag = ATOMIC_FLAG_INIT;
 int main() {
-return std::atomic_is_lock_free(&x);
+  ul++;
+  flag.test_and_set();
+  return std::atomic_is_lock_free(&x);
 }
 " ${varname})
 set(CMAKE_REQUIRED_FLAGS ${OLD_CMAKE_REQUIRED_FLAGS})
