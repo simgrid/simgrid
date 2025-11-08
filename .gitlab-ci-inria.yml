@@ -380,7 +380,7 @@ opensuse-release:
   tags:
     - large  # Inria infra
   script:
-  - zypper install -y ninja gfortran gcc-c++ git cmake python313-pybind11-devel python313-numpy-devel graphviz-devel eigen3-devel boost-devel libboost_context-devel java-21-openjdk-devel valgrind-devel diffutils nlohmann_json-devel
+  - zypper install -y ninja gcc-fortran gcc-c++ git cmake python313-pybind11-devel python313-numpy-devel graphviz-devel eigen3-devel boost-devel libboost_context-devel java-21-openjdk-devel valgrind-devel diffutils nlohmann_json-devel
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
