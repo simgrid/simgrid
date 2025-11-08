@@ -86,6 +86,11 @@ if(CMAKE_USE_PTHREADS_INIT)
   target_link_libraries(simgrid ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
+include(CheckAtomic)
+if(NOT HAVE_CXX_ATOMICS_WITHOUT_LIB)
+  target_link_libraries(simgrid "atomic")
+endif()
+
 if(HAVE_PAPI)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lpapi")
 endif()
