@@ -391,6 +391,7 @@ opensuse-release:
     reports:
       junit: result.xml
 
+# Check https://www.intel.com/content/www/us/en/developer/articles/news/oneapi-news-updates.html for new releases
 docker-intelCC:
   image: docker:latest
   stage: smoketests
@@ -404,7 +405,7 @@ docker-intelCC:
     - small  # Inria infra
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - tools/docker/build_on_need.sh $CI_REGISTRY_IMAGE/intelcc:latest tools/docker/Dockerfile.intelCC
+    - tools/docker/build_on_need.sh $CI_REGISTRY_IMAGE/intelcc:2025.3 tools/docker/Dockerfile.intelCC
 
 opensuse-intelCC:
   needs: [docker-intelCC]
