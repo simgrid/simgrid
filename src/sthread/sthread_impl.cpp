@@ -34,6 +34,37 @@
 #include <stdlib.h>
 #include <string_view>
 
+extern "C" {
+// These functions are mostly useful in sthread.c but they must be defined in libsimgrid for it to compile (although
+// they are not used in libsimgrid) We used to have 2 definitions of these functions, one useful in libsthread and one
+// placeholder in libsimgrid, but this proved to be fragile: it broke on several CI builders in 2025 when LTO and
+// optimizations were actived. That is why this code is now in this file, which is always in libsimgrid even if it's
+// mostly unused from here. Only sthread_is_initialized() is used here and there to detect that sthread is or is not
+// loaded in memory, to adapt the library initialization code.
+static thread_local int sthread_inside_simgrid = 1;
+void sthread_enable(void)
+{ // Start intercepting all pthread calls
+  sthread_inside_simgrid = 0;
+}
+void sthread_disable(void)
+{ // Stop intercepting all pthread calls
+  sthread_inside_simgrid = 1;
+}
+static int sthread_inited = 0;
+void sthread_do_initialize()
+{
+  sthread_inited = 1;
+}
+int sthread_is_initialized()
+{
+  return sthread_inited;
+}
+int sthread_is_enabled(void)
+{ // Returns whether sthread is currenctly active
+  return sthread_inside_simgrid == 0;
+}
+}
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(sthread, "pthread intercepter");
 namespace sg4 = simgrid::s4u;
 

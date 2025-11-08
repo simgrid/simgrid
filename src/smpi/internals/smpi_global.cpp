@@ -544,7 +544,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
   sg_storage_file_system_init();
   // parse the platform file: get the host list
   engine.load_platform(argv[1]);
-  if (sthread_in_memory())
+  if (sthread_is_initialized())
     engine.get_netzone_root()->add_host("Lilibeth", 1e15);
   engine.set_default_comm_data_copy_callback(smpi_comm_copy_buffer_callback);
 

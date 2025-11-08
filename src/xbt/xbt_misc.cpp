@@ -28,23 +28,6 @@ XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories"); /* lives here even if that's 
 const int xbt_pagesize = static_cast<int>(sysconf(_SC_PAGESIZE));
 const int xbt_pagebits = static_cast<int>(log2(xbt_pagesize));
 
-XBT_ATTRIB_NOINLINE void sthread_enable()
-{ // These symbols are used from ContextSwapped in any case, but they are only useful ...
-  asm("");
-}
-XBT_ATTRIB_NOINLINE void sthread_disable()
-{ //  ... when libsthread is LD_PRELOADED. In this case, sthread's implem gets used instead.
-  asm("");
-}
-int sthread_in_memory()
-{
-  return 0;
-}
-int sthread_is_enabled()
-{
-  return 0;
-}
-
 /* these two functions belong to xbt/sysdep.h, which have no corresponding .c file */
 /** @brief like xbt_free, but you can be sure that it is a function  */
 void xbt_free_f(void* p) noexcept(noexcept(::free))

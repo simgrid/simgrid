@@ -229,7 +229,6 @@ set(SMPI_SRC
   src/kernel/resource/models/network_ib.cpp
   )
 set(STHREAD_SRC
-  src/sthread/sthread_impl.cpp
   src/sthread/sthread.c
   src/sthread/sthread.h
   src/sthread/ObjectAccess.cpp
@@ -467,6 +466,9 @@ set(SIMGRID_SRC
   src/simgrid/sg_config.cpp
   src/simgrid/sg_version.cpp
   src/simgrid/util.hpp
+
+  src/sthread/sthread_impl.cpp
+
   src/smo/memory_observer.cpp
   src/smo/memory_observer.h
   )
