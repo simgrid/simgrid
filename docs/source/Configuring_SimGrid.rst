@@ -99,6 +99,7 @@ Existing Configuration Items
 
 - **debug/breakpoint:** :ref:`cfg=debug/breakpoint`
 - **debug/clean-atexit:** :ref:`cfg=debug/clean-atexit`
+- **debug/fullstack:** :ref:`cfg=debug/fullstack`
 - **debug/lmm-leaks:** :ref:`cfg=debug/lmm-leaks`
 - **debug/verbose-exit:** :ref:`cfg=debug/verbose-exit`
 
@@ -1820,6 +1821,18 @@ backtrace shown when an exception is thrown. This is mainly useful for
 the tests: the full file path would makes the tests non-reproducible because
 the paths of source files depend of the build settings. That would
 break most of the tests since their output is continually compared.
+
+.. _cfg=debug/fullstack:
+
+Trim the exception backtrace
+----------------------------
+
+**Option** ``debug/fullstack`` **default:** on
+
+By default, the exception backtrace is trimmed to remove internal symbols that are useless and troubling for the user, but it
+may happen that this trimming feature is buggy on some architectures. This may be as bad as completely empty stack traces. This
+option is intended for the users facing such issue, allowing them to request complete, untrimmed stack traces. The result will
+contain cruft, but at least not being completely empty.
 
 .. _logging_config:
 

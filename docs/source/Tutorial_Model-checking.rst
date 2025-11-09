@@ -62,10 +62,8 @@ memory events are not interleaved explicitly. Instead, Mc SimGrid uses a race de
 Limits
 ^^^^^^
 
-The first limit lies in the observation of events. At time of writing, technical limitations make it tedious to combine all
-instrumentation solutions (SMPI + sthread + the clang pass). Things should improve in the coming months, but many other
-applicative events remain unobserved. Communications are not observed if they don't use the MPI standard; Disk accesses are left
-completely unobserved, and so are the time-related APIs, to name a few.
+The first limit lies in the observation of events. Many applicative events remain unobserved. Communications are not observed if
+they don't use the MPI standard; Disk accesses are left completely unobserved, and so are the time-related APIs, to name a few.
 
 The second practical limit lies in the huge amount of scenarios to explore. SimGrid tries to explore only non-redundant scenarios
 thanks to classical reduction techniques (such as DPOR) but the exploration may well never finish if you don't carefully adapt

@@ -5,6 +5,12 @@
    \_/ \___|_|  |___/_|\___/|_| |_|    |_|(_)_|
                 (unreleased)
 
+Breaking the seal: v4.0 was not the final release.
+
+ * Allow to unseal netzones to modify the platform even after the simulation start.
+ * The model-checker can now report memory race conditions (see tutorial).
+ * Pip builds should now work out of the box.
+ * (+ the usual bug fixes and improvements to the Java and Python bindings).
                     _               _  _    ___
 __   _____ _ __ ___(_) ___  _ __   | || |  / _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \  | || |_| | | |
