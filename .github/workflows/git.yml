@@ -25,15 +25,14 @@ jobs:
           echo "CC=${{ matrix.config.cc }}"   >> $GITHUB_ENV
           echo "CXX=${{ matrix.config.cxx }}" >> $GITHUB_ENV
       - name: prepare for ubuntu
-        if: matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.name == 'Linux ARM'
         run: |
           sudo apt-get update && sudo apt-get install ninja-build libboost-dev libboost-context-dev pybind11-dev
       - name: prepare for MacOS
-        if: matrix.config.os == 'macos-13' || matrix.config.os == 'macos-15'
-        run: brew install boost eigen pybind11 ninja
-      - name: Select Xcode 16.3
-        if: matrix.config.os == 'macos-15'
-        run: sudo xcode-select -s /Applications/Xcode_16.3.app
+        if: matrix.config.name == 'MacOS Intel' || matrix.config.name == 'MacOS ARM'
+        run: |
+          brew install boost eigen pybind11 ninja
+          sudo xcode-select -s /Applications/Xcode_16.3.app
       - name: build
         run: |
           mkdir build ; cd build
