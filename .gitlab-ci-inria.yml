@@ -1,5 +1,8 @@
 # gitlab-ci-local --file .gitlab-ci-inria.yml  <job>
 
+# TODO:
+# intelCC v2025.3 has -Denable_model-checking=OFF as it fails with lib/libsimgrid.so.4.0.1: undefined reference to '__atomic_compare_exchange'
+
 coverage:
   image: debian:testing
   rules:
@@ -418,7 +421,7 @@ opensuse-intelCC:
   tags:
     - large  # Inria infra
   script:
-  - source /opt/intel/oneapi/setvars.sh; cmake -GNinja -DCMAKE_CXX_COMPILER=icpx -DCMAKE_C_COMPILER=icx -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - source /opt/intel/oneapi/setvars.sh; cmake -GNinja -DCMAKE_CXX_COMPILER=icpx -DCMAKE_C_COMPILER=icx -Denable_python=ON -Denable_java=ON -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:

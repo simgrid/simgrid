@@ -86,14 +86,6 @@ if(CMAKE_USE_PTHREADS_INIT)
   target_link_libraries(simgrid ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
-# libatomic is not automatically added as a dependency of libsimgrid with IntelCC 2025.3, and the linking then fails with:
-#   lib/libsimgrid.so.4.0.1: undefined reference to '__atomic_compare_exchange'
-# I tried to extend the cmake to check whether it works without it but failed. So, let's load this library when it exists.
-check_library_exists(atomic __atomic_compare_exchange "" HAVE_LIBATOMIC)
-if(HAVE_LIBATOMIC)
-  target_link_libraries(simgrid "atomic")
-endif()
-
 if(HAVE_PAPI)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lpapi")
 endif()
