@@ -100,7 +100,7 @@ For more details, please refer to the cpp and CMakeLists.txt files in
 Example
 *******
 
-The best way to build your C++ platform is starting from some examples.
+The best way to build your C++ platform is to start from some examples.
 Give a look in the examples folder in `examples/ <https://framagit.org/simgrid/simgrid/tree/master/examples/>`_.
 For instance, the file `examples/cpp/clusters-multicpu/s4u-clusters-multicpu.cpp <https://framagit.org/simgrid/simgrid/-/blob/master/examples/cpp/clusters-multicpu/s4u-clusters-multicpu.cpp>`_ shows how to build complex platforms composed of
 clusters of clusters.
