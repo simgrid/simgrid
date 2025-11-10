@@ -93,7 +93,7 @@ private:
 
   double total_carbon_footprint = 0.0; /*< Total CO2 emitted by the host */ 
   double carbon_intensity = 0.0; /*< Grams of CO2 emitted per kWh consumed by the host */
-  double last_updated = simgrid::s4u::Engine::get_clock(); /*< Timestamp of the last update event*/
+  double last_updated = -1; // Initially negative in the case there is CO2 data for t = 0
 
 public: 
   double last_energy;  /*< Amount of energy used so far (kwh) >*/
@@ -106,9 +106,10 @@ void HostCarbonFootprint::update()
   double start_time = last_updated;
   double finish_time = simgrid::s4u::Engine::get_clock();
 
-  if (start_time < finish_time) {
+  if (start_time <finish_time) {
     double previous_carbon_footprint = total_carbon_footprint;
     double total_carbon_this_step = 0.0;
+    double current_time = start_time < 0.0 ?  0.0 : start_time;
 
     // Process carbon intensity changes during the time period
     if (trace_file_loaded) {
@@ -157,8 +158,7 @@ void HostCarbonFootprint::update()
           }
         }
         
-        // Calculate carbon footprint for each time segment
-        double current_time = start_time;
+        // Calculate carbon footprint for each time segment                
         double current_intensity = this->carbon_intensity;
         int segment_number = 0;
         
@@ -201,18 +201,20 @@ void HostCarbonFootprint::update()
       } else {
         // No traces for this host, use standard calculation
         double instantaneous_power_consumption = sg_host_get_current_consumption(host_);
-        double energy_this_step = instantaneous_power_consumption * (finish_time - start_time);
+
+
+        double energy_this_step = instantaneous_power_consumption * (finish_time - current_time);
         double energy_this_step_kwh = energy_this_step / 3.6e6;
         total_carbon_this_step = energy_this_step_kwh * this->carbon_intensity;
         
         XBT_INFO("[%s] Nenhum trace encontrado para este host, usando calculo padrao: power=%.2f W, periodo=%.8f s, energia=%.8f kWh, carbon=%.8f g",
-                 host_name.c_str(), instantaneous_power_consumption, finish_time - start_time, 
+                 host_name.c_str(), instantaneous_power_consumption, finish_time - current_time, 
                  energy_this_step_kwh, total_carbon_this_step);
       }
     } else {
       // No trace file loaded, use standard calculation
       double instantaneous_power_consumption = sg_host_get_current_consumption(host_);
-      double energy_this_step = instantaneous_power_consumption * (finish_time - start_time);
+      double energy_this_step = instantaneous_power_consumption * (finish_time - current_time);
       double energy_this_step_kwh = energy_this_step / 3.6e6;
       total_carbon_this_step = energy_this_step_kwh * this->carbon_intensity;
     }
