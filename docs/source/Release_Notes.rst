@@ -844,13 +844,13 @@ Jean-Noël Quintin implemented most of the MPI standard in Python for SimGrid. M
 **On the software lifecycle side**, given the current (improved) form of the S4U API, it was time to release SimGrid 4.0. 
 The only missing pieces before the big jump seem to be some portions of the documentation which were not ported from Doxygen to Sphinx.
 
-We are done deprecating the old xbt_dict and xbt_dynar data containers, which will be fully removed in future releases (be it
-3.39 as currently planned or one of the 4.x serie).
+We are done deprecating the old xbt_dict and xbt_dynar data containers, which will be fully removed in future releases.
 
-**On the model-checking side**, we worked mostly on improving the performance of the verification process, and fixed some bugs. Our
-prefered algorithm (ODPOR reduction + Best-first exploration to enable random walk) is now much faster and consumes much less
-memory, being 5x faster on small scenarios. But since performance is now linear with the
-number of states, while it used to be polynomial, 5x faster is the lowest performance boost you can expect from the new version. The number of states to explore for a given scenario is still the same (ODPOR was not improved), but we now can explore these states much faster.
+**On the model-checking side**, we worked mostly on improving the performance of the verification process, and fixed some bugs.
+Our prefered algorithm (ODPOR reduction + Best-first exploration to enable random walk) is now much faster and consumes much
+less memory, being 5x faster on small scenarios. But since performance is now linear with the number of states, while it used to
+be polynomial, 5x faster is the lowest performance boost you can expect from the new version. The number of states to explore
+for a given scenario is still the same (ODPOR was not improved), but we now can explore these states much faster.
 
 **On the storage simulation side**, we finally allowed disks to be turned off and on, just like it was already possible for hosts and
 links. When a disk is turned off, all the I/O activities currently using it are canceled. When the disk is turned
@@ -864,6 +864,56 @@ been set.
 Version 4.1 (unreleased)
 ------------------------
 
+**On the platform side**, we added the ability to unseal a given network zone, for the user to add elements even after the
+simulation start. This is not enough for real platform dynamicity as it is not possible to remove elements from netzones yet,
+but that's a start.
+
+**On the bindings side**, we added several missing functions to both Python and Java. More functions are still missing, so do
+not hesitate to drop us a note (or better: a patch) if you need something here. We also plugged some memleaks in the Java
+bindings. Something's still rotten somewhere if you create and destroy thousands of actors or more, but that's already much
+better.
+
+**On the software quality side**, we reworked our whole CI infrastructure. The Inria instance of Jenkins is phased out, so we
+converted almost everything to gitlab, with some runners still running on github (to access MacOSX and Arm runners) or Inria's
+cloudstack (to get a FreeBSD runner and to access VMs that do not need to be reinstalled each time). We still need to
+reinstantiate a test using valgrind to detect memleaks in our code.
+
+**On the model-checking side**, we added the ability to check for race conditions in the user code. This feature needs to add a
+specific pass to the clang LLVM compiler, to make the memory accesses observable by our tool. This feature is usable (see the
+tutorial) and we even used it in our teachings, but the LLVM pass still lives in its separate repository for now.
+
+Unfortunately, we did not manage to find all bugs in our parallel explorer yet. We have a race condition somewhere :( Of course,
+the temptation to run the model-checker on itself to find such bugs is really high, but it poses tremendous difficulties. 
+
+First, our model-checker cannot observe network communications, while this is how the checker and the verified application
+interact. So, if the checker verifies another checker, the verifier checker will not be able to see all interactions of the
+verified checker with its environment. Observing the communications is probably easy enough (even if implementing the BSD logic
+in the checker may be time-consuming), but this then poses practical challenges to ensure that all UNIX processes involved in
+the communication are properly enrolled in the simulation. These issues were partially solved in other projects such as
+remote-simgrid or TANSIV, but doing so in the context of the model-checker will certainly take months to a full-time worker, who
+is still to hire.
+
+Some of us claim that verifying the verifier could still work somehow without observing the communication, provided that the
+verified checker is never forked in the middle, but always properly re-started from the start to explore other paths (i.e. using
+``--cfg=model-check/no-fork:on``). In this case, the verified checker will fork the external processes and interact with them in
+a way that may be transparent to the verifier checker (some of us are suspicious about whether this could work). Even if we can
+make it work without observing the networked communications, many other actions of our checker implementation are not observed
+yet. We use many atomic operations all over the place, and some parts of our code uses futexes. None of these mechanisms are
+observed by our LLVM pass yet. Observing atomic operations is probably simple enough, and we could change our implementation to
+remove the futexes (whose semantic is far from being trivial if we try to add them to our verification logic).
+
+Another difficulty is that sthread injects a S4U engine within the verified application, while the checker already has one such
+engine, which is a singleton. Solving it would require to either change the s4u engine to allow several engines to co-exist in
+the same UNIX process, or ensuring that the checker does not instantiate any engine. The former sounds very difficult given the
+amount of `static` variables scattering the state of the engine. We should give the later a spin to see how hard it is.
+
+And finally, the main issue is that we suspect a memory consistency issue while we did not implement TSO nor PSO consistency
+logics yet. For now, our race detection algorithm assumes strict consistency where no operation get reordered. While it's enough
+to find some bugs in simple codes, this is probably not sufficient to find our bug.
+
+So, this is a lot of work before we can even try to verify our tool with itself. We are probably doomed to use other tools but
+hellgrind gets fooled by the atomic operations while the thread sanitizer TSan do not report anything useful. This is why we
+suspect that the bug may be related to advanced memory consistency issues.
 
 .. |br| raw:: html
 
