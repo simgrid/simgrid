@@ -116,7 +116,7 @@ void HostCarbonFootprint::update()
       std::string host_name = host_->get_cname();
       auto host_traces = carbon_intensity_traces.find(host_name);
       
-      XBT_INFO("[%s] UPDATE iniciado com trace file: periodo=[%.8f-%.8f] s, duracao=%.8f s, carbon_intensity_inicial=%.2f g/kWh, carbon_footprint_anterior=%.8f g",
+      XBT_DEBUG("[%s] UPDATE started with trace file: period=[%.8f-%.8f] s, duration=%.8f s, initial_carbon_intensity=%.2f g/kWh, previous_carbon_footprint=%.8f g",
                host_name.c_str(), start_time, finish_time, finish_time - start_time, this->carbon_intensity, previous_carbon_footprint);
       
       if (host_traces != carbon_intensity_traces.end()) {
@@ -133,13 +133,13 @@ void HostCarbonFootprint::update()
         // Sort by time
         std::sort(intensity_changes.begin(), intensity_changes.end());
         
-        XBT_INFO("[%s] Encontradas %zu mudancas de carbon_intensity no periodo [%.8f-%.8f] s",
+        XBT_DEBUG("[%s] Found %zu carbon_intensity changes in period [%.8f-%.8f] s",
                  host_name.c_str(), intensity_changes.size(), start_time, finish_time);
         
         // Add the current intensity at the end if no changes occurred
         if (intensity_changes.empty()) {
           intensity_changes.push_back({finish_time, this->carbon_intensity});
-          XBT_INFO("[%s] Nenhuma mudanca de intensidade encontrada, usando intensidade atual: %.2f g/kWh",
+          XBT_DEBUG("[%s] No intensity change found, using current intensity: %.2f g/kWh",
                    host_name.c_str(), this->carbon_intensity);
         } else {
           // Use the last intensity that was active before finish_time
@@ -151,9 +151,9 @@ void HostCarbonFootprint::update()
           }
           intensity_changes.push_back({finish_time, last_intensity});
           
-          XBT_INFO("[%s] Mudancas de intensidade encontradas:", host_name.c_str());
+          XBT_DEBUG("[%s] Intensity changes found:", host_name.c_str());
           for (const auto& change : intensity_changes) {
-            XBT_INFO("[%s]   t=%.8f s -> carbon_intensity=%.2f g/kWh", 
+            XBT_DEBUG("[%s]   t=%.8f s -> carbon_intensity=%.2f g/kWh", 
                      host_name.c_str(), change.first, change.second);
           }
         }
@@ -162,7 +162,7 @@ void HostCarbonFootprint::update()
         double current_intensity = this->carbon_intensity;
         int segment_number = 0;
         
-        XBT_INFO("[%s] Calculando carbon footprint por segmentos:", host_name.c_str());
+        XBT_DEBUG("[%s] Calculating carbon footprint by segments:", host_name.c_str());
         
         for (const auto& change : intensity_changes) {
           double segment_end_time = change.first;
@@ -177,11 +177,6 @@ void HostCarbonFootprint::update()
             total_carbon_this_step += carbon_this_segment;
             segment_number++;
             
-            XBT_INFO("[%s] Segmento %d: periodo=[%.8f-%.8f] s, duracao=%.8f s, power=%.2f W, energia=%.8f J (%.8f kWh), carbon_intensity=%.2f g/kWh, carbon_segmento=%.8f g",
-                     host_name.c_str(), segment_number, current_time, segment_end_time, segment_duration,
-                     instantaneous_power_consumption, energy_this_segment, energy_this_segment_kwh,
-                     current_intensity, carbon_this_segment);
-            
             XBT_DEBUG("[carbon_footprint_segment of %s] period=[%.8f-%.8f]; power=%.2f W; carbon rate=%.2f g/kWh; "
                       "carbon this segment: %.8f g",
                       host_->get_cname(), current_time, segment_end_time, instantaneous_power_consumption, 
@@ -195,7 +190,7 @@ void HostCarbonFootprint::update()
         // Update the current carbon intensity to the final value
         this->carbon_intensity = current_intensity;
         
-        XBT_INFO("[%s] Total calculado neste update: carbon_this_step=%.8f g, carbon_intensity_final=%.2f g/kWh, segmentos_processados=%d",
+        XBT_DEBUG("[%s] Total calculated in this update: carbon_this_step=%.8f g, final_carbon_intensity=%.2f g/kWh, segments_processed=%d",
                  host_name.c_str(), total_carbon_this_step, this->carbon_intensity, segment_number);
         
       } else {
@@ -207,7 +202,7 @@ void HostCarbonFootprint::update()
         double energy_this_step_kwh = energy_this_step / 3.6e6;
         total_carbon_this_step = energy_this_step_kwh * this->carbon_intensity;
         
-        XBT_INFO("[%s] Nenhum trace encontrado para este host, usando calculo padrao: power=%.2f W, periodo=%.8f s, energia=%.8f kWh, carbon=%.8f g",
+        XBT_DEBUG("[%s] No trace found for this host, using standard calculation: power=%.2f W, period=%.8f s, energy=%.8f kWh, carbon=%.8f g",
                  host_name.c_str(), instantaneous_power_consumption, finish_time - current_time, 
                  energy_this_step_kwh, total_carbon_this_step);
       }
@@ -223,7 +218,7 @@ void HostCarbonFootprint::update()
     last_updated = finish_time;
 
     if (trace_file_loaded) {
-      XBT_INFO("[%s] UPDATE finalizado: carbon_footprint_anterior=%.8f g + carbon_adicionado=%.8f g = carbon_footprint_total=%.8f g, last_updated=%.8f s",
+      XBT_DEBUG("[%s] UPDATE finished: previous_carbon_footprint=%.8f g + carbon_added=%.8f g = total_carbon_footprint=%.8f g, last_updated=%.8f s",
                host_->get_cname(), previous_carbon_footprint, total_carbon_this_step, 
                total_carbon_footprint, last_updated);
     }
@@ -444,6 +439,6 @@ void sg_host_carbon_footprint_load_trace_file(const char* trace_file)
   file.close();
   trace_file_loaded = true;
   
-  XBT_INFO("Carbon trace file '%s' loaded successfully. Found traces for %zu hosts.", 
+  XBT_DEBUG("Carbon trace file '%s' loaded successfully. Found traces for %zu hosts.", 
            trace_file, carbon_intensity_traces.size());
 }
