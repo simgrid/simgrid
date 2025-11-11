@@ -833,7 +833,7 @@ library, plus 5k lines of Java for the examples). We think that Java is a much b
 use by students, as it is relatively easy and very forgiving, while C++ should be reserved to seasoned programmers who
 can then benefit of its added power.  Python is also an easy lanthage, but it is meant for small scripts. The
 medium-sized projects that are typically written during the course of a student's graduate-level projects are probably
-better written in Java than in Python. To be perfectly honnest, another motivation for the Java API development was fun.
+better written in Java than in Python. To be perfectly honest, another motivation for the Java API development was fun.
 Writing this code felt like solving a very large grid of Sudoku, requiring care but not being too difficult once you
 figured it out. We may consider implementing Rust bindings in the future, but a concern is the added maintenance burden
 if we add too many bindings.
@@ -847,7 +847,7 @@ The only missing pieces before the big jump seem to be some portions of the docu
 We are done deprecating the old xbt_dict and xbt_dynar data containers, which will be fully removed in future releases.
 
 **On the model-checking side**, we worked mostly on improving the performance of the verification process, and fixed some bugs.
-Our prefered algorithm (ODPOR reduction + Best-first exploration to enable random walk) is now much faster and consumes much
+Our preferred algorithm (ODPOR reduction + Best-first exploration to enable random walk) is now much faster and consumes much
 less memory, being 5x faster on small scenarios. But since performance is now linear with the number of states, while it used to
 be polynomial, 5x faster is the lowest performance boost you can expect from the new version. The number of states to explore
 for a given scenario is still the same (ODPOR was not improved), but we now can explore these states much faster.
@@ -864,56 +864,57 @@ been set.
 Version 4.1 (unreleased)
 ------------------------
 
-**On the platform side**, we added the ability to unseal a given network zone, allowing users to add elements (e.g., hosts,
-links, routes) even after the simulation started. This is still not enough to offer real platform dynamicity as it is not
-possible to remove elements from netzones yet, but that's a start.
+**On the platform side**, we added the ability to unseal a network zone, allowing users to add elements (e.g., hosts, links,
+routes) to it even after the simulation started. This is still not sufficient to provide full-fledged dynamic platforms as it
+is not possible to remove elements from netzones yet, but that's a start.
 
-**On the bindings side**, we added several missing functions to both Python and Java. Some functions may still be missing, so
-do not hesitate to drop us a note (or better propose a patch) if you need something there. We also plugged some memleaks in
-the Java bindings. Something's still rotten somewhere if you create and destroy thousands of actors or more, but this is already
-much better than it was.
+**On the bindings side**, we added several missing functions to both the Python and Java bindings. Some functions may still be missing, so
+do not hesitate to drop us a note (or better, propose a patch) if you need functionality that is missing. We also plugged some memleaks in
+the Java bindings. Something's still rotten somewhere, as can be seen if you create and destroy thousands of actors or more, but the current
+state is already much better than it previously was.
 
-**On the software quality side**, we reworked our whole CI infrastructure. The Inria instance of Jenkins has been phased out, so
+**On the software quality side**, we refactored our whole CI infrastructure. The Inria instance of Jenkins has been phased out, so
 we converted almost everything to gitlab, with some runners still running on github (to access MacOSX and Arm runners) or Inria's
 cloudstack (to get a FreeBSD runner and to access VMs that do not need to be reinstalled each time). We still need to
 reinstantiate a test using valgrind to detect memleaks in our code.
 
 **On the model-checking side**, we added the ability to check for race conditions in the user code. This feature needs to add a
 specific pass to the clang LLVM compiler, to make the memory accesses observable by our tool. This feature is usable (see the
-tutorial) and we even used it in our teachings, but the LLVM pass still lives in its separate repository for now.
+tutorial) and we already use it for teaching purposes at our institutions, but the additional LLVM pass still lives in its separate repository for now.
 
-Unfortunately, we did not manage to find all bugs in our parallel explorer yet. We have a race condition somewhere :( Of course,
-the temptation to run the model-checker on itself to find such bugs is really high, but it poses tremendous difficulties. 
+Unfortunately, we did not manage to find all the bugs in our parallel explorer yet. We have a race condition somewhere :( Of course,
+the temptation to run the model-checker on itself to find this kind of bugs is really high, but it poses tremendous difficulties,
+as described hereafter if you're interested.
 
-First, our model-checker cannot observe network communications, while this is how the checker and the verified application
+First, our model-checker cannot observe network communications, and unfortunately this is how the checker and the verified application
 interact. So, if the checker verifies another checker, the verifier checker will not be able to see all interactions of the
 verified checker with its environment. Observing the communications is probably easy enough (even if implementing the BSD logic
 in the checker may be time-consuming), but this then poses practical challenges to ensure that all UNIX processes involved in
-the communication are properly enrolled in the simulation. These issues were partially solved in other projects such as
-remote-simgrid or TANSIV, but doing so in the context of the model-checker will certainly take months to a full-time worker, who
-still has to be hired.
+the communication are properly enrolled in the simulation. These issues have been partially solved in other projects, such as
+remote-simgrid or TANSIV, but doing so in the context of the model-checker will certainly take months for somebody working
+full-time worker on it, and such a person has yet to be hired.
 
-Some of us claim that verifying the verifier could still work somehow without observing the communication, provided that the
+Some of us claim that verifying the verifier could still work without observing the communication, provided that the
 verified checker is never forked in the middle, but always properly re-started from the start to explore other paths (i.e., using
 ``--cfg=model-check/no-fork:on``). In this case, the verified checker will fork the external processes and interact with them in
-a way that may be transparent to the verifier checker (some of us are suspicious about whether this could work). Even if we can
+a way that may be transparent to the verifier checker. Some of us have doubts about whether this could work. Even if we can
 make it work without observing the communications, many other actions of our checker implementation are not observed
 yet. We use many atomic operations all over the place, and some parts of our code uses futexes. None of these mechanisms are
 observed by our LLVM pass yet. Observing atomic operations is probably simple enough, and we could change our implementation to
 remove the futexes (whose semantic is far from being trivial if we try to add them to our verification logic).
 
 Another difficulty is that sthread injects a S4U engine within the verified application, while the checker already has one such
-engine, which is a singleton. Solving it would require to either change the s4u engine to allow several engines to co-exist in
-the same UNIX process, or ensuring that the checker does not instantiate any engine. The former sounds very difficult given the
-amount of `static` variables scattering the state of the engine. We should give the latter a spin to see how hard it is.
+engine, which is a singleton. Running the model-checker on itself would require to either change the s4u engine to allow several engines to co-exist in
+the same UNIX process, or to ensure that the checker does not instantiate any engine. The former sounds very difficult given the
+amount of `static` variables scattering the state of the engine. We should give the latter a try to see how hard it really is.
 
-And finally, the main issue is that we suspect a memory consistency issue while we did not implement neither TSO nor PSO consistency
-logics yet. For now, our race detection algorithm assumes strict consistency where no operation get reordered. While it's enough
+And finally, we suspect that the main issue is a memory consistency issue, but we did have not implemented TSO or PSO consistency
+logics yet. For now, our race detection algorithm assumes strict consistency where no operations get reordered. While it's enough
 to find some bugs in simple codes, this is probably not sufficient to find our bug.
 
-So, this is a lot of work before we can even try to verify our tool with itself. We are probably doomed to use other tools but
-hellgrind gets fooled by the atomic operations while the thread sanitizer TSan do not report anything useful. This is why we
-suspect that the bug may be related to advanced memory consistency issues.
+In summary, this is a lot of work before we can even try to verify our tool with itself. We are probably doomed to use other tools but
+hellgrind gets fooled by the atomic operations while the thread sanitizer TSan works but do not report anything useful (which is why we
+suspect that the bug may be related to tricky memory consistency issues).
 
 .. |br| raw:: html
 
