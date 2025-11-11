@@ -15,16 +15,6 @@ void turn_host_off(simgrid::s4u::Host * host)
 {
   host->turn_off();
 }
-void update_co2_actor(simgrid::s4u::Host* host, std::map<int, double > co2_data)
-{  
-  for (auto it = co2_data.begin(); it != co2_data.end(); it++)
-  {
-    int time = it->first;
-    double co2_data = it->second;
-    simgrid::s4u::this_actor::sleep_until(time);
-    sg_host_set_carbon_intensity(host,co2_data);    
-  }      
-}
 
 void test_execution()
 {          
@@ -67,7 +57,7 @@ void test_execution()
     sg4::ExecPtr activity_4_2 = sg4::this_actor::exec_init(flopAmount_1_hour*4);
     sg4::ExecPtr activity_4_3 = sg4::this_actor::exec_init(flopAmount_1_hour*4);        
     sg4::ExecPtr activity_4_4 = sg4::this_actor::exec_init(flopAmount_1_hour*4);
-
+    
     activity_4_1->start();
     activity_4_2->start();
     activity_4_3->start();
@@ -77,8 +67,6 @@ void test_execution()
     activity_4_2->wait();
     activity_4_3->wait();
     activity_4_4->wait();
-
-    
  
 }
 
@@ -98,13 +86,12 @@ int main(int argc, char* argv[])
   sg4::Host* host_br_dynamic_co2 = sg4::Host::by_name("host_br_dynamic_co2");
   sg4::Host* host_usa_dynamic_co2 = sg4::Host::by_name("host_usa_dynamic_co2");
 
-         
   sg4::Actor::create("execution", host_br_static_co2, test_execution);
   sg4::Actor::create("execution", host_br_dynamic_co2, test_execution);
 
-  
-  host_usa_static_co2->turn_off();
-  host_usa_dynamic_co2->turn_off();
+  sg4::Actor::create("turn_off test", host_br_static_co2, turn_host_off,host_usa_static_co2);
+  sg4::Actor::create("turn_off test", host_br_static_co2, turn_host_off,host_usa_dynamic_co2);
+
   e.run();
 
 
