@@ -861,8 +861,8 @@ back on, these activities have to be manually restarted. Moreover, if disks are 
 the platform parsing now raises a ``on_platform_sealed()``  when the platform cannot be modified anymore and its routing has
 been set.
 
-Version 4.1 (unreleased)
-------------------------
+Version 4.1 (November 11. 2025)
+-------------------------------
 
 **On the platform side**, we added the ability to unseal a network zone, allowing users to add elements (e.g., hosts, links,
 routes) to it even after the simulation started. This is still not sufficient to provide full-fledged dynamic platforms as it
@@ -882,7 +882,7 @@ reinstantiate a test using valgrind to detect memleaks in our code.
 specific pass to the clang LLVM compiler, to make the memory accesses observable by our tool. This feature is usable (see the
 tutorial) and we already use it for teaching purposes at our institutions, but the additional LLVM pass still lives in its separate repository for now.
 
-Unfortunately, we did not manage to find all the bugs in our parallel explorer yet. We have a race condition somewhere :( Of course,
+We are working on a parallel explorer leveraging all cores to accelerate the exploration, but unfortunately, we did not manage to find all the bugs in our parallel explorer yet. We have a race condition somewhere :( Of course,
 the temptation to run the model-checker on itself to find this kind of bugs is really high, but it poses tremendous difficulties,
 as described hereafter if you're interested.
 
@@ -896,7 +896,7 @@ full-time worker on it, and such a person has yet to be hired.
 
 Some of us claim that verifying the verifier could still work without observing the communication, provided that the
 verified checker is never forked in the middle, but always properly re-started from the start to explore other paths (i.e., using
-``--cfg=model-check/no-fork:on``). In this case, the verified checker will fork the external processes and interact with them in
+:ref:`--cfg=model-check/no-fork:on<cfg=model-check/no-fork>`). In this case, the verified checker will fork the external processes and interact with them in
 a way that may be transparent to the verifier checker. Some of us have doubts about whether this could work. Even if we can
 make it work without observing the communications, many other actions of our checker implementation are not observed
 yet. We use many atomic operations all over the place, and some parts of our code uses futexes. None of these mechanisms are
