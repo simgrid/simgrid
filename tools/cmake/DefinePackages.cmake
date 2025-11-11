@@ -4,6 +4,7 @@ set(EXTRA_DIST
   src/3rd-party/catch.hpp
   src/bindings/python/simgrid_python.cpp
   src/bindings/python/smpi_python.cpp
+  src/bindings/java/MANIFEST.in
   src/dag/dax.dtd
   src/dag/dax_dtd.c
   src/dag/dax_dtd.h

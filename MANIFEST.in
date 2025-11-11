@@ -2269,6 +2269,7 @@ include include/xbt/virtu.h
 include include/xbt/xbt_os_time.h
 include setup.py
 include src/3rd-party/catch.hpp
+include src/bindings/java/MANIFEST.in
 include src/bindings/java/org/simgrid/s4u/Activity.java
 include src/bindings/java/org/simgrid/s4u/ActivitySet.java
 include src/bindings/java/org/simgrid/s4u/Actor.java
