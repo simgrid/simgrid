@@ -916,6 +916,9 @@ In summary, this is a lot of work before we can even try to verify our tool with
 hellgrind gets fooled by the atomic operations while the thread sanitizer TSan works but do not report anything useful (which is why we
 suspect that the bug may be related to tricky memory consistency issues).
 
+Version 4.2 (unreleased)
+------------------------
+
 .. |br| raw:: html
 
    <br />
