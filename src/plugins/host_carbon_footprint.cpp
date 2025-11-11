@@ -439,6 +439,6 @@ void sg_host_carbon_footprint_load_trace_file(const char* trace_file)
   file.close();
   trace_file_loaded = true;
   
-  XBT_DEBUG("Carbon trace file '%s' loaded successfully. Found traces for %zu hosts.", 
+  XBT_INFO("Carbon trace file '%s' loaded successfully. Found traces for %zu hosts.", 
            trace_file, carbon_intensity_traces.size());
 }
