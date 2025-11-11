@@ -127,7 +127,7 @@ if(enable_lib_in_jar)
 
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}
-    COMMAND ${CMAKE_STRIP} -x ${JAVA_NATIVE_PATH}/*
+    COMMAND ${CMAKE_STRIP} -x ${JAVA_NATIVE_PATH}/* # MacOSX does not accept long names such as --discard-all and does not have the same semantic for the -s parameter
     )
 endif()
 

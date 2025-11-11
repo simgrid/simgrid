@@ -1,0 +1,124 @@
+name: Jar build
+
+# Rebuild when changing the stable branch, or when clicking on the UI button
+on:
+  workflow_dispatch:
+  push:
+      branches:
+            - stable
+
+jobs:
+  build:
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+        matrix:
+          config: # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#choosing-github-hosted-runners
+          - { name: "MacOS Intel", os: macos-15-intel,   cc: "clang", cxx: "clang++"}
+          - { name: "MacOS ARM",   os: macos-latest,     cc: "clang", cxx: "clang++"}
+          - { name: "Linux Intel", os: ubuntu-24.04,     cc: "gcc",   cxx: "g++"}
+          - { name: "Linux ARM",   os: ubuntu-24.04-arm, cc: "gcc",   cxx: "g++"}
+
+    steps:
+    - uses: actions/checkout@v4
+     # install dependencies
+    - name: Init options
+      run: |
+          echo "CC=${{ matrix.config.cc }}"   >> $GITHUB_ENV
+          echo "CXX=${{ matrix.config.cxx }}" >> GITHUB_ENV
+    - name: prepare for ubuntu
+      if: matrix.config.name == 'Linux ARM' || matrix.config.name == 'Linux Intel'
+      run: |
+        sudo apt-get update && sudo apt-get install ninja-build libboost-dev libboost-context-dev default-jdk-headless
+    - name: prepare for MacOS
+      if: matrix.config.name == 'MacOS Intel' || matrix.config.name == 'MacOS ARM'
+      run: |
+        brew install boost eigen ninja
+        sudo xcode-select -s /Applications/Xcode_16.3.app
+    - name: Build and test jar with Cmake
+      run: |
+          mkdir build
+          cd build
+          cmake -GNinja -Denable_documentation=OFF -Denable_java=ON -Denable_lib_in_jar=ON -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF ${{ matrix.config.cmake_extra_options }} ..
+          ninja --verbose simgrid.jar tests-java
+          ctest -R java --output-on-failure
+    - name: Upload jar
+      uses: actions/upload-artifact@v4
+      with:
+          name: jar-${{ matrix.config.os }}
+          path: build/simgrid.jar
+    - name: Send the failure message
+      if: ${{ failure() }}
+      uses: mattermost/action-mattermost-notify@master
+      with:
+        MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+        MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
+        PAYLOAD: |-
+          {
+           "channel": "bot-office",
+           "attachments": [{
+             "color": "#FF0000",
+             "text": "Failure when building the jarfile on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+             "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
+          }]}
+  create_jar:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download all jars from ubuntu
+        uses: actions/download-artifact@v4
+      - name: Build final jar
+        run: |
+           patch=$(grep -r set\(SIMGRID_VERSION_PATCH ./CMakeLists.txt | sed 's/.*"\([[:digit:]]\+\)".*/\1/g')
+           major=$(grep -r set\(SIMGRID_VERSION_MAJOR ./CMakeLists.txt | sed 's/.*"\([[:digit:]]\+\)".*/\1/g')
+           minor=$(grep -r set\(SIMGRID_VERSION_MINOR ./CMakeLists.txt | sed 's/.*"\([[:digit:]]\+\)".*/\1/g')
+           if [ $patch -ne 0 ]; then
+             version="$major.$minor.$patch"
+           else
+             version="$major.$minor"
+           fi
+           mkdir content
+           cd content
+           for j in  ../jar-*/simgrid.jar ; do unzip -n $j ; done
+           file NATIVE/*/*/*
+           strip NATIVE/Linux/amd64/*.so
+           # x86_64-linux-gnu-strip NATIVE/*/*/lib*dll
+           zip -r ../simgrid-${version}.jar *
+      - name: Upload jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: multiarch-jarfile
+          path: simgrid-*.jar
+      - name: cleanup artifacts
+        uses: geekyeggo/delete-artifact@v1
+        with:
+          name: |
+            jar-*
+          failOnError: false
+      - name: Send the failure message
+        if: ${{ failure() }}
+        uses: mattermost/action-mattermost-notify@master
+        with:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
+          PAYLOAD: |-
+            {
+             "channel": "bot-office",
+             "attachments": [{
+               "color": "#FF0000",
+               "text": "Failure when building the jarfile on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+               "icon": "https://cdn3.iconfinder.com/data/icons/system-basic-vol-4-1/20/icon-note-attention-alt3-512.png"
+            }]}
+      - name: Send the success message
+        if: ${{ success() }}
+        uses: mattermost/action-mattermost-notify@master
+        with:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
+          PAYLOAD: |-
+            {
+             "channel": "bot-office",
+             "attachments": [{
+               "color": "#00FF00",
+               "text": "The jarfile built successfully on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }]}
